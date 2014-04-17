@@ -616,10 +616,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
         public static bool ActiveGiftDestination(long AFromPartnerKey,
-                                                    long AToPartnerKey,
-                                                    TPartnerClass APartnerClass,
-                                                    out bool AFromGiftDestinationNeedsEnded,
-                                                    out bool AToGiftDestinationNeedsEnded)
+            long AToPartnerKey,
+            TPartnerClass APartnerClass,
+            out bool AFromGiftDestinationNeedsEnded,
+            out bool AToGiftDestinationNeedsEnded)
         {
             AFromGiftDestinationNeedsEnded = false;
             AToGiftDestinationNeedsEnded = false;
@@ -633,26 +633,33 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 // if partners are Person's then find their family keys
                 if (APartnerClass == TPartnerClass.PERSON)
                 {
-                    AFromPartnerKey = ((PPersonRow) PPersonAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction).Rows[0]).FamilyKey;
-                    AToPartnerKey = ((PPersonRow) PPersonAccess.LoadByPrimaryKey(AToPartnerKey, Transaction).Rows[0]).FamilyKey;
+                    AFromPartnerKey = ((PPersonRow)PPersonAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction).Rows[0]).FamilyKey;
+                    AToPartnerKey = ((PPersonRow)PPersonAccess.LoadByPrimaryKey(AToPartnerKey, Transaction).Rows[0]).FamilyKey;
                 }
-                
+
                 // check for an active gift destination for the 'From' partner
                 PPartnerGiftDestinationTable GiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
                 ActiveRow = GetActiveGiftDestination(GiftDestinations);
-                
+
                 // return if no active record has been found
                 if (ActiveRow == null)
                 {
                     return false;
                 }
-                
+
                 // check for clash with the 'To' partner
                 PPartnerGiftDestinationTable ToGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AToPartnerKey, Transaction);
                 CheckGiftDestinationClashes(ToGiftDestinations, ActiveRow, out FromGiftDestinationRowNeedsEnded, out ToGiftDestinationRowNeedsEnded);
-                
-                if (FromGiftDestinationRowNeedsEnded != null) AFromGiftDestinationNeedsEnded = true;
-                if (ToGiftDestinationRowNeedsEnded != null) AToGiftDestinationNeedsEnded = true;
+
+                if (FromGiftDestinationRowNeedsEnded != null)
+                {
+                    AFromGiftDestinationNeedsEnded = true;
+                }
+
+                if (ToGiftDestinationRowNeedsEnded != null)
+                {
+                    AToGiftDestinationNeedsEnded = true;
+                }
             }
             catch (Exception e)
             {
@@ -674,16 +681,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <returns>Returns the active Gift Destination or null if none exist</returns>
         [RequireModulePermission("PTNRUSER")]
         public static PPartnerGiftDestinationRow GetActiveGiftDestination(PPartnerGiftDestinationTable APartnersGiftDestinations)
-        {  
+        {
             foreach (PPartnerGiftDestinationRow Row in APartnersGiftDestinations.Rows)
             {
-                if (Row.DateEffective <= DateTime.Today && (Row.IsDateExpiresNull() || Row.DateExpires >= DateTime.Today)
-                    && Row.DateEffective != Row.DateExpires)
+                if ((Row.DateEffective <= DateTime.Today) && (Row.IsDateExpiresNull() || (Row.DateExpires >= DateTime.Today))
+                    && (Row.DateEffective != Row.DateExpires))
                 {
                     return Row;
                 }
             }
-            
+
             return null;
         }
 
@@ -696,23 +703,24 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AToGiftDestinationNeedsEnded">Returns record that needs expired before the Active Row is effective</param>
         [RequireModulePermission("PTNRUSER")]
         public static void CheckGiftDestinationClashes(PPartnerGiftDestinationTable AToPartnersGiftDestinations,
-                                                       PPartnerGiftDestinationRow AFromActiveRow,
-                                                       out PPartnerGiftDestinationRow AFromGiftDestinationNeedsEnded,
-                                                       out PPartnerGiftDestinationRow AToGiftDestinationNeedsEnded)
+            PPartnerGiftDestinationRow AFromActiveRow,
+            out PPartnerGiftDestinationRow AFromGiftDestinationNeedsEnded,
+            out PPartnerGiftDestinationRow AToGiftDestinationNeedsEnded)
         {
             AFromGiftDestinationNeedsEnded = null;
             AToGiftDestinationNeedsEnded = null;
-            
+
             foreach (PPartnerGiftDestinationRow Row in AToPartnersGiftDestinations.Rows)
             {
-                if (Row.DateEffective != Row.DateExpires
-                    && Row.DateEffective >= AFromActiveRow.DateEffective && Row.DateEffective > DateTime.Today
-                    && (AFromActiveRow.IsDateExpiresNull() || Row.DateEffective <= AFromActiveRow.DateExpires))
+                if ((Row.DateEffective != Row.DateExpires)
+                    && (Row.DateEffective >= AFromActiveRow.DateEffective) && (Row.DateEffective > DateTime.Today)
+                    && (AFromActiveRow.IsDateExpiresNull() || (Row.DateEffective <= AFromActiveRow.DateExpires)))
                 {
                     AFromGiftDestinationNeedsEnded = Row;
                 }
-                else if (Row.DateEffective != Row.DateExpires && 
-                    Row.DateEffective < AFromActiveRow.DateEffective && (Row.IsDateExpiresNull() || Row.DateExpires >= AFromActiveRow.DateEffective))
+                else if ((Row.DateEffective != Row.DateExpires)
+                         && (Row.DateEffective < AFromActiveRow.DateEffective)
+                         && (Row.IsDateExpiresNull() || (Row.DateExpires >= AFromActiveRow.DateEffective)))
                 {
                     AToGiftDestinationNeedsEnded = Row;
                 }

@@ -237,10 +237,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     return;
                 }
 
-                // 
-                if (((FFromPartnerClass == TPartnerClass.FAMILY && FToPartnerClass == TPartnerClass.FAMILY)
-                     || FFromPartnerClass == TPartnerClass.PERSON)
-                     && GiftDestinationToMerge(out Categories[0]) == false)
+                //
+                if ((((FFromPartnerClass == TPartnerClass.FAMILY) && (FToPartnerClass == TPartnerClass.FAMILY))
+                     || (FFromPartnerClass == TPartnerClass.PERSON))
+                    && (GiftDestinationToMerge(out Categories[0]) == false))
                 {
                     MessageBox.Show(Catalog.GetString("Merge cancelled."));
                     return;
@@ -335,48 +335,50 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             return false;
         }
-        
+
         private bool GiftDestinationToMerge(out bool AMergeGiftDestination)
         {
             bool FromGiftDestinationNeedsEnded;
             bool ToGiftDestinationNeedsEnded;
             string Message = "";
+
             AMergeGiftDestination = false;
-            
+
             // if no active Gift Destination then return true
             if (TRemote.MPartner.Partner.WebConnectors.ActiveGiftDestination(FFromPartnerKey, FToPartnerKey, FFromPartnerClass,
-                     out FromGiftDestinationNeedsEnded, out ToGiftDestinationNeedsEnded) == false)
+                    out FromGiftDestinationNeedsEnded, out ToGiftDestinationNeedsEnded) == false)
             {
                 return true;
             }
-            
+
             // ask permission to move Gift Destination
             if (FFromPartnerClass == TPartnerClass.PERSON)
             {
                 Message = Catalog.GetString("A currently active Gift Destination exists for the 'From' Partner. " +
-                                        "Would you like to take this record over to the 'To' Partner?");
+                    "Would you like to take this record over to the 'To' Partner?");
             }
             else if (FFromPartnerClass == TPartnerClass.FAMILY)
             {
                 Message = Catalog.GetString("A currently active Gift Destination exists for the Family of the 'From' Partner. " +
-                                        "Would you like to take this record over to the Family of the 'To' Partner?");
+                    "Would you like to take this record over to the Family of the 'To' Partner?");
             }
-            
+
             // ask permission to modify expiry dates to allow move to happen
             if (FromGiftDestinationNeedsEnded)
             {
                 Message += "\n\n" + Catalog.GetString(
                     "The Expiry Date of this record will need to be brought forward so it can fit in with a future Gift Destination for the 'To' Partner.");
             }
-            
+
             if (ToGiftDestinationNeedsEnded)
             {
                 Message += "\n\n" + Catalog.GetString(
                     "The 'To' Partner also has a currently active Gift Destination. This will need to be ended to allow this record to be moved over.");
             }
-            
-            DialogResult Result = MessageBox.Show(Message, Catalog.GetString("Gift Destination"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
-            
+
+            DialogResult Result = MessageBox.Show(Message, Catalog.GetString(
+                    "Gift Destination"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+
             if (Result == DialogResult.Yes)
             {
                 // permission to merge Gift Destination
@@ -387,7 +389,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // cancel the entire merge
                 return false;
             }
-            
+
             return true;
         }
 
@@ -405,8 +407,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResult;
             bool CanMerge;
 
-            CanMerge = TRemote.MPartner.Partner.WebConnectors.CheckPartnersCanBeMerged(FFromPartnerKey, FToPartnerKey, FFromPartnerClass, FToPartnerClass,
-                cmbReasonForMerging.Text, out VerificationResult);
+            CanMerge = TRemote.MPartner.Partner.WebConnectors.CheckPartnersCanBeMerged(FFromPartnerKey,
+                FToPartnerKey,
+                FFromPartnerClass,
+                FToPartnerClass,
+                cmbReasonForMerging.Text,
+                out VerificationResult);
 
             // No critical errors. Display any warning messages.
             if (CanMerge)

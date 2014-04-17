@@ -51,7 +51,6 @@ RootNode:
             ReadOnly: true
             NoLabel: true
             BorderStyle: None
-            Tooltip: Field where the Partner is working
             Width: 100
             
         cmbPartnerStatus: 

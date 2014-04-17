@@ -995,11 +995,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            // obtain the bank's country code (if it exists)
+            string CountryCode = "";
+
+            if (lblCountry.Text.Length > 8)
+            {
+                CountryCode = lblCountry.Text.Substring(9);
+            }
+
             // validate bank account details
             TSharedPartnerValidation_Partner.ValidateBankingDetails(this,
                 ARow,
                 FMainDS.PBankingDetails,
-                lblCountry.Text.Substring(9),
+                CountryCode,
                 ref VerificationResultCollection,
                 FValidationControlsDict);
         }

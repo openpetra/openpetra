@@ -300,12 +300,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Sets the Text of the Worker Field.
+        /// Sets the Text of the Gift Destination.
         /// </summary>
-        /// <param name="AWorkerField">Worker Field.</param>
-        public void SetGiftDestinationText(String AWorkerField)
+        /// <param name="AGiftDestination"Gift Destination.</param>
+        public void SetGiftDestinationText(String AGiftDestination)
         {
-            txtGiftDestination.Text = AWorkerField;
+            txtGiftDestination.Text = AGiftDestination;
+            FPetraUtilsObject.SetStatusBarText(txtGiftDestination, AGiftDestination);
         }
 
         #endregion

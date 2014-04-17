@@ -132,7 +132,7 @@ namespace Ict.Tools.DataDumpPetra2
             FileInfo info = new FileInfo(dumpFile + ".d.gz");
 
             // ignore empty files (with one exception)
-            if (info.Length == 0 && oldTableName != "p_partner_gift_destination")
+            if ((info.Length == 0) && (oldTableName != "p_partner_gift_destination"))
             {
                 TLogging.Log("ignoring " + dumpFile + ".d.gz");
                 return;
@@ -165,7 +165,7 @@ namespace Ict.Tools.DataDumpPetra2
 
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
             // (except p_postcode_region_range, a_budget_revision and p_partner_gift_destination which are populated here)
-            if ((oldTable == null) && (newTable.strName != "p_postcode_region_range") && (newTable.strName != "a_budget_revision") 
+            if ((oldTable == null) && (newTable.strName != "p_postcode_region_range") && (newTable.strName != "a_budget_revision")
                 && (newTable.strName != "p_partner_gift_destination"))
             {
                 return;
@@ -432,13 +432,14 @@ namespace Ict.Tools.DataDumpPetra2
 
             storeOld.AddTable(storeNew.GetTable("p_postcode_region_range"));
         }
-        
+
         // creates p_partner_gift_destination.d.gz and leaves it blank
         private void CreateGiftDestinationTable()
         {
             FileStream outStream = File.Create(
-                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
-                    "p_partner_gift_destination" + ".d.gz");
+                TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                "p_partner_gift_destination" + ".d.gz");
+
             outStream.Close();
 
             storeOld.AddTable(storeNew.GetTable("p_partner_gift_destination"));

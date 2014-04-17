@@ -1843,7 +1843,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DetermineOrganisationIsFoundation();
 
             ArrangeMenuItemsAndToolBarButtons();
-            
+
             // Setup Modulerelated Toggle Buttons in ToolBar
             SetupAvailableModuleDataItems(true, TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone);
 
@@ -2727,11 +2727,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             ucoUpperPart.SetGiftDestinationText(MPartnerConstants.PARTNERTYPE_EX_WORKER);
                         }
-                        else if (HasCurrentCommitment && FieldName != "")
+                        else if (HasCurrentCommitment && (FieldName != ""))
                         {
                             ucoUpperPart.SetGiftDestinationText(FieldName);
                         }
-                        else if (HasCurrentCommitment && FieldKey > 0)
+                        else if (HasCurrentCommitment && (FieldKey > 0))
                         {
                             ucoUpperPart.SetGiftDestinationText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
                         }
@@ -2972,7 +2972,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Because of YAML inheritance there is one separator bar too many displayed: hide it for that reason
             mniSeparator0.Visible = false;
         }
-        
+
         /// <summary>
         /// Sets Module-related Toggle Buttons in ToolBar up
         /// </summary>

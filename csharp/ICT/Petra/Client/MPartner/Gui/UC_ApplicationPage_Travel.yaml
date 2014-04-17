@@ -12,20 +12,22 @@ RootNode:
         pnlDetails:
             Controls: [grpArrivalInfo, grpDepartureInfo]
             Dock: Fill
-        grpArrivalInfo: {Label=Arrival Details, Stretch=horizontally}
+        grpArrivalInfo: {Label=Arrival Details}
             Controls: 
                 Row0: [cmbArrivalTravelMethod]
                 Row1: [cmbArrivalPoint]
                 Row2: [dtpArrival, txtArrivalTimeHour, txtArrivalTimeMinute]
                 Row3: [txtArrivalTransportCode, chkArrivalTransportNeeded]
                 Row4: [txtArrivalComment]
-        grpDepartureInfo: {Label=Departure Details, Stretch=horizontally}
+            Dock: Top
+        grpDepartureInfo: {Label=Departure Details}
             Controls: 
                 Row0: [cmbDepartureTravelMethod]
                 Row1: [cmbDeparturePoint]
                 Row2: [dtpDeparture, txtDepartureTimeHour, txtDepartureTimeMinute]
                 Row3: [txtDepartureTransportCode, chkDepartureTransportNeeded]
                 Row4: [txtDepartureComment]
+            Dock: Top
                 
         cmbArrivalTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeToCongCode, ColSpan=3, Validation=true}
         cmbArrivalPoint: {Label=Arrival Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.ArrivalPointCode, ColSpan=3}

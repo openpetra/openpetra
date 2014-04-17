@@ -124,7 +124,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
             grdDetails.Columns.AutoSize(false);
-            
+
             //Prepare grid to highlight inactive Gift Destinations
             SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
             strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
@@ -134,15 +134,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             condition.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
             {
                 DataRowView row = (DataRowView)itemRow;
-                
-                if (row[PPartnerGiftDestinationTable.ColumnDateEffectiveId].ToString() == row[PPartnerGiftDestinationTable.ColumnDateExpiresId].ToString())
+
+                if (row[PPartnerGiftDestinationTable.ColumnDateEffectiveId].ToString() ==
+                    row[PPartnerGiftDestinationTable.ColumnDateExpiresId].ToString())
                 {
                     return true;
                 }
-                
+
                 return false;
             };
-            
+
             // add condtion to grid columns
             grdDetails.Columns[0].Conditions.Add(condition);
             grdDetails.Columns[1].Conditions.Add(condition);

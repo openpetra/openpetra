@@ -44,10 +44,10 @@ namespace Ict.Tools.DataDumpPetra2
             StreamWriter AWriter,
             StreamWriter AWriterTest)
         {
-            List<string[]> ActiveCommitments = new List<string[]>();
-            List<string[]> Persons = new List<string[]>();
+            List <string[]>ActiveCommitments = new List <string[]>();
+            List <string[]>Persons = new List <string[]>();
             int RowCounter = 0;
-            
+
             // default for all new records
             SetValue(AColumnNames, ref ANewRow, "p_active_l", "\\N");
             SetValue(AColumnNames, ref ANewRow, "p_default_gift_destination_l", "\\N");
@@ -60,7 +60,7 @@ namespace Ict.Tools.DataDumpPetra2
             SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
             SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
             SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
-            
+
             // load the file pm_staff_data.d.gz
             TTable StaffDataTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_staff_data");
 
@@ -69,7 +69,7 @@ namespace Ict.Tools.DataDumpPetra2
                 StaffDataTable.grpTableField.Count);
 
             StringCollection StaffDataColumnNames = GetColumnNames(StaffDataTable);
-            
+
             // find which records are currently active
             while (true)
             {
@@ -79,26 +79,27 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     break;
                 }
-                
+
                 try
                 {
                     // if commitment is currently active
-                    if (DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")) <= DateTime.Today
-                        && (GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d") == "\\N"
-                            || DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")) >= DateTime.Today)
-                        && GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d") 
-                            != GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d"))
+                    if ((DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")) <= DateTime.Today)
+                        && ((GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d") == "\\N")
+                            || (DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")) >= DateTime.Today))
+                        && (GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")
+                            != GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")))
                     {
-                       ActiveCommitments.Add(StaffDataRow);
+                        ActiveCommitments.Add(StaffDataRow);
                     }
                 }
                 catch
                 {
-                    TLogging.Log("WARNING: Invalid date: " + Convert.ToDateTime(GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")) +
-                                " or " + DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")));
+                    TLogging.Log("WARNING: Invalid date: " +
+                        Convert.ToDateTime(GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")) +
+                        " or " + DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")));
                 }
             }
-            
+
             // load the file p_person.d.gz
             TTable PersonTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("p_person");
 
@@ -107,7 +108,7 @@ namespace Ict.Tools.DataDumpPetra2
                 PersonTable.grpTableField.Count);
 
             StringCollection PersonColumnNames = GetColumnNames(PersonTable);
-            
+
             // add all Persons to a list
             while (true)
             {
@@ -117,10 +118,10 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     break;
                 }
-                
+
                 Persons.Add(PersonRow);
             }
-            
+
             // load the file p_family.d.gz
             TTable FamilyTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("p_family");
 
@@ -129,7 +130,7 @@ namespace Ict.Tools.DataDumpPetra2
                 FamilyTable.grpTableField.Count);
 
             StringCollection FamilyColumnNames = GetColumnNames(FamilyTable);
-            
+
             // read through each family
             while (true)
             {
@@ -139,53 +140,54 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     break;
                 }
-                
+
                 // find Person partners belonging to the family
-                List<string[]> PersonsInFamily = Persons.FindAll(e => GetValue(PersonColumnNames, e, "p_family_key_n") ==
-                                                                 GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
-                
+                List <string[]>PersonsInFamily = Persons.FindAll(e => GetValue(PersonColumnNames, e, "p_family_key_n") ==
+                    GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
+
                 bool CommitmentFound = false;
-                
+
                 // read through each of the Family's Persons
                 foreach (string[] Person in PersonsInFamily)
                 {
                     // find if the Person has a currently active commitment
                     string[] Commitment = ActiveCommitments.Find(e => GetValue(StaffDataColumnNames, e, "p_partner_key_n") ==
-                                               GetValue(PersonColumnNames, Person, "p_partner_key_n"));
-                        
+                        GetValue(PersonColumnNames, Person, "p_partner_key_n"));
+
                     // if currently active commitment exists create a new Gift Destination record
                     if (Commitment != null)
                     {
                         SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
                         SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
                         SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(StaffDataColumnNames, Commitment, "pm_target_field_n"));
-                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d", GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"));
+                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
+                            GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"));
                         SetValue(AColumnNames, ref ANewRow, "p_date_expires_d", GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"));
-                        
+
                         CommitmentFound = true;
-                        
+
                         // there can only be one active gift destination per family
                         break;
                     }
                 }
-                
+
                 // if no active commitment is found then search for a "p_om_field_key_n" and use that to create a gift destination
                 if (!CommitmentFound)
                 {
                     string OMFieldKey = GetValue(FamilyColumnNames, FamilyRow, "p_om_field_key_n");
-                    
-                    if (OMFieldKey != "\\N" && OMFieldKey != "0")
+
+                    if ((OMFieldKey != "\\N") && (OMFieldKey != "0"))
                     {
                         SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
                         SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
                         SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_om_field_key_n"));
                         SetValue(AColumnNames, ref ANewRow, "p_date_effective_d", DateTime.Today.ToShortDateString());
                         SetValue(AColumnNames, ref ANewRow, "p_date_expires_d", "\\N");
-                    
+
                         CommitmentFound = true;
                     }
                 }
-                
+
                 // write gift destination to file
                 if (CommitmentFound)
                 {
@@ -194,11 +196,11 @@ namespace Ict.Tools.DataDumpPetra2
                     AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
                     AWriterTest.WriteLine("\\.");
                     AWriterTest.WriteLine("ROLLBACK;");
-                        
+
                     RowCounter++;
                 }
             }
-            
+
             return RowCounter;
         }
     }
