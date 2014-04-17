@@ -309,6 +309,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.UnhookControl(txtStatus, false); // This control is not to be spied on!
             txtDetailAccountCode.TextChanged += new EventHandler(txtDetailAccountCode_TextChanged);
             chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
+            chkDetailIsSummary.CheckedChanged += chkDetailIsSummary_CheckedChanged;
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
             FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
             txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
@@ -329,6 +330,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // ex.Message is: DragDrop registration did not succeed.
                 // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+            }
+        }
+
+        void chkDetailIsSummary_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!FIAmUpdating) // Only look into this is the user has changed it...
+            {
+                MessageBox.Show("IsSummary: " + chkDetailIsSummary.Checked);
             }
         }
 
@@ -639,7 +648,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
+                chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
                 cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
+
+                chkDetailIsSummary.Checked = !ARow.PostingStatus;
+                chkDetailIsSummary.Enabled = !ARow.SystemAccountFlag;
+
+                //
+                // Reporting Order is in AAccountHierarchyDetail
+
+                FMainDS.AAccountHierarchyDetail.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    AAccountHierarchyDetailTable.GetReportingAccountCodeDBName(), ARow.AccountCode);
+                String txtReportingOrder = "";
+                if ((!ARow.PostingStatus) && FMainDS.AAccountHierarchyDetail.DefaultView.Count > 0)
+                {
+                    txtReportingOrder = ((AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[0].Row).ReportOrder.ToString();
+                }
+                txtRptOrder.Text = txtReportingOrder;
+                txtRptOrder.Enabled = !(ARow.PostingStatus);
 
                 if (!ARow.ForeignCurrencyFlag)
                 {
@@ -974,6 +1000,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 AccountNodeDetails nodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
                 nodeDetails.DetailRow.ReportingAccountCode = nodeDetails.AccountRow.AccountCode;
                 FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
+
+                nodeDetails.AccountRow.PostingStatus = !chkDetailIsSummary.Checked;
+                Int32 ReportingOrder = 0;
+                if (Int32.TryParse(txtRptOrder.Text, out ReportingOrder) && nodeDetails.DetailRow.ReportOrder != ReportingOrder)
+                {
+                    nodeDetails.DetailRow.ReportOrder = ReportingOrder;
+                }
             }
         }
 
