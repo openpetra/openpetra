@@ -80,7 +80,6 @@ CachedTables:
                 PtArrivalPoint: {Enum=ArrivalDeparturePointList, Comment=Contains the codes used to indicate where the conferee is arriving or departing}                
                 PtCongressCode: {Enum=EventRoleList, Comment=Contains the codes that indicate a person's role and/or position at conferences and outreaches}                
                 PtContact: {Comment=Contains the various methods by which a person learns of our organsiation. This table can be changed to fit any field's partiular awareness programs}
-                PtDriverStatus: {Comment=Contains the codes that indicate the level of ability a drive has}
                 PtLanguageLevel: {Comment="Contains the degrees to which a language is spoken, e.g. a little, phrases, fluent"}
                 PtLeadershipRating: {Comment=Contains the codes indicating the leadership potential of someone}
                 PtPassportType: {Comment=Contains the codes that indicate the type of passport a person holds}

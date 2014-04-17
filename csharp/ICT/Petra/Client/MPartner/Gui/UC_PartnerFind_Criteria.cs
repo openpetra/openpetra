@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FPartnerClassUpdateIsAutomatic = false;
 
         /// <summary>Dataset containg all PBank records for all banks and their locations</summary>
-        private BankTDS FBankDataset;
+        public BankTDS FBankDataset;
 
         #endregion
 
@@ -348,6 +348,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             TmpString = TmpString.Replace("WORKER-FAM", "FAMILY");
             FDefaultPartnerClass = TmpString;
 
+            if ((ARestrictedPartnerClasses.Length > 1) && (FPartnerClassDataTable.Select("PartnerClass = '*'").Length == 0))
+            {
+                PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                PartnerClassDataRow["PartnerClass"] = "*";
+                FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+            }
+
             foreach (String eachPart in ARestrictedPartnerClasses)
             {
 // MessageBox.Show("eachPart: " + eachPart);
@@ -483,7 +490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbBankName.SelectedValueChanged -= new System.EventHandler(this.BankNameChanged);
             cmbBankCode.SelectedValueChanged -= new System.EventHandler(this.BankCodeChanged);
 
-            // load bank records
+            // Load bank records. (I don't think this will ever be null. Database is populated when tab is loaded.)
             if (FBankDataset == null)
             {
                 // Do not load bank locations as this is much faster.

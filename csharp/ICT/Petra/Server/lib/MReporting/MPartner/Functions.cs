@@ -705,10 +705,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
         {
             string FieldName = "";
 
-            PPartnerFieldOfServiceTable ResultTable = PPartnerFieldOfServiceAccess.LoadViaPPartner(APartnerKey,
+            PPartnerGiftDestinationTable ResultTable = PPartnerGiftDestinationAccess.LoadViaPPartner(APartnerKey,
                 situation.GetDatabaseConnection().Transaction);
 
-            foreach (PPartnerFieldOfServiceRow Row in ResultTable.Rows)
+            foreach (PPartnerGiftDestinationRow Row in ResultTable.Rows)
             {
                 if (Row.Active)
                 {

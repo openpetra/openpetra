@@ -130,6 +130,9 @@ namespace Ict.Petra.Client.CommonForms
         /// just got changed in the DB.</summary>
         mcFamilyMembersChanged,
 
+        /// <summary>Gift Destination records have been edited, added or deleted.</summary>
+        mcGiftDestinationChanged,
+
         /// <summary>An AP transaction has been saved.</summary>
         mcAPTransactionChanged
     }
@@ -243,6 +246,7 @@ namespace Ict.Petra.Client.CommonForms
                 case TFormsMessageClassEnum.mcExistingPartnerSaved:
                 case TFormsMessageClassEnum.mcFamilyMembersChanged:
                 case TFormsMessageClassEnum.mcPartnerDeleted:
+                case TFormsMessageClassEnum.mcGiftDestinationChanged:
 
                     FMessageObject = new FormsMessagePartner(APartnerKey,
                     APartnerClass, AShortName, APartnerStatus);

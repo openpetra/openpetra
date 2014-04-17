@@ -500,6 +500,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             BankTDS ReturnValue = new BankTDS();
 
+            List <long>PartnerKeys = new List <long>();
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
             try
@@ -523,17 +525,36 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                     if (AIncludeLocations)
                     {
-                        // load locations for each bank (if they exist)
-                        PLocationTable LocationTable = PLocationAccess.LoadViaPPartner(Row.PartnerKey, ReadTransaction);
-                        ReturnValue.Merge(LocationTable);
+                        PartnerKeys.Add(Row.PartnerKey);
+                    }
+                }
 
-                        foreach (PLocationRow LocationRow in LocationTable.Rows)
+                if (AIncludeLocations)
+                {
+                    PPartnerLocationTable PartnerLocationTable = PPartnerLocationAccess.LoadAll(ReadTransaction);
+                    PLocationTable LocationTable = PLocationAccess.LoadAll(ReadTransaction);
+
+                    foreach (PPartnerLocationRow Row in PartnerLocationTable.Rows)
+                    {
+                        if (PartnerKeys.Contains(Row.PartnerKey))
                         {
-                            PPartnerLocationAccess.LoadByPrimaryKey(ReturnValue,
-                                Row.PartnerKey,
-                                LocationRow.SiteKey,
-                                LocationRow.LocationKey,
-                                ReadTransaction);
+                            PPartnerLocationRow NewPartnerLocationRow = ReturnValue.PPartnerLocation.NewRowTyped(false);
+                            NewPartnerLocationRow.PartnerKey = Row.PartnerKey;
+                            NewPartnerLocationRow.SiteKey = Row.SiteKey;
+                            NewPartnerLocationRow.LocationKey = Row.LocationKey;
+                            NewPartnerLocationRow.DateGoodUntil = Row.DateGoodUntil;
+                            ReturnValue.PPartnerLocation.Rows.Add(NewPartnerLocationRow);
+
+                            if (!ReturnValue.PLocation.Rows.Contains(new object[] { Row.SiteKey, Row.LocationKey }))
+                            {
+                                PLocationRow LocationRow = ((PLocationRow)LocationTable.Rows.Find(new object[] { Row.SiteKey, Row.LocationKey }));
+                                PLocationRow NewLocationRow = ReturnValue.PLocation.NewRowTyped(false);
+                                NewLocationRow.SiteKey = Row.SiteKey;
+                                NewLocationRow.LocationKey = Row.LocationKey;
+                                NewLocationRow.CountryCode = LocationRow.CountryCode;
+                                NewLocationRow.City = LocationRow.City;
+                                ReturnValue.PLocation.Rows.Add(NewLocationRow);
+                            }
                         }
                     }
                 }
@@ -544,6 +565,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetPBankRecords: committed own transaction.");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Gets the next available key for PPartnerGiftDestination
+        /// </summary>
+        /// <returns>The next available key</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static int GetNewKeyForPartnerGiftDestination()
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            int ReturnValue = 0;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            try
+            {
+                PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(ReadTransaction);
+
+                foreach (PPartnerGiftDestinationRow Row in Table.Rows)
+                {
+                    if (Row.Key >= ReturnValue)
+                    {
+                        ReturnValue = Row.Key + 1;
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination: committed own transaction.");
                 }
             }
 

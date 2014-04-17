@@ -153,6 +153,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // FindByPartnerDetails tab is shown first
             FCurrentlySelectedTab = ucoFindByPartnerDetails;
+
+            // add event which will populate the bank combo boxes when 'Find by bank details' tab is shown for the first time
+            this.ucoFindByBankDetails.VisibleChanged += new EventHandler(TPartnerFindScreen_VisibleChanged);
         }
 
         void ucoFindByPartnerDetails_SearchOperationStateChange(TSearchOperationStateChangeEventArgs e)
@@ -740,6 +743,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // FIRST TIME  do some initialisation
                     FPetraUtilsObject.FormActivatedForFirstTime = true;
                 }
+            }
+        }
+
+        private void TPartnerFindScreen_VisibleChanged(System.Object sender, System.EventArgs e)
+        {
+            // if FindByBankDetails tab is selected
+            if (tpgFindBankDetails.Visible)
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                // Populate the combo boxes (if not done already)
+                if (ucoFindByBankDetails.PartnerFindCriteria.FBankDataset == null)
+                {
+                    // Do not load bank locations as this is much faster.
+                    // Downside is that 'Find Bank' dialog must then load bank data from scratch from the database. But this is ok.
+                    ucoFindByBankDetails.PartnerFindCriteria.FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(false);
+
+                    Thread NewThread = new Thread(ucoFindByBankDetails.PartnerFindCriteria.PopulateBankComboBoxes);
+                    NewThread.Start();
+                }
+
+                Cursor.Current = Cursors.Default;
             }
         }
 
