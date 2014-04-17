@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     if (dtpStartDate.Date.Value > dtpEndDate.Date.Value)
                     {
                         FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
-                                Catalog.GetString("Start Date must not be later than End Date."),
+                                Catalog.GetString("Start Date must not be later than End Date"),
                                 Catalog.GetString("Invalid Data entered."),
                                 TResultSeverity.Resv_Critical));
                     }
@@ -221,6 +221,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_year_i", Year);
                 ACalculator.AddParameter("param_start_date", TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1));
                 ACalculator.AddParameter("param_end_date", TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12));
+            }
+            if (Year < 0)
+            {
+                FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                        Catalog.GetString("Accounting Year was not specified"),
+                        Catalog.GetString("Invalid Data entered."),
+                        TResultSeverity.Resv_Critical));
             }
 
         }

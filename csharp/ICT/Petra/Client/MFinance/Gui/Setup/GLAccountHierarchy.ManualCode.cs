@@ -225,7 +225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FDragNode = null;
         }
 
-        private void InsertAlphabetically(TreeNode Parent, TreeNode Child)
+        private void InsertInOrder(TreeNode Parent, TreeNode Child)
         {
             int Idx;
             AccountNodeDetails ChildTag = (AccountNodeDetails)Child.Tag;
@@ -290,9 +290,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 String NewParentAccountCode = ((AccountNodeDetails)ANewParent.Tag).AccountRow.AccountCode;
                 TreeNode NewNode = (TreeNode)AChild.Clone();
                 ((AccountNodeDetails)NewNode.Tag).DetailRow.AccountCodeToReportTo = NewParentAccountCode;
-                InsertAlphabetically(ANewParent, NewNode);
+                InsertInOrder(ANewParent, NewNode);
                 NewNode.Expand();
                 ANewParent.Expand();
+                ((AccountNodeDetails)ANewParent.Tag).AccountRow.PostingStatus = false; // The parent is now a summary account!
                 ANewParent.BackColor = Color.White;
                 ShowStatus (String.Format(Catalog.GetString("{0} was moved from {1} to {2}."),
                     AChild.Text, PrevParent, ANewParent.Text));
@@ -335,9 +336,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void chkDetailIsSummary_CheckedChanged(object sender, EventArgs e)
         {
-            if (!FIAmUpdating) // Only look into this is the user has changed it...
+            if (FCurrentNode != null && !FIAmUpdating) // Only look into this is the user has changed it...
             {
-                MessageBox.Show("IsSummary: " + chkDetailIsSummary.Checked);
+                AccountNodeDetails NodeDetails = GetAccountCodeAttributes(FCurrentNode);
+
+                if (chkDetailIsSummary.Checked) // I can't allow this to be made a summary if it has transactions posted:
+                {
+                    if (!NodeDetails.CanHaveChildren.Value)
+                    {
+                        MessageBox.Show(String.Format("Account {0} cannot be made summary because it has tranactions posted to it.", NodeDetails.AccountRow.AccountCode), "Summary Account");
+                        chkDetailIsSummary.Checked = false;
+                    }
+                }
+                else // I can't allow this account to be a posting account if it has children:
+                {
+                    if (FCurrentNode.Nodes.Count > 0)
+                    {
+                        MessageBox.Show(String.Format("Account {0} cannot be made postable while it has children.", NodeDetails.AccountRow.AccountCode), "Summary Account");
+                        chkDetailIsSummary.Checked = true;
+                    }
+                }
             }
         }
 
@@ -465,7 +483,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
-                InsertAlphabetically(AParent, Child);
+                InsertInOrder(AParent, Child);
             }
 
             // Now add the children of this node:
@@ -665,7 +683,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     txtReportingOrder = ((AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[0].Row).ReportOrder.ToString();
                 }
                 txtRptOrder.Text = txtReportingOrder;
-                txtRptOrder.Enabled = !(ARow.PostingStatus);
+                txtRptOrder.Enabled = !ARow.PostingStatus && !ARow.SystemAccountFlag;
 
                 if (!ARow.ForeignCurrencyFlag)
                 {
@@ -779,7 +797,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FCurrentNode.Nodes.Count == 0)
             {
                 // change posting/summary flag of parent account if it was a leaf
-                parentAccount.PostingStatus = false;
+                parentAccount.PostingStatus = false; // The parent is now a summary account!
                 hierarchyDetailRow.ReportOrder = 0;
             }
             else
