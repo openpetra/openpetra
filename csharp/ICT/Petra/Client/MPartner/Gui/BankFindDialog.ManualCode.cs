@@ -454,7 +454,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Will be called by TFormsList to inform any Form that is registered in TFormsList
         /// about any 'Forms Messages' that are broadcasted.
         /// </summary>
-        /// <remarks>The Partner Find 'listens' to such 'Forms Message' broadcasts by
+        /// <remarks>This screen 'listens' to such 'Forms Message' broadcasts by
         /// implementing this virtual Method. This Method will be called each time a
         /// 'Forms Message' broadcast occurs.
         /// </remarks>

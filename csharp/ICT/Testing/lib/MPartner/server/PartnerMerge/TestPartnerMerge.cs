@@ -4499,7 +4499,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftRow.DonorKey, "merge gift info");
-            Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientKey, "merge gift info");
+            Assert.AreEqual(0, GiftDetailRow.RecipientKey, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientLedgerNumber, "merge gift info");
 
             // Checking the MergeTable
@@ -4987,8 +4987,6 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(AToPartnerKey, DataLabelValuePartnerRow.PartnerKey, "merge PM data");
             Assert.AreEqual(175, PersonalDataRow.HeightCm, "merge PM data");
             Assert.AreEqual(95, PersonalDataRow.WeightKg, "merge PM data");
-            Assert.IsTrue(PersonalDataRow.InternalDriverLicense, "merge PM data");
-            Assert.IsTrue(PersonalDataRow.GenDriverLicense, "merge PM data");
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge PM data");

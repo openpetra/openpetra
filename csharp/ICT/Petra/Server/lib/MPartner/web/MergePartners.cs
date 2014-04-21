@@ -125,6 +125,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 if (ACategories[0] == true)
                 {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Gift Destination"),
+                        TrackerPercent * CurrentCategory);
+                    CurrentCategory++;
+
+                    MergeGiftDestination(AFromPartnerKey, AToPartnerKey, AFromPartnerClass, Transaction);
+                }
+
+                if (ACategories[1] == true)
+                {
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Merging: Gift Info"),
                         TrackerPercent * CurrentCategory);
                     CurrentCategory++;
@@ -1303,11 +1312,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         ToRow.EthnicOrigin = FromRow.EthnicOrigin;
                     }
 
-                    if (ToRow.DriverStatus == "")
-                    {
-                        ToRow.DriverStatus = FromRow.DriverStatus;
-                    }
-
                     if (ToRow.LifeQuestion1 == "")
                     {
                         ToRow.LifeQuestion1 = FromRow.LifeQuestion1;
@@ -1346,26 +1350,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     if (ToRow.LifeAnswer4 == "")
                     {
                         ToRow.LifeAnswer4 = FromRow.LifeAnswer4;
-                    }
-
-                    if (ToRow.DrivingLicenseNumber == "")
-                    {
-                        ToRow.DrivingLicenseNumber = FromRow.DrivingLicenseNumber;
-                    }
-
-                    if (ToRow.InternalDriverLicense == false)
-                    {
-                        ToRow.InternalDriverLicense = FromRow.InternalDriverLicense;
-                    }
-
-                    if (ToRow.GenDriverLicense == false)
-                    {
-                        ToRow.GenDriverLicense = FromRow.GenDriverLicense;
-                    }
-
-                    if (ToRow.DriverStatus == "")
-                    {
-                        ToRow.DriverStatus = FromRow.DriverStatus;
                     }
 
                     if ((ToRow.LanguageCode == "") || (ToRow.LanguageCode == "99"))
@@ -2964,6 +2948,53 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 PPartnerGraphicAccess.SubmitChanges(PartnerGraphicTable, ATransaction);
             }
+        }
+
+        private static void MergeGiftDestination(long AFromPartnerKey, long AToPartnerKey, TPartnerClass APartnerClass, TDBTransaction ATransaction)
+        {
+            PPartnerGiftDestinationRow ActiveRow = null;
+            PPartnerGiftDestinationRow FromGiftDestinationNeedsEnded = null;
+            PPartnerGiftDestinationRow ToGiftDestinationNeedsEnded = null;
+
+            // if partners are Person's then find their family keys
+            if (APartnerClass == TPartnerClass.PERSON)
+            {
+                AFromPartnerKey = ((PPersonRow)PPersonAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction).Rows[0]).FamilyKey;
+                AToPartnerKey = ((PPersonRow)PPersonAccess.LoadByPrimaryKey(AToPartnerKey, ATransaction).Rows[0]).FamilyKey;
+            }
+
+            // check for an active gift destination for the 'From' partner
+            PPartnerGiftDestinationTable FromGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
+            ActiveRow = TMergePartnersCheckWebConnector.GetActiveGiftDestination(FromGiftDestinations);
+
+            // return if no active record has been found (this should never happen!)
+            if (ActiveRow == null)
+            {
+                return;
+            }
+
+            // check for clash with the 'To' partner
+            PPartnerGiftDestinationTable ToGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
+            TMergePartnersCheckWebConnector.CheckGiftDestinationClashes(
+                ToGiftDestinations, ActiveRow, out FromGiftDestinationNeedsEnded, out ToGiftDestinationNeedsEnded);
+
+            // edit expiry dates if needed (the user will have given permission to do this)
+            if (FromGiftDestinationNeedsEnded != null)
+            {
+                ActiveRow.DateExpires = FromGiftDestinationNeedsEnded.DateEffective.AddDays(-1);
+            }
+
+            if (ToGiftDestinationNeedsEnded != null)
+            {
+                ToGiftDestinationNeedsEnded.DateExpires = ActiveRow.DateEffective.AddDays(-1);
+            }
+
+            // move Active Gift Destination to new family
+            ActiveRow.PartnerKey = AToPartnerKey;
+
+            // submit changes
+            PPartnerGiftDestinationAccess.SubmitChanges(FromGiftDestinations, ATransaction);
+            PPartnerGiftDestinationAccess.SubmitChanges(ToGiftDestinations, ATransaction);
         }
     }
 }

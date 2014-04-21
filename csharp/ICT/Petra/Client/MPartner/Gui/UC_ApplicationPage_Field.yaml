@@ -12,19 +12,21 @@ RootNode:
         pnlDetails:
             Controls: [grpField, grpPlacement]
             Dock: Fill
-        grpField: {NoLabel=true, Stretch=horizontally}
+        grpField: {NoLabel=true}
             Controls: 
                 Row0: [txtField]
                 Row1: [dtpAvailableFrom, dtpAvailableTo]
-        grpPlacement: {NoLabel=true, Stretch=horizontally}
+            Dock: Top
+        grpPlacement: {NoLabel=true}
             Controls: 
                 Row0: [cmbApplicationType]
                 Row1: [txtPlacementPerson]
+            Dock: Top
               
-        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, PartnerClass=UNIT, ColSpan=2, OnChange=ProcessApplicationFieldChanged, Validation=true}
+        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, PartnerClass=UNIT, ColSpan=2, OnChange=ProcessApplicationFieldChanged, Validation=true, Stretch=horizontally}
         dtpAvailableFrom: {Label=Available from, DataField=PmYearProgramApplication.StartOfCommitment, Validation=true}
         dtpAvailableTo: {Label=Available to, DataField=PmYearProgramApplication.EndOfCommitment, Validation=Pair(dtpAvailableFrom)}
 
-        cmbApplicationType: {Label=Application Type, List=FieldApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true}
-        txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey, PartnerClass=PERSON}
+        cmbApplicationType: {Label=Application Type, List=FieldApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true, Stretch=horizontally}
+        txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey, PartnerClass=PERSON, Stretch=horizontally}
         
