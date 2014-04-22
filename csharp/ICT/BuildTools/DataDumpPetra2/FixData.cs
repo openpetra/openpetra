@@ -790,6 +790,29 @@ namespace Ict.Tools.DataDumpPetra2
 
                 MyWriter.Close();
             }
+            
+            if (ATableName == "pt_congress_code" || ATableName == "pt_arrival_point" || ATableName == "pt_outreach_preference_level" ||
+                ATableName == "pt_leadership_rating")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "pt_code_c");
+
+                // ignore record if code is blank
+                if (val == "")
+                {
+                    return false;
+                }
+            }
+            
+            if (ATableName == "pt_contact")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "pt_contact_name_c");
+
+                // ignore record if this field is blank
+                if (val == "")
+                {
+                    return false;
+                }
+            }
 
             return true;
         }
