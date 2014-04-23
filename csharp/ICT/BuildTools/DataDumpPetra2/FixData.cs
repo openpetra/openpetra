@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -1451,8 +1451,6 @@ namespace Ict.Tools.DataDumpPetra2
                             TParseProgressCSV DriverStatusParser = new TParseProgressCSV(
                                 TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_driver_status.d.gz",
                                 DriverStatusTable.grpTableField.Count);
-
-                            StringCollection DriverStatusColumnNames = GetColumnNames(DriverStatusTable);
 
                             while (true)
                             {
