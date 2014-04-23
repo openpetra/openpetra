@@ -143,8 +143,7 @@ namespace Ict.Common.Verification
 
         /// <summary>
         /// Checks whether the date is not undefined. DateTime.MinValue is seen as undefined by this Method.
-        /// Null values are accepted. They are treated as valid, unless <paramref name="ATreatNullAsInvalid" /> is
-        /// set to true.
+        /// Null values are accepted.
         /// </summary>
         /// <param name="ADate">The date to check.</param>
         /// <param name="ADescription">The name of the date value.</param>
