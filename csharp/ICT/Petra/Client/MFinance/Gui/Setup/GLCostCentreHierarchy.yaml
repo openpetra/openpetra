@@ -12,7 +12,7 @@ RootNode:
     Actions:
         actAddNewCostCentre: {Label=&Add Cost Centre, ActionClick=AddNewCostCentre}
         actDeleteCostCentre: {Label=&Delete Cost Centre, ActionClick=DeleteCostCentre}
-        actExportHierarchy: {Label=&Export Hierarchy, ActionClick=ExportHierarchy}
+        actExportHierarchy: {Label=E&xport Hierarchy, ActionClick=ExportHierarchy}
         actImportHierarchy: {Label=&Import Hierarchy, ActionClick=ImportHierarchy}
         actLinkPartner: {Label=&Link Partners, ActionClick=LinkPartnerCostCentre}
     Controls:

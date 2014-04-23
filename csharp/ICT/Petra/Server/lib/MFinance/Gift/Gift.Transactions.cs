@@ -923,22 +923,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     giftCount = AInspectDS.AGift.Count;
                 }
-                
+
                 if (giftDetailTableInDataSet)
                 {
-                    giftDetailCount = AInspectDS.AGiftDetail.Count;    
+                    giftDetailCount = AInspectDS.AGiftDetail.Count;
                 }
 
-                if (giftBatchCount > 0 && giftCount > 0 && giftDetailCount > 1)
+                if ((giftBatchCount > 0) && (giftCount > 0) && (giftDetailCount > 1))
                 {
                     //The Gift Detail table must be in ascending order
-                    AGiftDetailTable cloneDetail  = (AGiftDetailTable)AInspectDS.AGiftDetail.Clone();
+                    AGiftDetailTable cloneDetail = (AGiftDetailTable)AInspectDS.AGiftDetail.Clone();
 
                     //Copy across any rows marked as deleted first.
                     DataView giftDetails1 = new DataView(AInspectDS.AGiftDetail);
                     giftDetails1.RowFilter = string.Format("{0}={1}",
-                                                          AGiftDetailTable.GetBatchNumberDBName(),
-                                                          AInspectDS.AGiftBatch[0].BatchNumber);
+                        AGiftDetailTable.GetBatchNumberDBName(),
+                        AInspectDS.AGiftBatch[0].BatchNumber);
                     giftDetails1.RowStateFilter = DataViewRowState.Deleted;
 
                     foreach (DataRowView drv in giftDetails1)
@@ -950,16 +950,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     //Import the other rows in ascending order
                     DataView giftDetails2 = new DataView(AInspectDS.AGiftDetail);
                     giftDetails1.RowFilter = string.Format("{0}={1}",
-                                                          AGiftDetailTable.GetBatchNumberDBName(),
-                                                          AInspectDS.AGiftBatch[0].BatchNumber);
+                        AGiftDetailTable.GetBatchNumberDBName(),
+                        AInspectDS.AGiftBatch[0].BatchNumber);
 
                     giftDetails2.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
-                                                      AGiftDetailTable.GetBatchNumberDBName(),
-                                                      AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                                                      AGiftDetailTable.GetDetailNumberDBName());
+                        AGiftDetailTable.GetBatchNumberDBName(),
+                        AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                        AGiftDetailTable.GetDetailNumberDBName());
 
                     TLogging.Log("Other Rows Count: " + giftDetails2.Count.ToString());
-                    
+
                     foreach (DataRowView giftDetailRows in giftDetails2)
                     {
                         AGiftDetailRow gDR = (AGiftDetailRow)giftDetailRows.Row;

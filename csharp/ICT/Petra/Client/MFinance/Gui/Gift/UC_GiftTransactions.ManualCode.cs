@@ -1269,7 +1269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             AGiftRow ARowToDeleteGiftRow = GetGiftRow(ARowToDelete.GiftTransactionNumber);
 
-            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch)this.ParentForm).SaveChanges())
+            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
                 return deletionSuccessful;
@@ -1502,12 +1502,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
 
             giftDetailView.RowFilter = String.Format("{0}={1}",
-                                                    AGiftDetailTable.GetBatchNumberDBName(),
-                                                    ABatchNumber);
+                AGiftDetailTable.GetBatchNumberDBName(),
+                ABatchNumber);
 
             giftDetailView.Sort = String.Format("{0} DESC, {1} DESC",
-                                                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                                                AGiftDetailTable.GetDetailNumberDBName());
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
 
             foreach (DataRowView dr in giftDetailView)
             {
@@ -1517,11 +1517,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DataView giftView = new DataView(FMainDS.AGift);
 
             giftView.RowFilter = String.Format("{0}={1}",
-                                              AGiftTable.GetBatchNumberDBName(),
-                                              ABatchNumber);
+                AGiftTable.GetBatchNumberDBName(),
+                ABatchNumber);
 
             giftView.Sort = String.Format("{0} DESC",
-                                          AGiftTable.GetGiftTransactionNumberDBName());
+                AGiftTable.GetGiftTransactionNumberDBName());
 
             foreach (DataRowView dr in giftView)
             {
@@ -1541,12 +1541,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DataView giftDetailView = new DataView(FTempDS.AGiftDetail);
 
             giftDetailView.RowFilter = String.Format("{0}={1}",
-                                                    AGiftDetailTable.GetBatchNumberDBName(),
-                                                    ABatchNumber);
+                AGiftDetailTable.GetBatchNumberDBName(),
+                ABatchNumber);
 
             giftDetailView.Sort = String.Format("{0} DESC, {1} DESC",
-                                                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                                                AGiftDetailTable.GetDetailNumberDBName());
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
 
             foreach (DataRowView dr in giftDetailView)
             {
@@ -1556,11 +1556,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DataView giftView = new DataView(FTempDS.AGift);
 
             giftView.RowFilter = String.Format("{0}={1}",
-                                              AGiftTable.GetBatchNumberDBName(),
-                                              ABatchNumber);
+                AGiftTable.GetBatchNumberDBName(),
+                ABatchNumber);
 
             giftView.Sort = String.Format("{0} DESC",
-                                          AGiftTable.GetGiftTransactionNumberDBName());
+                AGiftTable.GetGiftTransactionNumberDBName());
 
             foreach (DataRowView dr in giftView)
             {
@@ -1577,7 +1577,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FTempDS.AGift.Count > 0)
             {
                 FMainDS.AGift.Merge(FTempDS.AGift);
-                FMainDS.AGiftDetail.Merge(FTempDS.AGiftDetail);                
+                FMainDS.AGiftDetail.Merge(FTempDS.AGiftDetail);
             }
         }
 
