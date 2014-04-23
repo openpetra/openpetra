@@ -167,7 +167,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             // RateOfExchange must be positive (definitely not zero because we can invert it)
-            ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnRateOfExchangeId];
+            ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnRateOfExchangeId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
@@ -180,13 +180,29 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             // Date must not be empty
-            ValidationColumn = ARow.Table.Columns[ADailyExchangeRateTable.ColumnDateEffectiveFromId];
+            ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnDateEffectiveFromId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TDateChecks.IsNotUndefinedDateTime(ARow.DateEffectiveFrom,
                     ValidationControlsData.ValidationControlLabel,
                     true, AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // Date must be first of month
+            ValidationColumn = ARow.Table.Columns[ACorporateExchangeRateTable.ColumnDateEffectiveFromId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.IsNotCorporateDateTime(ARow.DateEffectiveFrom,
+                    ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
 

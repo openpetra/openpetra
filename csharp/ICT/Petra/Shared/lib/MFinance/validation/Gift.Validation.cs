@@ -368,14 +368,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ValidationContext = String.Format("Gift No.: {0}", ARow.GiftTransactionNumber);
 
             DateTime StartDateCurrentPeriod;
-            DateTime EndDateLastForwardingPeriod;
-            TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+            DateTime EndDateCurrentPeriod;
+            TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, AYear, 0, APeriod,
                 out StartDateCurrentPeriod,
-                out EndDateLastForwardingPeriod);
+                out EndDateCurrentPeriod);
 
             VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.DateEntered,
                 StartDateCurrentPeriod,
-                EndDateLastForwardingPeriod,
+                EndDateCurrentPeriod,
                 "Gift Date for " + ValidationContext.ToString(),
                 TDateBetweenDatesCheckType.dbdctUnspecific,
                 TDateBetweenDatesCheckType.dbdctUnspecific,
