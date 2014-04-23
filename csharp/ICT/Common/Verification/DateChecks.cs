@@ -60,6 +60,8 @@ namespace Ict.Common.Verification
         private static readonly string StrDateMustNotBeEmpty = Catalog.GetString("{0} must not be empty.");
         private static readonly string StrDateMustNotBePastDate = Catalog.GetString("{0} must not be a past date.");
         private static readonly string StrDateMustNotBeFutureDate = Catalog.GetString("{0} must not be a future date.");
+        private static readonly string StrDateMustNotBeLaterThanFirstDayOfMonth = Catalog.GetString(
+            "{0} must not be later than the first day of the month.");
         private static readonly string StrDateCannotBeLater = Catalog.GetString("{0} cannot be later then {1}.");
         private static readonly string StrDateCannotBeLaterOrEqual = Catalog.GetString("{0} cannot be later than or equal to {1}.");
         private static readonly string StrDateCannotBeEarlier = Catalog.GetString("{0} cannot be earlier than {1}.");
@@ -139,6 +141,58 @@ namespace Ict.Common.Verification
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Checks whether the date is not undefined. DateTime.MinValue is seen as undefined by this Method.
+        /// Null values are accepted.
+        /// </summary>
+        /// <param name="ADate">The date to check.</param>
+        /// <param name="ADescription">The name of the date value.</param>
+        /// <param name="AResultContext">Context of verification (can be null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null).</param>
+        /// <remarks>Usage in the Data Validation Framework: rather than using this Method, use Method
+        /// 'TSharedValidationControlHelper.IsNotInvalidDate' for checking the validity of dates as the latter can deal not only with
+        /// empty dates, but dates that are invalid in other respects (e.g. exceeding a valid date range)!!!</remarks>
+        /// <returns>Null if validation succeeded, otherwise a <see cref="TVerificationResult" /> is
+        /// returned that contains details about the problem.</returns>
+        public static TVerificationResult IsNotCorporateDateTime(DateTime? ADate, String ADescription,
+            object AResultContext = null, System.Data.DataColumn AResultColumn = null,
+            System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue;
+            DateTime TheDate = TSaveConvert.ObjectToDate(ADate);
+            DateTime FirstOfMonth;
+            String Description = THelper.NiceValueDescription(ADescription);
+
+            if (!ADate.HasValue)
+            {
+                return null;
+            }
+
+            FirstOfMonth = new DateTime(TheDate.Year, TheDate.Month, 1);
+
+            // Checks
+            if (TheDate == FirstOfMonth)
+            {
+                //MessageBox.Show('Date <> DateTime.MinValue');
+                ReturnValue = null;
+            }
+            else
+            {
+                ReturnValue = new TVerificationResult(AResultContext,
+                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDDATE,
+                        CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
+                        StrDateMustNotBeLaterThanFirstDayOfMonth, new string[] { Description }));
+
+                if (AResultColumn != null)
+                {
+                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                }
+            }
+
+            return ReturnValue;
+        }
+
         #endregion
 
 
@@ -177,7 +231,6 @@ namespace Ict.Common.Verification
         }
 
         #endregion
-
 
         #region IsCurrentOr...Date
 
