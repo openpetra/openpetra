@@ -615,7 +615,7 @@ namespace Ict.Common.Controls
                         this.SelectedIndex = FoundIndex;
 
                         this.SelectionStart = 0;
-                        this.SelectionLength = 9999;    
+                        this.SelectionLength = 9999;
 
                         e.Handled = true;
                     }

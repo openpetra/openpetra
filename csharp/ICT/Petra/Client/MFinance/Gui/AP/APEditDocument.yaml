@@ -81,14 +81,14 @@ RootNode:
 
         pnlTransAnalysisAttributes:
             Controls: [lblAnalAttributes, grdAnalAttributes]
-            Width: 240
+            Width: 340
 
         lblAnalAttributes:
             Label: Analysis Attributes
 
         grdAnalAttributes:
             TableName: AApAnalAttrib
-            Width: 280
+            Width: 330
             Height: 100
             Columns: [AnalysisTypeCode]
             CustomColumns:

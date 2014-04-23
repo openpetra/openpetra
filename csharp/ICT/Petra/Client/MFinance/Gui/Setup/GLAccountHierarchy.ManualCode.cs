@@ -94,6 +94,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             public AAccountHierarchyDetailRow DetailRow;
         };
 
+        /// <summary>Clear the Status Box</summary>
+        public void ClearStatus()
+        {
+            FStatus = "";
+            txtStatus.Text = FStatus;
+            txtStatus.Refresh();
+        }
+
+        /// <summary>Add this in the Status Box</summary>
+        /// <param name="NewStr"></param>
+        public void ShowStatus(String NewStr)
+        {
+            FStatus = FStatus + "\r\n" + NewStr;
+            txtStatus.Text = FStatus;
+            txtStatus.Refresh();
+        }
+
         //
         // Drag and drop methods
         // (Mostly copied from Microsoft example code) :
@@ -208,7 +225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FDragNode = null;
         }
 
-        private void InsertAlphabetically(TreeNode Parent, TreeNode Child)
+        private void InsertInOrder(TreeNode Parent, TreeNode Child)
         {
             int Idx;
             AccountNodeDetails ChildTag = (AccountNodeDetails)Child.Tag;
@@ -273,13 +290,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 String NewParentAccountCode = ((AccountNodeDetails)ANewParent.Tag).AccountRow.AccountCode;
                 TreeNode NewNode = (TreeNode)AChild.Clone();
                 ((AccountNodeDetails)NewNode.Tag).DetailRow.AccountCodeToReportTo = NewParentAccountCode;
-                InsertAlphabetically(ANewParent, NewNode);
+                InsertInOrder(ANewParent, NewNode);
                 NewNode.Expand();
                 ANewParent.Expand();
+                ((AccountNodeDetails)ANewParent.Tag).AccountRow.PostingStatus = false; // The parent is now a summary account!
                 ANewParent.BackColor = Color.White;
-                FStatus += String.Format(Catalog.GetString("{0} was moved from {1} to {2}.\r\n"),
-                    AChild.Text, PrevParent, ANewParent.Text);
-                txtStatus.Text = FStatus;
+                ShowStatus(String.Format(Catalog.GetString("{0} was moved from {1} to {2}."),
+                        AChild.Text, PrevParent, ANewParent.Text));
 
                 //Remove Original Node
                 AChild.Remove();
@@ -293,6 +310,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.UnhookControl(txtStatus, false); // This control is not to be spied on!
             txtDetailAccountCode.TextChanged += new EventHandler(txtDetailAccountCode_TextChanged);
             chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
+            chkDetailIsSummary.CheckedChanged += chkDetailIsSummary_CheckedChanged;
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
             FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
             txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
@@ -313,6 +331,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // ex.Message is: DragDrop registration did not succeed.
                 // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+            }
+        }
+
+        void chkDetailIsSummary_CheckedChanged(object sender, EventArgs e)
+        {
+            if ((FCurrentNode != null) && !FIAmUpdating) // Only look into this is the user has changed it...
+            {
+                AccountNodeDetails NodeDetails = GetAccountCodeAttributes(FCurrentNode);
+
+                if (chkDetailIsSummary.Checked) // I can't allow this to be made a summary if it has transactions posted:
+                {
+                    if (!NodeDetails.CanHaveChildren.Value)
+                    {
+                        MessageBox.Show(String.Format("Account {0} cannot be made summary because it has tranactions posted to it.",
+                                NodeDetails.AccountRow.AccountCode), "Summary Account");
+                        chkDetailIsSummary.Checked = false;
+                    }
+                }
+                else // I can't allow this account to be a posting account if it has children:
+                {
+                    if (FCurrentNode.Nodes.Count > 0)
+                    {
+                        MessageBox.Show(String.Format("Account {0} cannot be made postable while it has children.",
+                                NodeDetails.AccountRow.AccountCode), "Summary Account");
+                        chkDetailIsSummary.Checked = true;
+                    }
+                }
             }
         }
 
@@ -362,6 +407,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FLedgerNumber = value;
                 ucoAccountAnalysisAttributes.LedgerNumber = FLedgerNumber;
+                ucoAccountAnalysisAttributes.ShowStatus = ShowStatus;
                 FMainDS.Clear();
                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
                 PopulateTreeView();
@@ -439,7 +485,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
-                InsertAlphabetically(AParent, Child);
+                InsertInOrder(AParent, Child);
             }
 
             // Now add the children of this node:
@@ -622,7 +668,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
+                chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
                 cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
+
+                chkDetailIsSummary.Checked = !ARow.PostingStatus;
+                chkDetailIsSummary.Enabled = !ARow.SystemAccountFlag;
+
+                //
+                // Reporting Order is in AAccountHierarchyDetail
+
+                FMainDS.AAccountHierarchyDetail.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    AAccountHierarchyDetailTable.GetReportingAccountCodeDBName(), ARow.AccountCode);
+                String txtReportingOrder = "";
+
+                if ((!ARow.PostingStatus) && (FMainDS.AAccountHierarchyDetail.DefaultView.Count > 0))
+                {
+                    txtReportingOrder = ((AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[0].Row).ReportOrder.ToString();
+                }
+
+                txtRptOrder.Text = txtReportingOrder;
+                txtRptOrder.Enabled = !ARow.PostingStatus && !ARow.SystemAccountFlag;
 
                 if (!ARow.ForeignCurrencyFlag)
                 {
@@ -736,7 +801,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FCurrentNode.Nodes.Count == 0)
             {
                 // change posting/summary flag of parent account if it was a leaf
-                parentAccount.PostingStatus = false;
+                parentAccount.PostingStatus = false; // The parent is now a summary account!
                 hierarchyDetailRow.ReportOrder = 0;
             }
             else
@@ -957,6 +1022,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 AccountNodeDetails nodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
                 nodeDetails.DetailRow.ReportingAccountCode = nodeDetails.AccountRow.AccountCode;
                 FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
+
+                nodeDetails.AccountRow.PostingStatus = !chkDetailIsSummary.Checked;
+                Int32 ReportingOrder = 0;
+
+                if (Int32.TryParse(txtRptOrder.Text, out ReportingOrder) && (nodeDetails.DetailRow.ReportOrder != ReportingOrder))
+                {
+                    nodeDetails.DetailRow.ReportOrder = ReportingOrder;
+                }
             }
         }
 
@@ -1044,8 +1117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
 
-                        FStatus += Catalog.GetString("Account Code change REJECTED!") + Environment.NewLine;
-                        txtStatus.Text = FStatus;
+                        ShowStatus(Catalog.GetString("Account Code change REJECTED!"));
 
                         MessageBox.Show(String.Format(
                                 Catalog.GetString(
@@ -1076,10 +1148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         }
                         else
                         {
-                            FStatus += Catalog.GetString("Updating Account Code change - please wait.\r\n");
-
-                            txtStatus.Text = FStatus;
-                            txtStatus.Refresh();
+                            ShowStatus(Catalog.GetString("Updating Account Code change - please wait."));
                             TVerificationResultCollection VerificationResults;
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
@@ -1100,14 +1169,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FPetraUtilsObject.SuppressChangeDetection = true;
                                 PopulateTreeView();
                                 ShowDetailsManual(null);
-                                FStatus = "";
-                                txtStatus.Text = FStatus;
+                                ClearStatus();
                                 FIAmUpdating = false;
                                 FPetraUtilsObject.SuppressChangeDetection = false;
                                 SelectNodeByName(FRecentlyUpdatedDetailAccountCode);
 
-                                FStatus += String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode) + "\r\n";
-                                txtStatus.Text = FStatus;
+                                ShowStatus(String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode));
                             }
                             else
                             {
