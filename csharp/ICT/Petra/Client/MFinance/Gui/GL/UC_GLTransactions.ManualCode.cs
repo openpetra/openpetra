@@ -638,10 +638,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (GetSelectedAttributeRow() == null || FPSAttributesRow == GetSelectedAttributeRow())
+            if ((GetSelectedAttributeRow() == null) || (FPSAttributesRow == GetSelectedAttributeRow()))
             {
                 return;
             }
+
             FPSAttributesRow = GetSelectedAttributeRow();
 
             string currentAnalTypeCode = FPSAttributesRow.AnalysisTypeCode;
@@ -664,7 +665,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (analTypeCodeValuesCount == 0)
             {
-                MessageBox.Show(Catalog.GetString("No attribute values are defined!"), currentAnalTypeCode, MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString(
+                        "No attribute values are defined!"), currentAnalTypeCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             string[] analTypeValues = new string[analTypeCodeValuesCount];
@@ -683,10 +685,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Refresh the combo values
             cmbAnalAttribValues.StandardValuesExclusive = true;
             cmbAnalAttribValues.StandardValues = analTypeValues;
+
 /*
-            Console.WriteLine("RowSelected: ActivePos is {0}:{1}",
-                grdAnalAttributes.Selection.ActivePosition.Row,
-                grdAnalAttributes.Selection.ActivePosition.Column);
+ *          Console.WriteLine("RowSelected: ActivePos is {0}:{1}",
+ *              grdAnalAttributes.Selection.ActivePosition.Row,
+ *              grdAnalAttributes.Selection.ActivePosition.Column);
  */
         }
 

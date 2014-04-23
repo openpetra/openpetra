@@ -107,22 +107,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
 /*
  * All this moved out to ShowAnalysisAttributesForAccount, because doing it here is too late:
-            if (grdAnalAttributes.Columns.Count < 2)
-            {
-                grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
-
-                FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
-                FAnalAttribTypeVal.EnableEdit = true;
-                FAnalAttribTypeVal.Control.DropDownStyle = ComboBoxStyle.DropDownList;
-                FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
-                FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
-                grdAnalAttributes.AddTextColumn("Value",
-                    FMainDS.AApAnalAttrib.Columns[AApAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
-                    FAnalAttribTypeVal);
-
-                grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
-            }
-*/
+ *          if (grdAnalAttributes.Columns.Count < 2)
+ *          {
+ *              grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
+ *
+ *              FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
+ *              FAnalAttribTypeVal.EnableEdit = true;
+ *              FAnalAttribTypeVal.Control.DropDownStyle = ComboBoxStyle.DropDownList;
+ *              FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
+ *              FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
+ *              grdAnalAttributes.AddTextColumn("Value",
+ *                  FMainDS.AApAnalAttrib.Columns[AApAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
+ *                  FAnalAttribTypeVal);
+ *
+ *              grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
+ *          }
+ */
             mniEdit.DropDownItems.Remove(mniEditSeparator);
             mniEdit.DropDownItems.Remove(mniEditFilter); // These items are provided by windowEditWebConnectorMasterDetail
             mniEdit.DropDownItems.Remove(mniEditFind);   // but are not needed in this application.
@@ -135,11 +135,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-
-            if (GetSelectedAttributeRow() == null || FPSAttributesRow == GetSelectedAttributeRow())
+            if ((GetSelectedAttributeRow() == null) || (FPSAttributesRow == GetSelectedAttributeRow()))
             {
                 return;
             }
+
             FPSAttributesRow = GetSelectedAttributeRow();
 
             FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}=true",
@@ -152,7 +152,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (analTypeCodeValuesCount == 0)
             {
-                MessageBox.Show(Catalog.GetString("No attribute values are defined!"), FPSAttributesRow.AnalysisTypeCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString(
+                        "No attribute values are defined!"), FPSAttributesRow.AnalysisTypeCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             string[] analTypeValues = new string[analTypeCodeValuesCount];

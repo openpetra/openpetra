@@ -2977,7 +2977,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Check if a AnalysisAttribute Row can be removed from an Account (not if it's in use!)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean CanDetachTypeCodeFromAccount (Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String Message)
+        public static Boolean CanDetachTypeCodeFromAccount(Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String Message)
         {
             TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -2990,10 +2990,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     Template.AccountCode = AAccountCode;
                     Template.AnalysisTypeCode = ATypeCode;
                     tbl = AApAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
                     if (tbl.Rows.Count > 0)
                     {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode)
-                        + String.Format(Catalog.GetString("Analysis Type is used in AP documents ({0} entries)."), tbl.Rows.Count);
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                  String.Format(Catalog.GetString("Analysis Type is used in AP documents ({0} entries)."), tbl.Rows.Count);
                         return false;
                     }
                 }
@@ -3005,10 +3006,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     Template.AccountCode = AAccountCode;
                     Template.AnalysisTypeCode = ATypeCode;
                     tbl = ATransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
                     if (tbl.Rows.Count > 0)
                     {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode)
-                        + String.Format(Catalog.GetString("Analysis Type is used in Transactions ({0} entries)."), tbl.Rows.Count);
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                  String.Format(Catalog.GetString("Analysis Type is used in Transactions ({0} entries)."), tbl.Rows.Count);
                         return false;
                     }
                 }
@@ -3019,16 +3021,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     Template.AccountCode = AAccountCode;
                     Template.AnalysisTypeCode = ATypeCode;
                     tbl = ARecurringTransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
                     if (tbl.Rows.Count > 0)
                     {
-                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode)
-                        + String.Format(Catalog.GetString("Analysis Type is used in recurring Transactions ({0} entries)."), tbl.Rows.Count);
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                  String.Format(Catalog.GetString("Analysis Type is used in recurring Transactions ({0} entries)."), tbl.Rows.Count);
                         return false;
                     }
                 }
-                
             }
-
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();

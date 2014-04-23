@@ -295,8 +295,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ANewParent.Expand();
                 ((AccountNodeDetails)ANewParent.Tag).AccountRow.PostingStatus = false; // The parent is now a summary account!
                 ANewParent.BackColor = Color.White;
-                ShowStatus (String.Format(Catalog.GetString("{0} was moved from {1} to {2}."),
-                    AChild.Text, PrevParent, ANewParent.Text));
+                ShowStatus(String.Format(Catalog.GetString("{0} was moved from {1} to {2}."),
+                        AChild.Text, PrevParent, ANewParent.Text));
 
                 //Remove Original Node
                 AChild.Remove();
@@ -336,7 +336,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void chkDetailIsSummary_CheckedChanged(object sender, EventArgs e)
         {
-            if (FCurrentNode != null && !FIAmUpdating) // Only look into this is the user has changed it...
+            if ((FCurrentNode != null) && !FIAmUpdating) // Only look into this is the user has changed it...
             {
                 AccountNodeDetails NodeDetails = GetAccountCodeAttributes(FCurrentNode);
 
@@ -344,7 +344,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     if (!NodeDetails.CanHaveChildren.Value)
                     {
-                        MessageBox.Show(String.Format("Account {0} cannot be made summary because it has tranactions posted to it.", NodeDetails.AccountRow.AccountCode), "Summary Account");
+                        MessageBox.Show(String.Format("Account {0} cannot be made summary because it has tranactions posted to it.",
+                                NodeDetails.AccountRow.AccountCode), "Summary Account");
                         chkDetailIsSummary.Checked = false;
                     }
                 }
@@ -352,7 +353,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     if (FCurrentNode.Nodes.Count > 0)
                     {
-                        MessageBox.Show(String.Format("Account {0} cannot be made postable while it has children.", NodeDetails.AccountRow.AccountCode), "Summary Account");
+                        MessageBox.Show(String.Format("Account {0} cannot be made postable while it has children.",
+                                NodeDetails.AccountRow.AccountCode), "Summary Account");
                         chkDetailIsSummary.Checked = true;
                     }
                 }
@@ -678,10 +680,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.AAccountHierarchyDetail.DefaultView.RowFilter = String.Format("{0}='{1}'",
                     AAccountHierarchyDetailTable.GetReportingAccountCodeDBName(), ARow.AccountCode);
                 String txtReportingOrder = "";
-                if ((!ARow.PostingStatus) && FMainDS.AAccountHierarchyDetail.DefaultView.Count > 0)
+
+                if ((!ARow.PostingStatus) && (FMainDS.AAccountHierarchyDetail.DefaultView.Count > 0))
                 {
                     txtReportingOrder = ((AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[0].Row).ReportOrder.ToString();
                 }
+
                 txtRptOrder.Text = txtReportingOrder;
                 txtRptOrder.Enabled = !ARow.PostingStatus && !ARow.SystemAccountFlag;
 
@@ -1021,7 +1025,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 nodeDetails.AccountRow.PostingStatus = !chkDetailIsSummary.Checked;
                 Int32 ReportingOrder = 0;
-                if (Int32.TryParse(txtRptOrder.Text, out ReportingOrder) && nodeDetails.DetailRow.ReportOrder != ReportingOrder)
+
+                if (Int32.TryParse(txtRptOrder.Text, out ReportingOrder) && (nodeDetails.DetailRow.ReportOrder != ReportingOrder))
                 {
                     nodeDetails.DetailRow.ReportOrder = ReportingOrder;
                 }
@@ -1112,7 +1117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
 
-                        ShowStatus (Catalog.GetString("Account Code change REJECTED!"));
+                        ShowStatus(Catalog.GetString("Account Code change REJECTED!"));
 
                         MessageBox.Show(String.Format(
                                 Catalog.GetString(

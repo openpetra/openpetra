@@ -74,6 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
                 }
             }
+
             if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState == DataRowState.Detached))
             {
                 FPreviouslySelectedDetailRow = null;
@@ -174,8 +175,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 LoadCmbAnalType(ARow.AnalysisTypeCode);
                 cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
                 String ServerMessage;
-                Boolean CanBeChanged =TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARow.LedgerNumber, ARow.AccountCode, ARow.AnalysisTypeCode, out ServerMessage);
+                Boolean CanBeChanged = TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARow.LedgerNumber,
+                    ARow.AccountCode,
+                    ARow.AnalysisTypeCode,
+                    out ServerMessage);
                 pnlDetails.Enabled = CanBeChanged;
+
                 if (!CanBeChanged)
                 {
                     if (ShowStatus != null)
@@ -183,6 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         ShowStatus(ServerMessage);
                     }
                 }
+
                 FIamUpdating = false;
             }
         }
@@ -201,7 +207,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if ((ARowToDelete != null) && (ARowToDelete.RowState != DataRowState.Deleted))
             {
                 String ServerMessage;
-                if (TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARowToDelete.LedgerNumber, ARowToDelete.AccountCode, ARowToDelete.AnalysisTypeCode, out ServerMessage))
+
+                if (TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARowToDelete.LedgerNumber, ARowToDelete.AccountCode,
+                        ARowToDelete.AnalysisTypeCode, out ServerMessage))
                 {
                     ADeletionQuestion = String.Format(
                         Catalog.GetString("Confirm you want to Remove {0} from this account."),
@@ -248,7 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
 
                 //
-                // The change may have altered the ordering of the list, 
+                // The change may have altered the ordering of the list,
                 // so now I need to re-select the item, wherever it's gone!
                 Int32 RowIdx = FMainDS.AAnalysisAttribute.DefaultView.Find(cmbDetailAnalTypeCode.Text);
                 SelectByIndex(RowIdx + 1);
@@ -276,6 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void SelectByIndex(int rowIndex)
         {
             grdDetails.Selection.ResetSelection(true);
+
             if (rowIndex >= grdDetails.Rows.Count)
             {
                 rowIndex = grdDetails.Rows.Count - 1;
