@@ -125,8 +125,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchTable.GetLedgerNumberDBName(),
                 ABatchTable.GetBatchNumberDBName()
                 );
-
-            //Console.WriteLine("{0}: LoadBatches ended - took {1} ms", DateTime.Now.ToLongTimeString(), (DateTime.Now - dtStartLoad).TotalMilliseconds);
         }
 
         /// reset the control
@@ -1646,16 +1644,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (grdDetails.Rows.Count < 2)
+            if (grdDetails.CanFocus)
             {
-                btnNew.Focus();
-            }
-            else
-            {
-                grdDetails.Focus();
-            }
+                if (grdDetails.Rows.Count < 2)
+                {
+                    btnNew.Focus();
+                }
+                else
+                {
+                    grdDetails.Focus();
+                }
 
-            FInitialFocusActionComplete = true;
+                FInitialFocusActionComplete = true;
+            }
         }
 
         private void RunOnceOnParentActivationManual()

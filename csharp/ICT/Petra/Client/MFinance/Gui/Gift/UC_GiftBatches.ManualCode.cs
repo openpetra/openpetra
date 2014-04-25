@@ -158,6 +158,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.HasChanges = false;
             FPetraUtilsObject.SuppressChangeDetection = false;
             FBatchLoaded = true;
+
+        }
+
+        /// <summary>
+        /// A simple flag used to indicate that the form has been shown for the first time
+        /// </summary>
+        private bool FInitialFocusActionComplete = false;
+
+        /// <summary>
+        /// Sets the initial focus to the grid or the New button depending on the row count
+        /// </summary>
+        public void SetInitialFocus()
+        {
+            if (FInitialFocusActionComplete)
+            {
+                return;
+            }
+
+            if (grdDetails.CanFocus)
+            {
+                if (grdDetails.Rows.Count < 2)
+                {
+                    btnNew.Focus();
+                }
+                else
+                {
+                    grdDetails.Focus();
+                }
+
+                FInitialFocusActionComplete = true;
+            }
         }
 
         /// <summary>
@@ -253,11 +284,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
+
+            UpdateRecordNumberDisplay();
             SelectRowInGrid(1);
 
             FBatchLoaded = true;
-
-            UpdateRecordNumberDisplay();
         }
 
         private void SetupAccountAndCostCentreCombos(bool AActiveOnly = true, AGiftBatchRow ARow = null)
@@ -1570,9 +1601,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Focus on grid
         /// </summary>
-        public void FocusGrid()
+        public void SetFocusToGrid()
         {
-            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            if (grdDetails != null && grdDetails.CanFocus)
             {
                 grdDetails.Focus();
             }

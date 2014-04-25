@@ -139,6 +139,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             tabGiftBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+
+            this.Shown += delegate
+            {
+                // This will ensure the grid gets the focus when the screen is shown for the first time
+                ucoBatches.SetInitialFocus();
+            };
         }
 
         private void RunOnceOnActivationManual()
@@ -310,7 +316,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
-                this.ucoBatches.FocusGrid();
+                this.ucoBatches.SetFocusToGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
