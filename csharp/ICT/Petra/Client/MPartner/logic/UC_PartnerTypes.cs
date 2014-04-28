@@ -487,7 +487,7 @@ namespace Ict.Petra.Client.MPartner
             SelectedPartnerTypeTable = FMainDS.PPartnerType;
             SelectedPartnerTypeTableDV = SelectedPartnerTypeTable.DefaultView;
             SelectedPartnerTypeTableDV.Sort = PTypeTable.GetTypeCodeDBName();
-            
+
             UnselectedPartnerTypeTableDV = FDataCache_PartnerTypeListTable.DefaultView;
             UnselectedPartnerTypeTableDV.Sort = PTypeTable.GetTypeCodeDBName();
 
@@ -495,7 +495,8 @@ namespace Ict.Petra.Client.MPartner
             for (RowCounter = 0; RowCounter <= SelectedPartnerTypeTableDV.Count - 1; RowCounter += 1)
             {
                 #region Determine Type Description
-                TypeDescriptionInCachePosition = FDataCache_PartnerTypeListDV.Find(SelectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()]);
+                TypeDescriptionInCachePosition =
+                    FDataCache_PartnerTypeListDV.Find(SelectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()]);
 
                 if (TypeDescriptionInCachePosition != -1)
                 {
@@ -525,13 +526,13 @@ namespace Ict.Petra.Client.MPartner
             for (RowCounter = 0; RowCounter <= UnselectedPartnerTypeTableDV.Count - 1; RowCounter += 1)
             {
                 #region Determine Type Description
-                    TypeDescription = UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeDescriptionDBName()].ToString();
+                TypeDescription = UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeDescriptionDBName()].ToString();
 
-                    // If this Type is inactive, show it.
-                    if (!Convert.ToBoolean(UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetValidTypeDBName()]))
-                    {
-                        TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
-                    }
+                // If this Type is inactive, show it.
+                if (!Convert.ToBoolean(UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetValidTypeDBName()]))
+                {
+                    TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
+                }
 
                 #endregion
 

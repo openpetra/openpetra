@@ -1141,11 +1141,15 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
+            // this unseen column is used to order the table
+            //(sorting using the 'CHECKED' column causes problems as sorting takes place as soon as a record is checked)
+            NewTable.Columns.Add(new DataColumn("ORDER", typeof(bool)));
+
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 206);
+            AControl.DataBindGrid(NewTable, "ORDER DESC, " + ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>
@@ -1167,11 +1171,15 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
+            // this unseen column is used to order the table
+            //(sorting using the 'CHECKED' column causes problems as sorting takes place as soon as a record is checked)
+            NewTable.Columns.Add(new DataColumn("ORDER", typeof(bool)));
+
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 206);
+            AControl.DataBindGrid(NewTable, "ORDER DESC, " + ValueMember, CheckedMember, ValueMember, false, true, false);
         }
     }
 }

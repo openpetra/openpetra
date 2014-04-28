@@ -61,11 +61,11 @@ RootNode:
             Controls: [chkDetailAutopopdesc, chkDetailMotivationStatus, chkDetailReceipt, chkDetailTaxDeductible, chkDetailExportToIntranet]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
-        txtDetailMotivationDetailDesc: {Label=Description, Width=185}
+        txtDetailMotivationDetailDesc: {Label=Description, Width=210, OnChange=DescriptionTyped}
         txtDetailShortCode: {Label=Short Code} 
-        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=185}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=300}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=300}
+        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=210}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=400}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=400}
         chkDetailAutopopdesc: {Label=Populate Gift Description}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}

@@ -1077,6 +1077,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoCountryComboBox.SelectedValue = null;
             this.ucoCountryComboBox.Size = new System.Drawing.Size(154, 22);
             this.ucoCountryComboBox.TabIndex = 2;
+            this.ucoCountryComboBox.SelectedValueChanged += new EventHandler(this.UcoCountryComboBox_SelectedValueChanged);
 
             //
             // lblCountry
@@ -1415,6 +1416,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbBankName.TabIndex = 1;
             this.cmbBankName.RemoveDescriptionLabel();
+            this.cmbBankName.SelectedValueChanged += new EventHandler(this.CmbBankName_SelectedValueChanged);
 
             //
             // pnlBankCode
@@ -1450,6 +1452,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbBankCode.ComboBoxWidth = 175;
             this.cmbBankCode.TabIndex = 1;
             this.cmbBankCode.RemoveDescriptionLabel();
+            this.cmbBankCode.SelectedValueChanged += new EventHandler(this.CmbBankCode_SelectedValueChanged);
 
             //
             // TUC_PartnerFindCriteria

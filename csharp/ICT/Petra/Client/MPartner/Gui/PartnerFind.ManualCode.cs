@@ -180,8 +180,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.KeyCode == Keys.Enter)
             {
-                FCurrentlySelectedTab.BtnSearch_Click(sender, e);
-                e.Handled = true;
+                // make sure that the 'Enter' key has not been pressed to select a value from a combo boxes dropped down list
+                if (!ucoFindByPartnerDetails.PartnerFindCriteria.ComboboxDroppedDown()
+                    && !ucoFindByBankDetails.PartnerFindCriteria.ComboboxDroppedDown())
+                {
+                    FCurrentlySelectedTab.BtnSearch_Click(sender, e);
+                    e.Handled = true;
+                }
             }
             else
             {
@@ -1370,7 +1375,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 MessageProcessed = true;
             }
-            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+            else if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                     || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
             {
                 bool FoundRow = false;
 

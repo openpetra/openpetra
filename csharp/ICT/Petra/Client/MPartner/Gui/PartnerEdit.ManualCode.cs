@@ -2125,7 +2125,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (CanClose())
                 {
                     /* Delete Partner; if OK, broadcast a message to any listening forms to inform them and then close the screen */
-                    if (TPartnerMain.DeletePartner(FPartnerKey))
+                    if (TPartnerMain.DeletePartner(FPartnerKey, this))
                     {
                         BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcPartnerDeleted,
                             FCallerContext);

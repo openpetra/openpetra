@@ -793,6 +793,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FDontRecordCurrentWorkerFamOnlySelection = false;
+
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbPartnerClass.DroppedDown)
+            {
+                // this is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down
+                PartnerClassDroppedDown = true;
+            }
         }
 
         private void BtnLocationKey_Click(System.Object sender, System.EventArgs e)
@@ -3065,6 +3072,82 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
+
+        #region Comboboxes and the Enter key
+
+        // This is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down.
+
+        private bool CountryDroppedDown = false;
+        private bool BankNameDroppedDown = false;
+        private bool BankCodeDroppedDown = false;
+        private bool PartnerClassDroppedDown = false;
+
+        /// <summary>
+        /// Determines if a combo box's value has been changed while the list is dropped down
+        /// and that that combo box still contains the focus.
+        /// </summary>
+        /// <returns></returns>
+        public bool ComboboxDroppedDown()
+        {
+            if (CountryDroppedDown && ucoCountryComboBox.ContainsFocus)
+            {
+                CountryDroppedDown = false;
+                return true;
+            }
+            else if (BankNameDroppedDown && cmbBankName.ContainsFocus)
+            {
+                BankNameDroppedDown = false;
+                return true;
+            }
+            else if (BankCodeDroppedDown && cmbBankCode.ContainsFocus)
+            {
+                BankCodeDroppedDown = false;
+                return true;
+            }
+            else if (PartnerClassDroppedDown && cmbPartnerClass.ContainsFocus)
+            {
+                PartnerClassDroppedDown = false;
+                return true;
+            }
+
+            CountryDroppedDown = false;
+            BankNameDroppedDown = false;
+            BankCodeDroppedDown = false;
+            PartnerClassDroppedDown = false;
+
+            return false;
+        }
+
+        // events triggered when a combo box's value is changed
+
+        private void UcoCountryComboBox_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (ucoCountryComboBox.DroppedDown)
+            {
+                CountryDroppedDown = true;
+            }
+        }
+
+        private void CmbBankName_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbBankName.cmbCombobox.DroppedDown)
+            {
+                BankNameDroppedDown = true;
+            }
+        }
+
+        private void CmbBankCode_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbBankCode.cmbCombobox.DroppedDown)
+            {
+                BankCodeDroppedDown = true;
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>todoComment</summary>

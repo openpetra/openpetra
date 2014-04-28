@@ -73,6 +73,17 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// The checked column
+        /// </summary>
+        public string CheckedColumn
+        {
+            set
+            {
+                FCheckedColumn = value;
+            }
+        }
+
+        /// <summary>
         /// allows popping up a question whether to check the CheckBox
         ///
         /// </summary>

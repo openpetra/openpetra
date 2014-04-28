@@ -182,7 +182,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     out ResultLocationPK,
                     AParentForm))
             {
-                ResultValue = DeletePartner(PartnerKey);
+                ResultValue = DeletePartner(PartnerKey, AParentForm);
             }
 
             return ResultValue;
@@ -191,12 +191,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// delete partner with given partner key
         /// </summary>
-        public static Boolean DeletePartner(Int64 APartnerKey)
+        public static Boolean DeletePartner(Int64 APartnerKey, Form AParentForm)
         {
             Boolean ResultValue = false;
             String ShortName;
             String Message;
             TVerificationResultCollection VerificationResult;
+
+            AParentForm.Cursor = Cursors.WaitCursor;
 
             if (TRemote.MPartner.Partner.WebConnectors.CanPartnerBeDeleted(APartnerKey, out Message))
             {
@@ -235,6 +237,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+
+            AParentForm.Cursor = Cursors.Default;
 
             return ResultValue;
         }
