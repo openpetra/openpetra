@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -573,7 +573,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            txtDetailCostCentreCode.Focus();
 
             if (ValidateAllData(true, true))
             {
@@ -623,7 +622,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 newNode.Tag = NewNodeDetails;
                 trvCostCentres.EndUpdate();
 
+                trvCostCentres.Focus(); // Changing the selection doesn't cause a re-draw if the control is not in focus.
                 trvCostCentres.SelectedNode = newNode;
+                txtDetailCostCentreCode.Focus();
                 txtDetailCostCentreCode.SelectAll();
                 FPetraUtilsObject.SetChangedFlag();
             }
