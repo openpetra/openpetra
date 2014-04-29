@@ -2481,6 +2481,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
         }
 
+        private static bool UserHasFinanceAccess()
+        {
+            return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1);
+        }
+
         #endregion
 
         #region Help Menu
@@ -3116,8 +3121,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Finance Module Data
-            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
-                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
+            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone
+                || ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance)
+               && UserHasFinanceAccess())
             {
                 //tbbViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
                 //mniViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet

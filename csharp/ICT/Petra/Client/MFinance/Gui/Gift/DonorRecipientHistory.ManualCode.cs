@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash
+//       matthiash, peters
 //
 // Copyright 2004-2011 by OM International
 //
@@ -23,10 +23,12 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using System.Globalization;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
@@ -76,6 +78,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
 //            txtLedger.Text = "" + Ict.Petra.Client.MFinance.Logic.TLedgerSelection.DetermineDefaultLedger();
             grdDetails.DoubleClick += new EventHandler(grdDetails_DoubleClick);
+            
+            // remove from the combobox all ledger numbers which the user does not have permission to access
+            DataView cmbLedgerDataView = (DataView) cmbLedger.cmbCombobox.DataSource;
+            
+            for (int i = 0; i < cmbLedgerDataView.Count; i++)// cmbLedger.cmbCombobox.Items.Count; i++)
+            {
+                string LedgerNumber = ((int) cmbLedgerDataView[i].Row[0]).ToString("0000");
+                
+                if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber))
+                {
+                    cmbLedgerDataView.Delete(i);
+                    i--;
+                }
+            }
         }
 
         void grdDetails_DoubleClick(object sender, EventArgs e)
@@ -105,20 +121,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FLedgerNumber = cmbLedger.GetSelectedInt32();
         }
 
-        private void EnalbeLedgerDropdown()
+        private void EnableLedgerDropdown()
         {
             cmbLedger.Enabled = true;
-            Int16 DefaultLedger = TUserDefaults.GetInt16Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, -1);
+            
+            // set the selected ledger to be the current ledger
+            int CurrentLedger = TLstTasks.CurrentLedger;
 
-            if (DefaultLedger > 0)
+            if (CurrentLedger > 0)
             {
-                cmbLedger.SetSelectedInt32(DefaultLedger);
+                cmbLedger.SetSelectedInt32(CurrentLedger);
             }
-
-            if (cmbLedger.Count == 1)
-            {
-                cmbLedger.SelectedIndex = 0;
-            }
+            
+            FLedgerNumber = CurrentLedger;
         }
 
         private void SetupGrid()
@@ -183,7 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FLedgerNumber < 0)
             {
-                MessageBox.Show(Catalog.GetString("Select Ledger then press 'Search'."), Catalog.GetString("Ledger Error"));
+                MessageBox.Show(Catalog.GetString("Select Ledger and then press 'Search'."), Catalog.GetString("Ledger Error"));
                 return;
             }
 
@@ -312,6 +327,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(
                 theParentForm);
+            
+            // if the user does not have permission to access any Ledgers
+            if (((DataView) frmDRH.cmbLedger.cmbCombobox.DataSource).Count == 0)
+            {
+                MessageBox.Show(Catalog.GetString("Cannot view History as you do not have access rights to any Ledgers."));
+                return;
+            }
+            
             try
             {
                 frmDRH.Cursor = Cursors.WaitCursor;
@@ -325,7 +348,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     frmDRH.Recipient = PartnerKey;
                 }
 
-                frmDRH.EnalbeLedgerDropdown();
+                frmDRH.EnableLedgerDropdown();
                 frmDRH.Search(true);
                 frmDRH.Show();
             }
