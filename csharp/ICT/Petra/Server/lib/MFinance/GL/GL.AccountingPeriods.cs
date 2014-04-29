@@ -492,9 +492,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             ADisplayMember = "YearDate";
             AValueMember = "YearNumber";
+            String YearEnd = "YearEnd";
             DataTable datTable = new DataTable();
             datTable.Columns.Add(AValueMember, typeof(System.Int32));
             datTable.Columns.Add(ADisplayMember, typeof(String));
+            datTable.Columns.Add(YearEnd, typeof(String));
             datTable.PrimaryKey = new DataColumn[] {
                 datTable.Columns[0]
             };
@@ -529,8 +531,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 foreach (DataRow row in BatchYearTable.Rows)
                 {
                     DataRow resultRow = datTable.NewRow();
+                    DateTime SelectableYear = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0])));
                     resultRow[0] = row[0];
-                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString("yyyy");
+                    resultRow[1] = SelectableYear.ToString("yyyy");
+                    resultRow[2] = SelectableYear.ToString("dd-MMM-yyyy");
                     datTable.Rows.Add(resultRow);
                 }
             }

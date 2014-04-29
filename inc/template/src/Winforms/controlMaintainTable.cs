@@ -636,6 +636,11 @@ namespace {#NAMESPACE}
 
         DataRowView[] HighlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
 
+        if (HighlightedRows.Length == 0)
+        {
+            return;
+        }
+
         if (HighlightedRows.Length == 1)
         {
 {#IFDEF DELETEREFERENCECOUNT}

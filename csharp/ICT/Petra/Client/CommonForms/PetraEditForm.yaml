@@ -51,13 +51,13 @@ RootNode:
             Image: Find.ico
     Menu:
         mniFile:
-           mniFileSave: {Action=actSave}
-           mniSeparator: {Label=-}
-           mniFilePrint:
+            mniFileSave: {Action=actSave}
+            mniSeparator: {Label=-}
+            mniFilePrint:
              Label:&Print...
              Image: Print.ico
 #             ActionClick:FilePrint
-           mniSeparator: {Label=-}
+            mniFileSeparator: {Label=-}
         mniEdit: 
             Label:&Edit
             mniEditTop: {Action=actEditTop}
@@ -75,10 +75,9 @@ RootNode:
             mniEditUndoCurrentField: 
               Label:Undo &Current Field
 #              ActionClick:MniEdit_Click
-#              ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
             mniEditUndoScreen: 
               Label:&Undo Screen
 #              ActionClick:MniEdit_Click
-#              ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
+            mniEditSeparator: {Label=-}
     Toolbar:
         tbbSave: {Action=actSave, Order=AlwaysFirst}

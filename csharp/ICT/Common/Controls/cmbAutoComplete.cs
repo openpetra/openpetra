@@ -613,7 +613,10 @@ namespace Ict.Common.Controls
                     {
                         FoundIndex = this.FindStringSortedByLength(this.Text);
                         this.SelectedIndex = FoundIndex;
-                        SendKeys.Send("{TAB}");
+
+                        this.SelectionStart = 0;
+                        this.SelectionLength = 9999;
+
                         e.Handled = true;
                     }
                 }

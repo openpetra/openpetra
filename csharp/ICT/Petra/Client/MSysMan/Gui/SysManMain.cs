@@ -109,7 +109,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
             string username = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
 
             // TODO: use old password as well, to make sure the password is changed by its owner
-            // TODO: enter new password twice to be sure it is correct
             PetraInputBox input = new PetraInputBox(
                 Catalog.GetString("Change your password"),
                 Catalog.GetString("Please enter the old password:"),

@@ -25,7 +25,6 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -33,6 +32,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Shared.MSysMan.Validation;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.Security;
@@ -88,35 +88,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
-        /// this will do some simple checks and return false if the password is not strong enough
-        /// </summary>
-        /// <returns></returns>
-        [RequireModulePermission("NONE")]
-        public static bool CheckPasswordQuality(string APassword, out TVerificationResultCollection AVerification)
-        {
-            // at least 8 characters, at least one digit, at least one letter
-            string passwordPattern = @"^.*(?=.{8,})(?=.*\d)((?=.*[a-z])|(?=.*[A-Z])).*$";
-            Regex regex = new Regex(passwordPattern);
-
-            AVerification = null;
-
-            if (regex.Match(APassword).Success == false)
-            {
-                AVerification = new TVerificationResultCollection();
-                AVerification.Add(new TVerificationResult("password quality check",
-                        String.Format(
-                            Catalog.GetString(
-                                "Your password must have at least {0} characters, and must contain at least one digit and one letter."),
-                            8),
-                        TResultSeverity.Resv_Critical));
-                return false;
-            }
-
-            // TODO: could do some lexical check?
-            return true;
-        }
-
-        /// <summary>
         /// set the password of the current user. this takes into consideration how users are authenticated in this system, by
         /// using an optional authentication plugin dll.
         /// any user can call this, but they need to know the old password.
@@ -130,8 +101,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         {
             TDBTransaction Transaction;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            TVerificationResult VerificationResult;
 
-            if (!CheckPasswordQuality(APassword, out AVerification))
+            AVerification = new TVerificationResultCollection();
+
+            if (!TSharedSysManValidation.CheckPasswordQuality(APassword, out VerificationResult))
             {
                 return false;
             }
@@ -144,6 +118,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 if (TUserManagerWebConnector.CreateHashOfPassword(String.Concat(AOldPassword,
                             UserDR.PasswordSalt)) != UserDR.PasswordHash)
                 {
+                    AVerification = new TVerificationResultCollection();
+                    AVerification.Add(new TVerificationResult("\nPassword quality check.",
+                            String.Format(
+                                Catalog.GetString(
+                                    "Old password entered incorrectly. Password not changed.")),
+                            TResultSeverity.Resv_Critical));
                     return false;
                 }
 
@@ -218,6 +198,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 {
                     newUser.PasswordSalt = PasswordHelper.GetNewPasswordSalt();
                     newUser.PasswordHash = PasswordHelper.GetPasswordHash(APassword, newUser.PasswordSalt);
+                    newUser.PasswordNeedsChange = true;
                 }
             }
             else
@@ -418,15 +399,23 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             // TODO: if user module access permissions have changed, automatically update the table access permissions?
 
-            // for new users: create users on the alternative authentication method
             if (ASubmitDS.SUser != null)
             {
                 foreach (SUserRow user in ASubmitDS.SUser.Rows)
                 {
+                    // for new users: create users on the alternative authentication method
                     if (user.RowState == DataRowState.Added)
                     {
-                        CreateUser(user.UserId, string.Empty, user.FirstName, user.LastName, string.Empty);
+                        CreateUser(user.UserId, user.PasswordHash, user.FirstName, user.LastName, string.Empty);
                         user.AcceptChanges();
+                    }
+                    // If a password has been added for the first time there will be a (unecrypted) password and no salt.
+                    // Create salt and hash.
+                    else if ((user.PasswordHash.Length > 0) && user.IsPasswordSaltNull())
+                    {
+                        user.PasswordSalt = PasswordHelper.GetNewPasswordSalt();
+                        user.PasswordHash = PasswordHelper.GetPasswordHash(user.PasswordHash, user.PasswordSalt);
+                        user.PasswordNeedsChange = true;
                     }
                 }
             }

@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -57,6 +58,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
                 {
                     FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
+                else
+                {
+                    MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
                 }
             }
         }

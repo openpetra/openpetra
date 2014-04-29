@@ -12,19 +12,21 @@ RootNode:
         pnlDetails:
             Controls: [grpEventInfo, grpMiscellaneous]
             Dock: Fill
-        grpEventInfo: {NoLabel=true, Stretch=horizontally}
+        grpEventInfo: {NoLabel=true}
             Controls: 
                 Row0: [txtEvent]
                 Row1: [txtFieldCharged]
-        grpMiscellaneous: {NoLabel=true, Stretch=horizontally}
+            Dock: Top
+        grpMiscellaneous: {NoLabel=true}
             Controls: 
                 Row0: [cmbApplicationType]
                 Row1: [cmbContact1]
                 Row2: [cmbContact2]
                 Row3: [txtPlacementPerson]
+            Dock: Top
               
-        txtEvent: {Label=Event, DataField=PmShortTermApplication.StConfirmedOption, Type=Event, OnChange=ProcessApplicationEventChanged, Validation=true}
-        txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey, PartnerClass=UNIT, Validation=true}
+        txtEvent: {Label=Event, DataField=PmShortTermApplication.StConfirmedOption, Type=Event, OnChange=ProcessApplicationEventChanged, Validation=true, Stretch=horizontally}
+        txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey, PartnerClass=UNIT, Validation=true, Stretch=horizontally}
 
         cmbApplicationType: {Label=Application Type, List=EventApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true}
         cmbContact1: {Label=Organization Contact 1, List=ContactList, DataField=PmGeneralApplication.GenContact1}

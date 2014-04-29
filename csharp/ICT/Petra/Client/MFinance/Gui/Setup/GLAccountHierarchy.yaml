@@ -13,7 +13,7 @@ RootNode:
         actAddNewAccount: {Label=&Add Account, ActionClick=AddNewAccount}
         actDeleteUnusedAccount: {Label=&Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteUnusedAccount}
         actImportHierarchy: {Label=&Import Hierarchy, Help: This only works for accounts that have no transactions yet, ActionClick=ImportHierarchy}
-        actExportHierarchy: {Label=&Export Hierarchy, ActionClick=ExportHierarchy}
+        actExportHierarchy: {Label=E&xport Hierarchy, ActionClick=ExportHierarchy}
     Controls:
         pnlContent:
             Controls: [sptAccountSplitter]
@@ -26,18 +26,20 @@ RootNode:
             Dock: Fill
         trvAccounts: {Dock=Fill}
         pnlDetails: {Dock=Fill}
-            Controls: [pnlDetailTop, pnlForeignCurrency, ucoAccountAnalysisAttributes, txtStatus]
+            Controls: [pnlDetailTop, pnlFlags, pnlSummary, pnlForeignCurrency, ucoAccountAnalysisAttributes, txtStatus]
         pnlDetailTop:
             Controls: 
                 Row0: [txtDetailAccountCode, btnRename]
                 Row1: [cmbDetailAccountType]
-                Row2a: [txtDetailEngAccountCodeLongDesc]
-                Row2: [txtDetailEngAccountCodeShortDesc]
-                Row3: [txtDetailAccountCodeLongDesc]
-                Row4: [txtDetailAccountCodeShortDesc]
-                Row5: [cmbDetailValidCcCombo]
-                Row6: [chkDetailBankAccountFlag]
-                Row7: [chkDetailAccountActiveFlag]
+                Row2: [txtDetailEngAccountCodeLongDesc]
+                Row3: [txtDetailEngAccountCodeShortDesc]
+                Row4: [txtDetailAccountCodeLongDesc]
+                Row5: [txtDetailAccountCodeShortDesc]
+                Row6: [cmbDetailValidCcCombo]
+        pnlFlags: {ControlsOrientation = horizontal}
+            Controls: [chkDetailBankAccountFlag, chkDetailAccountActiveFlag]
+        pnlSummary: {ControlsOrientation = horizontal}
+            Controls: [chkDetailIsSummary, txtRptOrder]
         pnlForeignCurrency: {ControlsOrientation = horizontal}
             Controls: [chkDetailForeignCurrencyFlag, cmbDetailForeignCurrencyCode]
         txtDetailAccountCode: {LabelWidth=150, OnLeave=ChangeAccountCodeValue, CharacterCasing=Upper }
@@ -56,16 +58,18 @@ RootNode:
         # TODO: which bank account (pbankingdetail) is this account linked to
         chkDetailBankAccountFlag: {LabelWidth=150, Label=Bank Account}
         # TODO: system account, standard account
-        chkDetailAccountActiveFlag: {LabelWidth=150, Label=Active}
+        chkDetailAccountActiveFlag: {Label=Active}
+        chkDetailIsSummary: {LabelWidth=150, Label=Summary}
+        txtRptOrder: {LabelWidth=73, Width=45}
         chkDetailForeignCurrencyFlag: {LabelWidth=150, Label=Foriegn Currency}
         cmbDetailForeignCurrencyCode: {Width=180, NoLabel=true, List=CurrencyCodeList}
         ucoAccountAnalysisAttributes:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes
-            Height:190
+            Height:170
             Width:310
         txtStatus:
             NoLabel:true
-            Height:80
+            Height:76
             Width:310
             Multiline:true
             ScrollBars:Vertical

@@ -11,7 +11,7 @@
     Actions:
         actNewUser: {ActionClick=NewUser, Image=New_Record.ico}
         actRetire: {ActionClick=RetireUser, Image=Delete_Record.ico}
-        actSetPassword: {ActionClick=SetPassword}
+        actChangePassword: {ActionClick=SetPassword}
         cndChangePermissions:
     Controls:
         pnlContent:
@@ -26,11 +26,11 @@
             FindControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName]
         pnlDetailButtons:
             Dock: Bottom
-            Controls: [btnNewUser, btnRetire, btnSetPassword]
+            Controls: [btnNewUser, btnRetire, btnChangePassword]
             ControlsOrientation: horizontal
         btnNewUser: {Width=110}
         btnRetire: {Label=Retire/Unretire, Width=130}
-        btnSetPassword: {Width=130, StartNewButtonGroup=true}
+        btnChangePassword: {Width=130, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
             Columns: [DetailUserId, DetailFirstName, DetailLastName, DetailRetired, DetailLastLoginDate]
@@ -39,10 +39,13 @@
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailUserId]
+                Row0: [txtDetailUserId, txtDetailPasswordHash]
                 Row1: [txtDetailFirstName, txtDetailLastName]
                 Row2: [clbUserGroup]
         txtDetailUserId:
+        txtDetailPasswordHash:
+            Label: Password
+            PasswordEntry: true
         txtDetailFirstName:
         txtDetailLastName:
         clbUserGroup:

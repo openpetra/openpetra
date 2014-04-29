@@ -800,6 +800,34 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
+        /// This function fills the available financial end-of-years of a given ledger into a TCmbAutoPopulated combobox
+        /// </summary>
+        public static void InitialiseAvailableEndOfYearsList(ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr,
+            bool AIncludeNextYear = false)
+        {
+            string DisplayMember;
+            string ValueMember;
+            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
+                0,
+                AIncludeNextYear,
+                out DisplayMember,
+                out ValueMember);
+
+            Table.DefaultView.Sort = ValueMember + " DESC";
+
+            AControl.InitialiseUserControl(Table,
+                ValueMember,
+                "YearEnd",
+                null,
+                null);
+
+            AControl.SelectedIndex = 0;
+
+            AControl.AppearanceSetup(new int[] { 120 }, -1);
+        }
+
+        /// <summary>
         /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl,

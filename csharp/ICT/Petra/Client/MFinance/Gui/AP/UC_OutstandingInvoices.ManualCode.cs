@@ -225,26 +225,51 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <returns>void</returns>
         private void SearchFinishedCheckThread()
         {
+            TAsyncExecProgressState ThreadStatus;
+
             // Check whether this thread should still execute
             while (FKeepUpSearchFinishedCheck)
             {
-                TAsyncExecProgressState ThreadStatus = FMainForm.InvoiceFindObject.AsyncExecProgress.ProgressState;
+                // Wait and see if anything has changed
+                Thread.Sleep(200);
 
-                /* The next line of code calls a function on the PetraServer
-                 * > causes a bit of data traffic everytime! */
+                try
+                {
+                    /* The next line of code calls a function on the PetraServer
+                     * > causes a bit of data traffic everytime! */
+                    ThreadStatus = FMainForm.InvoiceFindObject.AsyncExecProgress.ProgressState;
+                }
+                catch (NullReferenceException)
+                {
+                    // The form is closing on the main thread ...
+                    return;         // end this thread
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
                 switch (ThreadStatus)
                 {
                     case TAsyncExecProgressState.Aeps_Finished:
                         FKeepUpSearchFinishedCheck = false;
 
-                        // see also http://stackoverflow.com/questions/6184/how-do-i-make-event-callbacks-into-my-win-forms-thread-safe
-                        if (InvokeRequired)
+                        try
                         {
-                            Invoke(new SimpleDelegate(FinishThread));
+                            // see also http://stackoverflow.com/questions/6184/how-do-i-make-event-callbacks-into-my-win-forms-thread-safe
+                            if (InvokeRequired)
+                            {
+                                Invoke(new SimpleDelegate(FinishThread));
+                            }
+                            else
+                            {
+                                FinishThread();
+                            }
                         }
-                        else
+                        catch (ObjectDisposedException)
                         {
-                            FinishThread();
+                            // Another exception that can be caused when the main screen is closed while running this thread
+                            return;
                         }
 
                         break;
@@ -254,22 +279,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         return;
                 }
 
-                // Sleep a bit, then loop...
-                Thread.Sleep(200);
+                // Loop again while FKeepUpSearchFinishedCheck is true ...
             }
         }
 
         private void FinishThread()
         {
+            DataTable dataTable = null;
+
             // Fetch the first page of data
             try
             {
                 grdInvoices.MinimumPageSize = 200;
-                grdInvoices.LoadFirstDataPage(@GetDataPagedResult);
+                dataTable = grdInvoices.LoadFirstDataPage(@GetDataPagedResult);
             }
             catch (Exception E)
             {
                 MessageBox.Show(E.ToString());
+                return;
+            }
+
+            if (dataTable == null)
+            {
+                // we lost the supplierFind object - probably means the screen is closing down so quit now
                 return;
             }
 

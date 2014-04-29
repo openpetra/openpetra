@@ -35,6 +35,7 @@ using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MSysMan.Validation;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
@@ -72,6 +73,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
             // SModuleTable is loaded with the users, therefore we can only now fill the checked list box.
             // TODO: should use cached table instead?
             LoadAvailableModulesIntoCheckedListBox();
+
+            // Event to reload the grid after every save.
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
+
+            FPetraUtilsObject.SetStatusBarText(txtDetailPasswordHash, Catalog.GetString("Enter a password for the user"));
         }
 
         private void LoadAvailableModulesIntoCheckedListBox()
@@ -86,8 +92,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             clbUserGroup.Columns.Clear();
             clbUserGroup.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbUserGroup.AddTextColumn(Catalog.GetString("Module"), NewTable.Columns[ValueMember], 100);
-            clbUserGroup.AddTextColumn(Catalog.GetString("Description"), NewTable.Columns[DisplayMember], 220);
+            clbUserGroup.AddTextColumn(Catalog.GetString("Module"), NewTable.Columns[ValueMember], 120);
+            clbUserGroup.AddTextColumn(Catalog.GetString("Description"), NewTable.Columns[DisplayMember], 342);
             clbUserGroup.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
@@ -98,17 +104,18 @@ namespace Ict.Petra.Client.MSysMan.Gui
             if (FMainDS != null)
             {
                 FMainDS.SUser.DefaultView.AllowNew = false;
+                FMainDS.SUser.DefaultView.Sort = "s_user_id_c ASC";
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.SUser.DefaultView);
             }
-
-            SelectRowInGrid(1);
         }
 
         private TSubmitChangesResult StoreManualCode(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
 
-            return TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS);
+            TSubmitChangesResult Result = TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS);
+
+            return Result;
         }
 
         private void ShowDetailsManual(SUserRow ARow)
@@ -130,6 +137,19 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     {
                         currentPermissions = StringHelper.AddCSV(currentPermissions, permission.ModuleId);
                     }
+                }
+
+                // If a password has been saved for a user it can be changed using btnChangePassword.
+                // If a password has not been saved then it can be added using txtDetailPasswordHash.
+                if (string.IsNullOrEmpty(ARow.PasswordHash) || (string.IsNullOrEmpty(ARow.PasswordSalt) && (ARow.RowState != DataRowState.Unchanged)))
+                {
+                    btnChangePassword.Enabled = false;
+                    txtDetailPasswordHash.Enabled = true;
+                }
+                else
+                {
+                    btnChangePassword.Enabled = true;
+                    txtDetailPasswordHash.Enabled = false;
                 }
             }
 
@@ -202,6 +222,17 @@ namespace Ict.Petra.Client.MSysMan.Gui
             ARow.UserId = newName;
         }
 
+        /// <summary>
+        /// Reload the grid after every save. (This will add new password's hash and salt to the table.)
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        private void OnDataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            LoadUsers();
+            SelectRowInGrid(FPrevRowChangedRow);
+        }
+
         private void RetireUser(Object Sender, EventArgs e)
         {
             GetSelectedDetailRow().Retired = !GetSelectedDetailRow().Retired;
@@ -210,12 +241,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void SetPassword(Object Sender, EventArgs e)
         {
-            if (this.FPetraUtilsObject.HasChanges)
-            {
-                MessageBox.Show(Catalog.GetString("Please save the current changes first before changing the password."));
-                return;
-            }
-
             string username = GetSelectedDetailRow().UserId;
 
             // only request the password once, since this is the sysadmin changing it.
@@ -229,17 +254,42 @@ namespace Ict.Petra.Client.MSysMan.Gui
             if (input.ShowDialog() == DialogResult.OK)
             {
                 string password = input.GetAnswer();
+                TVerificationResult VerificationResult;
 
-                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true))
+                if (TSharedSysManValidation.CheckPasswordQuality(password, out VerificationResult))
                 {
-                    LoadUsers();
-                    MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
+                    if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true))
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
+                    }
+                    else
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
+                    }
                 }
                 else
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "There was a problem setting the password for user {0}."), username) +
+                        Environment.NewLine + VerificationResult.ResultText);
                 }
             }
+        }
+
+        private void ValidateDataDetailsManual(SUserRow ARow)
+        {
+            if (ARow == null)
+            {
+                return;
+            }
+
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            // validate bank account details
+            TSharedSysManValidation.ValidateSUserDetails(this,
+                ARow,
+                ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

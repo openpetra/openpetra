@@ -9,7 +9,7 @@ RootNode:
     MasterTable: PPartner    
     
     Actions:
-        actMaintainWorkerField: {Label=&Worker Field..., ActionClick=MaintainWorkerField, Image: OMField.ico}
+        actMaintainGiftDestination: {Label=Gift Destination, ActionClick=MaintainGiftDestination}
         
     Controls:
         pnlContent:
@@ -40,20 +40,26 @@ RootNode:
 # Right-hand Panel (misc. information)            
         pnlWorkerField: {Visible=false}
             Controls: 
-                Row0: [btnWorkerField, txtWorkerField] 
+                Row0: [btnGiftDestination, txtGiftDestination] 
             Height: 30
-        btnWorkerField:
-            Action: actMaintainWorkerField
-            Width: 100
+            Padding: -20,0,0,0
+        btnGiftDestination:
+            Action: actMaintainGiftDestination
+            Width: 110
             Height: 22
-        txtWorkerField:
+        txtGiftDestination:
             ReadOnly: true
             NoLabel: true
             BorderStyle: None
-            Tooltip: Field where the Partner is working
             Width: 100
             
-        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100, Validation=true, OnChange=PartnerStatusCodeChangePromotion}
+        cmbPartnerStatus: 
+            Label: Partner &Status
+            DataField: StatusCode
+            List: PartnerStatusList
+            Width: 100
+            Validation: true
+            OnChange: PartnerStatusCodeChangePromotion
         dtpStatusUpdated:
             DataField: PPartner.StatusChange
             ReadOnly: true

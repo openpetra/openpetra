@@ -30,33 +30,6 @@ using Ict.Petra.Shared;
 namespace Ict.Petra.Client.CommonForms
 {
     /// <summary>
-    /// Implement this Interface in any base Form whose derived Forms
-    /// should be able to receive 'Forms Messages'.
-    /// </summary>
-    /// <description>
-    /// Implement <see cref="IFormsMessagingInterface"></see> as a
-    /// 'virtual' Method of the base Form so that each derived Form can choose
-    /// whether it wants to be able to receive 'Forms Messages' (by overriding
-    /// the <see cref="ProcessFormsMessage"> Method</see>.
-    /// </description>
-    public interface IFormsMessagingInterface
-    {
-        /// <summary>
-        /// This Method will be called by
-        /// <see cref="Ict.Petra.Client.CommonForms.TFormsList.BroadcastFormMessage"></see>
-        /// in each Form that is derived from a base Form that implements the
-        /// <see cref="IFormsMessagingInterface"></see> and that is enlisted in the
-        /// <see cref="Ict.Petra.Client.CommonForms.TFormsList.GFormsList"></see>.
-        /// </summary>
-        /// <param name="AFormsMessage">The 'Forms Message' that is being broadcast
-        /// by some code that calls
-        /// <see cref="Ict.Petra.Client.CommonForms.TFormsList.BroadcastFormMessage"></see>.</param>
-        /// <returns>Returns True if the Form reacted on the specific Forms Message,
-        /// otherwise false.</returns>
-        bool ProcessFormsMessage(TFormsMessage AFormsMessage);
-    }
-
-    /// <summary>
     /// Base Interface for any specific Interfaces that are to be implemented
     /// in 'data-only Classes' (such as <see cref="TFormsMessage.FormsMessagePartner"></see>).
     /// </summary>
@@ -129,6 +102,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>Family Members of an already existing Partner of Partner Class FAMILY
         /// just got changed in the DB.</summary>
         mcFamilyMembersChanged,
+
+        /// <summary>Gift Destination records have been edited, added or deleted.</summary>
+        mcGiftDestinationChanged,
 
         /// <summary>An AP transaction has been saved.</summary>
         mcAPTransactionChanged
@@ -227,8 +203,10 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>
         /// Allows setting of Partner Data for 'Form Messages' of MessageClass
         /// <see cref="TFormsMessageClassEnum.mcNewPartnerSaved"></see>,
-        /// <see cref="TFormsMessageClassEnum.mcExistingPartnerSaved"></see> and
-        /// <see cref="TFormsMessageClassEnum.mcFamilyMembersChanged"></see>.
+        /// <see cref="TFormsMessageClassEnum.mcExistingPartnerSaved"></see>,
+        /// <see cref="TFormsMessageClassEnum.mcFamilyMembersChanged"></see>,
+        /// <see cref="TFormsMessageClassEnum.mcPartnerDeleted"></see> and
+        /// <see cref="TFormsMessageClassEnum.mcGiftDestinationChanged"></see>.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of the Partner in the 'Forms Message'.</param>
         /// <param name="APartnerClass">Partner Class of the Partner in the 'Forms Message'.</param>
@@ -243,6 +221,7 @@ namespace Ict.Petra.Client.CommonForms
                 case TFormsMessageClassEnum.mcExistingPartnerSaved:
                 case TFormsMessageClassEnum.mcFamilyMembersChanged:
                 case TFormsMessageClassEnum.mcPartnerDeleted:
+                case TFormsMessageClassEnum.mcGiftDestinationChanged:
 
                     FMessageObject = new FormsMessagePartner(APartnerKey,
                     APartnerClass, AShortName, APartnerStatus);
@@ -277,12 +256,10 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// A 'data-only' class for Partner Data for 'Form Messages' of MessageClass
-        /// <see cref="TFormsMessageClassEnum.mcNewPartnerSaved"></see>,
-        /// <see cref="TFormsMessageClassEnum.mcExistingPartnerSaved"></see> and
-        /// <see cref="TFormsMessageClassEnum.mcFamilyMembersChanged"></see>.
+        /// Holds Supplier Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcAPTransactionChanged"></see>.
         /// </summary>
-        public class FormsMessageAP : IFormsMessageAPInterface
+        public struct FormsMessageAP : IFormsMessageAPInterface
         {
             String FSupplierName;
 
@@ -307,12 +284,14 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// A 'data-only' class for Partner Data for 'Form Messages' of MessageClass
+        /// Holds Partner Data for 'Form Messages' of MessageClasses
         /// <see cref="TFormsMessageClassEnum.mcNewPartnerSaved"></see>,
-        /// <see cref="TFormsMessageClassEnum.mcExistingPartnerSaved"></see> and
-        /// <see cref="TFormsMessageClassEnum.mcFamilyMembersChanged"></see>.
+        /// <see cref="TFormsMessageClassEnum.mcExistingPartnerSaved"></see>,
+        /// <see cref="TFormsMessageClassEnum.mcFamilyMembersChanged"></see>,
+        /// <see cref="TFormsMessageClassEnum.mcPartnerDeleted"></see> and
+        /// <see cref="TFormsMessageClassEnum.mcGiftDestinationChanged"></see>.
         /// </summary>
-        public class FormsMessagePartner : IFormsMessagePartnerInterface
+        public struct FormsMessagePartner : IFormsMessagePartnerInterface
         {
             Int64 FPartnerKey;
             TPartnerClass FPartnerClass;
