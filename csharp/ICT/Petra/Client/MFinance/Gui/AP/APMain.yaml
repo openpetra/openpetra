@@ -23,7 +23,7 @@ RootNode:
             Image: NewPartner.ico
             ShortCut: Ctrl+N
         actEditSupplier:
-            Label: Edit &Details
+            Label: Edit S&upplier
             ActionClick: EditDetails
             Tooltip: Change the details and settings of an existing supplier
             Image: Edit_Record.ico

@@ -81,7 +81,7 @@ RootNode:
 
         pnlTransAnalysisAttributes:
             Controls: [lblAnalAttributes, grdAnalAttributes]
-            Width: 240
+            Width: 330
 
         lblAnalAttributes:
             Label: Analysis Attributes
