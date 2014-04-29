@@ -1267,8 +1267,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return deletionSuccessful;
             }
 
-            AGiftRow ARowToDeleteGiftRow = GetGiftRow(ARowToDelete.GiftTransactionNumber);
-
             if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
