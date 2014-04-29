@@ -104,6 +104,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (TControlDef child in container.Children)
                 {
+                    if (IsMniEditClickAndIgnore(writer, child, true))
+                    {
+                        continue;
+                    }
+
                     if (addChildren.Length > 0)
                     {
                         addChildren += "," + Environment.NewLine + "            ";
@@ -128,6 +133,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            if (IsMniEditClickAndIgnore(writer, ctrl, false))
+            {
+                return writer.FTemplate;
+            }
+
             base.SetControlProperties(writer, ctrl);
 
             // deactivate menu items that have no action assigned yet.
@@ -143,6 +153,41 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // todo: this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 
             return writer.FTemplate;
+        }
+
+        private bool IsMniEditClickAndIgnore(TFormWriter writer, TControlDef ctrl, bool LogMessage)
+        {
+            if (writer.FCodeStorage.ManualFileExistsAndContains("void MniEditGoto_Click("))
+            {
+                // if there is manual code then we will use it
+                return false;
+            }
+
+            bool bHasGrid = false;
+            foreach (TControlDef ctrlDef in writer.FCodeStorage.FControlList.Values)
+            {
+                if (ctrlDef.controlTypePrefix == "grd")
+                {
+                    bHasGrid = true;
+                    break;
+                }
+            }
+
+            // Screens that have no grid or no detail table do not qualify for the Goto menus
+            if (!bHasGrid || !writer.FCodeStorage.HasAttribute("DetailTable"))
+            {
+                if ((ctrl.GetAction() != null) && (ctrl.GetAction().actionClick == "MniEditGoto_Click"))
+                {
+                    if (LogMessage)
+                    {
+                        TLogging.Log("Ignoring MniEditGoto_Click menus on this screen");
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

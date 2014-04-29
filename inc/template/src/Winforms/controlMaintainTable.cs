@@ -1404,7 +1404,7 @@ namespace {#NAMESPACE}
 #region Keyboard handler
 
     /// Our main keyboard handler
-    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    public bool ProcessParentCmdKey(ref Message msg, Keys keyData)
     {
 {#IFDEF FILTERANDFIND}
         {#PROCESSCMDKEYCTRLF}
@@ -1413,7 +1413,7 @@ namespace {#NAMESPACE}
         {#PROCESSCMDKEY}    
         {#PROCESSCMDKEYMANUAL}    
 
-        return base.ProcessCmdKey(ref msg, keyData);
+        return false;
     }
 
     private void FocusFirstEditableControl()

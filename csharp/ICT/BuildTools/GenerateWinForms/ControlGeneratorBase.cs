@@ -687,7 +687,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddToActionEnabledEvent(writer, ActionToPerform, ctrl.controlName);
 
                 // deal with action handler
-                if (((ActionToPerform == "actEditFilter")
+                if (((ActionToPerform == "actEditFilter") || (ActionToPerform == "actEditFindNext") || (ActionToPerform == "actEditFindPrevious")
                      || (ActionToPerform == "actEditFind")) && !writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
                 {
                     // Do nothing
@@ -709,6 +709,43 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.SetControlProperty("mniEditFind", "ShortcutKeys", "Keys.F | Keys.Control", false);
                 }
 
+                if ((ActionToPerform == "actEditFindNext") && (ctrl.controlName == "mniEditFindNext")
+                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                {
+                    writer.SetControlProperty("mniEditFindNext", "ShortcutKeys", "Keys.F3", false);
+                }
+
+                if ((ActionToPerform == "actEditFindPrevious") && (ctrl.controlName == "mniEditFindPrevious")
+                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                {
+                    writer.SetControlProperty("mniEditFindPrevious", "ShortcutKeys", "Keys.F3 | Keys.Shift", false);
+                }
+
+                if ((ActionToPerform == "actEditTop") && (ctrl.controlName == "mniEditTop"))
+                {
+                    writer.SetControlProperty("mniEditTop", "ShortcutKeys", "Keys.Home | Keys.Control", false);
+                }
+
+                if ((ActionToPerform == "actEditPrevious") && (ctrl.controlName == "mniEditPrevious"))
+                {
+                    writer.SetControlProperty("mniEditPrevious", "ShortcutKeys", "Keys.Up | Keys.Control", false);
+                }
+
+                if ((ActionToPerform == "actEditNext") && (ctrl.controlName == "mniEditNext"))
+                {
+                    writer.SetControlProperty("mniEditNext", "ShortcutKeys", "Keys.Down | Keys.Control", false);
+                }
+
+                if ((ActionToPerform == "actEditBottom") && (ctrl.controlName == "mniEditBottom"))
+                {
+                    writer.SetControlProperty("mniEditBottom", "ShortcutKeys", "Keys.End | Keys.Control", false);
+                }
+
+                if ((ActionToPerform == "actEditFocusGrid") && (ctrl.controlName == "mniEditFocusGrid"))
+                {
+                    writer.SetControlProperty("mniEditFocusGrid", "ShortcutKeys", "Keys.G | Keys.Control", false);
+                }
+
                 if ((ActionToPerform == "actEditFilter") && (ctrl.controlName == "mniEditFilter")
                     && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
                 {
@@ -723,6 +760,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ProcessTemplate snipCtrlS = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLS");
                     writer.FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlS);
                     writer.SetControlProperty("mniFileSave", "ShortcutKeys", "Keys.S | Keys.Control", false);
+                }
+
+                if ((ActionToPerform == "actPrint") && (ctrl.controlName == "mniFilePrint"))
+                {
+                    writer.SetControlProperty("mniFilePrint", "ShortcutKeys", "Keys.P | Keys.Control", false);
                 }
 
                 if (FCodeStorage.ManualFileExistsAndContains(" " + ActionHandler.actionName.Substring(3) + "(Form AParentForm)"))

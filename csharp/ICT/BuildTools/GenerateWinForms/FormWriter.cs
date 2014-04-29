@@ -1135,17 +1135,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
             }
 
-            if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYF9"))
+            if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLG"))
             {
-                if (FCodeStorage.FControlList.ContainsKey("grdDetails") && !FCodeStorage.FControlList["grdDetails"].HasAttribute("IgnoreF9F10]"))
+                if (FCodeStorage.FControlList.ContainsKey("grdDetails") && !FCodeStorage.FControlList["grdDetails"].HasAttribute("IgnoreEditMove]"))
                 {
-                    ProcessTemplate snipF9 = FTemplate.GetSnippet("PROCESSCMDKEYF9");
-                    FTemplate.InsertSnippet("PROCESSCMDKEY", snipF9);
+                    ProcessTemplate snipCtrlG = FTemplate.GetSnippet("PROCESSCMDKEYCTRLG");
+                    FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlG);
 
                     if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
                     {
-                        ProcessTemplate snipF10 = FTemplate.GetSnippet("PROCESSCMDKEYF10");
-                        FTemplate.InsertSnippet("PROCESSCMDKEY", snipF10);
+                        ProcessTemplate snipSelectRow = FTemplate.GetSnippet("PROCESSCMDKEYSELECTROW");
+                        FTemplate.InsertSnippet("PROCESSCMDKEY", snipSelectRow);
 
                         ProcessTemplate snipFocusFirstControl = FTemplate.GetSnippet("FOCUSFIRSTDETAILSPANELCONTROL");
                         FTemplate.InsertSnippet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", snipFocusFirstControl);

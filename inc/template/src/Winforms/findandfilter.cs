@@ -529,19 +529,21 @@ public void MniFilterFind_Click(object sender, EventArgs e)
             ToggleFilter();
         }
 
-        if (((ToolStripMenuItem)sender).Name == "mniEditFind")
+        string senderName = ((ToolStripMenuItem)sender).Name;
+
+        if (senderName.StartsWith("mniEditFind"))
         {
             if (FucoFilterAndFind.IsFindTabShown)
             {
                 FucoFilterAndFind.DisplayFindTab();
                 FFindPanelControls.FFindPanels[0].PanelControl.Focus();
 
-                if (e is KeyPressEventArgs)
+                if (senderName.Length > 12)
                 {
-                    // Act as if Find button was clicked and use up/down depending on whether F3 or SHIFT+F3
+                    // Act as if Find button was clicked and use up/down depending on whether Next or Previous
                     FucoFilterAndFind_FindNextClicked(null,
                         new TUcoFilterAndFind.TContextEventExtSearchDirectionArgs(
-                            TUcoFilterAndFind.EventContext.ecFindPanel, ((KeyPressEventArgs)e).KeyChar == '-'));
+                            TUcoFilterAndFind.EventContext.ecFindPanel, (senderName == "mniEditFindPrevious")));
                 }
             }
         }

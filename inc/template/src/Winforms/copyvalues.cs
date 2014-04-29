@@ -134,12 +134,12 @@ if (keyData == (Keys.F | Keys.Control))
 }
 if (keyData == Keys.F3)
 {
-    {#ACTIONCLICK}(mniEditFind, new KeyPressEventArgs('+'));
+    {#ACTIONCLICK}(mniEditFindNext, null);
     return true;
 }
 if (keyData == (Keys.F3 | Keys.Shift))
 {
-    {#ACTIONCLICK}(mniEditFind, new KeyPressEventArgs('-'));
+    {#ACTIONCLICK}(mniEditFindPrevious, null);
     return true;
 }
 
@@ -167,23 +167,35 @@ if (ProcessCmdKeyManual(ref msg, keyData))
     return true;
 }
 
-{##PROCESSCMDKEYF9}
-if (keyData == Keys.F9)
+{##PROCESSCMDKEYCTRLG}
+if (keyData == (Keys.G | Keys.Control))
 {
     grdDetails.Focus();
     return true;
 }
 
-{##PROCESSCMDKEYF10}
-if (keyData == Keys.F10)
+{##PROCESSCMDKEYSELECTROW}
+if (keyData == (Keys.Home | Keys.Control))
+{
+    SelectRowInGrid(1);
+    FocusFirstEditableControl();
+    return true;
+}
+if (keyData == ((Keys.Up | Keys.Control)))
+{
+    SelectRowInGrid(GetSelectedRowIndex() - 1);
+    FocusFirstEditableControl();
+    return true;
+}
+if (keyData == (Keys.Down | Keys.Control))
 {
     SelectRowInGrid(GetSelectedRowIndex() + 1);
     FocusFirstEditableControl();
     return true;
 }
-if (keyData == (Keys.F10 | Keys.Shift))
+if (keyData == ((Keys.End | Keys.Control)))
 {
-    SelectRowInGrid(GetSelectedRowIndex() - 1);
+    SelectRowInGrid(grdDetails.Rows.Count - 1);
     FocusFirstEditableControl();
     return true;
 }
