@@ -71,6 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.
             }
             uco_GeneralSettings.ShowOnlyEndPeriod();
+            uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
         }
 
         //
