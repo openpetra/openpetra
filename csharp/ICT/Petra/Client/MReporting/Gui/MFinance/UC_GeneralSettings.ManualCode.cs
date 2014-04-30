@@ -138,8 +138,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_currency_name", CurrencyName);
 
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
-            ACalculator.AddParameter("param_period_breakdown", rbtBreakdown.Checked);
+            ACalculator.AddParameter("param_period_breakdown", rbtBreakdown.Checked && rbtBreakdown.Visible);
+
+            ACalculator.AddParameter("param_period_checked", rbtPeriod.Checked);
             ACalculator.AddParameter("param_date_checked", rbtDate.Checked);
+            ACalculator.AddParameter("param_quarter_checked", rbtQuarter.Checked);
 
             if (rbtQuarter.Checked)
             {
