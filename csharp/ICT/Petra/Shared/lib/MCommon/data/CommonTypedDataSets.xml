@@ -47,6 +47,11 @@
         <Table sqltable="p_location"/>
         <Table sqltable="p_partner_location"/>
         <Table sqltable="p_country"/>		
-    </DataSet>   
+    </DataSet>
+
+  <DataSet name="PartnerAddressTDS">
+    <Table sqltable="p_location"/>
+    <Table sqltable="p_partner_location"/>
+  </DataSet>
 
 </PetraDataSets>

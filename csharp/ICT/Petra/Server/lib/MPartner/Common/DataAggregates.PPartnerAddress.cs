@@ -89,6 +89,12 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             PartnerLocationDT = (PPartnerLocationTable)ADataSet.Tables[PPartnerLocationTable.GetTableName()];
             ApplySecurity(ref PartnerLocationDT, ref LocationDT);
 
+            // make sure that location specific fields in PartnerLocationDT get initialized
+            if (ADataSet.GetType() == typeof(PartnerEditTDS))
+            {
+                PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(LocationDT, (PartnerEditTDSPPartnerLocationTable)PartnerLocationDT);
+            }
+
             if (TLogging.DL >= 9)
             {
                 DebugLoadedDataset(ADataSet);
@@ -1952,6 +1958,12 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             LocationDT = (PLocationTable)ADataSet.Tables[PLocationTable.GetTableName()];
             PartnerLocationDT = (PPartnerLocationTable)ADataSet.Tables[PPartnerLocationTable.GetTableName()];
             ApplySecurity(ref PartnerLocationDT, ref LocationDT);
+
+            // make sure that location specific fields in PartnerLocationDT get initialized
+            if (ADataSet.GetType() == typeof(PartnerEditTDS))
+            {
+                PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(LocationDT, (PartnerEditTDSPPartnerLocationTable)PartnerLocationDT);
+            }
         }
 
         /// <summary>

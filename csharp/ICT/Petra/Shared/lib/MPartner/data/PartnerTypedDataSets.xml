@@ -15,6 +15,17 @@
     <Table sqltable="p_partner_location">
       <CustomField name="BestAddress" type="bool"/>
       <CustomField name="Icon" type="Int32"/>
+      <Field name="LocationLocality" sqltable="p_location" sqlfield="p_locality_c"/>
+      <Field name="LocationStreetName" sqltable="p_location" sqlfield="p_street_name_c"/>
+      <Field name="LocationAddress3" sqltable="p_location" sqlfield="p_address_3_c"/>
+      <Field name="LocationCity" sqltable="p_location" sqlfield="p_city_c"/>
+      <Field name="LocationCounty" sqltable="p_location" sqlfield="p_county_c"/>
+      <Field name="LocationPostalCode" sqltable="p_location" sqlfield="p_postal_code_c"/>
+      <Field name="LocationCountryCode" sqltable="p_location" sqlfield="p_country_code_c"/>
+      <CustomField name="LocationCreatedBy" type="string"/>
+      <CustomField name="LocationDateCreated" type="DateTime"/>
+      <CustomField name="LocationModifiedBy" type="string"/>
+      <CustomField name="LocationDateModified" type="DateTime"/>
     </Table>
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>

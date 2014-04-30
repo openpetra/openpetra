@@ -1542,6 +1542,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// todoComment
         /// </summary>
         /// <returns></returns>
+        public PartnerEditTDSPPartnerLocationTable GetDataPartnerLocations(ref PLocationTable ALocations)
+        {
+            Int32 LocationsCount;
+
+            return GetPartnerLocationsInternal(out LocationsCount, false, ref ALocations);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
         public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues()
         {
             Boolean LabelsAvailable;
@@ -2144,6 +2155,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult;
+            //DataRow TempRow = null;
+            //PLocationRow LocationRow;
 
             AVerificationResult = null;
 //          TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChangesAddresses: Instance hash is " + this.GetHashCode().ToString());
@@ -2824,6 +2837,81 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
             return RelationshipDT;
+        }
+
+        private PartnerEditTDSPPartnerLocationTable GetPartnerLocationsInternal(out Int32 ACount, Boolean ACountOnly, ref PLocationTable ALocations)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PartnerEditTDSPPartnerLocationTable LocationDT;
+            PLocationTable LocationTable;
+            PLocationRow LocationRow;
+            
+            LocationDT = new PartnerEditTDSPPartnerLocationTable();
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                if (ACountOnly)
+                {
+                    ACount = PPartnerLocationAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
+                }
+                else
+                {
+                    // Logging.LogAtLevel(7,  "TPartnerEditUIConnector.GetPartnerLocationsInternal: loading Locations for Partner " + FPartnerKey.ToString() + "...");
+                    try
+                    {
+                        ALocations = PLocationAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
+
+                        LocationDT.Merge(PPartnerLocationAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
+
+                        foreach (PartnerEditTDSPPartnerLocationRow row in LocationDT.Rows)
+                        {
+                            LocationTable = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, ReadTransaction);
+                            if (LocationTable.Count > 0)
+                            {
+                                LocationRow = (PLocationRow)LocationTable.Rows[0];
+
+                                row.LocationLocality = LocationRow.Locality;
+                                row.LocationStreetName = LocationRow.StreetName;
+                                row.LocationAddress3 = LocationRow.Address3;
+                                row.LocationCity = LocationRow.City;
+                                row.LocationCounty = LocationRow.County;
+                                row.LocationPostalCode = LocationRow.PostalCode;
+                                row.LocationCountryCode = LocationRow.CountryCode;
+                                
+                                row.LocationCreatedBy = LocationRow.CreatedBy;
+                                if (!LocationRow.IsDateCreatedNull())
+                                {
+                                    row.LocationDateCreated = (DateTime)LocationRow.DateCreated;
+                                }
+                                row.LocationModifiedBy = LocationRow.ModifiedBy;
+                                if (!LocationRow.IsDateModifiedNull())
+                                {
+                                    row.LocationDateModified = (DateTime)LocationRow.DateModified;
+                                }
+                            }
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    ACount = LocationDT.Rows.Count;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerLocationsInternal: committed own transaction.");
+                }
+            }
+            return LocationDT;
         }
 
         private PDataLabelValuePartnerTable GetDataLocalPartnerDataValuesInternal(out Boolean ALabelsAvailable, Boolean ACountOnly)

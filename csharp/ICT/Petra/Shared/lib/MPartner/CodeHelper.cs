@@ -57,5 +57,45 @@ namespace Ict.Petra.Shared.MPartner
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// Update extra location specific fields in table APartnerLocationTable
+        /// </summary>
+        /// <param name="ALocationTable">Table containing location records to be used to update APartnerLocation records</param>
+        /// <param name="APartnerLocationTable">Table to be updated with Location specific information</param>
+        /// <returns></returns>
+        public static void SyncPartnerEditTDSPartnerLocation(PLocationTable ALocationTable, PartnerEditTDSPPartnerLocationTable APartnerLocationTable)
+        {
+            DataRow Row;
+            PLocationRow LocationRow;
+
+            foreach (PartnerEditTDSPPartnerLocationRow PartnerLocationRow in APartnerLocationTable.Rows)
+            {
+                Row = ALocationTable.Rows.Find(new Object[] { PartnerLocationRow.SiteKey, PartnerLocationRow.LocationKey });
+                if (Row != null)
+                {
+                    LocationRow = (PLocationRow)Row;
+
+                    PartnerLocationRow.LocationLocality = LocationRow.Locality;
+                    PartnerLocationRow.LocationStreetName = LocationRow.StreetName;
+                    PartnerLocationRow.LocationAddress3 = LocationRow.Address3;
+                    PartnerLocationRow.LocationCity = LocationRow.City;
+                    PartnerLocationRow.LocationCounty = LocationRow.County;
+                    PartnerLocationRow.LocationPostalCode = LocationRow.PostalCode;
+                    PartnerLocationRow.LocationCountryCode = LocationRow.CountryCode;
+
+                    PartnerLocationRow.LocationCreatedBy = LocationRow.CreatedBy;
+                    if (!LocationRow.IsDateCreatedNull())
+                    {
+                        PartnerLocationRow.LocationDateCreated = (DateTime)LocationRow.DateCreated;
+                    }
+                    PartnerLocationRow.LocationModifiedBy = LocationRow.ModifiedBy;
+                    if (!LocationRow.IsDateModifiedNull())
+                    {
+                        PartnerLocationRow.LocationDateModified = (DateTime)LocationRow.DateModified;
+                    }
+                }
+            }
+        }
     }
 }
