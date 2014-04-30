@@ -320,20 +320,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
         }
 
-        private void FindCostCentreCodeForRecipient(AGiftDetailRow ARow, bool AShowError = false)
+        private void FindCostCentreCodeForRecipient(AGiftDetailRow ARow, Int64 APartnerKey, bool AShowError = false)
         {
+            if (ARow == null)
+            {
+                return;
+            }
+            
             string CurrentCostCentreCode = ARow.CostCentreCode;
             string NewCostCentreCode = string.Empty;
+
+            DateTime giftDate = ((AGiftRow)GetGiftRow(ARow.GiftTransactionNumber)).DateEntered;
 
             string MotivationGroup = ARow.MotivationGroupCode;
             string MotivationDetail = ARow.MotivationDetailCode;
 
-            Int64 PartnerKey = ARow.RecipientKey;
             Int64 RecipientLedgerNumber = ARow.RecipientLedgerNumber;
             Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
 
             bool KeyMinIsActive = false;
-            bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(PartnerKey, out KeyMinIsActive);
+            bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartnerKey, out KeyMinIsActive);
 
             string ValidLedgerNumberCostCentreCode;
 
@@ -343,10 +349,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             string errMsg = string.Empty;
 
-            if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, PartnerKey,
+            //if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, PartnerKey,
+            //        out ValidLedgerNumberCostCentreCode)
+            //    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, RecipientLedgerNumber,
+            //        out ValidLedgerNumberCostCentreCode))
+            if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(APartnerKey, giftDate,
                     out ValidLedgerNumberCostCentreCode)
-                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, RecipientLedgerNumber,
-                    out ValidLedgerNumberCostCentreCode))
+                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(RecipientLedgerNumber, giftDate,
+                       out ValidLedgerNumberCostCentreCode))
             {
                 NewCostCentreCode = ValidLedgerNumberCostCentreCode;
             }
@@ -354,7 +364,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 errMsg = String.Format(
                     "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                    PartnerKey,
+                    APartnerKey,
                     FLedgerNumber,
                     Environment.NewLine,
                     RecipientLedgerNumber,
@@ -422,12 +432,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FinRecipientKeyChanging = true;
 
-            GiftBatchTDSAGiftDetailRow giftDetailRow = GetGiftDetailRow(FPreviouslySelectedDetailRow.GiftTransactionNumber,
-                FPreviouslySelectedDetailRow.DetailNumber);
-            giftDetailRow.RecipientDescription = APartnerShortName;
-
             try
             {
+                FPreviouslySelectedDetailRow.ReceiptNumber = Convert.ToInt32(APartnerKey);
+                FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
+
                 FPetraUtilsObject.SuppressChangeDetection = true;
 
                 //Set RecipientLedgerNumber
@@ -782,7 +791,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
 
-            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, true);
+            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, true);
 
             txtDetailCostCentreCode.Text = FPreviouslySelectedDetailRow.CostCentreCode;
         }

@@ -1447,6 +1447,64 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Check if an entry exists in ValidLedgerNumber for the specified ledger number and partner key
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AGiftDate"></param>
+        /// <param name="ACostCentreCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CheckCostCentreDestinationForRecipient(Int64 APartnerKey, DateTime AGiftDate, out string ACostCentreCode)
+        {
+            bool CostCentreExists = false;
+
+            ACostCentreCode = string.Empty;
+
+            bool NewTransaction;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            string PartnerGiftDestinationTable = "PartnerGiftDestination";
+
+            string GetPartnerGiftDestinationSQL = String.Format("SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
+                "WHERE pgd.p_partner_key_n = {0} And ((pgd.p_date_effective_d <= '{1}' And pgd.p_date_expires_d IS NULL) Or ('{1}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
+                APartnerKey,
+                AGiftDate.ToString("yyyy-MM-dd"));
+
+            TLogging.Log("GetPartnerGiftDestinationSQL: " + GetPartnerGiftDestinationSQL);
+
+            DataSet tempDataSet = new DataSet();
+
+            try
+            {
+                DBAccess.GDBAccessObj.Select(tempDataSet, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
+                    Transaction,
+                    0, 0);
+
+                if (tempDataSet.Tables[PartnerGiftDestinationTable] != null)
+                {
+                    if (tempDataSet.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
+                    {
+                        DataRow row = tempDataSet.Tables[PartnerGiftDestinationTable].Rows[0];
+                        ACostCentreCode = row[0].ToString();
+                        CostCentreExists = true;
+                    }
+
+                    tempDataSet.Clear();
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return CostCentreExists;
+        }
+
+        /// <summary>
         /// create GiftBatchTDS with the gift batch to post, and all gift transactions and details, and motivation details
         /// </summary>
         /// <param name="ALedgerNumber"></param>
