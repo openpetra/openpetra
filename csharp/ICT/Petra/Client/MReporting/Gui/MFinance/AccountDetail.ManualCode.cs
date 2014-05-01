@@ -210,6 +210,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
+            {
+                return false;
+            }
+
 
             //
             // If I'm reporting by period or quarter,
@@ -224,6 +229,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     pm.Get("param_end_period_i").ToInt32(),
                     pm.Get("param_currency").ToString().StartsWith("Int")
                     );
+                if (Balances == null)
+                {
+                    return false;
+                }
             }
 
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
@@ -231,6 +240,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ALedgerRow Row = ReportDs.ALedger[0];
                 ACalc.AddStringParameter("param_ledger_name", Row.LedgerName);
                 ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            }
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
+            {
+                return false;
             }
 
             //
@@ -252,6 +266,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     LastBatch);
                 Csv = StringHelper.AddCSV(Csv, "AAnalysisType/*/a_analysis_type/1=1");
                 ReportDs.Merge(TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv));
+            }
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
+            {
+                return false;
             }
 
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");
