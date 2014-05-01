@@ -406,7 +406,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (FCurrentNode != null)
             {
-                FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailEngAccountCodeShortDesc.Text);
+                FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailAccountCodeShortDesc.Text);
             }
         }
 

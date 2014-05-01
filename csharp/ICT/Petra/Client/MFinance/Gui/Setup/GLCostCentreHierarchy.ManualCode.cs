@@ -779,6 +779,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             //
+            // The Controls might not have changed, but if they have, this will make the tree look right:
+            FPetraUtilsObject_ControlChanged(null);
+
+            //
             // I'll look through and check whether any of the cost centres still have "NEWCOSTCENTRE"..
             //
             if (CheckForInvalidCostCentre(trvCostCentres.Nodes))
