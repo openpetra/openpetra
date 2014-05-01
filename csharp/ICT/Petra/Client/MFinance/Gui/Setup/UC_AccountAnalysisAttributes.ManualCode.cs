@@ -40,6 +40,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private string FAccountCode;
         DataView FAnalysisTypesForCombo;
         Boolean FIamUpdating = false;
+
+        /// <summary>Add this in the Status Box</summary>
+        public delegate void UpdateParentStatus (String Message);
+
+        /// <summary>Add this in the Status Box</summary>
+        public UpdateParentStatus ShowStatus = null;
+
         /// <summary>
         /// use this ledger
         /// </summary>
@@ -66,6 +73,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         Row.Delete();
                     }
                 }
+            }
+
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState == DataRowState.Detached))
+            {
+                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -125,13 +137,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FLedgerNumber,
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
                     FAccountCode);
+                FMainDS.AAnalysisAttribute.DefaultView.Sort = AAnalysisAttributeTable.GetAnalysisTypeCodeDBName();
 
-/*
- *              FMainDS.AAnalysisAttribute.DefaultView.Sort =
- *                  AAnalysisAttributeTable.GetLedgerNumberDBName() + ", " +
- *                  AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", " +
- *                  AAnalysisAttributeTable.GetAccountCodeDBName();
- */
                 pnlDetails.Enabled = false;
                 btnDelete.Enabled = (grdDetails.Rows.Count > 1);
                 UpdateRecordNumberDisplay();
@@ -167,6 +174,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FIamUpdating = true;
                 LoadCmbAnalType(ARow.AnalysisTypeCode);
                 cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
+                String ServerMessage;
+                Boolean CanBeChanged = TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARow.LedgerNumber,
+                    ARow.AccountCode,
+                    ARow.AnalysisTypeCode,
+                    out ServerMessage);
+                pnlDetails.Enabled = CanBeChanged;
+
+                if (!CanBeChanged)
+                {
+                    if (ShowStatus != null)
+                    {
+                        ShowStatus(ServerMessage);
+                    }
+                }
+
                 FIamUpdating = false;
             }
         }
@@ -184,20 +206,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // I can't delete any Analysis Type code that's been used in transactions.
             if ((ARowToDelete != null) && (ARowToDelete.RowState != DataRowState.Deleted))
             {
-                if (TRemote.MFinance.Setup.WebConnectors.CanDetachAnalysisType(ARowToDelete.LedgerNumber, ARowToDelete.AccountCode,
-                        ARowToDelete.AnalysisTypeCode))
+                String ServerMessage;
+
+                if (TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARowToDelete.LedgerNumber, ARowToDelete.AccountCode,
+                        ARowToDelete.AnalysisTypeCode, out ServerMessage))
                 {
                     ADeletionQuestion = String.Format(
                         Catalog.GetString("Confirm you want to Remove {0} from this account."),
                         ARowToDelete.AnalysisTypeCode);
                     return true;
                 }
-                else // The server reports that this can't be deleted because it's been using in transactions.
+                else // The server reports that this can't be deleted.
                 {
-                    MessageBox.Show(
-                        String.Format(Catalog.GetString("Analysis type {0} cannot be deleted because it has been used in tranactions."),
-                            ARowToDelete.AnalysisTypeCode),
-                        Catalog.GetString("Delete Analysis Type"));
+                    MessageBox.Show(ServerMessage, Catalog.GetString("Delete Analysis Type"));
                 }
             }
 
@@ -226,7 +247,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
         }
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
@@ -234,6 +254,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (!FIamUpdating && (FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
                 FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
+
+                //
+                // The change may have altered the ordering of the list,
+                // so now I need to re-select the item, wherever it's gone!
+                Int32 RowIdx = FMainDS.AAnalysisAttribute.DefaultView.Find(cmbDetailAnalTypeCode.Text);
+                SelectByIndex(RowIdx + 1);
             }
         }
 
@@ -257,6 +283,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void SelectByIndex(int rowIndex)
         {
+            grdDetails.Selection.ResetSelection(true);
+
             if (rowIndex >= grdDetails.Rows.Count)
             {
                 rowIndex = grdDetails.Rows.Count - 1;

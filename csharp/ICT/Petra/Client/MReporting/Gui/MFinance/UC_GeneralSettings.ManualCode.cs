@@ -77,13 +77,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbPeriodYear, FLedgerNumber);
             cmbPeriodYear.SelectedIndex = 0;
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbQuarterYear, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbQuarterYear, FLedgerNumber);
             cmbQuarterYear.SelectedIndex = 0;
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbBreakdownYear, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbBreakdownYear, FLedgerNumber);
             cmbBreakdownYear.SelectedIndex = 0;
 
             TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
@@ -144,12 +144,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             if (rbtQuarter.Checked)
             {
                 Year = cmbQuarterYear.GetSelectedInt32();
+                ACalculator.AddParameter("param_year_i", Year);
                 ACalculator.AddParameter("param_real_year", cmbQuarterYear.GetSelectedString(1));
+                ACalculator.AddParameter("param_real_year_ending", cmbPeriodYear.GetSelectedString(2));
 
                 int Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
                 ACalculator.AddParameter("param_quarter", (System.Object)(Quarter));
                 ACalculator.AddParameter("param_start_period_i", (System.Object)(Quarter * 3 - 2));
                 ACalculator.AddParameter("param_end_period_i", (System.Object)(Quarter * 3));
+                ACalculator.AddParameter("param_start_date",
+                    TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3 - 2));
+                ACalculator.AddParameter("param_end_date",
+                    TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3));
 
                 //VerificationResult = TFinancialPeriodChecks.ValidQuarter(DiffPeriod, Year, Quarter, "Quarter");
                 if (AReportAction == TReportActionEnum.raGenerate)
@@ -163,12 +169,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             else if (rbtPeriod.Checked)
             {
                 Year = cmbPeriodYear.GetSelectedInt32();
+                ACalculator.AddParameter("param_year_i", Year);
                 ACalculator.AddParameter("param_real_year", cmbPeriodYear.GetSelectedString(1));
+                ACalculator.AddParameter("param_real_year_ending", cmbPeriodYear.GetSelectedString(2));
 
                 int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
                 ACalculator.AddParameter("param_start_period_i", StartPeriod);
                 ACalculator.AddParameter("param_end_period_i", EndPeriod);
+                ACalculator.AddParameter("param_start_date",
+                    TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, StartPeriod));
+                ACalculator.AddParameter("param_end_date",
+                    TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod));
 
                 if (AReportAction == TReportActionEnum.raGenerate)
                 {
@@ -194,9 +206,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     if (dtpStartDate.Date.Value > dtpEndDate.Date.Value)
                     {
                         FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
-                                Catalog.GetString("Start Date must not be later than End Date."),
+                                Catalog.GetString("Start Date must not be later than End Date"),
                                 Catalog.GetString("Invalid Data entered."),
                                 TResultSeverity.Resv_Critical));
+                    }
+                    else
+                    {
+                        ACalculator.AddParameter("param_start_date", dtpStartDate.Date.Value);
+                        ACalculator.AddParameter("param_end_date", dtpEndDate.Date.Value);
+                        ACalculator.AddParameter("param_real_year", dtpEndDate.Date.Value.Year);
                     }
                 }
             }
@@ -204,11 +222,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 Year = cmbBreakdownYear.GetSelectedInt32();
                 ACalculator.AddParameter("param_real_year", cmbBreakdownYear.GetSelectedString(1));
+                ACalculator.AddParameter("param_year_i", Year);
+                ACalculator.AddParameter("param_start_date", TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1));
+                ACalculator.AddParameter("param_end_date", TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12));
             }
 
-            ACalculator.AddParameter("param_year_i", Year);
-            ACalculator.AddParameter("param_start_date", TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1));
-            ACalculator.AddParameter("param_end_date", TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12));
+            if (Year < 0)
+            {
+                FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                        Catalog.GetString("Accounting Year was not specified"),
+                        Catalog.GetString("Invalid Data entered."),
+                        TResultSeverity.Resv_Critical));
+            }
         }
 
         /// <summary>

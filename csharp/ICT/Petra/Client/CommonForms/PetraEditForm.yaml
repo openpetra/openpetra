@@ -23,25 +23,23 @@ RootNode:
             Image: Find.ico
     Menu:
         mniFile:
-           mniFileSave: {Action=actSave}
-           mniSeparator: {Label=-}
-           mniFilePrint:
-              Label:&Print...
-              Image: Print.ico
-#              ActionClick:MniFile_Click
-              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.P]
-           mniSeparator: {Label=-}
+            mniFileSave: {Action=actSave}
+            mniSeparator: {Label=-}
+            mniFilePrint:
+                Label:&Print...
+                Image: Print.ico
+#               ActionClick:MniFile_Click
+#               ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.P]
+            mniFileSeparator: {Label=-}
         mniEdit: 
             Label:&Edit
             mniEditUndoCurrentField: 
               Label:Undo &Current Field
 #              ActionClick:MniEdit_Click
-              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
             mniEditUndoScreen: 
               Label:&Undo Screen
 #             ActionClick:MniEdit_Click
-              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
-            mniSeparator: {Label=-}
+            mniEditSeparator: {Label=-}
             mniEditFilter: {Action=actEditFilter}
             mniEditFind: {Action=actEditFind}
     Toolbar:

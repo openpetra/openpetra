@@ -58,7 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private GLSetupTDS FCacheDS = null;
         private GLBatchTDSAJournalRow FJournalRow = null;
         private ATransAnalAttribRow FPSAttributesRow = null;
-        private SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
+        private SourceGrid.Cells.Editors.ComboBox cmbAnalAttribValues;
         private bool FIsUnposted = true;
 
         private ABatchRow FBatchRow = null;
@@ -163,13 +163,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
 
-                    FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
-                    FAnalAttribTypeVal.EnableEdit = true;
-                    FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
+                    cmbAnalAttribValues = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
+                    cmbAnalAttribValues.EnableEdit = true;
+                    cmbAnalAttribValues.EditableMode = EditableMode.Focus;
                     grdAnalAttributes.AddTextColumn("Value",
                         FMainDS.ATransAnalAttrib.Columns[ATransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
-                        FAnalAttribTypeVal);
-                    FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
+                        cmbAnalAttribValues);
+                    cmbAnalAttribValues.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
 
                     grdAnalAttributes.Columns[0].Width = 100;
                 }
@@ -530,7 +530,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdAnalAttributes.Rows.Count > 1)
             {
                 grdAnalAttributes.SelectRowWithoutFocus(1);
-                FPSAttributesRow = GetSelectedAttributeRow();
+                AnalysisAttributesGrid_RowSelected(null, null);
             }
         }
 
@@ -638,6 +638,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            if ((GetSelectedAttributeRow() == null) || (FPSAttributesRow == GetSelectedAttributeRow()))
+            {
+                return;
+            }
+
             FPSAttributesRow = GetSelectedAttributeRow();
 
             string currentAnalTypeCode = FPSAttributesRow.AnalysisTypeCode;
@@ -660,8 +665,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (analTypeCodeValuesCount == 0)
             {
-                MessageBox.Show("No analysis attribute type codes present!");
-                return;
+                MessageBox.Show(Catalog.GetString(
+                        "No attribute values are defined!"), currentAnalTypeCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             string[] analTypeValues = new string[analTypeCodeValuesCount];
@@ -678,12 +683,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Refresh the combo values
-            FAnalAttribTypeVal.StandardValuesExclusive = true;
-            FAnalAttribTypeVal.StandardValues = analTypeValues;
+            cmbAnalAttribValues.StandardValuesExclusive = true;
+            cmbAnalAttribValues.StandardValues = analTypeValues;
 
-            Console.WriteLine("RowSelected: ActivePos is {0}:{1}",
-                grdAnalAttributes.Selection.ActivePosition.Row,
-                grdAnalAttributes.Selection.ActivePosition.Column);
+/*
+ *          Console.WriteLine("RowSelected: ActivePos is {0}:{1}",
+ *              grdAnalAttributes.Selection.ActivePosition.Row,
+ *              grdAnalAttributes.Selection.ActivePosition.Column);
+ */
         }
 
         private void AnalysisAttributeValueChanged(System.Object sender, EventArgs e)
@@ -752,7 +759,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // If combobox to set analysis attribute value has focus when save button is pressed then currently
             // displayed value is not stored in database.
             // --> move focus to different field so that grid accepts value for storing in database
-            if (FAnalAttribTypeVal.Control.Focused)
+            if (cmbAnalAttribValues.Control.Focused)
             {
                 cmbDetailCostCentreCode.Focus();
             }
@@ -1008,7 +1015,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Make sure the grid combobox has right font else it will adopt strikeout
             // for all items in the list.
-            FAnalAttribTypeVal.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
+            cmbAnalAttribValues.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
 
             return retVal;
         }
