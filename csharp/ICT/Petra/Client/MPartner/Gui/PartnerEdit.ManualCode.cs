@@ -3121,9 +3121,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Finance Module Data
-            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone
-                || ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance)
-               && UserHasFinanceAccess())
+            if (((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                 || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
+                && UserHasFinanceAccess())
             {
                 //tbbViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
                 //mniViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet

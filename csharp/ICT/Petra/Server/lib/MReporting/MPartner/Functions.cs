@@ -710,7 +710,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             foreach (PPartnerGiftDestinationRow Row in ResultTable.Rows)
             {
-                if (Row.Active)
+                if (Row.DateEffective != Row.DateExpires)
                 {
                     FieldName = GetPartnerShortName(Row.FieldKey);
                     break;

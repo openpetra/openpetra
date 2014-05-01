@@ -30,11 +30,12 @@ using System.Globalization;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -44,6 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TFrmDonorRecipientHistory
     {
         private Int32 FLedgerNumber = -1;
+        private string ALL = "[" + Catalog.GetString("All") + "]";
 
         /// the Donor
         public long Donor
@@ -71,31 +73,55 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = value;
                 cmbLedger.SetSelectedInt32(FLedgerNumber);
+
+                // update the combobox lists
+                TFinanceControls.InitialiseMotivationGroupList(ref cmbMotivationGroup, FLedgerNumber, false);
+                DataRow BlankRow = cmbMotivationGroup.Table.NewRow();
+                BlankRow["a_ledger_number_i"] = value;
+                BlankRow["a_motivation_group_code_c"] = ALL;
+                BlankRow["a_motivation_group_description_c"] = Catalog.GetString("All groups");
+                cmbMotivationGroup.Table.Rows.InsertAt(BlankRow, 0);
+                cmbMotivationGroup.cmbCombobox.SelectedIndex = 0;
+                cmbMotivationGroup.ColumnWidthCol2 = 300;
+
+                TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, false);
+                BlankRow = cmbMotivationDetail.Table.NewRow();
+                BlankRow["a_ledger_number_i"] = value;
+                BlankRow["a_motivation_group_code_c"] = "";
+                BlankRow["a_motivation_detail_code_c"] = ALL;
+                BlankRow["a_motivation_detail_desc_c"] = Catalog.GetString("All details");
+                cmbMotivationDetail.Table.Rows.InsertAt(BlankRow, 0);
+                cmbMotivationDetail.cmbCombobox.SelectedIndex = 0;
+                cmbMotivationDetail.ColumnWidthCol2 = 300;
             }
         }
 
         private void InitializeManualCode()
         {
-//            txtLedger.Text = "" + Ict.Petra.Client.MFinance.Logic.TLedgerSelection.DetermineDefaultLedger();
-            grdDetails.DoubleClick += new EventHandler(grdDetails_DoubleClick);
-            
             // remove from the combobox all ledger numbers which the user does not have permission to access
-            DataView cmbLedgerDataView = (DataView) cmbLedger.cmbCombobox.DataSource;
-            
-            for (int i = 0; i < cmbLedgerDataView.Count; i++)// cmbLedger.cmbCombobox.Items.Count; i++)
+            DataView cmbLedgerDataView = (DataView)cmbLedger.cmbCombobox.DataSource;
+
+            for (int i = 0; i < cmbLedgerDataView.Count; i++) // cmbLedger.cmbCombobox.Items.Count; i++)
             {
-                string LedgerNumber = ((int) cmbLedgerDataView[i].Row[0]).ToString("0000");
-                
+                string LedgerNumber = ((int)cmbLedgerDataView[i].Row[0]).ToString("0000");
+
                 if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber))
                 {
                     cmbLedgerDataView.Delete(i);
                     i--;
                 }
             }
+
+            FPetraUtilsObject.SetStatusBarText(grdDetails, Catalog.GetString("Use the mouse or navigation keys to select a data row to view"));
+
+            // set the currency code to be blank initially
+            txtGiftTotal.CurrencyCode = "   ";
         }
 
-        void grdDetails_DoubleClick(object sender, EventArgs e)
+        private void ViewTransaction(object sender, EventArgs e)
         {
+            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
+
             if ((FPreviouslySelectedDetailRow != null) && (FMainDS != null))
             {
                 try
@@ -104,10 +130,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     TFrmGiftBatch gb = new TFrmGiftBatch(this);
                     gb.ViewMode = true;
-                    gb.ViewModeTDS = FMainDS;
-                    // When I call Gift Batch, it will want one row in a LedgerTable!
-                    gb.ViewModeTDS.ALedger.Merge(TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber));
-                    //gb.ShowDetailsOfOneBatch(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber);
+
+                    // load dataset with data for single transaction
+                    gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadSingleTransaction(FLedgerNumber,
+                        (int)FPreviouslySelectedDetailRow["BatchNumber"],
+                        (int)FPreviouslySelectedDetailRow["GiftTransactionNumber"],
+                        (int)FPreviouslySelectedDetailRow["DetailNumber"]);
+                    gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"]);
+                    gb.FindGiftDetail((AGiftDetailRow)gb.ViewModeTDS.AGiftDetail.Rows[0]);
+                    gb.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
                 }
                 finally
                 {
@@ -118,13 +149,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void OnCmbLedgerChange(System.Object sender, EventArgs e)
         {
-            FLedgerNumber = cmbLedger.GetSelectedInt32();
+            LedgerNumber = cmbLedger.GetSelectedInt32();
         }
 
         private void EnableLedgerDropdown()
         {
             cmbLedger.Enabled = true;
-            
+
             // set the selected ledger to be the current ledger
             int CurrentLedger = TLstTasks.CurrentLedger;
 
@@ -132,8 +163,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 cmbLedger.SetSelectedInt32(CurrentLedger);
             }
-            
-            FLedgerNumber = CurrentLedger;
+
+            LedgerNumber = CurrentLedger;
         }
 
         private void SetupGrid()
@@ -141,34 +172,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.Columns.Clear();
             grdDetails.AddDateColumn("Date Entered", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DateEntered"]);
             grdDetails.AddTextColumn("Group", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationGroupCode"]);
-            grdDetails.AddTextColumn("Detail", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationDetailCode"]);
-            grdDetails.AddTextColumn("Receipt", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ReceiptNumber"]);
+            grdDetails.AddTextColumn("Detail", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationDetailCode"], 80);
+            grdDetails.AddTextColumn("Receipt", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ReceiptNumber"], 60);
             grdDetails.AddCurrencyColumn("Amount (Base)", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftAmount"]);
             grdDetails.AddCurrencyColumn("Amount (Intl)", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftAmountIntl"]);
-            grdDetails.AddCheckBoxColumn("C", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ConfidentialGiftFlag"]);
+            grdDetails.AddCheckBoxColumn("C", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ConfidentialGiftFlag"], 17);
             grdDetails.AddTextColumn("Batch", FMainDS.Tables[TEMP_TABLE_NAME].Columns["BatchNumber"]);
-            grdDetails.AddTextColumn("Trans", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftTransactionNumber"]);
-            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorDescription"]);
-            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientDescription"]);
-            grdDetails.AddTextColumn("Reference", FMainDS.Tables[TEMP_TABLE_NAME].Columns["Reference"]);
-            grdDetails.AddTextColumn("Comment One", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentOne"]);
-            grdDetails.AddTextColumn("Comment Type", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CommentOneType"]);
-            grdDetails.AddTextColumn("Recipient Ledger", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientLedgerNumber"]);
-            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorKey"]);
-            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientKey"]);
-            grdDetails.AddCheckBoxColumn("Charge Fee", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ChargeFlag"]);
-            grdDetails.AddTextColumn("Method of Payment", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfPaymentCode"]);
-            grdDetails.AddTextColumn("Method of Giving", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfGivingCode"]);
-            grdDetails.AddTextColumn("Cost Centre Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CostCentreCode"]);
-            grdDetails.AddTextColumn("Comment Two", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentTwo"]);
-            grdDetails.AddTextColumn("Comment Three", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentThree"]);
-            grdDetails.AddTextColumn("Mailing Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MailingCode"]);
+            grdDetails.AddTextColumn("Trans", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftTransactionNumber"], 50);
+            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorDescription"], 160);
+            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientDescription"], 160);
+            grdDetails.AddTextColumn("Reference", FMainDS.Tables[TEMP_TABLE_NAME].Columns["Reference"], 90);
+            grdDetails.AddTextColumn("Comment One", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentOne"], 200);
+            grdDetails.AddTextColumn("Comment Type", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CommentOneType"], 100);
+            grdDetails.AddTextColumn("Recipient Field", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientLedgerNumber"], 100);
+            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorKey"], 70);
+            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientKey"], 70);
+            grdDetails.AddCheckBoxColumn("Charge Fee", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ChargeFlag"], 17);
+            grdDetails.AddTextColumn("Method of Payment", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfPaymentCode"], 120);
+            grdDetails.AddTextColumn("Method of Giving", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfGivingCode"], 110);
+            grdDetails.AddTextColumn("Cost Centre Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CostCentreCode"], 110);
+            grdDetails.AddTextColumn("Comment Two", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentTwo"], 100);
+            grdDetails.AddTextColumn("Comment Three", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentThree"], 100);
+            grdDetails.AddTextColumn("Mailing Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MailingCode"], 85);
 
             grdDetails.Columns[0].Width = 90;     // Date Entered
-            grdDetails.Columns[2].Width = 80;     // Motivation Detail Code
-            grdDetails.Columns[4].Width = 120;     // Amount - Base
-            grdDetails.Columns[5].Width = 120;     // Amount - Intl
-            grdDetails.Columns[9].Width = 160;     // Recipient
+            grdDetails.Columns[4].Width = 100;     // Amount - Base
+            grdDetails.Columns[5].Width = 90;     // Amount - Intl
         }
 
         /// <summary>
@@ -182,8 +211,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int64 donor = Convert.ToInt64(txtDonor.Text);
             Int64 recipient = Convert.ToInt64(txtRecipient.Text);
 
-            string motivationGroup = txtMotivationGroup.Text.Trim();
-            string motivationDetail = txtMotivationDetail.Text.Trim();
+            string motivationGroup = cmbMotivationGroup.cmbCombobox.Text;
+            string motivationDetail = cmbMotivationDetail.cmbCombobox.Text;
+
+            if (motivationGroup == ALL)
+            {
+                motivationGroup = "";
+            }
+
+            if (motivationDetail == ALL)
+            {
+                motivationDetail = "";
+            }
 
             string dateFrom = dtpDateFrom.Date.HasValue ? dtpDateFrom.Date.Value.ToShortDateString() : String.Empty;
             string dateTo = dtpDateTo.Date.HasValue ? dtpDateTo.Date.Value.ToShortDateString() : String.Empty;
@@ -217,9 +256,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 dtpDateTo.SelectAll();
                 return;
             }
-
-            txtMotivationGroup.Text = txtMotivationGroup.Text.ToUpper();
-            txtMotivationDetail.Text = txtMotivationDetail.Text.ToUpper();
 
             requestParams.Add("TempTable", TEMP_TABLE_NAME);
             requestParams.Add("Ledger", FLedgerNumber);
@@ -278,11 +314,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     myDataView.AllowNew = false;
                     grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-                    SelectByIndex(0);
+                    SelectDetailRowByDataTableIndex(0);
                     txtNumberOfGifts.Text = (grdDetails.Rows.Count - 1).ToString();
                 }
 
+                btnView.Enabled = grdDetails.Rows.Count > 1;
+
                 UpdateTotals();
+                UpdateRecordNumberDisplay();
             }
             finally
             {
@@ -327,14 +366,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(
                 theParentForm);
-            
+
             // if the user does not have permission to access any Ledgers
-            if (((DataView) frmDRH.cmbLedger.cmbCombobox.DataSource).Count == 0)
+            if (((DataView)frmDRH.cmbLedger.cmbCombobox.DataSource).Count == 0)
             {
                 MessageBox.Show(Catalog.GetString("Cannot view History as you do not have access rights to any Ledgers."));
                 return;
             }
-            
+
             try
             {
                 frmDRH.Cursor = Cursors.WaitCursor;
@@ -376,30 +415,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtGiftTotal.NumberValueDecimal = sum;
             txtGiftTotal.CurrencyCode = FMainDS.ALedger[0].BaseCurrency;
             txtGiftTotal.ReadOnly = true;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            }
-            else
-            {
-                grdDetails.Selection.ResetSelection(false);
-                FPreviouslySelectedDetailRow = null;
-            }
         }
     }
 }

@@ -449,6 +449,29 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// loads a GiftBatchTDS for a single transaction
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AGiftTransactionNumber"></param>
+        /// <param name="ADetailNumber"></param>
+        /// <returns>DataSet containing the transation's data</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadSingleTransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, Transaction);
+            AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
+            AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of recurring batches for the given ledger
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc

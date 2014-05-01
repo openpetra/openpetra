@@ -1340,6 +1340,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean changeable = (FPreviouslySelectedDetailRow != null) && (!ViewMode)
                                  && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
+            this.btnNew.Enabled = !ViewMode;
             this.btnCancel.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
             pnlDetails.Enabled = changeable;
