@@ -357,7 +357,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.CreateNewATransaction();
 
-            ClearControls();
+//          ClearControls(); // Don't clear controls! I've just worked hard to set some default values in them!
             ValidateAllData(true, false);
 
             pnlTransAnalysisAttributes.Enabled = true;
@@ -397,6 +397,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPreviouslySelectedDetailRow != null)
             {
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
+                ANewRow.Narrative = FPreviouslySelectedDetailRow.Narrative;
+                ANewRow.Reference = FPreviouslySelectedDetailRow.Reference;
             }
         }
 
