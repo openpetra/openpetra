@@ -158,7 +158,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.HasChanges = false;
             FPetraUtilsObject.SuppressChangeDetection = false;
             FBatchLoaded = true;
-
         }
 
         /// <summary>
@@ -1603,7 +1602,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void SetFocusToGrid()
         {
-            if (grdDetails != null && grdDetails.CanFocus)
+            if ((grdDetails != null) && grdDetails.CanFocus)
             {
                 grdDetails.Focus();
             }

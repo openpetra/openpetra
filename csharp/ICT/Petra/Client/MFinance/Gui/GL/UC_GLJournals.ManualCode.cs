@@ -48,6 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
         private string FBatchStatus = string.Empty;
+        private string FTransactionCurrency = string.Empty;
 
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
@@ -232,7 +233,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (RowIsNull)
             {
+                FTransactionCurrency = string.Empty;
                 btnAdd.Focus();
+            }
+            else
+            {
+                FTransactionCurrency = ARow.TransactionCurrency;
             }
 
             if (RowIsNull || (ARow.JournalStatus == MFinanceConstants.BATCH_CANCELLED))
@@ -518,13 +524,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
                 && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-                FPreviouslySelectedDetailRow.TransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
+                FTransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
+
+                FPreviouslySelectedDetailRow.TransactionCurrency = FTransactionCurrency;
 
                 ABatchRow batchrow = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
 
                 FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
+                    FTransactionCurrency,
                     FMainDS.ALedger[0].BaseCurrency,
-                    FPreviouslySelectedDetailRow.TransactionCurrency,
                     batchrow.DateEffective);
 
                 RefreshCurrencyAndExchangeRate();

@@ -326,7 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
-            
+
             string CurrentCostCentreCode = ARow.CostCentreCode;
             string NewCostCentreCode = string.Empty;
 
@@ -356,7 +356,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(APartnerKey, giftDate,
                     out ValidLedgerNumberCostCentreCode)
                 || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(RecipientLedgerNumber, giftDate,
-                       out ValidLedgerNumberCostCentreCode))
+                    out ValidLedgerNumberCostCentreCode))
             {
                 NewCostCentreCode = ValidLedgerNumberCostCentreCode;
             }
@@ -853,7 +853,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftDetailRow giftDetailRow = (AGiftDetailRow)dvRows.Row;
 
                 AGiftRow giftRow = GetGiftRow(giftDetailRow.GiftTransactionNumber);
-                
+
                 CurrentCostCentreCode = giftDetailRow.CostCentreCode;
                 NewCostCentreCode = CurrentCostCentreCode;
 

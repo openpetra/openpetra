@@ -1466,7 +1466,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             string PartnerGiftDestinationTable = "PartnerGiftDestination";
 
-            string GetPartnerGiftDestinationSQL = String.Format("SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
+            string GetPartnerGiftDestinationSQL = String.Format(
+                "SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
                 "WHERE pgd.p_partner_key_n = {0} And ((pgd.p_date_effective_d <= '{1}' And pgd.p_date_expires_d IS NULL) Or ('{1}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
                 APartnerKey,
                 AGiftDate.ToString("yyyy-MM-dd"));

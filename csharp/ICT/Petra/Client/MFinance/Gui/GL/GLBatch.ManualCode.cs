@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ucoBatches.SetInitialFocus();
                 FPreviousTab = eGLTabs.Batches;
             }
-            else if (ATab == eGLTabs.Journals)
+            else if ((ucoBatches.GetSelectedDetailRow() != null) && (ATab == eGLTabs.Journals))
             {
                 if (this.tpgJournals.Enabled)
                 {
