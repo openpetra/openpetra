@@ -315,9 +315,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //0 for the last two arguments means for all transactions in the batch
-            UpdateCostCentreCodeForRecipients(out FailedUpdates, 0, 0);
+            //UpdateCostCentreCodeForRecipients(out FailedUpdates, 0, 0);
 
-            ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
+            //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
         }
 
         private void FindCostCentreCodeForRecipient(AGiftDetailRow ARow, Int64 APartnerKey, bool AShowError = false)
@@ -419,18 +419,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        bool FinRecipientKeyChanging = false;
+        bool FInRecipientKeyChanging = false;
 
         private void RecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection)
         {
-            if (FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || FShowingDetails)
+            if (FInRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || FShowingDetails)
             {
                 return;
             }
 
-            FinRecipientKeyChanging = true;
+            FInRecipientKeyChanging = true;
 
             try
             {
@@ -463,19 +463,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     GetRecipientData(APartnerKey);
                 }
 
-                if (APartnerKey == 0)
+                if (APartnerKey > 0)
+                {
+                    RetrieveRecipientCostCentreCode(APartnerKey);
+                }
+                else
                 {
                     UpdateRecipientKeyText(APartnerKey);
                     RetrieveMotivationDetailCostCentreCode();
                 }
-                else
-                {
-                    RetrieveRecipientCostCentreCode(APartnerKey);
-                }
             }
             finally
             {
-                FinRecipientKeyChanging = false;
+                FInRecipientKeyChanging = false;
                 FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
@@ -622,7 +622,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         bool FInKeyMinistryChanging = false;
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
-            if (FInKeyMinistryChanging || FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || txtRecipientKeyMinistry.Visible)
+            if (FInKeyMinistryChanging || FInRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || txtRecipientKeyMinistry.Visible)
             {
                 return;
             }
@@ -785,11 +785,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            UpdateCostCentreCodeForRecipients(out FailedUpdates,
-                FPreviouslySelectedDetailRow.GiftTransactionNumber,
-                FPreviouslySelectedDetailRow.DetailNumber);
+            //UpdateCostCentreCodeForRecipients(out FailedUpdates,
+            //    FPreviouslySelectedDetailRow.GiftTransactionNumber,
+            //    FPreviouslySelectedDetailRow.DetailNumber);
 
-            ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
+            //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
 
             FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, true);
 
@@ -852,6 +852,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 AGiftDetailRow giftDetailRow = (AGiftDetailRow)dvRows.Row;
 
+                AGiftRow giftRow = GetGiftRow(giftDetailRow.GiftTransactionNumber);
+                
                 CurrentCostCentreCode = giftDetailRow.CostCentreCode;
                 NewCostCentreCode = CurrentCostCentreCode;
 
@@ -868,9 +870,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //    PartnerKey,
                 //    out ValidLedgerNumberCostCentreCode);
 
-                if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, PartnerKey,
+                if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(PartnerKey, giftRow.DateEntered,
                         out ValidLedgerNumberCostCentreCode)
-                    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, RecipientFundNumber,
+                    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(RecipientFundNumber, giftRow.DateEntered,
                         out ValidLedgerNumberCostCentreCode))
                 {
                     NewCostCentreCode = ValidLedgerNumberCostCentreCode;
@@ -935,6 +937,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            TLogging.Log("MotivationDetailChanged code...");
             FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
             if (FMotivationDetail.Length > 0)
@@ -952,15 +955,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             long PartnerKey = 0;
             Int64.TryParse(txtDetailRecipientKey.Text, out PartnerKey);
+            TLogging.Log("MotivationDetailChanged Partner Key: " + PartnerKey.ToString());
 
-            if (PartnerKey == 0)
+            if (PartnerKey > 0)
             {
-                RetrieveMotivationDetailCostCentreCode();
-                UpdateRecipientKeyText(0);
+                PopulateKeyMinistry(PartnerKey);
             }
             else
             {
-                PopulateKeyMinistry(PartnerKey);
+                RetrieveMotivationDetailCostCentreCode();
+                UpdateRecipientKeyText(0);
             }
         }
 
@@ -984,7 +988,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
         }
 
-        private void GetRecipientData(long APartnerKey = 0)
+        private void GetRecipientData(long APartnerKey)
         {
             if (APartnerKey == 0)
             {

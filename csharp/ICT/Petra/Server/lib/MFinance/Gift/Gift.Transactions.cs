@@ -2273,22 +2273,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// get the recipient ledger partner for a unit
         /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int64 GetRecipientFundNumber(Int64 partnerKey)
+        public static Int64 GetRecipientFundNumber(Int64 APartnerKey)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null));
-            MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(partnerKey, null));
-            MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(partnerKey, null));
-            MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(partnerKey, null));
-            MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(partnerKey, null));
+            MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, null));
+            MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, null));
+            MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, null));
+            MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, null));
             //MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null));
 
             UmUnitStructureAccess.LoadAll(MainDS, null);
             MainDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
 
-            return GetRecipientFundNumber(MainDS, partnerKey);
+            return GetRecipientFundNumber(MainDS, APartnerKey);
         }
 
         private static Int64 GetRecipientFundNumber(GiftBatchTDS AMainDS, Int64 APartnerKey)
@@ -2300,10 +2302,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // TODO check pm_staff_data for commitments
 
-            PFamilyRow familyRow;
+            //Look in RecipientFamily table
+            PFamilyRow familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(APartnerKey);
             PPersonRow personRow;
 
-            if ((familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(APartnerKey)) != null)
+            if (familyRow != null)
             {
                 if (familyRow.IsFieldKeyNull())
                 {
@@ -2315,7 +2318,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            if ((personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey)) != null)
+            //Look in RecipientPerson table
+            personRow = personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey);
+
+            if (personRow != null)
             {
                 if (personRow.IsFieldKeyNull())
                 {
@@ -2340,7 +2346,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             //This was taken from old Petra - perhaps we should better search for unit type = F in PUnit
-
             DataRowView[] rows = AMainDS.UmUnitStructure.DefaultView.FindRows(APartnerKey);
 
             if (rows.Length > 0)
@@ -2358,7 +2363,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else
             {
-                TLogging.Log("cannot find Recipient LedgerNumber for partner " + APartnerKey.ToString());
                 return APartnerKey;
             }
         }
