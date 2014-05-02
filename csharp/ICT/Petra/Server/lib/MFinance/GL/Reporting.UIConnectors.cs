@@ -916,7 +916,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             for (Int32 i = 0; i < SummaryAccountPath.Length; i++)
             {
-                if (SummaryAccountPath[i] == '/')
+                if (SummaryAccountPath[i] == '~')
                 {
                     if (--NthSlash == 0)
                     {
@@ -927,7 +927,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
 
             DataRow SummaryRow;
-            Int32 ViewIdx = filteredView.Find(new object[] { NewDataRow["AccountType"], SummaryAccountPath, NewDataRow["CostCentreCode"] });
+            Int32 ViewIdx = filteredView.Find(new object[] { NewDataRow["AccountTypeOrder"], SummaryAccountPath, NewDataRow["CostCentreCode"] });
 
             if (ViewIdx < 0) // No record yet..
             {
