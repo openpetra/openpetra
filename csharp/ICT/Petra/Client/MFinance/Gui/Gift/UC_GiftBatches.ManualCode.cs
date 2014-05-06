@@ -1419,7 +1419,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             string ACurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
             DateTime effectiveDate = FPreviouslySelectedDetailRow.GlEffectiveDate;
-            DateTime startOfMonth = new DateTime(effectiveDate.Year, effectiveDate.Month, 1);
 
             if (ANewExchangeRate == 0)
             {
@@ -1430,13 +1429,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     effectiveDate);
             }
 
-            decimal IntlRateToBatchCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
-                FMainDS.ALedger[0].IntlCurrency,
-                startOfMonth,
-                effectiveDate);
-
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false, IntlRateToBatchCurrency);
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
         }
 
         private void RefreshCurrencyAndExchangeRateControls(bool AFromUserAction = false)

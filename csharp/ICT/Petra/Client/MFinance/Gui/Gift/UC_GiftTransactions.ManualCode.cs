@@ -1036,7 +1036,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtBatchTotal.NumberValueDecimal = 0;
 
                 //If all details have been deleted
-                if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1) && (FBatchRow != null))
+                if ((FLedgerNumber != -1) && (FBatchRow != null) && (grdDetails.Rows.Count == 1))
                 {
                     ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
                 }
@@ -1072,7 +1072,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-//christiank: when you have a moFBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED &&
+                //FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED &&
                 txtGiftTotal.NumberValueDecimal = sum;
                 txtGiftTotal.CurrencyCode = txtDetailGiftTransactionAmount.CurrencyCode;
                 txtGiftTotal.ReadOnly = true;
@@ -2389,12 +2389,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// update the transaction base amount calculation from outside
         /// </summary>
-        public void UpdateBaseAmount(bool AUpdateCurrentRowOnly, decimal AInternationalToBaseExchangeRate = 1)
+        public void UpdateBaseAmount(bool AUpdateCurrentRowOnly)
         {
             Int32 LedgerNumber;
             Int32 CurrentBatchNumber;
+            DateTime StartOfMonth;
+            DateTime BatchEffectiveDate;
 
-            if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded
+            if (!(((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
                 || (GetBatchRow() == null)
                 || (FLedgerNumber == -1)
                 || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
@@ -2407,11 +2409,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchRow = GetBatchRow();
 
             FExchangeRateToBase = FBatchRow.ExchangeRateToBase;
+            BatchEffectiveDate = FBatchRow.GlEffectiveDate;
+            StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
+
+            decimal IntlRateToBatchCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
+               FMainDS.ALedger[0].IntlCurrency,
+               StartOfMonth,
+               BatchEffectiveDate);
 
             if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
             {
                 FPreviouslySelectedDetailRow.GiftAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal * FExchangeRateToBase;
-                FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount * AInternationalToBaseExchangeRate;
+                FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount * IntlRateToBatchCurrency;
             }
             else
             {
@@ -2438,7 +2447,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (FPreviouslySelectedDetailRow != null)
                     {
                         FPreviouslySelectedDetailRow.GiftAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount * FExchangeRateToBase;
-                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount * AInternationalToBaseExchangeRate;
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount * IntlRateToBatchCurrency;
                     }
                 }
 
@@ -2446,7 +2455,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
                 {
                     gdr.GiftAmount = gdr.GiftTransactionAmount * FExchangeRateToBase;
-                    gdr.GiftAmountIntl = gdr.GiftTransactionAmount;
+                    gdr.GiftAmountIntl = gdr.GiftAmount * IntlRateToBatchCurrency;
                 }
             }
         }

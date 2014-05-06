@@ -1203,14 +1203,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.DateEffective = batch.DateEffective;
             journal.JournalPeriod = giftBatch.BatchPeriod;
             journal.TransactionCurrency = giftBatch.CurrencyCode;
+            journal.ExchangeRateToBase = giftBatch.ExchangeRateToBase;
+            //ToDo 
+            //journal.ExchangeRateTime =  
             journal.JournalDescription = batch.BatchDescription;
             journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
             journal.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
             journal.LastTransactionNumber = 0;
             journal.DateOfEntry = DateTime.Now;
 
-            // TODO journal.ExchangeRateToBase and journal.ExchangeRateTime
-            journal.ExchangeRateToBase = 1.0M;
             GLDataset.AJournal.Rows.Add(journal);
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
@@ -1238,6 +1239,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     transaction.DebitCreditIndicator = false;
                     transaction.TransactionAmount = 0;
                     transaction.AmountInBaseCurrency = 0;
+                    transaction.AmountInIntlCurrency = 0;
                     transaction.SystemGenerated = true;
                     transaction.TransactionDate = giftBatch.GlEffectiveDate;
 
@@ -1250,6 +1252,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 transaction.TransactionAmount += giftdetail.GiftTransactionAmount;
                 transaction.AmountInBaseCurrency += giftdetail.GiftAmount;
+                transaction.AmountInIntlCurrency += giftdetail.GiftAmountIntl;
 
                 // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c ???
 
@@ -1262,18 +1265,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             transactionForTotals.JournalNumber = journal.JournalNumber;
             transactionForTotals.TransactionNumber = ++journal.LastTransactionNumber;
             transactionForTotals.TransactionAmount = 0;
+            transactionForTotals.AmountInBaseCurrency = 0;
+            transactionForTotals.AmountInIntlCurrency = 0;
             transactionForTotals.TransactionDate = giftBatch.GlEffectiveDate;
             transactionForTotals.SystemGenerated = true;
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
                 transactionForTotals.TransactionAmount += giftdetail.GiftTransactionAmount;
+                transactionForTotals.AmountInBaseCurrency += giftdetail.GiftAmount;
+                transactionForTotals.AmountInIntlCurrency += giftdetail.GiftAmountIntl;
             }
 
             transactionForTotals.DebitCreditIndicator = true;
-
-            // TODO: support foreign currencies
-            transactionForTotals.AmountInBaseCurrency = transactionForTotals.TransactionAmount;
 
             // TODO: account and costcentre based on linked costcentre, current commitment, and Motivation detail
             // if motivation cost centre is a summary cost centre, make sure the transaction costcentre is reporting to that summary cost centre
@@ -1942,21 +1946,39 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             // check that the Gift Batch BatchPeriod matches the date effective
+            DateTime GLEffectiveDate = GiftBatchRow.GlEffectiveDate;
+            DateTime StartOfMonth = new DateTime(GLEffectiveDate.Year, GLEffectiveDate.Month, 1);
             int DateEffectivePeriod, DateEffectiveYear;
+            
             TFinancialYear.IsValidPostingPeriod(GiftBatchRow.LedgerNumber,
                 GiftBatchRow.GlEffectiveDate,
                 out DateEffectivePeriod,
                 out DateEffectiveYear,
                 null);
 
+            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(MainDS.ALedger[0].BaseCurrency,
+                                                                                        MainDS.ALedger[0].IntlCurrency,
+                                                                                        StartOfMonth,
+                                                                                        GLEffectiveDate);
+
             if (GiftBatchRow.BatchPeriod != DateEffectivePeriod)
             {
                 AVerifications.Add(
                     new TVerificationResult(
                         "Posting Gift Batch",
-                        String.Format("Invalid gift batch period {0} for date {1:dd-MMM-yyyy}",
+                        String.Format("Invalid gift batch period {0} for date {1}",
                             GiftBatchRow.BatchPeriod,
-                            GiftBatchRow.GlEffectiveDate),
+                            GLEffectiveDate),
+                        TResultSeverity.Resv_Critical));
+                return null;
+            }
+            else if (IntlToBaseExchRate == 0)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting Gift Batch",
+                        String.Format("Cannot fine Corporate Exchange rate for date {0}",
+                            GLEffectiveDate),
                         TResultSeverity.Resv_Critical));
                 return null;
             }
@@ -2021,9 +2043,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // set column giftdetail.AccountCode motivation
                 giftDetail.AccountCode = motivationRow.AccountCode;
 
-                // TODO deal with different currencies; at the moment assuming base currency
-                //giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
                 giftDetail.GiftAmount = giftDetail.GiftTransactionAmount * GiftBatchRow.ExchangeRateToBase;
+                giftDetail.GiftAmountIntl = giftDetail.GiftAmount * IntlToBaseExchRate;
 
                 // get all motivation detail fees for this gift
                 foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)

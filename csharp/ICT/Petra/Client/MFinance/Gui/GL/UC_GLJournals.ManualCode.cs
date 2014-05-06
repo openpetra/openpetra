@@ -49,9 +49,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private string FBatchStatus = string.Empty;
         private string FTransactionCurrency = string.Empty;
-
+        private decimal FIntlRateToBaseCurrency = 0;
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
+        private ABatchRow FBatchRow = null;
 
         /// <summary>
         /// Returns FMainDS
@@ -73,14 +74,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool batchChanged = (FBatchNumber != ABatchNumber);
             bool ledgerChanged = (FLedgerNumber != ALedgerNumber);
 
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
+            {
+                return;
+            }
+
             //Make sure the current effective date for the Batch is correct
-            DateTime batchDateEffective = GetBatchRow().DateEffective;
+            DateTime batchDateEffective = FBatchRow.DateEffective;
+            FIntlRateToBaseCurrency = ((TFrmGLBatch)ParentForm).BaseToIntlExchangeRate(batchDateEffective);
 
             if (ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
                 if ((!dtpDetailDateEffective.Date.HasValue) || (dtpDetailDateEffective.Date.Value != batchDateEffective))
                 {
                     dtpDetailDateEffective.Date = batchDateEffective;
+                    //TODO
+                    //Recalculate internation currency amounts for all journals
                 }
             }
 
@@ -123,6 +134,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // only load from server if there are no journals loaded yet for this batch
                 // otherwise we would overwrite journals that have already been modified
                 dv = FMainDS.AJournal.DefaultView;
+                dv.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AJournalTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    AJournalTable.GetBatchNumberDBName(),
+                    ABatchNumber);
 
                 if (dv.Count == 0)
                 {
@@ -509,12 +525,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RefreshCurrencyAndExchangeRate()
         {
+            TLogging.Log("RefreshCurrencyAndExchangeRate");
+
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
-            // recalculate the base currency amounts for the transactions
-            ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals();
+            ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(FIntlRateToBaseCurrency);
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
         }

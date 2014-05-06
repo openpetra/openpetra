@@ -519,10 +519,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             RetVal = TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
 
-            TLogging.Log("GetAccountingYearPeriodByDate(): " + RetVal.ToString());
-            TLogging.Log("                               : " + ADate.ToShortDateString());
-            TLogging.Log("                               : " + AYear.ToString());
-            TLogging.Log("                               : " + APeriod.ToString());
+            //TLogging.Log("GetAccountingYearPeriodByDate(): " + RetVal.ToString());
+            //TLogging.Log("                               : " + ADate.ToShortDateString());
+            //TLogging.Log("                               : " + AYear.ToString());
+            //TLogging.Log("                               : " + APeriod.ToString());
 
             return RetVal;
         }

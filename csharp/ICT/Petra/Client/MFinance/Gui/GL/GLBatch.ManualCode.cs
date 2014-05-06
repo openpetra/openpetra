@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TFrmGLBatch
     {
-        private Int32 FLedgerNumber;
+        private Int32 FLedgerNumber = -1;
 
         /// <summary>
         /// use this ledger
@@ -55,6 +55,38 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ucoJournals.WorkAroundInitialization();
                 ucoTransactions.WorkAroundInitialization();
             }
+        }
+
+        /// <summary>
+        /// Stores the exchange rate to convert base currency into international currency
+        /// </summary>
+        public decimal BaseToIntlExchangeRate(DateTime AEffectiveDate)
+        {
+            if (FLedgerNumber == -1 || FMainDS.ALedger == null || FMainDS.ALedger.Count == 0)
+            {
+                return 0;
+            }
+
+            decimal intlRateToBaseCurrency = 0;
+            DateTime startOfMonth = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
+
+            try
+            {
+                // read the exchange rate for international currency calculations
+                intlRateToBaseCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
+                        FMainDS.ALedger[0].IntlCurrency,
+                        startOfMonth,
+                        AEffectiveDate);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("Error trying to calculate International Exchange Rate for Ledger {0} and date {1}. Message: {2}",
+                                                FLedgerNumber,
+                                                startOfMonth,
+                                                ex.Message));
+            }
+
+            return intlRateToBaseCurrency;
         }
 
         /// <summary>

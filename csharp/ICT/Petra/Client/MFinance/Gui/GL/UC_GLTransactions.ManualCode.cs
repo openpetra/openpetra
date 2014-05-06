@@ -199,7 +199,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 //This will update transaction headers
-                UpdateTransactionTotals(false);
+                UpdateTransactionTotals(1, false);
                 grdDetails.ResumeLayout();
                 FLoadCompleted = true;
                 Console.WriteLine("LoadTransactions completed  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
@@ -485,7 +485,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPetraUtilsObject.HasChanges && FIsUnposted)
             {
-                UpdateTransactionTotals();
+                UpdateTransactionTotals(1);
             }
             else if (FPetraUtilsObject.HasChanges && !FIsUnposted)
             {
@@ -753,7 +753,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount))
                 || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
-                UpdateTransactionTotals();
+                UpdateTransactionTotals(1);
             }
 
             // If combobox to set analysis attribute value has focus when save button is pressed then currently
@@ -768,8 +768,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// update amount in other currencies (optional) and recalculate all totals for current batch and journal
         /// </summary>
+        /// <param name="AIntlRateToBaseCurrency"></param>
         /// <param name="AUpdateAllTotals"></param>
-        public void UpdateTransactionTotals(bool AUpdateAllTotals = true)
+        public void UpdateTransactionTotals(decimal AIntlRateToBaseCurrency, bool AUpdateAllTotals = true)
         {
             decimal amtDebitTotal = 0.0M;
             decimal amtDebitTotalBase = 0.0M;
@@ -808,7 +809,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // recalculate the amount in base currency
                     if (FJournalRow.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                     {
-                        r.AmountInBaseCurrency = GLRoutines.Divide(r.TransactionAmount, FJournalRow.ExchangeRateToBase);
+                        r.AmountInBaseCurrency = GLRoutines.Multiply(r.TransactionAmount, FJournalRow.ExchangeRateToBase);
+                        r.AmountInIntlCurrency = GLRoutines.Multiply(r.AmountInBaseCurrency, AIntlRateToBaseCurrency);
                     }
 
                     if (r.DebitCreditIndicator)
@@ -819,6 +821,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         if ((FPreviouslySelectedDetailRow != null) && (r.TransactionNumber == FPreviouslySelectedDetailRow.TransactionNumber))
                         {
                             FPreviouslySelectedDetailRow.AmountInBaseCurrency = r.AmountInBaseCurrency;
+                            FPreviouslySelectedDetailRow.AmountInIntlCurrency = r.AmountInIntlCurrency;
                             txtDebitAmountBase.NumberValueDecimal = r.AmountInBaseCurrency;
                             txtCreditAmountBase.NumberValueDecimal = 0;
                         }
@@ -831,6 +834,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         if ((FPreviouslySelectedDetailRow != null) && (r.TransactionNumber == FPreviouslySelectedDetailRow.TransactionNumber))
                         {
                             FPreviouslySelectedDetailRow.AmountInBaseCurrency = r.AmountInBaseCurrency;
+                            FPreviouslySelectedDetailRow.AmountInIntlCurrency = r.AmountInIntlCurrency;
                             txtCreditAmountBase.NumberValueDecimal = r.AmountInBaseCurrency;
                             txtDebitAmountBase.NumberValueDecimal = 0;
                         }
@@ -854,6 +858,65 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ShowDataManual();
             }
         }
+
+        /// <summary>
+        /// update international amount for current batch and journal
+        /// </summary>
+        /// <param name="AIntlRateToBaseCurrency"></param>
+        /// <param name="AUpdateAllTrans"></param>
+        //public void UpdateGLTransactionsInternationalAmount(DateTime ABatchEffectiveDate, bool AUpdateAllTransactions = true)
+        //{
+        //    bool UpdateAllJournals;
+        //    bool UpdateAllTransactions;
+        //    decimal InternationalExchangeRateToBase;
+
+        //    if ((FJournalNumber == -1) || (FBatchRow == null) && (FJournalRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+        //    {
+        //        return;
+        //    }
+            
+        //    InternationalExchangeRateToBase = ((TFrmGLBatch)ParentForm).BaseToIntlExchangeRate(ABatchEffectiveDate);
+        //    UpdateAllJournals = (AJournalNumber == 0);
+
+        //    if (UpdateAllJournals)
+        //    {
+        //        UpdateAllTransactions = true;
+        //    }
+        //    else if (ATransactionNumber == 0)
+        //    {
+        //        UpdateAllTransactions = true;
+        //    }
+        //    else
+        //    {
+        //        UpdateAllTransactions = false;
+        //    }
+            
+        //    DataView TransView = new DataView(FMainDS.ATransaction);
+
+        //    if (UpdateAllJournals)
+        //    {
+                
+        //    }
+
+        //    foreach (DataRowView v in FMainDS.ATransaction.DefaultView)
+        //    {
+        //        ATransactionRow r = (ATransactionRow)v.Row;
+
+        //        // recalculate the amount in base currency
+        //        if (FJournalRow.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
+        //        {
+        //            r.AmountInIntlCurrency = GLRoutines.Multiply(r.AmountInBaseCurrency, InternationalExchangeRateToBase);
+        //        }
+
+        //        //TODO
+        //        //Check if this is needed, i.e. does FPreviouslySelectedDetailRow lock the record.
+        //        //  In that the international currency amount is not displayed then it should be OK.
+        //        //if ((FPreviouslySelectedDetailRow != null) && (r.TransactionNumber == FPreviouslySelectedDetailRow.TransactionNumber))
+        //        //{
+        //        //    FPreviouslySelectedDetailRow.AmountInIntlCurrency = r.AmountInIntlCurrency;
+        //        //}
+        //    }
+        //}
 
         /// <summary>
         /// WorkAroundInitialization
@@ -1092,7 +1155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //If no errors
             if (FPetraUtilsObject.VerificationResultCollection.Count == counter)
             {
-                UpdateTransactionTotals();
+                UpdateTransactionTotals(1);
             }
         }
 
@@ -1202,7 +1265,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FMainDS.ATransaction.DefaultView.Delete(i);
                     }
 
-                    UpdateTransactionTotals();
+                    UpdateTransactionTotals(1);
 
                     // Be sure to set the last transaction number in the parent table before saving all the changes
                     SetJournalLastTransNumber();
@@ -1263,7 +1326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ClearControls();
                 }
 
-                UpdateTransactionTotals();
+                UpdateTransactionTotals(1);
 
                 ((TFrmGLBatch) this.ParentForm).SaveChanges();
 
