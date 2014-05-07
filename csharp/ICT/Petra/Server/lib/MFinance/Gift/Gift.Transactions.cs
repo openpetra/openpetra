@@ -1189,10 +1189,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             batch.BatchDescription = Catalog.GetString("Gift Batch " + giftBatch.BatchNumber.ToString());
             batch.DateEffective = giftBatch.GlEffectiveDate;
+            batch.BatchPeriod = giftBatch.BatchPeriod;
             batch.GiftBatchNumber = giftBatch.BatchNumber;
-
-            // TODO batchperiod depending on date effective; or fix that when posting?
-            // batch.BatchPeriod =
             batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
             // one gift batch only has one currency, create only one journal
@@ -1204,8 +1202,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             journal.JournalPeriod = giftBatch.BatchPeriod;
             journal.TransactionCurrency = giftBatch.CurrencyCode;
             journal.ExchangeRateToBase = giftBatch.ExchangeRateToBase;
-            //ToDo 
-            //journal.ExchangeRateTime =  
+            journal.ExchangeRateTime = 7200; //represents 2 hours into the date, i.e. 2am
             journal.JournalDescription = batch.BatchDescription;
             journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
             journal.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
