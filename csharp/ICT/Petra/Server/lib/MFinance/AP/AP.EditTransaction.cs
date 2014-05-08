@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1490,7 +1490,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 return null;
             }
 
-            return Tbl[indexSupplier];
+            return (AApSupplierRow) Tbl.DefaultView[indexSupplier].Row;
         }
 
         /// <summary>

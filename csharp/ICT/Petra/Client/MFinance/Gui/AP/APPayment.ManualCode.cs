@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013
+// Copyright 2004-2014
 // This file is part of OpenPetra.org.
 //
 // OpenPetra.org is free software: you can redistribute it and/or modify
@@ -235,13 +235,27 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return true;
         }
 
+        /// <summary>
+        /// If asked to remove a payment,
+        /// I need to modify the ApPayment to reflect the removed ApDocumentPayment row.
+        /// If there's nothing left to pay, I should remove the ApPayment row.
+        /// </summary>
         private void RemoveSelectedDocument(Object sender, EventArgs e)
         {
             if (FSelectedDocumentRow != null)
             {
+                FSelectedPaymentRow.Amount -= FSelectedDocumentRow.Amount;
+
                 FMainDS.AApDocumentPayment.Rows.Remove(FSelectedDocumentRow);
                 FSelectedDocumentRow = null;
                 FocusedRowChangedDetails(null, null);
+
+                if (FSelectedPaymentRow.Amount <= 0)
+                {
+                    FMainDS.AApPayment.Rows.Remove(FSelectedPaymentRow);
+                    FSelectedPaymentRow = null;
+                    FocusedRowChanged(null, null);
+                }
             }
         }
 
