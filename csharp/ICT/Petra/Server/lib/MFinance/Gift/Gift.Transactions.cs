@@ -1916,6 +1916,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GiftBatchTDS MainDS = LoadGiftBatchData(ALedgerNumber, ABatchNumber);
 
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
             AVerifications = new TVerificationResultCollection();
 
             if (MainDS.AGiftBatch.Rows.Count < 1)
@@ -1931,6 +1933,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             AGiftBatchRow GiftBatchRow = MainDS.AGiftBatch[0];
+
             // for calculation of admin fees
             AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
             AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
@@ -1946,7 +1949,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DateTime GLEffectiveDate = GiftBatchRow.GlEffectiveDate;
             DateTime StartOfMonth = new DateTime(GLEffectiveDate.Year, GLEffectiveDate.Month, 1);
             int DateEffectivePeriod, DateEffectiveYear;
-            
+
             TFinancialYear.IsValidPostingPeriod(GiftBatchRow.LedgerNumber,
                 GiftBatchRow.GlEffectiveDate,
                 out DateEffectivePeriod,
@@ -1954,9 +1957,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 null);
 
             decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(MainDS.ALedger[0].BaseCurrency,
-                                                                                        MainDS.ALedger[0].IntlCurrency,
-                                                                                        StartOfMonth,
-                                                                                        GLEffectiveDate);
+                MainDS.ALedger[0].IntlCurrency,
+                StartOfMonth,
+                GLEffectiveDate);
 
             if (GiftBatchRow.BatchPeriod != DateEffectivePeriod)
             {

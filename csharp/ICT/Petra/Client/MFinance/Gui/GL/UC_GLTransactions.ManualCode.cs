@@ -874,7 +874,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         //    {
         //        return;
         //    }
-            
+
         //    InternationalExchangeRateToBase = ((TFrmGLBatch)ParentForm).BaseToIntlExchangeRate(ABatchEffectiveDate);
         //    UpdateAllJournals = (AJournalNumber == 0);
 
@@ -890,12 +890,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         //    {
         //        UpdateAllTransactions = false;
         //    }
-            
+
         //    DataView TransView = new DataView(FMainDS.ATransaction);
 
         //    if (UpdateAllJournals)
         //    {
-                
+
         //    }
 
         //    foreach (DataRowView v in FMainDS.ATransaction.DefaultView)

@@ -811,6 +811,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// return any specified gift batch row
+        /// </summary>
+        /// <returns>AGiftBatchRow</returns>
+        public AGiftBatchRow GetAnyBatchRow(Int32 ABatchNumber)
+        {
+            if (FBatchLoaded)
+            {
+                return (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, ABatchNumber });
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         /// reset the control
         public void ClearCurrentSelection()
         {
@@ -1417,19 +1433,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RecalculateTransactionAmounts(decimal ANewExchangeRate = 0)
         {
-            string ACurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
-            DateTime effectiveDate = FPreviouslySelectedDetailRow.GlEffectiveDate;
+            string CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
+            DateTime EffectiveDate = FPreviouslySelectedDetailRow.GlEffectiveDate;
 
             if (ANewExchangeRate == 0)
             {
-                //Need to get the exchange rate
-                FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
-                    FMainDS.ALedger[0].BaseCurrency,
-                    FPreviouslySelectedDetailRow.CurrencyCode,
-                    effectiveDate);
+                if (CurrencyCode == FMainDS.ALedger[0].BaseCurrency)
+                {
+                    ANewExchangeRate = 1;
+                }
+                else
+                {
+                    ANewExchangeRate = TExchangeRateCache.GetDailyExchangeRate(
+                        CurrencyCode,
+                        FMainDS.ALedger[0].BaseCurrency,
+                        EffectiveDate);
+                }
             }
 
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+            //Need to get the exchange rate
+            FPreviouslySelectedDetailRow.ExchangeRateToBase = ANewExchangeRate;
+
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(CurrencyCode);
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
         }
 

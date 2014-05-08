@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public decimal BaseToIntlExchangeRate(DateTime AEffectiveDate)
         {
-            if (FLedgerNumber == -1 || FMainDS.ALedger == null || FMainDS.ALedger.Count == 0)
+            if ((FLedgerNumber == -1) || (FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
             {
                 return 0;
             }
@@ -74,16 +74,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 // read the exchange rate for international currency calculations
                 intlRateToBaseCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
-                        FMainDS.ALedger[0].IntlCurrency,
-                        startOfMonth,
-                        AEffectiveDate);
+                    FMainDS.ALedger[0].IntlCurrency,
+                    startOfMonth,
+                    AEffectiveDate);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(String.Format("Error trying to calculate International Exchange Rate for Ledger {0} and date {1}. Message: {2}",
-                                                FLedgerNumber,
-                                                startOfMonth,
-                                                ex.Message));
+                        FLedgerNumber,
+                        startOfMonth,
+                        ex.Message));
             }
 
             return intlRateToBaseCurrency;
