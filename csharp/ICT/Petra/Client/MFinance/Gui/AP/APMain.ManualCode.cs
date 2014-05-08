@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private Boolean FIsInvoiceDataChanged = true;
 
         /// <summary>
-        /// Static method to get a supplier from a partner key.  Used by the AP sub=system.
+        /// Static method to get a supplier from a partner key.  Used by the AP subsystem.
         /// </summary>
         /// <param name="Tbl"></param>
         /// <param name="APartnerKey"></param>
@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return null;
             }
 
-            return Tbl[indexSupplier];
+            return (AApSupplierRow) Tbl.DefaultView[indexSupplier].Row;
         }
 
         /// <summary>
