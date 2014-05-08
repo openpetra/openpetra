@@ -1228,8 +1228,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 for (int i = 0; i < FMainDS.AGift.Count; i++)
                 {
                     AGiftRow giftRow = (AGiftRow)FMainDS.AGift[i];
-
-                    TLogging.Log("Row:" + giftRow.GiftTransactionNumber.ToString() + " " + giftRow.ItemArray.ToString());
                 }
 
                 DataView giftView = new DataView(FMainDS.AGift);

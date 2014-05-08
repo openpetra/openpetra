@@ -950,7 +950,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TLogging.Log("MotivationDetailChanged code...");
             FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
             if (FMotivationDetail.Length > 0)
@@ -968,7 +967,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             long PartnerKey = 0;
             Int64.TryParse(txtDetailRecipientKey.Text, out PartnerKey);
-            TLogging.Log("MotivationDetailChanged Partner Key: " + PartnerKey.ToString());
 
             if (PartnerKey > 0)
             {
@@ -2409,7 +2407,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// update the transaction base amount calculation from outside
+        /// update the transaction base amount calculation
         /// </summary>
         public void UpdateBaseAmount(bool AUpdateCurrentRowOnly)
         {
@@ -2463,6 +2461,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     LedgerIntlCurrency,
                     StartOfMonth,
                     BatchEffectiveDate);
+
+                if (IntlToBaseCurrencyExchRate == 0)
+                {
+                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                        LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        BatchEffectiveDate);
+                    return;
+                }
             }
 
             //If only updating the currency active row
@@ -2525,7 +2532,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     else
                     {
-                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
                         gdr.GiftAmountIntl = gdr.GiftTransactionAmount;
                     }
                 }

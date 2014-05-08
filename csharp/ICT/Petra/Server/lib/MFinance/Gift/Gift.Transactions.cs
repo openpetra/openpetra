@@ -1918,6 +1918,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
+            string LedgerBaseCurrency = MainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = MainDS.ALedger[0].IntlCurrency;
+
             AVerifications = new TVerificationResultCollection();
 
             if (MainDS.AGiftBatch.Rows.Count < 1)
@@ -1933,6 +1936,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             AGiftBatchRow GiftBatchRow = MainDS.AGiftBatch[0];
+
+            string BatchTransactionCurrency = GiftBatchRow.CurrencyCode;
 
             // for calculation of admin fees
             AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
@@ -1956,8 +1961,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 out DateEffectiveYear,
                 null);
 
-            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(MainDS.ALedger[0].BaseCurrency,
-                MainDS.ALedger[0].IntlCurrency,
+            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency,
+                LedgerIntlCurrency,
                 StartOfMonth,
                 GLEffectiveDate);
 
@@ -2043,8 +2048,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // set column giftdetail.AccountCode motivation
                 giftDetail.AccountCode = motivationRow.AccountCode;
 
-                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount * GiftBatchRow.ExchangeRateToBase;
-                giftDetail.GiftAmountIntl = giftDetail.GiftAmount * IntlToBaseExchRate;
+                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount / GiftBatchRow.ExchangeRateToBase;
+
+                if (BatchTransactionCurrency != LedgerIntlCurrency)
+                {
+                    giftDetail.GiftAmountIntl = giftDetail.GiftAmount / IntlToBaseExchRate;
+                }
+                else
+                {
+                    giftDetail.GiftAmountIntl = giftDetail.GiftTransactionAmount;
+                }
 
                 // get all motivation detail fees for this gift
                 foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)
