@@ -151,9 +151,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         MessageBox.Show(
                             Catalog.GetString(
-                                "You have moved a Local Cost Centre into ILT,\n"
-                                + "which is probably not what you want.\n"
-                                + "You should change the type to Foreign."),
+                                "You have moved a Local Cost Centre into ILT,\n" +
+                                "which is probably not what you want.\n" +
+                                "You should change the type to Foreign."),
                             Catalog.GetString("Cost Centre Type"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Warning);
@@ -165,15 +165,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         MessageBox.Show(
                             String.Format(Catalog.GetString(
-                                "This {0} Cost Centre is now a child of a {1} Cost Centre,\n"
-                                + "which is probably not what you want.\n"
-                                + "You should change the type to {1}."), MovingCostCentre.CostCentreType, NewParentCostCentre.CostCentreType),
+                                    "This {0} Cost Centre is now a child of a {1} Cost Centre,\n" +
+                                    "which is probably not what you want.\n" +
+                                    "You should change the type to {1}."), MovingCostCentre.CostCentreType, NewParentCostCentre.CostCentreType),
                             Catalog.GetString("Cost Centre Type"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Warning);
-
                     }
                 }
+
                 FPetraUtilsObject.SetChangedFlag();
             }
         }
@@ -606,15 +606,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 TreeNode Parent = e.Node.Parent;
+
                 if (Parent != null)
                 {
                     ACostCentreRow ParentRow = ((CostCentreNodeDetails)Parent.Tag).CostCentreRow;
+
                     if (ParentRow.CostCentreCode == "ILT")
                     {
                         CanAdd = false;
                     }
                 }
             }
+
             FPetraUtilsObject.EnableAction("actAddNewCostCentre", CanAdd);
         }
 
@@ -625,7 +628,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 MessageBox.Show(Catalog.GetString("You can only add a new cost centre after selecting a parent cost centre"));
                 return;
             }
-
 
             if (ValidateAllData(true, true))
             {
@@ -668,6 +670,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     newCostCentre.CostCentreType = ParentRow.CostCentreType;
                 }
+
                 newCostCentre.PostingCostCentreFlag = true;
                 newCostCentre.CostCentreToReportTo = ParentRow.CostCentreCode;
                 FMainDS.ACostCentre.Rows.Add(newCostCentre);
@@ -1026,15 +1029,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     else // It's not a system Cost Centre, but probably I still shouldn't be changing it...
                     {
                         if (MessageBox.Show(
-                            Catalog.GetString(
-                                "Are you sure you want to change this?\n"
-                                + "Changing from Local to foreign, or vice versa,\n"
-                                + "will affect the reporting of foreign ledgers.\n"
-                                + "In OM, Foreign Cost Centres are children of ILT.\n"
-                                + "All other Cost Centres are Local."),
-                            Catalog.GetString("Cost Centre Type"),
-                            MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Stop) == System.Windows.Forms.DialogResult.No)
+                                Catalog.GetString(
+                                    "Are you sure you want to change this?\n" +
+                                    "Changing from Local to foreign, or vice versa,\n" +
+                                    "will affect the reporting of foreign ledgers.\n" +
+                                    "In OM, Foreign Cost Centres are children of ILT.\n" +
+                                    "All other Cost Centres are Local."),
+                                Catalog.GetString("Cost Centre Type"),
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Stop) == System.Windows.Forms.DialogResult.No)
                         {
                             FIAmUpdating = true;
                             cmbDetailCostCentreType.SetSelectedString(Row.CostCentreType);

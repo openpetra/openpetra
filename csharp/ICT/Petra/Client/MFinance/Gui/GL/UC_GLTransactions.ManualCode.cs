@@ -576,6 +576,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool AccountAnalysisAttributesValuesExist(out String ValueRequiredForType)
         {
             ValueRequiredForType = "";
+
             if (!FIsUnposted || (FPreviouslySelectedDetailRow == null) || (FMainDS.ATransAnalAttrib.DefaultView.Count == 0))
             {
                 return true;
@@ -1708,6 +1709,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             String ValueRequiredForType;
+
             if (!AccountAnalysisAttributesValuesExist(out ValueRequiredForType))
             {
                 DataColumn ValidationColumn;

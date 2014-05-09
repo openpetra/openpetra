@@ -1490,7 +1490,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 return null;
             }
 
-            return (AApSupplierRow) Tbl.DefaultView[indexSupplier].Row;
+            return (AApSupplierRow)Tbl.DefaultView[indexSupplier].Row;
         }
 
         /// <summary>

@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return null;
             }
 
-            return (AApSupplierRow) Tbl.DefaultView[indexSupplier].Row;
+            return (AApSupplierRow)Tbl.DefaultView[indexSupplier].Row;
         }
 
         /// <summary>

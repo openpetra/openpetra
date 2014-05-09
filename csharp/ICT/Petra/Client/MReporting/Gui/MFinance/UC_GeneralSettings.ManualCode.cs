@@ -203,9 +203,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                     TResultSeverity.Resv_Critical));
                         }
                     }
+
                     dtpStartDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, StartPeriod);
                 }
-
             }
             else if (rbtDate.Checked)
             {
@@ -335,7 +335,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
-        /// For BalanceSheet, quarters and periods are not appropriate - 
+        /// For BalanceSheet, quarters and periods are not appropriate -
         /// I just want a single date.
         /// </summary>
         public void ShowOnlyEndPeriod()

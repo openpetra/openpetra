@@ -123,7 +123,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             String TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
-                               "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
+                                      "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
 
             String ReferenceFilter = "";
             String AnalysisTypeFilter = "";
@@ -210,11 +210,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
+
             if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
             {
                 return false;
             }
-
 
             //
             // If I'm reporting by period or quarter,
@@ -229,6 +229,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     pm.Get("param_end_period_i").ToInt32(),
                     pm.Get("param_currency").ToString().StartsWith("Int")
                     );
+
                 if (Balances == null)
                 {
                     return false;

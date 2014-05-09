@@ -337,7 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>If the user sets this strangely, I'll just warn her...</summary>
-        /// 
+        ///
         void cmbDetailValidCcCombo_SelectedValueChanged(object sender, EventArgs e)
         {
             if ((FCurrentNode == null) || FIAmUpdating) // Only look into this is the user has changed it...
@@ -349,10 +349,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             String ValidCCType = cmbDetailValidCcCombo.Text;
             String RequiredValue = "";
 
-            if (AccountType == "Asset" || AccountType == "Liability")
+            if ((AccountType == "Asset") || (AccountType == "Liability"))
             {
                 RequiredValue = "Local";
             }
+
             if (AccountType == "Equity")
             {
                 RequiredValue = "All";
@@ -361,11 +362,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if ((RequiredValue != "") && (ValidCCType != RequiredValue))
             {
                 if (MessageBox.Show(String.Format(Catalog.GetString(
-                    "{0} Accounts should accept CostCentres of type {1}.\n"
-                   + "Are you sure you want to use {2}?"),
-                   AccountType,
-                   RequiredValue,
-                   ValidCCType), Catalog.GetString("Valid Cost Centre Type"), MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
+                                "{0} Accounts should accept CostCentres of type {1}.\n" +
+                                "Are you sure you want to use {2}?"),
+                            AccountType,
+                            RequiredValue,
+                            ValidCCType), Catalog.GetString("Valid Cost Centre Type"), MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
                     != System.Windows.Forms.DialogResult.Yes)
                 {
                     FIAmUpdating = true;
