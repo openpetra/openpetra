@@ -34,6 +34,4 @@ WHERE a_gift.a_ledger_number_i = a_gift_batch.a_ledger_number_i
   AND (? OR a_gift.p_donor_key_n = ?)
   AND (? OR a_gift_detail.p_recipient_key_n = ?)
   AND (? OR a_gift.a_date_entered_d BETWEEN CAST(? || ' 00:00:00' AS TIMESTAMP) AND CAST(? || ' 23:59:59' AS TIMESTAMP))
-  AND (? OR a_gift_detail.a_motivation_group_code_c LIKE (? || '%'))
-  AND (? OR a_gift_detail.a_motivation_detail_code_c LIKE (? || '%'))
 ORDER BY a_gift.a_date_entered_d DESC

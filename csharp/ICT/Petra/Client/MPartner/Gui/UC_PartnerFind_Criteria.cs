@@ -519,7 +519,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PBankTable.GetBranchNameDBName(),
                 PBankTable.GetBranchCodeDBName(),
                 null);
-            cmbBankName.AppearanceSetup(new int[] { 175, 160 }, -1);
             cmbBankName.Filter = PBankTable.GetBranchNameDBName() + " <> '' OR " +
                                  PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = ''";
             cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
@@ -529,12 +528,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PBankTable.GetBranchCodeDBName(),
                 PBankTable.GetPartnerKeyDBName(),
                 null);
-            cmbBankCode.AppearanceSetup(new int[] { 175 }, -1);
             // filter rows that are blank or <INACTIVE>
             cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '<INACTIVE> ') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '<INACTIVE> ')";
             cmbBankCode.SelectedValueChanged += new System.EventHandler(this.BankCodeChanged);
+        }
+
+        private void TUC_PartnerFindCriteria_SizeChanged(System.Object sender, EventArgs e)
+        {
+            int ComboWidth = spcCriteria.Panel1.Width - cmbBankName.Location.X - 6;
+
+            cmbBankName.Width = ComboWidth;
+            cmbBankName.AppearanceSetup(new int[] { ComboWidth, 200 }, -1);
+            cmbBankCode.Width = ComboWidth;
+            cmbBankCode.AppearanceSetup(new int[] { ComboWidth }, -1);
         }
 
         /// <summary>
@@ -1996,7 +2004,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     critAccountNumber.DataBindings.Clear();
                     critIban.DataBindings.Clear();
                     critBic.DataBindings.Clear();
-                    //critBankCode.DataBindings.Clear();
                 }
             }
 

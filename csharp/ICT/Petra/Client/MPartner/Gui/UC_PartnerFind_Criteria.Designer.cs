@@ -169,6 +169,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlAccountNumber.SuspendLayout();
             this.pnlIban.SuspendLayout();
             this.pnlBic.SuspendLayout();
+            this.pnlBankName.SuspendLayout();
             this.pnlBankCode.SuspendLayout();
             this.SuspendLayout();
 
@@ -198,6 +199,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.spcCriteria.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.spcCriteria.Location = new System.Drawing.Point(0, 0);
             this.spcCriteria.Name = "spcCriteria";
+            this.spcCriteria.SplitterMoved += new SplitterEventHandler(TUC_PartnerFindCriteria_SizeChanged);
 
             //
             // spcCriteria.Panel1
@@ -467,6 +469,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlLeftColumn.Controls.Add(this.pnlAccountNumber);
             this.pnlLeftColumn.Controls.Add(this.pnlIban);
             this.pnlLeftColumn.Controls.Add(this.pnlBic);
+            this.pnlLeftColumn.Controls.Add(this.pnlBankKey);
+            this.pnlLeftColumn.Controls.Add(this.pnlBankName);
             this.pnlLeftColumn.Controls.Add(this.pnlBankCode);
             this.pnlLeftColumn.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlLeftColumn.Location = new System.Drawing.Point(0, 0);
@@ -1408,10 +1412,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbBankName.Name = "txtBankName";
             this.cmbBankName.Location = new System.Drawing.Point(146, 0);
             this.cmbBankName.Size = new System.Drawing.Size(175, 19);
+            this.cmbBankName.AppearanceSetup(new int[] { 175, 200 }, -1);
             this.cmbBankName.Anchor =
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
                                                       System.Windows.Forms.AnchorStyles.Right)));
-            this.cmbBankName.ComboBoxWidth = 175;
             this.cmbBankName.Font =
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbBankName.TabIndex = 1;
@@ -1448,8 +1452,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmbBankCode.Location = new System.Drawing.Point(146, 2);
             this.cmbBankCode.Size = new System.Drawing.Size(175, 19);
+            this.cmbBankCode.AppearanceSetup(new int[] { 175 }, -1);
             this.cmbBankCode.Name = "txtBankCode";
-            this.cmbBankCode.ComboBoxWidth = 175;
             this.cmbBankCode.TabIndex = 1;
             this.cmbBankCode.RemoveDescriptionLabel();
             this.cmbBankCode.SelectedValueChanged += new EventHandler(this.CmbBankCode_SelectedValueChanged);

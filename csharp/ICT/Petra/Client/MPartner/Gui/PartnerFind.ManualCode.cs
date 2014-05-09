@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MPartnerResourcestrings.StrCancelButtonHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
 
             mniFile.DropDownOpening += new System.EventHandler(MniFile_DropDownOpening);
             mniEdit.DropDownOpening += new System.EventHandler(MniEdit_DropDownOpening);
@@ -1164,9 +1164,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             this.Cursor = Cursors.WaitCursor;
-
-            // Restore Window Position and Size
-            // TODO TUserDefaults.NamedDefaults.GetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
 #if TODO
             // Set up Splitter distances
             ucoPartnerFindCriteria.RestoreSplitterSetting();
