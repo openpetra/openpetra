@@ -837,9 +837,9 @@ namespace FastReport
 </Report>
 ');
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_xml_text_c)
-VALUES(22,'Account Detail','OpenPetra default template','System',True,True,
+VALUES(23,'Account Detail','OpenPetra default template','System',True,True,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="04/30/2014 11:33:34" ReportInfo.CreatorVersion="2013.4.4.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="05/09/2014 14:21:41" ReportInfo.CreatorVersion="2013.4.4.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -1122,7 +1122,12 @@ namespace FastReport
       <Column Name="s_modified_by_c" DataType="System.String"/>
       <Column Name="s_modification_id_t" DataType="System.DateTime"/>
     </TableDataSource>
-    <TableDataSource Name="balances" ReferenceName="balances" DataType="System.Int32" Enabled="true"/>
+    <TableDataSource Name="balances" ReferenceName="balances" DataType="System.Int32" Enabled="true">
+      <Column Name="a_cost_centre_code_c" DataType="System.String"/>
+      <Column Name="a_account_code_c" DataType="System.String"/>
+      <Column Name="OpeningBalance" DataType="System.Decimal"/>
+      <Column Name="ClosingBalance" DataType="System.Decimal"/>
+    </TableDataSource>
     <Relation Name="a_account_a_transaction" ParentDataSource="a_account" ChildDataSource="a_transaction" ParentColumns="a_account_code_c" ChildColumns="a_account_code_c" Enabled="true"/>
     <Relation Name="a_costCentre_a_transaction" ParentDataSource="a_costCentre" ChildDataSource="a_transaction" ParentColumns="a_cost_centre_code_c" ChildColumns="a_cost_centre_code_c" Enabled="true"/>
     <Relation Name="a_trans_anal_attrib_a_transaction" ParentDataSource="a_trans_anal_attrib" ChildDataSource="a_transaction" ParentColumns="a_ledger_number_i&#13;&#10;a_batch_number_i&#13;&#10;a_journal_number_i&#13;&#10;a_transaction_number_i" ChildColumns="a_ledger_number_i&#13;&#10;a_batch_number_i&#13;&#10;a_journal_number_i&#13;&#10;a_transaction_number_i" Enabled="true"/>
@@ -1141,8 +1146,8 @@ namespace FastReport
     <Parameter Name="param_sortby" DataType="System.String"/>
     <Parameter Name="param_account_list_title" DataType="System.String"/>
     <Parameter Name="param_account_codes" DataType="System.String"/>
-    <Parameter Name="param_account_code_start" DataType="System.Int32"/>
-    <Parameter Name="param_account_code_end" DataType="System.Int32"/>
+    <Parameter Name="param_account_code_start" DataType="System.String"/>
+    <Parameter Name="param_account_code_end" DataType="System.String"/>
     <Parameter Name="param_rgrAccounts" DataType="System.String"/>
     <Parameter Name="param_cost_centre_list_title" DataType="System.String"/>
     <Parameter Name="param_cost_centre_codes" DataType="System.String"/>
@@ -1173,14 +1178,14 @@ namespace FastReport
   <ReportPage Name="Page1">
     <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="85.05">
       <TextObject Name="Text1" Left="245.7" Width="207.9" Height="18.9" Text="Account Detail" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
-      <TextObject Name="Text9" Left="453.6" Width="122.85" Height="18.9" Text="Printed :" HorzAlign="Right"/>
-      <TextObject Name="Text8" Left="576.45" Width="141.75" Height="18.9" Text="[OmDate([Date])]"/>
+      <TextObject Name="Text9" Left="453.6" Width="103.95" Height="18.9" Text="Printed :" HorzAlign="Right"/>
+      <TextObject Name="Text8" Left="557.55" Width="160.65" Height="18.9" Text="[OmDate([Date])]"/>
       <TextObject Name="Text20" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
       <TextObject Name="Text10" Left="75.6" Width="170.1" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
-      <TextObject Name="Text11" Left="576.45" Top="18.9" Width="141.75" Height="18.9" Text="[param_cost_centre_list_title]"/>
-      <TextObject Name="Text12" Left="453.6" Top="18.9" Width="122.85" Height="18.9" Text="Cost Centres :" HorzAlign="Right"/>
-      <TextObject Name="Text14" Left="453.6" Top="37.8" Width="122.85" Height="18.9" Text="Accounts :" HorzAlign="Right"/>
-      <TextObject Name="Text13" Left="576.45" Top="37.8" Width="141.75" Height="18.9" Text="[param_account_list_title]"/>
+      <TextObject Name="HeaderCostCentreList" Left="557.55" Top="18.9" Width="160.65" Height="18.9" Text="[param_cost_centre_list_title]" AutoShrink="FontSize" AutoShrinkMinSize="6"/>
+      <TextObject Name="Text12" Left="453.6" Top="18.9" Width="103.95" Height="18.9" Text="Cost Centres :" HorzAlign="Right"/>
+      <TextObject Name="Text14" Left="453.6" Top="37.8" Width="103.95" Height="18.9" Text="Accounts :" HorzAlign="Right"/>
+      <TextObject Name="HeaderAccountsList" Left="557.55" Top="37.8" Width="160.65" Height="18.9" Text="[param_account_list_title]" AutoShrink="FontSize" AutoShrinkMinSize="6"/>
       <TextObject Name="Text21" Top="18.9" Width="75.6" Height="18.9" Text="Currency :" HorzAlign="Right"/>
       <TextObject Name="Text18" Left="75.6" Top="18.9" Width="170.1" Height="18.9" Text="[param_currency_name]"/>
       <TextObject Name="Text22" Top="37.8" Width="75.6" Height="18.9" Text="[IIf([param_period],&quot;Period :&quot;,&quot;Date :&quot;)]" HorzAlign="Right"/>
@@ -1188,8 +1193,8 @@ namespace FastReport
       <TextObject Name="Text42" Left="245.7" Top="18.9" Width="207.9" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
       <TextObject Name="Text43" Left="274.05" Top="37.8" Width="179.55" Height="18.9"/>
       <LineObject Name="Line1" Left="718.2" Top="75.6" Width="-718.2"/>
-      <TextObject Name="Text50" Left="453.6" Top="56.7" Width="122.85" Height="18.9" Text="Ordered By :" HorzAlign="Right"/>
-      <TextObject Name="Text51" Left="576.45" Top="56.7" Width="141.75" Height="18.9" Text="[param_sortby]"/>
+      <TextObject Name="Text50" Left="453.6" Top="56.7" Width="103.95" Height="18.9" Text="Ordered By :" HorzAlign="Right"/>
+      <TextObject Name="Text51" Left="557.55" Top="56.7" Width="160.65" Height="18.9" Text="[param_sortby]"/>
       <TextObject Name="Text56" Left="75.6" Top="56.7" Width="198.45" Height="18.9" Text="[OmDate([param_start_date])+&quot; - &quot;+OmDate([param_end_date])]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
     </ReportTitleBand>
     <PageHeaderBand Name="PageHeader1" Top="88.38" Width="718.2"/>
