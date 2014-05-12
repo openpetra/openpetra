@@ -22,6 +22,7 @@ RootNode:
             ParameterName: param_account_codes
             Controls: [rbtAllAccounts, rbtAccountRange, rbtAccountFromList]
             Label: Select Account Codes
+            Width:622
         rbtAllAccounts:
         rbtAccountRange:
             Label: Select Range
@@ -35,6 +36,7 @@ RootNode:
             ParameterName: param_costcentreoptions
             Controls: [rbtAllCostCentres, rbtCostCentreRange, rbtCostCentreFromList]
             Label: Select Cost Centre Codes
+            Width:622
         rbtAllCostCentres:
         rbtCostCentreRange:
             Label: Select Range
@@ -51,7 +53,7 @@ RootNode:
         clbAccountCodes: 
             List: UserDefinedList
             NoLabel:true
-            Width: 365
+            Width: 340
         btnUnselectAllAccountCodes: 
             Label: Unselect All
             Action: actUnselectAllAccountCodes
@@ -74,7 +76,7 @@ RootNode:
         clbCostCentres: 
             List: UserDefinedList
             NoLabel:true
-            Width: 365
+            Width: 340
         btnUnselectAllCostCentres: 
             Label: Unselect All
             Action: actUnselectAllCostCentres

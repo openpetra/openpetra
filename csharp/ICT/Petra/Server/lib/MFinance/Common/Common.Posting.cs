@@ -1480,10 +1480,28 @@ namespace Ict.Petra.Server.MFinance.Common
                 //
                 // The call to GLBatchCanBeCancelled will have loaded all these records for me.
 
-                TempTDS.AJournal.Rows.Clear();
-                TempTDS.ATransaction.Rows.Clear();
-                TempTDS.ATransAnalAttrib.Rows.Clear();
+                foreach (DataRow row in TempTDS.AJournal.Rows)
+                {
+                    row.Delete();
+                }
 
+                foreach (DataRow row in TempTDS.ATransaction.Rows)
+                {
+                    row.Delete();
+                }
+
+                foreach (DataRow row in TempTDS.ATransAnalAttrib.Rows)
+                {
+                    row.Delete();
+                }
+
+/*
+ * // apparently using Rows.Clear doesn't convey "delete these rows" back to the database, which is what we need:
+ *
+ *              TempTDS.AJournal.Rows.Clear();
+ *              TempTDS.ATransaction.Rows.Clear();
+ *              TempTDS.ATransAnalAttrib.Rows.Clear();
+ */
                 GLBatchTDSAccess.SubmitChanges(TempTDS);
 
                 return true;
@@ -1496,8 +1514,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public static GLBatchTDS CreateABatch(Int32 ALedgerNumber, Boolean ACommitTransaction = true)
         {
-            bool NewTransactionStarted = false;
-
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
             GLBatchTDS MainDS = null;
 
             //Error handling
@@ -1507,46 +1525,43 @@ namespace Ict.Petra.Server.MFinance.Common
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
             TVerificationResultCollection VerificationResult = null;
 
-            try
-            {
-                MainDS = new GLBatchTDS();
+            MainDS = new GLBatchTDS();
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
-
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-                ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
-                NewRow.LedgerNumber = ALedgerNumber;
-                MainDS.ALedger[0].LastBatchNumber++;
-                NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-                NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
-                NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
-                MainDS.ABatch.Rows.Add(NewRow);
-
-                GLBatchTDSAccess.SubmitChanges(MainDS);
-
-                MainDS.AcceptChanges();
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage =
-                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
-                            Environment.NewLine + Environment.NewLine + ex.ToString()),
-                        ALedgerNumber);
-                ErrorType = TResultSeverity.Resv_Critical;
-                VerificationResult = new TVerificationResultCollection();
-                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-
-                throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
-            }
-            finally
-            {
-                if (NewTransactionStarted && ACommitTransaction)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction, ref SubmissionOK, ACommitTransaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
+                    try
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                        ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+                        NewRow.LedgerNumber = ALedgerNumber;
+                        MainDS.ALedger[0].LastBatchNumber++;
+                        NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+                        NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                        NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
+                        MainDS.ABatch.Rows.Add(NewRow);
+
+                        GLBatchTDSAccess.SubmitChanges(MainDS);
+
+                        MainDS.AcceptChanges();
+
+                        SubmissionOK = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessage =
+                            String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                                    Environment.NewLine + Environment.NewLine + ex.ToString()),
+                                ALedgerNumber);
+                        ErrorType = TResultSeverity.Resv_Critical;
+                        VerificationResult = new TVerificationResultCollection();
+                        VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+
+                        throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
+                    }
+                });
 
             return MainDS;
         }
@@ -1566,8 +1581,8 @@ namespace Ict.Petra.Server.MFinance.Common
             decimal ABatchControlTotal,
             DateTime ADateEffective)
         {
-            bool NewTransactionStarted = false;
-
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
             GLBatchTDS MainDS = null;
 
             //Error handling
@@ -1577,39 +1592,44 @@ namespace Ict.Petra.Server.MFinance.Common
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
             TVerificationResultCollection VerificationResult = null;
 
+            MainDS = new GLBatchTDS();
+
             try
             {
-                MainDS = new GLBatchTDS();
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction, ref SubmissionOK,
+                    delegate
+                    {
+                        ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
+                        ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+                        NewRow.LedgerNumber = ALedgerNumber;
+                        MainDS.ALedger[0].LastBatchNumber++;
+                        NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+                        NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                        NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
 
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                        int FinancialYear, FinancialPeriod;
 
-                ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
-                NewRow.LedgerNumber = ALedgerNumber;
-                MainDS.ALedger[0].LastBatchNumber++;
-                NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-                NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
-                NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
+                        if (ADateEffective != default(DateTime))
+                        {
+                            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod, null,
+                                false);
+                            NewRow.DateEffective = ADateEffective;
+                            NewRow.BatchPeriod = FinancialPeriod;
+                            NewRow.BatchYear = FinancialYear;
+                        }
 
-                int FinancialYear, FinancialPeriod;
+                        NewRow.BatchDescription = ABatchDescription;
+                        NewRow.BatchControlTotal = ABatchControlTotal;
+                        MainDS.ABatch.Rows.Add(NewRow);
 
-                if (ADateEffective != default(DateTime))
-                {
-                    TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod, null, false);
-                    NewRow.DateEffective = ADateEffective;
-                    NewRow.BatchPeriod = FinancialPeriod;
-                    NewRow.BatchYear = FinancialYear;
-                }
+                        GLBatchTDSAccess.SubmitChanges(MainDS);
 
-                NewRow.BatchDescription = ABatchDescription;
-                NewRow.BatchControlTotal = ABatchControlTotal;
-                MainDS.ABatch.Rows.Add(NewRow);
+                        MainDS.AcceptChanges();
 
-                GLBatchTDSAccess.SubmitChanges(MainDS);
-
-                MainDS.AcceptChanges();
+                        SubmissionOK = true;
+                    });
             }
             catch (Exception ex)
             {
@@ -1623,13 +1643,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
             }
-            finally
-            {
-                if (NewTransactionStarted)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
+
             return MainDS;
         }
 

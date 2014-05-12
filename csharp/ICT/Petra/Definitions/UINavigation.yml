@@ -31,7 +31,7 @@ OpenPetra:
 
                         #ChangeAddress:
                         #MergePartners:
-                        FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners, ActionOpenScreen=TPartnerFindScreen, Singleton=true}
+                        FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners, Singleton=true}
                         WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
                         MergePartners: {Label=Merge Partners, Description=Merge two partner records together, ActionOpenScreen=TFrmMergePartnersDialog}
                         DeletePartner: {Label=Delete Partner, Description=Delete a selected Partner, ActionClick=TPartnerMain.DeletePartnerRecord}
@@ -242,7 +242,9 @@ OpenPetra:
                         ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                         LinkCostCentresToPartners: {Description:Link or unlink Partners and Cost Centres, ActionOpenScreen=TFrmLinkPartnerCostCentreDialog}
-                        CostCentreTypes: {Description=Maintain Cost Centres Types, ActionOpenScreen=TFrmSetupCostCentreTypes}
+
+                      # We shouldn't allow users to edit Cost Centre Types, but a non-OM application might want to...
+                      # CostCentreTypes: {Description=Maintain Cost Centres Types, ActionOpenScreen=TFrmSetupCostCentreTypes}
                         AnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
                         DeleteLedger: {Description="Careful: Delete the ledger with all finance data", ActionClick=TDeleteLedger.DeleteLedger}
                         #Accounts:

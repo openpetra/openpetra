@@ -58,9 +58,9 @@ RootNode:
                 Row0: [txtDetailFeeCode, txtDetailFeeDescription]
                 Row1: [cmbDetailChargeOption, txtDetailChargePercentage, txtDetailChargeAmount]
                 Row2: [grpAssignment]
-        txtDetailFeeCode: {Label=Fee Code, CharacterCasing=Upper}
+        txtDetailFeeCode: {Label=Fee Code, CharacterCasing=Upper, Width=100}
         txtDetailFeeDescription: {Label=Description, ColSpan=2, Width=320}
-        cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged}
+        cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged, Width=100}
             OptionalValues: [Minimum, Maximum, Fixed, Percentage]
         txtDetailChargePercentage:  {Label=Charge Percentage, Format=PercentDecimal}
         txtDetailChargeAmount:  {Label=Charge Amount, Format=Decimal, Width=111, LabelWidth=120}

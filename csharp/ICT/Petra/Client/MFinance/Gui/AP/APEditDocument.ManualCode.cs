@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -679,8 +679,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (grdAnalAttributes.Rows.Count > 2)
             {
+                grdAnalAttributes.Enabled = true;
                 grdAnalAttributes.SelectRowWithoutFocus(1);
                 AnalysisAttributesGrid_RowSelected(null, null);
+            }
+            else
+            {
+                grdAnalAttributes.Enabled = false;
             }
         }
 
