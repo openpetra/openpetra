@@ -53,6 +53,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FTransactionNumber = -1;
         private bool FActiveOnly = true;
         private string FTransactionCurrency = string.Empty;
+        private string FJournalCurrencyCode = string.Empty;
+        private decimal FBatchExchangeRateToBase = 0;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
         private GLSetupTDS FCacheDS = null;
@@ -69,12 +71,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private AAccountTable FAccountTable = null;
 
         /// <summary>
+        /// Load the transaction and attribute data into the Dataset without setting up the form
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="intJournalNumber"></param>
+        /// <returns></returns>
+        public bool LoadTransactionsDataOnly(int ALedgerNumber, int ABatchNumber, int intJournalNumber = 0)
+        {
+            return true;
+        }
+        
+        /// <summary>
         /// load the transactions into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
-        /// <param name="AForeignCurrencyName"></param>
+        /// <param name="ACurrencyCode"></param>
         /// <param name="ABatchStatus"></param>
         /// <param name="AJournalStatus"></param>
         /// <param name="AFromBatchTab"></param>
@@ -82,7 +96,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public bool LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
-            string AForeignCurrencyName,
+            string ACurrencyCode,
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
             string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED,
             bool AFromBatchTab = false)
@@ -103,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
-                && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
+                && (FTransactionCurrency == ACurrencyCode) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
                 && (FMainDS.ATransaction.DefaultView.Count > 0))
             {
                 //Same as previously selected
@@ -126,13 +140,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 // A new ledger/batch
                 IsNewBatch = true;
-                bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != AForeignCurrencyName);
+                bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != ACurrencyCode);
 
                 FLedgerNumber = ALedgerNumber;
                 FBatchNumber = ABatchNumber;
                 FJournalNumber = AJournalNumber;
                 FTransactionNumber = -1;
-                FTransactionCurrency = AForeignCurrencyName;
+                FTransactionCurrency = ACurrencyCode;
                 FBatchStatus = ABatchStatus;
                 FJournalStatus = AJournalStatus;
 
@@ -194,7 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SetupExtraGridFunctionality();
 
                     TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-                        true, false, ActiveOnly, false, AForeignCurrencyName, true);
+                        true, false, ActiveOnly, false, ACurrencyCode, true);
                     TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
                 }
 
@@ -777,6 +791,47 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal amtCreditTotal = 0.0M;
             decimal amtCreditTotalBase = 0.0M;
 
+            ABatchRow CurrentBatchRow = GetBatchRow();
+            AJournalRow CurrentJournalRow = GetJournalRow();
+
+            if (!(((TFrmGLBatch)this.ParentForm).GetJournalsControl().FJournalsLoaded)
+                || (CurrentJournalRow == null)
+                || (CurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                || ((CurrentJournalRow.TransactionCurrency == FTransactionCurrency) && (CurrentJournalRow.ExchangeRateToBase == FBatchExchangeRateToBase)))
+            {
+                return;
+            }
+
+            if ((FBatchRow == null)
+                || (CurrentBatchRow.LedgerNumber != FBatchRow.LedgerNumber)
+                || (CurrentBatchRow.BatchNumber != FBatchRow.BatchNumber))
+            {
+                FBatchRow = CurrentBatchRow;
+            }
+
+            int LedgerNumber = FBatchRow.LedgerNumber;
+            int CurrentBatchNumber = FBatchRow.BatchNumber;
+
+            if (CheckIfTransLoaded)
+            {
+                //Check if this batch's transactions are already loaded
+                DataView detailView = new DataView(FMainDS.AGift);
+
+                detailView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AGiftTable.GetLedgerNumberDBName(),
+                    LedgerNumber,
+                    AGiftTable.GetBatchNumberDBName(),
+                    CurrentBatchNumber);
+
+                if (detailView.Count == 0)
+                {
+                    //FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(LedgerNumber, CurrentBatchNumber));
+                    LoadGifts(LedgerNumber, CurrentBatchNumber);
+                    ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+                }
+            }
+
+
             if ((FJournalNumber != -1) && (FBatchRow != null) && (FJournalRow != null)) // && (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED))         // && !pnlDetailsProtected)
             {
                 if (FPreviouslySelectedDetailRow != null)
@@ -809,8 +864,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // recalculate the amount in base currency
                     if (FJournalRow.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                     {
-                        r.AmountInBaseCurrency = GLRoutines.Multiply(r.TransactionAmount, FJournalRow.ExchangeRateToBase);
-                        r.AmountInIntlCurrency = GLRoutines.Multiply(r.AmountInBaseCurrency, AIntlRateToBaseCurrency);
+                        r.AmountInBaseCurrency = GLRoutines.Divide(r.TransactionAmount, FJournalRow.ExchangeRateToBase);
+                        r.AmountInIntlCurrency = GLRoutines.Divide(r.AmountInBaseCurrency, AIntlRateToBaseCurrency);
                     }
 
                     if (r.DebitCreditIndicator)
@@ -859,11 +914,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        /// update international amount for current batch and journal
-        /// </summary>
-        /// <param name="AIntlRateToBaseCurrency"></param>
-        /// <param name="AUpdateAllTrans"></param>
+        private void UpdateCurrencyValues()
+        { 
+        
+}
+
+        // /// <summary>
+        // /// update international amount for current batch and journal
+        // /// </summary>
+        // /// <param name="AIntlRateToBaseCurrency"></param>
+        // /// <param name="AUpdateAllTrans"></param>
         //public void UpdateGLTransactionsInternationalAmount(DateTime ABatchEffectiveDate, bool AUpdateAllTransactions = true)
         //{
         //    bool UpdateAllJournals;

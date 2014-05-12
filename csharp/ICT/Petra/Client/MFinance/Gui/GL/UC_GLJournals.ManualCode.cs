@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private string FTransactionCurrency = string.Empty;
         private decimal FIntlRateToBaseCurrency = 0;
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
+        public bool FJournalsLoaded = false;
 
         private ABatchRow FBatchRow = null;
 
@@ -148,6 +149,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Now set up the complete current filter
                 FFilterPanelControls.SetBaseFilter(dv.RowFilter, true);
                 ApplyFilter();
+
+                FJournalsLoaded = true;
             }
 
             //This will also call UpdateChangeableStatus

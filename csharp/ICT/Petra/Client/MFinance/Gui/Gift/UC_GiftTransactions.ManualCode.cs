@@ -274,11 +274,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
-
-                UpdateAllRecipientDescriptions();
-
-                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
+                EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
             }
 
             //Check if need to update batch period in each gift
@@ -2409,18 +2405,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// update the transaction base amount calculation
         /// </summary>
-        public void UpdateBaseAmount(bool AUpdateCurrentRowOnly)
+        /// <param name="AUpdateCurrentRowOnly"></param>
+        /// <param name="AConfirmTransactionsLoaded"></param>
+        public void UpdateBaseAmount(Boolean AUpdateCurrentRowOnly, Boolean AConfirmTransactionsLoaded = false)
         {
             Int32 LedgerNumber;
             Int32 CurrentBatchNumber;
+
             DateTime StartOfMonth;
             DateTime BatchEffectiveDate;
+
             decimal IntlToBaseCurrencyExchRate = 0;
-            string LedgerBaseCurrency = string.Empty;
-            string LedgerIntlCurrency = string.Empty;
             bool TransactionInIntlCurrency = false;
 
+            string LedgerBaseCurrency = string.Empty;
+            string LedgerIntlCurrency = string.Empty;
+
             AGiftBatchRow CurrentBatchRow = GetCurrentBatchRow();
+            bool TransExist = false;
 
             if (!(((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
                 || (CurrentBatchRow == null)
@@ -2447,39 +2449,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
             LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
 
-            if (LedgerBaseCurrency == LedgerIntlCurrency)
+            if (!EnsureGiftDataPresent(LedgerNumber, CurrentBatchNumber) || !GetInternationalCurrencyExchangeRate(FBatchRow, ref IntlToBaseCurrencyExchRate, ref TransactionInIntlCurrency))
             {
-                IntlToBaseCurrencyExchRate = 1;
-            }
-            else if (FBatchCurrencyCode == LedgerIntlCurrency)
-            {
-                TransactionInIntlCurrency = true;
-            }
-            else
-            {
-                IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
-                    LedgerIntlCurrency,
-                    StartOfMonth,
-                    BatchEffectiveDate);
-
-                if (IntlToBaseCurrencyExchRate == 0)
-                {
-                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
-                        LedgerBaseCurrency,
-                        LedgerIntlCurrency,
-                        BatchEffectiveDate);
-                    return;
-                }
+                //No transactions exist to process or corporate exchange rate not found
+                return;
             }
 
             //If only updating the currency active row
             if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
             {
-                FPreviouslySelectedDetailRow.GiftAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal / FBatchExchangeRateToBase;
+                FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide((decimal)txtDetailGiftTransactionAmount.NumberValueDecimal, FBatchExchangeRateToBase);
 
                 if (!TransactionInIntlCurrency)
                 {
-                    FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount / IntlToBaseCurrencyExchRate;
+                    FPreviouslySelectedDetailRow.GiftAmountIntl = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftAmount, IntlToBaseCurrencyExchRate);
                 }
                 else
                 {
@@ -2488,54 +2471,126 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                //Check if this batch's transactions are already loaded
-                DataView detailView = new DataView(FMainDS.AGift);
-
-                detailView.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    AGiftTable.GetLedgerNumberDBName(),
-                    LedgerNumber,
-                    AGiftTable.GetBatchNumberDBName(),
-                    CurrentBatchNumber);
-
-                if (detailView.Count == 0)
-                {
-                    //FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(LedgerNumber, CurrentBatchNumber));
-                    LoadGifts(LedgerNumber, CurrentBatchNumber);
-                    ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                }
-                else if ((FLedgerNumber == LedgerNumber) && (FBatchNumber == CurrentBatchNumber))
+                if (FPreviouslySelectedDetailRow != null && FLedgerNumber == LedgerNumber && FBatchNumber == CurrentBatchNumber)
                 {
                     //Rows already active in transaction tab. Need to set current row as code further below will not update selected row
-                    if (FPreviouslySelectedDetailRow != null)
-                    {
-                        FPreviouslySelectedDetailRow.GiftAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount / FBatchExchangeRateToBase;
+                    FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftTransactionAmount, FBatchExchangeRateToBase);
 
-                        if (!TransactionInIntlCurrency)
-                        {
-                            FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount / IntlToBaseCurrencyExchRate;
-                        }
-                        else
-                        {
-                            FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
-                        }
+                    if (!TransactionInIntlCurrency)
+                    {
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftAmount, IntlToBaseCurrencyExchRate);
+                    }
+                    else
+                    {
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
                     }
                 }
 
                 //Update all transactions
-                foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
-                {
-                    gdr.GiftAmount = gdr.GiftTransactionAmount / FBatchExchangeRateToBase;
+                RecalcTransactionsCurrencyAmounts(FBatchRow, IntlToBaseCurrencyExchRate, TransactionInIntlCurrency);
+            }
+        }
 
-                    if (!TransactionInIntlCurrency)
-                    {
-                        gdr.GiftAmountIntl = gdr.GiftAmount / IntlToBaseCurrencyExchRate;
-                    }
-                    else
-                    {
-                        gdr.GiftAmountIntl = gdr.GiftTransactionAmount;
-                    }
+        /// <summary>
+        /// Update all single batch transactions currency amounts fields
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AIntlToBaseCurrencyExchRate"></param>
+        /// <param name="ATransactionInIntlCurrency"></param>
+        public void RecalcTransactionsCurrencyAmounts(AGiftBatchRow ABatchRow, Decimal AIntlToBaseCurrencyExchRate, Boolean ATransactionInIntlCurrency)
+        {
+            int LedgerNumber = ABatchRow.LedgerNumber;
+            int BatchNumber = ABatchRow.BatchNumber;
+            decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
+            
+            EnsureGiftDataPresent(LedgerNumber, BatchNumber);
+
+            DataView transDV = new DataView(FMainDS.AGiftDetail);
+            transDV.RowFilter = String.Format("{0}={1}",
+                                                AGiftDetailTable.GetBatchNumberDBName(),
+                                                BatchNumber);
+
+            foreach (DataRowView drvTrans in transDV)
+            {
+                AGiftDetailRow gdr = (AGiftDetailRow)drvTrans.Row;
+
+                gdr.GiftAmount = GLRoutines.Divide(gdr.GiftTransactionAmount, BatchExchangeRateToBase);
+
+                if (!ATransactionInIntlCurrency)
+                {
+                    gdr.GiftAmountIntl = GLRoutines.Divide(gdr.GiftAmount, AIntlToBaseCurrencyExchRate);
+                }
+                else
+                {
+                    gdr.GiftAmountIntl = gdr.GiftTransactionAmount;
                 }
             }
+        }
+
+        private bool GetInternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow, ref Decimal AIntlToBaseCurrencyExchRate, ref Boolean ATransactionInIntlCurrency)
+        {
+            string FBatchCurrencyCode = ABatchRow.CurrencyCode;
+            decimal FBatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
+            DateTime BatchEffectiveDate = ABatchRow.GlEffectiveDate;
+            DateTime StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            if (LedgerBaseCurrency == LedgerIntlCurrency)
+            {
+                AIntlToBaseCurrencyExchRate = 1;
+            }
+            else if (FBatchCurrencyCode == LedgerIntlCurrency)
+            {
+                ATransactionInIntlCurrency = true;
+            }
+            else
+            {
+                AIntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                    LedgerIntlCurrency,
+                    StartOfMonth,
+                    BatchEffectiveDate);
+
+                if (AIntlToBaseCurrencyExchRate == 0)
+                {
+                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                        LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        BatchEffectiveDate);
+
+                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Ensure the data is loaded for the specified batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns>If transactions exist</returns>
+        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            DataView transDV = new DataView(FMainDS.AGiftDetail);
+            transDV.RowFilter = String.Format("{0}={1}",
+                                                AGiftDetailTable.GetBatchNumberDBName(),
+                                                ABatchNumber);
+
+            if (transDV.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
+
+                UpdateAllRecipientDescriptions();
+
+                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+            }
+
+            return (transDV.Count > 0);
         }
 
         private void GiftDateChanged(object sender, EventArgs e)

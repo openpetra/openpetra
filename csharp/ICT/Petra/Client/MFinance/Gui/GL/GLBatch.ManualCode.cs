@@ -167,20 +167,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// activate the transaction tab and load the transactions of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <param name="AForeignCurrencyName"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, String AForeignCurrencyName)
-        {
-            this.tpgTransactions.Enabled = true;
-            this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AForeignCurrencyName);
-            this.Refresh();
-        }
-
-        /// <summary>
         /// disable the transactions tab if we have no active journal
         /// </summary>
         public void DisableTransactions()

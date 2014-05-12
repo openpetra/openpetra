@@ -1453,7 +1453,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPreviouslySelectedDetailRow.ExchangeRateToBase = ANewExchangeRate;
 
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(CurrencyCode);
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false, true);
         }
 
         private void RefreshCurrencyAndExchangeRateControls(bool AFromUserAction = false)

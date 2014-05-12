@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Verification.Exceptions;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MFinance;
@@ -1412,33 +1413,67 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
+            bool RetVal = false;
+            string BatchStatus = string.Empty;
+
+            string ErrorMessage = string.Empty;
+            string ErrorContext = "Check if a Batch can be cancelled";
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+
+            TVerificationResultCollection VerificationResult = null;
+
             // get the data from the database into the MainDS
             if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
-                return false;
+                RetVal = false;
             }
-
-            ABatchRow Batch = AMainDS.ABatch[0];
-
-            if (Batch.BatchStatus == MFinanceConstants.BATCH_POSTED)
+            else
             {
-                AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot cancel Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It has status {0}"), Batch.BatchStatus),
-                        TResultSeverity.Resv_Critical));
-                return false;
-            }
+                try
+                {
+                    ABatchRow Batch = AMainDS.ABatch[0];
 
-            if (Batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED)
+                    BatchStatus = Batch.BatchStatus;
+
+                    if (BatchStatus == MFinanceConstants.BATCH_CANCELLED)
+                    {
+                        VerificationResult.Add(new TVerificationResult(
+                                String.Format(Catalog.GetString("Cannot cancel Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                String.Format(Catalog.GetString("It was already cancelled.")),
+                                TResultSeverity.Resv_Critical));
+                        RetVal = false;
+                    }
+                    else if (BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                    {
+                        VerificationResult.Add(new TVerificationResult(
+                                String.Format(Catalog.GetString("Cannot cancel Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                String.Format(Catalog.GetString("It has status {0}"), Batch.BatchStatus),
+                                TResultSeverity.Resv_Critical));
+                        RetVal = false;
+                    }
+                    else
+                    {
+                        //Only if reaches here it can be deleted
+                        RetVal = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage = String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                                                 Environment.NewLine + Environment.NewLine + ex.ToString()),
+                                                 ALedgerNumber);
+                    ErrorType = TResultSeverity.Resv_Critical;
+                    VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                }
+            }
+            
+            if (VerificationResult != null)
             {
-                AVerifications.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot cancel Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It was already cancelled.")),
-                        TResultSeverity.Resv_Critical));
-                return false;
+                AVerifications.AddCollection(VerificationResult);
             }
 
-            return true;
+            return RetVal;
         }
 
         /// <summary>
@@ -1540,8 +1575,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     ErrorType = TResultSeverity.Resv_Critical;
                     VerificationResult = new TVerificationResultCollection();
                     VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-    
-                    throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
+
+                    throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
                 }
             });
 
@@ -1576,12 +1611,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             MainDS = new GLBatchTDS();
             
-            try
-            {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,  
-                    ref Transaction, ref SubmissionOK, 
-                delegate
-                {                
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,  
+                ref Transaction, ref SubmissionOK, 
+            delegate
+            {                
+                try
+                {
                     ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
     
                     ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
@@ -1610,20 +1645,20 @@ namespace Ict.Petra.Server.MFinance.Common
                     MainDS.AcceptChanges();
                         
                     SubmissionOK = true;
-                });
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage =
-                    String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
-                            Environment.NewLine + Environment.NewLine + ex.ToString()),
-                        ALedgerNumber);
-                ErrorType = TResultSeverity.Resv_Critical;
-                VerificationResult = new TVerificationResultCollection();
-                VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                }
+                catch (Exception ex)
+                {
+                    ErrorMessage =
+                        String.Format(Catalog.GetString("Unknown error while creating a batch for Ledger: {0}." +
+                                Environment.NewLine + Environment.NewLine + ex.ToString()),
+                            ALedgerNumber);
+                    ErrorType = TResultSeverity.Resv_Critical;
+                    VerificationResult = new TVerificationResultCollection();
+                    VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
 
-                throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
-            }
+                    throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
+                }
+            });
 
             return MainDS;
         }
@@ -1674,7 +1709,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
 
-                throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
+                throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
             }
             finally
             {
