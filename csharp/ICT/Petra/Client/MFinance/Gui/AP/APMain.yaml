@@ -11,8 +11,8 @@ RootNode:
         Closed: {class=System.EventHandler, method=Form_Closed}
     Actions:
         cndSelectedSupplier: {InitialValue=false}
-        actEditFilter: {ActionClick=mniFilterFind_Click, Image=FilterActive.ico, Tooltip=Filter the displayed records by one or more criteria}
-        actEditFind: {ActionClick=mniFilterFind_Click, Image=Find.ico, Tooltip=Find a record that matches one or more criteria}
+        actEditFilter: {Label=Filte&r..., ActionClick=mniFilterFind_Click, Image=FilterActive.ico, Tooltip=Filter the displayed records by one or more criteria}
+        actEditFind: {Label=&Find..., ActionClick=mniFilterFind_Click, Image=Find.ico, Tooltip=Find a record that matches one or more criteria}
         actDefaults: {ActionClick=mniDefaults_Click, Image=Options2.ico, Tooltip=View or modify the default settings for Accounts Payable}
         actShowInvoice:
             ActionClick: ShowInvoice
@@ -89,6 +89,14 @@ RootNode:
             Image: Delete_Record.ico
             ActionClick: DeleteAllTagged
             Tooltip: Delete the tagged invoices that have been opened or approved
+        actEditFindNext:
+            Label:Find Ne&xt
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find the next record that matches the current 'Find' criteria
+        actEditFindPrevious:
+            Label:Find Pre&vious
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find the previous record that matches the current 'Find' criteria
         #actTagAllPostable:
         #    ActionClick: TagAllPostable
         #actTagAllPayable:
@@ -146,9 +154,11 @@ RootNode:
         mniEdit:
             Label:&Edit
             mniEditFilter: 
-              Label:Filte&r...
+#              Label:Filte&r...
             mniEditFind:
-              Label:&Find...
+#              Label:&Find...
+            mniEditFindNext:
+            mniEditFindPrevious:
         mniSupplier:
             Label:&Supplier
             mniNewSupplier: {Action=actNewSupplier}

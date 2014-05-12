@@ -205,18 +205,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TabChange(null, null);
         }
 
-        private void mniFilterFind_Click(object sender, EventArgs e)
-        {
-            if (tabSearchResult.SelectedTab == tpgSuppliers)
-            {
-                ucoSuppliers.MniFilterFind_Click(sender, e);
-            }
-            else
-            {
-                ucoOutstandingInvoices.MniFilterFind_Click(sender, e);
-            }
-        }
-
         private void SupplierTransactions(object sender, EventArgs e)
         {
             ucoSuppliers.SupplierTransactions(sender, e);
@@ -335,34 +323,41 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        /// Special Handlers for menus and command keys for our user controls
+
+        private void MniFilterFind_Click(object sender, EventArgs e)
+        {
+            if (tabSearchResult.SelectedTab == tpgSuppliers)
+            {
+                ucoSuppliers.MniFilterFind_Click(sender, e);
+            }
+            else if (tabSearchResult.SelectedTab == tpgOutstandingInvoices)
+            {
+                ucoOutstandingInvoices.MniFilterFind_Click(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
         {
-            if (keyData == (Keys.F | Keys.Control))
+            if ((tabSearchResult.SelectedTab == tpgSuppliers) && (ucoSuppliers.ProcessParentCmdKey(ref msg, keyData)))
             {
-                mniFilterFind_Click(mniEditFind, null);
+                return true;
+            }
+            else if ((tabSearchResult.SelectedTab == tpgOutstandingInvoices) && (ucoOutstandingInvoices.ProcessParentCmdKey(ref msg, keyData)))
+            {
                 return true;
             }
 
-            if (keyData == (Keys.R | Keys.Control))
-            {
-                mniFilterFind_Click(mniEditFilter, null);
-                return true;
-            }
-
-            if (keyData == (Keys.F3))
-            {
-                mniFilterFind_Click(mniEditFind, new KeyPressEventArgs('+'));
-                return true;
-            }
-
-            if (keyData == (Keys.F3 | Keys.Shift))
-            {
-                mniFilterFind_Click(mniEditFind, new KeyPressEventArgs('-'));
-                return true;
-            }
-
-            return false;
+            return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        #endregion
 
         #region Forms Messaging Interface Implementation
 

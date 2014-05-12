@@ -641,21 +641,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
         {
-            if (keyData == Keys.F9)
+            if (keyData == (Keys.L | Keys.Control))
             {
                 grdDetails.Focus();
                 return true;
             }
-
-            if (keyData == Keys.F10)
+            if (keyData == (Keys.Home | Keys.Control))
+            {
+                SelectRowInGrid(1);
+                return true;
+            }
+            if (keyData == ((Keys.Up | Keys.Control)))
+            {
+                SelectRowInGrid(FPrevRowChangedRow - 1);
+                return true;
+            }
+            if (keyData == (Keys.Down | Keys.Control))
             {
                 SelectRowInGrid(FPrevRowChangedRow + 1);
                 return true;
             }
-
-            if (keyData == (Keys.F10 | Keys.Shift))
+            if (keyData == ((Keys.End | Keys.Control)))
             {
-                SelectRowInGrid(FPrevRowChangedRow - 1);
+                SelectRowInGrid(grdDetails.Rows.Count - 1);
                 return true;
             }
 
