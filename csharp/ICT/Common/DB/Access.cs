@@ -1273,7 +1273,9 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
-                throw new EOPDBException("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction " +
+                throw new EOPDBException(
+                    "BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction "
+                    +
                     "as concurrent transactions are not supported");
             }
 
@@ -1388,7 +1390,9 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
-                throw new EOPDBException("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction " +
+                throw new EOPDBException(
+                    "BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction or GetNewOrExistingAutoTransaction "
+                    +
                     "as concurrent transactions are not supported");
             }
 
@@ -1671,7 +1675,7 @@ namespace Ict.Common.DB
                 // Set Flag that indicates that the Transaction has been re-used instead of freshly created! This Flag can be
                 // inquired using the readonly TDBTransaction.Reused Property!
                 TheTransaction.SetTransactionToReused();
-                
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     Console.WriteLine(
@@ -2593,306 +2597,305 @@ namespace Ict.Common.DB
                 }
             }
         }
-        
-        
+
         #region AutoTransactions
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that 
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either 
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel, 
-            ref TDBTransaction ATransaction, ref bool ASubmissionOK, 
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            ref TDBTransaction ATransaction, ref bool ASubmissionOK,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact, 
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
                 ref ATransaction, ref ASubmissionOK, AEncapsulatedDBAccessCode);
         }
-       
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
-        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and 
-        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that 
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
-        /// </param> 
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either 
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
-            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction, 
-            ref bool ASubmissionOK, 
+            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
+            ref bool ASubmissionOK,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel, 
-                ref ATransaction, ref ASubmissionOK, true, AEncapsulatedDBAccessCode);            
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel,
+                ref ATransaction, ref ASubmissionOK, true, AEncapsulatedDBAccessCode);
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> 
-        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
         /// and <paramref name="ACommitTransaction"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either 
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true <em>and</em> when 
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true <em>and</em> when
         /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
-        /// <param name="ACommitTransaction">Controls whether a Commit is issued when 
+        /// <param name="ACommitTransaction">Controls whether a Commit is issued when
         /// <paramref name="ASubmissionOK"/> is true, or whether nothing should happen in that case (also no Rollback!).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
-            ref TDBTransaction ATransaction, ref bool ASubmissionOK, bool ACommitTransaction, 
+            ref TDBTransaction ATransaction, ref bool ASubmissionOK, bool ACommitTransaction,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact, 
-                ref ATransaction, ref ASubmissionOK, ACommitTransaction, AEncapsulatedDBAccessCode);            
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
+                ref ATransaction, ref ASubmissionOK, ACommitTransaction, AEncapsulatedDBAccessCode);
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> 
-        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and 
-        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
         /// and <paramref name="ACommitTransaction"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
-        /// </param> 
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either 
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true <em>and</em> when 
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true <em>and</em> when
         /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
-        /// <param name="ACommitTransaction">Controls whether a Commit is issued when 
+        /// <param name="ACommitTransaction">Controls whether a Commit is issued when
         /// <paramref name="ASubmissionOK"/> is true, or whether nothing should happen in that case (also no Rollback!).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
-            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction, 
-            ref bool ASubmissionOK, bool ACommitTransaction, 
+            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
+            ref bool ASubmissionOK, bool ACommitTransaction,
             Action AEncapsulatedDBAccessCode)
         {
             bool NewTransaction;
             bool ExceptionThrown = true;
-            
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
+
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
-            ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel, 
+            ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel,
                 ATryToEnforceIsolationLevel, out NewTransaction);
-                
+
             try
             {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!) 
+                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
                 AEncapsulatedDBAccessCode();
-        
+
                 // Once execution gets to here we know that no unhandled Exception was thrown
                 ExceptionThrown = false;
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the 
+
+                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
                 AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK, NewTransaction && ACommitTransaction);
             }
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that 
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either 
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel, 
-            ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, 
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact, 
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
                 ref ATransaction, ref ASubmitChangesResult, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em> : Calls the 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> 
-        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and 
-        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that 
+        /// <em>Automatic Transaction Handling</em> : Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
-        /// </param> 
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either 
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>                
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
-            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,  
-            ref TSubmitChangesResult ASubmitChangesResult, 
+            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel, 
-                ref ATransaction, ref ASubmitChangesResult, true, AEncapsulatedDBAccessCode);            
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel,
+                ref ATransaction, ref ASubmitChangesResult, true, AEncapsulatedDBAccessCode);
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that 
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either 
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
-        /// <see cref="TSubmitChangesResult.scrOK"/> <em>and</em> when 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/> <em>and</em> when
         /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
-        /// <param name="ACommitTransaction">Controls whether a Commit is issued when 
-        /// <paramref name="ASubmitChangesResult"/> is <see cref="TSubmitChangesResult.scrOK"/>, 
+        /// <param name="ACommitTransaction">Controls whether a Commit is issued when
+        /// <paramref name="ASubmitChangesResult"/> is <see cref="TSubmitChangesResult.scrOK"/>,
         /// or whether nothing should happen in that case (also no Rollback!).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>                
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
-            ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction, 
+            ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact, 
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
                 ref ATransaction, ref ASubmitChangesResult, ACommitTransaction, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em> : Calls the 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> 
-        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and 
-        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that 
+        /// <em>Automatic Transaction Handling</em> : Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmitChangesResult"/>
         /// and <paramref name="ACommitTransaction"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
-        /// </param> 
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either 
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
-        /// <see cref="TSubmitChangesResult.scrOK"/> <em>and</em> when 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/> <em>and</em> when
         /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
-        /// <param name="ACommitTransaction">Controls whether a Commit is issued when 
-        /// <paramref name="ASubmitChangesResult"/> is <see cref="TSubmitChangesResult.scrOK"/>, 
+        /// <param name="ACommitTransaction">Controls whether a Commit is issued when
+        /// <paramref name="ASubmitChangesResult"/> is <see cref="TSubmitChangesResult.scrOK"/>,
         /// or whether nothing should happen in that case (also no Rollback!).</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
-            ref TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction, 
+            ref TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction,
             Action AEncapsulatedDBAccessCode)
         {
             bool NewTransaction;
             bool ExceptionThrown = true;
-            
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
-            // regarding Exception Handling.)            
-            ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel, 
+
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
+            // regarding Exception Handling.)
+            ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel,
                 ATryToEnforceIsolationLevel, out NewTransaction);
-                
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
                 AEncapsulatedDBAccessCode();
 
-                // Once execution gets to here we know that no unhandled Exception was thrown        
+                // Once execution gets to here we know that no unhandled Exception was thrown
                 ExceptionThrown = false;
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the 
-                // 'ExceptionThrown' Variable and will act accordingly!                
+
+                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
+                // 'ExceptionThrown' Variable and will act accordingly!
                 AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult, NewTransaction && ACommitTransaction);
             }
-        }        
+        }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that 
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>, 
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either 
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoReadTransaction(IsolationLevel ADesiredIsolationLevel,
             ref TDBTransaction ATransaction,
             Action AEncapsulatedDBAccessCode)
@@ -2902,35 +2905,35 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
-        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and 
-        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that 
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
-        /// either started or simply returned in <paramref name="ATransaction"/>. 
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>, 
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
-        /// </param> 
-        /// <param name="ATransaction">The DB Transaction that the Method 
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either 
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
         /// started or simply returned.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoReadTransaction(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
             Action AEncapsulatedDBAccessCode)
         {
             bool NewTransaction;
-           
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
-            // regarding Exception Handling.)                        
-            ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel, 
+
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
+            // regarding Exception Handling.)
+            ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel,
                 ATryToEnforceIsolationLevel, out NewTransaction);
-                
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
@@ -2938,336 +2941,335 @@ namespace Ict.Common.DB
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
-                if(NewTransaction)
+
+                if (NewTransaction)
                 {
                     // A DB Transaction Rollback is issued regardless of whether an unhandled Exception was thrown, or not!
                     //
                     // Reasoning as to why we don't Commit the DB Transaction:
-                    // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written 
-                    // to the DB using that DB Transaction then that data will get Committed here although we are only reading here, 
-                    // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!                                                      
+                    // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
+                    // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
+                    // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
                     RollbackTransaction();
                 }
             }
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(short)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry 
+        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
         /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method  
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(short)"/> started.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoTransaction(ref TDBTransaction ATransaction, 
-			bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(ref TDBTransaction ATransaction,
+            bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
             BeginAutoTransaction(-1, ref ATransaction, ASubmissionOK, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(short)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns 
+        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
         /// the DB Transaction that <see cref="BeginTransaction(short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(short)"/> started.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction, 
-			bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
+            bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
             bool ExceptionThrown = true;
-            
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
-            // regarding Exception Handling.)                                    
+
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
+            // regarding Exception Handling.)
             ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
-                
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
                 AEncapsulatedDBAccessCode();
-        
+
                 // Once execution gets to here we know that no unhandled Exception was thrown
                 ExceptionThrown = false;
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the 
-                // 'ExceptionThrown' Variable and will act accordingly!                
+
+                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
+                // 'ExceptionThrown' Variable and will act accordingly!
                 AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK);
             }
-
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(short)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry 
+        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
         /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(short)"/> started.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoTransaction(ref TDBTransaction ATransaction, 
-			ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(ref TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
         {
             BeginAutoTransaction(-1, ref ATransaction, ref ASubmitChangesResult, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(short)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns 
+        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
         /// the DB Transaction that <see cref="BeginTransaction(short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(short)"/> started.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction, 
-			ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
         {
             bool ExceptionThrown = true;
 
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
-            // regarding Exception Handling.)                                    
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
+            // regarding Exception Handling.)
             ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
-                
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
                 AEncapsulatedDBAccessCode();
-        
+
                 // Once execution gets to here we know that no unhandled Exception was thrown
                 ExceptionThrown = false;
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the 
-                // 'ExceptionThrown' Variable and will act accordingly!                                
+
+                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
+                // 'ExceptionThrown' Variable and will act accordingly!
                 AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult);
             }
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods' 
-        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns 
-        /// the DB Transaction that 
+        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
+        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns
+        /// the DB Transaction that
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction, 
-			bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
+            bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
             BeginAutoTransaction(AIsolationLevel, -1, ref ATransaction, ASubmissionOK, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and 
+        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
         /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that 
+        /// and returns the DB Transaction that
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful, 
-			ref TDBTransaction ATransaction, bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
             bool ExceptionThrown = true;
-            
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
-            // regarding Exception Handling.)                                                
+
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
+            // regarding Exception Handling.)
             ATransaction = BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
-                
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
                 AEncapsulatedDBAccessCode();
-        
+
                 // Once execution gets to here we know that no unhandled Exception was thrown
                 ExceptionThrown = false;
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the 
-                // 'ExceptionThrown' Variable and will act accordingly!                                
+
+                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
+                // 'ExceptionThrown' Variable and will act accordingly!
                 AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK);
             }
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods' 
-        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns 
-        /// the DB Transaction that 
+        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
+        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns
+        /// the DB Transaction that
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction, 
-			ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
         {
             BeginAutoTransaction(AIsolationLevel, -1, ref ATransaction, ref ASubmitChangesResult, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and 
+        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
         /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that 
+        /// and returns the DB Transaction that
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>                
-        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful, 
-			ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
         {
             bool ExceptionThrown = true;
-            
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
-            // regarding Exception Handling.)                        
+
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
+            // regarding Exception Handling.)
             ATransaction = BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
-                
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
                 AEncapsulatedDBAccessCode();
-        
+
                 // Once execution gets to here we know that no unhandled Exception was thrown
                 ExceptionThrown = false;
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the 
-                // 'ExceptionThrown' Variable and will act accordingly!                                
+
+                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
+                // 'ExceptionThrown' Variable and will act accordingly!
                 AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult);
             }
         }
 
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(short)"/>
-        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry 
+        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
         /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short)"/>
         /// started in <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>, 
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoReadTransaction(ref TDBTransaction ATransaction, 
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoReadTransaction(ref TDBTransaction ATransaction,
             Action AEncapsulatedDBAccessCode)
         {
             BeginAutoReadTransaction(-1, ref ATransaction, AEncapsulatedDBAccessCode);
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(short)"/>
-        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns 
+        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
         /// the DB Transaction that <see cref="BeginTransaction(short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>, 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoReadTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, 
-			ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoReadTransaction(Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
-            // regarding Exception Handling.)                        
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
+            // regarding Exception Handling.)
             ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
-                
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
@@ -3275,66 +3277,66 @@ namespace Ict.Common.DB
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
 
                 // A DB Transaction Rollback is issued regardless of whether an unhandled Exception was thrown, or not!
                 //
                 // Reasoning as to why we don't Commit the DB Transaction:
-                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written 
-                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here, 
-                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!                                                                    
+                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
+                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
+                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
                 RollbackTransaction();
             }
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods' 
+        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
         /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful)
-        /// and returns the DB Transaction that 
+        /// and returns the DB Transaction that
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>, 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction, 
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
             Action AEncapsulatedDBAccessCode)
         {
             BeginAutoReadTransaction(AIsolationLevel, -1, ref ATransaction, AEncapsulatedDBAccessCode);
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Calls the 
+        /// <em>Automatic Transaction Handling</em>: Calls the
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// Method with the Arguments <paramref name="AIsolationLevel"/> and 
+        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
         /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
-        /// and returns the DB Transaction that 
+        /// and returns the DB Transaction that
         /// <see cref="BeginTransaction(IsolationLevel, short)"/>
-        /// started in <paramref name="ATransaction"/>. 
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>, 
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
-        /// <param name="ATransaction">The DB Transaction that the Method 
+        /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>        
-        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful, 
-			ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
-            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness' 
-            // regarding Exception Handling.)                        
+            // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
+            // regarding Exception Handling.)
             ATransaction = BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
-                
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
@@ -3342,98 +3344,98 @@ namespace Ict.Common.DB
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
+
                 // A DB Transaction Rollback is issued regardless of whether an unhandled Exception was thrown, or not!
                 //
                 // Reasoning as to why we don't Commit the DB Transaction:
-                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written 
-                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here, 
-                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!                                                                      
+                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
+                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
+                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
                 RollbackTransaction();
             }
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction 
-        /// in Argument <paramref name="ATransaction"/> and handles the Committing / Rolling Back 
-        /// of that DB Transaction automatically, depending whether an Exception occured (Rollback always issued!) 
+        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction
+        /// in Argument <paramref name="ATransaction"/> and handles the Committing / Rolling Back
+        /// of that DB Transaction automatically, depending whether an Exception occured (Rollback always issued!)
         /// and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="ATransaction">Instance of a running DB Transaction.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>                
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
         public void AutoTransaction(ref TDBTransaction ATransaction, bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
             bool ExceptionThrown = true;
-    
+
             try
             {
                 // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
                 AEncapsulatedDBAccessCode();
 
-                // Once execution gets to here we know that no unhandled Exception was thrown        
-                ExceptionThrown = false;
-            }
-            finally
-            {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
-                //   2) an unhandled Exception was thrown.
-                
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the 
-                // 'ExceptionThrown' Variable and will act accordingly!                
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK);                
-            }
-         }        
-
-        /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction 
-        /// in Argument <paramref name="ATransaction"/> and handles the Committing / Rolling Back 
-        /// of that DB Transaction automatically, depending whether an Exception occured (Rollback always issued!) 
-        /// and on the value of <paramref name="ASubmitChangesResult"/>.
-        /// </summary>
-        /// <param name="ATransaction">Instance of a running DB Transaction.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
-        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>                
-        public void AutoTransaction(ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
-        {
-            bool ExceptionThrown = true;
-    
-            try
-            {
-                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
-                AEncapsulatedDBAccessCode();
-        
                 // Once execution gets to here we know that no unhandled Exception was thrown
                 ExceptionThrown = false;
             }
             finally
             {
-                // We can get to here in two ways: 
-                //   1) no unhandled Exception was thrown; 
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
                 //   2) an unhandled Exception was thrown.
-                
-                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the 
-                // 'ExceptionThrown' Variable and will act accordingly!                
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult);                
+
+                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
+                // 'ExceptionThrown' Variable and will act accordingly!
+                AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK);
             }
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction 
+        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction
+        /// in Argument <paramref name="ATransaction"/> and handles the Committing / Rolling Back
+        /// of that DB Transaction automatically, depending whether an Exception occured (Rollback always issued!)
+        /// and on the value of <paramref name="ASubmitChangesResult"/>.
+        /// </summary>
+        /// <param name="ATransaction">Instance of a running DB Transaction.</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void AutoTransaction(ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
+        {
+            bool ExceptionThrown = true;
+
+            try
+            {
+                // Execute the 'encapsulated C# code section' that the caller 'sends us' in the AEncapsulatedDBAccessCode Action delegate (0..n lines of code!)
+                AEncapsulatedDBAccessCode();
+
+                // Once execution gets to here we know that no unhandled Exception was thrown
+                ExceptionThrown = false;
+            }
+            finally
+            {
+                // We can get to here in two ways:
+                //   1) no unhandled Exception was thrown;
+                //   2) an unhandled Exception was thrown.
+
+                // The next Method that gets called will know wheter an unhandled Exception has be thrown (or not) by inspecting the
+                // 'ExceptionThrown' Variable and will act accordingly!
+                AutoTransCommitOrRollback(ExceptionThrown, ASubmitChangesResult);
+            }
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Takes an instance of a running DB Transaction
         /// in Argument <paramref name="ATransaction"/>.
-        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>, 
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="ATransaction">Instance of a running DB Transaction.</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the 
-        /// automatic DB Transaction handling scope that this Method provides.</param>                
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
         private void AutoReadTransaction(ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
             try
@@ -3446,66 +3448,66 @@ namespace Ict.Common.DB
                 // A DB Transaction Rollback is issued regardless of whether an unhandled Exception was thrown, or not!
                 //
                 // Reasoning as to why we don't Commit the DB Transaction:
-                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written 
-                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here, 
-                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!                                                                      
-                RollbackTransaction();   
+                // If the DB Transaction that was used for here for reading was re-used and if in earlier code paths data was written
+                // to the DB using that DB Transaction then that data will get Committed here although we are only reading here,
+                // and in doing so we would not know here 'what' we would be unknowingly committing to the DB!
+                RollbackTransaction();
             }
-        } 
-        
+        }
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Works on the basis of the currently running DB Transaction 
-        /// and handles the Committing / Rolling Back of that DB Transaction, depending whether an Exception occured 
-        /// (indicated with Argument <paramref name="AExceptionThrown"/>) and on the values of 
+        /// <em>Automatic Transaction Handling</em>: Works on the basis of the currently running DB Transaction
+        /// and handles the Committing / Rolling Back of that DB Transaction, depending whether an Exception occured
+        /// (indicated with Argument <paramref name="AExceptionThrown"/>) and on the values of
         /// Arguments <paramref name="ASubmissionOK"/> and <paramref name="ACommitTransaction"/>.
         /// </summary>
         /// <param name="AExceptionThrown">Set to true if an Exception occured.</param>
-        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param> 
-        /// <param name="ACommitTransaction">Set this to false if no Exception was thrown, but when the running  
-        /// DB Transaction should still not get committed.</param>                        
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
+        /// <param name="ACommitTransaction">Set this to false if no Exception was thrown, but when the running
+        /// DB Transaction should still not get committed.</param>
         private void AutoTransCommitOrRollback(bool AExceptionThrown, bool ASubmissionOK, bool ACommitTransaction = true)
-        {            
+        {
             if ((!AExceptionThrown)
                 && ASubmissionOK)
             {
                 // While everthing is fine, the calling code might decide not to Commit the DB Transaction!
-                if (ACommitTransaction) 
+                if (ACommitTransaction)
                 {
-                    CommitTransaction();    
-                }                
+                    CommitTransaction();
+                }
             }
             else
             {
                 RollbackTransaction();
-            }    
+            }
         }
-        
+
         /// <summary>
-        /// <em>Automatic Transaction Handling</em>: Works on the basis of the currently running DB Transaction 
-        /// and handles the Committing / Rolling Back of that DB Transaction, depending whether an Exception occured 
-        /// (indicated with Argument <paramref name="AExceptionThrown"/>) and on the values of 
+        /// <em>Automatic Transaction Handling</em>: Works on the basis of the currently running DB Transaction
+        /// and handles the Committing / Rolling Back of that DB Transaction, depending whether an Exception occured
+        /// (indicated with Argument <paramref name="AExceptionThrown"/>) and on the values of
         /// Arguments <paramref name="ASubmitChangesResult"/> and <paramref name="ACommitTransaction"/>.
         /// </summary>
         /// <param name="AExceptionThrown">Set to true if an Exception occured.</param>
-        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is 
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
-        /// <param name="ACommitTransaction">Set this to false if no Exception was thrown, but when the running  
-        /// DB Transaction should still not get committed.</param>                        
+        /// <param name="ACommitTransaction">Set this to false if no Exception was thrown, but when the running
+        /// DB Transaction should still not get committed.</param>
         private void AutoTransCommitOrRollback(bool AExceptionThrown, TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction = true)
         {
-            if ((!AExceptionThrown) 
+            if ((!AExceptionThrown)
                 && (ASubmitChangesResult == TSubmitChangesResult.scrOK))
             {
                 // While everthing is fine, the calling code might decide not to Commit the DB Transaction!
-                if (ACommitTransaction) 
+                if (ACommitTransaction)
                 {
-                    CommitTransaction();    
-                }                
+                    CommitTransaction();
+                }
             }
             else
             {
                 RollbackTransaction();
-            }                            
+            }
         }
 
         #endregion
@@ -3591,7 +3593,7 @@ namespace Ict.Common.DB
         /// <summary>Holds the DbTransaction that we are wrapping inside this class.</summary>
         private DbTransaction FWrappedTransaction;
         private bool FReused = false;
-        
+
         /// <summary>
         /// Database connection to which the Transaction belongs.
         /// </summary>
@@ -3630,7 +3632,7 @@ namespace Ict.Common.DB
                 return FWrappedTransaction;
             }
         }
-        
+
         /// <summary>
         /// True if the Transaction has been re-used at least once by way of calling one of the
         /// 'TDataBase.GetNewOrExistingTransaction' or 'TDataBase.GetNewOrExistingAutoTransaction' Methods.
@@ -3642,7 +3644,7 @@ namespace Ict.Common.DB
                 return FReused;
             }
         }
-        
+
         /// <summary>
         /// True if the Transaction hasn't been Committed or Rolled Back, otherwise false.
         /// </summary>
@@ -3653,7 +3655,7 @@ namespace Ict.Common.DB
                 return FWrappedTransaction.Connection != null;
             }
         }
-        
+
         /// <summary>
         /// Constructor for a <see cref="TDBTransaction" /> Object.
         /// </summary>
@@ -3671,7 +3673,7 @@ namespace Ict.Common.DB
         {
             FReused = true;
         }
-        
+
         #region Dispose pattern
 
         /// <summary>

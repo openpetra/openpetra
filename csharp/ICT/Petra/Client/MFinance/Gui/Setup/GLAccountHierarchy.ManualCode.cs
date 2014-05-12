@@ -314,6 +314,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
             FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
             txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
+            cmbDetailValidCcCombo.SelectedValueChanged += cmbDetailValidCcCombo_SelectedValueChanged;
+
 
             FIAmUpdating = false;
             FNameForNewAccounts = Catalog.GetString("NEWACCOUNT");
@@ -331,6 +333,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // ex.Message is: DragDrop registration did not succeed.
                 // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+            }
+        }
+
+        /// <summary>If the user sets this strangely, I'll just warn her...</summary>
+        ///
+        void cmbDetailValidCcCombo_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if ((FCurrentNode == null) || FIAmUpdating) // Only look into this is the user has changed it...
+            {
+                return;
+            }
+
+            String AccountType = cmbDetailAccountType.Text;
+            String ValidCCType = cmbDetailValidCcCombo.Text;
+            String RequiredValue = "";
+
+            if ((AccountType == "Asset") || (AccountType == "Liability"))
+            {
+                RequiredValue = "Local";
+            }
+
+            if (AccountType == "Equity")
+            {
+                RequiredValue = "All";
+            }
+
+            if ((RequiredValue != "") && (ValidCCType != RequiredValue))
+            {
+                if (MessageBox.Show(String.Format(Catalog.GetString(
+                                "{0} Accounts should accept CostCentres of type {1}.\n" +
+                                "Are you sure you want to use {2}?"),
+                            AccountType,
+                            RequiredValue,
+                            ValidCCType), Catalog.GetString("Valid Cost Centre Type"), MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
+                    != System.Windows.Forms.DialogResult.Yes)
+                {
+                    FIAmUpdating = true;
+                    cmbDetailValidCcCombo.Text = RequiredValue;
+                    FIAmUpdating = false;
+                }
             }
         }
 
@@ -365,7 +407,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (FCurrentNode != null)
             {
-                FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailEngAccountCodeShortDesc.Text);
+                FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailAccountCodeShortDesc.Text);
             }
         }
 

@@ -212,7 +212,7 @@
 43,7400,Asset,Land & Buildings,Land & Buildings,Land & Buildings,Land & Buildings,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,7400S,Asset,Land & Buildings,Land & Buildings,Land & Buildings,Land & Buildings,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,7500,Liability,Accumulated Depreciation Equip,Accumulated Depreciation Equip,Accumulated Depreciation Equip,Accumulated Depreciation Equip,false,true,false,true,true,false,?,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,7500S,Asset,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,7500S,Liability,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,7600,Liability,Land and Buildings,Land and Buildings,Land and Buildings,Land and Buildings,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,7600S,Asset,Accum. Depreciation:  Land & Buildings,Accum. Depr.:  Land & Buildings,Accum. Depr.:  Land & Buildings,Accum. Depreciation:  Land & Buildings,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,8100,Liability,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?

@@ -100,7 +100,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                     // If so, then I need to unset the current Default:
                     foreach (SReportTemplateRow Row in FTemplateTable.Rows)
                     {
-                        Row.Default = (Row == FSelectedRow);
+                        if (Row.RowState != DataRowState.Deleted)
+                        {
+                            Row.Default = (Row == FSelectedRow);
+                        }
                     }
                 }
                 else // The user wants to unset this but he can't.

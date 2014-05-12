@@ -982,14 +982,21 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void SetWindowTitle()
         {
-            // set the title of the window
-            if (FCurrentSettingsName.Length > 0)
+            if (FWinForm.InvokeRequired)
             {
-                FWinForm.Text = FWindowCaption + ": " + FCurrentSettingsName + FFastReportsPlugin.SelectedTemplateName;
+                FWinForm.Invoke(new CrossThreadUpdate(SetWindowTitle));
             }
             else
             {
-                FWinForm.Text = FWindowCaption;
+                // set the title of the window
+                if (FCurrentSettingsName.Length > 0)
+                {
+                    FWinForm.Text = FWindowCaption + ": " + FCurrentSettingsName + FFastReportsPlugin.SelectedTemplateName;
+                }
+                else
+                {
+                    FWinForm.Text = FWindowCaption;
+                }
             }
         }
 

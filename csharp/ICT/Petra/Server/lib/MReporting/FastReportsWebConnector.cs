@@ -138,6 +138,12 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (FDbAdapter.IsCancelled)
+            {
+                return null;
+            }
+
             return MainDs;
         }
     }
