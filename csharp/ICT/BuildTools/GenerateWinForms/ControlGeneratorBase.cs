@@ -690,7 +690,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if (((ActionToPerform == "actEditFilter") || (ActionToPerform == "actEditFindNext") || (ActionToPerform == "actEditFindPrevious")
                      || (ActionToPerform == "actEditFind")) && !writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
                 {
-                    // Do nothing
+                    // Do nothing unless there is a manual code handler (on screens with user controls)
+                    if (writer.FCodeStorage.ManualFileExistsAndContains("void MniFilterFind_Click("))
+                    {
+                        AssignEventHandlerToControl(writer, ctrl, "Click", "MniFilterFind_Click");
+                    }
+                    else if (ActionToPerform == "actEditFind")
+                    {
+                        TLogging.Log("No implementation of actEditFind on this screen");
+                    }
                 }
                 else
                 {
@@ -700,23 +708,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
                 SetControlActionProperties(writer, ctrl, ActionHandler);
 
+                string strMniFilterFindClick = "void MniFilterFind_Click(";
+
                 if ((ActionToPerform == "actEditFind") && (ctrl.controlName == "mniEditFind")
-                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind") || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
                 {
-                    ProcessTemplate snipCtrlF = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLF");
-                    snipCtrlF.SetCodelet("ACTIONCLICK", ctrl.GetAction().actionClick);
-                    writer.FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlF);
                     writer.SetControlProperty("mniEditFind", "ShortcutKeys", "Keys.F | Keys.Control", false);
                 }
 
                 if ((ActionToPerform == "actEditFindNext") && (ctrl.controlName == "mniEditFindNext")
-                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind") || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
                 {
                     writer.SetControlProperty("mniEditFindNext", "ShortcutKeys", "Keys.F3", false);
                 }
 
                 if ((ActionToPerform == "actEditFindPrevious") && (ctrl.controlName == "mniEditFindPrevious")
-                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind") || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
                 {
                     writer.SetControlProperty("mniEditFindPrevious", "ShortcutKeys", "Keys.F3 | Keys.Shift", false);
                 }
@@ -747,11 +754,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 if ((ActionToPerform == "actEditFilter") && (ctrl.controlName == "mniEditFilter")
-                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind") || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
                 {
-                    ProcessTemplate snipCtrlR = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLR");
-                    snipCtrlR.SetCodelet("ACTIONCLICK", ctrl.GetAction().actionClick);
-                    writer.FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlR);
                     writer.SetControlProperty("mniEditFilter", "ShortcutKeys", "Keys.R | Keys.Control", false);
                 }
 

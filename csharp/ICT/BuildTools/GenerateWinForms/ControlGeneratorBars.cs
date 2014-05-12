@@ -104,7 +104,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (TControlDef child in container.Children)
                 {
-                    if (IsMniEditClickAndIgnore(writer, child, true))
+                    if (IsMniFilterFindClickAndIgnore(writer, child, child.controlName == "mniEditFind"))
                     {
                         continue;
                     }
@@ -133,7 +133,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
-            if (IsMniEditClickAndIgnore(writer, ctrl, false))
+            if (IsMniFilterFindClickAndIgnore(writer, ctrl, false))
             {
                 return writer.FTemplate;
             }
@@ -155,32 +155,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return writer.FTemplate;
         }
 
-        private bool IsMniEditClickAndIgnore(TFormWriter writer, TControlDef ctrl, bool LogMessage)
+        private bool IsMniFilterFindClickAndIgnore(TFormWriter writer, TControlDef ctrl, bool LogMessage)
         {
-            if (writer.FCodeStorage.ManualFileExistsAndContains("void MniEditGoto_Click("))
+            if (writer.FCodeStorage.ManualFileExistsAndContains("void MniFilterFind_Click("))
             {
                 // if there is manual code then we will use it
                 return false;
             }
 
-            bool bHasGrid = false;
-            foreach (TControlDef ctrlDef in writer.FCodeStorage.FControlList.Values)
+            // Screens that have no Filter/Find panel do not qualify for the Filter/Find menus
+            if (!writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
             {
-                if (ctrlDef.controlTypePrefix == "grd")
-                {
-                    bHasGrid = true;
-                    break;
-                }
-            }
-
-            // Screens that have no grid or no detail table do not qualify for the Goto menus
-            if (!bHasGrid || !writer.FCodeStorage.HasAttribute("DetailTable"))
-            {
-                if ((ctrl.GetAction() != null) && (ctrl.GetAction().actionClick == "MniEditGoto_Click"))
+                if ((ctrl.GetAction() != null) && (ctrl.GetAction().actionClick == "MniFilterFind_Click"))
                 {
                     if (LogMessage)
                     {
-                        TLogging.Log("Ignoring MniEditGoto_Click menus on this screen");
+                        TLogging.Log("Ignoring MniFilterFind_Click menus on this screen");
                     }
 
                     return true;

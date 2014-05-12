@@ -522,14 +522,23 @@ void ApplyFilter()
 /// If this is part of a user control, it can be called from the parent
 public void MniFilterFind_Click(object sender, EventArgs e)
 {
-    if (ValidateAllData(true, true))
+    if ((this.ActiveControl == null) || ValidateAllData(true, true))
     {
         if (FucoFilterAndFind == null)
         {
             ToggleFilter();
         }
 
-        string senderName = ((ToolStripMenuItem)sender).Name;
+        string senderName;
+
+        if (sender is ToolStripMenuItem)
+        {
+            senderName = ((ToolStripMenuItem)sender).Name;
+        }
+        else
+        {
+            senderName = sender.ToString();
+        }
 
         if (senderName.StartsWith("mniEditFind"))
         {

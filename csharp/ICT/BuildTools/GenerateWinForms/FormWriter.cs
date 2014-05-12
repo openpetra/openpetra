@@ -1135,12 +1135,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
             }
 
-            if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLG"))
+            if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLL"))
             {
                 if (FCodeStorage.FControlList.ContainsKey("grdDetails") && !FCodeStorage.FControlList["grdDetails"].HasAttribute("IgnoreEditMove]"))
                 {
-                    ProcessTemplate snipCtrlG = FTemplate.GetSnippet("PROCESSCMDKEYCTRLG");
-                    FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlG);
+                    ProcessTemplate snipCtrlL = FTemplate.GetSnippet("PROCESSCMDKEYCTRLL");
+                    FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlL);
 
                     if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
                     {
@@ -1157,6 +1157,37 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ProcessTemplate snipCmdKeyManual = FTemplate.GetSnippet("PROCESSCMDKEYMANUAL");
                     FTemplate.InsertSnippet("PROCESSCMDKEYMANUAL", snipCmdKeyManual);
                 }
+            }
+            if ((FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLF")) && (FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")))
+            {
+                ProcessTemplate snipCtrlF = FTemplate.GetSnippet("PROCESSCMDKEYCTRLF");
+                
+                if (FCodeStorage.FActionList.ContainsKey("actEditFind"))
+                {
+                    snipCtrlF.SetCodelet("ACTIONCLICK", FCodeStorage.FActionList["actEditFind"].actionClick);
+                }
+                else
+                {
+                    snipCtrlF.SetCodelet("ACTIONCLICK", "MniFilterFind_Click");
+                }
+                
+                FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlF);
+            }
+
+            if ((FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLR")) && (FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")))
+            {
+                ProcessTemplate snipCtrlR = FTemplate.GetSnippet("PROCESSCMDKEYCTRLR");
+
+                if (FCodeStorage.FActionList.ContainsKey("actEditFilter"))
+                {
+                    snipCtrlR.SetCodelet("ACTIONCLICK", FCodeStorage.FActionList["actEditFilter"].actionClick);
+                }
+                else
+                {
+                    snipCtrlR.SetCodelet("ACTIONCLICK", "MniFilterFind_Click");
+                }
+
+                FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlR);
             }
 
             if (FCodeStorage.HasAttribute("DatasetType"))

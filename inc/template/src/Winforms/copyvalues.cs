@@ -129,24 +129,24 @@ return null;
 {##PROCESSCMDKEYCTRLF}
 if (keyData == (Keys.F | Keys.Control))
 {
-    {#ACTIONCLICK}(mniEditFind, null);
+    {#ACTIONCLICK}("mniEditFind", null);
     return true;
 }
 if (keyData == Keys.F3)
 {
-    {#ACTIONCLICK}(mniEditFindNext, null);
+    {#ACTIONCLICK}("mniEditFindNext", null);
     return true;
 }
 if (keyData == (Keys.F3 | Keys.Shift))
 {
-    {#ACTIONCLICK}(mniEditFindPrevious, null);
+    {#ACTIONCLICK}("mniEditFindPrevious", null);
     return true;
 }
 
 {##PROCESSCMDKEYCTRLR}
 if (keyData == (Keys.R | Keys.Control))
 {
-    {#ACTIONCLICK}(mniEditFilter, null);
+    {#ACTIONCLICK}("mniEditFilter", null);
     return true;
 }
 
@@ -167,8 +167,8 @@ if (ProcessCmdKeyManual(ref msg, keyData))
     return true;
 }
 
-{##PROCESSCMDKEYCTRLG}
-if (keyData == (Keys.G | Keys.Control))
+{##PROCESSCMDKEYCTRLL}
+if (keyData == (Keys.L | Keys.Control))
 {
     grdDetails.Focus();
     return true;
