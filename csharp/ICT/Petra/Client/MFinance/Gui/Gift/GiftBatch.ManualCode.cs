@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="sender">Pass this on to the user control.</param>
         /// <param name="e">Not evaluated.</param>
-        public void mniFilterFind_Click(object sender, System.EventArgs e)
+        public void MniFilterFind_Click(object sender, System.EventArgs e)
         {
             switch (tabGiftBatch.SelectedIndex)
             {
@@ -356,6 +356,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.SelectBatchNumber(gdr.BatchNumber);
             ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
             standardTabIndex = 1;     // later we switch to the detail tab
+        }
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ((tabGiftBatch.SelectedTab == tpgBatches) && (ucoBatches.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((tabGiftBatch.SelectedTab == tpgTransactions) && (ucoTransactions.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }
