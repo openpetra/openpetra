@@ -2197,6 +2197,15 @@ namespace Ict.Common
             }
 
             return result;
-        }
-    }
+        }        
+
+        /// <summary> 
+        /// Splits a string that contains one or more email addresses 
+        /// so that each email address becomes one item in a string array.
+        /// </summary>
+        static public string[] SplitEmailAddresses(string AEmailAddress)
+        {
+            return AEmailAddress.Split(",;".ToCharArray());
+        }        
+    }    
 }

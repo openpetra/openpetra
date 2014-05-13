@@ -302,8 +302,9 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(TreeView))
                          || (ctrl.GetType() == typeof(TTrvTreeView))
                          || (ctrl.GetType() == typeof(TbtnCreated))
-                         || ((ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel))
-                             || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))))
+                         || (ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel))
+                         || ((ctrl.GetType() == typeof(System.Windows.Forms.RichTextBox))
+                         || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))))
                 {
                     // nothing to do
                 }
