@@ -1515,10 +1515,28 @@ namespace Ict.Petra.Server.MFinance.Common
                 //
                 // The call to GLBatchCanBeCancelled will have loaded all these records for me.
 
-                TempTDS.AJournal.Rows.Clear();
-                TempTDS.ATransaction.Rows.Clear();
-                TempTDS.ATransAnalAttrib.Rows.Clear();
+                foreach (DataRow row in TempTDS.AJournal.Rows)
+                {
+                    row.Delete();
+                }
 
+                foreach (DataRow row in TempTDS.ATransaction.Rows)
+                {
+                    row.Delete();
+                }
+
+                foreach (DataRow row in TempTDS.ATransAnalAttrib.Rows)
+                {
+                    row.Delete();
+                }
+
+/*
+ * // apparently using Rows.Clear doesn't convey "delete these rows" back to the database, which is what we need:
+ *
+ *              TempTDS.AJournal.Rows.Clear();
+ *              TempTDS.ATransaction.Rows.Clear();
+ *              TempTDS.ATransAnalAttrib.Rows.Clear();
+ */
                 GLBatchTDSAccess.SubmitChanges(TempTDS);
 
                 return true;

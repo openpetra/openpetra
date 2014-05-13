@@ -371,7 +371,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.CreateNewATransaction();
 
-            ClearControls();
+//          ClearControls(); // Don't clear controls! I've just worked hard to set some default values in them!
             ValidateAllData(true, false);
 
             pnlTransAnalysisAttributes.Enabled = true;
@@ -411,6 +411,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPreviouslySelectedDetailRow != null)
             {
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
+                ANewRow.Narrative = FPreviouslySelectedDetailRow.Narrative;
+                ANewRow.Reference = FPreviouslySelectedDetailRow.Reference;
             }
         }
 
@@ -585,13 +587,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return RetVal;
         }
 
-        private bool AccountAnalysisAttributesValuesExist()
+        private bool AccountAnalysisAttributesValuesExist(out String ValueRequiredForType)
         {
-            bool RetVal = true;
+            ValueRequiredForType = "";
 
             if (!FIsUnposted || (FPreviouslySelectedDetailRow == null) || (FMainDS.ATransAnalAttrib.DefaultView.Count == 0))
             {
-                return RetVal;
+                return true;
             }
 
             int TransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
@@ -624,13 +626,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     if (rw.IsAnalysisAttributeValueNull() || (rw.AnalysisAttributeValue == string.Empty))
                     {
-                        RetVal = false;
-                        break;
+                        ValueRequiredForType = rw.AnalysisTypeCode;
+                        return false;
                     }
                 }
             }
 
-            return RetVal;
+            return true;
         }
 
         private ATransAnalAttribRow GetSelectedAttributeRow()
@@ -1813,8 +1815,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 object ValidationContext;
 
                 ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnAccountCodeId];
-                ValidationContext = String.Format(" - Account Code {0} in Transaction {1} is missing Analysis Attributes.{2}{2}" +
-                    "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}.",
+                ValidationContext = String.Format("Analysis Attributes for Account Code {0} in Transaction {1}.{2}{2}" +
+                    "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}",
                     ARow.AccountCode,
                     ARow.TransactionNumber,
                     Environment.NewLine);
@@ -1828,14 +1830,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
             }
 
-            if (!AccountAnalysisAttributesValuesExist())
+            String ValueRequiredForType;
+
+            if (!AccountAnalysisAttributesValuesExist(out ValueRequiredForType))
             {
                 DataColumn ValidationColumn;
                 TVerificationResult VerificationResult = null;
                 object ValidationContext;
 
                 ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnAccountCodeId];
-                ValidationContext = String.Format(" - Account Code {0} in Transaction {1} is missing Analysis Attribute values.",
+                ValidationContext = String.Format("Analysis code {0} for Account Code {1} in Transaction {2}",
+                    ValueRequiredForType,
                     ARow.AccountCode,
                     ARow.TransactionNumber);
 
