@@ -51,37 +51,30 @@ RootNode:
         btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
        
         grpContactDetails:
-            Controls: [grpFilter, pnlEditing]
-            Dock: Fill
-
-        grpFilter:
-            Controls: [chkValidContactDetailsOnly]
-            Dock: Top
-
-        chkValidContactDetailsOnly: {CheckBoxAttachedLabel=Left, OnChange=FilterCriteriaChanged}
-
-        pnlEditing:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
-            Padding: 0,5,0,0
         
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails, pnlPromoteDemote]
 
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew, btnDelete, pnlPromoteDemote]
-        btnNew: {Stretch=horizontally}
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
             Action: actNew
-        btnDelete: {Stretch=horizontally}
+            Width: 80
+        btnDelete:
             Action: actDelete
+            Width: 80
         pnlPromoteDemote:
+            Dock: Right
             Controls: [btnDemote, btnPromote]
-            Margin: 0,0,0,0
-            Padding: 0,5,0,0
         btnPromote: {NoLabel=true, Width=15}
+            Padding: 0,75,0,0
         btnDemote: {NoLabel=true, Width=15}
+            Padding: 0,70,0,0
             
         grdDetails:
             Dock: Fill

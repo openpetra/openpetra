@@ -347,9 +347,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(cmbPhoneWithinTheOrganisation, Catalog.GetString("Select one of the Partner's telephone numbers to designate it as her/his telephone number within The Organisation."));
             FPetraUtilsObject.SetStatusBarText(cmbEMailWithinTheOrganisation, Catalog.GetString("Select one of the Partner's e-mail addresses to designate it as her/his e-mail address within The Organisation."));
             FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkEMailWithinOrg, Catalog.GetString("Click this button to send an email to the Partner's Office E-mail address."));
-            
-            FPetraUtilsObject.SetStatusBarText(chkValidContactDetailsOnly, Catalog.GetString("Only currently valid Contact Details are shown if this is ticked."));
-            
+                        
             FPetraUtilsObject.SetStatusBarText(btnPromote, Catalog.GetString("Click this button to re-arrange a contact detail record within records of the same Contact Type."));
             FPetraUtilsObject.SetStatusBarText(btnDemote, Catalog.GetString("Click this button to re-arrange a contact detail record within records of the same Contact Type."));
             
