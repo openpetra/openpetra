@@ -63,6 +63,7 @@ namespace Ict.Common.Controls
             
             SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK);
             SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_URLLINK);
+            SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_URLWITHVALUELINK);
             SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_SECUREDURL);
             SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_FTPLINK);
             SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_SKYPELINK);
@@ -467,6 +468,16 @@ namespace Ict.Common.Controls
                 FHyperLinksControl.Text = THyperLinkHandling.HYPERLINK_PREFIX_URLLINK + AUrl;
             }
             
+
+            /// <summary>
+            /// Displays Internet hyperlinks (URLs) with value replacements. 
+            /// </summary>
+            /// <param name="AUrl">Hyperlink (URL).</param>
+            public void DisplayURLWithValue(string AUrl)
+            {
+                FHyperLinksControl.Text = THyperLinkHandling.HYPERLINK_PREFIX_URLWITHVALUELINK + AUrl;
+            }
+            
             /// <summary>
             /// Displays Skype IDs. 
             /// </summary>
@@ -504,9 +515,21 @@ namespace Ict.Common.Controls
                                     LinkType = @"http://";
                                 }
             
-
                                 break;
-            
+                                
+                            case THyperLinkHandling.THyperLinkType.Http_With_Value_Replacement:
+                                            
+                                if (FHyperLinksControl.BuildLinkWithValue != null) 
+                                {
+                                    TheLink = FHyperLinksControl.BuildLinkWithValue(TheLink);
+                                }
+                                else
+                                {
+                                    throw new EProblemLaunchingHyperlinkException("Link is a Hyperlink that asks for a replacement of {VALUE}, but the Delegate 'BuildLinkWithValue' has not been set up");
+                                }
+                                
+                                break;
+ 
                             case THyperLinkHandling.THyperLinkType.Ftp:
             
                                 if (ALinkText.ToLower().IndexOf(@"ftp://") < 0)
@@ -533,20 +556,6 @@ namespace Ict.Common.Controls
                                 
                                 break;
                         }                        
-
-// TODO                        
-//                                if (...)
-//                                {
-//                                    if (FHyperLinksControl.BuildLinkWithValue != null) 
-//                                    {
-//                                        TheLink = FHyperLinksControl.BuildLinkWithValue(TheLink);
-//                                    }
-//                                    else
-//                                    {
-//                                        throw new EProblemLaunchingHyperlinkException("Link is a Hyperlink that asks for a replacement of {VALUE}, but the Delegate 'BuildLinkWithValue' has not been set up");
-//                                    }
-//                                }
-                                
                         
                         System.Diagnostics.Process.Start(LinkType + TheLink);
                     }
@@ -555,8 +564,7 @@ namespace Ict.Common.Controls
                 {
                     throw new EProblemLaunchingHyperlinkException("Hyperlink cannot be launched!", ex);
                 }
-            }        
-               
+            }                       
         }                
     }
 }

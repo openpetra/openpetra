@@ -266,6 +266,7 @@ namespace Ict.Common
     {
         public const string HYPERLINK_PREFIX_EMAILLINK = "||email||";
         public const string HYPERLINK_PREFIX_URLLINK = "||hyperlink||";
+        public const string HYPERLINK_PREFIX_URLWITHVALUELINK = "||hyperlink_with_value||";
         public const string HYPERLINK_PREFIX_SECUREDURL = "||securehyperlink||";
         public const string HYPERLINK_PREFIX_FTPLINK = "||FTP||";
         public const string HYPERLINK_PREFIX_SKYPELINK = "||skype||";
@@ -332,6 +333,10 @@ namespace Ict.Common
             else if (String.Equals(AHyperLinkType, HYPERLINK_PREFIX_URLLINK))
             {
                 ReturnValue = THyperLinkType.Http;
+            }
+            else if (String.Equals(AHyperLinkType, HYPERLINK_PREFIX_URLWITHVALUELINK))
+            {
+                ReturnValue = THyperLinkType.Http_With_Value_Replacement;
             }
             else if (String.Equals(AHyperLinkType, HYPERLINK_PREFIX_SECUREDURL))
             {

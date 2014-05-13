@@ -913,7 +913,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
                     
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
-                    rtbValue.Helper.DisplayURL(Value);   // TODO: display it with value!
+                    rtbValue.Helper.DisplayURLWithValue(Value);
                                         
                     break;
             
