@@ -217,6 +217,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Country", FCriteriaData.Columns[PLocationTable.GetCountryCodeDBName()], 60);
 
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(grdDetails_DoubleClickCell);
+            grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(grdDetails_EnterKey);
+            grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
         }
 
         #endregion
@@ -299,6 +301,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         private void grdDetails_DoubleClickCell(object Sender, SourceGrid.CellContextEventArgs e)
+        {
+            Accept(e, null);
+        }
+
+        private void grdDetails_EnterKey(object Sender, EventArgs e)
         {
             Accept(e, null);
         }
