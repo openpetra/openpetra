@@ -958,8 +958,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         AGiftDetailTable.GetGiftTransactionNumberDBName(),
                         AGiftDetailTable.GetDetailNumberDBName());
 
-                    TLogging.Log("Other Rows Count: " + giftDetails2.Count.ToString());
-
                     foreach (DataRowView giftDetailRows in giftDetails2)
                     {
                         AGiftDetailRow gDR = (AGiftDetailRow)giftDetailRows.Row;

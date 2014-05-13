@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             return true;
         }
-        
+
         /// <summary>
         /// load the transactions into the grid
         /// </summary>
@@ -794,10 +794,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ABatchRow CurrentBatchRow = GetBatchRow();
             AJournalRow CurrentJournalRow = GetJournalRow();
 
-            if (!(((TFrmGLBatch)this.ParentForm).GetJournalsControl().FJournalsLoaded)
+            if (!(((TFrmGLBatch) this.ParentForm).GetJournalsControl().FJournalsLoaded)
                 || (CurrentJournalRow == null)
                 || (CurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                || ((CurrentJournalRow.TransactionCurrency == FTransactionCurrency) && (CurrentJournalRow.ExchangeRateToBase == FBatchExchangeRateToBase)))
+                || ((CurrentJournalRow.TransactionCurrency == FTransactionCurrency)
+                    && (CurrentJournalRow.ExchangeRateToBase == FBatchExchangeRateToBase)))
             {
                 return;
             }
@@ -812,25 +813,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int LedgerNumber = FBatchRow.LedgerNumber;
             int CurrentBatchNumber = FBatchRow.BatchNumber;
 
-            if (CheckIfTransLoaded)
-            {
-                //Check if this batch's transactions are already loaded
-                DataView detailView = new DataView(FMainDS.AGift);
+            //if (CheckIfTransLoaded)
+            //{
+            //    //Check if this batch's transactions are already loaded
+            //    DataView detailView = new DataView(FMainDS.AGift);
 
-                detailView.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    AGiftTable.GetLedgerNumberDBName(),
-                    LedgerNumber,
-                    AGiftTable.GetBatchNumberDBName(),
-                    CurrentBatchNumber);
+            //    detailView.RowFilter = String.Format("{0}={1} And {2}={3}",
+            //        AGiftTable.GetLedgerNumberDBName(),
+            //        LedgerNumber,
+            //        AGiftTable.GetBatchNumberDBName(),
+            //        CurrentBatchNumber);
 
-                if (detailView.Count == 0)
-                {
-                    //FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(LedgerNumber, CurrentBatchNumber));
-                    LoadGifts(LedgerNumber, CurrentBatchNumber);
-                    ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                }
-            }
-
+            //    if (detailView.Count == 0)
+            //    {
+            //        //FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(LedgerNumber, CurrentBatchNumber));
+            //        LoadGifts(LedgerNumber, CurrentBatchNumber);
+            //        ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+            //    }
+            //}
 
             if ((FJournalNumber != -1) && (FBatchRow != null) && (FJournalRow != null)) // && (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED))         // && !pnlDetailsProtected)
             {
@@ -915,9 +915,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         private void UpdateCurrencyValues()
-        { 
-        
-}
+        {
+        }
 
         // /// <summary>
         // /// update international amount for current batch and journal

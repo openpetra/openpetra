@@ -53,7 +53,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private DateTime FDateEffective;
-        private Int32 FSelectedBatchNumber;
         private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
@@ -78,6 +77,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Flags whether all the gift batch rows for this form have finished loading
         /// </summary>
         public bool FBatchLoaded = false;
+
+        /// <summary>
+        /// Currently selected batchnumber
+        /// </summary>
+        public Int32 FSelectedBatchNumber = -1;
 
         /// <summary>
         /// Stores the current batch's method of payment
@@ -114,6 +118,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             Console.WriteLine("End RefreshAll");
+        }
+
+        /// <summary>
+        /// Checks various things on the form before saving
+        /// </summary>
+        public void CheckBeforeSavingBatch()
+        {
+            //Add code here to run before the batch is saved
         }
 
         /// <summary>
@@ -861,6 +873,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ((TFrmGiftBatch)ParentForm).DisableTransactions();
                 dtpDetailGlEffectiveDate.Date = FDefaultDate;
+                FSelectedBatchNumber = -1;
                 return;
             }
 
@@ -1453,7 +1466,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPreviouslySelectedDetailRow.ExchangeRateToBase = ANewExchangeRate;
 
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(CurrencyCode);
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false, true);
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
         }
 
         private void RefreshCurrencyAndExchangeRateControls(bool AFromUserAction = false)
