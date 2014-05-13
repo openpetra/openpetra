@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,6 +85,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String AccountCodeFilter = ""; // Account Filter, as range or list:
             String TranctAccountCodeFilter = "";
+            DataTable Balances = new DataTable();
 
             if (pm.Get("param_rgrAccounts").ToString() == "AccountList")
             {
@@ -121,10 +122,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                          "' AND a_transaction.a_cost_centre_code_c<='" + pm.Get("param_cost_centre_code_end") + "'";
             }
 
-            String TranctDateFilter = ""; // Optional Date Filter, as periods or dates
-
-            TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
-                               "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
+            String TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
+                                      "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
 
             String ReferenceFilter = "";
             String AnalysisTypeFilter = "";
@@ -212,12 +211,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
 
-            //
-            // If I'm reporting period,
-            // I want to include opening and closing balances for each Cost Centre / Account, in the selected currency:
-            if (pm.Get("param_period").ToBool() == true)
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
             {
-                DataTable Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
+                return false;
+            }
+
+            //
+            // If I'm reporting by period or quarter,
+            // I want to include opening and closing balances for each Cost Centre / Account, in the selected currency:
+            if (pm.Get("param_period_checked").ToBool() || pm.Get("param_quarter_checked").ToBool())
+            {
+                Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
                     LedgerFilter,
                     AccountCodeFilter,
                     CostCentreFilter,
@@ -225,8 +229,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     pm.Get("param_end_period_i").ToInt32(),
                     pm.Get("param_currency").ToString().StartsWith("Int")
                     );
-                ReportDs.Merge(Balances);
-                FPetraUtilsObject.FFastReportsPlugin.RegisterData(Balances, "balances");
+
+                if (Balances == null)
+                {
+                    return false;
+                }
             }
 
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
@@ -234,6 +241,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ALedgerRow Row = ReportDs.ALedger[0];
                 ACalc.AddStringParameter("param_ledger_name", Row.LedgerName);
                 ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            }
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
+            {
+                return false;
             }
 
             //
@@ -257,11 +269,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ReportDs.Merge(TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv));
             }
 
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
+            {
+                return false;
+            }
+
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAnalysisType, "a_analysis_type");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(Balances, "balances");
             return true;
         }
     }
