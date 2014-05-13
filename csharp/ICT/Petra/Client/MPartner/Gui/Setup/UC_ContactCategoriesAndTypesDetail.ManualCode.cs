@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             ARow.Code = newName;
             ARow.AttributeCategory = FAttributeCategory;
+            ARow.Deletable = true;
         }
 
         private void GetDetailDataFromControlsManual(PPartnerAttributeTypeRow ARow)
@@ -142,5 +143,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // TODO
         }        
         
+        private void EnableDisableUnassignableDate(Object sender, EventArgs e)
+        {
+            dtpDetailUnassignableDate.Enabled = chkDetailUnassignable.Checked;
+
+            if (!chkDetailUnassignable.Checked)
+            {
+                dtpDetailUnassignableDate.Date = null;
+            }
+            else
+            {
+                dtpDetailUnassignableDate.Date = DateTime.Now.Date;
+            }
+        }        
     }
 }

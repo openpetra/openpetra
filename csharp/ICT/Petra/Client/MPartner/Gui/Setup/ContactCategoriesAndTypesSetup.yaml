@@ -21,20 +21,24 @@ RootNode:
         pnlGrid:
             Height: 300
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails, pnlPromoteDemoteCategory]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew, btnDelete, pnlPromoteDemoteCategory]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
-            Stretch: horizontally
+            Action: actNew
+            Width: 80
         btnDelete:
-            Stretch: horizontally
+            Action: actDelete
+            Width: 80
         pnlPromoteDemoteCategory:
-            Controls: [btnDemoteCategory, btnPromoteCategory]
-            Margin: 0,0,0,0
-            Padding: 0,0,0,0
+            Dock: Right
+            Controls: [btnDemoteCategory, btnPromoteCategory]            
         btnPromoteCategory: {NoLabel=true, Width=15}
+            Padding: 0,50,0,0
         btnDemoteCategory: {NoLabel=true, Width=15}
+            Padding: 0,50,0,0
         grdDetails:
             Dock: Fill
             TableName: PPartnerAttributeCategory
@@ -42,13 +46,13 @@ RootNode:
             CustomColumns:
                 CategoryCode: {Label=Contact Category}
                 CategoryDesc: {Label=Description}
-                Deletable: {Label=Deletable?, Type=Boolean}
+                Deletable: {Label=Deletable, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailCategoryCode, txtDetailCategoryDescription]
-                Row1: [chkDetailCategoryDeletable]
+                Row0: [txtDetailCategoryCode, txtDetailCategoryDesc]
+                Row1: [chkDetailCategoryDeletable, chkDetailSystemCategory]
                 Row2: [grpExtraDetails]
         grpExtraDetails: {Label=Contact Types}
             Controls: [ucoValues]
@@ -64,8 +68,6 @@ RootNode:
             Padding: 3,5,0,5                
           
         txtDetailCategoryCode: {Label=Contact Category, Width=200, Validation=true}
-        txtDetailCategoryDescription: {Label=Description, Width=293, Validation=true}
+        txtDetailCategoryDesc: {Label=Description, Width=293, Validation=true}
         chkDetailCategoryDeletable: {Label=Deletable, ReadOnly=true}
-    Toolbar:
-        tbbNew:
-            Label: New Contact Category
+        chkDetailSystemCategory: {ReadOnly=true}

@@ -18,21 +18,24 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails, pnlPromoteDemote]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew, btnDelete, pnlPromoteDemote]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
-            Stretch: horizontally
+            Action: actNew
+            Width: 80
         btnDelete:
-            Stretch: horizontally
+            Action: actDelete
+            Width: 80
         pnlPromoteDemote:
-            Controls: [btnDemote, btnPromote]
-            Margin: 0,0,0,0
-            Padding: 0,20,0,0
+            Dock: Right
+            Controls: [btnDemote, btnPromote]            
         btnPromote: {NoLabel=true, Width=15}
+            Padding: 0,60,0,0
         btnDemote: {NoLabel=true, Width=15}
-            
+            Padding: 0,60,0,0
         grdDetails:
             Dock: Fill
             TableName: PPartnerAttributeType
@@ -40,9 +43,9 @@ RootNode:
             CustomColumns:
                 Code: {Label=Contact Type}
                 Description: {Label=Description}
-                Unassignable: {Label=Unassignable?, Type=Boolean}
+                Unassignable: {Label=Unassignable, Type=Boolean}
                 UnassignableDate: {Label=Unassignable Date, Type=DateTime}
-                Deletable: {Label=Deletable?, Type=Boolean}
+                Deletable: {Label=Deletable, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
             
         pnlDetails:
@@ -72,7 +75,7 @@ RootNode:
         txtDetailCode: {Label=Contact Type, Width=255}
         txtDetailSpecialLabel: {Label=Label When for Business, Width=255}
         txtDetailDescription: {Width=255}
-        chkDetailUnassignable:
+        chkDetailUnassignable: {OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {ReadOnly=true}
         chkDetailDeletable: {ReadOnly=true}
         cmbDetailAttributeTypeValueKind: {Label=Value Is, Width=150}

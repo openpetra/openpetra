@@ -60,6 +60,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             ARow.CategoryCode = newName;
+            ARow.Deletable = true;
         }
 
         private TSubmitChangesResult StoreManualCode(ref PartnerContactSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
