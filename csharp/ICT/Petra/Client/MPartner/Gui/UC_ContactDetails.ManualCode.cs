@@ -774,17 +774,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Confidential
             grdDetails.AddCheckBoxColumn("Confidential", FMainDS.PPartnerAttribute.ColumnConfidential);
 
-            // Sequence (for testing purposes only...)
-            grdDetails.AddTextColumn("Sequence", FMainDS.PPartnerAttribute.ColumnSequence);
-
-            // Index (for testing purposes only...)
-            grdDetails.AddTextColumn("Index", FMainDS.PPartnerAttribute.ColumnIndex);
-
-            // Primary (for testing purposes only...)
-            grdDetails.AddCheckBoxColumn("Primary", FMainDS.PPartnerAttribute.ColumnPrimary);
-
-            // Within Organsiation (for testing purposes only...)
-            grdDetails.AddCheckBoxColumn("Within Organsiation", FMainDS.PPartnerAttribute.ColumnWithinOrgansiation);
+//            // Sequence (for testing purposes only...)
+//            grdDetails.AddTextColumn("Sequence", FMainDS.PPartnerAttribute.ColumnSequence);
+//
+//            // Index (for testing purposes only...)
+//            grdDetails.AddTextColumn("Index", FMainDS.PPartnerAttribute.ColumnIndex);
+//
+//            // Primary (for testing purposes only...)
+//            grdDetails.AddCheckBoxColumn("Primary", FMainDS.PPartnerAttribute.ColumnPrimary);
+//
+//            // Within Organsiation (for testing purposes only...)
+//            if (FMainDS.PPartner[0].PartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON)) 
+//            {
+//                
+//                grdDetails.AddCheckBoxColumn("Within Org.", FMainDS.PPartnerAttribute.ColumnWithinOrgansiation);                
+//            }
             
             // Modification TimeStamp (for testing purposes only...)
             // grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
@@ -900,7 +904,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void UpdateValueManual()
         {
-            string Value = GetSelectedDetailRow().Value;
+            var CurrentRow = GetSelectedDetailRow();
+            
+            if (CurrentRow == null) 
+            {
+                return;    
+            }
+            
+            string Value = CurrentRow.Value;
             string ValueText = String.Empty;
             
             switch (FValueKind) 
