@@ -72,20 +72,20 @@ RootNode:
             Dock: Right
             Controls: [btnDemote, btnPromote]
         btnPromote: {NoLabel=true, Width=15}
-            Padding: 0,75,0,0
+            Padding: 0,70,0,0
         btnDemote: {NoLabel=true, Width=15}
             Padding: 0,70,0,0
             
         grdDetails:
             Dock: Fill
             TableName: PPartnerAttributeType
-            Columns: [AttributeType, Value, Comment, Current, Confidential]
+            Columns: [AttributeType, Comment, Value, Current, Confidential]
             CustomColumns:
-                AttributeType: {Label=Contact Type}
+                AttributeType: {Label=Contact Type}               
+                Comment: {Label=Comment}
                 Value: {Label=Value}
-                Comment: {Label=Comments}
-                Current: {Label=Current?, Type=Boolean}
-                Confidential: {Label=Confidential?, Type=Boolean}
+                Current: {Label=Current, Type=Boolean}
+                Confidential: {Label=Confidential, Type=Boolean}
             # NOTE: These columns get discarded and replaced with more and 'calculated' Columns in ManualCode (Method 'CreateGridColumns')!
             ActionFocusRow: FocusedRowChanged
 
@@ -94,8 +94,9 @@ RootNode:
             Controls:
                 Row0: [cmbContactCategory, cmbContactType, chkSpecialised]
                 Row1: [rtbValue, txtComment]
-                Row2: [pnlCurrentGrouping, chkConfidential]
-            Height: 87
+                Row2: [pnlCurrentGrouping]
+                Row3: [chkConfidential]
+            Height: 115
 
         cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true, OnChange=FilterContactTypeCombo}
         cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true, OnChange=OnContactTypeChanged}
@@ -106,7 +107,7 @@ RootNode:
             Label: Value
             Width: 290
             Type: Hyperlink
-        txtComment: {Label=Comment, Width=245, ColSpan=2, DataField=PPartnerAttribute.Comment}
+        txtComment: {Label=Comment, Multiline=true, Width=245, Height=73, ColSpan=2, RowSpan=3, ScrollBars=Vertical, DataField=PPartnerAttribute.Comment}
 
         pnlCurrentGrouping:
             ControlsOrientation: horizontal

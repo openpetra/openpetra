@@ -144,7 +144,7 @@ namespace Ict.Common.Controls
                 
             ARTFBox.Rtf = @"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Verdana;}}" +
                 @"{\colortbl;\red0\green0\blue255;}" +
-                @"\viewkind4\uc1\pard\lang1033\f0\fs19\par}";
+                @"\viewkind4\uc1\pard\lang1033\b\f0\fs17\par}";
 
 //MessageBox.Show("ARTFBox.Text: " + text);
             string[]TextLines = text.Split(new string[] { "\r\n" }, StringSplitOptions.None);
@@ -158,7 +158,7 @@ namespace Ict.Common.Controls
         
         private void WriteLinkRTF(RichTextBox ARTFBox)
         {
-            const string RtfSelectionReplacementStart = @"{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Verdana;}}{\colortbl ;\red0\green0\blue255;}\uc1\pard\lang1033\f0\fs19";
+            const string RtfSelectionReplacementStart = @"{\rtf1\ansi\ansicpg1252\deff0{\fonttbl{\f0\fnil\fcharset0 Verdana;}}{\colortbl ;\red0\green0\blue255;}\uc1\pard\lang1033\b\f0\fs17";
             const string RtfSelectionReplacementEnd = "}";
             
             int TextPos = 0;

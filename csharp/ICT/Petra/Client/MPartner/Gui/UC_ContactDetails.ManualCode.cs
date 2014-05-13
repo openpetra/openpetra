@@ -336,8 +336,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             // Move the Panel that groups the 'Current' Controls for layout purposes a bit up from it's automatically assigned position
             pnlCurrentGrouping.Top = 53;
-            chkCurrent.Top = 6;
+            chkCurrent.Top = 7;
             dtpNoLongerCurrentFrom.Top = 4;
+            lblNoLongerCurrentFrom.Top = 9;
+            
+            chkConfidential.Top = 88;
+            lblConfidential.Top = 93;
+            
             
             // Set up status bar texts for unbound controls and for bound controls whose auto-assigned texts don't match the use here on this screen (these talk about 'Partner Attributes')
             FPetraUtilsObject.SetStatusBarText(cmbPrimaryWayOfContacting, Catalog.GetString("Select the primary method by which the Partner should be contacted. Purely for information."));
@@ -757,11 +762,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Contact Type (Calculated Expression!)
             grdDetails.AddTextColumn("Contact Type", FMainDS.PPartnerAttribute.Columns["ContactType"]);
             
+            // Comment
+            grdDetails.AddTextColumn("Comment", FMainDS.PPartnerAttribute.ColumnComment);
+
             // Value
             grdDetails.AddTextColumn("Value", FMainDS.PPartnerAttribute.ColumnValue);
-
-            // Comment
-            grdDetails.AddTextColumn("Comments", FMainDS.PPartnerAttribute.ColumnComment);
 
             // Current
             grdDetails.AddCheckBoxColumn("Current", FMainDS.PPartnerAttribute.ColumnCurrent);
