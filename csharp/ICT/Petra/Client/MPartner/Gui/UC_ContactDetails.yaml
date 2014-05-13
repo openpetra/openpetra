@@ -100,7 +100,7 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [cmbContactCategory, cmbContactType, chkSpecialised]
-                Row1: [txtValue, txtComment]
+                Row1: [rtbValue, txtComment]
                 Row2: [pnlCurrentGrouping, chkConfidential]
             Height: 87
 
@@ -109,11 +109,10 @@ RootNode:
         chkSpecialised: 
            Label: Business
            Validation: true   # only to cause data to be updated on-the-fly...
-        txtValue:
+        rtbValue:
             Label: Value
             Width: 290
             Type: Hyperlink
-            LinkType: http
         txtComment: {Label=Comment, Width=245, ColSpan=2, DataField=PPartnerAttribute.Comment}
 
         pnlCurrentGrouping:

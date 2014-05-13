@@ -36,7 +36,7 @@ namespace Ict.Common.Controls
         #region Fields
 
         private LinkLabel FLinkLabel;
-        private TLinkTypes FLinkType = TLinkTypes.None;
+        private THyperLinkHandling.THyperLinkType FLinkType = THyperLinkHandling.THyperLinkType.None;
 
         private bool FIsLinkClicked = false;
 
@@ -47,14 +47,14 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Type of Hyperlink.
         /// </summary>
-        [DefaultValue(TLinkTypes.None)]
-        public TLinkTypes LinkType
+        [DefaultValue(THyperLinkHandling.THyperLinkType.None)]
+        public THyperLinkHandling.THyperLinkType LinkType
         {
             set
             {
                 this.FLinkType = value;
 
-                if (value == TLinkTypes.None)
+                if (value == THyperLinkHandling.THyperLinkType.None)
                 {
                     SwitchToEditMode(true);
                 }
@@ -122,7 +122,7 @@ namespace Ict.Common.Controls
             base.OnGotFocus(e);
 
             // When control gets focus and we have active LinkType then switch to edit mode
-            if (FLinkType != TLinkTypes.None)
+            if (FLinkType != THyperLinkHandling.THyperLinkType.None)
             {
                 this.SwitchToEditMode(true);
             }
@@ -138,7 +138,7 @@ namespace Ict.Common.Controls
             base.OnLostFocus(e);
 
             // When control gets Focus and we have a hyperlink-LinkType then switch to clickable mode
-            if (FLinkType != TLinkTypes.None)
+            if (FLinkType != THyperLinkHandling.THyperLinkType.None)
             {
                 this.SwitchToEditMode(false);
             }               
@@ -153,7 +153,7 @@ namespace Ict.Common.Controls
             base.OnTextChanged(e);
 
             // When TextBox's Text changes, copy that data to the LinkLabel
-            if (FLinkType != TLinkTypes.None)
+            if (FLinkType != THyperLinkHandling.THyperLinkType.None)
             {
                 FillLinkData();
             }
@@ -186,7 +186,7 @@ namespace Ict.Common.Controls
 
             switch (FLinkType)
             {
-                case TLinkTypes.Http:
+                case THyperLinkHandling.THyperLinkType.Http:
 
                     if ((this.Text.ToLower().IndexOf(@"http://") < 0) && (this.Text.ToLower().IndexOf(@"https://") < 0))
                     {
@@ -195,7 +195,7 @@ namespace Ict.Common.Controls
 
                     break;
 
-                case TLinkTypes.Ftp:
+                case THyperLinkHandling.THyperLinkType.Ftp:
 
                     if (this.Text.ToLower().IndexOf(@"ftp://") < 0)
                     {
@@ -204,7 +204,7 @@ namespace Ict.Common.Controls
 
                     break;
 
-                case TLinkTypes.Email:
+                case THyperLinkHandling.THyperLinkType.Email:
 
                     if (this.Text.ToLower().IndexOf("mailto:") < 0)
                     {
@@ -213,7 +213,7 @@ namespace Ict.Common.Controls
 
                     break;
 
-                case TLinkTypes.Skype:
+                case THyperLinkHandling.THyperLinkType.Skype:
                     if (this.Text.ToLower().IndexOf("skype:") < 0)
                     {                    
                         LinkType = "skype:";
@@ -229,7 +229,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Try to "execute" supplied link. Throws ArgumentException if it fails.
+        /// Try to "execute" supplied link.
         /// </summary>
         private void LaunchHyperlink()
         {
@@ -241,7 +241,7 @@ namespace Ict.Common.Controls
                 {
                     TheLink = FLinkLabel.Links[0].LinkData.ToString();
                     
-                    if (FLinkType == TLinkTypes.Http_With_Value_Replacement)
+                    if (FLinkType == THyperLinkHandling.THyperLinkType.Http_With_Value_Replacement)
                     {
                         if (BuildLinkWithValue != null) 
                         {
@@ -273,7 +273,7 @@ namespace Ict.Common.Controls
         /// <param name="e">Supplied by WinForms.</param>
         private void LinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            if (FLinkType != TLinkTypes.None)
+            if (FLinkType != THyperLinkHandling.THyperLinkType.None)
             {
                 LaunchHyperlink();
             }
@@ -285,7 +285,7 @@ namespace Ict.Common.Controls
         /// <param name="e">Supplied by WinForms.</param>
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if (FLinkType != TLinkTypes.None)
+            if (FLinkType != THyperLinkHandling.THyperLinkType.None)
             {
                 if ((e.Button == MouseButtons.Left) 
                     && ((Control.ModifierKeys & Keys.Control) == Keys.Control))
@@ -326,70 +326,5 @@ namespace Ict.Common.Controls
         }
 
         #endregion
-    }
-
-    #region LinkTypes Enum
-
-    /// <summary>
-    /// Types of Hyperlinks that TtxtLinkTextBox supports.
-    /// </summary>
-    public enum TLinkTypes
-    {
-        /// <summary>
-        /// Act as a regular TextBox
-        /// </summary>
-        None,
-
-        /// <summary>
-        /// Act as a http:// or https:// hyperlink
-        /// </summary>
-        Http,
-
-        /// <summary>
-        /// Act as a http:// or https:// hyperlink where a part of the URL is replaced with a custom value.
-        /// </summary>
-        Http_With_Value_Replacement,
-        
-        /// <summary>
-        /// Act as a ftp:// hyperlink
-        /// </summary>
-        Ftp,
-
-        /// <summary>
-        /// Act as a mailto: hyperlink
-        /// </summary>
-        Email,
-        
-        /// <summary>
-        /// Get the Skype.exe application to start a call to the supplied Skype ID
-        /// </summary>
-        Skype
-    }
-
-    #endregion
-    
-    /// <summary>
-    /// Thrown if the Control encounters a problem when trying to launch a Hyperlink.
-    /// </summary>
-    public class EProblemLaunchingHyperlinkException : Exception
-    {
-        /// <summary>
-        /// Constructor with inner Exception
-        /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public EProblemLaunchingHyperlinkException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Constructor without inner Exception
-        /// </summary>
-        /// <param name="message"></param>
-        public EProblemLaunchingHyperlinkException(string message)
-            : base(message)
-        {
-        }
-    }
+    }    
  }

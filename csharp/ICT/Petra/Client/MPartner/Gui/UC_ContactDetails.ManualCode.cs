@@ -50,6 +50,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private string FDefaultContactType = String.Empty;
         
+        private TPartnerAttributeTypeValueKind FValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
+        
         #region Properties
         
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -265,6 +267,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
             
+            rtbValue.LinkClicked += new Ict.Common.Controls.TRtbHyperlinks.THyperLinkClickedArgs(rtbValue.Helper.LaunchHyperLink);
+   
 //            ApplySecurity();            // TODO
         }
 
@@ -352,7 +356,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(cmbContactCategory, Catalog.GetString("Contact Category to which the Contact Type belongs to (narrows down available Contact Types)."));
             FPetraUtilsObject.SetStatusBarText(cmbContactType, Catalog.GetString("Contact Type of this record. Describes what the Value is (e.g. Phone Number, E-Mail Address, etc)."));
             FPetraUtilsObject.SetStatusBarText(chkSpecialised, Catalog.GetString("Tick this if the Value designates a business-related Contact Detail (e.g. business telephone number)."));
-            FPetraUtilsObject.SetStatusBarText(txtValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
+            FPetraUtilsObject.SetStatusBarText(rtbValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
             FPetraUtilsObject.SetStatusBarText(txtComment, Catalog.GetString("Comment for this Contact Detail record."));
             FPetraUtilsObject.SetStatusBarText(chkCurrent, Catalog.GetString("Untick this if the Contact Detail record is no longer current."));
             FPetraUtilsObject.SetStatusBarText(dtpNoLongerCurrentFrom, Catalog.GetString("Date from which the Contact Detail record is no longer current."));
@@ -362,7 +366,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // By default only valid Contact Details should be shown
 //            chkValidContactDetailsOnly.Checked = true;  // TODO - work on Action, then uncomment this line
 
-            txtValue.BuildLinkWithValue = BuildLinkWithValue;
+           rtbValue.BuildLinkWithValue = BuildLinkWithValue;
         }
 
         /// <summary>
@@ -855,7 +859,7 @@ namespace Ict.Petra.Client.MPartner.Gui
  
         private void OnContactTypeChanged(Object sender, EventArgs e)
         {
-            PPartnerAttributeTypeRow ContactTypeDR;
+            PPartnerAttributeTypeRow ContactTypeDR;           
             TPartnerAttributeTypeValueKind ValueKind;
             
             if (cmbContactType.Text != String.Empty) 
@@ -868,26 +872,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     switch (ValueKind) 
                     {
-                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
-                            txtValue.LinkType = TLinkTypes.None;
-                            break;
-                            
-                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
-                            txtValue.LinkType = TLinkTypes.Http;
-                            break;
-                            
+                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:                            
+                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:                            
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
-                            txtValue.LinkType = TLinkTypes.Http_With_Value_Replacement;
-                            
-                            break;
-                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
-                            txtValue.LinkType = TLinkTypes.Email;
-                            break;
-                            
+                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:                           
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
-                            txtValue.LinkType = TLinkTypes.Skype;
+                            FValueKind = ValueKind;                 
+
                             break;
-                            
+           
                         default:
                             throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");
                     }
@@ -895,8 +888,49 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     // Fallback!
-                    txtValue.LinkType = TLinkTypes.None;
+                    FValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
                 }
+                
+                UpdateValueManual();
+            }
+        }
+        
+        private void UpdateValueManual()
+        {
+            string Value = GetSelectedDetailRow().Value;
+            string ValueText = String.Empty;
+            
+            switch (FValueKind) 
+            {
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
+                    // TODO
+                    
+                    break;
+            
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
+                    rtbValue.Helper.DisplayURL(Value);
+
+                    break;
+                    
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
+                    rtbValue.Helper.DisplayURL(Value);   // TODO: display it with value!
+                                        
+                    break;
+            
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
+            
+                    rtbValue.Helper.DisplayEmailAddress(Value);
+                                                
+                    break;
+                    
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
+                    rtbValue.Helper.DisplaySkypeID(Value);                                          
+
+                    break;           
+            
+                default:
+                    throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");
+                    
             }
         }
         
@@ -926,8 +960,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string HyperlinkFormat;
             string ReturnValue = String.Empty;
-            
-            if (txtValue.LinkType == TLinkTypes.Http_With_Value_Replacement) 
+
+            if(FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE)
             {
                 HyperlinkFormat = ((PPartnerAttributeTypeRow)cmbContactType.GetSelectedItemsDataRow()).HyperlinkFormat;
                 
@@ -938,7 +972,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                        && HyperlinkFormat.Contains("}")) 
                     {
                         ReturnValue = HyperlinkFormat.Substring(0, HyperlinkFormat.IndexOf('{')) + 
-                            txtValue.Text;
+                            rtbValue.Text;
                         ReturnValue += HyperlinkFormat.Substring(HyperlinkFormat.LastIndexOf('}') + 1);    
                     }
                     else

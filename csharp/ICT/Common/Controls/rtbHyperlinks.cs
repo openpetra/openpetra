@@ -40,16 +40,11 @@ namespace Ict.Common.Controls
     /// </remarks>
     public partial class TRtbHyperlinks : UserControl
     {
-        private const string EMAILLINK_PREFIX = "||email||";
-        private const string URLLINK_PREFIX = "||hyperlink||";
-        private const string SECUREDURL_LINKPREFIX = "||securehyperlink||";
-        private const string FTPLINK_PREFIX = "||FTP||";
-        private const string SKYPELINK_PREFIX = "||skype||";
-        
         private List<string> SupportedLinkTypes = new List<string>();
         private SortedDictionary<int, string> FLinkPrefixes = new SortedDictionary<int, string>();
         private SortedDictionary<int, int> FLinkRanges = new SortedDictionary<int, int>();
-
+        private DisplayHelper FDisplayHelper;
+        
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -64,11 +59,13 @@ namespace Ict.Common.Controls
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             #endregion
             
-            SupportedLinkTypes.Add(EMAILLINK_PREFIX);
-            SupportedLinkTypes.Add(URLLINK_PREFIX);
-            SupportedLinkTypes.Add(SECUREDURL_LINKPREFIX);
-            SupportedLinkTypes.Add(FTPLINK_PREFIX);
-            SupportedLinkTypes.Add(SKYPELINK_PREFIX);
+            FDisplayHelper = new DisplayHelper(this);
+            
+            SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK);
+            SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_URLLINK);
+            SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_SECUREDURL);
+            SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_FTPLINK);
+            SupportedLinkTypes.Add(THyperLinkHandling.HYPERLINK_PREFIX_SKYPELINK);
             
             PlainRTFFormatting(rtbTextWithLinks);
             WriteLinkRTF(rtbTextWithLinks);
@@ -80,8 +77,28 @@ namespace Ict.Common.Controls
             rtbTextWithLinks.MouseMove += new System.Windows.Forms.MouseEventHandler(rtbTextWithLinks_MouseMove);            
         }
 
+        #region Delegates
+        
+        /// <summary>
+        /// Delegate for building a Link where the Text of this Control is part of a hyperlink rather than it being the full hyperlink.
+        /// </summary>
+        public Func<string, string> BuildLinkWithValue;
+        
+        #endregion
+        
         #region Properties
 
+        /// <summary>
+        /// Helper Class for handling the displaying, parsing and execution of certain types of HyperLinks 
+        /// </summary>
+        public DisplayHelper Helper
+        {
+            get
+            {
+                return FDisplayHelper;
+            }
+        }
+        
         /// <summary>
         /// Sets the Text of the RichTextBox. Include keywords that are reserved for the Link Types 
         /// to mark up text passages that should be rendered as Hyperlinks.
@@ -395,5 +412,151 @@ namespace Ict.Common.Controls
         }        
 
         #endregion
+
+        /// <summary>
+        /// Helper Class for handling the displaying, parsing and execution of certain types of HyperLinks 
+        /// </summary>        
+        public class DisplayHelper
+        {
+            private const string EMAILSEPARATOR = ";";
+            
+            private readonly TRtbHyperlinks FHyperLinksControl;
+            
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AParent">The TRtbHyperlinks Control.</param>
+            public DisplayHelper(TRtbHyperlinks AParent)
+            {
+                FHyperLinksControl = AParent;
+            }
+            
+            /// <summary>
+            /// Displays email Address(es). 
+            /// </summary>
+            /// <param name="AEmailAddress">Email Address or Email Addresses.</param>
+            public void DisplayEmailAddress(string AEmailAddress)
+            {
+                String[] EmailAddresses;
+                string DisplayedText = String.Empty;
+                
+                if (AEmailAddress != String.Empty)
+                {
+                    EmailAddresses = StringHelper.SplitEmailAddresses(AEmailAddress);
+            
+                    for (int Counter = 0; Counter <= EmailAddresses.Length - 1; Counter += 1)
+                    {
+                        DisplayedText += THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK + EmailAddresses[Counter];
+                
+                        if (Counter != EmailAddresses.Length - 1) 
+                        {
+                            DisplayedText += EMAILSEPARATOR + " ";    
+                        }                                   
+                    }                    
+                }
+                
+                FHyperLinksControl.Text = DisplayedText;    
+            }
+
+            /// <summary>
+            /// Displays Internet hyperlinks (URLs). 
+            /// </summary>
+            /// <param name="AUrl">Hyperlink (URL).</param>
+            public void DisplayURL(string AUrl)
+            {
+                FHyperLinksControl.Text = THyperLinkHandling.HYPERLINK_PREFIX_URLLINK + AUrl;
+            }
+            
+            /// <summary>
+            /// Displays Skype IDs. 
+            /// </summary>
+            /// <param name="ASkypeID">SkypeID.</param>
+            public void DisplaySkypeID(string ASkypeID)
+            {
+                FHyperLinksControl.Text = THyperLinkHandling.HYPERLINK_PREFIX_SKYPELINK + ASkypeID;
+            }
+
+            /// <summary>
+            /// Try to "execute" supplied link.
+            /// </summary>
+            public void LaunchHyperLink(string ALinkText, string ALinkType)
+            {
+                string TheLink;
+                string LinkType = String.Empty;
+
+                if (String.IsNullOrEmpty(ALinkType)) 
+                {
+                    throw new ArgumentException("The 'ALinkType' Argument must not be null or an empty string");                    
+                }
+ 
+                try
+                {
+                    if (ALinkText != String.Empty)
+                    {
+                        TheLink = ALinkText;
+
+                        switch (THyperLinkHandling.ParseHyperLinkType(ALinkType))
+                        {
+                            case THyperLinkHandling.THyperLinkType.Http:
+            
+                                if ((ALinkText.ToLower().IndexOf(@"http://") < 0) && (ALinkText.ToLower().IndexOf(@"https://") < 0))
+                                {
+                                    LinkType = @"http://";
+                                }
+            
+
+                                break;
+            
+                            case THyperLinkHandling.THyperLinkType.Ftp:
+            
+                                if (ALinkText.ToLower().IndexOf(@"ftp://") < 0)
+                                {
+                                    LinkType = @"ftp://";
+                                }
+            
+                                break;
+            
+                            case THyperLinkHandling.THyperLinkType.Email:
+            
+                                if (ALinkText.ToLower().IndexOf("mailto:") < 0)
+                                {
+                                    LinkType = "mailto:";
+                                }
+            
+                                break;
+            
+                            case THyperLinkHandling.THyperLinkType.Skype:
+                                if (ALinkText.ToLower().IndexOf("skype:") < 0)
+                                {                    
+                                    LinkType = "skype:";
+                                }
+                                
+                                break;
+                        }                        
+
+// TODO                        
+//                                if (...)
+//                                {
+//                                    if (FHyperLinksControl.BuildLinkWithValue != null) 
+//                                    {
+//                                        TheLink = FHyperLinksControl.BuildLinkWithValue(TheLink);
+//                                    }
+//                                    else
+//                                    {
+//                                        throw new EProblemLaunchingHyperlinkException("Link is a Hyperlink that asks for a replacement of {VALUE}, but the Delegate 'BuildLinkWithValue' has not been set up");
+//                                    }
+//                                }
+                                
+                        
+                        System.Diagnostics.Process.Start(LinkType + TheLink);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new EProblemLaunchingHyperlinkException("Hyperlink cannot be launched!", ex);
+                }
+            }        
+               
+        }                
     }
 }
