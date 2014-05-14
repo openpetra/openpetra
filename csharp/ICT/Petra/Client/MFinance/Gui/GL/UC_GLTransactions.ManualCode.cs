@@ -992,7 +992,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailNarrative.Validated += new EventHandler(ControlValidatedHandler);
             txtDetailReference.Validated += new EventHandler(ControlValidatedHandler);
             dtpDetailTransactionDate.Validated += new EventHandler(ControlValidatedHandler);
-
             grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
         }
 

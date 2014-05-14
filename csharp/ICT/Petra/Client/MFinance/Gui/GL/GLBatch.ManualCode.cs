@@ -38,6 +38,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TFrmGLBatch
     {
         private Int32 FLedgerNumber = -1;
+        private Int32 standardTabIndex = 0;
+        private eGLTabs FPreviouslySelectedTab = eGLTabs.Batches;
+        private bool FWindowIsMaximized = false;
 
         /// <summary>
         /// use this ledger
@@ -57,69 +60,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        /// Stores the exchange rate to convert base currency into international currency
-        /// </summary>
-        public decimal BaseToIntlExchangeRate(DateTime AEffectiveDate)
+        /// this window contains 4 tabs
+        public enum eGLTabs
         {
-            if ((FLedgerNumber == -1) || (FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
-            {
-                return 0;
-            }
+            /// list of batches
+            Batches,
 
-            decimal intlRateToBaseCurrency = 0;
-            DateTime startOfMonth = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
+            /// list of journals
+            Journals,
 
-            try
-            {
-                // read the exchange rate for international currency calculations
-                intlRateToBaseCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
-                    FMainDS.ALedger[0].IntlCurrency,
-                    startOfMonth,
-                    AEffectiveDate);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(String.Format("Error trying to calculate International Exchange Rate for Ledger {0} and date {1}. Message: {2}",
-                        FLedgerNumber,
-                        startOfMonth,
-                        ex.Message));
-            }
-
-            return intlRateToBaseCurrency;
-        }
-
-        /// <summary>
-        /// Handles the click event for filter/find.
-        /// </summary>
-        /// <param name="sender">Pass this on to the user control.</param>
-        /// <param name="e">Not evaluated.</param>
-        public void mniFilterFind_Click(object sender, System.EventArgs e)
-        {
-            switch (tabGLBatch.SelectedIndex)
-            {
-                case (int)eGLTabs.Batches:
-                    ucoBatches.MniFilterFind_Click(sender, e);
-                    break;
-
-                case (int)eGLTabs.Journals:
-                    ucoJournals.MniFilterFind_Click(sender, e);
-                    break;
-
-                case (int)eGLTabs.Transactions:
-                    ucoTransactions.MniFilterFind_Click(sender, e);
-                    break;
-            }
-        }
-
-        private int standardTabIndex = 0;
+            /// list of transactions
+            Transactions
+        };
 
         private void TFrmGLBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             tabGLBatch.SelectedIndex = standardTabIndex;
-            TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            TabSelectionChanged(null, null);
 
             this.Shown += delegate
             {
@@ -136,52 +95,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Load the journals for the current batch in the background
+        /// Enable the journal tab if we have an active batch
         /// </summary>
-        public void LoadJournals()
+        public void EnableJournals(Boolean AEnable = true)
         {
-            int batchNumber = ucoBatches.GetSelectedDetailRow().BatchNumber;
+            this.tabGLBatch.TabStop = AEnable;
 
-            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
-                AJournalTable.GetBatchNumberDBName(),
-                batchNumber);
-
-            // only load from server if there are no journals loaded yet for this batch
-            // otherwise we would overwrite journals that have already been modified
-            if (FMainDS.AJournal.DefaultView.Count == 0)
+            if (this.tpgJournals.Enabled != AEnable)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+                this.tpgJournals.Enabled = AEnable;
+                this.Refresh();
             }
-        }
-
-        /// <summary>
-        /// activate the journal tab and load the journals of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            this.tpgJournals.Enabled = true;
-            DisableTransactions();
-            this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
-        }
-
-        /// <summary>
-        /// disable the transactions tab if we have no active journal
-        /// </summary>
-        public void DisableTransactions()
-        {
-            this.tpgTransactions.Enabled = false;
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// disable the transactions tab if we have no active journal
-        /// </summary>
-        public void EnableTransactions(bool AEnable = true)
-        {
-            this.tpgTransactions.Enabled = AEnable;
-            this.Refresh();
         }
 
         /// <summary>
@@ -191,40 +115,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tabGLBatch.TabStop = false;
 
-            this.tpgJournals.Enabled = false;
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// Enable the journal tab if we have an active batch
-        /// </summary>
-        public void EnableJournals()
-        {
-            this.tabGLBatch.TabStop = true;
-
-            if (!this.tpgJournals.Enabled)
+            if (this.tpgJournals.Enabled)
             {
-                this.tpgJournals.Enabled = true;
+                this.tpgJournals.Enabled = false;
                 this.Refresh();
             }
         }
 
-        /// this window contains 4 tabs
-        public enum eGLTabs
+        /// <summary>
+        /// Control transactions tab enabled status. This can do both ways
+        /// </summary>
+        public void EnableTransactions(Boolean AEnable = true)
         {
-            /// list of batches
-            Batches,
+            if (this.tpgTransactions.Enabled != AEnable)
+            {
+                this.tpgTransactions.Enabled = AEnable;
+                this.Refresh();
+            }
+        }
 
-            /// list of journals
-            Journals,
-
-            /// list of transactions
-            Transactions
-        };
-
-
-        //Might need this later
-        private eGLTabs FPreviousTab = eGLTabs.Batches;
+        /// <summary>
+        /// disable the transactions tab if we have no active journal
+        /// </summary>
+        public void DisableTransactions()
+        {
+            if (this.tpgTransactions.Enabled)
+            {
+                this.tpgTransactions.Enabled = false;
+                this.Refresh();
+            }
+        }
 
         /// <summary>
         /// Switch to the given tab
@@ -248,7 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 ucoBatches.SetInitialFocus();
-                FPreviousTab = eGLTabs.Batches;
+                FPreviouslySelectedTab = eGLTabs.Batches;
             }
             else if ((ucoBatches.GetSelectedDetailRow() != null) && (ATab == eGLTabs.Journals))
             {
@@ -266,7 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
 
-                    FPreviousTab = eGLTabs.Journals;
+                    FPreviouslySelectedTab = eGLTabs.Journals;
                 }
             }
             else if (ATab == eGLTabs.Transactions)
@@ -279,7 +199,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     bool fromBatchTab = false;
 
-                    if (FPreviousTab == eGLTabs.Batches)
+                    if (FPreviouslySelectedTab == eGLTabs.Batches)
                     {
                         fromBatchTab = true;
                         //This only happens when the user clicks from Batch to Transactions,
@@ -303,7 +223,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoTransactions.AutoSizeGrid();
                     }
 
-                    FPreviousTab = eGLTabs.Transactions;
+                    FPreviouslySelectedTab = eGLTabs.Transactions;
                 }
             }
 
@@ -323,19 +243,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void SelectTabManual(int ASelectedTabIndex)
+        private void SelectTabManual(Int32 ASelectedTabIndex)
         {
-            if (ASelectedTabIndex == (int)eGLTabs.Batches)
+            switch (ASelectedTabIndex)
             {
-                SelectTab(eGLTabs.Batches);
-            }
-            else if (ASelectedTabIndex == (int)eGLTabs.Journals)
-            {
-                SelectTab(eGLTabs.Journals);
-            }
-            else //(ASelectedTabIndex == (int)eGLTabs.Transactions)
-            {
-                SelectTab(eGLTabs.Transactions);
+                case (int)eGLTabs.Batches:
+                    SelectTab(eGLTabs.Batches);
+                    break;
+                case (int)eGLTabs.Journals:
+                    SelectTab(eGLTabs.Journals);
+                    break;
+                default: //(ASelectedTabIndex == (int)eGLTabs.Transactions)
+                    SelectTab(eGLTabs.Transactions);
+                    break;
             }
         }
 
@@ -368,7 +288,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Resize += new EventHandler(TFrmGLBatch_Resize);
         }
 
-        private bool FWindowIsMaximized = false;
         void TFrmGLBatch_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Maximized)
@@ -401,5 +320,61 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 Console.WriteLine("Normal - autosizing both");
             }
         }
+
+        /// <summary>
+        /// Handles the click event for filter/find.
+        /// </summary>
+        /// <param name="sender">Pass this on to the user control.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void mniFilterFind_Click(object sender, System.EventArgs e)
+        {
+            switch (tabGLBatch.SelectedIndex)
+            {
+                case (int)eGLTabs.Batches:
+                    ucoBatches.MniFilterFind_Click(sender, e);
+                    break;
+
+                case (int)eGLTabs.Journals:
+                    ucoJournals.MniFilterFind_Click(sender, e);
+                    break;
+
+                case (int)eGLTabs.Transactions:
+                    ucoTransactions.MniFilterFind_Click(sender, e);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Stores the exchange rate to convert base currency into international currency
+        /// </summary>
+        public Decimal BaseToIntlExchangeRate(DateTime AEffectiveDate)
+        {
+            if ((FLedgerNumber == -1) || (FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
+            {
+                return 0;
+            }
+
+            decimal IntlRateToBaseCurrency = 0;
+            DateTime StartOfMonthDate = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
+
+            try
+            {
+                // read the exchange rate for international currency calculations
+                IntlRateToBaseCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
+                    FMainDS.ALedger[0].IntlCurrency,
+                    StartOfMonthDate,
+                    AEffectiveDate);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(String.Format("Error trying to retrieve International Exchange Rate for Ledger {0} and date {1}. Message: {2}",
+                        FLedgerNumber,
+                        StartOfMonthDate,
+                        ex.Message));
+            }
+
+            return IntlRateToBaseCurrency;
+        }
+
     }
 }

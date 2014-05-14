@@ -73,9 +73,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         public void LoadBatches(Int32 ALedgerNumber)
         {
-            //DateTime dtStartLoad = DateTime.Now;
-            //Console.WriteLine("{0}: LoadBatches starting", dtStartLoad.ToLongTimeString());
-
             FLedgerNumber = ALedgerNumber;
 
             RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
@@ -86,17 +83,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FSuppressRefreshPeriods = true;
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbYearFilter, FLedgerNumber); //.InitialiseAvailableGiftYearsList(ref cmbYearFilter, FLedgerNumber);
             FSuppressRefreshPeriods = false;
-            //Console.WriteLine("InitialiseAvailableFinancialYearsList took {0} ms", (DateTime.Now - dtStartLoad).TotalMilliseconds);
-            //DateTime dtStart = DateTime.Now;
 
             // Now we can set the period part of the filter
             RefreshPeriods(null, null);
-            //Console.WriteLine("RefreshPeriods took {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
-            //dtStart = DateTime.Now;
 
             // this will load the batches from the server
             RefreshFilter(null, null);
-            //Console.WriteLine("RefreshFilter took {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
 
             if (grdDetails.Rows.Count > 1)
             {
@@ -112,10 +104,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
 
+            //Set the valid date range label
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
                 out StartDateCurrentPeriod,
                 out EndDateLastForwardingPeriod,
                 out FDefaultDate);
+
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
@@ -127,7 +121,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 );
         }
 
-        /// reset the control
+        /// Reset the control
         public void ClearCurrentSelection()
         {
             GetDataFromControls();
@@ -149,26 +143,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void EnableTransactionTabForBatch()
         {
-            bool enable = false;
+            bool EnableTransTab = false;
 
             //If a single journal exists and it is not status=Cancelled then enable transactions tab
             if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1))
             {
                 LoadJournalsForCurrentBatch();
 
-                AJournalRow rJ = (AJournalRow)FMainDS.AJournal.DefaultView[0].Row;
+                if (FMainDS.AJournal.DefaultView.Count > 0)
+                {
+                    AJournalRow rJ = (AJournalRow)FMainDS.AJournal.DefaultView[0].Row;
 
-                enable = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
+                    EnableTransTab = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
+                }
             }
 
-            if (enable)
-            {
-                ((TFrmGLBatch) this.ParentForm).EnableTransactions();
-            }
-            else
-            {
-                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-            }
+            ((TFrmGLBatch)this.ParentForm).EnableTransactions(EnableTransTab);
         }
 
         /// <summary>
@@ -176,13 +166,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ShowDataManual()
         {
-            if (FLedgerNumber != -1)
-            {
-                ALedgerRow ledger =
-                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
-                         TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-            }
-            else
+            if (FLedgerNumber == -1)
             {
                 EnableButtonControl(false);
             }
@@ -411,15 +395,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void LoadJournalsForCurrentBatch()
         {
             //Current Batch number
-            Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            Int32 BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
-                ATransactionTable.GetBatchNumberDBName(),
-                batchNumber);
-
-            if (FMainDS.AJournal.DefaultView.Count == 0)
+            if (FMainDS.AJournal != null)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+                FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    BatchNumber);
+
+                if (FMainDS.AJournal.DefaultView.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, BatchNumber));
+                }
             }
         }
 

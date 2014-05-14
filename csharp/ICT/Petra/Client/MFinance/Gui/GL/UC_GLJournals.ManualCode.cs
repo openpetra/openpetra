@@ -565,9 +565,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void WorkAroundInitialization()
         {
             btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
-            cmbDetailTransactionCurrency.SelectedValueChanged +=
-                new System.EventHandler(ResetCurrencyExchangeRate);
-
+            cmbDetailTransactionCurrency.SelectedValueChanged += new System.EventHandler(ResetCurrencyExchangeRate);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
         }
 
