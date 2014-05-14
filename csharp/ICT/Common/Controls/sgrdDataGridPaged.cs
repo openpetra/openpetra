@@ -31,6 +31,8 @@ using System.Data;
 using SourceGrid;
 using System.Globalization;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Common.Controls
 {
     #region TSgrdDataGridPaged
@@ -94,6 +96,9 @@ namespace Ict.Common.Controls
         /// <summary>Size of the Pages that are to be returned</summary>
         private Int16 FPageSize;
 
+        /// <summary>Minimum size of the Pages that are to be returned. Can be used to transfer larger chunks than the physical grid size</summary>
+        private Int16 FMinimumPageSize = 1;
+
         /// <summary>Number of records resulting from the query</summary>
         private Int32 FTotalRecords;
 
@@ -118,6 +123,27 @@ namespace Ict.Common.Controls
         /// <summary>Keeps track of whether the OnIdle Handler is already hooked up</summary>
         private bool FIdleSet = false;
 
+        /// <summary>
+        /// Gets/sets the minimum number of rows that constitute one page.  Can be used to get larger chunks of data in one go.
+        /// </summary>
+        public Int16 MinimumPageSize
+        {
+            set
+            {
+                FMinimumPageSize = value;
+
+                if (FMinimumPageSize < DEFAULT_PAGESIZE_IF_GRID_TOO_SMALL)
+                {
+                    FMinimumPageSize = DEFAULT_PAGESIZE_IF_GRID_TOO_SMALL;
+                }
+            }
+
+            get
+            {
+                return FMinimumPageSize;
+            }
+        }
+
         /// <summary>Number of rows that would fit into the Grid at its current horizontal size.</summary>
         public Int32 PageSize
         {
@@ -131,7 +157,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TDataGridPagedNotInitialisedException(
+                    throw new EDataGridPagedNotInitialisedException(
                         "The " + this.GetType().FullName + " control is not properly initialised yet. " +
                         "The LoadFirstDataPage method needs to be called before the PageSize property can be accessed");
                 }
@@ -153,7 +179,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TDataGridPagedNoDataLoadedYetException(
+                    throw new EDataGridPagedNoDataLoadedYetException(
                         "The " + this.GetType().FullName + " control has not loaded any data yet. " +
                         "The LoadFirstDataPage method needs to be called before the TotalRecords property can be accessed");
                 }
@@ -175,7 +201,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TDataGridPagedNoDataLoadedYetException(
+                    throw new EDataGridPagedNoDataLoadedYetException(
                         "The " + this.GetType().FullName + " control has not loaded any data yet. " +
                         "The LoadFirstDataPage method needs to be called before the TotalPages property can be accessed");
                 }
@@ -197,7 +223,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TDataGridPagedNoDataLoadedYetException(
+                    throw new EDataGridPagedNoDataLoadedYetException(
                         "The " + this.GetType().FullName + " control has not loaded any data yet. " +
                         "The LoadFirstDataPage method needs to be called before the PagedDataTable property can be accessed");
                 }
@@ -229,7 +255,7 @@ namespace Ict.Common.Controls
             {
                 if (!InDesignMode)
                 {
-                    throw new TDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
+                    throw new EDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
                 }
 
                 return TAutoFindModeEnum.NoAutoFind;
@@ -240,7 +266,7 @@ namespace Ict.Common.Controls
                 {
                     if (!InDesignMode)
                     {
-                        throw new TDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
+                        throw new EDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
                     }
                 }
             }
@@ -260,7 +286,7 @@ namespace Ict.Common.Controls
             {
                 if (!InDesignMode)
                 {
-                    throw new TDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
+                    throw new EDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
                 }
 
                 return -1;
@@ -271,7 +297,7 @@ namespace Ict.Common.Controls
                 {
                     if (!InDesignMode)
                     {
-                        throw new TDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
+                        throw new EDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
                     }
                 }
             }
@@ -358,11 +384,42 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         /// <returns>void</returns>
-        private void DataTransferDone()
+        private void DataTransferDone(bool AAddEmptyRows)
+        {
+//TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + "; FPageSize: " + FPageSize.ToString());
+
+            if (AAddEmptyRows)
+            {
+                AddEmptyRows();
+//TLogging.Log("DataTransferDone: empty rows added to the Grid.");
+            }
+
+            FDataTransferDone = true;
+
+            // Setup the ArrayList that keeps track of which pages of data have already been retrieved
+            ResetPaging();
+        }
+
+        /// <summary>
+        /// Adds the necessary amount of empty rows (all apart from the Rows that make up the first 'Data Page')
+        /// to make the Grid appear as if it has already loaded *all* the Rows with *all* the data so
+        ///   1) that the user can see the appropriately sized vertical scrollbar;
+        ///   2) that the user can scroll to anywhere in the total amount of Rows.
+        /// </summary>
+        /// <remarks>
+        /// <em>CAUTION</em>: Calling .AutoSizeCells() can take a considerable amount of time if there
+        /// are many Cells to auto-size (ie. the combination of Columns and Rows is high), that is, if
+        /// <see cref="AddEmptyRows" /> has been run before a call to .AutoSizeCells(). To avoid that,
+        /// call the Method <see cref="LoadFirstDataPage" /> with Argument 'AAddEmptyRows' set to *false*, and
+        /// call <see cref="AddEmptyRows" /> ONLY AFTER you have called .AutoSizeCells() (which will the only take
+        /// the first Data Page's rows into consideration for the auto-sizing, but that is why it will not be slow!)
+        /// </remarks>
+        public void AddEmptyRows()
         {
             DataRow EmptyRow;
 
-            // MessageBox.Show('FTotalRecords: ' + FTotalRecords.ToString + '; FPageSize: ' + FPageSize.ToString);
+            this.SuspendLayout();
+
             // Add empty rows if needed (these allow scrolling in the DataGrid!)
             try
             {
@@ -380,26 +437,34 @@ namespace Ict.Common.Controls
                 MessageBox.Show("Empty rows cannot be added to the grid (because of DB constraints)", "Exception");
             }
 
-            FDataTransferDone = true;
+            this.ResumeLayout();
 
-            // Setup the ArrayList that keeps track of which pages of data have already been retrieved
-            ResetPaging();
+            this.RecalcCustomScrollBars();
         }
 
         /// <summary>
-        /// Needs to be called as soon as it is desired to display the first page of data.
-        ///
-        /// @comment All further pages are loaded by the control on demand.
-        ///
+        /// Needs to be called as soon as it is desired to display the first 'Page' of data.
         /// </summary>
+        /// <remarks>All further pages are loaded by the control on demand!</remarks>
         /// <param name="ADelegateGetDataPagedResultFunction">Delegate function that gets called
         /// when a Page of data needs to be retrieved.
         /// </param>
-        /// <returns>void</returns>
-        public DataTable LoadFirstDataPage(TDelegateGetDataPagedResult ADelegateGetDataPagedResultFunction)
+        /// <param name="AAddEmptyRows">Whether empty Rows for the data that *hasn't* been loaded
+        /// in the first 'Data Page' should be added, or not. Set this to false if you are planning to call
+        /// .AutoSizeCells() on the Grid and there is a possibility that there could be more than a couple of hundred
+        /// records in total. The reason is that calling .AutoSizeCells() can take a considerable amount of time if there
+        /// are many Cells to autosize (ie. the combination of Columns and Rows is high). If set to false, a separate
+        /// call to the Method <see cref="AddEmptyRows" /> needs to be made by the caller after .AutoSizeCells()
+        /// has been called on the Grid to add the empty rows at that point in time! (This results in the AutoSize only
+        /// taking the first Data Page's rows into consideration for the auto-sizing, but that is why it will not be slow!)</param>
+        /// <returns>A DataTable holding the records that fitted into the first 'Data Page'.</returns>
+        public DataTable LoadFirstDataPage(TDelegateGetDataPagedResult ADelegateGetDataPagedResultFunction, bool AAddEmptyRows = true)
         {
             DataTable ReturnValue;
             TDataPageLoadEventArgs CustomEventArgs;
+
+//            TLogging.Log("Enter LoadFirstDataPage...");
+//            TLogging.Log("LoadFirstDataPage:  HScrollBarVisible: " + HScrollBarVisible.ToString());
 
             DeterminePageSize();
             FGetDataPagedResult = ADelegateGetDataPagedResultFunction;
@@ -413,9 +478,14 @@ namespace Ict.Common.Controls
                 this.OnDataPageLoading(CustomEventArgs);
 
                 // Fetch the first page of data
+                if (FPageSize < FMinimumPageSize)
+                {
+                    FPageSize = FMinimumPageSize;
+                }
+
                 FPagedDataTable = FGetDataPagedResult(0, FPageSize, out FTotalRecords, out FTotalPages);
                 ReturnValue = FPagedDataTable;
-                DataTransferDone();
+                DataTransferDone(AAddEmptyRows);
 
                 // Fire OnDataPageLoaded event.
                 CustomEventArgs = new TDataPageLoadEventArgs();
@@ -424,13 +494,14 @@ namespace Ict.Common.Controls
             }
             else
             {
-                throw new TDataGridPagedDelegateFunctionNotSpecifiedException(
+                throw new EDataGridPagedDelegateFunctionNotSpecifiedException(
                     "The " + this.GetType().FullName + " control is not properly initialised yet. " +
                     "The ADelegateGetDataPagedResultFunction parameter of the InitialiseGrid method needs to be set to the delegate function that returns a page of data");
             }
 
             FGridInitialised = true;
 
+//            TLogging.Log("LoadFirstDataPage is finished.");
             return ReturnValue;
         }
 
@@ -451,7 +522,7 @@ namespace Ict.Common.Controls
                 CustomEventArgs.DataPage = ANeededPage;
                 this.OnDataPageLoading(CustomEventArgs);
 
-                // MessageBox.Show('Retrieving Page ' + ANeededPage.ToString + '...');
+//                TLogging.Log("Retrieving Page " + ANeededPage.ToString() + "...");
 
                 Int32 CurrentTotalRecords;  // These two values should be the same as FTotalRecords
                 Int16 CurrentTotalPages;    // and FTotalPages, which were set when the first page was loaded.
@@ -462,7 +533,7 @@ namespace Ict.Common.Controls
                     FTransferredDataPages.Add(ANeededPage);
                     Int32 IdxBase = ANeededPage * FPageSize;
 
-                    // MessageBox.Show('Inserting Page ' + ANeededPage.ToString + ' (PageSize: ' + FPageSize.ToString + '; Records returned: ' +  PagedTable.Rows.Count.ToString + ')...');
+//                    TLogging.Log("Inserting Page " + ANeededPage.ToString() + " (PageSize: " + FPageSize.ToString() + "; Records returned: " +  PagedTable.Rows.Count.ToString() + ")...");
                     for (Int32 Counter = 0; Counter < PagedTable.Rows.Count; Counter++)
                     {
                         DataRow TargetRow;
@@ -500,7 +571,7 @@ namespace Ict.Common.Controls
             {
                 if (!FTransferredDataPages.Contains(Counter))
                 {
-                    // MessageBox.Show('LoadSingleDataPageIntoPagedTable(' + Counter.ToString + ')');
+//                    TLogging.Log("LoadSingleDataPageIntoPagedTable(" + Counter.ToString() + ")");
                     LoadSingleDataPage(Counter);
                 }
             }
@@ -525,10 +596,12 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void ResetPaging()
         {
+//            TLogging.Log("ResetPaging called.");
             // Setup the ArrayList that keeps track of which pages of data have already been retrieved
             FTransferredDataPages.Clear();
             FTransferredDataPages.Add(Convert.ToInt32(0));
             FPerformFullLoadOnDataGridSort = false;
+//            TLogging.Log("ResetPaging finished.");
         }
 
         #endregion
@@ -631,7 +704,7 @@ namespace Ict.Common.Controls
                 if ((FPagedDataTable != null) && (FPagedDataTable.Rows.Count != 0))
                 {
                     // There is data in the Grid
-                    // MessageBox.Show('OnSizeChanged:  HSize;' + HSize.ToString);
+//                    TLogging.Log("OnSizeChanged:  HSize: " + HSize.ToString());
                     OnVScrollPositionChanged(null);
                 }
             }
@@ -672,12 +745,12 @@ namespace Ict.Common.Controls
 
             Application.Idle -= new EventHandler(this.OnIdle);
 
-//             TLogging.Log("OnIdle: Calling base.OnResize.");
+//            TLogging.Log("OnIdle: Calling base.OnResize.");
             this.Cursor = Cursors.WaitCursor;
             base.OnResize(e);
             this.Cursor = Cursors.Default;
 
-//             TLogging.Log("OnIdle: Called base.OnResize.");
+//            TLogging.Log("OnIdle: Called base.OnResize.");
         }
 
         /// <summary>
@@ -732,20 +805,20 @@ namespace Ict.Common.Controls
                 // causing an OnVScrollPositionChanged Event!
                 BottomRowNumber = BottomRowNumber + 1;
 
-//                TLogging.Log("TopRowNumber: " + TopRowNumber.ToString() + "; BottomRowNumber: " + BottomRowNumber.ToString());
+//                TLogging.Log("OnVScrollPositionChanged:  TopRowNumber: " + TopRowNumber.ToString() + "; BottomRowNumber: " + BottomRowNumber.ToString());
 
                 for (Counter = TopRowNumber; Counter <= BottomRowNumber; Counter++)
                 {
                     CheckPage = (int)((float)Counter / (float)FPageSize);
 
-//                    TLogging.Log("CheckPage: " + CheckPage.ToString());
+//                    TLogging.Log("OnVScrollPositionChanged:  CheckPage: " + CheckPage.ToString());
 
                     if ((CheckPage != LastCheckedPage) && (CheckPage < FTotalPages))
                     {
-//                        TLogging.Log("Checking if Page #" + CheckPage.ToString() + " is already transfered...");
+//                        TLogging.Log("OnVScrollPositionChanged:  Checking if Page #" + CheckPage.ToString() + " is already transfered...");
                         if (!FTransferredDataPages.Contains(CheckPage))
                         {
-//                            TLogging.Log("Page #" + CheckPage.ToString() + " is NOT transfered yet, requesting it from PetraServer...");
+//                            TLogging.Log("OnVScrollPositionChanged:  Page #" + CheckPage.ToString() + " is NOT transfered yet, requesting it from PetraServer...");
                             LoadSingleDataPage(CheckPage);
                         }
 
@@ -760,7 +833,7 @@ namespace Ict.Common.Controls
         #region Custom Events
         private void OnDataPageLoading(TDataPageLoadEventArgs e)
         {
-            // MessageBox.Show('OnDataPageLoading');
+//            TLogging.Log("OnDataPageLoading");
             if (DataPageLoading != null)
             {
                 DataPageLoading(this, e);
@@ -769,7 +842,7 @@ namespace Ict.Common.Controls
 
         private void OnDataPageLoaded(TDataPageLoadEventArgs e)
         {
-            // MessageBox.Show('OnDataPageLoaded');
+//            TLogging.Log("OnDataPageLoaded");
             if (DataPageLoaded != null)
             {
                 DataPageLoaded(this, e);
@@ -782,101 +855,143 @@ namespace Ict.Common.Controls
 
 
     #region Exceptions
-    #region TDataGridPagedNotInitialisedException
+
+    #region EDataGridPagedNotInitialisedException
 
     /// <summary>
-    /// error when not initialised
+    /// Error when not initialised.
     /// </summary>
-    public class TDataGridPagedNotInitialisedException : ApplicationException
+    public class EDataGridPagedNotInitialisedException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridPagedNotInitialisedException() : base()
+        public EDataGridPagedNotInitialisedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridPagedNotInitialisedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDataGridPagedNotInitialisedException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridPagedNotInitialisedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+
     #endregion
 
-    #region TDataGridPagedNoDataLoadedYetException
+    #region EDataGridPagedNoDataLoadedYetException
 
     /// <summary>
-    /// no data available yet
+    /// No data available yet.
     /// </summary>
-    public class TDataGridPagedNoDataLoadedYetException : ApplicationException
+    public class EDataGridPagedNoDataLoadedYetException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridPagedNoDataLoadedYetException() : base()
+        public EDataGridPagedNoDataLoadedYetException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridPagedNoDataLoadedYetException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDataGridPagedNoDataLoadedYetException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridPagedNoDataLoadedYetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+
     #endregion
 
-    #region TDataGridPagedDelegateFunctionNotSpecifiedException
+    #region EDataGridPagedDelegateFunctionNotSpecifiedException
 
     /// <summary>
-    /// no delegate
+    /// No Delegate.
     /// </summary>
-    public class TDataGridPagedDelegateFunctionNotSpecifiedException : ApplicationException
+    public class EDataGridPagedDelegateFunctionNotSpecifiedException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridPagedDelegateFunctionNotSpecifiedException() : base()
+        public EDataGridPagedDelegateFunctionNotSpecifiedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridPagedDelegateFunctionNotSpecifiedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDataGridPagedDelegateFunctionNotSpecifiedException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridPagedDelegateFunctionNotSpecifiedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+
     #endregion
 
-    #region TDataGridPagedAutoFindNotSupportedException
+    #region EDataGridPagedAutoFindNotSupportedException
 
     /// <summary>
     /// auto find not supported
     /// </summary>
-    public class TDataGridPagedAutoFindNotSupportedException : ApplicationException
+    public class EDataGridPagedAutoFindNotSupportedException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridPagedAutoFindNotSupportedException() : base()
+        public EDataGridPagedAutoFindNotSupportedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridPagedAutoFindNotSupportedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDataGridPagedAutoFindNotSupportedException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridPagedAutoFindNotSupportedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+
     #endregion
+
     #endregion
 
 

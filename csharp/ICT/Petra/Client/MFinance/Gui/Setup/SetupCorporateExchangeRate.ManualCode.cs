@@ -36,6 +36,7 @@ using Ict.Common.IO;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
@@ -151,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.VerificationResultCollection.Clear();
             ValidateAllData(false, false);
 
-            if (FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
             {
                 return;
             }
@@ -358,6 +359,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             try
             {
                 DateTime dt = dtpDetailDateEffectiveFrom.Date.Value;
+                DateTime dtFirstOfMonth = new DateTime(dt.Year, dt.Month, 1);
+                //Set to first of month for corporate
+
+                if (dt != dtFirstOfMonth)
+                {
+                    dt = dtFirstOfMonth;
+                    dtpDetailDateEffectiveFrom.Date = dt;
+                }
+
+                dtpDetailDateEffectiveFrom.Date = dt;
 
                 if (dt != FPreviouslySelectedDetailRow.DateEffectiveFrom)
                 {
@@ -416,7 +427,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ACorporateExchangeRateRow mainRow = (ACorporateExchangeRateRow)FMainDS.ACorporateExchangeRate.Rows.Find(
                 new object[] { ARow.ToCurrencyCode, ARow.FromCurrencyCode, ARow.DateEffectiveFrom });
 
-            if (mainRow != null)
+            if ((mainRow != null) && (ARow.RateOfExchange != 0.0m))
             {
                 // Checking to see if we have a matching rate is tricky because rounding errors mean that the inverse of an inverse
                 // does not always get you back where you started.  So we check both ways to look for a match.
@@ -463,15 +474,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
 
-                TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, "Corporate", results);
+                int nRowsImported = TImportExchangeRates.ImportCurrencyExRates(FMainDS.ACorporateExchangeRate, "Corporate", results);
 
                 if (results.Count > 0)
                 {
-                    TDataValidation.ProcessAnyDataValidationErrors(true, results, this.GetType(), null);
+                    string formatter;
+
+                    if (nRowsImported == 0)
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportNoRows;
+                    }
+                    else if (nRowsImported == 1)
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportOneRow;
+                    }
+                    else
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportMultiRow;
+                    }
+
+                    formatter += "{0}{0}{1}{0}{0}{3}{0}{0}{4}";
+                    MessageBox.Show(String.Format(formatter,
+                            Environment.NewLine,
+                            results[0].ResultText,
+                            nRowsImported,
+                            MCommonResourcestrings.StrExchRateImportTryAgain,
+                            results[0].ResultCode),
+                        MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    results.Clear();
+                }
+                else if (nRowsImported == 0)
+                {
+                    MessageBox.Show(MCommonResourcestrings.StrExchRateImportNoRows, MCommonResourcestrings.StrExchRateImportTitle);
+                }
+                else if (nRowsImported == 1)
+                {
+                    MessageBox.Show(MCommonResourcestrings.StrExchRateImportOneRowSuccess, MCommonResourcestrings.StrExchRateImportTitle);
+                }
+                else
+                {
+                    MessageBox.Show(String.Format(MCommonResourcestrings.StrExchRateImportMultiRowSuccess,
+                            nRowsImported), MCommonResourcestrings.StrExchRateImportTitle);
                 }
 
-                FPetraUtilsObject.SetChangedFlag();
-                results.Clear();
+                if (nRowsImported > 0)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
+                }
             }
         }
 

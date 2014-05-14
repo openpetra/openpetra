@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Runtime.Remoting.Lifetime;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using System.Data;
@@ -438,6 +439,19 @@ namespace Ict.Petra.Client.MReporting.Logic
         public TimeSpan GetDuration()
         {
             return Duration;
+        }
+
+        /// <summary>
+        /// send report as email
+        /// </summary>
+        public Boolean SendEmail(string AEmailAddresses,
+            bool AAttachExcelFile,
+            bool AAttachCSVFile,
+            bool AAttachPDF,
+            bool AWrapColumn,
+            out TVerificationResultCollection AVerification)
+        {
+            return FReportingGenerator.SendEmail(AEmailAddresses, AAttachExcelFile, AAttachCSVFile, AAttachPDF, AWrapColumn, out AVerification);
         }
 
         /// <summary>

@@ -22,43 +22,45 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.IO;
+using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
-using Mono.Data.Sqlite;
-using System.Collections;
-using Ict.Common;
-using Ict.Common.IO;
+using System.IO;
 using System.Text.RegularExpressions;
+using Mono.Data.Sqlite;
+
+using Ict.Common;
+using Ict.Common.DB.Exceptions;
+using Ict.Common.IO;
 
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// this class allows access to SQLite databases on Windows and Linux, using Mono.Data.Sqlite
+    /// Allows access to SQLite databases on Windows and Linux, using the 'Mono.Data.Sqlite' .NET Data Provider.
     /// </summary>
     public class TSQLite : IDataBaseRDBMS
     {
         /// <summary>
-        /// Create a SQLite connection using Mono.Data.Sqlite.
-        /// this works on Windows (with the sqlite3.dll) and on Linux
+        /// Creates a SQLite connection using the 'Mono.Data.Sqlite' .NET Data Provider.
+        /// This works on Windows (with the sqlite3.dll) and on Linux.
         /// </summary>
-        /// <param name="AServer">The Database file</param>
-        /// <param name="APort">the port that the db server is running on</param>
-        /// <param name="ADatabaseName">not in use</param>
-        /// <param name="AUsername">not in use</param>
-        /// <param name="APassword">The password for opening the database</param>
-        /// <param name="AConnectionString">not in use</param>
-        /// <param name="AStateChangeEventHandler">for connection state changes</param>
-        /// <returns>the connection</returns>
-        public IDbConnection GetConnection(String AServer, String APort,
+        /// <param name="AServer">Database file.</param>
+        /// <param name="APort">Port that the db server is running on.</param>
+        /// <param name="ADatabaseName">Not in use with SQLite.</param>
+        /// <param name="AUsername">Not in use with SQLite.</param>
+        /// <param name="APassword">Password for opening the database.</param>
+        /// <param name="AConnectionString">Not in use with SQLite.</param>
+        /// <param name="AStateChangeEventHandler">Event Handler for connection state changes.</param>
+        /// <returns>Instantiated SqliteConnection, but not opened yet (null if connection could not be established).
+        /// </returns>
+        public DbConnection GetConnection(String AServer, String APort,
             String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
         {
             ArrayList ExceptionList;
-
             SqliteConnection TheConnection = null;
 
             if (!File.Exists(AServer))
@@ -79,7 +81,7 @@ namespace Ict.Common.DB
                 File.Copy(baseDatabase, AServer);
             }
 
-            if (AConnectionString == "")
+            if (String.IsNullOrEmpty(AConnectionString))
             {
                 AConnectionString = "Data Source=" + Path.GetFullPath(AServer);
 
@@ -122,9 +124,10 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// enforce foreign key constraints
+        /// Initialises the connection after it was opened. Enforces Foreign Key constraints on SQLite.
         /// </summary>
-        public void InitConnection(IDbConnection AConnection)
+        /// <param name="AConnection">DB Connection.</param>
+        public void InitConnection(DbConnection AConnection)
         {
             string enforceForeignKeyConstraints = "PRAGMA foreign_keys = ON;";
 
@@ -135,11 +138,11 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// format an error message for exception of type SQLiteException
+        /// Formats an error message if the Exception is of Type 'SQLiteException'.
         /// </summary>
         /// <param name="AException"></param>
         /// <param name="AErrorMessage"></param>
-        /// <returns>true if this is an SQLiteException</returns>
+        /// <returns>True if this is an SQLiteException.</returns>
         public bool LogException(Exception AException, ref string AErrorMessage)
         {
             if (AException is SqliteException)
@@ -153,11 +156,11 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// format the sql query so that it works for SQLite
-        /// see also the comments for TDataBase.FormatQueryRDBMSSpecific
+        /// Formats a SQL query so that it works for SQLite.
+        /// See also the comments for TDataBase.FormatQueryRDBMSSpecific.
         /// </summary>
-        /// <param name="ASqlQuery"></param>
-        /// <returns></returns>
+        /// <param name="ASqlQuery">SQL Query.</param>
+        /// <returns>Formatted SQL Query.</returns>
         public String FormatQueryRDBMSSpecific(String ASqlQuery)
         {
             string ReturnValue = ASqlQuery;
@@ -215,7 +218,7 @@ namespace Ict.Common.DB
         /// of SQLiteParameter.
         /// </summary>
         /// <param name="AParameterArray">Array of DbParameter that is to be converted.</param>
-        /// <param name="ASqlStatement">SQL Statement will stay the same.</param>
+        /// <param name="ASqlStatement">SQL Statement. It will not be modified!</param>
         /// <returns>Array of SQLiteParameter (converted from <paramref name="AParameterArray" />.</returns>
         public DbParameter[] ConvertOdbcParameters(DbParameter[] AParameterArray, ref string ASqlStatement)
         {
@@ -241,17 +244,17 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create a IDbCommand object
-        /// this formats the sql query for SQLite, and transforms the parameters
+        /// Creates a DbCommand object.
+        /// This formats the sql query for SQLite, and transforms the parameters.
         /// </summary>
         /// <param name="ACommandText"></param>
         /// <param name="AConnection"></param>
         /// <param name="AParametersArray"></param>
         /// <param name="ATransaction"></param>
-        /// <returns></returns>
-        public IDbCommand NewCommand(ref string ACommandText, IDbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
+        /// <returns>Instantiated SqliteCommand.</returns>
+        public DbCommand NewCommand(ref string ACommandText, DbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
         {
-            IDbCommand ObjReturn = null;
+            DbCommand ObjReturn = null;
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
@@ -287,60 +290,59 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create an IDbDataAdapter for SQLite
+        /// Creates a DbDataAdapter for SQLite.
         /// </summary>
-        /// <returns></returns>
-        public IDbDataAdapter NewAdapter()
+        /// <remarks>
+        /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits
+        /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
+        /// </remarks>
+        /// <returns>Instantiated SqliteDataAdapter.</returns>
+        public DbDataAdapter NewAdapter()
         {
-            IDbDataAdapter TheAdapter = new SqliteDataAdapter();
+            DbDataAdapter TheAdapter = new SqliteDataAdapter();
 
             return TheAdapter;
         }
 
         /// <summary>
-        /// fill an IDbDataAdapter that was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataSet"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
         /// <param name="ADataTableName"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataSet AFillDataSet,
             Int32 AStartRecord,
             Int32 AMaxRecords,
             string ADataTableName)
         {
             ((SqliteDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
-
-            TheAdapter.SelectCommand.Dispose();
-            ((SqliteDataAdapter)TheAdapter).Dispose();
         }
 
         /// <summary>
-        /// overload of FillAdapter, just for one table
-        /// IDbDataAdapter was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
+        /// <remarks>Overload of FillAdapter, just for one table.</remarks>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataTable"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataTable AFillDataTable,
             Int32 AStartRecord,
             Int32 AMaxRecords)
         {
             ((SqliteDataAdapter)TheAdapter).Fill(AFillDataTable);
-
-            TheAdapter.SelectCommand.Dispose();
-            ((SqliteDataAdapter)TheAdapter).Dispose();
         }
 
         /// <summary>
-        /// some databases have some problems with certain Isolation levels
+        /// Some RDMBS's have some problems with certain Isolation Levels. True for SQLite!
         /// </summary>
-        /// <param name="AIsolationLevel"></param>
-        /// <returns>true if isolation level was modified</returns>
+        /// <param name="AIsolationLevel">Isolation Level.</param>
+        /// <returns>True if Isolation Level was modified.</returns>
         public bool AdjustIsolationLevel(ref IsolationLevel AIsolationLevel)
         {
             // somehow there is a problem with RepeatableRead
@@ -359,18 +361,18 @@ namespace Ict.Common.DB
         /// <param name="ASequenceName">Name of the Sequence.</param>
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
-        /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
+        /// <param name="ADatabase">Database object that can be used for querying.</param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
 
-            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection))
+            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)ATransaction.Connection))
             {
                 cmd.ExecuteNonQuery();
-                return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
             }
+
+            return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase);
         }
 
         /// <summary>
@@ -379,26 +381,24 @@ namespace Ict.Common.DB
         /// <param name="ASequenceName">Name of the Sequence.</param>
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
-        /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
+        /// <param name="ADatabase">Database object that can be used for querying.</param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
 
-            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection))
+            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)ATransaction.Connection))
             {
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }
         }
 
         /// <summary>
-        /// restart a sequence with the given value
+        /// Restart a sequence with the given value.
         /// </summary>
         public void RestartSequence(String ASequenceName,
             TDBTransaction ATransaction,
             TDataBase ADatabase,
-            IDbConnection AConnection,
             Int64 ARestartValue)
         {
             ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction);
@@ -406,7 +406,7 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Replace DAYOFYEAR(p_param) with strftime(%j, p_param)
+        /// Replace DAYOFYEAR(p_param) with strftime(%j, p_param).
         /// </summary>
         /// <param name="ASqlCommand"></param>
         /// <returns></returns>
@@ -421,12 +421,12 @@ namespace Ict.Common.DB
                 return ASqlCommand;
             }
 
-            return ASqlCommand.Substring(0, StartIndex) + "strftime(%j, " +
+            return ASqlCommand.Substring(0, StartIndex) + "strftime('%j', " +
                    ASqlCommand.Substring(StartIndex + 10);
         }
 
         /// <summary>
-        /// For standalone installations, we update the SQLite database on the fly
+        /// For standalone installations, we update the SQLite database on the fly.
         /// </summary>
         public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
             string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
@@ -435,73 +435,81 @@ namespace Ict.Common.DB
             if (AExeVersion.FileMajorPart == 0)
             {
                 DBAccess.GDBAccessObj.CloseDBConnection();
-                throw new Exception(String.Format("Unsupported upgrade: Please rename your file {0} so that we can start with a fresh database!",
+
+                throw new EDBUnsupportedDBUpgradeException(String.Format(Catalog.GetString(
+                            "Unsupported upgrade: Please rename the file {0} so that we can start with a fresh database!   " +
+                            "Please restart the OpenPetra Client after that."),
                         AHostOrFile));
             }
 
             string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
             ADBVersion.FilePrivatePart = 0;
             AExeVersion.FilePrivatePart = 0;
 
-            try
+            using (TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction())
             {
-                // run all available patches. for each release there could be a patch file
-                string[] sqlFiles = Directory.GetFiles(dbpatchfilePath, "*.sql");
-
-                bool foundUpdate = true;
-
-                // run through all sql files until we have no matching update files anymore
-                while (foundUpdate)
+                try
                 {
-                    foundUpdate = false;
+                    // run all available patches. for each release there could be a patch file
+                    string[] sqlFiles = Directory.GetFiles(dbpatchfilePath, "*.sql");
 
-                    foreach (string sqlFile in sqlFiles)
+                    bool foundUpdate = true;
+
+                    // run through all sql files until we have no matching update files anymore
+                    while (foundUpdate)
                     {
-                        if (!sqlFile.EndsWith("pg.sql") && (new TPatchFileVersionInfo(ADBVersion)).PatchApplies(sqlFile, AExeVersion))
+                        foundUpdate = false;
+
+                        foreach (string sqlFile in sqlFiles)
                         {
-                            foundUpdate = true;
-                            StreamReader sr = new StreamReader(sqlFile);
-
-                            while (!sr.EndOfStream)
+                            if (!sqlFile.EndsWith("pg.sql") && (new TPatchFileVersionInfo(ADBVersion)).PatchApplies(sqlFile, AExeVersion))
                             {
-                                string line = sr.ReadLine().Trim();
+                                foundUpdate = true;
+                                StreamReader sr = new StreamReader(sqlFile);
 
-                                if (!line.StartsWith("--"))
+                                while (!sr.EndOfStream)
                                 {
-                                    DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction);
-                                }
-                            }
+                                    string line = sr.ReadLine().Trim();
 
-                            sr.Close();
-                            ADBVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(sqlFile);
+                                    if (!line.StartsWith("--"))
+                                    {
+                                        DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction);
+                                    }
+                                }
+
+                                sr.Close();
+                                ADBVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(sqlFile);
+                            }
                         }
                     }
-                }
 
-                if (ADBVersion.Compare(AExeVersion) == 0)
-                {
-                    // if patches have been applied successfully, update the database version
-                    string newVersionSql =
-                        String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
-                            AExeVersion.ToStringDotsHyphen());
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    if (ADBVersion.Compare(AExeVersion) == 0)
+                    {
+                        // if patches have been applied successfully, update the database version
+                        string newVersionSql =
+                            String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
+                                AExeVersion.ToStringDotsHyphen());
+
+                        DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
+
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+
+                        throw new Exception(String.Format(Catalog.GetString(
+                                    "Cannot connect to old database (version {0}), there are some missing sql patch files"),
+                                ADBVersion));
+                    }
                 }
-                else
+                catch (Exception)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw new Exception(String.Format("Cannot connect to old database (version {0}), there are some missing sql patch files",
-                            ADBVersion));
-                }
-            }
-            catch (Exception)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
 
-                throw;
+                    throw;
+                }
             }
         }
     }

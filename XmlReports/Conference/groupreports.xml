@@ -3,60 +3,60 @@
 <reports>
 
   <report id="Group Reports">
-	<description>
-		Report for Conference Groups (discovery, fellowship or work group)
-		depends on conference.xml
-	</description>
-	<reportparameters> 
-	  <reportparameter name="param_rgrGroups"></reportparameter>
-	  <reportparameter name="param_rgrParticipants"></reportparameter>
-	</reportparameters>
+    <description>
+        Report for Conference Groups (discovery, fellowship or work group)
+        depends on conference.xml
+    </description>
+    <reportparameters> 
+      <reportparameter name="param_rgrGroups"></reportparameter>
+      <reportparameter name="param_rgrParticipants"></reportparameter>
+    </reportparameters>
 
     <reportheader></reportheader>
     <pageheader>
-	<field whichfield="title1">
-		<fielddetail>
-			<switch>
-				<case condition="eq({param_rgrGroups}, AllGroups)">
-					<value text="All Group Report"/>
-				</case>
-				<case condition="eq({param_rgrGroups}, WorkGroups)">
-					<value text="Work Group Report"/>
-				</case>
-				<case condition="eq({param_rgrGroups}, FellowshipGroups)">
-					<value text="Fellowship Group Report"/>
-				</case>
-				<case condition="eq({param_rgrGroups}, DiscoveryGroups)">
-					<value text="Discovery Group Report"/>
-				</case>
-			</switch>
-		</fielddetail>
-	</field>
+    <field whichfield="title1">
+        <fielddetail>
+            <switch>
+                <case condition="eq({param_rgrGroups}, AllGroups)">
+                    <value text="All Group Report"/>
+                </case>
+                <case condition="eq({param_rgrGroups}, WorkGroups)">
+                    <value text="Work Group Report"/>
+                </case>
+                <case condition="eq({param_rgrGroups}, FellowshipGroups)">
+                    <value text="Fellowship Group Report"/>
+                </case>
+                <case condition="eq({param_rgrGroups}, DiscoveryGroups)">
+                    <value text="Discovery Group Report"/>
+                </case>
+            </switch>
+        </fielddetail>
+    </field>
       <field whichfield="title2"><value function="getSiteName()"></value></field>
       <field whichfield="descr1">
-	  <fielddetail>
-		<switch>
-			<case condition="not(eq({param_rgrGroups}, AllGroups))">
-				<value text="Sorted by: Group, Last Name"></value>
-			</case>
-			<default>
-				<value text="Sorted by: Last Name"></value>
-			</default>
-		</switch>
-	  </fielddetail>
+      <fielddetail>
+        <switch>
+            <case condition="not(eq({param_rgrGroups}, AllGroups))">
+                <value text="Sorted by: Group, Last Name"></value>
+            </case>
+            <default>
+                <value text="Sorted by: Last Name"></value>
+            </default>
+        </switch>
+      </fielddetail>
       </field>
       <field whichfield="descr2">
         <fielddetail>
           <value text="Selection: "></value>
         </fielddetail>
         <fielddetail condition="eq({param_attendeeselection}, one attendee)">
-		<value text="Partner: "></value><value variable="param_partnerkey"></value>
+        <value text="Partner: "></value><value variable="param_partnerkey"></value>
         </fielddetail>
         <fielddetail condition="eq({param_attendeeselection}, all attendees)">
-		<value text="All Attendees"></value>
+        <value text="All Attendees"></value>
         </fielddetail>
         <fielddetail condition="eq({param_attendeeselection}, from extract)">
-		 <value text="Extract: "></value><value variable="param_extractname"></value>
+         <value text="Extract: "></value><value variable="param_extractname"></value>
         </fielddetail>
       </field>
       <field whichfield="period1">
@@ -83,397 +83,391 @@
     </pageheader>
 
     <calculations>
-	
-			<calculation id="Select Groups" returns="automatic" returnsFormat="row">
-				<query>
-					<queryDetail><value>
-						SELECT DISTINCT
-							PUB_pc_conference.pc_conference_key_n AS CurrentConferenceKey
-					</value></queryDetail>
-					<queryDetail condition="eq({param_rgrGroups}, FellowshipGroups)"><value>
-							, PUB_pm_short_term_application.pm_st_fg_code_c AS CurrentGroup
-					</value></queryDetail>
-					<queryDetail condition="eq({param_rgrGroups}, DiscoveryGroups)"><value>
-							, PUB_pc_attendee.pc_discovery_group_c AS CurrentGroup
-					</value></queryDetail>
-					<queryDetail condition="eq({param_rgrGroups}, WorkGroups)"><value>
-							, PUB_pc_attendee.pc_work_group_c AS CurrentGroup
-					</value></queryDetail>
-					<queryDetail><value>
-						FROM   PUB_p_partner,
-							PUB_p_unit,
-							PUB_pc_attendee,
-							PUB_pc_conference,
-							PUB_pm_general_application,
-							PUB_pm_short_term_application
-					</value></queryDetail>
-					<queryDetail condition="or(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant))"><value>
-							, PUB_pt_congress_code
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
-						WHERE 
-							PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
-							AND
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
-						WHERE 
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
-							, PUB_m_extract, PUB_m_extract_master
-						WHERE
-							 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-							AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
-							AND
-					</value></queryDetail>
-					<queryDetail><value>
-							PUB_p_partner.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-					</value></queryDetail>
-					
-					<queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
-							AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
-							AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
-							AND
-					</value></queryDetail>
-					<queryDetail condition="eq({param_conferenceselection}, one conference)">
-							<value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
-									variable="param_conferenceoptions" calculation="OR" format="Number">
-							</value>
-					</queryDetail>
-					
-					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
-							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
-					</value></queryDetail>
-					
-					<queryDetail condition="or(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant))"><value>
-							AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
-							AND PUB_pt_congress_code.pt_participant_l = 1
-					</value></queryDetail>
-					
-					<queryDetail><value>
-							AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
-							AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-							AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
-							AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
-							AND NOT pm_general_application.pm_gen_app_delete_flag_l = 1
-							AND ( 	PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
-									OR 
-									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
-					</value></queryDetail>
-					
-					<!-- Don't select the group if the group name is empty or null and the selection is set
-						to "show only attendees with a group assigned to it -->
-					<queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
-							AND NOT (( PUB_pm_short_term_application.pm_st_fg_code_c IS NULL)
-								OR PUB_pm_short_term_application.pm_st_fg_code_c = "")
-					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
-							AND NOT (( PUB_pc_attendee.pc_discovery_group_c IS NULL)
-								OR PUB_pc_attendee.pc_discovery_group_c = "")
-					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
-							AND NOT (( PUB_pc_attendee.pc_work_group_c IS NULL)
-								OR PUB_pc_attendee.pc_work_group_c = "")
-					</value></queryDetail>
-					
-					<queryDetail condition="not(eq({param_rgrGroups}, AllGroups))"><value>
-							ORDER BY CurrentGroup
-					</value></queryDetail>
-				</query>
-			</calculation> <!-- Select Groups -->
-			
-			<calculation id="Select Attendee from group" returns="automatic" returnsFormat="row">
-				<query>
-					<queryDetail><value>
-						SELECT DISTINCT
-							PUB_p_partner.p_partner_key_n AS AttendeeKey,
-							PUB_p_partner.p_partner_short_name_c AS AttendeeName,
-							PUB_p_partner.p_partner_class_c AS AttendeeClass,
-							
-							PUB_p_person.p_gender_c AS Gender,
-							PUB_p_person.p_date_of_birth_d AS Birthday,
-							PUB_p_person.p_first_name_c AS FirstName,
-							PUB_p_person.p_prefered_name_c AS PreferredName,
-							PUB_p_person.p_family_name_c AS LastName,
-							PUB_p_person.p_marital_status_c AS MaritalStatus,
-							PUB_p_person.p_family_key_n AS FamilyKey,
-							
-							PUB_p_unit.p_unit_name_c AS ConferenceName,
-							PUB_p_unit.p_partner_key_n AS ConferenceKey,
-							ChargedUnit.p_unit_name_c AS ChargedOffice,
-							PUB_pc_conference.pc_start_d AS StartDate,
-							PUB_pc_conference.pc_end_d AS EndDate,
-							
-							PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
-							PUB_pm_short_term_application.pm_arrival_hour_i,
-							PUB_pm_short_term_application.pm_arrival_minute_i,
-							PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
-							PUB_pm_short_term_application.pm_departure_hour_i,
-							PUB_pm_short_term_application.pm_departure_minute_i,
-							PUB_pm_short_term_application.pt_arrival_point_code_c,
-							PUB_pm_short_term_application.pm_arrival_comments_c AS ArrivalComment,
-							PUB_pm_short_term_application.pt_departure_point_code_c,
-							PUB_pm_short_term_application.pm_departure_comments_c AS DepartureComment,
-							PUB_pm_short_term_application.pm_arrival_exp_d AS ArrivalExpectedDate,
-							PUB_pm_short_term_application.pm_arrival_exp_hour_i,
-							PUB_pm_short_term_application.pm_arrival_exp_minute_i,
-							PUB_pm_short_term_application.pm_departure_exp_d AS DepartureExpectedDate,
-							PUB_pm_short_term_application.pm_departure_exp_hour_i,
-							PUB_pm_short_term_application.pm_departure_exp_minute_i,
-							PUB_pm_short_term_application.pm_to_cong_travel_info_c AS ArrivalTravelDetails,
-							PUB_pm_short_term_application.pm_from_cong_travel_info_c AS DepartureTravelDetails,
-							PUB_pm_short_term_application.pt_travel_type_to_cong_code_c AS ArrivalTravelType,
-							PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureTravelType,
-							PUB_pm_short_term_application.pm_arrival_transport_needed_l,
-							PUB_pm_short_term_application.pm_departure_transport_needed_l,
-							PUB_pm_short_term_application.pm_confirmed_option_code_c AS OutreachCode,
-							PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
-							PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
-							PUB_pm_short_term_application.pm_st_fg_leader_l,
-							
-							PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
-							PUB_pc_attendee.pc_work_group_c AS WorkGroup,
-							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
-							PUB_pc_attendee.pc_departure_group_c AS DepartureGroup,
-							PUB_pc_attendee.pc_registered_d AS RegistrationDate,
-							PUB_pc_attendee.pc_actual_arr_d AS ActualArrivingDate,
-							PUB_pc_attendee.pc_actual_dep_d AS ActualDepartureDate
-						FROM   PUB_p_partner,
-							PUB_p_person,
-							PUB_p_unit,
-							PUB_p_unit AS ChargedUnit,
-							PUB_pc_attendee,
-							PUB_pc_conference,
-							PUB_pm_general_application,
-							PUB_pm_short_term_application,
-							PUB_pt_congress_code
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
-						WHERE 
-							PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
-							AND
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
-						WHERE 
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
-							, PUB_m_extract, PUB_m_extract_master
-						WHERE
-							 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-							AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
-							AND
-					</value></queryDetail>
-					<queryDetail><value>
-							PUB_p_partner.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-							AND PUB_p_person.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-					
-							AND PUB_pc_conference.pc_conference_key_n = {{CurrentConferenceKey}}
-							AND PUB_pc_attendee.pc_conference_key_n = {{CurrentConferenceKey}}
-					</value></queryDetail>
-					<queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
-							AND
-					</value></queryDetail>
-					<queryDetail condition="eq({param_conferenceselection}, one conference)">
-							<value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
-									variable="param_conferenceoptions" calculation="OR" format="Number">
-							</value>
-					</queryDetail>
-					
-					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
-							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
-					</value></queryDetail>
-					
-					<queryDetail><value>
-							AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
-							AND ChargedUnit.p_partner_key_n = PUB_pm_short_term_application.pm_st_field_charged_n
-							AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-							AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
-							AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
-							AND NOT pm_general_application.pm_gen_app_delete_flag_l = 1
-							AND ( 	PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
-									OR 
-									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
-					</value></queryDetail>
-					
-					<queryDetail condition="eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt)"><value>
-							AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
-							AND PUB_pt_congress_code.pt_participant_l = 1
-					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant), lt(length({CurrentGroup}),1))"><value>
-							AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
-							AND PUB_pt_congress_code.pt_participant_l = 1
-					</value></queryDetail>
-					
-					
-					<queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), gt(length({CurrentGroup}), 0))"><value>
-							AND PUB_pm_short_term_application.pm_st_fg_code_c = {CurrentGroup}
-					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), gt(length({CurrentGroup}), 0))"><value>
-							AND PUB_pc_attendee.pc_discovery_group_c = {CurrentGroup}
-					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), gt(length({CurrentGroup}), 0))"><value>
-							AND PUB_pc_attendee.pc_work_group_c = {CurrentGroup}
-					</value></queryDetail>
-					
-					
-					<queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), lt(length({CurrentGroup}), 1))"><value>
-							AND PUB_pm_short_term_application.pm_st_fg_code_c IS NULL
-					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), lt(length({CurrentGroup}), 1))"><value>
-							AND PUB_pc_attendee.pc_discovery_group_c IS NULL
-					</value></queryDetail>
-					<queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), lt(length({CurrentGroup}), 1))"><value>
-							AND PUB_pc_attendee.pc_work_group_c IS NULL
-					</value></queryDetail>
-					
-					
-					
-					<queryDetail><value>
-							ORDER BY LastName
-					</value></queryDetail>
-				</query>
-			</calculation> <!-- Select Attendee from group -->
-			
-			<calculation id="GetLanguage" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="assign(Language, GetPersonLanguages({AttendeeKey}))"/>
-						<value function="assign(NumberOfPersonsInReport, add({NumberOfPersonsInReport}, 1))"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="GetNumberOfPersonsInGroup" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="assign(NumberOfPersonsInGroup, sub({NumberOfPersonsInReport}, {OldNumberOfPersonsInGroup}))"/>
-						<value function="assign(OldNumberOfPersonsInGroup, {NumberOfPersonsInReport})"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Current Group" returns="text" returnsFormat="text">
-				<caption><value text="CurrentGroup"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="CurrentGroup"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="CurrentConferenceKey" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="CurrentConferenceKey"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Language" returns="text" returnsFormat="text">
-				<caption><value text="Language"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="Language"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="NumberOfPersonsInGroup" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="NumberOfPersonsInGroup"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="OldNumberOfPersonsInGroup" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="OldNumberOfPersonsInGroup"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="NumberOfPersonsInReport" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="NumberOfPersonsInReport"></value>
-					</queryDetail>
-				</query>
-			</calculation>
+    
+            <calculation id="Select Groups" returns="automatic" returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                        SELECT DISTINCT
+                            PUB_pc_conference.pc_conference_key_n AS CurrentConferenceKey
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_rgrGroups}, FellowshipGroups)"><value>
+                            , PUB_pm_short_term_application.pm_st_fg_code_c AS CurrentGroup
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_rgrGroups}, DiscoveryGroups)"><value>
+                            , PUB_pc_attendee.pc_discovery_group_c AS CurrentGroup
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_rgrGroups}, WorkGroups)"><value>
+                            , PUB_pc_attendee.pc_work_group_c AS CurrentGroup
+                    </value></queryDetail>
+                    <queryDetail><value>
+                        FROM   PUB_p_partner,
+                            PUB_p_unit,
+                            PUB_pc_attendee,
+                            PUB_pc_conference,
+                            PUB_pm_general_application,
+                            PUB_pm_short_term_application
+                    </value></queryDetail>
+                    <queryDetail condition="or(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant))"><value>
+                            , PUB_pt_congress_code
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
+                        WHERE 
+                            PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
+                        WHERE 
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
+                            , PUB_m_extract, PUB_m_extract_master
+                        WHERE
+                             PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                            AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                            AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail><value>
+                            PUB_p_partner.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                    </value></queryDetail>
+                    
+                    <queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
+                            AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
+                            AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_conferenceselection}, one conference)">
+                            <value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
+                                    variable="param_conferenceoptions" calculation="OR" format="Number">
+                            </value>
+                    </queryDetail>
+                    
+                    <queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
+                            AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
+                            AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+                    </value></queryDetail>
+                    
+                    <queryDetail condition="or(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant))"><value>
+                            AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
+                            AND PUB_pt_congress_code.pt_participant_l = 1
+                    </value></queryDetail>
+                    
+                    <queryDetail><value>
+                            AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
+                            AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                            AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+                            AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
+                            AND NOT pm_general_application.pm_gen_app_delete_flag_l = 1
+                            AND (   PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
+                                    OR 
+                                    PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
+                    </value></queryDetail>
+                    
+                    <!-- Don't select the group if the group name is empty or null and the selection is set
+                        to "show only attendees with a group assigned to it -->
+                    <queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
+                            AND NOT (( PUB_pm_short_term_application.pm_st_fg_code_c IS NULL)
+                                OR PUB_pm_short_term_application.pm_st_fg_code_c = '')
+                    </value></queryDetail>
+                    <queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
+                            AND NOT (( PUB_pc_attendee.pc_discovery_group_c IS NULL)
+                                OR PUB_pc_attendee.pc_discovery_group_c = '')
+                    </value></queryDetail>
+                    <queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
+                            AND NOT (( PUB_pc_attendee.pc_work_group_c IS NULL)
+                                OR PUB_pc_attendee.pc_work_group_c = '')
+                    </value></queryDetail>
+                    
+                    <queryDetail condition="not(eq({param_rgrGroups}, AllGroups))"><value>
+                            ORDER BY CurrentGroup
+                    </value></queryDetail>
+                </query>
+            </calculation> <!-- Select Groups -->
+            
+            <calculation id="Select Attendee from group" returns="automatic" returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                        SELECT DISTINCT
+                            PUB_p_partner.p_partner_key_n AS AttendeeKey,
+                            PUB_p_partner.p_partner_short_name_c AS AttendeeName,
+                            PUB_p_partner.p_partner_class_c AS AttendeeClass,
+                            
+                            PUB_p_person.p_gender_c AS Gender,
+                            PUB_p_person.p_date_of_birth_d AS Birthday,
+                            PUB_p_person.p_first_name_c AS FirstName,
+                            PUB_p_person.p_prefered_name_c AS PreferredName,
+                            PUB_p_person.p_family_name_c AS LastName,
+                            PUB_p_person.p_marital_status_c AS MaritalStatus,
+                            PUB_p_person.p_family_key_n AS FamilyKey,
+                            
+                            PUB_p_unit.p_unit_name_c AS ConferenceName,
+                            PUB_p_unit.p_partner_key_n AS ConferenceKey,
+                            ChargedUnit.p_unit_name_c AS ChargedOffice,
+                            PUB_pc_conference.pc_start_d AS StartDate,
+                            PUB_pc_conference.pc_end_d AS EndDate,
+                            
+                            PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
+                            PUB_pm_short_term_application.pm_arrival_hour_i,
+                            PUB_pm_short_term_application.pm_arrival_minute_i,
+                            PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
+                            PUB_pm_short_term_application.pm_departure_hour_i,
+                            PUB_pm_short_term_application.pm_departure_minute_i,
+                            PUB_pm_short_term_application.pt_arrival_point_code_c,
+                            PUB_pm_short_term_application.pm_arrival_comments_c AS ArrivalComment,
+                            PUB_pm_short_term_application.pt_departure_point_code_c,
+                            PUB_pm_short_term_application.pm_departure_comments_c AS DepartureComment,
+                            PUB_pm_short_term_application.pm_to_cong_travel_info_c AS ArrivalTravelDetails,
+                            PUB_pm_short_term_application.pm_from_cong_travel_info_c AS DepartureTravelDetails,
+                            PUB_pm_short_term_application.pt_travel_type_to_cong_code_c AS ArrivalTravelType,
+                            PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureTravelType,
+                            PUB_pm_short_term_application.pm_arrival_transport_needed_l,
+                            PUB_pm_short_term_application.pm_departure_transport_needed_l,
+                            PUB_pm_short_term_application.pm_confirmed_option_code_c AS OutreachCode,
+                            PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
+                            PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
+                            PUB_pm_short_term_application.pm_st_fg_leader_l,
+                            
+                            PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
+                            PUB_pc_attendee.pc_work_group_c AS WorkGroup,
+                            PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
+                            PUB_pc_attendee.pc_departure_group_c AS DepartureGroup,
+                            PUB_pc_attendee.pc_registered_d AS RegistrationDate,
+                            PUB_pc_attendee.pc_actual_arr_d AS ActualArrivingDate,
+                            PUB_pc_attendee.pc_actual_dep_d AS ActualDepartureDate
+                        FROM   PUB_p_partner,
+                            PUB_p_person,
+                            PUB_p_unit,
+                            PUB_p_unit AS ChargedUnit,
+                            PUB_pc_attendee,
+                            PUB_pc_conference,
+                            PUB_pm_general_application,
+                            PUB_pm_short_term_application,
+                            PUB_pt_congress_code
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
+                        WHERE 
+                            PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
+                        WHERE 
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
+                            , PUB_m_extract, PUB_m_extract_master
+                        WHERE
+                             PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                            AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                            AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail><value>
+                            PUB_p_partner.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                            AND PUB_p_person.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                    
+                            AND PUB_pc_conference.pc_conference_key_n = {{CurrentConferenceKey}}
+                            AND PUB_pc_attendee.pc_conference_key_n = {{CurrentConferenceKey}}
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
+                            AND
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_conferenceselection}, one conference)">
+                            <value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
+                                    variable="param_conferenceoptions" calculation="OR" format="Number">
+                            </value>
+                    </queryDetail>
+                    
+                    <queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
+                            AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+                    </value></queryDetail>
+                    
+                    <queryDetail><value>
+                            AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
+                            AND ChargedUnit.p_partner_key_n = PUB_pm_short_term_application.pm_st_field_charged_n
+                            AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                            AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+                            AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
+                            AND NOT pm_general_application.pm_gen_app_delete_flag_l = 1
+                            AND (   PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
+                                    OR 
+                                    PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
+                    </value></queryDetail>
+                    
+                    <queryDetail condition="eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt)"><value>
+                            AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
+                            AND PUB_pt_congress_code.pt_participant_l = 1
+                    </value></queryDetail>
+                    <queryDetail condition="and(eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipant), lt(length({CurrentGroup}),1))"><value>
+                            AND PUB_pm_short_term_application.pm_st_congress_code_c = PUB_pt_congress_code.pt_code_c
+                            AND PUB_pt_congress_code.pt_participant_l = 1
+                    </value></queryDetail>
+                    
+                    
+                    <queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), gt(length({CurrentGroup}), 0))"><value>
+                            AND PUB_pm_short_term_application.pm_st_fg_code_c = {CurrentGroup}
+                    </value></queryDetail>
+                    <queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), gt(length({CurrentGroup}), 0))"><value>
+                            AND PUB_pc_attendee.pc_discovery_group_c = {CurrentGroup}
+                    </value></queryDetail>
+                    <queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), gt(length({CurrentGroup}), 0))"><value>
+                            AND PUB_pc_attendee.pc_work_group_c = {CurrentGroup}
+                    </value></queryDetail>
+                    
+                    
+                    <queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), lt(length({CurrentGroup}), 1))"><value>
+                            AND PUB_pm_short_term_application.pm_st_fg_code_c IS NULL
+                    </value></queryDetail>
+                    <queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), lt(length({CurrentGroup}), 1))"><value>
+                            AND PUB_pc_attendee.pc_discovery_group_c IS NULL
+                    </value></queryDetail>
+                    <queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), lt(length({CurrentGroup}), 1))"><value>
+                            AND PUB_pc_attendee.pc_work_group_c IS NULL
+                    </value></queryDetail>
+                    
+                    
+                    
+                    <queryDetail><value>
+                            ORDER BY LastName
+                    </value></queryDetail>
+                </query>
+            </calculation> <!-- Select Attendee from group -->
+            
+            <calculation id="GetLanguage" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value text="NO-SQL"/>
+                        <value function="assign(Language, GetPersonLanguages({AttendeeKey}))"/>
+                        <value function="assign(NumberOfPersonsInReport, add({NumberOfPersonsInReport}, 1))"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="GetNumberOfPersonsInGroup" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value text="NO-SQL"/>
+                        <value function="assign(NumberOfPersonsInGroup, sub({NumberOfPersonsInReport}, {OldNumberOfPersonsInGroup}))"/>
+                        <value function="assign(OldNumberOfPersonsInGroup, {NumberOfPersonsInReport})"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Current Group" returns="text" returnsFormat="text">
+                <caption><value text="CurrentGroup"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="CurrentGroup"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="CurrentConferenceKey" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="CurrentConferenceKey"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Language" returns="text" returnsFormat="text">
+                <caption><value text="Language"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="Language"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="NumberOfPersonsInGroup" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="NumberOfPersonsInGroup"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="OldNumberOfPersonsInGroup" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="OldNumberOfPersonsInGroup"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="NumberOfPersonsInReport" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="NumberOfPersonsInReport"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
     </calculations>
     
     <levels>    
-	<level name="main">
-		<detail>
-			<lowerLevelReport level="intermediate Level"></lowerLevelReport>
-		</detail>
-	</level> <!-- main -->
-	
-	<level name="intermediate Level">
-		<detail>
-			<lowerLevelReport calculation="Select Groups" level="Group Level"></lowerLevelReport>
-		</detail>
-		<footer space="above">
-			<field whichfield="left 0" pos="0cm" width="4cm">
-			</field>
-			<field whichfield="left 1" pos="0cm" width="0cm">
-				<value text="Total in Report: "/>
-				<value variable="NumberOfPersonsInReport"/>
-			</field>
-		</footer>
-	</level> <!-- intermediate Level -->
+    <level name="main">
+        <detail>
+            <lowerLevelReport level="intermediate Level"></lowerLevelReport>
+        </detail>
+    </level> <!-- main -->
+    
+    <level name="intermediate Level">
+        <detail>
+            <lowerLevelReport calculation="Select Groups" level="Group Level"></lowerLevelReport>
+        </detail>
+        <footer space="above">
+            <field whichfield="left 0" pos="0cm" width="4cm">
+            </field>
+            <field whichfield="left 1" pos="0cm" width="0cm">
+                <value text="Total in Report: "/>
+                <value variable="NumberOfPersonsInReport"/>
+            </field>
+        </footer>
+    </level> <!-- intermediate Level -->
 
       <level name="Group Level" identification="AttendeeKey">
-		<header>
-			<switch>
-				<case condition="gt(length({CurrentGroup}), 0)">
-					<field whichfield="header 1" pos="0cm" width="8cm">
-						<value text="Group: "/>
-						<value variable="CurrentGroup"/>
-					</field>
-				</case>
-				<case condition="eq({param_rgrGroups}, AllGroups)">
-				</case>
-				<default>
-					<field whichfield="header 1" pos="0cm" width="8cm">
-						<value text="Group: Unassigned"/>
-					</field>
-				</default>
-			</switch>
-		</header>
-		<detail>
-			<lowerLevelReport calculation="Select Attendee from group" level="Attendee Level"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<switch>
-				<case condition="eq({param_rgrGroups}, AllGroups)">
-				</case>
-				<default>
-					<field whichfield="left 0" pos="0cm" width="4cm">
-					</field>
-					<field whichfield="left 1" pos="0cm" width="0cm" calculation="GetNumberOfPersonsInGroup">
-						<value text="Total in Group: "/>
-						<value variable="NumberOfPersonsInGroup"/>
-					</field>
-				</default>
-			</switch>
-		</footer>
+        <header>
+            <switch>
+                <case condition="gt(length({CurrentGroup}), 0)">
+                    <field whichfield="header 1" pos="0cm" width="8cm">
+                        <value text="Group: "/>
+                        <value variable="CurrentGroup"/>
+                    </field>
+                </case>
+                <case condition="eq({param_rgrGroups}, AllGroups)">
+                </case>
+                <default>
+                    <field whichfield="header 1" pos="0cm" width="8cm">
+                        <value text="Group: Unassigned"/>
+                    </field>
+                </default>
+            </switch>
+        </header>
+        <detail>
+            <lowerLevelReport calculation="Select Attendee from group" level="Attendee Level"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+            <switch>
+                <case condition="eq({param_rgrGroups}, AllGroups)">
+                </case>
+                <default>
+                    <field whichfield="left 0" pos="0cm" width="4cm">
+                    </field>
+                    <field whichfield="left 1" pos="0cm" width="0cm" calculation="GetNumberOfPersonsInGroup">
+                        <value text="Total in Group: "/>
+                        <value variable="NumberOfPersonsInGroup"/>
+                    </field>
+                </default>
+            </switch>
+        </footer>
        </level><!-- Group Level -->
-	   
-	<level name="Attendee Level" identification="CurrentGroup">
-		<header>
-		</header>
-		<detail>
-			<field whichfield="left 0" pos="0cm" width="0.4cm" calculation="GetLanguage"></field>
-			<field whichfield="Columns" calculation="GetOtherDetails"></field>
-		</detail>
-	</level><!-- Attendee Level -->
-	
+       
+    <level name="Attendee Level" identification="CurrentGroup">
+        <header>
+        </header>
+        <detail>
+            <field whichfield="left 0" pos="0cm" width="0.4cm" calculation="GetLanguage"></field>
+            <field whichfield="Columns" calculation="GetOtherDetails"></field>
+        </detail>
+    </level><!-- Attendee Level -->
+    
     </levels>
   </report>
 </reports>

@@ -55,7 +55,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// generate the invoices from a text file that was generated with Benerator
         /// </summary>
         /// <param name="AInputBeneratorFile"></param>
-        public static void GenerateInvoices(string AInputBeneratorFile)
+        /// <param name="AYear">eg. 2013</param>
+        public static void GenerateInvoices(string AInputBeneratorFile, int AYear)
         {
             XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AInputBeneratorFile, ",");
 
@@ -89,6 +90,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 invoiceRow.PartnerKey = SupplierKey;
                 invoiceRow.Reference = "something";
                 invoiceRow.DateIssued = Convert.ToDateTime(TXMLParser.GetAttribute(RecordNode, "DateIssued"));
+                invoiceRow.DateIssued = new DateTime(AYear, invoiceRow.DateIssued.Month, invoiceRow.DateIssued.Day);
                 invoiceRow.DateEntered = invoiceRow.DateIssued;
                 invoiceRow.TotalAmount = Convert.ToDecimal(TXMLParser.GetAttribute(RecordNode, "Amount")) / 100.0m;
                 invoiceRow.CurrencyCode = CurrencyCode;
@@ -115,13 +117,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-            AccountsPayableTDSAccess.SubmitChanges(MainDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            ;
+            AccountsPayableTDSAccess.SubmitChanges(MainDS);
         }
 
         /// <summary>

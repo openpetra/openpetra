@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -77,17 +78,25 @@ namespace Ict.Tools.DevelopersAssistant
 
                     for (int i = 0; i < cmdProcesses.Length; i++)
                     {
-                        TimeSpan ts = dtServerStart - cmdProcesses[i].StartTime;
-
-                        if (ts >= TimeSpan.Zero)
+                        try
                         {
-                            // This cmd window did start before the server console process
-                            if (ts < tsSmallest)
+                            // If this command window is an administrator's one, we will get access denied when we ask for the start time
+                            // But that's ok - it won't be one we are interested in anyway!  So we can just try the next one.
+                            TimeSpan ts = dtServerStart - cmdProcesses[i].StartTime;
+
+                            if (ts >= TimeSpan.Zero)
                             {
-                                _serverProcessID = cmdProcesses[i].Id;
-                                _serverProcessIdIsCmdWindow = true;
-                                tsSmallest = ts;
+                                // This cmd window did start before the server console process
+                                if (ts < tsSmallest)
+                                {
+                                    _serverProcessID = cmdProcesses[i].Id;
+                                    _serverProcessIdIsCmdWindow = true;
+                                    tsSmallest = ts;
+                                }
                             }
+                        }
+                        catch (Exception)
+                        {
                         }
                     }
                 }
@@ -197,7 +206,23 @@ namespace Ict.Tools.DevelopersAssistant
         /// <returns>True if nant.bat was launched successfully.  Check the log file to see if the command actually succeeded.</returns>
         public static bool RunGenericNantTarget(string BranchLocation, string NantTarget)
         {
-            return LaunchExe("nant.bat", String.Format("{0}  -logfile:opda.txt", NantTarget), BranchLocation);
+            if ((NantTarget == "test-main-navigation-screens-core") && !IsServerRunning())
+            {
+                // Final chance to start the server for any task that requires it
+                StartServer(BranchLocation, true);
+            }
+
+            PlatformID platform = Environment.OSVersion.Platform;
+
+            if ((platform == PlatformID.MacOSX) || (platform == PlatformID.Unix))
+            {
+                // Unix does not support the redirect character, so we use the logfile command line - but this gives less output
+                return LaunchExe("nant.bat", String.Format("{0}  -logfile:opda.txt", NantTarget), BranchLocation);
+            }
+            else
+            {
+                return LaunchExe("nant.bat", String.Format("{0} > opda.txt", NantTarget), BranchLocation);
+            }
         }
 
         /// <summary>
@@ -205,26 +230,21 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         /// <param name="BranchLocation">The path to the openPetra branch for which the task is to be run</param>
         /// <param name="YAMLPath">The sub-path to the YAML file, eg MPartner\Gui\Setup\myForm.yaml</param>
-        /// <param name="AndCompile">Boolean indicating if the compiler is to be invoked after generating the form</param>
-        /// <param name="AndStartClient">Boolean indicating if the client should be started after compilation</param>
         /// <returns>True if nant.bat was launched successfully.  Check the log file to see if the command actually succeeded.</returns>
-        public static bool RunGenerateWinform(string BranchLocation, string YAMLPath, bool AndCompile, bool AndStartClient)
+        public static bool RunGenerateWinform(string BranchLocation, string YAMLPath)
         {
+            // Prior to v1.0.3 we used one of three options to deal with generating a Win Form - using a different nant call to handle the check box options on the GUI
+            // From v1.0.3 this method just runs nant to generatWinform with no compile
+            //  The check box options are dealt with by creating different 'sequences' because that way we can 'abort' after an error.
+            // This call was used to compile AND startClient
+            //     return LaunchExe("nant.bat", String.Format("generateWinform  startPetraClient  -D:file={0}  -logfile:opda.txt", YAMLPath), initialDir);
+            // This call was used to compile
+            //     return LaunchExe("nant.bat", String.Format("generateWinform  -D:file={0}  -logfile:opda.txt", YAMLPath), initialDir);
+
             string initialDir = System.IO.Path.Combine(BranchLocation, "csharp\\ICT\\Petra\\Client");
 
-            if (AndCompile && AndStartClient)
-            {
-                return LaunchExe("nant.bat", String.Format("generateWinform  startPetraClient  -D:file={0}  -logfile:opda.txt", YAMLPath), initialDir);
-            }
-            else if (AndCompile)
-            {
-                return LaunchExe("nant.bat", String.Format("generateWinform  -D:file={0}  -logfile:opda.txt", YAMLPath), initialDir);
-            }
-            else
-            {
-                return LaunchExe("nant.bat", String.Format("generateWinform  -D:file={0}  -D:donotcompile=true  -logfile:opda.txt",
-                        YAMLPath), initialDir);
-            }
+            return LaunchExe("nant.bat", String.Format("generateWinformNoCompile  -D:file={0}  -logfile:opda.txt",
+                    YAMLPath), initialDir);
         }
 
         /// <summary>

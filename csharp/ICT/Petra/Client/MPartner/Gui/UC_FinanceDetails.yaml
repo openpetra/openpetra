@@ -9,76 +9,182 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
+        actShare: {Label=&Share, ActionClick=ShareExistingBankAccount}
         actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
         actSetMainAccount: {ActionClick=SetMainAccount}
+        actFindBank: {ActionClick=OpenFindBankDialog}
+        actCopyPartnerName: {Label=<- Partner's Name, ActionClick=CopyPartnerName}
     Controls:
         pnlContent:
-            Controls: [grpBankAccounts, grpDonorGiftReceipting, grpRecipientGiftReceipting, grpOther]
+            Controls: [pnlMiscSettings, grpBankAccounts]
             Dock: Fill
-        grpDonorGiftReceipting:
-            Label: Gift Receipting (for donors)
+    
+        pnlMiscSettings:
             Dock: Top
+            Controls:
+                Row0: [grpDonorGiftReceipting, pnlRightMiscSettings]
+        grpDonorGiftReceipting:
+            Label: Gift Processing (for donors)
             Controls:
                 Row0: [cmbReceiptLetterFrequency]
                 Row1: [chkReceiptEachGift]
                 Row2: [chkAnonymousDonor]
-        cmbReceiptLetterFrequency: {List=FrequencyList, Width=105}
+            Width: 380
+            Height: 110
+        pnlRightMiscSettings:
+            Controls:
+                Row0: [grpRecipientGiftReceipting]
+                Row1: [grpOther]
+            Width: 390
+        grpRecipientGiftReceipting:
+            Controls: [chkEmailGiftStatement]
+            Padding: 0,-7,0,0
+            Width: 385
+        grpOther:
+            Controls: [txtFinanceComment]
+            Width: 385
+            Padding: 0,-7,0,0
+            Label: Finance Comment
+   
+        grpBankAccounts:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails]
+        pnlDetails: 
+            Dock: Bottom
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_FinanceDetails
+            Height: 215
+            Controls: [grpAccountDetail]
+            Visible: false
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnShare, btnDelete, btnSetMainAccount]
+            ControlsOrientation: horizontal
+        grpAccountDetail: 
+            Label: Account Detail
+            Dock: Fill
+            Controls: 
+                Row0: [pnlAccountDetailBank]
+                Row1: [pnlAccountDetailBottom]
+        pnlAccountDetailBank:
+            Stretch: horizontally
+            Controls:
+                Row0: [txtBankKey, cmbBankName, cmbBankCode]
+                Row1: [Empty, lblBicSwiftCode, lblCountry]
+        pnlAccountDetailBottom:
+            Stretch: horizontally
+            Padding: 0,-15,0,0
+            Height: 150
+            Controls: [pnlAccountDetailLeft, pnlAccountDetailRight]
+            ControlsOrientation: horizontal
+        pnlAccountDetailLeft:
+            Width: 550
+            Controls: 
+                Row0: [txtAccountName, btnCopyPartnerName]
+                Row1: [txtBankAccountNumber]
+                Row2: [txtIban]
+                Row3: [chkSavingsAccount]
+                Row4: [txtComment]
+        pnlAccountDetailRight:
+            Width: 210
+            Padding: -5,0,0,0
+            Controls: [lblAccountSharedWith, grdAccountSharedWith]
+            
+  
+        cmbReceiptLetterFrequency: 
+            List: FrequencyList
+            Width: 105
         chkReceiptEachGift:
             Label: Printed Receipt for Each Gift
         chkAnonymousDonor:
-        grpRecipientGiftReceipting:
-            Dock: Top
-            Controls:
-                Row0: [chkEmailGiftStatement]
         chkEmailGiftStatement:
             Label: Email Recipient Gift Statement
-        grpOther:
-            Dock: Top
-            Controls: [txtFinanceComment]
         txtFinanceComment:
             Multiline: true
-            Height: 60
-            Width: 300
-        grpBankAccounts:
-            Controls: [pnlGrid, pnlDetails]
-            Dock: Top
-            Height: 270
-        pnlGrid:
-            Dock: Fill
-            Height: 120
-            Controls: [pnlButtons, grdDetails]
-        pnlButtons:
-            Dock: Bottom
-            Controls: [btnNew, btnDelete, btnSetMainAccount]
-            ControlsOrientation: horizontal
-        btnNew: {Width=80}
-            Action: actNew
-        btnDelete: {Width=80}
-            Action: actDelete
-        btnSetMainAccount: {Width=120, StartNewButtonGroup=true}
-            Action: actSetMainAccount
+            Height: 47
+            Width: 375
+            NoLabel: true
+            ScrollBars: Vertical
+ 
         grdDetails:
             Dock: Fill
-            Height: 120
             TableName: PBankingDetails
             Columns: [MainAccount, AccountName, BankAccountNumber, Iban]
             CustomColumns:
                 MainAccount: {Label=Main Account, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
-        pnlDetails: 
-            Dock: Bottom
-            Type: Ict.Petra.Client.MPartner.Gui.TUC_FinanceDetails
-            Height: 150
-            Controls: 
-                Row0: [grpAccountDetail]
+            ActionDoubleClick: actSetMainAccount
+            EnableMultiSelection: false
             
-        grpAccountDetail: {Label=Account Detail, Strech=horizontally}
-            Controls: [txtAccountName, txtBankAccountNumber, txtIban, txtBankKey]
-    
+        txtBankKey:
+            NoLabel: true
+            OnEnter: CheckIfRowIsShared
+            OnChange: PartnerKeyChanged
+            OnLeave: PartnerKeyChanged
+            Width: 120
+            Type: Bank
+        cmbBankName:
+            List: UserDefinedList
+            Label: Bank Name
+            ClearIfSettingEmpty: true
+            Width: 230
+            OnEnter: CheckIfRowIsShared
+        cmbBankCode:
+            List: UserDefinedList
+            Label: Bank Code
+            ClearIfSettingEmpty: true
+            Width: 210
+            OnEnter: CheckIfRowIsShared
+        lblBicSwiftCode:
+            Label: BIC/SWIFT Code
+            Width: 250
+        lblCountry:
+            Width: 200
         txtAccountName:
-            Label: Account Name       
+            Label: Account Name
+            Width: 260
+            OnEnter: CheckIfRowIsShared
+        btnCopyPartnerName:
+            Action: actCopyPartnerName
+            OnEnter: CheckIfRowIsShared
+            Padding: -160,0,0,0
         txtBankAccountNumber:
-            Label: Bank Account Number
+            Label: Account Number
+            Width: 160
+            OnEnter: CheckIfRowIsShared
         txtIban:
             Label: IBAN
-        txtBankKey: {Label=Bank, Type=PartnerKey, PartnerClass=BANK}
+            Width: 260
+            OnEnter: CheckIfRowIsShared
+        chkSavingsAccount:
+            Text: Savings Account?
+            ActionClick: SavingsAccount_Click
+            OnEnter: CheckIfRowIsShared
+        txtComment:
+            Width: 430
+            Height: 34
+            Multiline: true
+            ScrollBars: Vertical
+            OnEnter: CheckIfRowIsShared
+        lblAccountSharedWith:
+            Label: Other Partner's using this account
+        grdAccountSharedWith:
+            Stretch: fully
+            ActionDoubleClick: OpenSharingPartner
+            EnableMultiSelection: false
+ 
+ 
+        btnNew: {Width=80}
+            Action: actNew
+        btnShare: {Width=95}
+            Action: actShare
+        btnDelete: {Width=80}
+            Action: actDelete
+            Padding: 8,0,0,0
+        btnSetMainAccount: {Width=120, StartNewButtonGroup=true, Enabled=false}
+            Action: actSetMainAccount
+            Padding: 8,0,0,0
+
+        Empty:

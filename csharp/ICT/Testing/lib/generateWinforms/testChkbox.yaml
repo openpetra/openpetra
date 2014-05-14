@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../Petra/Client/CommonForms/PetraForm.yaml
+    BaseYaml: ../../../Petra/Client/CommonForms/PetraForm.yaml
     FormTitle: Test screen
     Namespace: Ict.Testing
     FormType: browse

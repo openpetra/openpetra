@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -268,6 +268,30 @@ namespace Ict.Common.IO
                     Directory.CreateDirectory(APath);
                 }
             }
+        }
+
+        /// <summary>
+        /// returns the filename for a file that does not exist yet
+        /// </summary>
+        /// <param name="ASpeakingName"></param>
+        /// <param name="AExtension"></param>
+        /// <returns></returns>
+        public static string GetTempFileName(string ASpeakingName, string AExtension)
+        {
+            int counter = 0;
+            string filename = string.Empty;
+
+            do
+            {
+                filename = Path.Combine(
+                    Path.GetTempPath(),
+                    ASpeakingName.Replace(" ", "_") + "_" +
+                    DateTime.Now.Year.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() +
+                    (counter > 0 ? "_" + counter.ToString("00") : "") + "." + AExtension.Replace(".", ""));
+                counter++;
+            } while (File.Exists(filename));
+
+            return filename;
         }
     }
 }

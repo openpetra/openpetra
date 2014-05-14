@@ -32,6 +32,7 @@ using System.Security.Principal;
 using System.Resources;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using System.Threading;
@@ -449,38 +450,47 @@ namespace Ict.Common.Remoting.Server
             catch (EUserNotExistantException)
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "User does not exist in DB", AClientComputerName, AClientIPAddress }));
+                        new String[] { AUserName, "User does not exist in the OpenPetra Database!", AClientComputerName, AClientIPAddress }));
+
                 throw;
             }
             catch (EPasswordWrongException PasswordWrongException)
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "Password is wrong", AClientComputerName, AClientIPAddress }));
+                        new String[] { AUserName, "The Password that the user supplied is wrong!", AClientComputerName, AClientIPAddress }));
 
                 // for security reasons we don't distinguish between a nonexisting user and a wrong password when informing the Client!
                 throw new EUserNotExistantException(PasswordWrongException.Message);
             }
-            catch (EAccessDeniedException)
+            catch (EAccessDeniedException AccessDeniedException)
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "User got auto-retired", AClientComputerName, AClientIPAddress }));
-                throw;
+                        new String[] { AUserName, "User got auto-retired after too many failed log-in attempts!", AClientComputerName,
+                                       AClientIPAddress }));
+
+                // for security reasons we don't distinguish between user that just got auto-retired and a wrong username/password combination when informing the Client!
+                throw new EUserNotExistantException(AccessDeniedException.Message);
             }
-            catch (EUserRecordLockedException)
+            catch (EUserRetiredException UserRetiredException)
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "User record locked", AClientComputerName, AClientIPAddress }));
-                throw;
+                        new String[] { AUserName, "User tried to log in, but that user is 'retired'.", AClientComputerName, AClientIPAddress }));
+
+                // for security reasons we don't distinguish between user that is retired and a wrong username/password combination when informing the Client!
+                throw new EUserNotExistantException(UserRetiredException.Message);
             }
             catch (ESystemDisabledException)
             {
-                TLogging.Log(String.Format(AUTHENTICATION_FAILED, new String[] { AUserName, "System Disabled", AClientComputerName, AClientIPAddress }));
+                TLogging.Log(String.Format(AUTHENTICATION_FAILED,
+                        new String[] { AUserName, "The System is currently Disabled", AClientComputerName, AClientIPAddress }));
+
                 throw;
             }
             catch (Exception exp)
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
                         new String[] { AUserName, "Exception occured: " + exp.ToString(), AClientComputerName, AClientIPAddress }));
+
                 throw;
             }
 
@@ -741,26 +751,7 @@ namespace Ict.Common.Remoting.Server
         /// <returns></returns>
         public static Int32 QueueClientTask(String AUserID, String ATaskGroup, String ATaskCode, System.Int16 ATaskPriority)
         {
-            return QueueClientTask(AUserID, ATaskGroup, ATaskCode, ATaskPriority, -1);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="AUserID"></param>
-        /// <param name="ATaskGroup"></param>
-        /// <param name="ATaskCode"></param>
-        /// <param name="ATaskPriority"></param>
-        /// <param name="AExceptClientID"></param>
-        /// <returns></returns>
-        public static Int32 QueueClientTask(String AUserID,
-            String ATaskGroup,
-            String ATaskCode,
-            System.Int16 ATaskPriority,
-            System.Int16 AExceptClientID)
-        {
-            return QueueClientTask(AUserID, ATaskGroup, ATaskCode,
-                null, null, null, null, ATaskPriority);
+            return QueueClientTask(AUserID, ATaskGroup, ATaskCode, ATaskPriority);
         }
 
         /// <summary>
@@ -1056,8 +1047,6 @@ namespace Ict.Common.Remoting.Server
             String AUserID,
             Int32 AProcessID)
         {
-            TVerificationResultCollection VerificationResult;
-
             if (UErrorLog != null)
             {
                 UErrorLog.AddErrorLogEntry(AErrorCode,
@@ -1066,8 +1055,7 @@ namespace Ict.Common.Remoting.Server
                     AMessageLine2,
                     AMessageLine3,
                     AUserID,
-                    AProcessID,
-                    out VerificationResult);
+                    AProcessID);
             }
         }
 

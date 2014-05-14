@@ -8,8 +8,8 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     CacheableTableSpecificFilter: Ledger
-    WindowWidth: 750
-    WindowHeight: 500
+    WindowWidth: 800
+    WindowHeight: 700
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -19,7 +19,15 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailFeeCode, txtDetailFeeDescription, cmbDetailCostCentreCode, cmbDetailAccountCode, cmbDetailDrAccountCode]
+            FindControls: [txtDetailFeeCode, txtDetailFeeDescription]
+            ControlAttributes:
+                cmbDetailCostCentreCode: {Label=CR Cost Centre}
+                cmbDetailAccountCode: {Label=CR Account}
+                cmbDetailDrAccountCode: {Label=DR Account}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -42,6 +50,7 @@ RootNode:
                 DrAccountCode: {Label=DR Account Code}
                 CostCentreCode: {Label=Cost Centre Code}
                 AccountCode: {Label=Account Code}
+            SortOrder: AFeesReceivable.FeeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -49,9 +58,9 @@ RootNode:
                 Row0: [txtDetailFeeCode, txtDetailFeeDescription]
                 Row1: [cmbDetailChargeOption, txtDetailChargePercentage, txtDetailChargeAmount]
                 Row2: [grpAssignment]
-        txtDetailFeeCode: {Label=Fee Code, CharacterCasing=Upper}
+        txtDetailFeeCode: {Label=Fee Code, CharacterCasing=Upper, Width=100}
         txtDetailFeeDescription: {Label=Description, ColSpan=2, Width=320}
-        cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged}
+        cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged, Width=100}
             OptionalValues: [Minimum, Maximum, Fixed, Percentage]
         txtDetailChargePercentage:  {Label=Charge Percentage, Format=PercentDecimal}
         txtDetailChargeAmount:  {Label=Charge Amount, Format=Decimal, Width=111, LabelWidth=120}

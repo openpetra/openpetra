@@ -82,7 +82,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             get
             {
                 return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(IAsynchronousExecutionProgress),
                     typeof(TAsynchronousExecutionProgressRemote),
                     FPartnerFind.AsyncExecProgress);
             }
@@ -101,6 +100,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public void PerformSearch(DataTable ACriteriaData, bool ADetailedResults)
         {
             FPartnerFind.PerformSearch(ACriteriaData, ADetailedResults);
+        }
+
+        /// <summary>
+        /// Procedure to execute a Find query. Although the full
+        /// query results are retrieved from the DB and stored internally in an object,
+        /// data will be returned in 'pages' of data, each page holding a defined number
+        /// of records.
+        /// </summary>
+        public void PerformSearchByBankDetails(DataTable ACriteriaData)
+        {
+            FPartnerFind.PerformSearchByBankDetails(ACriteriaData);
         }
 
         /// <summary>
@@ -146,14 +156,26 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <summary>
         /// Adds all Partners that were last found to an Extract.
         /// </summary>
+        /// <param name="AExtractName">Name of the Extract to add the Partners to.</param>
+        /// <param name="AExtractDescription">Description of the Extract to add the Partners to.</param>
         /// <param name="AExtractID">ExtractID of the Extract to add the Partners to.</param>
         /// <param name="AVerificationResult">Contains DB call exceptions, if there are any.</param>
         /// <returns>The number of Partners that were added to the Extract, or -1
         /// if DB call exeptions occured.</returns>
-        public Int32 AddAllFoundPartnersToExtract(int AExtractID,
+        public Int32 AddAllFoundPartnersToExtract(string AExtractName, string AExtractDescription, int AExtractID,
             out TVerificationResultCollection AVerificationResult)
         {
-            return AddAllFoundPartnersToExtract(AExtractID, out AVerificationResult);
+            return FPartnerFind.AddAllFoundPartnersToExtract(AExtractName, AExtractDescription, AExtractID, out AVerificationResult);
+        }
+
+        /// <summary>
+        /// Checks if a search result contains a given partner
+        /// </summary>
+        /// <param name="APartnerKey">Partner key of partner</param>
+        /// <returns>True if partner is included, false if not.</returns>
+        public bool CheckIfResultsContainPartnerKey(long APartnerKey)
+        {
+            return FPartnerFind.CheckIfResultsContainPartnerKey(APartnerKey);
         }
     }
 }

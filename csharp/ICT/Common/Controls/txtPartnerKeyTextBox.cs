@@ -84,6 +84,11 @@ namespace Ict.Common.Controls
         /// <summary> Required designer variable. </summary>
         protected System.Int64 FPartnerKey;
 
+        /// <summary>Partner Class.</summary>
+        private String FPartnerClass;
+
+        private Color? FOriginalPartnerClassColor = null;
+
         /**
          * This property gets or sets the maximum number of characters the user can
          * type or paste into the text box control.
@@ -142,6 +147,26 @@ namespace Ict.Common.Controls
                 {
                     this.txtTextBox.Text = this.FLabelString;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the PartnerClass of the Control. The only purpose of this Property
+        /// is to change the BackColor of the TextBox to <see cref="TCommonControlsHelper.PartnerClassPERSONColour" />
+        /// if this Property is set to "PERSON".
+        /// </summary>
+        public string PartnerClass
+        {
+            get
+            {
+                return FPartnerClass;
+            }
+
+            set
+            {
+                FPartnerClass = value;
+
+                TCommonControlsHelper.SetPartnerKeyBackColour(FPartnerClass, txtTextBox, FOriginalPartnerClassColor);
             }
         }
 
@@ -205,10 +230,6 @@ namespace Ict.Common.Controls
             {
                 return base.DelegateFallbackTextBox;
             }
-
-            set
-            {
-            }
         }
 
         #region Windows Form Designer generated code
@@ -265,7 +286,6 @@ namespace Ict.Common.Controls
             //
             this.SetTextBoxDefaultWidth();
             this.SetDefaultFont();
-            this.DelegateFallbackTextBox = false;
             this.txtTextBox.MaxLength = 10;
             this.txtTextBox.KeyPress += new KeyPressEventHandler(this.TxtTextBox_KeyPress);
             this.txtTextBox.KeyUp += new KeyEventHandler(this.TxtTextBox_KeyUp);

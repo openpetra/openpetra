@@ -1,0 +1,134 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraUtils
+    Namespace: Ict.Petra.Client.MSysMan.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan,Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.MSysMan.Validation]
+    FormType: dialog
+    Template: usercontrolUnbound
+
+    Controls:
+        pnlContent:
+            Controls: 
+                Row0: [grpTasks]
+                Row1: [grpGridColours]
+                Row2: [grpPanelColours]
+            
+        grpTasks:
+            Controls:
+                Row0: [lblViewTasks, rgrViewTasks]
+                Row1: [lblTaskSize, rgrTaskSize]
+                Row2: [chkSingleClickExecution]
+            Width: 430
+            Height: 145
+        grpGridColours:
+            Controls:
+                Row0: [pnlGridColoursSettings, pnlExample]
+            Width: 430
+            Height: 220
+        pnlGridColoursSettings:
+            Controls:
+                Row0: [lblBackground, btnBackground]
+                Row1: [lblCellBackground, btnCellBackground]
+                Row2: [lblAlternate, btnAlternate]
+                Row3: [lblGridlines, btnGridlines]
+                Row4: [lblSelection, btnSelection]
+                Row5: [lblAlpha, nudAlpha]
+            Width: 220
+            Height: 200
+        pnlExample:
+            Controls: [grdExample, btnRestore]
+            Width: 190
+            Height: 200
+        grpPanelColours:
+            Controls:
+                Row0: [pnlPanelColoursSettings, pnlRestoreFilterFind]
+            Width: 430
+            Height: 90
+        pnlPanelColoursSettings:
+            Controls:
+                Row0: [lblFilter, btnFilter]
+                Row1: [lblFind, btnFind]
+            Width: 220
+            Height: 70
+        pnlRestoreFilterFind:
+            Controls: [btnRestoreFilterFind]
+            Width: 190
+            Height: 70
+
+        lblViewTasks: {Label=View Tasks as}
+        rgrViewTasks:
+            ControlsOrientation: horizontal
+            OptionalValues: [Tiles, List]
+            BorderVisible: false
+            Padding: -120,5,0,0
+        lblTaskSize: {Label=Task Size}
+        rgrTaskSize:
+            ControlsOrientation: horizontal
+            OptionalValues: [Large, Medium, Small]
+            BorderVisible: false
+            Padding: -120,5,0,0
+        chkSingleClickExecution:
+            CheckBoxAttachedLabel: right
+            Label: Single-click to open an item
+            Padding: 5,5,0,0
+
+        lblBackground: {Label=Grid Background Colour, Align=right}
+        btnBackground:
+            ActionClick:OnBtnBackground
+            Label: ...
+            Width: 50
+            Padding: -10,0,0,0
+        lblCellBackground: {Label=Row Background Colour, Align=right}
+        btnCellBackground:
+            ActionClick:OnBtnCellBackground
+            Label: ...
+            Width: 50
+            Padding: -10,0,0,0
+        lblAlternate: {Label=Alternate Row Background Colour, Align=right, Height=30, Multiline: true}
+        btnAlternate:
+            ActionClick:OnBtnAlternate
+            Label: ...
+            Width: 50
+            Padding: -10,0,0,0
+        lblGridlines: {Label=Gridlines Colour, Align=right}
+        btnGridlines:
+            ActionClick:OnBtnGridlines
+            Label: ...
+            Width: 50
+            Padding: -10,0,0,0
+        lblSelection: {Label=Selected Row Colour, Align=right}
+        btnSelection:
+            ActionClick:OnBtnSelection
+            Label: ...
+            Width: 50
+            Padding: -10,0,0,0
+        lblAlpha: {Label=Selected Row Transparency (0-255), Width=150, Height=30, Multiline: true}
+        nudAlpha:
+            Width: 50
+            Padding: -10,5,0,0
+            NoLabel: true
+            OnChange: OnNudAlpha
+        btnRestore:
+            ActionClick: OnBtnRestore
+            Label: Restore to Default Colours
+
+        lblFilter: {Label=Filter Panel Colour, Align=right}
+        btnFilter:
+            ActionClick:OnBtnFilter
+            Label: ...
+            Width: 50
+            Padding: 23,0,0,0
+        lblFind: {Label=Find Panel Colour, Align=right}
+        btnFind:
+            ActionClick:OnBtnFind
+            Label: ...
+            Width: 50
+            Padding: 23,0,0,0
+        btnRestoreFilterFind:
+            ActionClick: OnBtnRestoreFilterFind
+            Label: Restore to Default Colours
+            Padding: 0,33,0,0
+  
+        grdExample:
+            Width: 190
+            Height: 160

@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [cmbDetailPublicationCode, txtDetailPublicationCost, cmbDetailCurrencyCode]
+            FindControls: [cmbDetailPublicationCode, cmbDetailCurrencyCode]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -34,6 +38,7 @@ RootNode:
             Columns: [DetailPublicationCode, DetailDateEffective, DetailPublicationCost, DetailPostageCost, DetailCurrencyCode]
             CustomColumns:
                 DetailDateEffective: {Label=Effective Date, Type=DateTime}
+            SortOrder: DetailPublicationCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

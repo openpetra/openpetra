@@ -9,8 +9,9 @@ using System.Data.Odbc;
 using Ict.Common.Data;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data.Exceptions;
 using Ict.Common.Verification;
-using Ict.Common.Remoting.Shared;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core;
@@ -264,20 +265,17 @@ namespace {#NAMESPACE}
             Boolean ARefreshFromDB,
             out System.Type AType)
         {
+            TDBTransaction ReadTransaction = null;
             String TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
 
             TLogging.LogAtLevel (9, "{#CACHEABLECLASS}.GetCacheableTable '{#SUBMODULE}' called.");
 
             if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
-                Boolean NewTransaction;
-                TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                try
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction, 
+                delegate                    
                 {
-
                     switch(ACacheableTable)
                     {
                         {#LOADTABLESANDLISTS}
@@ -287,15 +285,7 @@ namespace {#NAMESPACE}
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
                                 TableName + "' is not available as a Standard Cacheable Table");
                     }
-                }
-                finally
-                {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                        TLogging.LogAtLevel (9, "{#CACHEABLECLASS}.GetCacheableTable: commited own transaction.");
-                    }
-                }
+                });
             }
 
             // Return the DataTable from the Cache only if the Hash is not the same
@@ -324,11 +314,12 @@ namespace {#NAMESPACE}
             ref TTypedDataTable ASubmitTable,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction;
+            TDBTransaction SubmitChangesTransaction = null;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TVerificationResultCollection SingleVerificationResultCollection;
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
-
+            TTypedDataTable SubmitTable = ASubmitTable;
+            TVerificationResultCollection VerificationResult;
+            
             // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
             AVerificationResult = null;
 
@@ -337,34 +328,24 @@ namespace {#NAMESPACE}
             if (ASubmitTable != null)
             {
                 AVerificationResult = new TVerificationResultCollection();
-                SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
+                VerificationResult = AVerificationResult;
+                
                 try
                 {
-                    switch (ACacheableTable)
-                    {
-                        {#SAVETABLE}
+                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, 
+                        ref SubmissionResult, 
+                    delegate
+                    {                
+                        switch (ACacheableTable)
+                        {
+                            {#SAVETABLE}
 
-                        default:
+                            default:
 
-                            throw new Exception(
-                            "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
-                    }
-
-                    if (SubmissionResult == TSubmitChangesResult.scrOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
-                catch (EDBConcurrencyException)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    throw;
+                                throw new Exception(
+                                "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
+                        }
+                    });
                 }
                 catch (Exception e)
                 {
@@ -372,8 +353,6 @@ namespace {#NAMESPACE}
                         "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheable DataTable '" +
                         CacheableDTName +
                         "':  Exception " + e.ToString());
-
-                    DBAccess.GDBAccessObj.RollbackTransaction();
 
                     throw;
                 }
@@ -454,6 +433,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     System.Int32 ALedgerNumber,
     out System.Type AType)
 {
+    TDBTransaction ReadTransaction = null;
     string TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
 
     if (TLogging.DL >= 7)
@@ -478,13 +458,9 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
                     out AType).Select(ALedgerTable.GetLedgerNumberDBName() + " = " +
                     ALedgerNumber.ToString()).Length == 0)))
     {
-        Boolean NewTransaction;
-        TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-            MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
-            TEnforceIsolationLevel.eilMinimum,
-            out NewTransaction);
-
-        try
+        DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction, 
+        delegate                    
         {
             switch (ACacheableTable)
             {
@@ -497,15 +473,7 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
                     Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum),
                         ACacheableTable) + "' is not available as a Standard Cacheable Table (with ALedgerNumber as an Argument)");
             }
-        }
-        finally
-        {
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel (7, "T{#SUBMODULE}CacheableWebConnector.GetCacheableTable: commited own transaction.");
-            }
-        }
+        });
     }
 
     DataView TmpView = new DataView(FCacheableTablesManager.GetCachedDataTable(TableName,
@@ -540,10 +508,11 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     int ALedgerNumber,
     out TVerificationResultCollection AVerificationResult)
 {
-    TDBTransaction SubmitChangesTransaction;
+    TDBTransaction SubmitChangesTransaction = null;
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-    TVerificationResultCollection SingleVerificationResultCollection;
     string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
+    TTypedDataTable SubmitTable = ASubmitTable;
+    TVerificationResultCollection VerificationResult;    
     Type TmpType;
 
     // Console.WriteLine("Entering Finance.SaveChangedStandardCacheableTable...");
@@ -554,43 +523,31 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
     if (ASubmitTable != null)
     {
         AVerificationResult = new TVerificationResultCollection();
-        SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+        VerificationResult = AVerificationResult;
 
         try
         {
-            switch (ACacheableTable)
-            {
-                {#SAVETABLE}
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, 
+                ref SubmissionResult, 
+            delegate
+            {        
+                switch (ACacheableTable)
+                {
+                    {#SAVETABLE}
 
-                default:
+                    default:
 
-                    throw new Exception(
-                    "TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
-            }
-
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-        }
-        catch (EDBConcurrencyException)
-        {
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            throw;
-        }
+                        throw new Exception(
+                        "TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
+                }
+            });
+        }            
         catch (Exception e)
         {
             TLogging.Log(
                 "TFinanceCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheable DataTable '" +
                 CacheableDTName +
                 "':  Exception " + e.ToString());
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
 
             throw;
         }
@@ -657,22 +614,16 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 
 {##SAVETABLE}
 case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
-    if (ASubmitTable.Rows.Count > 0) 
+    if (SubmitTable.Rows.Count > 0) 
     { 
-        {#DATATABLENAME}Validation.Validate(ASubmitTable, ref AVerificationResult);
-        Validate{#ENUMNAME}Manual(ref AVerificationResult, ASubmitTable);
+        {#DATATABLENAME}Validation.Validate(SubmitTable, ref VerificationResult);
+        Validate{#ENUMNAME}Manual(ref VerificationResult, SubmitTable);
 
-        if (!AVerificationResult.HasCriticalErrors)
+        if (TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult))
         {
-            if ({#DATATABLENAME}Access.SubmitChanges(({#DATATABLENAME}Table)ASubmitTable, SubmitChangesTransaction,
-                out SingleVerificationResultCollection))
-            {
-                SubmissionResult = TSubmitChangesResult.scrOK;
-            }
-            else
-            {
-                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-            }
+            {#DATATABLENAME}Access.SubmitChanges(({#DATATABLENAME}Table)SubmitTable, SubmitChangesTransaction);
+
+            SubmissionResult = TSubmitChangesResult.scrOK;
         }
     }
 

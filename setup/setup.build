@@ -174,11 +174,15 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       </fileset>
     </tar>
 
-    <!-- ************ create a patch file that does not depend on an earlier patch. needs to be renamed though ********* -->
+    <!-- ************ create a patch file for patching the previous patch release ********* -->
     <property name="OldRelease" value="${string::substring(ReleaseVersion, 0, string::last-index-of(ReleaseVersion,'.'))}"/>
     <property name="OldBuild" value="${int::parse(string::substring(ReleaseVersion, string::last-index-of(ReleaseVersion,'.') + 1, string::get-length(ReleaseVersion) - string::last-index-of(ReleaseVersion,'.') - 1)) - 1}"/>
     <property name="OldVersion" value="${OldRelease}.${OldBuild}" overwrite="false"/>
     <property name="NewVersion" value="${ReleaseVersion}"/>
+    <call target="createRemoteClientPatch"/>
+
+    <!-- ************ create a patch file that does not depend on an earlier patch. needs to be renamed though ********* -->
+    <property name="OldBuild" value="0"/>
     <call target="createRemoteClientPatch"/>
 </target>
 
@@ -454,6 +458,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
           <include name="*.config" />
       </fileset>
+      <filterchain>
+          <expandproperties />
+      </filterchain>
     </copy>
     <copy todir="${setupDir}/demo30">
       <fileset basedir="${dir.bin}/demodata/">

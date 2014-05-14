@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -117,16 +117,37 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
             return false;
         }
 
+        /// <summary>
+        /// this non interactive function can be used from the unit tests
+        /// </summary>
+        public BankImportTDS ImportBankStatementNonInteractive(Int32 ALedgerNumber, string ABankAccountCode,
+            string ABankStatementFilename)
+        {
+            BankImportTDS MainDS = new BankImportTDS();
+
+            // import file
+            if (!ImportFromFile(ABankStatementFilename,
+                    ABankAccountCode,
+                    ref MainDS))
+            {
+                return null;
+            }
+
+            foreach (AEpStatementRow stmt in MainDS.AEpStatement.Rows)
+            {
+                stmt.LedgerNumber = ALedgerNumber;
+            }
+
+            return MainDS;
+        }
+
         private int FStatementKey = -1;
 
         private void ProcessStatementsOnServer(BankImportTDS AMainDS)
         {
-            TVerificationResultCollection VerificationResult;
-
             if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
                     AMainDS,
-                    out FStatementKey,
-                    out VerificationResult) == TSubmitChangesResult.scrOK)
+                    out FStatementKey) == TSubmitChangesResult.scrOK)
             {
             }
         }
@@ -164,7 +185,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     }
                     else
                     {
-                        // TODO: this could be IBAN/BIC, if it starts with a letter
+                        // TODO: this could be the IBAN, if it starts with a letter
                         row.BankAccountNumber = tr.accountCode;
                     }
 
@@ -174,6 +195,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     }
                     else
                     {
+                        // this could be the BIC
                         row.BranchCode = tr.bankCode;
                     }
 
@@ -187,7 +209,10 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                         || (row.TransactionTypeCode == "053")
                         || (row.TransactionTypeCode == "067")
                         || (row.TransactionTypeCode == "068")
-                        || (row.TransactionTypeCode == "069"))
+                        || (row.TransactionTypeCode == "069")
+                        || (row.TransactionTypeCode == "166") /* SEPA Credit Transfer */
+                        || (row.TransactionTypeCode == "169") /* SEPA Credit Transfer Donation */
+                        )
                     {
                         row.TransactionTypeCode += MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
                     }

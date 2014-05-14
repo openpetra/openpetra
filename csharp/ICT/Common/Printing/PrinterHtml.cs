@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -268,6 +268,11 @@ namespace Ict.Common.Printing
                 counter++;
             }
 
+            if (ADocumentNr > 1)
+            {
+                return null;
+            }
+
             throw new Exception("cannot find the body tag");
         }
 
@@ -425,7 +430,11 @@ namespace Ict.Common.Printing
                 }
             }
 
-            if (FPrinter is TGfxPrinter)
+            if (CurrentNode == null)
+            {
+                FHasMorePages = false;
+            }
+            else if (FPrinter is TGfxPrinter)
             {
                 TGfxPrinter printer = (TGfxPrinter)FPrinter;
                 RenderContent(printer.FPageXPos, printer.FPageWidthAvailable, ref CurrentNode);
@@ -1410,6 +1419,30 @@ namespace Ict.Common.Printing
             return ATemplate.Replace(ATemplateRow, "#ROWTEMPLATE");
         }
 
+        /// <summary>
+        /// find section that starts with BEGIN detail comment and ends with END detail comment
+        /// </summary>
+        /// <param name="ATemplate"></param>
+        /// <param name="ATemplateRow">template for one row</param>
+        /// <returns>modified template, replace detail block with #ROWTEMPLATE</returns>
+        public static string GetTableRowByDetailComment(string ATemplate, out string ATemplateRow)
+        {
+            string startString = "<!-- BEGIN detail -->";
+            string endString = "<!-- END detail -->";
+            Int32 posTableRowStart = ATemplate.IndexOf(startString);
+            Int32 posTableRowEnd = ATemplate.IndexOf(endString);
+
+            if ((posTableRowStart == -1) || (posTableRowEnd == -1))
+            {
+                ATemplateRow = "";
+                return ATemplate;
+            }
+
+            ATemplateRow = ATemplate.Substring(posTableRowStart + startString.Length,
+                posTableRowEnd - posTableRowStart - startString.Length);
+            return ATemplate.Substring(0, posTableRowStart) + "#ROWTEMPLATE" + ATemplate.Substring(posTableRowEnd + endString.Length);
+        }
+
         private static void FindAllChildren(XmlNode ANode, ref List <XmlNode>AResult, string AElement, string AAttributeName, string AName)
         {
             if ((ANode.Name == AElement) && (TXMLParser.GetAttribute(ANode, AAttributeName) == AName))
@@ -1467,6 +1500,12 @@ namespace Ict.Common.Printing
         /// remove all elments with given name or class
         public static string RemoveElement(string AHtmlMessage, string AElementName, string AAttributeName, string ADivID, out string AElementCode)
         {
+            if (AHtmlMessage.Length == 0)
+            {
+                AElementCode = string.Empty;
+                return string.Empty;
+            }
+
             // use xml tree to avoid whitespace differences etc?
             XmlDocument htmlDoc = Ict.Common.Printing.TPrinterHtml.ParseHtml(AHtmlMessage);
 

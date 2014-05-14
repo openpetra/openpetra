@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,11 +27,14 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using Ict.Common;
 using System.Text;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Xml;
+using Ict.Common.IO;
 
 namespace Ict.Petra.Shared.MReporting
 {
@@ -294,6 +297,8 @@ namespace Ict.Petra.Shared.MReporting
     {
         /// <summary>the list of TResult objects</summary>
         private ArrayList results;
+        /// <summary>The message from an exception after CSV export failed</summary>
+        public String ErrorStatus;
 
         /// <summary>the most right column that should be displayed (start counting at 1)</summary>
         private Int32 MaxDisplayColumns;
@@ -323,9 +328,23 @@ namespace Ict.Petra.Shared.MReporting
             TVariant[] descr,
             TVariant[] column)
         {
-            TResult element;
+//
+// I wonder why we care about this "duplicate code"? Certainly this code generates lots of warnings, but reports are still generated OK:
 
-            element = new TResult(masterRow, childRow, display, depth, code, condition, debit_credit_indicator, header, descr, column);
+/*
+ *          foreach (TResult existingElement in results)
+ *          {
+ *              if (existingElement.code == code)
+ *              {
+ *                  TLogging.Log("Warning: TResult.AddRow: duplicate row codes! there is already a row with code " +
+ *                      code);
+ *                  // throw new Exception("TResult.AddRow: duplicate row codes! there is already a row with code " +
+ *                  //    code);
+ *              }
+ *          }
+ */
+            TResult element = new TResult(masterRow, childRow, display, depth, code, condition, debit_credit_indicator, header, descr, column);
+
             results.Add(element);
             return element;
         }
@@ -339,6 +358,7 @@ namespace Ict.Petra.Shared.MReporting
         public TResultList()
         {
             MaxDisplayColumns = 0;
+            ErrorStatus = "";
             results = new ArrayList();
         }
 
@@ -800,11 +820,56 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
         /// otherwise all levels in AParameter are exported</param>
         /// <returns>true for success</returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging, Boolean AExportOnlyLowestLevel)
+        public bool WriteCSV(TParameterList AParameters,
+            string csvfilename,
+            string separator = "FIND_BEST_SEPARATOR",
+            Boolean ADebugging = false,
+            Boolean AExportOnlyLowestLevel = false)
         {
+            StreamWriter csvStream;
+
+            try
+            {
+                // don't append; use the local encoding, e.g. to support Umlauts
+                csvStream = new StreamWriter(csvfilename, false, System.Text.Encoding.Default);
+            }
+            catch (System.Exception ex)
+            {
+                ErrorStatus = ex.Message;
+                return false;
+            }
+
+            List <string>lines = WriteCSVInternal(AParameters, separator, ADebugging, AExportOnlyLowestLevel);
+
+            foreach (string line in lines)
+            {
+                csvStream.WriteLine(line);
+            }
+
+            csvStream.Close();
+
+            return true;
+        }
+
+        /// <summary>
+        /// This returns the resultlist as lines for a CSV file
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="separator">if this has the value FIND_BEST_SEPARATOR,
+        /// then first the parameters will be checked for CSV_separator, and if that parameter does not exist,
+        /// then the CurrentCulture is checked, for the local language settings</param>
+        /// <param name="ADebugging">if true, thent the currency and date values are written encoded, not localized</param>
+        /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
+        /// otherwise all levels in AParameter are exported</param>
+        /// <returns>the lines to be written to the CSV file</returns>
+        public List <string>WriteCSVInternal(TParameterList AParameters,
+            string separator = "FIND_BEST_SEPARATOR",
+            Boolean ADebugging = false,
+            Boolean AExportOnlyLowestLevel = false)
+        {
+            List <string>lines = new List <string>();
             int i;
             string strLine;
-            StreamWriter csvStream;
             ArrayList sortedList;
             bool display;
             bool useIndented;
@@ -832,16 +897,6 @@ namespace Ict.Petra.Shared.MReporting
                 {
                     separator = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
                 }
-            }
-
-            try
-            {
-                // don't append; use the local encoding, e.g. to support Umlauts
-                csvStream = new StreamWriter(csvfilename, false, System.Text.Encoding.Default);
-            }
-            catch (System.Exception)
-            {
-                return false;
             }
 
             if (ADebugging == false)
@@ -898,6 +953,8 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
+            MaxDisplayColumns = AParameters.Get("MaxDisplayColumns").ToInt32();
+
             for (i = 0; i < MaxDisplayColumns; i++)
             {
                 if ((!FormattedParameters.Get("ColumnCaption", i, -1, eParameterFit.eBestFit).IsNil()))
@@ -919,7 +976,7 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
-            csvStream.WriteLine(strLine);
+            lines.Add(strLine);
             FormattedResult.SortChildren();
             sortedList = new ArrayList();
             FormattedResult.CreateSortedListByMaster(sortedList, 0);
@@ -1043,54 +1100,17 @@ namespace Ict.Petra.Shared.MReporting
 
                     if (display)
                     {
-                        csvStream.WriteLine(strLine);
+                        lines.Add(strLine);
                     }
                 }
             }
 
-            csvStream.Close();
             sortedList = null;
-            return true;
-        }
-
-        /// <summary>
-        /// overload; export all levels
-        /// </summary>
-        /// <param name="AParameters"></param>
-        /// <param name="csvfilename"></param>
-        /// <param name="separator"></param>
-        /// <param name="ADebugging"></param>
-        /// <returns></returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging)
-        {
-            return WriteCSV(AParameters, csvfilename, separator, ADebugging, false);
-        }
-
-        /// <summary>
-        /// overload; no debugging
-        /// </summary>
-        /// <param name="AParameters"></param>
-        /// <param name="csvfilename"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator)
-        {
-            return WriteCSV(AParameters, csvfilename, separator, false, false);
+            return lines;
         }
 
         /// <summary>
         /// overload; no specific separator, find the best for the current localisation
-        /// </summary>
-        /// <param name="AParameters"></param>
-        /// <param name="csvfilename"></param>
-        /// <returns></returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename)
-        {
-            return WriteCSV(AParameters, csvfilename, "FIND_BEST_SEPARATOR", false, false);
-        }
-
-        /// <summary>
-        /// overlaod; no specific separator, find the best for the current localisation
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="csvfilename"></param>
@@ -1101,7 +1121,19 @@ namespace Ict.Petra.Shared.MReporting
             return WriteCSV(AParameters, csvfilename, "FIND_BEST_SEPARATOR", false, AExportOnlyLowestLevel);
         }
 
-        // needed for TRptSituation.processAllRows
+        /// <summary>
+        /// This stores the resultlist into a XmlDocument (to be saved as Excel file)
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
+        /// otherwise all levels in AParameter are exported</param>
+        /// <returns>the XmlDocument</returns>
+        public XmlDocument WriteXmlDocument(TParameterList AParameters, Boolean AExportOnlyLowestLevel = false)
+        {
+            List <string>lines = WriteCSVInternal(AParameters, ";", false, AExportOnlyLowestLevel);
+
+            return TCsv2Xml.ParseCSV2Xml(lines, ";");
+        }
 
         /// <summary>
         /// needed for TRptSituation.processAllRows

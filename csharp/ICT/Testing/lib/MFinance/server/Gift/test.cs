@@ -64,10 +64,25 @@ namespace Tests.MFinance.Server.Gift
         [Test]
         public void TestSimpleDatabaseAccess()
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction = false;
 
-            Assert.AreEqual(1, Ict.Petra.Server.MFinance.Account.Data.Access.ALedgerAccess.CountAll(Transaction), "Testing the number of ledgers");
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            try
+            {
+                Assert.AreEqual(1, Ict.Petra.Server.MFinance.Account.Data.Access.ALedgerAccess.CountAll(Transaction), "Testing the number of ledgers");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
         }
 
         /// <summary>

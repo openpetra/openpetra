@@ -23,16 +23,23 @@ RootNode:
         txtConferenceDates: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlFilterAndFind, grdDetails, pnlButtons]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [rgrType]
+            #FindControls: [txtDetailOptionDays]
+            ControlAttributes:
+                rgrType: {ClearButton=false, NoLabel=true}
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailType, DetailApplicable, DetailAmountPercent, DetailAmount, DetailPercent]
@@ -65,6 +72,4 @@ RootNode:
         dtpDetailApplicable: {Label=Applicable, Width=100}
         txtDetailAmount: {Label=Amount, Width=90, Format=Currency}
         txtDetailPercent: {Label=Percentage, Width=60, Format=PercentInteger}
-    Toolbar:
-        tbbNew:
-            Label: New Early or Late Registration
+

@@ -54,7 +54,8 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
     [TestFixture]
     public class TestBudget
     {
-        private const int intLedgerNumber = 43;
+        private const int FLedgerNumber = 43;
+        private BudgetTDS FMainDS;
 
         /// <summary>
         /// TestFixtureSetUp
@@ -78,7 +79,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         /// test the budget consolidation
         /// </summary>
         [Test]
-        public void TestConsolidation()
+        public void T0_Consolidation()
         {
             // reset the database, so that there is no consolidated budget
             CommonNUnitFunctions.ResetDatabase();
@@ -92,7 +93,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             // import budget from CSV
             decimal RowsImported = TBudgetMaintainWebConnector.ImportBudgets(
-                intLedgerNumber,
+                FLedgerNumber,
                 0,
                 budgetTestFile,
                 new string[] { ",", "dmy", "American" },
@@ -101,15 +102,10 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             Assert.AreNotEqual(0, RowsImported, "expect to import several rows");
 
-            if (VerificationResult != null)
-            {
-                Assert.AreEqual(false,
-                    VerificationResult.HasCriticalErrors,
-                    "ImportBudgets has critical errors: " + VerificationResult.BuildVerificationResultString());
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "ImportBudgets has critical errors:");
 
-            Assert.AreEqual(TSubmitChangesResult.scrOK, BudgetTDSAccess.SubmitChanges(ImportDS,
-                    out VerificationResult), "submitchanges of imported budget");
+            BudgetTDSAccess.SubmitChanges(ImportDS);
 
             // check for value in budget table
             string sqlQueryBudget =
@@ -119,7 +115,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                     ABudgetPeriodTable.GetBudgetBaseDBName(),
                     ABudgetTable.GetTableDBName(),
                     ABudgetPeriodTable.GetTableDBName(),
-                    intLedgerNumber);
+                    FLedgerNumber);
 
             decimal budgetValue = Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryBudget, IsolationLevel.ReadCommitted));
             Assert.AreEqual(250m, budgetValue, "problem with importing budget from CSV");
@@ -132,23 +128,14 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                     AGeneralLedgerMasterPeriodTable.GetBudgetBaseDBName(),
                     AGeneralLedgerMasterPeriodTable.GetTableDBName(),
                     AGeneralLedgerMasterTable.GetTableDBName(),
-                    intLedgerNumber);
+                    FLedgerNumber);
 
             Assert.AreEqual(0, DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryCheckEmptyConsolidatedBudget,
                     IsolationLevel.ReadCommitted), "budget should not be consolidated yet");
 
             // consolidate the budget
-            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(intLedgerNumber);
-            bool consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(intLedgerNumber, true, out VerificationResult);
-
-            if (VerificationResult != null)
-            {
-                Assert.AreEqual(false,
-                    VerificationResult.HasCriticalErrors,
-                    "ConsolidateBudget has critical errors: " + VerificationResult.BuildVerificationResultString());
-            }
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets");
+            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
             // check for correct value in glmperiod budget
             string sqlQueryConsolidatedBudget =
@@ -158,7 +145,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                     AGeneralLedgerMasterPeriodTable.GetBudgetBaseDBName(),
                     AGeneralLedgerMasterPeriodTable.GetTableDBName(),
                     AGeneralLedgerMasterTable.GetTableDBName(),
-                    intLedgerNumber);
+                    FLedgerNumber);
 
             decimal consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
@@ -173,7 +160,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 ABudgetPeriodTable.GetTableDBName(),
                 ABudgetPeriodTable.GetBudgetBaseDBName(),
                 ABudgetTable.GetTableDBName(),
-                intLedgerNumber);
+                FLedgerNumber);
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -182,17 +169,8 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             DBAccess.GDBAccessObj.CommitTransaction();
 
             // post all budgets again
-            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(intLedgerNumber);
-            consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(intLedgerNumber, true, out VerificationResult);
-
-            if (VerificationResult != null)
-            {
-                Assert.AreEqual(false,
-                    VerificationResult.HasCriticalErrors,
-                    "2nd ConsolidateBudget has critical errors: " + VerificationResult.BuildVerificationResultString());
-            }
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets for the second time");
+            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
             consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
@@ -205,14 +183,14 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 ABudgetPeriodTable.GetTableDBName(),
                 ABudgetPeriodTable.GetBudgetBaseDBName(),
                 ABudgetTable.GetTableDBName(),
-                intLedgerNumber);
+                FLedgerNumber);
 
             string sqlMarkBudgetForConsolidation = String.Format("UPDATE PUB_{0} SET {1} = false WHERE " +
                 "a_ledger_number_i = {2} " +
                 "AND a_year_i = 0 AND a_revision_i = 0 AND a_account_code_c = '0300' AND a_cost_centre_code_c = '4300'",
                 ABudgetTable.GetTableDBName(),
                 ABudgetTable.GetBudgetStatusDBName(),
-                intLedgerNumber);
+                FLedgerNumber);
 
             Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -222,23 +200,124 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             DBAccess.GDBAccessObj.CommitTransaction();
 
             // post only modified budget again
-            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(intLedgerNumber);
-            consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(intLedgerNumber, false, out VerificationResult);
-
-            if (VerificationResult != null)
-            {
-                Assert.AreEqual(false,
-                    VerificationResult.HasCriticalErrors,
-                    "3rd ConsolidateBudget has critical errors: " + VerificationResult.BuildVerificationResultString());
-            }
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets for the third time");
+            TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, false);
 
             consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
             Assert.AreEqual(65.0m, consolidatedBudgetValue, "budget should be consolidated with the new value, after UnPostBudget");
 
             // TODO: test forwarding periods. what happens to next year values, when there is no next year glm record yet?
+        }
+
+        /// <summary>
+        /// test the budget autogeneration
+        /// </summary>
+        [Test]
+        public void T1_AutoGenerationLoadData()
+        {
+            FMainDS = new BudgetTDS();
+
+            FMainDS.Merge(TBudgetAutoGenerateWebConnector.LoadBudgetForAutoGenerate(FLedgerNumber));
+
+            //Not needed
+            FMainDS.RemoveTable("AGeneralLedgerMasterPeriod");
+
+            string emptyTables = string.Empty;
+
+            foreach (DataTable tb in FMainDS.Tables)
+            {
+                if (FMainDS.Tables[tb.TableName].Rows.Count == 0)
+                {
+                    emptyTables += tb.TableName + "; ";
+                }
+            }
+
+            Assert.IsEmpty(emptyTables, "Empty Budget Autogeneration Tables: " + emptyTables);
+        }
+
+        /// <summary>
+        /// test the budget autogeneration
+        /// </summary>
+        [Test]
+        public void T2_AutoGenerationGenBudget()
+        {
+            //FMainDS loaded in previous test
+            int budgetSequence = FMainDS.ABudget.Count > 0 ? FMainDS.ABudget[0].BudgetSequence : 0;
+            string forecastType = MFinanceConstants.FORECAST_TYPE_BUDGET;
+
+            if (FMainDS.ABudget.Count == 0)
+            {
+                return;
+            }
+
+            Assert.IsTrue(TBudgetAutoGenerateWebConnector.GenBudgetForNextYear(FLedgerNumber,
+                    budgetSequence,
+                    forecastType), "Budget Autogenerate failed!");
+        }
+
+//        /// <summary>
+//        /// test the budget autogeneration
+//        /// </summary>
+//        [Test]
+//        public void T3_AutoGenerationGetBudgetAmount()
+//        {
+//			//FMainDS loaded in previous test
+//              if (FMainDS.ABudget.Count == 0)
+//			{
+//				return;
+//			}
+//
+//			int budgetSequence = FMainDS.ABudget[0].BudgetSequence;
+//			int periodNo = 1;
+//
+//			ABudgetPeriodRow bPRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] {budgetSequence, 1});
+//
+//              if (bPRow == null)
+//              {
+//                      Assert.IsNotNull(bPRow, String.Format("Cannot find budget period {0} value for budget sequence {1}", periodNo, budgetSequence));
+//                      return;
+//              }
+//
+//              decimal baseBudgetAmountFromTable = bPRow.BudgetBase;
+//              decimal baseBudgetAmountFromFunction = TBudgetAutoGenerateWebConnector.GetBudgetPeriodAmount(budgetSequence, 1);
+//
+//              //Check if the value in the database equals that delivered by the function
+//              Assert.IsTrue(baseBudgetAmountFromTable == baseBudgetAmountFromFunction, String.Format("GetBudgetPeriod Failed. Base Amount in Table is {0}. Function returns: {1}",
+//                                                                                                    baseBudgetAmountFromTable,
+//                                                                                                    baseBudgetAmountFromFunction));
+//        }
+
+        /// <summary>
+        /// test the budget autogeneration
+        /// </summary>
+        [Test]
+        public void T4_AutoGenerationSetBudgetAmount()
+        {
+            //FMainDS loaded in previous test
+            if (FMainDS.ABudget.Count == 0)
+            {
+                return;
+            }
+
+            int budgetSequence = FMainDS.ABudget[0].BudgetSequence;
+
+            ABudgetPeriodRow bPRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, 1 });
+
+            if (bPRow == null)
+            {
+                Assert.IsNotNull(bPRow, String.Format("Cannot find budget period 1 value for budget sequence {0}", budgetSequence));
+                return;
+            }
+
+            //Add 10 to Budget base value and check if it is written
+            decimal budgetBase = bPRow.BudgetBase;
+            TBudgetAutoGenerateWebConnector.SetBudgetPeriodBaseAmount(budgetSequence, 1, (budgetBase + 10));
+
+            decimal budgetBaseNew = TBudgetAutoGenerateWebConnector.GetBudgetPeriodAmount(budgetSequence, 1);
+            Assert.IsTrue(budgetBaseNew == (budgetBase + 10), String.Format("SetBudgetPeriod Failed. BudgetBase ({0}) has not been updated to: {1}",
+                    budgetBase,
+                    budgetBaseNew));
         }
     }
 }

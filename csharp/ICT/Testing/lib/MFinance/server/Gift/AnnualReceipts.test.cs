@@ -29,6 +29,7 @@ using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Testing.NUnitTools;
 using Ict.Common;
@@ -68,31 +69,40 @@ namespace Tests.MFinance.Server.Gift
             TPetraServerConnector.Disconnect();
         }
 
-        private bool ImportAndPostGiftBatch()
+        /// <summary>
+        /// prepare the test case
+        /// </summary>
+        public static bool ImportAndPostGiftBatch(int ALedgerNumber, out TVerificationResultCollection VerificationResult)
         {
             TGiftImporting importer = new TGiftImporting();
 
             string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
+
+            FileContent = FileContent.Replace("{ledgernumber}", ALedgerNumber.ToString());
 
             sr.Close();
 
             Hashtable parameters = new Hashtable();
             parameters.Add("Delimiter", ",");
-            parameters.Add("ALedgerNumber", FLedgerNumber);
+            parameters.Add("ALedgerNumber", ALedgerNumber);
             parameters.Add("DateFormatString", "yyyy-MM-dd");
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
 
-            TVerificationResultCollection VerificationResult;
-
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
+            if (!importer.ImportGiftBatches(parameters, FileContent, out VerificationResult))
+            {
+                return false;
+            }
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
-            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatch(ALedgerNumber, BatchNumber, out VerificationResult))
             {
+                CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult);
+
                 return false;
             }
 
@@ -108,7 +118,12 @@ namespace Tests.MFinance.Server.Gift
             CommonNUnitFunctions.ResetDatabase();
 
             // import a test gift batch
-            ImportAndPostGiftBatch();
+            TVerificationResultCollection VerificationResult;
+
+            if (!ImportAndPostGiftBatch(FLedgerNumber, out VerificationResult))
+            {
+                Assert.Fail("ImportAndPostGiftBatch failed: " + VerificationResult.BuildVerificationResultString());
+            }
 
             // TODO test reversed gifts
 

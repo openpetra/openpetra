@@ -61,13 +61,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            //Need this to allow focus to go to the grid.
-            tabRecurringGLBatch.TabStop = false;
-
             tabRecurringGLBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null); //tabRecurringGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
-            this.ucoRecurringBatches.FocusGrid();
+            this.Shown += delegate
+            {
+                // This will ensure the grid gets the focus when the screen is shown for the first time
+                ucoRecurringBatches.SetInitialFocus();
+            };
         }
 
         private void InitializeManualCode()
@@ -97,40 +98,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// activate the journal tab and load the journals of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            this.tpgJournals.Enabled = true;
-            DisableTransactions();
-            this.ucoRecurringJournals.LoadJournals(ALedgerNumber, ABatchNumber);
-        }
-
-        /// <summary>
-        /// activate the transaction tab and load the transactions of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <param name="AForeignCurrencyName"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, String AForeignCurrencyName)
-        {
-            this.tpgTransactions.Enabled = true;
-            this.ucoRecurringTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AForeignCurrencyName);
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// Unload transactions from the form
-        /// </summary>
-        public void UnloadTransactions()
-        {
-            this.ucoRecurringTransactions.UnloadTransactions();
-        }
-
-        /// <summary>
         /// disable the transactions tab if we have no active journal
         /// </summary>
         public void DisableTransactions()
@@ -153,6 +120,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void DisableJournals()
         {
+            this.tabRecurringGLBatch.TabStop = false;
+
             this.tpgJournals.Enabled = false;
             this.Refresh();
         }
@@ -160,11 +129,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Enable the journal tab if we have an active batch
         /// </summary>
-        public void EnableJournals(bool AEnable = true)
+        public void EnableJournals()
         {
-            if (this.tpgJournals.Enabled != AEnable)
+            this.tabRecurringGLBatch.TabStop = true;
+
+            if (!this.tpgJournals.Enabled)
             {
-                this.tpgJournals.Enabled = AEnable;
+                this.tpgJournals.Enabled = true;
                 this.Refresh();
             }
         }
@@ -183,7 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         };
 
         //Might need this later
-        //private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
+        private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
 
         /// <summary>
         /// Switch to the given tab
@@ -191,6 +162,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             if (ATab == eGLTabs.RecurringBatches)
             {
                 this.tabRecurringGLBatch.SelectedTab = this.tpgBatches;
@@ -200,11 +173,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     this.ucoRecurringTransactions.CancelChangesToFixedBatches();
                     this.ucoRecurringJournals.CancelChangesToFixedBatches();
-                    this.tpgTransactions.Enabled = false;
+                    ucoRecurringBatches.EnableTransactionTabForBatch();
                 }
 
-                this.ucoRecurringBatches.FocusGrid();
-                //FPreviousTab = eGLTabs.RecurringBatches;
+                ucoRecurringBatches.SetInitialFocus();
+                FPreviousTab = eGLTabs.RecurringBatches;
             }
             else if (ATab == eGLTabs.RecurringJournals)
             {
@@ -217,32 +190,53 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
 
                     this.tpgTransactions.Enabled =
-                        (ucoRecurringJournals.GetSelectedDetailRow() != null);
+                        (ucoRecurringJournals.GetSelectedDetailRow() != null && ucoRecurringJournals.GetSelectedDetailRow().JournalStatus !=
+                         MFinanceConstants.BATCH_CANCELLED);
 
                     this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
 
-                    this.ucoRecurringJournals.FocusGrid();
-                    //FPreviousTab = eGLTabs.RecurringJournals;
+                    FPreviousTab = eGLTabs.RecurringJournals;
                 }
             }
             else if (ATab == eGLTabs.RecurringTransactions)
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
+                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
                     this.tabRecurringGLBatch.SelectedTab = this.tpgTransactions;
 
-                    this.ucoRecurringTransactions.LoadTransactions(
-                        FLedgerNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
-                        ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
-                        ucoRecurringJournals.GetSelectedDetailRow().JournalStatus);
+                    bool fromBatchTab = false;
 
-                    //FPreviousTab = eGLTabs.RecurringTransactions;
+                    if (FPreviousTab == eGLTabs.RecurringBatches)
+                    {
+                        fromBatchTab = true;
+                        //This only happens when the user clicks from Batch to Transactions,
+                        //  which is only allowed when one journal exists
+
+                        //Need to make sure that the Journal is loaded
+                        this.ucoRecurringJournals.LoadJournals(FLedgerNumber,
+                            ucoRecurringBatches.GetSelectedDetailRow().BatchNumber,
+                            ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
+                    }
+
+                    if (this.ucoRecurringTransactions.LoadTransactions(
+                            FLedgerNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
+                            ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
+                            ucoRecurringJournals.GetSelectedDetailRow().JournalStatus,
+                            fromBatchTab))
+                    {
+                        ucoRecurringTransactions.AutoSizeGrid();
+                    }
+
+                    FPreviousTab = eGLTabs.RecurringTransactions;
                 }
             }
 
+            this.Cursor = Cursors.Default;
             this.Refresh();
         }
 
@@ -296,6 +290,68 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public TUC_RecurringGLTransactions GetTransactionsControl()
         {
             return ucoRecurringTransactions;
+        }
+
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        /// <param name="sender">Not evaluated.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void mniFilterFind_Click(object sender, System.EventArgs e)
+        {
+            switch (tabRecurringGLBatch.SelectedIndex)
+            {
+                case (int)eGLTabs.RecurringBatches:
+                    ucoRecurringBatches.MniFilterFind_Click(sender, e);
+                    break;
+
+                case (int)eGLTabs.RecurringJournals:
+                    ucoRecurringJournals.MniFilterFind_Click(sender, e);
+                    break;
+
+                case (int)eGLTabs.RecurringTransactions:
+                    ucoRecurringTransactions.MniFilterFind_Click(sender, e);
+                    break;
+            }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            this.Resize += new EventHandler(TFrmGLBatch_Resize);
+        }
+
+        private bool FWindowIsMaximized = false;
+        void TFrmGLBatch_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                // set the flag that we are maximized
+                FWindowIsMaximized = true;
+
+                if (tabRecurringGLBatch.SelectedTab == this.tpgBatches)
+                {
+                    ucoRecurringTransactions.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing transactions");
+                }
+                else if (tabRecurringGLBatch.SelectedTab == this.tpgTransactions)
+                {
+                    ucoRecurringBatches.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing batches");
+                }
+                else
+                {
+                    ucoRecurringBatches.AutoSizeGrid();
+                    ucoRecurringTransactions.AutoSizeGrid();
+                }
+            }
+            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
+            {
+                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
+                ucoRecurringBatches.AutoSizeGrid();
+                ucoRecurringTransactions.AutoSizeGrid();
+                FWindowIsMaximized = false;
+                Console.WriteLine("Normal - autosizing both");
+            }
         }
     }
 }

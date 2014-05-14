@@ -60,18 +60,6 @@ namespace Ict.Petra.Shared.MSysMan
         public const String PARTNER_FINDOPTIONS_EXACTPARTNERKEYMATCHSEARCH = "findopt_exactpartnerkeymatchsearch";
 
         /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FORM = "partnfindscr_splitpos_form";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_CRITERIA = "partnfindscr_splitpos_criteria";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FINDBYDETAILS = "partnfindscr_splitpos_findbydetails";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FINDBYDETAILS_CRIT = "partnfindscr_splitpos_findbydetails_crit";
-
-        /// <summary>todoComment</summary>
         public const String PARTNER_FIND_PARTNERDETAILS_OPEN = "partnfindscr_partnerdetails_open";
 
         /// <summary>todoComment</summary>
@@ -133,6 +121,9 @@ namespace Ict.Petra.Shared.MSysMan
 
         /// <summary>column name for last and first name combined field in UserList</summary>
         public const String USER_LAST_AND_FIRST_NAME_COLUMNNAME = "LastAndFirstName";
+
+        /// <summary>todoComment</summary>
+        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LastConferenceWorkedWith";
 
         /// <summary>
         /// ------------------------------------------------------------------------------

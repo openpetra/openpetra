@@ -26,8 +26,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using System.Xml;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
@@ -68,6 +72,55 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// export all partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public bool ExportPartnersInExtract(System.Object sender, EventArgs e)
+        {
+            Boolean Result = false;
+
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Export Partners in Extract"))
+                && (GetSelectedDetailRow() != null))
+            {
+                String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
+
+                if (FileName.Length > 0)
+                {
+                    if (FileName.EndsWith("ext"))
+                    {
+                        String doc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(GetSelectedDetailRow().ExtractId, false);
+                        Result = TImportExportDialogs.ExportTofile(doc, FileName);
+
+                        if (!Result)
+                        {
+                            MessageBox.Show(Catalog.GetString("Export of Partners in Extract failed!"), Catalog.GetString(
+                                    "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            MessageBox.Show(Catalog.GetString("Export of Partners in Extract finished"), Catalog.GetString(
+                                    "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    else
+                    {
+                        // XmlDocument doc = new XmlDocument();
+                        MessageBox.Show(Catalog.GetString("Export with this format is not yet supported!"), Catalog.GetString(
+                                "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartners(GetSelectedDetailRow().ExtractId, false));
+                        // Result = TImportExportDialogs.ExportTofile(doc, FileName);
+                    }
+                }
+
+                return Result;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// save the changes on the screen (code is copied from auto-generated code)
         /// </summary>
         /// <returns></returns>
@@ -92,7 +145,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     this.Cursor = Cursors.WaitCursor;
 
                     TSubmitChangesResult SubmissionResult;
-                    TVerificationResultCollection VerificationResult;
 
                     MExtractMasterTable SubmitDT = new MExtractMasterTable();
 
@@ -117,7 +169,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     try
                     {
                         SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtractMaster
-                                               (ref SubmitDT, out VerificationResult);
+                                               (ref SubmitDT);
                     }
                     catch (System.Net.Sockets.SocketException)
                     {
@@ -339,44 +391,35 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     SubscriptionTable.Rows.Add(SubscriptionRow);
 
                     // perform update of extract data on server side
-                    if (TRemote.MPartner.Partner.WebConnectors.AddSubscription
-                            (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs, out SubscriptionsAdded))
+                    TRemote.MPartner.Partner.WebConnectors.AddSubscription
+                        (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs, out SubscriptionsAdded);
+
+                    MessageText =
+                        String.Format(Catalog.GetString(
+                                "Subscription {0} successfully added for {1} out of {2} Partner(s) in Extract {3}."),
+                            SubscriptionRow.PublicationCode,
+                            SubscriptionsAdded, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
+
+                    if (PartnersWithExistingSubs.Rows.Count > 0)
                     {
-                        MessageText =
-                            String.Format(Catalog.GetString(
-                                    "Subscription {0} successfully added for {1} out of {2} Partner(s) in Extract {3}."),
-                                SubscriptionRow.PublicationCode,
-                                SubscriptionsAdded, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
-
-                        if (PartnersWithExistingSubs.Rows.Count > 0)
-                        {
-                            MessageText += "\r\n\r\n" +
-                                           String.Format(Catalog.GetString(
-                                    "See the following Dialog for the {0} Partner(s) that were already subscribed for this Publication. The Subscription was not added for those Partners."),
-                                PartnersWithExistingSubs.Rows.Count);
-                        }
-
-                        MessageBox.Show(MessageText,
-                            Catalog.GetString("Add Subscription"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-
-                        if (PartnersWithExistingSubs.Rows.Count > 0)
-                        {
-                            TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
-                            partnerDialog.SetExplanation("These partners already have a Subscription for " + SubscriptionRow.PublicationCode,
-                                "The Subscription was not added to the following Partners:");
-                            partnerDialog.SetPartnerList(PartnersWithExistingSubs);
-                            partnerDialog.ShowDialog();
-                        }
+                        MessageText += "\r\n\r\n" +
+                                       String.Format(Catalog.GetString(
+                                "See the following Dialog for the {0} Partner(s) that were already subscribed for this Publication. The Subscription was not added for those Partners."),
+                            PartnersWithExistingSubs.Rows.Count);
                     }
-                    else
+
+                    MessageBox.Show(MessageText,
+                        Catalog.GetString("Add Subscription"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    if (PartnersWithExistingSubs.Rows.Count > 0)
                     {
-                        MessageBox.Show(Catalog.GetString("Error while adding Subscription for Partners in Extract ") +
-                            GetSelectedDetailRow().ExtractName,
-                            Catalog.GetString("Add Subscription"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                        TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
+                        partnerDialog.SetExplanation("These partners already have a Subscription for " + SubscriptionRow.PublicationCode,
+                            "The Subscription was not added to the following Partners:");
+                        partnerDialog.SetPartnerList(PartnersWithExistingSubs);
+                        partnerDialog.ShowDialog();
                     }
                 }
             }
@@ -528,45 +571,36 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         SubscriptionTable.Rows.Add(SubscriptionRow);
 
                         // perform update of extract data on server side
-                        if (TRemote.MPartner.Partner.WebConnectors.ChangeSubscription
-                                (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, FieldsToChange, out PartnersWithoutSubs,
-                                out SubscriptionsChanged))
+                        TRemote.MPartner.Partner.WebConnectors.ChangeSubscription
+                            (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, FieldsToChange, out PartnersWithoutSubs,
+                            out SubscriptionsChanged);
+
+                        MessageText =
+                            String.Format(Catalog.GetString(
+                                    "Subscription {0} successfully changed for {1} out of {2} Partner(s) in Extract {3}."),
+                                SubscriptionRow.PublicationCode,
+                                SubscriptionsChanged, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
+
+                        if (PartnersWithoutSubs.Rows.Count > 0)
                         {
-                            MessageText =
-                                String.Format(Catalog.GetString(
-                                        "Subscription {0} successfully changed for {1} out of {2} Partner(s) in Extract {3}."),
-                                    SubscriptionRow.PublicationCode,
-                                    SubscriptionsChanged, GetSelectedDetailRow().KeyCount, GetSelectedDetailRow().ExtractName);
-
-                            if (PartnersWithoutSubs.Rows.Count > 0)
-                            {
-                                MessageText += "\r\n\r\n" +
-                                               String.Format(Catalog.GetString(
-                                        "See the following Dialog for the {0} Partner(s) that are not subscribed for this Publication and therefore no change was made for them."),
-                                    PartnersWithoutSubs.Rows.Count);
-                            }
-
-                            MessageBox.Show(MessageText,
-                                Catalog.GetString("Change Subscription"),
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-
-                            if (PartnersWithoutSubs.Rows.Count > 0)
-                            {
-                                TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
-                                partnerDialog.SetExplanation("These partners do not have a Subscription for " + SubscriptionRow.PublicationCode,
-                                    "The Subscription was therefore not changed for the following Partners:");
-                                partnerDialog.SetPartnerList(PartnersWithoutSubs);
-                                partnerDialog.ShowDialog();
-                            }
+                            MessageText += "\r\n\r\n" +
+                                           String.Format(Catalog.GetString(
+                                    "See the following Dialog for the {0} Partner(s) that are not subscribed for this Publication and therefore no change was made for them."),
+                                PartnersWithoutSubs.Rows.Count);
                         }
-                        else
+
+                        MessageBox.Show(MessageText,
+                            Catalog.GetString("Change Subscription"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+
+                        if (PartnersWithoutSubs.Rows.Count > 0)
                         {
-                            MessageBox.Show(Catalog.GetString("Error while changing Subscription for Partners in Extract ") +
-                                GetSelectedDetailRow().ExtractName,
-                                Catalog.GetString("Change Subscription"),
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
+                            TFrmSimplePartnerListDialog partnerDialog = new TFrmSimplePartnerListDialog(this.FindForm());
+                            partnerDialog.SetExplanation("These partners do not have a Subscription for " + SubscriptionRow.PublicationCode,
+                                "The Subscription was therefore not changed for the following Partners:");
+                            partnerDialog.SetPartnerList(PartnersWithoutSubs);
+                            partnerDialog.ShowDialog();
                         }
                     }
                 }
@@ -595,27 +629,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     if (dialog.GetReturnedParameters(out TypeCode))
                     {
                         // perform update of extract data on server side
-                        if (TRemote.MPartner.Partner.WebConnectors.UpdatePartnerType
-                                (GetSelectedDetailRow().ExtractId, true, TypeCode))
-                        {
-                            Message = String.Format(Catalog.GetString("Partner Type {0} successfully added for all Partners in Extract {1}"),
-                                TypeCode, GetSelectedDetailRow().ExtractName);
+                        TRemote.MPartner.Partner.WebConnectors.UpdatePartnerType
+                            (GetSelectedDetailRow().ExtractId, true, TypeCode);
 
-                            MessageBox.Show(Message,
-                                Catalog.GetString("Add Partner Type"),
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            Message = String.Format(Catalog.GetString("Error while adding Partner Type {0} for Partners in Extract {1}"),
-                                TypeCode, GetSelectedDetailRow().ExtractName);
+                        Message = String.Format(Catalog.GetString("Partner Type {0} successfully added for all Partners in Extract {1}"),
+                            TypeCode, GetSelectedDetailRow().ExtractName);
 
-                            MessageBox.Show(Message,
-                                Catalog.GetString("Add Partner Type"),
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                        }
+                        MessageBox.Show(Message,
+                            Catalog.GetString("Add Partner Type"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                     }
                 }
             }
@@ -643,27 +666,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     if (dialog.GetReturnedParameters(out TypeCode))
                     {
                         // perform update of extract data on server side
-                        if (TRemote.MPartner.Partner.WebConnectors.UpdatePartnerType
-                                (GetSelectedDetailRow().ExtractId, false, TypeCode))
-                        {
-                            Message = String.Format(Catalog.GetString("Partner Type {0} successfully deleted for all Partners in Extract {1}"),
-                                TypeCode, GetSelectedDetailRow().ExtractName);
+                        TRemote.MPartner.Partner.WebConnectors.UpdatePartnerType
+                            (GetSelectedDetailRow().ExtractId, false, TypeCode);
 
-                            MessageBox.Show(Message,
-                                Catalog.GetString("Delete Partner Type"),
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            Message = String.Format(Catalog.GetString("Error while deleting Partner Type {0} for Partners in Extract {1}"),
-                                TypeCode, GetSelectedDetailRow().ExtractName);
+                        Message = String.Format(Catalog.GetString("Partner Type {0} successfully deleted for all Partners in Extract {1}"),
+                            TypeCode, GetSelectedDetailRow().ExtractName);
 
-                            MessageBox.Show(Message,
-                                Catalog.GetString("Delete Partner Type"),
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Error);
-                        }
+                        MessageBox.Show(Message,
+                            Catalog.GetString("Delete Partner Type"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                     }
                 }
             }

@@ -209,19 +209,51 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            // 'GL amount must be non-zero
-            ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionAmountId];
+            //TransactionAmount is not in the dictionary so had to pass the control directly
+            if ((AControl != null) && AControl.Name.EndsWith("Amount"))
+            {
+                // 'GL amount must be non-zero and positive
+                ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionAmountId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                //Doesn't work for these two controls: txtDebitAmount & txtCreditAmount
+                //if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                //{
+                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
+                    "Amount of " + ValidationContext,
+                    AContext, ValidationColumn, AControl);
+
+                if (VerificationResult != null)
+                {
+                    VerificationResult.SuppressValidationToolTip = true;
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+
+                //}
+
+                return VerifResultCollAddedCount == 0;
+            }
+
+            // 'Narrative must not be empty
+            ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnNarrativeId];
             ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
                 ARow.TransactionNumber,
                 ARow.BatchNumber,
                 ARow.JournalNumber);
 
-            //TransactionAmount is not in the dictionary so had to pass the control directly
-            if (AControl != null)
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.TransactionAmount,
-                    "Amount of " + ValidationContext,
-                    AContext, ValidationColumn, AControl);
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Narrative,
+                    "Narrative of " + ValidationContext,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
@@ -237,26 +269,52 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.BatchNumber,
                 ARow.JournalNumber);
 
-            DateTime StartDatePeriod;
-            DateTime EndDatePeriod;
-            TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, ABatchRow.BatchYear, 0, ABatchRow.BatchPeriod,
-                out StartDatePeriod,
-                out EndDatePeriod);
-
-            VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.TransactionDate,
-                StartDatePeriod,
-                EndDatePeriod,
-                "Transaction Date for " + ValidationContext.ToString(),
-                TDateBetweenDatesCheckType.dbdctUnspecific,
-                TDateBetweenDatesCheckType.dbdctUnspecific,
-                AContext,
-                ValidationColumn,
-                ValidationControlsData.ValidationControl);
-
-            // Handle addition/removal to/from TVerificationResultCollection
-            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerifResultCollAddedCount++;
+                DateTime StartDatePeriod;
+                DateTime EndDatePeriod;
+                TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, ABatchRow.BatchYear, 0, ABatchRow.BatchPeriod,
+                    out StartDatePeriod,
+                    out EndDatePeriod);
+
+                VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.TransactionDate,
+                    StartDatePeriod,
+                    EndDatePeriod,
+                    "Transaction Date for " + ValidationContext.ToString(),
+                    TDateBetweenDatesCheckType.dbdctUnspecific,
+                    TDateBetweenDatesCheckType.dbdctUnspecific,
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            if ((AControl != null) && AControl.Name.EndsWith("Reference"))
+            {
+                // if "Reference" is mandatory then make sure it is set
+                ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnReferenceId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
+                        "Reference of " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
             }
 
             return VerifResultCollAddedCount == 0;
@@ -282,6 +340,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
             object ValidationContext;
             int VerifResultCollAddedCount = 0;
@@ -292,34 +351,18 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            // Narrative must not be empty
-            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnNarrativeId];
-            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
-                ARow.TransactionNumber,
-                ARow.BatchNumber,
-                ARow.JournalNumber);
-
-            VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Narrative,
-                "Narrative of " + ValidationContext,
-                AContext, ValidationColumn, AControl);
-
-            // Handle addition/removal to/from TVerificationResultCollection
-            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-            {
-                VerifResultCollAddedCount++;
-            }
-
-            // 'GL amount must be non-zero
-            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
-            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
-                ARow.TransactionNumber,
-                ARow.BatchNumber,
-                ARow.JournalNumber);
-
             //TransactionAmount is not in the dictionary so had to pass the control directly
-            if (AControl != null)
+            //  also needed to handle reference
+            if ((AControl != null) && AControl.Name.EndsWith("Amount"))
             {
-                VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.TransactionAmount,
+                // 'GL amount must be non-zero
+                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
                     "Amount of " + ValidationContext,
                     AContext, ValidationColumn, AControl);
 
@@ -327,6 +370,50 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
+                }
+
+                return VerifResultCollAddedCount == 0;
+            }
+
+            // Narrative must not be empty
+            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnNarrativeId];
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
+                ARow.BatchNumber,
+                ARow.JournalNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Narrative,
+                    "Narrative of " + ValidationContext,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            if ((AControl != null) && AControl.Name.EndsWith("Reference"))
+            {
+                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnReferenceId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
+                        "Reference of " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
                 }
             }
 

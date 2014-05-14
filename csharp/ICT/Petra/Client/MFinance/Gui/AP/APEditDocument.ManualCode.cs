@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
@@ -41,6 +42,7 @@ using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using SourceGrid;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -48,6 +50,28 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     {
         Int32 FDocumentLedgerNumber;
         ALedgerRow FLedgerRow = null;
+        SourceGrid.Cells.Editors.ComboBox cmbAnalAttribValues;
+        AApAnalAttribRow FPSAttributesRow;
+
+        /// <summary>
+        /// Before saving the document, I'll remove any ApAnalAttrib rows that have no values set
+        /// (These may have been created by the overly keen method below and are not required at all,
+        /// or perhaps they are required but the user has not yet provided values. )
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        void BeforeDataSave(object Sender, EventArgs e)
+        {
+            for (Int32 RowNum = FMainDS.AApAnalAttrib.Rows.Count; RowNum > 0; RowNum--)
+            {
+                AApAnalAttribRow Row = (AApAnalAttribRow)FMainDS.AApAnalAttrib.Rows[RowNum - 1];
+
+                if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisAttributeValue == ""))  // I need to delete empty rows
+                {
+                    Row.Delete();
+                }
+            }
+        }
 
         /// <summary>
         /// When this document is saved in the database, I can check whether
@@ -59,10 +83,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (e.Success)
             {
-                if (FPetraUtilsObject.GetCallerForm().GetType() == typeof(TFrmAPSupplierTransactions))
-                {
-                    ((TFrmAPSupplierTransactions)FPetraUtilsObject.GetCallerForm()).Reload();
-                }
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
+                broadcastMessage.SetMessageDataAPTransaction(txtSupplierName.Text);
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
         }
 
@@ -70,6 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             // When a doument is saved, I'll see about updating my caller.
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(BeforeDataSave);
         }
 
         private void RunOnceOnActivationManual()
@@ -80,6 +104,94 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDiscountPercentage.Visible = false;
             txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
             txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
+
+/*
+ * All this moved out to ShowAnalysisAttributesForAccount, because doing it here is too late:
+ *          if (grdAnalAttributes.Columns.Count < 2)
+ *          {
+ *              grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
+ *
+ *              FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
+ *              FAnalAttribTypeVal.EnableEdit = true;
+ *              FAnalAttribTypeVal.Control.DropDownStyle = ComboBoxStyle.DropDownList;
+ *              FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
+ *              FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
+ *              grdAnalAttributes.AddTextColumn("Value",
+ *                  FMainDS.AApAnalAttrib.Columns[AApAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
+ *                  FAnalAttribTypeVal);
+ *
+ *              grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
+ *          }
+ */
+            mniEdit.DropDownItems.Remove(mniEditSeparator);
+            mniEdit.DropDownItems.Remove(mniEditFilter); // These items are provided by windowEditWebConnectorMasterDetail
+            mniEdit.DropDownItems.Remove(mniEditFind);   // but are not needed in this application.
+        }
+
+        private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)
+        {
+            if (grdAnalAttributes.Selection.ActivePosition.IsEmpty() || (grdAnalAttributes.Selection.ActivePosition.Column == 0))
+            {
+                return;
+            }
+
+            if ((GetSelectedAttributeRow() == null) || (FPSAttributesRow == GetSelectedAttributeRow()))
+            {
+                return;
+            }
+
+            FPSAttributesRow = GetSelectedAttributeRow();
+
+            FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}=true",
+                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                FPSAttributesRow.AnalysisTypeCode,
+                AFreeformAnalysisTable.GetActiveDBName());
+
+            //Refresh the combo values
+            int analTypeCodeValuesCount = FMainDS.AFreeformAnalysis.DefaultView.Count;
+
+            if (analTypeCodeValuesCount == 0)
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "No attribute values are defined!"), FPSAttributesRow.AnalysisTypeCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            string[] analTypeValues = new string[analTypeCodeValuesCount];
+
+            FMainDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
+            int counter = 0;
+
+            foreach (DataRowView dvr in FMainDS.AFreeformAnalysis.DefaultView)
+            {
+                AFreeformAnalysisRow faRow = (AFreeformAnalysisRow)dvr.Row;
+                analTypeValues[counter++] = faRow.AnalysisValue;
+            }
+
+            cmbAnalAttribValues.StandardValuesExclusive = true;
+            cmbAnalAttribValues.StandardValues = analTypeValues;
+        }
+
+        void AnalysisAttributeValueChanged(object sender, EventArgs e)
+        {
+            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
+            {
+                return;
+            }
+
+            DevAge.Windows.Forms.DevAgeComboBox valueType = (DevAge.Windows.Forms.DevAgeComboBox)sender;
+
+            int selectedValueIndex = valueType.SelectedIndex;
+
+            if (selectedValueIndex < 0)
+            {
+                return;
+            }
+            else if (valueType.Items[selectedValueIndex].ToString() != FPSAttributesRow.AnalysisAttributeValue)
+            {
+                FPetraUtilsObject.SetChangedFlag();
+                FPSAttributesRow.AnalysisAttributeValue = valueType.Items[selectedValueIndex].ToString();
+                ValidateAllData(false, true);
+            }
         }
 
         private void LookupExchangeRate(Object sender, EventArgs e)
@@ -135,13 +247,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 btnAddDetail.Enabled = false;
                 btnDelete.Enabled = false;
                 btnLookupExchangeRate.Enabled = false;
-                btnAnalysisAttributes.Enabled = false;
 
                 txtDetailNarrative.Enabled = false;
                 txtDetailItemRef.Enabled = false;
                 txtDetailAmount.Enabled = false;
                 cmbDetailCostCentreCode.Enabled = false;
-                btnUseTaxAccount.Enabled = false;
                 txtDetailBaseAmount.Enabled = false;
                 cmbDetailAccountCode.Enabled = false;
                 pnlDetails.Enabled = false;
@@ -211,75 +321,41 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     }
                 }
 
-                if (IhaveAllMyAttributes)
-                {
-                    AllPresent = true;         // This detail line is fully specified
-                }
-                else
-                {
-                    AllPresent = false;         // This detail line requires attributes
-                }
-
+                AllPresent = IhaveAllMyAttributes;
                 return true;
             }
             else
             {
                 AllPresent = true; // This detail line is fully specified
-                return false;         // No attributes are required
+                return false;      // No attributes are required
             }
         }
 
-        /// <summary>
-        /// Called from cmbDetailAccountCode.SelectedValueChanged
-        /// When an account is selected for a detail line,
-        /// I need to determine whether analysis attributes are required for this account
-        /// and if they are, whether I already have all the attributes required.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-
-        private void CheckAccountRequiredAttr(Object sender, EventArgs e)
+        private void UpdateAttributeLabel(AccountsPayableTDSAApDocumentDetailRow DetailRow)
         {
-            // I'm not doing this if this document was already posted.
-            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
+            string strAnalAttr = "";
+
+            FMainDS.AApAnalAttrib.DefaultView.RowFilter =
+                String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
+
+            foreach (DataRowView rv in FMainDS.AApAnalAttrib.DefaultView)
             {
-                return;
-            }
+                AApAnalAttribRow Row = (AApAnalAttribRow)rv.Row;
 
-            string AccountCode = cmbDetailAccountCode.GetSelectedString();
-
-            if (AccountCode.Length == 0)
-            {
-                return;
-            }
-
-            FPreviouslySelectedDetailRow.AccountCode = AccountCode;
-
-            bool AllPresent = true;
-
-            if (DetailLineAttributesRequired(ref AllPresent, FMainDS, FPreviouslySelectedDetailRow))
-            {
-                btnAnalysisAttributes.Enabled = true;
-
-                if (AllPresent)
+                if (strAnalAttr.Length > 0)
                 {
-                    btnAnalysisAttributes.ForeColor = System.Drawing.Color.Green;             // This detail line is fully specified
+                    strAnalAttr += ", ";
                 }
-                else
-                {
-                    btnAnalysisAttributes.ForeColor = System.Drawing.Color.Red;             // This detail line requires attributes
-                }
+
+                strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
             }
-            else
-            {
-                btnAnalysisAttributes.Enabled = false;         // No attributes are required
-            }
+
+            DetailRow.AnalAttr = strAnalAttr;
         }
 
         private void ShowDataManual()
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
-            AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
 
             FDocumentLedgerNumber = DocumentRow.LedgerNumber;
 
@@ -318,26 +394,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Create Text description of Anal Attribs for each DetailRow..
             foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
             {
-                string strAnalAttr = "";
-                FMainDS.AApAnalAttrib.DefaultView.RowFilter =
-                    String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
-
-                foreach (DataRowView rv in FMainDS.AApAnalAttrib.DefaultView)
-                {
-                    AApAnalAttribRow Row = (AApAnalAttribRow)rv.Row;
-
-                    if (strAnalAttr.Length > 0)
-                    {
-                        strAnalAttr += ", ";
-                    }
-
-                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
-                }
-
-                DetailRow.AnalAttr = strAnalAttr;
+                UpdateAttributeLabel(DetailRow);
             }
 
             EnableControls();
+        }
+
+        private void GetDetailDataFromControlsManual(AccountsPayableTDSAApDocumentDetailRow ARow)
+        {
+            if (ARow == null)
+            {
+                return;
+            }
+
+            UpdateAttributeLabel(ARow);
         }
 
         private void NewDetail(Object sender, EventArgs e)
@@ -403,33 +473,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 EnableControls();
             }
-        }
-
-        /// <summary>
-        /// Display the Analysis Attributes form for this selected detail
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Analyse(Object sender, EventArgs e)
-        {
-            TFrmAPAnalysisAttributes AnalAttrForm = new TFrmAPAnalysisAttributes(this);
-
-            ValidateAllData(false, true);
-//          GetDetailsFromControls(FPreviouslySelectedDetailRow);
-
-            AnalAttrForm.Initialise(ref FMainDS, FPreviouslySelectedDetailRow);
-            AnalAttrForm.ShowDialog();
-            ShowData(FMainDS.AApDocument[0]);
-
-//          CheckAccountRequiredAttr(null, null);
-            if (AnalAttrForm.DetailsChanged)
-            {
-                FPetraUtilsObject.SetChangedFlag();
-            }
-        }
-
-        private void UseTaxAccount(Object sender, EventArgs e)
-        {
         }
 
         private void ValidateDataManual(AccountsPayableTDSAApDocumentRow ARow)
@@ -512,8 +555,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // if this document was already posted, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
 
+            FPetraUtilsObject.SuppressChangeDetection = true;
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
+            FPetraUtilsObject.SuppressChangeDetection = false;
             EnableControls();
 
             Decimal ExchangeRateToBase = 0;
@@ -533,6 +578,125 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 DetailAmount /= ExchangeRateToBase;
                 txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
             }
+        }
+
+        //
+        // Called from cmbDetailAccountCode.SelectedValueChanged,
+        // I need to load the Analysis Types Pane with the required attributes for this account,
+        // and show any assignments already made.
+
+        void ShowAnalysisAttributesForAccount(object sender, EventArgs e)
+        {
+            //
+            // It's possible that my TDS doesn't even have an AnalAttrib table...
+
+            if (FMainDS.AApAnalAttrib == null)
+            {
+                FMainDS.Merge(new AApAnalAttribTable());
+            }
+
+            if (FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            //Empty the grid
+            FMainDS.AApAnalAttrib.DefaultView.RowFilter = "1=2";
+            FPSAttributesRow = null;
+
+            if (grdAnalAttributes.Columns.Count < 2) // This is initialisation but I moved it here because sometimes this is called before Show().
+            {
+                grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
+
+                cmbAnalAttribValues = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
+                cmbAnalAttribValues.Control.DropDownStyle = ComboBoxStyle.DropDownList;
+                cmbAnalAttribValues.EnableEdit = true;
+                cmbAnalAttribValues.EditableMode = EditableMode.Focus;
+                cmbAnalAttribValues.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
+                grdAnalAttributes.AddTextColumn("Value",
+                    FMainDS.AApAnalAttrib.Columns[AApAnalAttribTable.GetAnalysisAttributeValueDBName()], 120,
+                    cmbAnalAttribValues);
+
+                grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
+            }
+
+            grdAnalAttributes.Columns[0].Width = 90; // for some unknown reason, this doesn't work.
+            grdAnalAttributes.Columns[1].Width = 120;
+
+            AccountsPayableTDSAApDocumentDetailRow DetailRow = GetSelectedDetailRow();
+            DetailRow.AccountCode = cmbDetailAccountCode.GetSelectedString();
+
+            //
+            // So I want to remove any attributes attached to this row that don't have the new account code...
+            FMainDS.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}<>'{7}'",
+                AApAnalAttribTable.GetLedgerNumberDBName(), DetailRow.LedgerNumber,
+                AApAnalAttribTable.GetApDocumentIdDBName(), DetailRow.ApDocumentId,
+                AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
+                AApAnalAttribTable.GetAccountCodeDBName(), DetailRow.AccountCode);
+
+            for (Int32 RowIdx = FMainDS.AApAnalAttrib.DefaultView.Count; RowIdx > 0; RowIdx--)
+            {
+                FMainDS.AApAnalAttrib.DefaultView[RowIdx - 1].Row.Delete();
+            }
+
+            FMainDS.AAnalysisAttribute.DefaultView.RowFilter =
+                String.Format("{0}='{1}'", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);
+
+            String AccountCodeRowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}='{7}'",
+                AApAnalAttribTable.GetLedgerNumberDBName(), DetailRow.LedgerNumber,
+                AApAnalAttribTable.GetApDocumentIdDBName(), DetailRow.ApDocumentId,
+                AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
+                AApAnalAttribTable.GetAccountCodeDBName(), DetailRow.AccountCode);
+
+            foreach (DataRowView rv in FMainDS.AAnalysisAttribute.DefaultView) // List of attributes required for this account
+            {
+                AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
+
+                FMainDS.AApAnalAttrib.DefaultView.RowFilter = AccountCodeRowFilter +
+                                                              String.Format(" AND {0}='{1}'",
+                    AApAnalAttribTable.GetAnalysisTypeCodeDBName(), AttrRow.AnalysisTypeCode);
+
+                if (FMainDS.AApAnalAttrib.DefaultView.Count == 0)   // No Entry yet for this attribute. This is likely, given I just deleted everything...
+                {
+                    AApAnalAttribRow AARow = FMainDS.AApAnalAttrib.NewRowTyped();
+                    AARow.LedgerNumber = DetailRow.LedgerNumber;
+                    AARow.ApDocumentId = DetailRow.ApDocumentId;
+                    AARow.DetailNumber = DetailRow.DetailNumber;
+                    AARow.AnalysisTypeCode = AttrRow.AnalysisTypeCode;
+                    AARow.AccountCode = DetailRow.AccountCode;
+                    FMainDS.AApAnalAttrib.Rows.Add(AARow);
+                }
+            }
+
+            FMainDS.AApAnalAttrib.DefaultView.RowFilter = AccountCodeRowFilter;
+            FMainDS.AApAnalAttrib.DefaultView.Sort = AApAnalAttribTable.GetAnalysisTypeCodeDBName();
+
+            grdAnalAttributes.DataSource = null;
+            grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApAnalAttrib.DefaultView);
+            UpdateAttributeLabel(DetailRow);
+
+            if (grdAnalAttributes.Rows.Count > 2)
+            {
+                grdAnalAttributes.Enabled = true;
+                grdAnalAttributes.SelectRowWithoutFocus(1);
+                AnalysisAttributesGrid_RowSelected(null, null);
+            }
+            else
+            {
+                grdAnalAttributes.Enabled = false;
+            }
+        }
+
+        private AApAnalAttribRow GetSelectedAttributeRow()
+        {
+            DataRowView[] SelectedGridRow = grdAnalAttributes.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                return (AApAnalAttribRow)SelectedGridRow[0].Row;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -726,7 +890,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// This static function is called from several places
         /// /// </summary>
         /// <returns>true if everything went OK</returns>
-        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List <int>AApDocumentIds)
+        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List <int>AApDocumentIds, Form AOwnerForm)
         {
             TVerificationResultCollection Verifications;
 
@@ -744,6 +908,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
+            AOwnerForm.Cursor = Cursors.WaitCursor;
+
             if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                     ALedgerNumber,
                     AApDocumentIds,
@@ -751,10 +917,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     false,
                     out Verifications))
             {
+                AOwnerForm.Cursor = Cursors.Default;
                 return true;
             }
             else
             {
+                AOwnerForm.Cursor = Cursors.Default;
                 string ErrorMessages = String.Empty;
 
                 foreach (TVerificationResult verif in Verifications)
@@ -796,7 +964,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TaggedDocuments.Add(FMainDS.AApDocument[0].ApDocumentId);
 
-            if (PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments))
+            if (PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments, this))
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP document has been posted successfully!"));
@@ -810,12 +978,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 //
                 // Also refresh the opener?
-                Form Opener = FPetraUtilsObject.GetCallerForm();
-
-                if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
-                {
-                    ((TFrmAPSupplierTransactions)Opener).Reload();
-                }
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
+                broadcastMessage.SetMessageDataAPTransaction(lblSupplierName.Text);
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
         }
 

@@ -111,16 +111,16 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Contains data about a Link that got clicked by the user.
         /// </summary>
-        public delegate void TaskLinkClicked(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked);
+        public delegate void TaskLinkClicked(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData);
 
         /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
         public event TaskLinkClicked ItemActivation;
 
-        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
         {
             if (ItemActivation != null)
             {
-                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
             }
         }
 
@@ -486,7 +486,7 @@ namespace Ict.Common.Controls
             SetCommonActivatedLinkAppearance(ClickedLabel);
 
             // Fire ItemActivation Event
-            OnItemActivation(this, (XmlNode)e.Link.LinkData, (LinkLabel)sender);
+            OnItemActivation(this, (XmlNode)e.Link.LinkData, (LinkLabel)sender, null);
 
             // Repaint all Tasks to reflect their Activated/non-Activated state
             // Note: This re-sets the Link appearance set above to 'Activated' appearance
@@ -849,10 +849,32 @@ namespace Ict.Common.Controls
         /// </summary>
         public void SelectFirstTaskItem()
         {
-            LinkLabel FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[0];
+            int CurrentIndex = 0;
+            LinkLabel FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
 
-            lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
-                    (FirstLinkLabel.Links[0]));
+            // not an ideal solution: this call triggers initialization (enable/disable) of xml nodes that later in this
+            // method is needed to react to disabled items
+            if (FirstLinkLabel != null)
+            {
+                lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
+                        (FirstLinkLabel.Links[0]));
+            }
+
+            // retrieve first item again as LinkClicked event may have triggered recreation of link labels
+            FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
+
+            while (CurrentIndex <= this.tPnlGradient1.Controls.Count - 1
+                   && IsDisabled((XmlNode)FirstLinkLabel.Links[0].LinkData))
+            {
+                CurrentIndex++;
+                FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
+            }
+
+            if (FirstLinkLabel != null)
+            {
+                lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
+                        (FirstLinkLabel.Links[0]));
+            }
         }
 
         /// <summary>

@@ -23,6 +23,10 @@ RootNode:
         actFileRecentPartner9: {ActionClick=MniFileRecentPartner_Click}
         actFileRecentPartner10: {ActionClick=MniFileRecentPartner_Click}
         actFileNewPartner: {ActionClick=MniFile_Click, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdFamily: {ActionClick=MniFile_Click, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdChurch: {ActionClick=MniFile_Click, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdOrganisation: {ActionClick=MniFile_Click, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdUnit: {ActionClick=MniFile_Click, Image: NewPartner.ico}
         actFileEditPartner: {ActionClick=MniFile_Click, Image: EditPartner.ico}
         actFileMergePartners: {ActionClick=MniFile_Click, Image=MergePartner.ico}
         actFileDeletePartner: {ActionClick=MniFile_Click, Image=DeletePartner.ico}
@@ -37,7 +41,7 @@ RootNode:
         actEditCopyEmailAddress: {ActionClick=MniEdit_Click, Image=CopyToClipboard_EmailAddress.ico}
         
         actMaintainAddresses: {Label=&Addresses..., ActionClick=MniMaintain_Click, Image, Image: Address.ico}
-        actMaintainPartnerDetails: {Label=Partner &Details..., ActionClick=MniMaintain_Click, Image: Details.ico}
+        actMaintainPartnerDetails: {Label=&Partner Details..., ActionClick=MniMaintain_Click, Image: Details.ico}
         actMaintainFoundationDetails: {Label=Foundation Details..., ActionClick=MniMaintain_Click, Image: Foundations.ico}
         actMaintainSubscriptions: {Label=&Subscriptions..., ActionClick=MniMaintain_Click, Image: Subscriptions.ico}
         actMaintainSpecialTypes: {Label=Special &Types..., ActionClick=MniMaintain_Click, Image: Types.ico}
@@ -48,13 +52,13 @@ RootNode:
         actMaintainReminders: {Label=&Reminders..., ActionClick=MniMaintain_Click, Image: Reminders.ico}
         actMaintainNotes: {Label=&Notes..., ActionClick=MniMaintain_Click, Image: Notes.ico}
         actMaintainLocalPartnerData: {Label=&Local Partner Data..., ActionClick=MniMaintain_Click, Image: OfficeSpecific.ico}
-        actMaintainWorkerField: {Label=&Worker Field..., ActionClick=MniMaintain_Click, Image: OMField.ico}
-        actMaintainPersonnelData: {Label=&Personnel/Individual Data..., ActionClick=MniMaintain_Click, Image: personel_small.ico}
+        actMaintainWorkerField: {Label=Gift &Destination..., ActionClick=MniMaintain_Click, Image: OMField.ico}
+        actMaintainPersonnelData: {Label=P&ersonnel/Individual Data..., ActionClick=MniMaintain_Click, Image: personel_small.ico}
         actMaintainDonorHistory: {Label=Donor &History..., ActionClick=MniMaintain_Click}
         actMaintainRecipientHistory: {Label=Recipient Histor&y..., ActionClick=MniMaintain_Click}
         actMaintainFinanceReports: {Label=Finance Report&s..., ActionClick=MniMaintain_Click}
         actMaintainBankAccounts: {Label=Ban&k Accounts..., ActionClick=MniMaintain_Click}
-        actMaintainGiftReceipting: {Label=&Gift Receipting..., ActionClick=MniMaintain_Click}
+        actMaintainGiftReceipting: {Label=&Gift Processing..., ActionClick=MniMaintain_Click}
         actMaintainFinanceDetails: {Label=&Finance Details..., ActionClick=MniMaintain_Click, Image: FinanceDetails.ico}        
         
         actMailingGenerateExtract: {Label=&Generate Extract From Found Partners..., ActionClick=MniMailing_Click}
@@ -77,13 +81,19 @@ RootNode:
         tabPartnerFindMethods:
             Dock: Fill
             Controls: [tpgFindPartner, tpgFindBankDetails]
+            ActionClick: TabChanged
         tpgFindPartner:
             Label: Find by Partner Details
             Controls: [ucoFindByPartnerDetails]
         ucoFindByPartnerDetails:
             Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails
             Dock: Fill
-        tpgFindBankDetails: {Label=Find by Bank Details}
+        tpgFindBankDetails:
+            Label: Find by Bank Details
+            Controls: [ucoFindByBankDetails]
+        ucoFindByBankDetails:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails
+            Dock: Fill
         pnlModalButtons:
             ControlsOrientation: horizontal
             Dock: Bottom

@@ -2,435 +2,442 @@
 <!DOCTYPE reports SYSTEM "../../reports.dtd">
 <reports>
 
-	<report id="APAgedSupplierList">
-		<description>
-			
-		</description>
-		<reportparameters>
-			<reportparameter name="param_ledger_number_i"/>
-			<reportparameter name="param_date_selection"/>
-			<reportparameter name="param_date_selection30"/>
-			<reportparameter name="param_date_selection60"/>
-			<reportparameter name="param_date_selectionSub30"/>
-			<reportparameter name="param_show_invoices"/>
-			<reportparameter name="param_discounted_only"/>
-		</reportparameters>
-		
-		<reportheader/>
-		
-		<pageheader>
-			<field whichfield="title1">
-				<fielddetail condition="eq({param_discounted_only}, false)">
-					<value text ="AP - Aged Supplier List" />
-				</fielddetail>
-				<fielddetail condition="eq({param_discounted_only}, true)">
-					<value text ="AP - Aged Supplier List for Discount" />
-				</fielddetail>
-			</field>
-			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
-			<field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
-				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
-			</field>
-			
-			<field whichfield="period1">
-				<value text="Selected Date: "/>
-				<value variable="param_date_selection"/>
-			</field>
-		</pageheader>
-		
-		<calculations>		
-			
-			<calculation id="SelectCurrencies" returns="Currency" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT DISTINCT
-							PUB_a_ap_supplier.a_currency_code_c AS Currency
-						FROM
-							PUB_a_ap_document,
-							PUB_a_ap_supplier,
-							PUB_p_partner
-						WHERE
-								PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
-							AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
-							AND PUB_a_ap_document.a_document_status_c &lt;&gt; "CANCELLED"
-							AND PUB_a_ap_document.a_document_status_c &lt;&gt; "PAID"
-							
-							AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_discounted_only}, true)">
-						<value>
-							AND PUB_a_ap_document.a_discount_days_i &gt; 0
-						</value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-							ORDER BY
-								PUB_a_ap_supplier.a_currency_code_c
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectSupplier" returns="SupplierName, SupplierKey" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT DISTINCT
-							PUB_p_partner.p_partner_short_name_c AS SupplierName,
-							PUB_a_ap_document.p_partner_key_n AS SupplierKey
-						FROM
-							PUB_a_ap_document,
-							PUB_a_ap_supplier,
-							PUB_p_partner
-						WHERE
-								PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
-							AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
-							AND PUB_a_ap_document.a_document_status_c &lt;&gt; "CANCELLED"
-							AND PUB_a_ap_document.a_document_status_c &lt;&gt; "PAID"
-							
-							AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
-							AND PUB_a_ap_supplier.a_currency_code_c = {Currency}
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_discounted_only}, true)">
-						<value>
-							AND PUB_a_ap_document.a_discount_days_i &gt; 0
-						</value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-							ORDER BY
-								PUB_p_partner.p_partner_short_name_c
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectDetails" returns="automatic" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT
-							PUB_a_ap_document.a_total_amount_n AS APAmount,
-							PUB_a_ap_document.a_ap_number_i AS APNumber,
-							PUB_a_ap_document.a_credit_note_flag_l AS IsCredit,
-							PUB_a_ap_document.a_date_issued_d AS IssueDate,
-							PUB_a_ap_document.a_credit_terms_i AS CreditTerms,
-							PUB_a_ap_document.a_document_code_c AS DocumentCode,
-							PUB_a_ap_document.a_reference_c AS Reference,
-							PUB_a_ap_document.a_discount_days_i AS DiscountDays,
-							PUB_a_ap_supplier.a_currency_code_c
-						FROM
-							PUB_a_ap_document,
-							PUB_a_ap_supplier,
-							PUB_p_partner
-						WHERE
-								PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
-							AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
-							AND PUB_a_ap_document.a_document_status_c &lt;&gt; "CANCELLED"
-							AND PUB_a_ap_document.a_document_status_c &lt;&gt; "PAID"
-							
-							AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
-							
-							AND PUB_p_partner.p_partner_short_name_c = {SupplierName}
-							AND PUB_a_ap_document.p_partner_key_n = {{SupplierKey}}
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_discounted_only}, true)">
-						<value>
-							AND PUB_a_ap_document.a_discount_days_i &gt; 0
-						</value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-							ORDER BY
-								PUB_a_ap_document.a_date_issued_d,
-								PUB_a_ap_document.a_credit_terms_i
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectPaymentAmount" returns="PaidAmount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT
-							SUM (PUB_a_ap_document_payment.a_amount_n) AS PaidAmount
-						FROM
-							PUB_a_ap_document_payment
-						WHERE
-								PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_ap_document_payment.a_ap_number_i = {{APNumber}}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="CalculateAmount" returns="NetAmount" returnsFormat="amount">
-				<query>
-					<queryDetail condition="not(not({IsCredit}))">
-						<value function="assign(NetAmount, sub(mul({APAmount}, -1), {PaidAmount}))"/>
-					</queryDetail>
-					<queryDetail condition="not({IsCredit})">
-						<value function="assign(NetAmount, sub({APAmount}, {PaidAmount}))"/>
-					</queryDetail>
-					<queryDetail>
-						<value function="assign(DueDate, addDays({IssueDate}, {{CreditTerms}}))"/>
-					</queryDetail>
-					<!-- Hide the Rows if we don't show the invoices -->
-					<queryDetail condition="eq({param_show_invoices}, false)">
-						<value function="ConditionRow(false)"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="Overdue" returnsFormat="currency" returns="amount">
-				<caption><value text="Overdue"/></caption>
-				<query>
-					<queryDetail condition="and(gt({DueDate}, {param_date_selectionSub30}), le({DueDate}, {param_date_selection}))">
-						<value variable="NetAmount"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Overdue 30+" returnsFormat="currency" returns="amount">
-				<caption><value text="Overdue 30+"/></caption>
-				<query>
-					<queryDetail condition="le({DueDate}, {param_date_selectionSub30})">
-						<value variable="NetAmount"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Due" returnsFormat="currency" returns="amount">
-				<caption><value text="Due"/></caption>
-				<query>
-					<queryDetail condition="and(gt({DueDate}, {param_date_selection}), le({DueDate}, {param_date_selection30}))">
-						<value variable="NetAmount"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Due 30+" returnsFormat="currency" returns="amount">
-				<caption><value text="Due 30+"/></caption>
-				<query>
-					<queryDetail condition="and(gt({DueDate}, {param_date_selection30}), le({DueDate}, {param_date_selection60}))">
-						<value variable="NetAmount"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Due 60+" returnsFormat="currency" returns="amount">
-				<caption><value text="Due 60+"/></caption>
-				<query>
-					<queryDetail condition="gt({DueDate}, {param_date_selection60})">
-						<value variable="NetAmount"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Total Due" returnsFormat="currency" returns="amount">
-				<caption><value text="Total Due"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="NetAmount"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Reference" returnsFormat="text" returns="text">
-				<caption><value text="Reference"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="Reference"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Document Code" returnsFormat="text" returns="text">
-				<caption><value text="Document Code"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="DocumentCode"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Supplier" returnsFormat="text" returns="text">
-				<caption><value text="Supplier"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="SupplierName"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="Discount" returnsFormat="text" returns="text">
-				<caption><value text=" "/></caption>
-				<query>
-					<queryDetail>
-						<value text=" "/>
-					</queryDetail>
-					<queryDetail condition="gt({DiscountDays}, 0)">
-						<value text="D"/>
-					</queryDetail>
-				</query>
-			</calculation>
+  <report id="APAgedSupplierList">
+    <description>
 
-		</calculations>
-		
-		<levels>
-		<level name="main">
-			<detail>
-				<lowerLevelReport level="main1"/>
-			</detail>
-		</level> <!-- main -->
-		
-		<level name="main1">
-			<detail>
-				<lowerLevelReport level="CurrencyLevel" calculation="SelectCurrencies"/>
-			</detail>
-			<footer space="below">
-				<switch>
-					<case condition="eq({param_show_invoices}, true)">
-						<field whichfield="column 0">
-							<value text="D = Discount"/>
-						</field>
-					</case>
-				</switch>
-			</footer>
-		</level>
-		
-		<level name="CurrencyLevel">
-			<header>
-				<field whichfield="header 0" pos="0cm" width="10cm">
-					<value text="Currency: "/>
-					<value variable="Currency"/>
-				</field>
-			</header>
-			<detail>
-				<lowerLevelReport level="SupplierLevel" calculation="SelectSupplier"/>
-			</detail>
-			<footer line="below" space="below">
-				<switch>
-					<case condition="eq({param_show_invoices}, true)">
-						<field whichfield="column 0">
-							<value variable="Currency"/>
-						</field>
-						<field whichfield="column 3" line="above">
-							<value function="getSumLower2Report({{lineId}}, 3)"/>
-						</field>
-						<field whichfield="column 4" line="above">
-							<value function="getSumLower2Report({{lineId}}, 4)"/>
-						</field>
-						<field whichfield="column 5" line="above">
-							<value function="getSumLower2Report({{lineId}}, 5)"/>
-						</field>
-						<field whichfield="column 6" line="above">
-							<value function="getSumLower2Report({{lineId}}, 6)"/>
-						</field>
-						<field whichfield="column 7" line="above">
-							<value function="getSumLower2Report({{lineId}}, 7)"/>
-						</field>
-						<field whichfield="column 8" line="above">
-							<value function="getSumLower2Report({{lineId}}, 8)"/>
-						</field>
-					</case>
-					<case condition="eq({param_show_invoices}, false)">
-						<field whichfield="column 0">
-							<value variable="Currency"/>
-						</field>
-						<field whichfield="column 1" line="above">
-							<value function="getSumLower2Report({{lineId}}, 1)"/>
-						</field>
-						<field whichfield="column 2" line="above">
-							<value function="getSumLower2Report({{lineId}}, 2)"/>
-						</field>
-						<field whichfield="column 3" line="above">
-							<value function="getSumLower2Report({{lineId}}, 3)"/>
-						</field>
-						<field whichfield="column 4" line="above">
-							<value function="getSumLower2Report({{lineId}}, 4)"/>
-						</field>
-						<field whichfield="column 5" line="above">
-							<value function="getSumLower2Report({{lineId}}, 5)"/>
-						</field>
-						<field whichfield="column 6" line="above">
-							<value function="getSumLower2Report({{lineId}}, 6)"/>
-						</field>
-					</case>
-				</switch>
-			</footer>
-		</level>
-		
-		<level name="SupplierLevel">
-			<header>
-				<field whichfield="header 0" pos="0cm" width="8cm">
-					<value text="Supplier: "/>
-					<value variable="SupplierKey" format="partnerKey"/>
-					<value text=" "/>
-					<value variable="SupplierName"/>
-					<value function="ConditionRow(true)"/>
-				</field>
-			</header>
-			<detail>
-				<lowerLevelReport level="DetailLevel" calculation="SelectDetails"/>
-			</detail>
-			<footer space="below">
-				<switch>
-					<case condition="eq({param_show_invoices}, true)">
-						<field whichfield="column 3" line="above">
-							<value function="getSumLowerReport({{lineId}}, 3)"/>
-						</field>
-						<field whichfield="column 4" line="above">
-							<value function="getSumLowerReport({{lineId}}, 4)"/>
-						</field>
-						<field whichfield="column 5" line="above">
-							<value function="getSumLowerReport({{lineId}}, 5)"/>
-						</field>
-						<field whichfield="column 6" line="above">
-							<value function="getSumLowerReport({{lineId}}, 6)"/>
-						</field>
-						<field whichfield="column 7" line="above">
-							<value function="getSumLowerReport({{lineId}}, 7)"/>
-						</field>
-						<field whichfield="column 8" line="above">
-							<value function="getSumLowerReport({{lineId}}, 8)"/>
-						</field>
-					</case>
-					<case condition="eq({param_show_invoices}, false)">
-						<field whichfield="column 0">
-							<value variable="SupplierKey"/>
-							<value text=" "/>
-							<value variable="SupplierName"/>
-						</field>
-						<field whichfield="column 1">
-							<value function="getSumLowerReport({{lineId}}, 1)"/>
-						</field>
-						<field whichfield="column 2">
-							<value function="getSumLowerReport({{lineId}}, 2)"/>
-						</field>
-						<field whichfield="column 3">
-							<value function="getSumLowerReport({{lineId}}, 3)"/>
-						</field>
-						<field whichfield="column 4">
-							<value function="getSumLowerReport({{lineId}}, 4)"/>
-						</field>
-						<field whichfield="column 5">
-							<value function="getSumLowerReport({{lineId}}, 5)"/>
-						</field>
-						<field whichfield="column 6">
-							<value function="getSumLowerReport({{lineId}}, 6)"/>
-						</field>
-					</case>
-				</switch>
-			</footer>
-		</level>
-		
-		<level name="DetailLevel">
-			<detail>
-				<field whichfield="left 0" calculation="SelectPaymentAmount"/>
-				<field whichfield="columns" calculation="CalculateAmount"/>
-			</detail>
-		</level>
-		
-		</levels>
-	</report>
+    </description>
+    <reportparameters>
+      <reportparameter name="param_ledger_number_i"/>
+      <reportparameter name="param_date_selection"/>
+      <reportparameter name="param_date_selection30"/>
+      <reportparameter name="param_date_selection60"/>
+      <reportparameter name="param_date_selectionSub30"/>
+      <reportparameter name="param_show_invoices"/>
+      <reportparameter name="param_discounted_only"/>
+    </reportparameters>
+    <reportheader/>
+
+    <pageheader>
+      <field whichfield="title1">
+        <fielddetail condition="eq({param_discounted_only}, false)">
+          <value text ="AP - Aged Supplier List" />
+        </fielddetail>
+        <fielddetail condition="eq({param_discounted_only}, true)">
+          <value text ="AP - Aged Supplier List for Discount" />
+        </fielddetail>
+      </field>
+
+      <field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+      <field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+        <value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+
+      <field whichfield="period1">
+        <value text="Selected Date: "/>
+        <value variable="param_date_selection"/>
+      </field>
+    </pageheader>
+
+    <calculations>
+
+      <calculation id="SelectCurrencies" returns="Currency" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT DISTINCT
+              PUB_a_ap_supplier.a_currency_code_c AS Currency
+            FROM
+              PUB_a_ap_document,
+              PUB_a_ap_supplier,
+              PUB_p_partner
+            WHERE
+                PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
+              AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'CANCELLED'
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'PAID'
+              
+              AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_discounted_only}, true)">
+            <value>
+              AND PUB_a_ap_document.a_discount_days_i &gt; 0
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+              ORDER BY
+                PUB_a_ap_supplier.a_currency_code_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectSupplier" returns="SupplierName, SupplierKey" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT DISTINCT
+              PUB_p_partner.p_partner_short_name_c AS SupplierName,
+              PUB_a_ap_document.p_partner_key_n AS SupplierKey
+            FROM
+              PUB_a_ap_document,
+              PUB_a_ap_supplier,
+              PUB_p_partner
+            WHERE
+                PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
+              AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'CANCELLED'
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'PAID'
+              AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
+              AND PUB_a_ap_supplier.a_currency_code_c = {Currency}
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_discounted_only}, true)">
+            <value>
+              AND PUB_a_ap_document.a_discount_days_i &gt; 0
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+              ORDER BY
+                PUB_p_partner.p_partner_short_name_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectDetails" returns="automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT
+              PUB_a_ap_document.a_ap_document_id_i AS DocId,
+              PUB_a_ap_document.a_total_amount_n AS APAmount,
+              PUB_a_ap_document.a_ap_number_i AS APNumber,
+              PUB_a_ap_document.a_credit_note_flag_l AS IsCredit,
+              PUB_a_ap_document.a_date_issued_d AS IssueDate,
+              PUB_a_ap_document.a_credit_terms_i AS CreditTerms,
+              PUB_a_ap_document.a_document_code_c AS DocumentCode,
+              PUB_a_ap_document.a_reference_c AS Reference,
+              PUB_a_ap_document.a_discount_days_i AS DiscountDays,
+              PUB_a_ap_supplier.a_currency_code_c
+            FROM
+              PUB_a_ap_document,
+              PUB_a_ap_supplier,
+              PUB_p_partner
+            WHERE
+                PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
+              AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'CANCELLED'
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'PAID'
+              AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
+              AND PUB_p_partner.p_partner_short_name_c = {SupplierName}
+              AND PUB_a_ap_document.p_partner_key_n = {{SupplierKey}}
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_discounted_only}, true)">
+            <value>
+              AND PUB_a_ap_document.a_discount_days_i &gt; 0
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+              ORDER BY
+                PUB_a_ap_document.a_date_issued_d,
+                PUB_a_ap_document.a_credit_terms_i
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectPaymentAmount" returns="PaidAmount" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT
+              SUM (PUB_a_ap_document_payment.a_amount_n) AS PaidAmount
+            FROM
+              PUB_a_ap_document_payment
+            WHERE
+                PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document_payment.a_ap_document_id_i = {{DocId}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="CalculateAmount" returns="NetAmount" returnsFormat="amount">
+        <query>
+          <queryDetail condition="not(not({IsCredit}))">
+            <value function="assign(NetAmount, sub(mul({APAmount}, -1), {PaidAmount}))"/>
+          </queryDetail>
+          <queryDetail condition="not({IsCredit})">
+            <value function="assign(NetAmount, sub({APAmount}, {PaidAmount}))"/>
+          </queryDetail>
+          <queryDetail>
+            <value function="assign(DueDate, addDays({IssueDate}, {{CreditTerms}}))"/>
+          </queryDetail>
+          <!-- Hide the Rows if we don't show the invoices -->
+          <queryDetail condition="eq({param_show_invoices}, false)">
+            <value function="ConditionRow(false)"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Overdue" returnsFormat="currency" returns="amount">
+        <caption><value text="Overdue"/></caption>
+        <query>
+          <queryDetail condition="and(gt({DueDate}, {param_date_selectionSub30}), le({DueDate}, {param_date_selection}))">
+            <value variable="NetAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Overdue 30+" returnsFormat="currency" returns="amount">
+        <caption><value text="Overdue 30+"/></caption>
+        <query>
+          <queryDetail condition="le({DueDate}, {param_date_selectionSub30})">
+            <value variable="NetAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Due" returnsFormat="currency" returns="amount">
+        <caption><value text="Due"/></caption>
+        <query>
+          <queryDetail condition="and(gt({DueDate}, {param_date_selection}), le({DueDate}, {param_date_selection30}))">
+            <value variable="NetAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Due 30+" returnsFormat="currency" returns="amount">
+        <caption><value text="Due 30+"/></caption>
+        <query>
+          <queryDetail condition="and(gt({DueDate}, {param_date_selection30}), le({DueDate}, {param_date_selection60}))">
+            <value variable="NetAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Due 60+" returnsFormat="currency" returns="amount">
+        <caption><value text="Due 60+"/></caption>
+        <query>
+          <queryDetail condition="gt({DueDate}, {param_date_selection60})">
+            <value variable="NetAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Total Due" returnsFormat="currency" returns="amount">
+        <caption><value text="Total Due"/></caption>
+        <query>
+          <queryDetail>
+            <value variable="NetAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Reference" returnsFormat="text" returns="text">
+        <caption><value text="Reference"/></caption>
+        <query>
+          <queryDetail>
+            <value variable="Reference"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Document Code" returnsFormat="text" returns="text">
+        <caption><value text="Document Code"/></caption>
+        <query>
+          <queryDetail>
+            <value variable="DocumentCode"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Supplier" returnsFormat="text" returns="text">
+        <caption><value text="Supplier"/></caption>
+        <query>
+          <queryDetail>
+            <value variable="SupplierName"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Discount" returnsFormat="text" returns="text">
+        <caption><value text=" "/></caption>
+        <query>
+          <queryDetail>
+            <value text=" "/>
+          </queryDetail>
+          <queryDetail condition="gt({DiscountDays}, 0)">
+            <value text="D"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+    </calculations>
+
+    <levels>
+    <level name="main">
+      <detail>
+        <lowerLevelReport level="main1"/>
+      </detail>
+    </level> <!-- main -->
+
+    <level name="main1">
+      <detail>
+        <lowerLevelReport level="CurrencyLevel" calculation="SelectCurrencies"/>
+      </detail>
+      <footer space="below">
+        <switch>
+          <case condition="eq({param_show_invoices}, true)">
+            <field whichfield="column 0">
+              <value text="D = Discount"/>
+            </field>
+          </case>
+        </switch>
+      </footer>
+    </level>
+
+    <level name="CurrencyLevel">
+      <header>
+        <field whichfield="header 0" pos="0cm" width="10cm">
+          <value text="Currency: "/>
+          <value variable="Currency"/>
+        </field>
+      </header>
+      <detail>
+        <lowerLevelReport level="SupplierLevel" calculation="SelectSupplier"/>
+      </detail>
+      <footer line="below" space="below">
+        <switch>
+          <case condition="eq({param_show_invoices}, true)">
+            <field whichfield="column 0">
+              <value variable="Currency"/>
+            </field>
+            <field whichfield="column 3" line="above">
+              <value function="getSumLower2Report({{lineId}}, 3)"/>
+            </field>
+            <field whichfield="column 4" line="above">
+              <value function="getSumLower2Report({{lineId}}, 4)"/>
+            </field>
+            <field whichfield="column 5" line="above">
+              <value function="getSumLower2Report({{lineId}}, 5)"/>
+            </field>
+            <field whichfield="column 6" line="above">
+              <value function="getSumLower2Report({{lineId}}, 6)"/>
+            </field>
+            <field whichfield="column 7" line="above">
+              <value function="getSumLower2Report({{lineId}}, 7)"/>
+            </field>
+            <field whichfield="column 8" line="above">
+              <value function="getSumLower2Report({{lineId}}, 8)"/>
+            </field>
+          </case>
+          <case condition="eq({param_show_invoices}, false)">
+            <field whichfield="column 0">
+              <value variable="Currency"/>
+            </field>
+            <field whichfield="column 1" line="above">
+              <value function="getSumLower2Report({{lineId}}, 1)"/>
+            </field>
+            <field whichfield="column 2" line="above">
+              <value function="getSumLower2Report({{lineId}}, 2)"/>
+            </field>
+            <field whichfield="column 3" line="above">
+              <value function="getSumLower2Report({{lineId}}, 3)"/>
+            </field>
+            <field whichfield="column 4" line="above">
+              <value function="getSumLower2Report({{lineId}}, 4)"/>
+            </field>
+            <field whichfield="column 5" line="above">
+              <value function="getSumLower2Report({{lineId}}, 5)"/>
+            </field>
+            <field whichfield="column 6" line="above">
+              <value function="getSumLower2Report({{lineId}}, 6)"/>
+            </field>
+          </case>
+        </switch>
+      </footer>
+    </level>
+
+    <level name="SupplierLevel">
+      <header>
+        <field whichfield="header 0" pos="0cm" width="8cm">
+          <value text="Supplier: "/>
+          <value variable="SupplierKey" format="partnerKey"/>
+          <value text=" "/>
+          <value variable="SupplierName"/>
+          <value condition="ConditionRow(true)" text =""/>
+        </field>
+      </header>
+      <detail>
+        <lowerLevelReport level="DetailLevel" calculation="SelectDetails"/>
+      </detail>
+      <footer space="below">
+        <switch>
+          <case condition="eq({param_show_invoices}, true)">
+            <field whichfield="column 3" line="above">
+              <value function="getSumLowerReport({{lineId}}, 3)"/>
+            </field>
+            <field whichfield="column 4" line="above">
+              <value function="getSumLowerReport({{lineId}}, 4)"/>
+            </field>
+            <field whichfield="column 5" line="above">
+              <value function="getSumLowerReport({{lineId}}, 5)"/>
+            </field>
+            <field whichfield="column 6" line="above">
+              <value function="getSumLowerReport({{lineId}}, 6)"/>
+            </field>
+            <field whichfield="column 7" line="above">
+              <value function="getSumLowerReport({{lineId}}, 7)"/>
+            </field>
+            <field whichfield="column 8" line="above">
+              <value function="getSumLowerReport({{lineId}}, 8)"/>
+            </field>
+          </case>
+          <case condition="eq({param_show_invoices}, false)">
+            <field whichfield="column 0">
+              <value variable="SupplierKey"/>
+              <value text=" "/>
+              <value variable="SupplierName"/>
+            </field>
+            <field whichfield="column 1">
+              <value function="getSumLowerReport({{lineId}}, 1)"/>
+            </field>
+            <field whichfield="column 2">
+              <value function="getSumLowerReport({{lineId}}, 2)"/>
+            </field>
+            <field whichfield="column 3">
+              <value function="getSumLowerReport({{lineId}}, 3)"/>
+            </field>
+            <field whichfield="column 4">
+              <value function="getSumLowerReport({{lineId}}, 4)"/>
+            </field>
+            <field whichfield="column 5">
+              <value function="getSumLowerReport({{lineId}}, 5)"/>
+            </field>
+            <field whichfield="column 6">
+              <value function="getSumLowerReport({{lineId}}, 6)"/>
+            </field>
+          </case>
+        </switch>
+      </footer>
+    </level>
+
+    <level name="DetailLevel">
+      <detail>
+        <field whichfield="left 0" calculation="SelectPaymentAmount"/>
+        <field whichfield="columns" calculation="CalculateAmount"/>
+      </detail>
+    </level>
+
+    </levels>
+  </report>
 </reports>

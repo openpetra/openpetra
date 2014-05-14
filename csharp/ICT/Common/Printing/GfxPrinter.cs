@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1077,6 +1077,11 @@ namespace Ict.Common.Printing
 
                 FMarginType = eMarginType.eCalculatedMargins;
             }
+
+            if (FHeight < 0)
+            {
+                throw new Exception("TGfxPrinter.SetPageSize: invalid paper size, height is negative");
+            }
         }
 
         /// <summary>
@@ -1177,8 +1182,19 @@ namespace Ict.Common.Printing
             }
 
             CurrentYPos = FTopMargin;
+            CurrentXPos = FLeftMargin;
+
             FPrinterLayout.PrintPageHeader();
+
+            float CurrentYPosBefore = CurrentYPos;
+            float CurrentXPosBefore = CurrentXPos;
             FPrinterLayout.PrintPageBody();
+
+            if ((CurrentYPosBefore == CurrentYPos) && (CurrentXPosBefore == CurrentXPos) && FEv.HasMorePages)
+            {
+                throw new Exception("failure printing, does not fit the page");
+            }
+
             FPrinterLayout.PrintPageFooter();
 
             if (AEv.PageSettings.PrinterSettings.PrintRange == PrintRange.SomePages)

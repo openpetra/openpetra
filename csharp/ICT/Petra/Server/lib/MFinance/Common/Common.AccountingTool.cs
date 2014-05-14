@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (blnReadyForTransaction)
                 {
-                    TVerificationException terminate = new TVerificationException(
+                    EVerificationException terminate = new EVerificationException(
                         "You cannot change the Date after you have created a journal!");
                     terminate.Context = "Common Accountig";
                     terminate.ErrorCode = "GL.CAT.01";
@@ -164,7 +164,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (!blnReadyForTransaction)
                 {
-                    TVerificationException terminate = new TVerificationException(
+                    EVerificationException terminate = new EVerificationException(
                         "You have to add a journal before you can change the JournalDescription!");
                     terminate.Context = "Common Accountig";
                     terminate.ErrorCode = "GL.CAT.02";
@@ -184,7 +184,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (!blnReadyForTransaction)
                 {
-                    TVerificationException terminate = new TVerificationException(
+                    EVerificationException terminate = new EVerificationException(
                         "You have to add a journal before you can change the TransactionTypeCode!");
                     terminate.Context = "Common Accountig";
                     terminate.ErrorCode = "GL.CAT.03";
@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (!blnReadyForTransaction)
                 {
-                    TVerificationException terminate = new TVerificationException(
+                    EVerificationException terminate = new EVerificationException(
                         "You have to add a journal before you can change the SubSystemCode!");
                     terminate.Context = "Common Accountig";
                     terminate.ErrorCode = "GL.CAT.04";
@@ -301,7 +301,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (!blnJournalIsInForeign)
             {
-                TVerificationException terminate = new TVerificationException(
+                EVerificationException terminate = new EVerificationException(
                     Catalog.GetString("You cannot account foreign currencies in a base journal!"));
                 terminate.Context = "Common Accountig";
                 terminate.ErrorCode = "GL.CAT.05";
@@ -323,11 +323,16 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (!blnReadyForTransaction)
             {
-                TVerificationException terminate = new TVerificationException(
+                EVerificationException terminate = new EVerificationException(
                     Catalog.GetString("You have to add a journal before you can add a transaction!"));
                 terminate.Context = "Common Accountig";
                 terminate.ErrorCode = "GL.CAT.06";
                 throw terminate;
+            }
+
+            if (AAccount.Trim().Length == 0)
+            {
+                throw new Exception("account code is empty");
             }
 
             if (blnJournalIsInForeign)
@@ -352,7 +357,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                     AAccount,
                                     accountCheck.ForeignCurrencyCode,
                                     getForeignCurrencyInfo.CurrencyCode);
-                                TVerificationException terminate = new TVerificationException(strMessage);
+                                EVerificationException terminate = new EVerificationException(strMessage);
                                 terminate.Context = "Common Accountig";
                                 terminate.ErrorCode = "GL.CAT.07";
                                 throw terminate;
@@ -430,13 +435,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
             }
 
-            TSubmitChangesResult submissionResult = GLBatchTDSAccess.SubmitChanges(
-                aBatchTable, out AVerifications);
-
-            if (submissionResult != TSubmitChangesResult.scrOK)
-            {
-                throw new ApplicationException("Batch could not be saved!");
-            }
+            GLBatchTDSAccess.SubmitChanges(aBatchTable);
 
             TGLPosting.PostGLBatch(
                 aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications);

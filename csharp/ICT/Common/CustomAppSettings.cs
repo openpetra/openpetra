@@ -27,6 +27,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Xml;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Common
 {
     /// <summary>
@@ -163,7 +165,7 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AFailOnMissingConfigFile">if this is true and there is no config file, an exception is raised; otherwise it returns false</param>
         /// <returns>TRUE if reading of the .NET Configuration File succeeded.</returns>
-        /// <exception cref="ApplicationException">Raised when it is not possible to load or
+        /// <exception cref="EOPAppException">Raised when it is not possible to load or
         /// XML-parse the .NET Configuration File.
         /// </exception>
         private bool LoadCustomAppSettingFile(bool AFailOnMissingConfigFile)
@@ -191,12 +193,12 @@ namespace Ict.Common
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Could not XML-parse the configuration file '" + FConfigFileName + "'.", exp);
+                    throw new EOPAppException("Could not XML-parse the configuration file '" + FConfigFileName + "'.", exp);
                 }
             }
             else if (AFailOnMissingConfigFile)
             {
-                throw new ApplicationException("Unable to load the configuration file '" + FConfigFileName + "'.");
+                throw new EOPAppException("Unable to load the configuration file '" + FConfigFileName + "'.");
             }
             else
             {
@@ -263,6 +265,7 @@ namespace Ict.Common
                 if (appsetting != null)
                 {
                     ReturnValue = appsetting.GetAttribute("value");
+//                  TLogging.Log("CustomAppSettings: " + AKey + " = " + ReturnValue);
                 }
                 else
                 {
@@ -270,10 +273,11 @@ namespace Ict.Common
                     {
                         try
                         {
-                            TLogging.Log("Cannot find " + AKey + " in command line options or in the config file " + FConfigFileName,
+                            TLogging.Log(
+                                "CustomAppSettings: Cannot find " + AKey + " in command line options or in the config file " + FConfigFileName,
                                 TLoggingType.ToConsole | TLoggingType.ToLogfile);
                         }
-                        catch (TNoLoggingToFile_WrongConstructorUsedException)
+                        catch (ENoLoggingToFile_WrongConstructorUsedException)
                         {
                             // ignore this Exception; it is thrown if TLogging was not initialised yet, which means no Log file is specified.
                         }
@@ -345,7 +349,7 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public static System.Int16 GetInt16(String AKey, System.Int16 ADefaultValue)
+        public static System.Int16 GetInt16(String AKey, System.Int16 ADefaultValue = -1)
         {
             System.Int16 ReturnValue;
             ReturnValue = ADefaultValue;
@@ -366,83 +370,55 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// read an integer value
-        /// </summary>
-        /// <param name="AKey">the name of the parameter</param>
-        /// <returns>the value of the parameter or -1 if the parameter does not exist on the command line or in the config file</returns>
-        public static System.Int16 GetInt16(String AKey)
-        {
-            return GetInt16(AKey, -1);
-        }
-
-        /// <summary>
-        /// return the Integer value of a parameter or its default value
+        /// Return the Integer value of a parameter or its default value
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public static System.Int32 GetInt32(String AKey, System.Int32 ADefaultValue)
+        public static System.Int32 GetInt32(String AKey, System.Int32 ADefaultValue = -1)
         {
-            System.Int32 ReturnValue;
-            ReturnValue = ADefaultValue;
-            try
+            Int32 ReturnValue;
+
+            if (!Int32.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue))
             {
-                ReturnValue = Convert.ToInt32(GetValue(AKey, (ADefaultValue == -1)));
-            }
-            catch (Exception)
-            {
+                ReturnValue = ADefaultValue;
+
                 if (ADefaultValue == -1)
                 {
                     // Caller wanted the Value and didn't specify a Default: log that
-                    TLogging.Log("Problem reading Int32 value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
+                    TLogging.Log("CustomAppSettings: Problem reading Int32 value from key " + AKey, TLoggingType.ToLogfile);
+                }
+                else
+                {
+//                  TLogging.Log("CustomAppSettings: Int32(" + AKey + ") not found - default: " + ReturnValue, TLoggingType.ToLogfile);
                 }
             }
+
             return ReturnValue;
         }
 
         /// <summary>
-        /// read an integer value
-        /// </summary>
-        /// <param name="AKey">the name of the parameter</param>
-        /// <returns>the value of the parameter or -1 if the parameter does not exist on the command line or in the config file</returns>
-        public static System.Int32 GetInt32(String AKey)
-        {
-            return GetInt32(AKey, -1);
-        }
-
-        /// <summary>
         /// return the Integer value of a parameter or its default value
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public static System.Int64 GetInt64(String AKey, System.Int64 ADefaultValue)
+        public static System.Int64 GetInt64(String AKey, System.Int64 ADefaultValue = -1)
         {
-            System.Int64 ReturnValue;
-            ReturnValue = ADefaultValue;
-            try
+            Int64 ReturnValue;
+
+            if (!Int64.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue))
             {
-                ReturnValue = Convert.ToInt64(GetValue(AKey, (ADefaultValue == -1)));
-            }
-            catch (Exception)
-            {
+                ReturnValue = ADefaultValue;
+
                 if (ADefaultValue == -1)
                 {
                     // Caller wanted the Value and didn't specify a Default: log that
                     TLogging.Log("Problem reading Int64 value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
                 }
             }
-            return ReturnValue;
-        }
 
-        /// <summary>
-        /// read an integer value
-        /// </summary>
-        /// <param name="AKey">the name of the parameter</param>
-        /// <returns>the value of the parameter or -1 if the parameter does not exist on the command line or in the config file</returns>
-        public static System.Int64 GetInt64(String AKey)
-        {
-            return GetInt64(AKey, -1);
+            return ReturnValue;
         }
 
         /// <summary>
@@ -452,17 +428,15 @@ namespace Ict.Common
         /// <returns>the value of the parameter or -1.0 if the parameter does not exist on the command line or in the config file</returns>
         public static float GetFloat(String AKey)
         {
-            float ReturnValue = -1.0f;
+            float ReturnValue;
 
-            try
+            if (!float.TryParse(GetValue(AKey), out ReturnValue))
             {
-                ReturnValue = (float)Convert.ToDouble(GetValue(AKey));
-            }
-            catch (Exception)
-            {
-                // Caller wanted the Value and didn't specify a Default: log that
+                ReturnValue = -1.0f;
+                // No default is possible:
                 TLogging.Log("Problem reading Double value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
             }
+
             return ReturnValue;
         }
 
@@ -472,16 +446,13 @@ namespace Ict.Common
         /// <returns>the value of the parameter or -1.0 if the parameter does not exist on the command line or in the config file</returns>
         public static double GetDouble(String AKey, double ADefault)
         {
-            double ReturnValue = -1.0f;
+            double ReturnValue;
 
-            try
-            {
-                ReturnValue = Convert.ToDouble(GetValue(AKey, false));
-            }
-            catch (Exception)
+            if (!double.TryParse(GetValue(AKey), out ReturnValue))
             {
                 ReturnValue = ADefault;
             }
+
             return ReturnValue;
         }
 

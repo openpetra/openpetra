@@ -33,6 +33,9 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}
     private int FCurrentRow;
 {#ENDIF SHOWDETAILS}
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDDECLARATIONS}
+{#ENDIF FILTERANDFIND}
 
     /// constructor
     public {#CLASSNAME}() : base()
@@ -68,6 +71,46 @@ namespace {#NAMESPACE}
         }
     }
 
+    /// <summary>
+    /// Can be used by the Form/Control which contains this UserControl to
+    /// suppress the Change Detection (using FPetraUtilsObject.SuppressChangeDetection = false).
+    /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
+    /// </summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>
+    /// Can be used by the Form/Control which contains this UserControl to
+    /// activate the Change Detection (using FPetraUtilsObject.SuppressChangeDetection = true).
+    /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
+    /// </summary>
+    public event System.EventHandler DataLoadingFinished;
+
+    /// <summary>
+    /// Raises the DataLoadingStarted Event if it is subscribed to.
+    /// </summary>
+    /// <param name="sender">Ignored.</param>
+    /// <param name="e">Ignored.</param>
+    private void OnDataLoadingStarted(object sender, EventArgs e)
+    {
+        if (DataLoadingStarted != null)
+        {
+            DataLoadingStarted(sender, e);
+        }
+    }
+
+    /// <summary>
+    /// Raises the DataLoadingFinished Event if it is subscribed to.
+    /// </summary>
+    /// <param name="sender">Ignored.</param>
+    /// <param name="e">Ignored.</param>
+    private void OnDataLoadingFinished(object sender, EventArgs e)
+    {
+        if (DataLoadingFinished != null)
+        {
+            DataLoadingFinished(sender, e);
+        }
+    }
+
     /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
@@ -82,6 +125,12 @@ namespace {#NAMESPACE}
       grdDetails.DataSource = myDataView;
       grdDetails.Columns.AutoSizeMode = Fill;
 
+{#IFDEF BUTTONPANEL}
+      FinishButtonPanelSetup();
+{#ENDIF BUTTONPANEL}
+{#IFDEF FILTERANDFIND}
+      SetupFilterAndFindControls();
+{#ENDIF FILTERANDFIND}
       ShowData();
     }
     
@@ -237,6 +286,7 @@ namespace {#NAMESPACE}
         {
             ARow.BeginEdit();
             {#SAVEDETAILS}
+            {#SAVEDETAILSEXTRA}
             ARow.EndEdit();
         }
     }
@@ -248,6 +298,38 @@ namespace {#NAMESPACE}
     }
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
+
+{#IFDEF BUTTONPANEL}
+    ///<summary>
+    /// Finish the set up of the Button Panel.
+    /// </summary>
+    private void FinishButtonPanelSetup()
+    {
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+        lblRecordCounter.AutoSize = true;
+        lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+        lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+        pnlButtonsRecordCounter.AutoSize = true;
+        
+        UpdateRecordNumberDisplay();
+    }
+    
+    private void UpdateRecordNumberDisplay()
+    {
+        int RecordCount;
+        
+        if (grdDetails.DataSource != null) 
+        {
+            RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            lblRecordCounter.Text = String.Format(Catalog.GetPluralString("{0} record", "{0} records", RecordCount, true), RecordCount);
+        }                
+    }
+{#ENDIF BUTTONPANEL}
+
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDMETHODS}
+{#ENDIF FILTERANDFIND}    
 
 #region Implement interface functions
     /// auto generated
@@ -301,3 +383,4 @@ namespace {#NAMESPACE}
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE findandfilter.cs}

@@ -47,6 +47,18 @@ namespace Ict.Tools.DataDumpPetra2
         private static TDataDefinitionStore storeOld = null;
         private static TDataDefinitionStore storeNew = null;
 
+        static int FBudgetSequenceNumber = 0;
+
+        /// <summary>
+        /// The new sequence number for a_budget after conversion
+        /// </summary>
+        static public int BudgetSequenceNumber {
+            set
+            {
+                FBudgetSequenceNumber = value;
+            }
+        }
+
         /// <summary>
         /// get the data structure for the version that should be upgraded
         /// </summary>
@@ -119,9 +131,9 @@ namespace Ict.Tools.DataDumpPetra2
 
             FileInfo info = new FileInfo(dumpFile + ".d.gz");
 
-            if (info.Length == 0)
+            // ignore empty files (with one exception)
+            if ((info.Length == 0) && (oldTableName != "p_partner_gift_destination"))
             {
-                // this table should be ignored
                 TLogging.Log("ignoring " + dumpFile + ".d.gz");
                 return;
             }
@@ -152,7 +164,9 @@ namespace Ict.Tools.DataDumpPetra2
             TTable oldTable = storeOld.GetTable(oldTableName);
 
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
-            if (oldTable == null)
+            // (except p_postcode_region_range, a_budget_revision and p_partner_gift_destination which are populated here)
+            if ((oldTable == null) && (newTable.strName != "p_postcode_region_range") && (newTable.strName != "a_budget_revision")
+                && (newTable.strName != "p_partner_gift_destination"))
             {
                 return;
             }
@@ -334,6 +348,9 @@ namespace Ict.Tools.DataDumpPetra2
 
             TSequenceWriter.InitSequences(GetStoreNew().GetSequences());
 
+            CreatePostcodeRegionRangeTable();
+            CreateGiftDestinationTable();
+
             if (ATableName.Length == 0)
             {
                 List <TTable>newTables = storeNew.GetTables();
@@ -356,6 +373,76 @@ namespace Ict.Tools.DataDumpPetra2
 
             TLogging.Log("Success: finished exporting the data");
             TTable.GEnabledLoggingMissingFields = true;
+        }
+
+        // creates p_postcode_region_range.d.gz and populates with data from p_postcode_region.d.gz
+        private void CreatePostcodeRegionRangeTable()
+        {
+            string dumpFile = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "p_postcode_region";
+            FileInfo FileName = new FileInfo(dumpFile + ".d.gz");
+
+            // new file is not needed if p_postcode_region.d.gz does not exist or is empty
+            if (!File.Exists(dumpFile + ".d.gz") || (FileName.Length == 0))
+            {
+                return;
+            }
+
+            Encoding ProgressFileEncoding;
+            string ProgressCodepage = TAppSettingsManager.GetValue("CodePage", Environment.GetEnvironmentVariable("PROGRESS_CP"));
+
+            try
+            {
+                ProgressFileEncoding = Encoding.GetEncoding(Convert.ToInt32(ProgressCodepage));
+            }
+            catch
+            {
+                ProgressFileEncoding = Encoding.GetEncoding(ProgressCodepage);
+            }
+
+            try
+            {
+                string FilePath = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                                  "p_postcode_region" + ".d.gz";
+                Stream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+                GZipInputStream gzipStream = new GZipInputStream(fs);
+                StreamReader MyReader = new StreamReader(gzipStream, ProgressFileEncoding);
+
+                FileStream outStream = File.Create(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                    "p_postcode_region_range" + ".d.gz");
+                Stream gzoStream = new GZipOutputStream(outStream);
+                StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
+
+                char[] block = new char[10000];
+                int count = 0;
+
+                // copy entire contents of p_postcode_region.d.gz to p_postcode_region_range.d.gz
+                while ((count = MyReader.ReadBlock(block, 0, block.Length)) != 0)
+                {
+                    MyWriter.Write(block, 0, count);
+                }
+
+                MyWriter.Close();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Memory usage: " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
+                TLogging.Log("WARNING Problems processing file " + "p_postcode_region_range" + ": " + e.ToString());
+            }
+
+            storeOld.AddTable(storeNew.GetTable("p_postcode_region_range"));
+        }
+
+        // creates p_partner_gift_destination.d.gz and leaves it blank
+        private void CreateGiftDestinationTable()
+        {
+            FileStream outStream = File.Create(
+                TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                "p_partner_gift_destination" + ".d.gz");
+
+            outStream.Close();
+
+            storeOld.AddTable(storeNew.GetTable("p_partner_gift_destination"));
         }
 
         /// <summary>
@@ -407,7 +494,25 @@ namespace Ict.Tools.DataDumpPetra2
                             GZipInputStream gzipStream = new GZipInputStream(fs);
                             StreamReader sr = new StreamReader(gzipStream);
 
-                            sw.Write(sr.ReadToEnd());
+                            string Sequence;
+
+                            while (true)
+                            {
+                                Sequence = sr.ReadLine();
+
+                                if (Sequence == null)
+                                {
+                                    break;
+                                }
+
+                                // update the sequence number for a_budget (which will have chaged during conversion)
+                                if (Sequence.Contains("seq_budget") && (FBudgetSequenceNumber > 0))
+                                {
+                                    Sequence = "SELECT pg_catalog.setval('seq_budget', " + FBudgetSequenceNumber + ", false);";
+                                }
+
+                                sw.WriteLine(Sequence);
+                            }
 
                             sr.Close();
                         }
@@ -484,7 +589,25 @@ namespace Ict.Tools.DataDumpPetra2
                             GZipInputStream gzipStream = new GZipInputStream(fs);
                             StreamReader sr = new StreamReader(gzipStream);
 
-                            sw.Write(sr.ReadToEnd());
+                            string Sequence;
+
+                            while (true)
+                            {
+                                Sequence = sr.ReadLine();
+
+                                if (Sequence == null)
+                                {
+                                    break;
+                                }
+
+                                // update the sequence number for a_budget (which will have chaged during conversion)
+                                if ((Sequence.Contains("seq_budget") && (FBudgetSequenceNumber > 0)) && (FBudgetSequenceNumber > 0))
+                                {
+                                    Sequence = "SELECT pg_catalog.setval('seq_budget', " + FBudgetSequenceNumber + ", false);";
+                                }
+
+                                sw.WriteLine(Sequence);
+                            }
 
                             sr.Close();
                         }

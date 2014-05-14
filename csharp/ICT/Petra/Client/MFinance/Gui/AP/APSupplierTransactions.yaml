@@ -6,66 +6,124 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: browse
     Template: windowFind
-    WindowWidth: 754
-    WindowHeight: 623
+    WindowWidth: 895
+    WindowHeight: 700
     Actions:
-        actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice}        
-        actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R, ActionClick=CreateCreditNote}
-        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedTransaction}
-        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5, ActionClick=ReverseSelected}
-        #actApproveTagged: {Label=&Approve Tagged, ShortCut=F6}
-        actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments}
-        actAddTaggedToPayment: {Label=Pay Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment}
-        actTagPayable: {ActionClick=TagAllPayable}
-        actTagPostable: {ActionClick=TagAllPostable}
-        actUntagAll: {Label=&Untag All, ActionClick=UntagAll}
+        actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice, Image=New_Record.ico, Tooltip=Create a new invoice relating to the current supplier}        
+        actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R, ActionClick=CreateCreditNote, Image=New_Credit.ico, Tooltip=Create a new credit note relating to the current supplier}
+        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedTransaction, Image=Edit_Record.ico, Tooltip=View details of the selected transaction}
+        actOpenTagged: {Label=Open Ta&gged, ShortCut=Ctrl+O, ActionClick=OpenTaggedDocuments, Tooltip=View details of all the tagged transactions}
+        actApproveTagged: {Label=&Approve Tagged, ShortCut=F6, ActionClick=ApproveTaggedDocuments, Tooltip=Approve all the tagged invoices}
+        actDeleteSelected: {Label=De&lete Selected, ShortCut=F5, ActionClick=DeleteSelected, Image=Delete_Record.ico, Tooltip=Delete the selected invoice/payment}
+        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5, ActionClick=ReverseSelected, Tooltip=Reverse the selected invoice/payment}
+        actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments, Tooltip=Post all the tagged invoices}
+        actAddTaggedToPayment: {Label=Pa&y Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment, Tooltip=Pay or part-pay all the tagged invoices}
+        #actTagPayable: {ActionClick=TagAllPayable}
+        #actTagPostable: {ActionClick=TagAllPostable}
+        actTagAll: {Label=&Tag All, ActionClick=TagAll, Tooltip=Tag all the rows in the grid}
+        actUntagAll: {Label=&Untag All, ActionClick=UntagAll, Tooltip=Untag all the rows in the grid}
         actReloadList: {ActionClick=DoRefreshButton}
         actReprintPaymentReport: {ActionClick=PaymentReport}
+        actEditFind: {ActionClick=MniFilterFind_Click, Image=Find.ico, Tooltip=Find a record that matches one or more criteria}
+        actEditFilter: {ActionClick=MniFilterFind_Click, Image=FilterActive.ico, Tooltip=Filter the displayed records by one or more criteria}
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlCurrentSupplierInfo, pnlFilter1, pnlFilter2, pnlButtons, grdResult, pnlDisplayedBalance]
+            Controls: [pnlHeader, pnlGrid, pnlOutstandingTotals, pnlButtons]
+        pnlHeader:
+            Controls: [pnlCurrentSupplierInfo, pnlHeaderButtons]
+            ControlsOrientation: horizontal
+            Height:40
+            Dock:Top
         pnlCurrentSupplierInfo:
             Controls: [txtSupplierName, txtSupplierCurrency]
             ControlsOrientation: horizontal
-            Dock:Top
+            Dock:Fill
+        pnlHeaderButtons:
+            Controls: [btnReloadList]
+            Width:120
+            Dock:Right
         txtSupplierName: {Label=Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
         txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
-        pnlDisplayedBalance: 
-            Controls: [txtDisplayedBalance]
-            Dock: Bottom
-        txtDisplayedBalance: {Label=Displayed Balance, ReadOnly=true}
-        pnlFilter1:
-#            Controls: [cmbType, cmbDate, cmbDateField]
-            Controls: [cmbType]
-            ControlsOrientation: horizontal
-            Dock:Top
-        cmbType: {Label=&Type}
-            OptionalValues: [=All, Invoice, Credit Note, Payment]
-            OnChange: TypeFilterChange
-#        cmbDate: {Label=&Date}
-#        cmbDateField: {Label=Date &Field}
-        pnlFilter2:
-            Controls: [cmbStatus, chkHideAgedTransactions]
-            ControlsOrientation: horizontal
-            Dock:Top
-        cmbStatus: {Label=&Status}
-            OptionalValues: [=All, OPEN,APPROVED,POSTED,PARTPAID,PAID]
-            OnChange: StatusFilterChange
-        chkHideAgedTransactions: {Label=Hide &Aged Transactions, CheckBoxAttachedLabel=right, OnChange=StatusFilterChange}
         pnlButtons:
-            Controls: [btnTagPostable, btnTagPayable, btnUntagAll, txtSumOfTagged, btnReloadList]
+            Controls: [btnTagAll, btnUntagAll, btnApproveTagged, btnPostTagged, btnAddTaggedToPayment, btnReverseSelected, btnDeleteSelected]
             ControlsOrientation: horizontal
-            Dock:Top
+            Dock:Bottom
+        pnlOutstandingTotals:
+            Controls: [grpOutstandingTotals]
+            Padding: 5,10,5,5
+            Height: 90
+            Dock: Bottom
+        grpOutstandingTotals:
+            Controls:
+                Row0: [txtSupplierBalance, txtFilteredBalance]
+                Row1: [txtTaggedBalance, txtTaggedCount]
+            Height: 70
+            Dock: Top
         #btnTagApprovable: {Label=Tag all Appro&vable}
-        btnTagPostable: {Label=Tag all P&ostable}
-        btnTagPayable: {Label=Tag all Paya&ble}
+        #btnTagPostable: {Label=Tag all P&ostable}
+        #btnTagPayable: {Label=Tag all Paya&ble}
+        btnTagAll:
         btnUntagAll:
-        txtSumOfTagged: {Label=Sum of Tagged, ReadOnly=true}
+        btnApproveTagged:
+        btnPostTagged:
+        btnAddTaggedToPayment:
+        btnReverseSelected:
+        btnDeleteSelected: {Width=120}
+        txtSupplierBalance: {Label=All outstanding transactions, ReadOnly=true}
+        txtFilteredBalance: {Label=Displayed transactions, ReadOnly=true}
+        txtTaggedBalance: {Label=Tagged transactions, ReadOnly=true}
+        txtTaggedCount: {Label=Tagged items, ReadOnly=true, Width=40}
         btnReloadList: {Label=Reload List}
+        pnlGrid: 
+            Dock: Fill
+            Controls: [pnlFilterAndFind, grdResult]
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 185
+            InitiallyExpanded: true     
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            FilterControls: [pnlFilterControls]
+            FindControls: [pnlFindControls]
+            ControlAttributes:
+                dtpDate-1: {Comparison=gte, Label=From Date}
+                dtpDate-2: {Comparison=lte, Label=To Date}
+            Panels:
+                pnlFilterControls:
+                    Controls: [rgrStatus, rgrHistory, cmbTransactionType, cmbStatus]
+                    rgrStatus: 
+                        Label: Status and Tagging
+                        ClearButton: false
+                        OptionalValues: [=AllStatus, ForApproval, ForPosting, ForPaying]
+                    rbtAllStatus: {Text=All, OnChange=StatusFilterChange}
+                    rbtForApproval: {OnChange=StatusFilterChange}
+                    rbtForPosting: {OnChange=StatusFilterChange}
+                    rbtForPaying: {OnChange=StatusFilterChange}
+                    rgrHistory: 
+                        #Label: History
+                        ClearButton: false
+                        OptionalValues: [=AllHistory, Recent, LastQuarter, LastSixMonths, LastYear]
+                    rbtAllHistory: {Text=All, OnChange=HistoryFilterChange}
+                    rbtRecent: {OnChange=HistoryFilterChange}
+                    rbtLastQuarter: {OnChange=HistoryFilterChange}
+                    rbtLastSixMonths: {OnChange=HistoryFilterChange}
+                    rbtLastYear: {OnChange=HistoryFilterChange}
+                    cmbTransactionType: {OnChange=TypeFilterChange}
+                        OptionalValues: [Invoice, Credit Note, Payment]
+                    cmbStatus: {OnChange=StatusFilterChange}
+                        OptionalValues: [OPEN,APPROVED,CANCELLED,POSTED,PARTPAID,PAID]
+                pnlFindControls:
+                    Controls: [cmbTransactionType, cmbStatus, dtpDate-1, dtpDate-2]
+                    cmbTransactionType:
+                        OptionalValues: [Invoice, Credit Note, Payment]
+                    cmbStatus:
+                        OptionalValues: [OPEN,APPROVED,POSTED,PARTPAID,PAID]
+                    dtpDate-1:
+                    dtpDate-2:
         grdResult: 
             Dock: Fill
             ActionDoubleClick: actOpenSelected
+            ActionEnterKeyPressed: actOpenSelected
     Menu:
         mniFile:
             mniReloadList:
@@ -73,25 +131,35 @@ RootNode:
             mniReprintRemittanceAdvice: {Label=Reprint Re&mittance Advice}
             mniReprintCheque: {Label=Reprint &Cheque}
             mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
+        mniEdit:
+            Label:&Edit
+            mniEditFilter: 
+              Label:Filte&r...
+              ActionClick:MniFilterFind_Click
+            mniEditFind: 
+              Label:&Find...
+              ActionClick:MniFilterFind_Click
         mniAction:
-            Label: &Action
+            Label: Tran&saction
             mniActionNew:
-                Label: &New...
-                mniNewInvoice:
-                mniNewCreditNote:
+                Label: &New
+                mniNewInvoice: {Label=&Invoice...}
+                mniNewCreditNote: {Label=&Credit Note...}
             mniOpenSelected:
-            mniSeparator: {Label=-}
             mniReverseSelected:
+            mniDeleteSelected:
+            mniSeparator: {Label=-}
+            mniOpenTagged:
             mniApproveTagged:
             mniPostTagged:
             mniAddTaggedToPayment:
     Toolbar:
         tbbNewInvoice:
         tbbNewCreditNote:
-        tbbSeparator: {Label=-}
-        tbbOpenSelected:
-        tbbReverseSelected:
-        tbbSeparator: {Label=-}
+        #tbbSeparator: {Label=-}
+        #tbbOpenSelected:
+        #tbbReverseSelected:
+        #tbbSeparator: {Label=-}
         #tbbApproveTagged:
-        tbbPostTagged:
-        tbbAddTaggedToPayment:
+        #tbbPostTagged:
+        #tbbAddTaggedToPayment:

@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbIncludeSpecialTypes.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Code"), NewTable.Columns[ValueMember], 100);
             clbIncludeSpecialTypes.AddTextColumn(Catalog.GetString("Type Description"), NewTable.Columns[DisplayMember], 320);
-            clbIncludeSpecialTypes.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            clbIncludeSpecialTypes.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>
@@ -79,6 +79,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
                 tabReportSettings.Controls.Remove(tpgReportSorting);
+            }
+            else
+            {
+                ucoChkFilter.ShowMailingAddressesOnly(false);
             }
 
             // enable autofind in list for first character (so the user can press character to find list entry)

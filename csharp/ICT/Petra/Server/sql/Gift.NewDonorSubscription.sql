@@ -10,8 +10,8 @@ SELECT PUB_a_gift.*,
 FROM PUB_p_subscription, PUB_p_partner, PUB_p_partner AS RecipientPartner, PUB_a_gift_batch, PUB_a_gift, PUB_a_gift_detail, PUB_m_extract_master, PUB_m_extract
 WHERE PUB_p_partner.p_partner_key_n = PUB_p_subscription.p_partner_key_n
 AND PUB_p_subscription.p_publication_code_c = ?
-AND PUB_p_subscription.p_subscription_status_c = "PERMANENT"
-AND PUB_p_subscription.p_reason_subs_given_code_c = "DONATION"
+AND PUB_p_subscription.p_subscription_status_c = 'PERMANENT'
+AND PUB_p_subscription.p_reason_subs_given_code_c = 'DONATION'
 AND PUB_p_subscription.p_start_date_d >= ?
 AND PUB_p_subscription.p_start_date_d <= ?
 AND PUB_a_gift.p_donor_key_n = PUB_p_subscription.p_partner_key_n

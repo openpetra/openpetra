@@ -30,13 +30,17 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Data;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Logic;
@@ -44,6 +48,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Client.MPersonnel.Gui.Setup;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -103,6 +108,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private String FNewPartnerAcquisitionCode;
         private Boolean FNewPartnerPrivatePartner;
         private Boolean FNewPartnerShowNewPartnerDialog;
+        private String FCallerContext = "";
         private TPartnerEditTabPageEnum FShowTabPage;
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private Boolean FUppperPartInitiallyCollapsed;
@@ -134,6 +140,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
             "and then delete the Partner from the Partner Module screen.");
         private static readonly string StrCannotDeletePartnerTitle = Catalog.GetString("Cannot delete Partner that has unsaved changes");
+        private static readonly string StrCannotPrintPartner = Catalog.GetString(
+            "Cannot print a Partner with unsaved changes.\r\n\r\n" +
+            "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
+            "and reopen.");
+        private static readonly string StrCannotPrintPartnerTitle = Catalog.GetString("Cannot print a Partner with unsaved changes");
 // TODO        private static readonly string StrDownloadVideoTutorialTitle = Catalog.GetString("Download Video Tutorial");
 // TODO        private static readonly string StrDownloadVideoTutoriaManuallTitle = Catalog.GetString("Manual Download of Video Tutorial");
 // TODO        private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
@@ -193,6 +204,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FShowTabPage = value;
+            }
+        }
+
+        /// <summary>
+        /// Used in the 'Form Messaging' implementation in <see cref="SaveChanges(ref PartnerEditTDS)"></see>.
+        /// </summary>
+        /// <description>
+        /// Several running instances of the same screen (e.g. Partner Find screen)
+        /// can distinguish between messages for certain instances of the screen through that.
+        /// </description>
+        public string CallerContext
+        {
+            get
+            {
+                return FCallerContext;
+            }
+
+            set
+            {
+                FCallerContext = value;
             }
         }
 
@@ -801,7 +832,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.ValidateAllData(false);
 
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType(), null, true);
+                this.GetType(), null, false);
 
             if (ReturnValue)
             {
@@ -831,7 +862,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean SaveChanges(ref PartnerEditTDS AInspectDS)
         {
             Boolean ReturnValue = false;
-            PartnerEditTDS SubmitDS;
+            PartnerEditTDS SubmitDS = null;
             TSubmitChangesResult SubmissionResult;
 
             TVerificationResultCollection VerificationResult;
@@ -841,6 +872,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             int RowIndex;
             int NumRows;
             Int32 MaxColumn;
+            Boolean SavedPartnerIsNewParter = false;
             bool AddressesOrRelationsChanged = false;
             System.Int32 ChangedColumns;
 #if SHOWCHANGES
@@ -992,6 +1024,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // for inspectDataTable in inspectDataSet.Tables do
                     }
 
+                    // If changes have been made to pm_staff_data (commitments) then update the partner's family's Gift Destination records
+                    UpdateGiftDestination(ref AInspectDS);
+
                     SubmitDS = AInspectDS.GetChangesTyped(true);
 
                     if (SubmitDS == null)
@@ -1074,9 +1109,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         case TSubmitChangesResult.scrOK:
 
+                            SavedPartnerIsNewParter = IsNewPartner(AInspectDS);
+
                             // MessageBox.Show('DUMMY: ' + (SubmitDS.Tables['Locations'].Rows[0]['DUMMY']).ToString() );
                             if ((SharedTypes.PartnerClassStringToEnum(AInspectDS.PPartner[0].PartnerClass) == TPartnerClass.UNIT)
-                                && (IsNewPartner(AInspectDS)))
+                                && SavedPartnerIsNewParter)
                             {
                                 /*
                                  * A new Partner of PartnerClass UNIT has been created
@@ -1244,7 +1281,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                             }
 #endif
 
-                            ucoLowerPart.RefreshAddressesAfterMerge();
+                            ucoUpperPart.UpdateStatusUpdatedDate();  // this is to refresh 'Status Updated' if it has been changed in the ComboBox and then saved...
+
+                            ucoLowerPart.RefreshRecordsAfterMerge();
                             ucoLowerPart.RefreshPersonnelDataAfterMerge(AddressesOrRelationsChanged);
 
                             // Call AcceptChanges so that we don't have any changed data anymore!
@@ -1431,7 +1470,301 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
             }
 
+            // if the partner has been saved then broadcast a message to any listening forms to inform them
+            if (ReturnValue)
+            {
+                TFormsMessage BroadcastMessage;
+                TFormsMessage BroadcastMessageGiftDestination;
+                String PartnerShortNameForBroadcast;
+                long FamilyPartnerKey;
+                String FamilyShortName;
+
+                if (SavedPartnerIsNewParter)
+                {
+                    BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcNewPartnerSaved,
+                        FCallerContext);
+                }
+                else
+                {
+                    BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExistingPartnerSaved,
+                        FCallerContext);
+                }
+
+                if (!FMainDS.PPartner[0].IsPartnerShortNameNull())
+                {
+                    PartnerShortNameForBroadcast = FMainDS.PPartner[0].PartnerShortName;
+                }
+                else
+                {
+                    PartnerShortNameForBroadcast = String.Empty;
+                }
+
+                BroadcastMessage.SetMessageDataPartner(
+                    FPartnerKey,
+                    SharedTypes.PartnerClassStringToEnum(FPartnerClass),
+                    PartnerShortNameForBroadcast,
+                    FMainDS.PPartner[0].StatusCode);
+
+                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
+                if ((SubmitDS.PPartnerGiftDestination != null) && (SubmitDS.PPartnerGiftDestination.Rows.Count > 0))
+                {
+                    BroadcastMessageGiftDestination = new TFormsMessage(TFormsMessageClassEnum.mcGiftDestinationChanged,
+                        FCallerContext);
+
+                    if (FPartnerClass == TPartnerClass.FAMILY.ToString())
+                    {
+                        FamilyPartnerKey = FPartnerKey;
+                        FamilyShortName = PartnerShortNameForBroadcast;
+                    }
+                    else
+                    {
+                        FamilyPartnerKey = ((PPersonRow)FMainDS.PPerson.Rows[0]).FamilyKey;
+                        FamilyShortName = String.Empty;
+                    }
+
+                    BroadcastMessageGiftDestination.SetMessageDataPartner(
+                        FamilyPartnerKey,
+                        TPartnerClass.FAMILY,
+                        FamilyShortName,
+                        FMainDS.PPartner[0].StatusCode);
+
+                    TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessageGiftDestination);
+                }
+            }
+
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Gives the user the option to update Gift Destination records if commitments have been added
+        /// </summary>
+        /// <param name="AInspectDS"></param>
+        private void UpdateGiftDestination(ref PartnerEditTDS AInspectDS)
+        {
+            PmStaffDataTable ModifiedStaffData = new PmStaffDataTable();
+            IndividualDataTDS IndividualDataDS = new IndividualDataTDS();
+            PmStaffDataTable OriginalCommitments;
+            int NewRecords = 0;
+
+            IndividualDataDS.Merge(AInspectDS);
+
+            // return if no changes have been made to commitments
+            if ((IndividualDataDS.PmStaffData == null) || (IndividualDataDS.PmStaffData.Rows.Count == 0))
+            {
+                return;
+            }
+
+            foreach (PmStaffDataRow Row in IndividualDataDS.PmStaffData.Rows)
+            {
+                // Commitments only trigger changes to Gift Destination if they are new and apply to future dates.
+                if (Row.RowState == DataRowState.Deleted)
+                {
+                    // need to temporarily undelete row
+                    Row.RejectChanges();
+
+                    if (Row.IsEndOfCommitmentNull() || (Row.EndOfCommitment >= DateTime.Today))
+                    {
+                        ModifiedStaffData.LoadDataRow(Row.ItemArray, true);
+                    }
+
+                    Row.Delete();
+                }
+                else if ((Row.RowState != DataRowState.Unchanged) && (Row.IsEndOfCommitmentNull() || (Row.EndOfCommitment >= DateTime.Today)))
+                {
+                    ModifiedStaffData.LoadDataRow(Row.ItemArray, true);
+                }
+            }
+
+            if (ModifiedStaffData.Rows.Count == 0)
+            {
+                return;
+            }
+
+            // load original (currently saved) PmStaffData
+            OriginalCommitments = TRemote.MPersonnel.WebConnectors.LoadPersonellStaffData(FPartnerKey).PmStaffData;
+
+            foreach (PmStaffDataRow ModifiedStaffDataRow in ModifiedStaffData.Rows)
+            {
+                PPartnerGiftDestinationRow ActiveGiftDestinationWhichCanBeEnded = null;
+                PPartnerGiftDestinationRow GiftDestinationWhichCanBeModified = null;
+                PPartnerGiftDestinationRow GiftDestinationWhichCanBeDeactivated = null;
+                bool DatesOverlap = false;
+                bool CreateNewGiftDestination = false;
+                string EndOfCommitment;
+                PmStaffDataRow OriginalCommitmentRow = null;
+                DataRowState RowState = DataRowState.Unchanged;
+
+                // get the rowstate of ModifiedStaffDataRow
+                DataRow TempRow = IndividualDataDS.PmStaffData.Rows.Find(new object[] { ModifiedStaffDataRow.SiteKey, ModifiedStaffDataRow.Key });
+
+                if (TempRow != null)
+                {
+                    RowState = TempRow.RowState;
+                }
+                else
+                {
+                    RowState = DataRowState.Deleted;
+                }
+
+                if ((AInspectDS.PPartnerGiftDestination != null) && (AInspectDS.PPartnerGiftDestination.Rows.Count > 0))
+                {
+                    // Get the original record (before it was edited)
+                    if ((RowState == DataRowState.Modified) || (RowState == DataRowState.Deleted))
+                    {
+                        OriginalCommitmentRow = (PmStaffDataRow)OriginalCommitments.Rows.Find(
+                            new object[] { ModifiedStaffDataRow.SiteKey, ModifiedStaffDataRow.Key });
+                    }
+
+                    foreach (PPartnerGiftDestinationRow CurrentRow in AInspectDS.PPartnerGiftDestination.Rows)
+                    {
+                        // if two records are the same
+                        if ((OriginalCommitmentRow != null)
+                            && (OriginalCommitmentRow.ReceivingField == CurrentRow.FieldKey)
+                            && (OriginalCommitmentRow.StartOfCommitment == CurrentRow.DateEffective)
+                            && (OriginalCommitmentRow.EndOfCommitment == CurrentRow.DateExpires)
+                            && (CurrentRow.DateEffective != CurrentRow.DateExpires))
+                        {
+                            if ((RowState == DataRowState.Modified)
+                                && (OriginalCommitmentRow.StartOfCommitment == ModifiedStaffDataRow.StartOfCommitment)
+                                && (OriginalCommitmentRow.ReceivingField == ModifiedStaffDataRow.ReceivingField))
+                            {
+                                // if the field and start date have not been changed then we can update the Gift Destination
+                                GiftDestinationWhichCanBeModified = CurrentRow;
+                                break;
+                            }
+                            else if (RowState == DataRowState.Deleted)
+                            {
+                                GiftDestinationWhichCanBeDeactivated = CurrentRow;
+                                break;
+                            }
+                        }
+
+                        // ignore records that start and end on the same day (deactivated)
+                        if (CurrentRow.DateEffective == CurrentRow.DateExpires)
+                        {
+                            continue;
+                        }
+                        // check if an active Gift Destination can be ended and this new commitment added
+                        else if ((CurrentRow.DateEffective <= ModifiedStaffDataRow.StartOfCommitment)
+                                 && (CurrentRow.IsDateExpiresNull() || (CurrentRow.DateExpires >= ModifiedStaffDataRow.StartOfCommitment)))
+                        {
+                            ActiveGiftDestinationWhichCanBeEnded = CurrentRow;
+                        }
+                        // check if dates overlap
+                        else if ((CurrentRow.DateEffective >= ModifiedStaffDataRow.StartOfCommitment)
+                                 && ((CurrentRow.DateEffective <= ModifiedStaffDataRow.EndOfCommitment) || ModifiedStaffDataRow.IsEndOfCommitmentNull()))
+                        {
+                            DatesOverlap = true;
+                        }
+                    }
+                }
+
+                if (ModifiedStaffDataRow.IsEndOfCommitmentNull())
+                {
+                    EndOfCommitment = "UNSPECIFIED";
+                }
+                else
+                {
+                    EndOfCommitment = ModifiedStaffDataRow.EndOfCommitment.Value.ToShortDateString();
+                }
+
+                // if an existing active Gift Destination can be ended in order to add a Gift Destination for new commitment
+                if ((ActiveGiftDestinationWhichCanBeEnded != null) && !DatesOverlap)
+                {
+                    // offer to end this Gift Destination and use new commitment instead
+                    if (MessageBox.Show(Catalog.GetString(string.Format("An existing Gift Destination record is active during the period {0} to {1}."
+                                    +
+                                    "{2}Would you like to end this Gift Destination and make this new Commitment to " +
+                                    "the field '{3}' the active Gift Destination for this period?",
+                                    ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
+                                    "\n\n", ModifiedStaffDataRow.ReceivingField)),
+                            Catalog.GetString("Update Gift Destination"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+                        CreateNewGiftDestination = true;
+
+                        // end active Gift Destination
+                        if (ActiveGiftDestinationWhichCanBeEnded.DateEffective != ModifiedStaffDataRow.StartOfCommitment)
+                        {
+                            ActiveGiftDestinationWhichCanBeEnded.DateExpires = ModifiedStaffDataRow.StartOfCommitment.AddDays(-1);
+                        }
+                        else
+                        {
+                            ActiveGiftDestinationWhichCanBeEnded.DateExpires = ModifiedStaffDataRow.StartOfCommitment;
+                        }
+                    }
+                }
+                // if an existing gift destination can be updated from a modified commitment
+                else if ((GiftDestinationWhichCanBeModified != null) && !DatesOverlap)
+                {
+                    // offer to modify this Gift Destination
+                    if (MessageBox.Show(Catalog.GetString(string.Format("An existing Gift Destination record matches a modified commitment.{0}" +
+                                    "Would you like to update the Gift Destination record to the field '{1}'" +
+                                    "for the period {2} to {3}?",
+                                    "\n\n", ModifiedStaffDataRow.ReceivingField,
+                                    ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment)),
+                            Catalog.GetString("Update Gift Destination"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+                        GiftDestinationWhichCanBeModified.DateExpires = ModifiedStaffDataRow.EndOfCommitment;
+                    }
+                }
+                // if an existing gift destination can be made inactive because of a deleted commitment
+                else if ((GiftDestinationWhichCanBeDeactivated != null) && !DatesOverlap)
+                {
+                    // offer to deactivate this Gift Destination
+                    if (MessageBox.Show(Catalog.GetString(string.Format("An existing Gift Destination record matches a deleted commitment.{0}" +
+                                    "Would you like to deactivate the Gift Destination record to the field '{1}'" +
+                                    "for the period {2} to {3}?",
+                                    "\n\n", ModifiedStaffDataRow.ReceivingField,
+                                    ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment)),
+                            Catalog.GetString("Update Gift Destination"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+                        GiftDestinationWhichCanBeDeactivated.DateExpires = GiftDestinationWhichCanBeDeactivated.DateEffective;
+                    }
+                }
+                // if there is no active Gift Destination during dates of new commitment
+                else if (!DatesOverlap && (RowState != DataRowState.Deleted))
+                {
+                    // offer to create new Gift Destination using new commitment
+                    if (MessageBox.Show(Catalog.GetString(string.Format("This partner does not have an active Gift Destination during the period " +
+                                    "{0} to {1}.{2}Would you like to make this new Commitment to the field " +
+                                    "'{3}' the active Gift Destination for this period?",
+                                    ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment, "\n\n",
+                                    ModifiedStaffDataRow.ReceivingField)),
+                            Catalog.GetString("Update Gift Destination"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information) == DialogResult.Yes)
+                    {
+                        CreateNewGiftDestination = true;
+                    }
+                }
+
+                // create a brand new Gift Destination
+                if (CreateNewGiftDestination)
+                {
+                    if (AInspectDS.PPartnerGiftDestination == null)
+                    {
+                        AInspectDS.Merge(new PPartnerGiftDestinationTable());
+                    }
+
+                    // create new Gift Destination
+                    PPartnerGiftDestinationRow NewRow = AInspectDS.PPartnerGiftDestination.NewRowTyped(true);
+                    NewRow.Key = TRemote.MPartner.Partner.WebConnectors.GetNewKeyForPartnerGiftDestination() + NewRecords;
+                    NewRow.PartnerKey = ((PPersonRow)FMainDS.PPerson.Rows[0]).FamilyKey;
+                    NewRow.FieldKey = ModifiedStaffDataRow.ReceivingField;
+                    NewRow.DateEffective = ModifiedStaffDataRow.StartOfCommitment;
+                    NewRow.DateExpires = ModifiedStaffDataRow.EndOfCommitment;
+                    AInspectDS.PPartnerGiftDestination.Rows.Add(NewRow);
+
+                    NewRecords++;
+                }
+            }
         }
 
         /// <summary>
@@ -1472,6 +1805,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
+            this.Shown += new EventHandler(FPetraUtilsObject.OnFormShown);
+            this.Shown += new EventHandler(TFrmPartnerEdit_Shown);
+
             // Reduce Form height to fit the PartnerEdit screen fully only on 800x600 resolution
             if (System.Windows.Forms.Screen.GetBounds(ucoUpperPart).Height == 600)
             {
@@ -1506,6 +1842,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Determine whether Partner is of PartnerClass ORGANISATION and whether it is a Foundation
             DetermineOrganisationIsFoundation();
 
+            ArrangeMenuItemsAndToolBarButtons();
 
             // Setup Modulerelated Toggle Buttons in ToolBar
             SetupAvailableModuleDataItems(true, TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone);
@@ -1574,7 +1911,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             /*
              * Set up top part of the Screen
              */
-            ucoUpperPart.InitialiseDelegateMaintainWorkerField(new TDelegateMaintainWorkerField(MaintainWorkerField));
+            ucoUpperPart.InitialiseDelegateMaintainGiftDestination(new TDelegateMaintainGiftDestination(MaintainGiftDestination));
             ucoUpperPart.MainDS = FMainDS;
             ucoUpperPart.VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
             ucoUpperPart.PartnerEditUIConnector = FPartnerEditUIConnector;
@@ -1621,6 +1958,18 @@ namespace Ict.Petra.Client.MPartner.Gui
 // TODO            ucoUpperPart.CheckForUserTips();
         }
 
+        /// <summary>
+        /// We must switch to the selected TabPage only once the the 'Shown' Event of the Form has been run
+        /// to make sure that the TabControl does not show the selected TabPage leftmost, but at its' correct
+        /// place in the order of the Tabs. (See Bug https://tracker.openpetra.org/view.php?id=2392)
+        /// </summary>
+        /// <param name="sender">Not evaluated.</param>
+        /// <param name="e">Not evaluated.</param>
+        void TFrmPartnerEdit_Shown(object sender, EventArgs e)
+        {
+            ucoLowerPart.SelectTabPage(FInitiallySelectedTabPage);
+        }
+
         private void UcoUpperPart_PartnerClassMainDataChanged(System.Object Sender, TPartnerClassMainDataChangedEventArgs e)
         {
             FPetraUtilsObject.HasChanges = true;
@@ -1630,15 +1979,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void UcoUpperPart_CollapsingEvent(System.Object sender, CollapsibleEventArgs args)
         {
+#if TODO
             if (args.WillCollapse)
             {
                 // is getting collapsed
                 ucoUpperPart.Caption = "  " + ucoUpperPart.PartnerQuickInfo(false);
-                ucoUpperPart.SubCaption = '[' + FPartnerClass + "] ";
+// TODO               ucoUpperPart.SubCaption = '[' + FPartnerClass + "] ";
 
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
-                    ucoUpperPart.SubCaptionHighlighted = true;
+// TODO                   ucoUpperPart.SubCaptionHighlighted = true;
                 }
             }
             else
@@ -1647,6 +1997,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoUpperPart.Caption = "";
                 ucoUpperPart.SubCaption = "";
             }
+#endif
         }
 
         private void UcoPartnerTabSet_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)
@@ -1757,6 +2108,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileDeletePartner(System.Object sender, System.EventArgs e)
         {
+            TFormsMessage BroadcastMessage;
+
             /* Check for new Partner that wasn't saved yet */
             if (IsNewPartner(FMainDS))
             {
@@ -1771,9 +2124,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* Check for unsaved changes */
                 if (CanClose())
                 {
-                    /* Delete Partner; if OK, close the screen */
+                    /* Delete Partner; if OK, broadcast a message to any listening forms to inform them and then close the screen */
                     if (TPartnerMain.DeletePartner(FPartnerKey))
                     {
+                        BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcPartnerDeleted,
+                            FCallerContext);
+
+                        BroadcastMessage.SetMessageDataPartner(
+                            FPartnerKey,
+                            SharedTypes.PartnerClassStringToEnum(FPartnerClass),
+                            "",
+                            FMainDS.PPartner[0].StatusCode);
+
+                        TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
                         this.Close();
                     }
                 }
@@ -1794,7 +2158,31 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FilePrintPartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            /* Check for new Partner that wasn't saved yet */
+            if (IsNewPartner(FMainDS))
+            {
+                /* Tell user that he can't delete a new Partner that wasn't saved yet */
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorPrintPartner2,
+                    MPartnerResourcestrings.StrErrorNeedToSavePartnerTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+            else
+            {
+                /* Check for unsaved changes */
+                if (CanClose())
+                {
+                    Form MainWindow = FPetraUtilsObject.GetCallerForm();
+                    TCommonScreensForwarding.OpenPrintPartnerDialog.Invoke(FPartnerKey, MainWindow);
+                }
+                else
+                {
+                    /* Tell user that he can't print a Partner that has changes that weren't saved yet */
+                    MessageBox.Show(StrCannotPrintPartner, StrCannotPrintPartnerTitle,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+            }
         }
 
         private void FilePrintSection(System.Object sender, System.EventArgs e)
@@ -1837,24 +2225,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
-            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
-
-            if (FileName.Length > 0)
-            {
-                if (FileName.EndsWith("ext"))
-                {
-                    StringCollection ASpecificBuildingInfo = null;
-                    String doc = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader();
-                    Int32 SiteKey = 0;
-                    Int32 LocationKey = 0;
-
-                    doc += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
-                        this.PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
-
-                    doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
-                    TImportExportDialogs.ExportTofile(doc, FileName);
-                }
-            }
+            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0);
         }
 
         /// <summary>
@@ -1920,7 +2291,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainInterests(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpInterests);
         }
 
         private void MaintainReminders(System.Object sender, System.EventArgs e)
@@ -1941,17 +2312,33 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// This Method is called through a Delegate from UC_PartnerEdit_TopPart.ManualCode.cs!
         /// </summary>
-        private void MaintainWorkerField()
+        private void MaintainGiftDestination()
         {
-            MaintainWorkerField(this, null);
+            MaintainGiftDestination(this, null);
         }
 
-        private void MaintainWorkerField(System.Object sender, System.EventArgs e)
+        private void MaintainGiftDestination(System.Object sender, System.EventArgs e)
         {
-            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+            if (FPartnerClass == TPartnerClass.FAMILY.ToString())
+            {
+                TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), FPartnerKey);
 
-            staffDataForm.PartnerKey = FPartnerKey;
-            staffDataForm.Show();
+                GiftDestinationForm.Show();
+            }
+            else if (FPartnerClass == TPartnerClass.PERSON.ToString())
+            {
+                // open the Gift Destination screen for the person's family
+                TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(
+                    FPetraUtilsObject.GetForm(), ((PPersonRow)FMainDS.PPerson.Rows[0]).FamilyKey);
+
+                MessageBox.Show(string.Format(Catalog.GetString("Gift Destination records are held for Family partners only.{0}" +
+                            "This screen will display all Gift Destination records for the Family of {1}."),
+                        "\n\n", ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerShortName),
+                    Catalog.GetString("Gift Destination"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                GiftDestinationForm.Show();
+            }
         }
 
         private void MaintainIndividualData(System.Object sender, System.EventArgs e)
@@ -2089,7 +2476,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             throw new NotImplementedException();
         }
 
-        private bool UserHasPersonnelAccess()
+        private static bool UserHasPersonnelAccess()
         {
             return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
         }
@@ -2313,34 +2700,50 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPartnerKey = FMainDS.PPartner[0].PartnerKey;
                     }
 
-#if TODO
                     // get Field of Partner (if PERSON or FAMILY)
-                    cmdPartner = new TCmdMPartner();
-                    System.Int64 FieldKey;
-                    String FieldName;
-                    bool HasCurrentCommitment;
-                    cmdPartner.GetPartnerField(this, FPartnerKey, out FieldKey, out FieldName, out HasCurrentCommitment);
+                    System.Int64 FieldKey = 0;
+                    String FieldName = "";
+                    TPartnerClass FieldClass;
+                    bool HasCurrentCommitment = false;
 
-                    // MessageBox.Show('Partner ' + FPartnerKey.toString() + ' belongs to field ' + FieldName + ' (' + FieldKey.ToString() + ')');
+                    if ((FMainDS.PPartnerGiftDestination != null) && (FMainDS.PPartnerGiftDestination.Rows.Count > 0))
+                    {
+                        foreach (PPartnerGiftDestinationRow Row in FMainDS.PPartnerGiftDestination.Rows)
+                        {
+                            // check if record is active for today
+                            if ((Row.DateEffective <= DateTime.Today)
+                                && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
+                                && (Row.DateEffective != Row.DateExpires))
+                            {
+                                HasCurrentCommitment = true;
+                                FieldKey = Row.FieldKey;
+                                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FieldKey, out FieldName, out FieldClass);
+                            }
+                        }
 
-                    // Check whether the Partner has "EX-WORKER*" Partner Type by looking this up in the MiscellaneusData Table
-                    if ((FMainDS.MiscellaneousData[0].HasEXWORKERPartnerType == true)
-                        && !HasCurrentCommitment)
-                    {
-                        ucoUpperPart.SetWorkerFieldText(MPartnerConstants.PARTNERTYPE_EX_WORKER);
-                    }
-                    else if (FieldName != "")
-                    {
-                        ucoUpperPart.SetWorkerFieldText(FieldName);
+                        // Check whether the Partner has "EX-WORKER*" Partner Type by looking this up in the MiscellaneusData Table
+                        if ((FMainDS.MiscellaneousData[0].HasEXWORKERPartnerType == true)
+                            && !HasCurrentCommitment)
+                        {
+                            ucoUpperPart.SetGiftDestinationText(MPartnerConstants.PARTNERTYPE_EX_WORKER);
+                        }
+                        else if (HasCurrentCommitment && (FieldName != ""))
+                        {
+                            ucoUpperPart.SetGiftDestinationText(FieldName);
+                        }
+                        else if (HasCurrentCommitment && (FieldKey > 0))
+                        {
+                            ucoUpperPart.SetGiftDestinationText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
+                        }
+                        else
+                        {
+                            ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
+                        }
                     }
                     else
                     {
-                        if (FieldKey > 0)
-                        {
-                            ucoUpperPart.SetWorkerFieldText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
-                        }
+                        ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
                     }
-#endif
                 }
                 catch (EPartnerNotExistantException)
                 {
@@ -2509,6 +2912,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpPartnerRelationships:
                 case TPartnerEditTabPageEnum.petpNotes:
                 case TPartnerEditTabPageEnum.petpFinanceDetails:
+                case TPartnerEditTabPageEnum.petpInterests:
                     FInitiallySelectedTabPage = FShowTabPage;
 
                     break;
@@ -2516,7 +2920,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 #if  SHOWUNFINISHEDTABS
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
-                case TPartnerEditTabPageEnum.petpInterests:
                     FInitiallySelectedTabPage = FShowTabPage;
 
                     break;
@@ -2524,7 +2927,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 #else
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
-                case TPartnerEditTabPageEnum.petpInterests:
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
 
@@ -2566,6 +2968,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void ArrangeMenuItemsAndToolBarButtons()
+        {
+            // Because of YAML inheritance there is one separator bar too many displayed: hide it for that reason
+            mniSeparator0.Visible = false;
+        }
+
         /// <summary>
         /// Sets Module-related Toggle Buttons in ToolBar up
         /// </summary>
@@ -2594,7 +3002,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniViewPartnerData.Enabled = IsEnabled;
 
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
-                    mniMaintainWorkerField.Enabled = IsEnabled;
+                    mniMaintainGiftDestination.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMenuItemText;
 
                     // TODO
@@ -2607,7 +3015,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniViewPartnerData.Enabled = false;
 
                     mniMaintainFamilyMembers.Enabled = IsEnabled;
-                    mniMaintainWorkerField.Enabled = IsEnabled;
+                    mniMaintainGiftDestination.Enabled = IsEnabled;
                     mniMaintainFamilyMembers.Text = MPartnerResourcestrings.StrFamilyMembersMenuItemText;
                 }
                 else
@@ -2617,7 +3025,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // Following functionality is available only for PERSON and FAMILY
                     mniMaintainFamilyMembers.Enabled = false;
-                    mniMaintainWorkerField.Enabled = false;
+                    mniMaintainGiftDestination.Enabled = false;
                 }
 
                 mniMaintainAddresses.Enabled = IsEnabled;
@@ -2661,7 +3069,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniMaintainRelationships.Enabled = (!IsEnabled);
                 mniMaintainContacts.Enabled = (!IsEnabled);
                 mniMaintainNotes.Enabled = (!IsEnabled);
-                mniMaintainWorkerField.Enabled = (!IsEnabled);
+                mniMaintainGiftDestination.Enabled = (!IsEnabled);
                 mniMaintainFinanceDetails.Enabled = (!IsEnabled);
             }
 
@@ -3005,6 +3413,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerEditTabPageEnum.petpInterests:
                     FMainDS.PPartnerInterest.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PPartnerInterest.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
                     break;
 
                 case TPartnerEditTabPageEnum.petpOfficeSpecific:
@@ -3120,6 +3529,40 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void HookupDataChangeEvents()
         {
             HookupPartnerEditDataChangeEvents(TPartnerEditTabPageEnum.petpAddresses);
+        }
+
+        #endregion
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcNewPartnerSaved)
+                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
+            {
+                // Refreshes the Family Members list on the Family tab
+                ucoLowerPart.RefreshFamilyMembersList(AFormsMessage);
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
         }
 
         #endregion

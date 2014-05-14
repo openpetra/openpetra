@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE reports SYSTEM "reports.dtd">
+<!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
 	<report id="Finance Common">
 		<description>
@@ -21,6 +21,7 @@
 					SELECT a_cost_centre_code_c AS line_a_cost_centre_code_c,
 					 	a_cost_centre_name_c AS cost_centre_name FROM
 					PUB_a_cost_centre WHERE a_ledger_number_i = {{param_ledger_number_i}}
+					ORDER BY a_cost_centre_code_c
 					</value></queryDetail>
 				</query>
 			</calculation>
@@ -34,6 +35,7 @@
 					PUB_a_cost_centre 
 					WHERE a_ledger_number_i = {{param_ledger_number_i}}
 					AND a_cost_centre_active_flag_l = 1
+					ORDER BY a_cost_centre_code_c
 					</value></queryDetail>
 				</query>
 			</calculation>
@@ -46,7 +48,7 @@
 						a_cost_centre_name_c AS cost_centre_name FROM
 					PUB_a_cost_centre WHERE a_ledger_number_i = {{param_ledger_number_i}} AND (
 					</value><value function = "csv" text="a_cost_centre_code_c" variable="param_cost_centre_codes" format="Text"/>
-					<value text=")"/></queryDetail>
+					<value text=") ORDER BY a_cost_centre_code_c"/></queryDetail>
 				</query>
 			</calculation>
 		

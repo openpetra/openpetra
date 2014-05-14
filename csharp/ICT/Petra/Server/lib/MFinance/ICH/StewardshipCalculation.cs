@@ -70,9 +70,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         [RequireModulePermission("FINANCE-3")]
         public static bool PerformStewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
-            out TVerificationResultCollection AVerificationResult
-            )
+            out TVerificationResultCollection AVerificationResult)
         {
+            bool NewTransaction;
+
 /*
  *          if (TLogging.DL >= 9)
  *          {
@@ -81,10 +82,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
  */
             AVerificationResult = new TVerificationResultCollection();
 
-            //Begin the transaction
-            bool NewTransaction = false;
-
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out NewTransaction);
 
             try
             {
@@ -119,18 +118,21 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     return false;
                 }
             }
-            catch (Exception Exp)
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                TLogging.Log("An Exception occured while performing the Stewardship Calculations:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
 
 /*
- *              if (TLogging.DL >= 8)
- *              {
- *                  Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
- *              }
+ *                  if (TLogging.DL >= 8)
+ *                  {
+ *                      Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
+ *                  }
  */
-                TLogging.Log(Exp.Message);
-                TLogging.Log(Exp.StackTrace);
+                }
 
                 throw;
             }
@@ -199,8 +201,50 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 AIchStewardshipAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
                 AAccountHierarchyAccess.LoadViaALedger(PostingDS, ALedgerNumber, DBTransaction);
 
-                ATransactionAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
-                AJournalAccess.LoadViaALedger(MainDS, ALedgerNumber, DBTransaction);
+                ABatchTable BatchTable = new ABatchTable();
+
+                ABatchRow TemplateRow0 = (ABatchRow)BatchTable.NewRowTyped(false);
+
+                TemplateRow0.LedgerNumber = ALedgerNumber;
+                TemplateRow0.BatchPeriod = APeriodNumber;
+
+                StringCollection Operators0 = StringHelper.InitStrArr(new string[] { "=", "=" });
+                StringCollection OrderList0 = new StringCollection();
+
+                OrderList0.Add("ORDER BY");
+                OrderList0.Add(ABatchTable.GetBatchNumberDBName() + " DESC");
+
+                ABatchTable BatchesInAPeriod = ABatchAccess.LoadUsingTemplate(TemplateRow0,
+                    Operators0,
+                    null,
+                    DBTransaction,
+                    OrderList0,
+                    0,
+                    0);
+
+                if (BatchesInAPeriod != null)
+                {
+                    int BatchNumber = 0;
+
+                    for (int i = 0; i < BatchesInAPeriod.Count; i++)
+                    {
+                        ABatchRow batchRow = (ABatchRow)BatchesInAPeriod.Rows[i];
+
+                        BatchNumber = batchRow.BatchNumber;
+
+                        AJournalAccess.LoadViaABatch(MainDS, ALedgerNumber, BatchNumber, DBTransaction);
+                        ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, BatchNumber, DBTransaction);
+                    }
+                }
+                else
+                {
+                    ErrorContext = Catalog.GetString("Generating the ICH batch");
+                    ErrorMessage =
+                        String.Format(Catalog.GetString("No Batches found to process in Ledger: {0}"),
+                            ALedgerNumber);
+                    ErrorType = TResultSeverity.Resv_Noncritical;
+                    throw new System.InvalidOperationException(ErrorMessage);
+                }
 
                 ALedgerRow LedgerRow = (ALedgerRow)PostingDS.ALedger.Rows[0];
 
@@ -309,11 +353,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 DataRow[] FoundCCRows = PostingDS.ACostCentre.Select(WhereClause, OrderBy);
 
-                AIchStewardshipTable IchStewardshipTable = new AIchStewardshipTable();
+                AIchStewardshipTable ICHStewardshipTable = new AIchStewardshipTable();
 
-                foreach (DataRow untypedCCRow in FoundCCRows)
+                foreach (DataRow UntypedCCRow in FoundCCRows)
                 {
-                    ACostCentreRow CostCentreRow = (ACostCentreRow)untypedCCRow;
+                    ACostCentreRow CostCentreRow = (ACostCentreRow)UntypedCCRow;
 
                     string CostCentre = CostCentreRow.CostCentreCode;
 
@@ -322,9 +366,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     decimal IncomeAmount = 0;
                     decimal ExpenseAmount = 0;
                     decimal XferAmount = 0;
-                    decimal IncomeAmount2 = 0;
-                    decimal ExpenseAmount2 = 0;
-                    decimal XferAmount2 = 0;
+                    decimal IncomeAmountIntl = 0;
+                    decimal ExpenseAmountIntl = 0;
+                    decimal XferAmountIntl = 0;
 
                     TransferFound = false;
 
@@ -339,9 +383,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     DataRow[] FoundTransRows = MainDS.ATransaction.Select(WhereClause, OrderBy);
 
-                    foreach (DataRow untypedTransRow in FoundTransRows)
+                    foreach (DataRow UntypedTransRow in FoundTransRows)
                     {
-                        ATransactionRow TransactionRow = (ATransactionRow)untypedTransRow;
+                        ATransactionRow TransactionRow = (ATransactionRow)UntypedTransRow;
 
                         CurrentAccountCode = TransactionRow.AccountCode;
                         AmountInBaseCurrency = TransactionRow.AmountInBaseCurrency;
@@ -377,12 +421,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 if (TransactionRow.DebitCreditIndicator == IncomeDrCrIndicator)
                                 {
                                     IncomeAmount += AmountInBaseCurrency;
-                                    IncomeAmount2 += AmountInIntlCurrency;
+                                    IncomeAmountIntl += AmountInIntlCurrency;
                                 }
                                 else
                                 {
                                     IncomeAmount -= AmountInBaseCurrency;
-                                    IncomeAmount2 -= AmountInIntlCurrency;
+                                    IncomeAmountIntl -= AmountInIntlCurrency;
                                 }
                             }
 
@@ -394,12 +438,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 if (TransactionRow.DebitCreditIndicator = ExpenseDrCrIndicator)
                                 {
                                     ExpenseAmount += AmountInBaseCurrency;
-                                    ExpenseAmount2 += AmountInIntlCurrency;
+                                    ExpenseAmountIntl += AmountInIntlCurrency;
                                 }
                                 else
                                 {
                                     ExpenseAmount -= AmountInBaseCurrency;
-                                    ExpenseAmount2 -= AmountInIntlCurrency;
+                                    ExpenseAmountIntl -= AmountInIntlCurrency;
                                 }
                             }
 
@@ -409,12 +453,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 if (TransactionRow.DebitCreditIndicator == ExpenseDrCrIndicator)
                                 {
                                     XferAmount += AmountInBaseCurrency;
-                                    XferAmount2 += AmountInIntlCurrency;
+                                    XferAmountIntl += AmountInIntlCurrency;
                                 }
                                 else
                                 {
                                     XferAmount -= AmountInBaseCurrency;
-                                    XferAmount2 -= AmountInIntlCurrency;
+                                    XferAmountIntl -= AmountInIntlCurrency;
                                 }
                             }
                         }
@@ -443,25 +487,25 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             GiftBatchRow = (AGiftBatchRow)untypedTransRow;
                             BatchNumber = GiftBatchRow.BatchNumber;
 
-                            AGiftDetailRow TemplateRow = (AGiftDetailRow)GiftDetailTable.NewRowTyped(false);
+                            AGiftDetailRow TemplateRow1 = (AGiftDetailRow)GiftDetailTable.NewRowTyped(false);
 
-                            TemplateRow.LedgerNumber = ALedgerNumber;
-                            TemplateRow.BatchNumber = BatchNumber;
-                            TemplateRow.IchNumber = 0;
-                            TemplateRow.CostCentreCode = CostCentre;
+                            TemplateRow1.LedgerNumber = ALedgerNumber;
+                            TemplateRow1.BatchNumber = BatchNumber;
+                            TemplateRow1.IchNumber = 0;
+                            TemplateRow1.CostCentreCode = CostCentre;
 
-                            StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "=", "=", "=" });
-                            StringCollection OrderList = new StringCollection();
+                            StringCollection Operators1 = StringHelper.InitStrArr(new string[] { "=", "=", "=", "=" });
+                            StringCollection OrderList1 = new StringCollection();
 
-                            OrderList.Add("ORDER BY");
-                            OrderList.Add(AGiftDetailTable.GetGiftTransactionNumberDBName() + " ASC");
-                            OrderList.Add(AGiftDetailTable.GetDetailNumberDBName() + " ASC");
+                            OrderList1.Add("ORDER BY");
+                            OrderList1.Add(AGiftDetailTable.GetGiftTransactionNumberDBName() + " ASC");
+                            OrderList1.Add(AGiftDetailTable.GetDetailNumberDBName() + " ASC");
 
-                            AGiftDetailTable GiftDetailTable2 = AGiftDetailAccess.LoadUsingTemplate(TemplateRow,
-                                operators,
+                            AGiftDetailTable GiftDetailTable2 = AGiftDetailAccess.LoadUsingTemplate(TemplateRow1,
+                                Operators1,
                                 null,
                                 DBTransaction,
-                                OrderList,
+                                OrderList1,
                                 0,
                                 0);
 
@@ -535,22 +579,22 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         || (ExpenseAmount != 0)
                         || (XferAmount != 0))
                     {
-                        AIchStewardshipRow IchStewardshipRow = IchStewardshipTable.NewRowTyped(true);
+                        AIchStewardshipRow ICHStewardshipRow = ICHStewardshipTable.NewRowTyped(true);
 
                         //MainDS.Tables.Add(IchStewardshipTable);
 
-                        IchStewardshipRow.LedgerNumber = ALedgerNumber;
-                        IchStewardshipRow.PeriodNumber = APeriodNumber;
-                        IchStewardshipRow.IchNumber = ICHProcessing;
-                        IchStewardshipRow.DateProcessed = DateTime.Today;
-                        IchStewardshipRow.CostCentreCode = CostCentre;
-                        IchStewardshipRow.IncomeAmount = IncomeAmount;
-                        IchStewardshipRow.ExpenseAmount = ExpenseAmount;
-                        IchStewardshipRow.DirectXferAmount = XferAmount;
-                        IchStewardshipRow.IncomeAmountIntl = IncomeAmount2;
-                        IchStewardshipRow.ExpenseAmountIntl = ExpenseAmount2;
-                        IchStewardshipRow.DirectXferAmountIntl = XferAmount2;
-                        IchStewardshipTable.Rows.Add(IchStewardshipRow);
+                        ICHStewardshipRow.LedgerNumber = ALedgerNumber;
+                        ICHStewardshipRow.PeriodNumber = APeriodNumber;
+                        ICHStewardshipRow.IchNumber = ICHProcessing;
+                        ICHStewardshipRow.DateProcessed = DateTime.Today;
+                        ICHStewardshipRow.CostCentreCode = CostCentre;
+                        ICHStewardshipRow.IncomeAmount = IncomeAmount;
+                        ICHStewardshipRow.ExpenseAmount = ExpenseAmount;
+                        ICHStewardshipRow.DirectXferAmount = XferAmount;
+                        ICHStewardshipRow.IncomeAmountIntl = IncomeAmountIntl;
+                        ICHStewardshipRow.ExpenseAmountIntl = ExpenseAmountIntl;
+                        ICHStewardshipRow.DirectXferAmountIntl = XferAmountIntl;
+                        ICHStewardshipTable.Rows.Add(ICHStewardshipRow);
                     }
                 }   // for each cost centre
 
@@ -612,17 +656,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     //Post the batch
                     if (PostICHBatch)
                     {
-                        IsSuccessful = AIchStewardshipAccess.SubmitChanges(IchStewardshipTable, DBTransaction, out AVerificationResult);
+                        AIchStewardshipAccess.SubmitChanges(ICHStewardshipTable, DBTransaction);
 
-                        if (IsSuccessful)
-                        {
-                            IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(MainDS, out AVerificationResult));
+                        GLBatchTDSAccess.SubmitChanges(MainDS);
 
-                            if (IsSuccessful)
-                            {
-                                IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
-                            }
-                        }
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
                     }
                     else
                     {
@@ -642,35 +680,63 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
                 }
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException Exc)
             {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-                Console.WriteLine(ex.Message);
+                TLogging.Log("An ArgumentException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
+
+                if (AVerificationResult == null)
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
+
+                throw;
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException Exc)
             {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-                Console.WriteLine(ex.Message);
+                TLogging.Log(
+                    "An InvalidOperationException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
+
+                if (AVerificationResult == null)
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
+
+                throw;
             }
-            catch (Exception ex)
+            catch (Exception Exc)
             {
+                TLogging.Log("An Exception occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
+
                 ErrorContext = Catalog.GetString("Calculate Admin Fee");
                 ErrorMessage = String.Format(Catalog.GetString("Unknown error while Generating the ICH batch for Ledger: {0} and Period: {1}" +
-                        Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        Environment.NewLine + Environment.NewLine + Exc.ToString()),
                     ALedgerNumber,
                     APeriodNumber);
                 ErrorType = TResultSeverity.Resv_Critical;
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                Console.WriteLine(ex.Message);
-            }
 
-            if (IsSuccessful && NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                if (AVerificationResult == null)
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+
+                throw;
             }
-            else if (!IsSuccessful && NewTransaction)
+            finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (IsSuccessful && NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else if (!IsSuccessful && NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return IsSuccessful;
@@ -1135,20 +1201,17 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         //Post the batch just created
 
-                        IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(AdminFeeDS, out Verification));
+                        GLBatchTDSAccess.SubmitChanges(AdminFeeDS);
+
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchRow.BatchNumber, out Verification);
 
                         if (IsSuccessful)
                         {
-                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchRow.BatchNumber, out Verification);
-                        }
-
-                        if (IsSuccessful)
-                        {
-                            AProcessedFeeAccess.SubmitChanges(ProcessedFeeDataTable, ADBTransaction, out Verification);
+                            AProcessedFeeAccess.SubmitChanges(ProcessedFeeDataTable, ADBTransaction);
                         }
                     }
 
-                    if ((Verification == null) || Verification.HasCriticalErrors)
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verification))
                     {
                         //Petra error: GL0067
                         ErrorContext = Catalog.GetString("Posting Admin Fee Batch");

@@ -147,11 +147,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             // need to make sure that partner key fields that are not referring to p_partner table
             // but to other tables like p_unit or p_person are set to NULL when they are empty (and
             // not to 0 as then foreign key constraints will fail)
-            if ((txtField.Text.Length != 0)
-                && (Convert.ToInt64(txtField.Text) == 0))
-            {
-                ARow.SetGenAppPossSrvUnitKeyNull();
-            }
+            // HOWEVER: at the moment the thinking is (according to WolfgangB, and Petra 2.x's implementation)
+            // that the Target Field needs to be specified for an Application to be valid!
+//            if ((txtField.Text.Length != 0)
+//                && (Convert.ToInt64(txtField.Text) == 0))
+//            {
+//                ARow.SetGenAppPossSrvUnitKeyNull();
+//            }
 
             if ((txtPlacementPerson.Text.Length != 0)
                 && (Convert.ToInt64(txtPlacementPerson.Text) == 0))
@@ -165,12 +167,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, false, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
 
             TSharedPersonnelValidation_Personnel.ValidateFieldApplicationManual(this,
                 FMainDS.PmYearProgramApplication[0],
                 ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
         }
 
         private void ProcessApplicationFieldChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)

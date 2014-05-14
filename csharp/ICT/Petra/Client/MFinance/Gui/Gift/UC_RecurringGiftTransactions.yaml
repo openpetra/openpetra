@@ -13,10 +13,21 @@ RootNode:
         actDelete: {Label=&Delete Detail, SkipReferenceCheck=true, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
-            Width: 1000
+            Controls: [pnlInfo, pnlFilterAndFind, sptTransactions]
+            Width: 970
             Height: 800
             Dock: Fill
+        sptTransactions:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 35
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDetailGrid
+            Panel2: pnlDetails1
+        pnlDetails1:
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+            Controls: [pnlDetails]
         pnlInfo:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchTotal]
@@ -29,6 +40,18 @@ RootNode:
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductible, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailAccountCode, txtDetailGiftCommentOne]
+            FindControls: [Column:GiftBatchTDSAGiftDetailTable.DonorName, Column:GiftBatchTDSAGiftDetailTable.RecipientDescription, chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductible, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailAccountCode, txtDetailGiftCommentOne]
+            ControlAttributes: 
+                chkDetailTaxDeductible: {Text=Tax deductible}
+                chkDetailConfidentialGiftFlag: {Text=Confidential}
+                chkDetailChargeFlag: {Text=Charges apply}
+                txtRecipientDescription: {Label=Recipient}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNewGift, btnNewDetail, btnDelete]
@@ -57,51 +80,55 @@ RootNode:
             RowFilter: AGiftDetail.BatchNumber
             EnableMultiSelection: false
         pnlDetails:
-            Dock: Bottom
+            Dock: Fill
             Scrollbars: true
             Controls:
-                Row0: [lblReceipt, chkDetailActive]
-                Row1: [txtDetailDonorKey]
-                Row2: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
+                Row0: [grpDetailsForDonor]
+                Row1: [grpDetailsForEachGift]
+        grpDetailsForDonor: {Width:930, Height:125}
+            Controls: 
+                Row0: [chkDetailActive]
+                Row1: [txtDetailDonorKey, cmbDetailMethodOfGivingCode]
+                Row2: [txtGiftTotal, cmbDetailMethodOfPaymentCode]
                 Row3: [txtDetailReference, cmbDetailReceiptLetterCode]
-                Row4: [txtGiftTotal]
-                Row5: [txtDetailGiftAmount, chkDetailConfidentialGiftFlag]
-                Row6: [dtpStartDonations, dtpEndDonations]
-                Row7: [txtDetailRecipientKey]
-                Row8: [txtField,chkDetailChargeFlag]
-                Row9: [cmbMinistry]
-                Row10: [cmbDetailMailingCode, chkDetailTaxDeductable]
-                Row11: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
-                Row12: [txtDetailCostCentreCode, txtDetailAccountCode]
-                Row13: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
-                Row14: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
-                Row15: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
-        lblReceipt: {Label=*Receipt Each Gift*}        
+        grpDetailsForEachGift: {Width:930, Height:265}
+            Controls: 
+                Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
+                Row1: [txtField,chkDetailChargeFlag]
+                Row2: [cmbMinistry, chkDetailTaxDeductible]
+                Row3: [dtpStartDonations, dtpEndDonations]
+                Row4: [txtDetailGiftAmount, cmbDetailMailingCode]
+                Row5: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
+                Row6: [txtDetailCostCentreCode, txtDetailAccountCode]
+                Row7: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
+                Row8: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
+                Row9: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
+        #lblReceipt: {Label=*Receipt Each Gift*}        
         dtpStartDonations: {Label=Don. Period From}
         dtpEndDonations: {Label=To}
         chkDetailActive: {Label=Active Gift}
-        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=2, Unbound=true, OnChange=DonorKeyChanged}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Width=158, Unbound=true}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, ColSpan=2, OnChange=RecipientKeyChanged}
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient, OnChange=RecipientKeyChanged}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
-        txtField: {Label=Field, Type=PartnerKey, ReadOnly=true}
+        txtField: {Label=Field, Type=PartnerKey, ReadOnly=true, Width=300}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
-        cmbMinistry: {Label=Key Ministry, ColSpan=2, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
+        cmbMinistry: {Label=Key Ministry, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
         txtDetailGiftAmount: {Label=Amount,Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
-        chkDetailTaxDeductable: {Label=Tax deductable?}
-        txtDetailGiftCommentOne: {Label=Comment 1,Width=250, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Comment 2,Width=250, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Comment 3,Width=250, Validation=true, OnLeave=DetailCommentChanged}
+        chkDetailTaxDeductible: {Label=Tax deductible?}
+        txtDetailGiftCommentOne: {Label=Comment 1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment 2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment 3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for

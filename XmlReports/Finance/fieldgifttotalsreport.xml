@@ -100,28 +100,28 @@
 							 PUB_a_gift_batch
 						WHERE
 								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
 							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
-							AND detail.a_motivation_group_code_c = "GIFT"
-							AND detail.a_motivation_detail_code_c = "SUPPORT"
+							AND detail.a_motivation_group_code_c = 'GIFT'
+							AND detail.a_motivation_detail_code_c = 'SUPPORT'
 							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_ledger_number_i}, 2)">
 						<value>
-							AND ( detail.a_motivation_detail_code_c = "SUPPORT"
-								OR detail.a_motivation_detail_code_c = "USA SUPP"
-								OR detail.a_motivation_detail_code_c = "SHRTTERM"
-								OR detail.a_motivation_detail_code_c = "UNKFLD" )
+							AND ( detail.a_motivation_detail_code_c = 'SUPPORT'
+								OR detail.a_motivation_detail_code_c = 'USA SUPP'
+								OR detail.a_motivation_detail_code_c = 'SHRTTERM'
+								OR detail.a_motivation_detail_code_c = 'UNKFLD' )
 						</value>
 					</queryDetail>
 					<queryDetail condition="not(eq({param_ledger_number_i}, 2))">
 						<value>
-							AND detail.a_motivation_group_code_c = "GIFT"
-							AND ( detail.a_motivation_detail_code_c = "SUPPORT" 
-								OR detail.a_motivation_detail_code_c = "PERSONAL" )
+							AND detail.a_motivation_group_code_c = 'GIFT'
+							AND ( detail.a_motivation_detail_code_c = 'SUPPORT'
+								OR detail.a_motivation_detail_code_c = 'PERSONAL' )
 						</value>
 					</queryDetail>
 					<queryDetail condition="lt({{Month0}}, 9)">
@@ -150,7 +150,7 @@
 					</queryDetail>
 					<queryDetail>
 						<value>
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 						</value>
@@ -180,12 +180,12 @@
 							 PUB_a_gift_batch
 						WHERE
 								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
 							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
-							AND detail.a_motivation_group_code_c = "GIFT"
-							AND detail.a_motivation_detail_code_c = "FIELD"
+							AND detail.a_motivation_group_code_c = 'GIFT'
+							AND detail.a_motivation_detail_code_c = 'FIELD'
 							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
 						 </value>
 					</queryDetail>
@@ -215,7 +215,7 @@
 					</queryDetail>
 					<queryDetail>
 						<value>
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 						</value>

@@ -61,15 +61,14 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// <param name="ARunManually">this is true if the process was called manually from the server admin console</param>
         public static void Process(TDataBase ADBAccessObj, bool ARunManually)
         {
+            TDBTransaction ReadWriteTransaction;
             bool NewTransaction;
             bool LastReminderDateAcquired;
             DateTime LastReminderDate;
             DataSet ReminderResultsDS;
             SSystemDefaultsRow SystemDefaultsDR;
             PPartnerReminderTable PartnerReminderDT;
-            TVerificationResultCollection ReminderUpdateVerificationResults;
             int ReminderFreqency;
-            bool ProcessResult = false;
             TDataBase DBAccessObj;
 
             if (TLogging.DebugLevel >= 6)
@@ -89,8 +88,8 @@ namespace Ict.Petra.Server.MPartner.Processing
 
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
-            // Open database transaction
-            TDBTransaction ReadWriteTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            ReadWriteTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                out NewTransaction);
 
             /*
              * This whole process must either succeed or fail, therefore the whole thing is in a try-catch.
@@ -195,61 +194,39 @@ namespace Ict.Petra.Server.MPartner.Processing
                 }
 
                 // Update all the changed PartnerReminder Rows
-                ProcessResult = PPartnerReminderAccess.SubmitChanges(PartnerReminderDT, ReadWriteTransaction,
-                    out ReminderUpdateVerificationResults);
+                PPartnerReminderAccess.SubmitChanges(PartnerReminderDT, ReadWriteTransaction);
 
                 if (TLogging.DebugLevel >= 6)
                 {
                     TLogging.Log("_---------------------------------_");
                 }
 
-                if (ProcessResult)
-                {
-                    /*
-                     * Update the SystemDefault that keeps track of when Partner Reminders last ran.
-                     * (SystemDefaultsDR will point to the row we loaded earlier on, OR the row we added earlier on
-                     * if there wasn't already a SystemDefault row.)
-                     */
-                    if (UpdateLastReminderDate(SystemDefaultsDR, ReadWriteTransaction))
-                    {
-                        ProcessResult = true;
-                    }
-                    else
-                    {
-                        ProcessResult = false;
-                    }
-                }
-            }
-            catch (Exception Exp)
-            {
-                TLogging.Log(TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " encountered an Exception:");
-                TLogging.Log(Exp.ToString());
-                TLogging.LogStackTrace(TLoggingType.ToLogfile);
-            }
-            finally
-            {
-                if (ProcessResult)
-                {
-                    DBAccessObj.CommitTransaction();
+                /*
+                 * Update the SystemDefault that keeps track of when Partner Reminders last ran.
+                 * (SystemDefaultsDR will point to the row we loaded earlier on, OR the row we added earlier on
+                 * if there wasn't already a SystemDefault row.)
+                 */
+                UpdateLastReminderDate(SystemDefaultsDR, ReadWriteTransaction);
 
-                    TLogging.LogAtLevel(1, TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " ran succesfully.");
-                }
-                else
+                if (NewTransaction)
                 {
-                    // Attempt to Rollback the Database Transaction
-                    try
-                    {
-                        DBAccessObj.RollbackTransaction();
-                    }
-                    catch (Exception Exp)
-                    {
-                        TLogging.Log(
-                            TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
-                            "  encountered an Exception while rolling back its own DB Transaction:");
-                        TLogging.Log(Exp.ToString());
-                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                    }
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
+
+                TLogging.LogAtLevel(1, TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " ran succesfully.");
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log(
+                    TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " encountered an Exception:" + Environment.NewLine +
+                    Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
             }
         }
 
@@ -280,7 +257,6 @@ namespace Ict.Petra.Server.MPartner.Processing
             string LastReminderDateStr;
 
             string[] DateParts;
-            TVerificationResultCollection SystemDefaultsVerificationResults;
             bool ReturnValue = true;
 
 
@@ -313,18 +289,15 @@ namespace Ict.Petra.Server.MPartner.Processing
                 ASystemDefaultsDR.DefaultDescription = SYSTEMDEFAULT_LAST_REMINDER_DATE_DESC;
                 ASystemDefaultsDR.DefaultValue = UNDEFINED_SYSTEMDEFAULT_LAST_REMINDER_DATE;
 
-                ReturnValue = SSystemDefaultsAccess.SubmitChanges(SystemDefaultsDT, AReadWriteTransaction, out SystemDefaultsVerificationResults);
-
-                if (!ReturnValue)
+                try
                 {
-                    TLogging.Log(Messages.BuildMessageFromVerificationResult(
-                            "TProcessPartnerReminders.GetLastReminderDate: Could not create SystemDefault row!   SubmitChanges VerificationResult: ",
-                            SystemDefaultsVerificationResults));
+                    SSystemDefaultsAccess.SubmitChanges(SystemDefaultsDT, AReadWriteTransaction);
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("TProcessPartnerReminders.GetLastReminderDate: An Exception occured:" + Environment.NewLine + Exc.ToString());
 
-                    ASystemDefaultsDR = null;
-                    ALastReminderDate = DateTime.MinValue;
-
-                    return false;
+                    throw;
                 }
             }
 
@@ -352,27 +325,21 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// </summary>
         /// <param name="ASystemDefaultsDR">SystemDefaults DataRow containing the date.</param>
         /// <param name="AReadWriteTransaction">Already instantiated DB Transaction.</param>
-        /// <returns>True if updating of the 'Last Reminder Date' was successful, otherwise false.</returns>
-        private static bool UpdateLastReminderDate(SSystemDefaultsRow ASystemDefaultsDR, TDBTransaction AReadWriteTransaction)
+        private static void UpdateLastReminderDate(SSystemDefaultsRow ASystemDefaultsDR, TDBTransaction AReadWriteTransaction)
         {
-            bool ReturnValue;
-            TVerificationResultCollection VerificationResults;
-
             // Set SystemDefault value to today's date (mind the Format!)
             ASystemDefaultsDR.DefaultValue = String.Format("{0},{1},{2}", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
-            ReturnValue = SSystemDefaultsAccess.SubmitChanges((SSystemDefaultsTable)ASystemDefaultsDR.Table,
-                AReadWriteTransaction,
-                out VerificationResults);
-
-            if (!ReturnValue)
+            try
             {
-                TLogging.Log(Messages.BuildMessageFromVerificationResult(
-                        "TProcessPartnerReminders.UpdateLastReminderDate: Could not update SystemDefault row!   SubmitChanges VerificationResult: ",
-                        VerificationResults));
+                SSystemDefaultsAccess.SubmitChanges((SSystemDefaultsTable)ASystemDefaultsDR.Table, AReadWriteTransaction);
             }
+            catch (Exception Exc)
+            {
+                TLogging.Log("TProcessPartnerReminders.UpdateLastReminderDate: An Exception occured:" + Environment.NewLine + Exc.ToString());
 
-            return ReturnValue;
+                throw;
+            }
         }
 
         /// <summary>
@@ -434,7 +401,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
 
             // Retrieve ShortName of the Partner to which the Reminder Email should be sent
-            PartnerShortName = GetPartnerShortName(APartnerReminderDR.PartnerKey, AReadWriteTransaction);
+            PartnerShortName = GetPartnerShortName(APartnerReminderDR.PartnerKey);
 
             // Format Email Recipient Address as per email RFC's
             if (!Destination.Trim().StartsWith("<"))
@@ -476,16 +443,15 @@ namespace Ict.Petra.Server.MPartner.Processing
             }
 
             // Send Email (this picks up the SMTPServer AppSetting from the Server Config File)
-            return new TSmtpSender().SendEmail(Destination, "OpenPetra Server", Destination, Subject, Body, null);
+            return new TSmtpSender().SendEmail(Destination, "OpenPetra Server", Destination, Subject, Body);
         }
 
         /// <summary>
         /// Retrieves the ShortName of a Partner.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
-        /// <param name="AReadTransaction">Already instantiated DB Transacation.</param>
         /// <returns>ShortName of the specified Partner.</returns>
-        private static string GetPartnerShortName(long APartnerKey, TDBTransaction AReadTransaction)
+        private static string GetPartnerShortName(long APartnerKey)
         {
             string ShortName = "";
 
@@ -510,7 +476,6 @@ namespace Ict.Petra.Server.MPartner.Processing
             char LF = Convert.ToChar(10);
             string ReturnValue = "";
 
-
             try
             {
                 if (!PPartnerContactAccess.Exists(AContactID, AReadTransaction))
@@ -518,16 +483,13 @@ namespace Ict.Petra.Server.MPartner.Processing
                     return String.Format("Contact ID {0} not found{1}", AContactID, LF);
                 }
 
-                PartnerContactDT = PPartnerContactAccess.LoadByPrimaryKey(
-                    AContactID,
-                    AReadTransaction);
+                PartnerContactDT = PPartnerContactAccess.LoadByPrimaryKey(AContactID, AReadTransaction);
             }
             catch (Exception Exp)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                TLogging.Log("TProcessPartnerReminders.GetContactDetails encountered an Exception: " + Exp.ToString(), TLoggingType.ToLogfile);
-                TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
-                throw Exp;
+                TLogging.Log("TProcessPartnerReminders.GetContactDetails encountered an Exception: " + Exp.ToString());
+
+                throw;
             }
 
             PartnerContactDR = PartnerContactDT[0];

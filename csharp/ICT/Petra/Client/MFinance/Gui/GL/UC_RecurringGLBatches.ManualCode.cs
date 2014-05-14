@@ -32,6 +32,7 @@ using System.Collections;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
@@ -52,6 +53,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FSelectedBatchNumber = -1;
         private DateTime FDefaultDate = DateTime.Today;
+        private GLSetupTDS FCacheDS;
+        private ACostCentreTable FCostCentreTable = null;
+        private AAccountTable FAccountTable = null;
 
         /// <summary>
         /// load the batches into the grid
@@ -70,14 +74,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
+                EnableTransactionTabForBatch();
             }
             else
             {
                 ClearControls();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
             }
 
-            ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
+            //Load all analysis attribute values
+            if (FCacheDS == null)
+            {
+                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, false);
+            }
 
             ShowData();
 
@@ -87,7 +97,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARecurringBatchTable.GetBatchNumberDBName()
                 );
 
-            grdDetails.Focus();
+            UpdateRecordNumberDisplay();
+            SetAccountCostCentreTableVariables();
         }
 
         /// reset the control
@@ -105,6 +116,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public GLBatchTDS RecurringBatchFMainDS()
         {
             return FMainDS;
+        }
+
+        /// <summary>
+        /// Enable the transaction tab
+        /// </summary>
+        public void EnableTransactionTabForBatch()
+        {
+            bool enable = false;
+
+            //If a single journal exists and it is not status=Cancelled then enable transactions tab
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1))
+            {
+                LoadJournalsForCurrentBatch();
+
+                ARecurringJournalRow rJ = (ARecurringJournalRow)FMainDS.ARecurringJournal.DefaultView[0].Row;
+
+                enable = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
+            }
+
+            if (enable)
+            {
+                ((TFrmRecurringGLBatch) this.ParentForm).EnableTransactions();
+            }
+            else
+            {
+                ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
+            }
+        }
+
+        private void LoadJournalsForCurrentBatch()
+        {
+            //Current Batch number
+            Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+            FMainDS.ARecurringJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, batchNumber));
+            }
         }
 
         /// <summary>
@@ -161,40 +214,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ParseHashTotal(ARecurringBatchRow ARow)
         {
-            decimal correctHashValue = 0;
-            string hashTotal = txtDetailBatchControlTotal.Text.Trim();
-            decimal hashDecimalVal;
+            decimal correctHashValue = 0m;
 
             if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
             {
                 return;
             }
 
-            if ((hashTotal == null) || (hashTotal.Length == 0))
+            if ((txtDetailBatchControlTotal.NumberValueDecimal == null) || !txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
             {
                 correctHashValue = 0m;
             }
             else
             {
-                if (!Decimal.TryParse(hashTotal, out hashDecimalVal))
-                {
-                    correctHashValue = 0m;
-                }
-                else
-                {
-                    correctHashValue = hashDecimalVal;
-                }
+                correctHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
             }
 
-            if (ARow.BatchControlTotal != correctHashValue)
-            {
-                ARow.BatchControlTotal = correctHashValue;
-                txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
-            }
+            txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
+            ARow.BatchControlTotal = correctHashValue;
         }
 
         private void ShowDetailsManual(ARecurringBatchRow ARow)
         {
+            EnableTransactionTabForBatch();
+            grdDetails.TabStop = (ARow != null);
+
             if (ARow == null)
             {
                 return;
@@ -251,45 +295,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            Int32 yearNumber = 0;
-            Int32 periodNumber = 0;
-
             if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
             {
                 return;
             }
 
-            FPetraUtilsObject.VerificationResultCollection.Clear();
+            CreateNewARecurringBatch();
 
             pnlDetails.Enabled = true;
-
             EnableButtonControl(true);
 
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateARecurringBatch(FLedgerNumber));
-
-            ARecurringBatchRow newBatchRow = (ARecurringBatchRow)FMainDS.ARecurringBatch.Rows[FMainDS.ARecurringBatch.Rows.Count - 1];
-
-            newBatchRow.DateEffective = FDefaultDate;
+            ARecurringBatchRow newBatchRow = GetSelectedDetailRow();
+            Int32 yearNumber = 0;
+            Int32 periodNumber = 0;
 
             if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
             {
                 newBatchRow.BatchPeriod = periodNumber;
             }
 
-            SelectDetailRowByDataTableIndex(FMainDS.ARecurringBatch.Rows.Count - 1);
+            newBatchRow.DateEffective = FDefaultDate;
 
-            FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
-
-
-            FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            FSelectedBatchNumber = newBatchRow.BatchNumber;
 
             string enterMsg = Catalog.GetString("Please enter a batch description");
-            FPreviouslySelectedDetailRow.BatchDescription = enterMsg;
+            newBatchRow.BatchDescription = enterMsg;
             txtDetailBatchDescription.Text = enterMsg;
-            txtDetailBatchDescription.Focus();
-
-            //Not needed as recurring batches can be deleted
-            //((TFrmRecurringGLBatch)ParentForm).SaveChanges();
+            txtDetailBatchDescription.SelectAll();
 
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
@@ -449,6 +481,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // Delete the recurring batch row.
             ARowToDelete.Delete();
 
+            UpdateRecordNumberDisplay();
+
             return true;
         }
 
@@ -488,6 +522,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmRecurringGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                 ((TFrmRecurringGLBatch)ParentForm).DisableJournals();
             }
+
+            SetInitialFocus();
         }
 
         private void ClearControls()
@@ -555,11 +591,43 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            // now load journals for this batch so we know if exchange rate needs to be set in case of different currency
-            GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, FSelectedBatchNumber);
-            FMainDS.Merge(TempDS);
+            // now load journals/transactions for this batch, if necessary, so we know if exchange rate needs to be set in case of different currency
+            FMainDS.ARecurringJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                FSelectedBatchNumber);
+            FMainDS.ARecurringTransaction.DefaultView.RowFilter = String.Format("{0}={1}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                FSelectedBatchNumber);
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1}",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                FSelectedBatchNumber);
+
+            if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
+            {
+                //Make sure all data is loaded for batch
+                //clear any journals from other batches
+                FMainDS.ARecurringTransAnalAttrib.Clear();
+                FMainDS.ARecurringTransaction.Clear();
+                FMainDS.ARecurringJournal.Clear();
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(FLedgerNumber, FSelectedBatchNumber));
+            }
+            else if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
+            {
+                FMainDS.ARecurringTransAnalAttrib.Clear();
+                FMainDS.ARecurringTransaction.Clear();
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatchAndContent(FLedgerNumber, FSelectedBatchNumber));
+            }
+
+            //Reset row filter
+            //FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Empty;
+            //FMainDS.ARecurringTransaction.DefaultView.RowFilter = string.Empty;
+            //FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
+
+            bool inactiveCodefound = false;
 
             // check how many journals have currency different from base currency
+            // check for inactive accounts or cost centres
+
             foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
             {
                 if ((JournalRow.BatchNumber == FSelectedBatchNumber)
@@ -567,6 +635,47 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     NumberOfNonBaseCurrencyJournals++;
                 }
+            }
+
+            foreach (ARecurringTransactionRow transRow in FMainDS.ARecurringTransaction.Rows)
+            {
+                if (!AccountIsActive(transRow.AccountCode) || !CostCentreIsActive(transRow.CostCentreCode))
+                {
+                    inactiveCodefound = true;
+
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "Recurring batch no. {0} cannot be submitted because transaction {1} in Journal {2} contains an inactive account or cost centre code"),
+                            FSelectedBatchNumber,
+                            transRow.JournalNumber,
+                            transRow.TransactionNumber),
+                        Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    break;
+                }
+            }
+
+            foreach (ARecurringTransAnalAttribRow analAttribRow in FMainDS.ARecurringTransAnalAttrib.Rows)
+            {
+                if (!AnalysisCodeIsActive(analAttribRow.AccountCode,
+                        analAttribRow.AnalysisTypeCode)
+                    || !AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
+                {
+                    inactiveCodefound = true;
+
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "Recurring batch no. {0} cannot be submitted because transaction {1} in Journal {2} contains an inactive analysis code|value"),
+                            FSelectedBatchNumber,
+                            analAttribRow.JournalNumber,
+                            analAttribRow.TransactionNumber),
+                        Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    break;
+                }
+            }
+
+            if (inactiveCodefound)
+            {
+                return;
             }
 
             Hashtable requestParams = new Hashtable();
@@ -596,7 +705,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // set exchange rate to base to 1 as default if no journals with other currencies exist
                     foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
                     {
-                        requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1);
+                        requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1.0);
                     }
                 }
                 else
@@ -648,33 +757,126 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ParentForm.ShowInTaskbar = true;
             }
 
-            if (SubmitCancelled)
+            if (!SubmitCancelled)
             {
-                MessageBox.Show(Catalog.GetString("Submission of recurring batch was cancelled"),
-                    Catalog.GetString("Cancelled"),
+                TRemote.MFinance.GL.WebConnectors.SubmitRecurringGLBatch(requestParams);
+
+                MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
+                    Catalog.GetString("Success"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
-            else
+        }
+
+        private void SetAccountCostCentreTableVariables()
+        {
+            //Populate CostCentreList variable
+            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            FCostCentreTable = (ACostCentreTable)costCentreList;
+
+            //Populate AccountList variable
+            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            FAccountTable = (AAccountTable)accountList;
+        }
+
+        private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAccountCode == string.Empty))
             {
-                TVerificationResultCollection AMessages;
-
-                Boolean submitOK = TRemote.MFinance.GL.WebConnectors.SubmitRecurringGLBatch(requestParams, out AMessages);
-
-                if (submitOK)
-                {
-                    MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Submitting the batch failed!") +
-                            Environment.NewLine +
-                            Catalog.GetString("Reasons:"), AMessages));
-                }
+                return retVal;
             }
+
+            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
+
+            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                AAccountCode,
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AAnalysisAttributeTable.GetActiveDBName());
+
+            retVal = (dv.Count > 0);
+
+            return retVal;
+        }
+
+        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
+            {
+                return retVal;
+            }
+
+            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
+
+            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AFreeformAnalysisTable.GetAnalysisValueDBName(),
+                AAnalysisAttributeValue,
+                AFreeformAnalysisTable.GetActiveDBName());
+
+            retVal = (dv.Count > 0);
+
+            return retVal;
+        }
+
+        private bool AccountIsActive(string AAccountCode)
+        {
+            bool retVal = true;
+
+            AAccountRow currentAccountRow = null;
+
+            if (FAccountTable != null)
+            {
+                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+            }
+
+            if (currentAccountRow != null)
+            {
+                retVal = currentAccountRow.AccountActiveFlag;
+            }
+
+            return retVal;
+        }
+
+        private bool CostCentreIsActive(string ACostCentreCode)
+        {
+            bool retVal = true;
+
+            ACostCentreRow currentCostCentreRow = null;
+
+            if (FCostCentreTable != null)
+            {
+                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+            }
+
+            if (currentCostCentreRow != null)
+            {
+                retVal = currentCostCentreRow.CostCentreActiveFlag;
+            }
+
+            return retVal;
         }
 
         private int CurrentRowIndex()
@@ -759,6 +961,99 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.Focus();
             }
+        }
+
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        public void ShowFindPanel()
+        {
+            if (FucoFilterAndFind == null)
+            {
+                ToggleFilter();
+            }
+
+            FucoFilterAndFind.DisplayFindTab();
+        }
+
+        /// <summary>
+        /// A simple flag used to indicate that the form has been shown for the first time
+        /// </summary>
+        private bool FInitialFocusActionComplete = false;
+
+        /// <summary>
+        /// Sets the initial focus to the grid or the New button depending on the row count
+        /// </summary>
+        public void SetInitialFocus()
+        {
+            if (FInitialFocusActionComplete)
+            {
+                return;
+            }
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                btnNew.Focus();
+            }
+            else
+            {
+                grdDetails.Focus();
+            }
+
+            FInitialFocusActionComplete = true;
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            AutoSizeGrid();
+        }
+
+        /// <summary>
+        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
+        {
+            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
+            {
+                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
+                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
+            }
+        }
+
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[0].Width = 60;
+            grdDetails.Columns[4].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
         }
     }
 }

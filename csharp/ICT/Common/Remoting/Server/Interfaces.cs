@@ -38,7 +38,7 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// add a new user
         /// </summary>
-        bool AddUser(string AUserID);
+        bool AddUser(string AUserID, string APassword = "");
 
         /// <summary>
         /// authenticate a user
@@ -72,24 +72,22 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// add an error log
         /// </summary>
-        Boolean AddErrorLogEntry(String AErrorCode,
+        void AddErrorLogEntry(String AErrorCode,
             String AContext,
             String AMessageLine1,
             String AMessageLine2,
-            String AMessageLine3,
-            out TVerificationResultCollection AVerificationResult);
+            String AMessageLine3);
 
         /// <summary>
         /// add an error log
         /// </summary>
-        Boolean AddErrorLogEntry(String AErrorCode,
+        void AddErrorLogEntry(String AErrorCode,
             String AContext,
             String AMessageLine1,
             String AMessageLine2,
             String AMessageLine3,
             String AUserID,
-            Int32 AProcessID,
-            out TVerificationResultCollection AVerificationResult);
+            Int32 AProcessID);
     }
 
     /// <summary>

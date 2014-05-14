@@ -25,7 +25,6 @@ using System;
 using System.Data;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -33,6 +32,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Shared.MSysMan.Validation;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared.Security;
@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// using an optional authentication plugin dll
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static bool SetUserPassword(string AUsername, string APassword)
+        public static bool SetUserPassword(string AUsername, string APassword, bool APasswordNeedsChanged)
         {
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
@@ -70,10 +70,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 UserDR.PasswordSalt = r.Next(1000000000).ToString();
                 UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt), "SHA1");
+                UserDR.PasswordNeedsChange = APasswordNeedsChanged;
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                TVerificationResultCollection VerificationResult;
-                SUserAccess.SubmitChanges(UserTable, Transaction, out VerificationResult);
+                SUserAccess.SubmitChanges(UserTable, Transaction);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
 
@@ -88,45 +88,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
-        /// this will do some simple checks and return false if the password is not strong enough
-        /// </summary>
-        /// <returns></returns>
-        [RequireModulePermission("NONE")]
-        public static bool CheckPasswordQuality(string APassword, out TVerificationResultCollection AVerification)
-        {
-            // at least 8 characters, at least one digit, at least one letter
-            string passwordPattern = @"^.*(?=.{8,})(?=.*\d)((?=.*[a-z])|(?=.*[A-Z])).*$";
-            Regex regex = new Regex(passwordPattern);
-
-            AVerification = null;
-
-            if (regex.Match(APassword).Success == false)
-            {
-                AVerification = new TVerificationResultCollection();
-                AVerification.Add(new TVerificationResult("password quality check",
-                        String.Format(
-                            Catalog.GetString(
-                                "Your password must have at least {0} characters, and must contain at least one digit and one letter."),
-                            8),
-                        TResultSeverity.Resv_Critical));
-                return false;
-            }
-
-            // TODO: could do some lexical check?
-            return true;
-        }
-
-        /// <summary>
         /// set the password of the current user. this takes into consideration how users are authenticated in this system, by
         /// using an optional authentication plugin dll.
         /// any user can call this, but they need to know the old password.
         /// </summary>
         [RequireModulePermission("NONE")]
-        public static bool SetUserPassword(string AUsername, string APassword, string AOldPassword, out TVerificationResultCollection AVerification)
+        public static bool SetUserPassword(string AUsername,
+            string APassword,
+            string AOldPassword,
+            bool APasswordNeedsChanged,
+            out TVerificationResultCollection AVerification)
         {
+            TDBTransaction Transaction;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+            TVerificationResult VerificationResult;
 
-            if (!CheckPasswordQuality(APassword, out AVerification))
+            AVerification = new TVerificationResultCollection();
+
+            if (!TSharedSysManValidation.CheckPasswordQuality(APassword, out VerificationResult))
             {
                 return false;
             }
@@ -139,6 +118,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 if (TUserManagerWebConnector.CreateHashOfPassword(String.Concat(AOldPassword,
                             UserDR.PasswordSalt)) != UserDR.PasswordHash)
                 {
+                    AVerification = new TVerificationResultCollection();
+                    AVerification.Add(new TVerificationResult("\nPassword quality check.",
+                            String.Format(
+                                Catalog.GetString(
+                                    "Old password entered incorrectly. Password not changed.")),
+                            TResultSeverity.Resv_Critical));
                     return false;
                 }
 
@@ -146,12 +131,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                 UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt));
+                UserDR.PasswordNeedsChange = APasswordNeedsChanged;
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                TVerificationResultCollection VerificationResult;
-                SUserAccess.SubmitChanges(UserTable, Transaction, out VerificationResult);
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                try
+                {
+                    SUserAccess.SubmitChanges(UserTable, Transaction);
+
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("An Exception occured during the setting of the User Password:" + Environment.NewLine + Exc.ToString());
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw;
+                }
 
                 return true;
             }
@@ -199,13 +196,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 if (APassword.Length > 0)
                 {
-                    const int SALTSIZE = 32;
-                    byte[] saltBytes = new byte[SALTSIZE];
-                    RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-                    rng.GetNonZeroBytes(saltBytes);
-                    newUser.PasswordSalt = Convert.ToBase64String(saltBytes);
-                    newUser.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
-                            newUser.PasswordSalt));
+                    newUser.PasswordSalt = PasswordHelper.GetNewPasswordSalt();
+                    newUser.PasswordHash = PasswordHelper.GetPasswordHash(APassword, newUser.PasswordSalt);
+                    newUser.PasswordNeedsChange = true;
                 }
             }
             else
@@ -229,15 +222,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             if (newUser != null)
             {
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                TVerificationResultCollection VerificationResult;
 
                 try
                 {
-                    if (!SUserAccess.SubmitChanges(userTable, Transaction, out VerificationResult))
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        return false;
-                    }
+                    SUserAccess.SubmitChanges(userTable, Transaction);
 
                     List <string>modules = new List <string>();
 
@@ -277,11 +265,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
                     }
 
-                    if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out VerificationResult))
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        return false;
-                    }
+                    SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction);
 
                     // TODO: table permissions should be set by the module list
                     string[] tables = new string[] {
@@ -299,20 +283,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         tableAccessPermissionTable.Rows.Add(tableAccessPermissionRow);
                     }
 
-                    if (!SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, Transaction, out VerificationResult))
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        return false;
-                    }
+                    SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, Transaction);
 
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                catch (Exception e)
+                catch (Exception Exc)
                 {
-                    TLogging.Log(e.Message);
-                    TLogging.Log(e.StackTrace);
+                    TLogging.Log("An Exception occured while creating a User:" + Environment.NewLine + Exc.ToString());
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
+
+                    throw;
                 }
 
                 return true;
@@ -383,15 +364,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS)
         {
-            AVerificationResult = null;
-
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
 
             bool CanCreateUser;
             bool CanChangePassword;
             bool CanChangePermissions;
+
             GetAuthenticationFunctionality(out CanCreateUser, out CanChangePassword, out CanChangePermissions);
 
             // make sure users are not deleted or added if this is not possible
@@ -419,22 +399,32 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             // TODO: if user module access permissions have changed, automatically update the table access permissions?
 
-            // for new users: create users on the alternative authentication method
             if (ASubmitDS.SUser != null)
             {
                 foreach (SUserRow user in ASubmitDS.SUser.Rows)
                 {
+                    // for new users: create users on the alternative authentication method
                     if (user.RowState == DataRowState.Added)
                     {
-                        CreateUser(user.UserId, string.Empty, user.FirstName, user.LastName, string.Empty);
+                        CreateUser(user.UserId, user.PasswordHash, user.FirstName, user.LastName, string.Empty);
                         user.AcceptChanges();
+                    }
+                    // If a password has been added for the first time there will be a (unecrypted) password and no salt.
+                    // Create salt and hash.
+                    else if ((user.PasswordHash.Length > 0) && user.IsPasswordSaltNull())
+                    {
+                        user.PasswordSalt = PasswordHelper.GetNewPasswordSalt();
+                        user.PasswordHash = PasswordHelper.GetPasswordHash(user.PasswordHash, user.PasswordSalt);
+                        user.PasswordNeedsChange = true;
                     }
                 }
             }
 
             try
             {
-                ReturnValue = MaintainUsersTDSAccess.SubmitChanges(ASubmitDS, out AVerificationResult);
+                MaintainUsersTDSAccess.SubmitChanges(ASubmitDS);
+
+                ReturnValue = TSubmitChangesResult.scrOK;
             }
             catch (Exception e)
             {

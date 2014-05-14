@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE reports SYSTEM "reports.dtd">
+<!DOCTYPE reports SYSTEM "..\reports.dtd">
 <reports>
 	<report id="Income Expense Statement">
 		<description>
@@ -32,12 +32,12 @@
 				<option name="summary"/>
 			</reportparameter>
 			<reportparameter name="param_currency">
-				<option name="depends on column"/>			
+				<option name="depends on column"/>
 				<option name="base"/>
 				<option name="international"/>
 			</reportparameter>
 			<reportparameter name="param_ytd">
-				<option name="depends on column"/>			
+				<option name="depends on column"/>
 				<option name="true"/>
 				<option name="false"/>
 			</reportparameter>
@@ -85,7 +85,7 @@
 											  sub({{param_year_i}}, 1),
 											  {param_ytd},
 											  {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Budget Previous Year" 
@@ -99,10 +99,10 @@
 					<queryDetail><value function="getBudgetPeriods(
 											  {{param_start_period_i}},
 											  {{param_end_period_i}},
-                                              sub({{param_year_i}},1),
+                        sub({{param_year_i}},1),
 											  {param_ytd},
 											  {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Actual Selected Year" 
@@ -120,7 +120,7 @@
 											  {{param_year_i}},
 											  {param_ytd},
 											  {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Budget Selected Year" 
@@ -135,10 +135,10 @@
 					<queryDetail><value function="getBudgetPeriods(
 											  {{param_start_period_i}},
 											  {{param_end_period_i}},
-                                              {{param_year_i}},
+                        {{param_year_i}},
 											  {param_ytd},
 											  {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Actual End of Previous Year" 
@@ -153,7 +153,7 @@
                                               {{param_end_period_i}},
                                               {{param_year_i}},
                                               {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Budget Whole Selected Year" 
@@ -165,12 +165,12 @@
 				<query> 
 					<queryDetail>
 						<value condition="le({{param_end_period_i}}, {{param_number_of_accounting_periods_i}})" 
-					            function="getBudgetPeriods(
-											  1,
-											  {{param_number_of_accounting_periods_i}},
-                                              {{param_year_i}},
-											  true,
-											  {param_currency})"/>
+					      function="getBudgetPeriods(
+											1,
+											{{param_number_of_accounting_periods_i}},
+                      {{param_year_i}},
+											true,
+											{param_currency})"/>
 						<value condition="gt({{param_end_period_i}}, {{param_number_of_accounting_periods_i}})" 
 								function="getBudgetPeriods(
 										  1,
@@ -178,7 +178,7 @@
 										  add({{param_year_i}}, 1),
 										  true,
 										  {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Budget Next Year" 
@@ -192,10 +192,10 @@
 					<queryDetail><value function="getBudgetPeriods(
 											  {{param_start_period_i}},
 											  {{param_end_period_i}},
-                                              add({{param_year_i}},1),
+                        add({{param_year_i}},1),
 											  {param_ytd},
 											  {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 					
 			</calculation>
@@ -259,7 +259,7 @@
 				<lowerLevelReport level="summaryAccount" calculation ="Select AccountChildren">
 						<parameter name="param_ledger_number_i"/>
 						<parameter name="param_parentaccountcode" value = "PL"/>
-				</lowerLevelReport>			
+				</lowerLevelReport>
 			</detail>
 			<footer>
 				<field whichfield="left 0" pos="0cm" width="5 cm">
@@ -324,8 +324,8 @@
 							</parameter>
 						</lowerLevelReport>
 					</case>
-				</switch>	
-			</detail>			
+				</switch>
+			</detail>
 			<footer space="below">
 				<switch>
 					<case condition="eq({param_cost_centre_breakdown}, false)">
@@ -363,14 +363,14 @@
 						</lowerLevelReport>
 					</case>
 				</switch>
-			</detail>			
+			</detail>
 			<footer>
 				<switch>
 					<case condition="eq({param_cost_centre_breakdown}, true)">
 						<field whichfield="columns" line="none" pos="indented">
 							<value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
 					</case>
-					<default>		
+					<default>
 						<field calculation="GetGLMSequences" whichfield="columns" pos="indented" format="currency">
 							<value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
 					</default>
@@ -406,7 +406,7 @@
 						<field calculation="GetGLMSequences" whichfield="columns"/>
 					</default>
 				</switch>
-			</detail>			
+			</detail>
 			<footer>
 			    <switch>
 				<case condition="eq({param_cost_centre_summary}, true)">

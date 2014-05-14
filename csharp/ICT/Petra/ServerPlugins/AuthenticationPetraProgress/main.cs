@@ -26,6 +26,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
@@ -64,7 +65,7 @@ namespace Plugin.AuthenticationPetraProgress
             if ((UserDR != null) && (TUserManagerWebConnector.CreateHashOfPassword(APassword, "MD5").Substring(0, 16) != password2))
             {
                 // todo: increase failed logins
-                throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
+                throw new EPasswordWrongException(Catalog.GetString("Invalid User ID or Password."));
             }
             else
             {

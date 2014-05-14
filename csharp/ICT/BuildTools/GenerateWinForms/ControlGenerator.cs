@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -191,6 +191,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             bool OverrideTextAlign = false;
             bool NoLabel = false;
 
+            TLogging.LogAtLevel(1, "ButtonGenerator.SetControlProperties for Control " + ctrl.controlName);
+
             if (!ctrl.HasAttribute("Width"))
             {
                 ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 15).ToString());
@@ -211,24 +213,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.IsOnHorizontalGridButtonPanel)
             {
-//Console.WriteLine("Setting Height for Control '" + ctrl.controlName + "' to 23 as it is on a horizontal Grid Button Panel");
+                TLogging.LogAtLevel(1, "Setting Height for Control '" + ctrl.controlName + "' to 23 as it is on a horizontal Grid Button Panel");
                 FDefaultHeight = 23;
 
                 if (!ctrl.HasAttribute("ImageAlign"))
                 {
                     if (NoLabel)
                     {
-//Console.WriteLine("Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomCenter as it is on a horizontal Grid Button Panel (no Text)");
+                        //TLogging.LogAtLevel(1, "Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomCenter as it is on a horizontal Grid Button Panel (no Text)");
                         writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.BottomCenter");
                     }
                     else
                     {
-//Console.WriteLine("Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomLeft as it is on a horizontal Grid Button Panel");
+                        //TLogging.LogAtLevel(1, "Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomLeft as it is on a horizontal Grid Button Panel");
                         writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.BottomLeft");
 
                         // Note: In this case want the text centered on the Button, which the TextAlign Property will achieve.
                         // However, its default value is System.Drawing.ContentAlignment.MiddleCenter which means we don't need to explicitly write this out into the Designer file...
-//Console.WriteLine("Setting TextAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.MiddleCenter as it is on a horizontal Grid Button Panel");
+                        //TLogging.LogAtLevel(1, "Setting TextAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.MiddleCenter as it is on a horizontal Grid Button Panel");
 //                        writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
                     }
 
@@ -518,6 +520,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl, "FixedRows", "1");
+            writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".CancelEditingWithEscapeKey = false;" + Environment.NewLine);
             return writer.FTemplate;
         }
     }
@@ -529,7 +532,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public PrintPreviewGenerator()
-            : base("ppv", typeof(PrintPreviewControl))
+            : base("ppv", "Ict.Petra.Client.CommonControls.TUC_PrintPreviewControl")
+        {
+            FGenerateLabel = false;
+        }
+    }
+
+    /// <summary>
+    /// generator for a browser control (used for email preview at the moment)
+    /// </summary>
+    public class BrowserGenerator : TControlGenerator
+    {
+        /// <summary>constructor</summary>
+        public BrowserGenerator()
+            : base("brw", typeof(WebBrowser))
         {
             FGenerateLabel = false;
         }
@@ -640,6 +656,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".InitUserControl();" + Environment.NewLine);
+
+            // Note: The follwing code *assumes* that the nested UserControl has got 'DataLoadingStarted' and
+            // 'DataLoadingFinished' Events. If it hasn't, the code is generated and won't compile.
+            // I (ChristianK) could find no way to determine whether the Class of the nested UserControl
+            // would actually contain those Events, so I went ahead and added those Events to all
+            // Templates for UserControls and to the few manually developed UserControls that get nested
+            // in Generated Code files....
+            if (writer.Template.FTemplateCode.Contains("OnDataLoadingStarted"))
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS",
+                    controlName + ".DataLoadingStarted += new System.EventHandler(OnDataLoadingStarted);" +
+                    Environment.NewLine);
+            }
+
+            if (writer.Template.FTemplateCode.Contains("OnDataLoadingFinished"))
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS",
+                    controlName + ".DataLoadingFinished += new System.EventHandler(OnDataLoadingFinished);" +
+                    Environment.NewLine);
+            }
 
             return writer.FTemplate;
         }

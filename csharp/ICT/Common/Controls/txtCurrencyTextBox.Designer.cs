@@ -70,7 +70,7 @@ namespace Ict.Common.Controls
             this.FTxtNumeric.Name = "FTxtNumeric";
             this.FTxtNumeric.Size = new System.Drawing.Size(157, 21);
             this.FTxtNumeric.TabIndex = 0;
-            this.FTxtNumeric.Text = "1,234.00";
+            this.FTxtNumeric.NumberValueDecimal = 1234.00m;
             this.FTxtNumeric.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 //            this.FTxtNumeric.DoubleClick += new System.EventHandler(this.FLblCurrencyDoubleClick);   // only for debugging the layout of the Controls
             //

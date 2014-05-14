@@ -55,9 +55,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>DataRow for the p_subscription record we are working with</summary>
         private PSubscriptionRow FSubscriptionDR = null;
 
-        /// <summary>CachedDataset.TmpCacheDS: DataSet; Currently selected PublicationCode. Won't update automatically!</summary>
-        private System.Object FSelectedPublicationCode;
-
         #region Public Methods
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -158,6 +155,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             EnableDisableIssuesGroupBox(false);
 
             txtPublicationCost.ReadOnly = true;
+
+            // make sure initialization happens
+            PublicationStatusChanged(null, null);
 
             FInitializationRunning = false;
         }
@@ -270,11 +270,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void PublicationStatusChanged(object sender, EventArgs e)
         {
-            if ((cmbPSubscriptionPublicationCode.GetSelectedString() == "")
-                || (FSubscriptionDR == null)
+            if ((FSubscriptionDR == null)
                 || FInitializationRunning)
             {
-                /* don't do his check while a new record is being displayed */
+                /* don't do this check while a new record is being displayed */
                 return;
             }
 
@@ -292,7 +291,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* clear any previously supplied Date Ended */
                 this.dtpPSubscriptionDateCancelled.Enabled = false;
                 this.dtpPSubscriptionDateCancelled.Text = "";
-                FSubscriptionDR.SetDateCancelledNull();
+
+                if (!FSubscriptionDR.IsDateCancelledNull())
+                {
+                    FSubscriptionDR.SetDateCancelledNull();
+                }
             }
             else if ((this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
                      || (this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED))
@@ -300,29 +303,60 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* CANCELLED or EXPIRED */
                 /* Set the DateEnded field to todays date: */
                 this.dtpPSubscriptionDateCancelled.Enabled = true;
-                dtpPSubscriptionDateCancelled.Text = StringHelper.DateToLocalizedString(DateTime.Now, false);
-                FSubscriptionDR.DateCancelled = DateTime.Now.Date;
+
+                if (dtpPSubscriptionDateCancelled.Text.Length == 0)
+                {
+                    // only initialize date if value is not set yet
+                    dtpPSubscriptionDateCancelled.Text = StringHelper.DateToLocalizedString(DateTime.Now, false);
+                    FSubscriptionDR.DateCancelled = DateTime.Now.Date;
+                }
 
                 /* clear any previously supplied partner key */
-                FSubscriptionDR.GiftFromKey = 0;
-                txtPSubscriptionGiftFromKey.Text = "0";
+                if (!FSubscriptionDR.IsGiftFromKeyNull())
+                {
+                    FSubscriptionDR.SetGiftFromKeyNull();
+                }
+
+                // following check prevents save button to be wrongly enabled during initialization of tab
+                if (txtPSubscriptionGiftFromKey.Text != "0000000000")
+                {
+                    txtPSubscriptionGiftFromKey.Text = "0";
+                }
+
                 this.txtPSubscriptionGiftFromKey.Enabled = false;
 
                 /* allow them to enter a reason ended */
                 this.cmbPSubscriptionReasonSubsCancelledCode.Enabled = true;
 
-                this.cmbPSubscriptionReasonSubsCancelledCode.DropDown();
+                // don't open drop down box during initialization
+                if (!FInitializationRunning)
+                {
+                    this.cmbPSubscriptionReasonSubsCancelledCode.DropDown();
+                }
             }
             else
             {
                 /* All other Cases */
                 /* clear any previously supplied partner key */
-                FSubscriptionDR.GiftFromKey = 0;
-                txtPSubscriptionGiftFromKey.Text = "0";
+                if (!FSubscriptionDR.IsGiftFromKeyNull())
+                {
+                    FSubscriptionDR.SetGiftFromKeyNull();
+                }
+
+                // following check prevents save button to be wrongly enabled during initialization of tab
+                if (txtPSubscriptionGiftFromKey.Text != "0000000000")
+                {
+                    txtPSubscriptionGiftFromKey.Text = "0";
+                }
+
                 this.txtPSubscriptionGiftFromKey.Enabled = false;
 
                 /* clear any previously supplied Date Ended */
-                FSubscriptionDR.SetDateCancelledNull();
+                if (!FSubscriptionDR.IsDateCancelledNull())
+                {
+                    FSubscriptionDR.SetDateCancelledNull();
+                }
+
                 this.dtpPSubscriptionDateCancelled.Text = "";
                 this.dtpPSubscriptionDateCancelled.Enabled = false;
 
@@ -359,9 +393,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Sets the Publication cost
         /// </summary>
         /// <returns>void</returns>
-        private void SetupPublicationCost(double APublicationCost, String ACurrencyCode)
+        private void SetupPublicationCost(decimal APublicationCost, String ACurrencyCode)
         {
-            this.txtPublicationCost.NumberValueDouble = APublicationCost;
+            this.txtPublicationCost.NumberValueDecimal = APublicationCost;
             this.txtPublicationCost.CurrencyCode = ACurrencyCode;
         }
 
@@ -385,7 +419,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     /* if the Subscription has a cost, set it, else set the cost to 0. */
                     if (PublicationCostRows.Length > 0)
                     {
-                        SetupPublicationCost((double)((PPublicationCostRow)PublicationCostRows[0]).PublicationCost,
+                        SetupPublicationCost((decimal)((PPublicationCostRow)PublicationCostRows[0]).PublicationCost,
                             ((PPublicationCostRow)PublicationCostRows[0]).CurrencyCode);
                     }
                     else
@@ -402,53 +436,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CheckPublicationValidity()
         {
-            DataTable DataCachePublicationListTable;
-            PPublicationRow TmpRow;
-
             if (FInitializationRunning)
             {
                 /* don't do his check while a new record is being displayed */
                 return;
             }
 
-            try
-            {
-                /* check if the publication selected is valid, if not, gives warning. */
-                DataCachePublicationListTable = TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationList);
-                TmpRow = (PPublicationRow)DataCachePublicationListTable.Rows.Find(
-                    new Object[] { this.cmbPSubscriptionPublicationCode.GetSelectedString() });
-
-                if (TmpRow.ValidPublication)
-                {
-                    FSelectedPublicationCode = cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue;
-                }
-                else
-                {
-                    if (MessageBox.Show("Please note that Publication '" + this.cmbPSubscriptionPublicationCode.GetSelectedString() +
-                            "'\r\nis no longer available." + "\r\n" + "" + "Do you still want to add a subscription for it?",
-                            "Create Subscription",
-                            MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                            MessageBoxDefaultButton.Button2) == DialogResult.No)
-                    {
-                        /* If user selects not to use the publication, the recent publication code is selected. */
-                        if (FSelectedPublicationCode != null)
-                        {
-                            this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue = FSelectedPublicationCode;
-                        }
-                        else
-                        {
-                            this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedIndex = -1;
-                        }
-                    }
-                    else
-                    {
-                        FSelectedPublicationCode = cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
+            TUCPartnerSubscriptionsLogic.CheckPublicationComboValidValue(cmbPSubscriptionPublicationCode);
         }
 
         private void ValidateDataManual(PSubscriptionRow ARow)

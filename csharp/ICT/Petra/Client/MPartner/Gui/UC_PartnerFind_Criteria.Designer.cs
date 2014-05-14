@@ -117,6 +117,31 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlMailingAddressOnly = new System.Windows.Forms.Panel();
             this.chkMailingAddressOnly = new System.Windows.Forms.CheckBox();
             this.lblMailingAddressOnly = new System.Windows.Forms.Label();
+            this.pnlAccountName = new System.Windows.Forms.Panel();
+            this.critAccountName = new Ict.Petra.Client.CommonControls.SplitButton();
+            this.txtAccountName = new System.Windows.Forms.TextBox();
+            this.lblAccountName = new System.Windows.Forms.Label();
+            this.pnlAccountNumber = new System.Windows.Forms.Panel();
+            this.critAccountNumber = new Ict.Petra.Client.CommonControls.SplitButton();
+            this.txtAccountNumber = new System.Windows.Forms.TextBox();
+            this.lblAccountNumber = new System.Windows.Forms.Label();
+            this.pnlIban = new System.Windows.Forms.Panel();
+            this.critIban = new Ict.Petra.Client.CommonControls.SplitButton();
+            this.txtIban = new System.Windows.Forms.TextBox();
+            this.lblIban = new System.Windows.Forms.Label();
+            this.pnlBic = new System.Windows.Forms.Panel();
+            this.critBic = new Ict.Petra.Client.CommonControls.SplitButton();
+            this.lblBic = new System.Windows.Forms.Label();
+            this.txtBic = new System.Windows.Forms.TextBox();
+            this.pnlBankKey = new System.Windows.Forms.Panel();
+            this.txtBankKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
+            this.lblBankKey = new System.Windows.Forms.Label();
+            this.pnlBankName = new System.Windows.Forms.Panel();
+            this.lblBankName = new System.Windows.Forms.Label();
+            this.cmbBankName = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.pnlBankCode = new System.Windows.Forms.Panel();
+            this.lblBankCode = new System.Windows.Forms.Label();
+            this.cmbBankCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.tipUC = new System.Windows.Forms.ToolTip(this.components);
             this.spcCriteria.Panel1.SuspendLayout();
             this.spcCriteria.Panel2.SuspendLayout();
@@ -140,6 +165,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlCounty.SuspendLayout();
             this.pnlCountry.SuspendLayout();
             this.pnlMailingAddressOnly.SuspendLayout();
+            this.pnlAccountName.SuspendLayout();
+            this.pnlAccountNumber.SuspendLayout();
+            this.pnlIban.SuspendLayout();
+            this.pnlBic.SuspendLayout();
+            this.pnlBankCode.SuspendLayout();
             this.SuspendLayout();
 
             //
@@ -156,7 +186,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.Location = new System.Drawing.Point(4, 0);
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.Name = "ucoPartnerFind_PersonnelCriteria_CollapsiblePart";
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.Size = new System.Drawing.Size(302, 126);
-            this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.SubCaption = null;
+// TODO            this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.SubCaption = null;
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.TabIndex = 0;
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.Visible = false;
 
@@ -433,6 +463,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlLeftColumn.Controls.Add(this.pnlCounty);
             this.pnlLeftColumn.Controls.Add(this.pnlCountry);
             this.pnlLeftColumn.Controls.Add(this.pnlMailingAddressOnly);
+            this.pnlLeftColumn.Controls.Add(this.pnlAccountName);
+            this.pnlLeftColumn.Controls.Add(this.pnlAccountNumber);
+            this.pnlLeftColumn.Controls.Add(this.pnlIban);
+            this.pnlLeftColumn.Controls.Add(this.pnlBic);
+            this.pnlLeftColumn.Controls.Add(this.pnlBankCode);
             this.pnlLeftColumn.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlLeftColumn.Location = new System.Drawing.Point(0, 0);
             this.pnlLeftColumn.Margin = new System.Windows.Forms.Padding(0);
@@ -823,7 +858,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlAddress1.Name = "pnlAddress1";
             this.pnlAddress1.Size = new System.Drawing.Size(304, 21);
             this.pnlAddress1.TabIndex = 2;
-            this.pnlAddress1.Tag = "BeginGroup";
+            this.pnlAddress1.Tag = Ict.Common.Controls.Formatting.TSingleLineFlow.BeginGroupIndicator;
 
             //
             // critAddress1
@@ -1062,7 +1097,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlMailingAddressOnly.Name = "pnlMailingAddressOnly";
             this.pnlMailingAddressOnly.Size = new System.Drawing.Size(304, 21);
             this.pnlMailingAddressOnly.TabIndex = 2;
-            this.pnlMailingAddressOnly.Tag = "BeginGroup";
+            this.pnlMailingAddressOnly.Tag = Ict.Common.Controls.Formatting.TSingleLineFlow.BeginGroupIndicator;
 
             //
             // chkMailingAddressOnly
@@ -1084,6 +1119,337 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblMailingAddressOnly.TabIndex = 0;
             this.lblMailingAddressOnly.Text = "Mailin&g Addresses Only:";
             this.lblMailingAddressOnly.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // pnlAccountName
+            //
+            this.pnlAccountName.Controls.Add(this.critAccountName);
+            this.pnlAccountName.Controls.Add(this.txtAccountName);
+            this.pnlAccountName.Controls.Add(this.lblAccountName);
+            this.pnlAccountName.Location = new System.Drawing.Point(2, 54);
+            this.pnlAccountName.Name = "pnlAccountName";
+            this.pnlAccountName.Size = new System.Drawing.Size(304, 21);
+            this.pnlAccountName.TabIndex = 2;
+            this.pnlAccountName.Visible = false;
+
+            //
+            // critAccountName
+            //
+            this.critAccountName.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.critAccountName.BackColor = System.Drawing.SystemColors.Control;
+            this.critAccountName.ControlMode = Ict.Petra.Client.CommonControls.TControlMode.Matches;
+            this.critAccountName.DataBindings.Add(new System.Windows.Forms.Binding("SelectedValue", this.FFindCriteriaDataTable, "AccountNameMatch",
+                    true));
+            this.critAccountName.Location = new System.Drawing.Point(260, 2);
+            this.critAccountName.Name = "critAccountName";
+            this.critAccountName.SelectedValue = "BEGINS";
+            this.critAccountName.Size = new System.Drawing.Size(41, 18);
+            this.critAccountName.TabIndex = 4;
+            this.critAccountName.TabStop = false;
+
+            //
+            // txtAccountName
+            //
+            this.txtAccountName.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.txtAccountName.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.FFindCriteriaDataTable, "AccountName", true));
+            this.txtAccountName.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtAccountName.Location = new System.Drawing.Point(146, 0);
+            this.txtAccountName.Name = "txtAccountName";
+            this.txtAccountName.Size = new System.Drawing.Size(112, 21);
+            this.txtAccountName.TabIndex = 1;
+            this.txtAccountName.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtAccountName_KeyUp);
+            this.txtAccountName.Leave += new EventHandler(this.TxtAccountName_Leave);
+
+            //
+            // lblAccountName
+            //
+            this.lblAccountName.Location = new System.Drawing.Point(2, 2);
+            this.lblAccountName.Name = "lblAccountName";
+            this.lblAccountName.Size = new System.Drawing.Size(142, 23);
+            this.lblAccountName.TabIndex = 0;
+            this.lblAccountName.Text = "Account Name:";
+            this.lblAccountName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // pnlAccountNumber
+            //
+            this.pnlAccountNumber.Controls.Add(this.critAccountNumber);
+            this.pnlAccountNumber.Controls.Add(this.txtAccountNumber);
+            this.pnlAccountNumber.Controls.Add(this.lblAccountNumber);
+            this.pnlAccountNumber.Location = new System.Drawing.Point(2, 54);
+            this.pnlAccountNumber.Name = "pnlAccountNumber";
+            this.pnlAccountNumber.Size = new System.Drawing.Size(304, 21);
+            this.pnlAccountNumber.TabIndex = 2;
+            this.pnlAccountNumber.Visible = false;
+
+            //
+            // critAccountNumber
+            //
+            this.critAccountNumber.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.critAccountNumber.BackColor = System.Drawing.SystemColors.Control;
+            this.critAccountNumber.ControlMode = Ict.Petra.Client.CommonControls.TControlMode.Matches;
+            this.critAccountNumber.DataBindings.Add(new System.Windows.Forms.Binding("SelectedValue", this.FFindCriteriaDataTable,
+                    "AccountNumberMatch",
+                    true));
+            this.critAccountNumber.Location = new System.Drawing.Point(260, 2);
+            this.critAccountNumber.Name = "critAccountNumber";
+            this.critAccountNumber.SelectedValue = "BEGINS";
+            this.critAccountNumber.Size = new System.Drawing.Size(41, 18);
+            this.critAccountNumber.TabIndex = 4;
+            this.critAccountNumber.TabStop = false;
+
+            //
+            // txtAccountNumber
+            //
+            this.txtAccountNumber.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.txtAccountNumber.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.FFindCriteriaDataTable, "AccountNumber", true));
+            this.txtAccountNumber.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtAccountNumber.Location = new System.Drawing.Point(146, 0);
+            this.txtAccountNumber.Name = "txtAccountNumber";
+            this.txtAccountNumber.Size = new System.Drawing.Size(112, 21);
+            this.txtAccountNumber.TabIndex = 1;
+            this.txtAccountNumber.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtAccountNumber_KeyUp);
+            this.txtAccountNumber.Leave += new EventHandler(this.TxtAccountNumber_Leave);
+
+            //
+            // lblAccountNumber
+            //
+            this.lblAccountNumber.Location = new System.Drawing.Point(2, 2);
+            this.lblAccountNumber.Name = "lblAccountNumber";
+            this.lblAccountNumber.Size = new System.Drawing.Size(142, 23);
+            this.lblAccountNumber.TabIndex = 0;
+            this.lblAccountNumber.Text = "Account Number:";
+            this.lblAccountNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // pnlIban
+            //
+            this.pnlIban.Controls.Add(this.critIban);
+            this.pnlIban.Controls.Add(this.txtIban);
+            this.pnlIban.Controls.Add(this.lblIban);
+            this.pnlIban.Location = new System.Drawing.Point(2, 78);
+            this.pnlIban.Name = "pnlIban";
+            this.pnlIban.Size = new System.Drawing.Size(304, 21);
+            this.pnlIban.TabIndex = 2;
+            this.pnlIban.Tag = Ict.Common.Controls.Formatting.TSingleLineFlow.BeginGroupIndicator;
+
+            //
+            // critIban
+            //
+            this.critIban.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.critIban.BackColor = System.Drawing.SystemColors.Control;
+            this.critIban.ControlMode = Ict.Petra.Client.CommonControls.TControlMode.Matches;
+            this.critIban.DataBindings.Add(new System.Windows.Forms.Binding("SelectedValue", this.FFindCriteriaDataTable, "IbanMatch", true));
+            this.critIban.Location = new System.Drawing.Point(260, 2);
+            this.critIban.Name = "critIban";
+            this.critIban.SelectedValue = "BEGINS";
+            this.critIban.Size = new System.Drawing.Size(41, 18);
+            this.critIban.TabIndex = 4;
+            this.critIban.TabStop = false;
+
+            //
+            // txtIban
+            //
+            this.txtIban.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.txtIban.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.FFindCriteriaDataTable, "Iban", true));
+            this.txtIban.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtIban.Location = new System.Drawing.Point(146, 0);
+            this.txtIban.Name = "txtIban";
+            this.txtIban.Size = new System.Drawing.Size(112, 21);
+            this.txtIban.TabIndex = 1;
+            this.txtIban.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtIban_KeyUp);
+            this.txtIban.Leave += new EventHandler(this.TxtIban_Leave);
+
+            //
+            // lblIban
+            //
+            this.lblIban.Location = new System.Drawing.Point(2, 2);
+            this.lblIban.Name = "lblIban";
+            this.lblIban.Size = new System.Drawing.Size(142, 23);
+            this.lblIban.TabIndex = 0;
+            this.lblIban.Text = "IBAN:";
+            this.lblIban.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // pnlBic
+            //
+            this.pnlBic.BackColor = System.Drawing.Color.Transparent;
+            this.pnlBic.Controls.Add(this.critBic);
+            this.pnlBic.Controls.Add(this.lblBic);
+            this.pnlBic.Controls.Add(this.txtBic);
+            this.pnlBic.Location = new System.Drawing.Point(2, 197);
+            this.pnlBic.Name = "pnlBic";
+            this.pnlBic.Size = new System.Drawing.Size(304, 21);
+            this.pnlBic.TabIndex = 0;
+
+            //
+            // critBic
+            //
+            this.critBic.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.critBic.BackColor = System.Drawing.SystemColors.Control;
+            this.critBic.ControlMode = Ict.Petra.Client.CommonControls.TControlMode.Matches;
+            this.critBic.DataBindings.Add(new System.Windows.Forms.Binding("SelectedValue", this.FFindCriteriaDataTable, "BicMatch", true));
+            this.critBic.Location = new System.Drawing.Point(260, 2);
+            this.critBic.Name = "critBic";
+            this.critBic.SelectedValue = "BEGINS";
+            this.critBic.Size = new System.Drawing.Size(41, 18);
+            this.critBic.TabIndex = 4;
+            this.critBic.TabStop = false;
+
+            //
+            // lblBic
+            //
+            this.lblBic.Location = new System.Drawing.Point(2, 2);
+            this.lblBic.Name = "lblBic";
+            this.lblBic.Size = new System.Drawing.Size(142, 23);
+            this.lblBic.TabIndex = 0;
+            this.lblBic.Text = "BIC:";
+            this.lblBic.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // txtBic
+            //
+            this.txtBic.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.txtBic.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.FFindCriteriaDataTable, "Bic", true));
+            this.txtBic.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtBic.Location = new System.Drawing.Point(146, 0);
+            this.txtBic.Name = "txtBic";
+            this.txtBic.Size = new System.Drawing.Size(112, 21);
+            this.txtBic.TabIndex = 1;
+            this.txtBic.Leave += new System.EventHandler(this.TxtBic_Leave);
+            this.txtBic.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtBic_KeyUp);
+
+            //
+            // pnlBankKey
+            //
+            this.pnlBankKey.Controls.Add(this.lblBankKey);
+            this.pnlBankKey.Controls.Add(this.txtBankKey);
+            this.pnlBankKey.Location = new System.Drawing.Point(2, 100);
+            this.pnlBankKey.Name = "pnlBankKey";
+            this.pnlBankKey.Size = new System.Drawing.Size(262, 22);
+            this.pnlBankKey.TabIndex = 0;
+
+            //
+            // lblBankKey
+            //
+            this.lblBankKey.Location = new System.Drawing.Point(2, 2);
+            this.lblBankKey.Name = "lblBankKey";
+            this.lblBankKey.Size = new System.Drawing.Size(142, 23);
+            this.lblBankKey.TabIndex = 0;
+            this.lblBankKey.Text = "Bank Key:";
+            this.lblBankKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // txtBankKey
+            //
+            this.txtBankKey.Name = "txtBankKey";
+            this.txtBankKey.Location = new System.Drawing.Point(146, 0);
+            this.txtBankKey.ASpecialSetting = true;
+            this.txtBankKey.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.txtBankKey.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.FFindCriteriaDataTable, "BankKey", true));
+            this.txtBankKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtBankKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.Bank;
+            this.txtBankKey.PartnerClass = "BANK";
+            this.txtBankKey.MaxLength = 32767;
+            this.txtBankKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtBankKey.TextBoxWidth = 80;
+            this.txtBankKey.ButtonWidth = 40;
+            this.txtBankKey.ReadOnly = false;
+            this.txtBankKey.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtBankKey.ButtonText = "Find";
+            this.txtBankKey.TabIndex = 1;
+            this.txtBankKey.LabelVisible = false;
+            this.txtBankKey.ValueChanged += new TDelegatePartnerChanged(this.PartnerKeyChanged);
+            this.txtBankKey.Leave += new EventHandler(this.PartnerKeyChanged);
+
+            //
+            // pnlBankName
+            //
+            this.pnlBankName.Controls.Add(this.lblBankName);
+            this.pnlBankName.Controls.Add(this.cmbBankName);
+            this.pnlBankName.Location = new System.Drawing.Point(2, 100);
+            this.pnlBankName.Name = "pnlBankName";
+            this.pnlBankName.Size = new System.Drawing.Size(304, 19);
+            this.pnlBankName.TabIndex = 0;
+
+            //
+            // lblBankName
+            //
+            this.lblBankName.Location = new System.Drawing.Point(2, 2);
+            this.lblBankName.Name = "lblBankName";
+            this.lblBankName.Size = new System.Drawing.Size(142, 23);
+            this.lblBankName.TabIndex = 0;
+            this.lblBankName.Text = "Bank/Branch Name:";
+            this.lblBankName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // cmbBankName
+            //
+            this.cmbBankName.Name = "txtBankName";
+            this.cmbBankName.Location = new System.Drawing.Point(146, 0);
+            this.cmbBankName.Size = new System.Drawing.Size(175, 19);
+            this.cmbBankName.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbBankName.ComboBoxWidth = 175;
+            this.cmbBankName.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbBankName.TabIndex = 1;
+            this.cmbBankName.RemoveDescriptionLabel();
+
+            //
+            // pnlBankCode
+            //
+            this.pnlBankCode.Controls.Add(this.lblBankCode);
+            this.pnlBankCode.Controls.Add(this.cmbBankCode);
+            this.pnlBankCode.Location = new System.Drawing.Point(2, 100);
+            this.pnlBankCode.Name = "pnlBankCode";
+            this.pnlBankCode.Size = new System.Drawing.Size(304, 21);
+            this.pnlBankCode.TabIndex = 0;
+
+            //
+            // lblBankCode
+            //
+            this.lblBankCode.Location = new System.Drawing.Point(2, 2);
+            this.lblBankCode.Name = "lblBankCode";
+            this.lblBankCode.Size = new System.Drawing.Size(142, 23);
+            this.lblBankCode.TabIndex = 0;
+            this.lblBankCode.Text = "Branch/Bank Code:";
+            this.lblBankCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // cmbBankCode
+            //
+            this.cmbBankCode.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbBankCode.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbBankCode.Location = new System.Drawing.Point(146, 2);
+            this.cmbBankCode.Size = new System.Drawing.Size(175, 19);
+            this.cmbBankCode.Name = "txtBankCode";
+            this.cmbBankCode.ComboBoxWidth = 175;
+            this.cmbBankCode.TabIndex = 1;
+            this.cmbBankCode.RemoveDescriptionLabel();
 
             //
             // TUC_PartnerFindCriteria
@@ -1132,6 +1498,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlCounty.PerformLayout();
             this.pnlCountry.ResumeLayout(false);
             this.pnlMailingAddressOnly.ResumeLayout(false);
+            this.pnlAccountName.ResumeLayout(false);
+            this.pnlAccountName.PerformLayout();
+            this.pnlAccountNumber.ResumeLayout(false);
+            this.pnlAccountNumber.PerformLayout();
+            this.pnlIban.ResumeLayout(false);
+            this.pnlIban.PerformLayout();
+            this.pnlBic.ResumeLayout(false);
+            this.pnlBic.PerformLayout();
+            this.pnlBankCode.ResumeLayout(false);
+            this.pnlBankCode.PerformLayout();
             this.ResumeLayout(false);
         }
 
@@ -1207,5 +1583,30 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.RadioButton rbtPrivate;
         private System.Windows.Forms.ToolTip tipUC;
         private System.Windows.Forms.SplitContainer spcCriteria;
+        private System.Windows.Forms.Panel pnlAccountName;
+        private System.Windows.Forms.TextBox txtAccountName;
+        private System.Windows.Forms.Label lblAccountName;
+        private System.Windows.Forms.Panel pnlAccountNumber;
+        private System.Windows.Forms.TextBox txtAccountNumber;
+        private System.Windows.Forms.Label lblAccountNumber;
+        private System.Windows.Forms.Panel pnlIban;
+        private System.Windows.Forms.TextBox txtIban;
+        private System.Windows.Forms.Label lblIban;
+        private System.Windows.Forms.Panel pnlBankKey;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtBankKey;
+        private System.Windows.Forms.Label lblBankKey;
+        private System.Windows.Forms.Panel pnlBankName;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbBankName;
+        private System.Windows.Forms.Label lblBankName;
+        private System.Windows.Forms.Panel pnlBankCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbBankCode;
+        private System.Windows.Forms.Label lblBankCode;
+        private System.Windows.Forms.Panel pnlBic;
+        private System.Windows.Forms.Label lblBic;
+        private System.Windows.Forms.TextBox txtBic;
+        private SplitButton critAccountName;
+        private SplitButton critAccountNumber;
+        private SplitButton critIban;
+        private SplitButton critBic;
     }
 }

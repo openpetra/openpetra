@@ -414,6 +414,41 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// the label attached to the combobox
+        public Label AttachedLabel
+        {
+            get
+            {
+                return this.lblDescription;
+            }
+        }
+
+        /// the text displayed in the combobox label including an inactive prefix
+        public string LabelTextFull
+        {
+            get
+            {
+                return this.lblDescription.Text;
+            }
+        }
+
+        /// the text displayed in the combobox label with an inactive prefix removed
+        public string LabelTextOriginal
+        {
+            get
+            {
+                string labelText = this.lblDescription.Text;
+                string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
+
+                if (labelText.StartsWith(inactiveIdentifier))
+                {
+                    labelText = labelText.Substring(inactiveIdentifier.Length);
+                }
+
+                return labelText;
+            }
+        }
+
         /// <summary>
         /// set the string that should be selected;
         /// uses TCmbVersatile.SetSelectedString
@@ -437,9 +472,9 @@ namespace Ict.Common.Controls
         /// get the selected string
         /// uses TCmbVersatile.GetSelectedString
         /// </summary>
-        public string GetSelectedString()
+        public string GetSelectedString(Int32 Idx = -1)
         {
-            return this.cmbCombobox.GetSelectedString();
+            return this.cmbCombobox.GetSelectedString(Idx);
         }
 
         /// <summary>
@@ -663,11 +698,51 @@ namespace Ict.Common.Controls
             this.Invalidate();
         }
 
+        /// <summary>
+        /// Clear all the contents of the combobox
+        /// </summary>
+        public void Clear()
+        {
+            this.cmbCombobox.DataSource = null;
+            this.cmbCombobox.Text = string.Empty;
+        }
+
         #region Event handling
+
+        /// <summary>
+        /// Forces a refresh of the combobox label
+        /// </summary>
+        public void RefreshLabel()
+        {
+            RefreshLabel(null, null);
+            this.Invalidate();
+        }
 
         private void RefreshLabel(object sender, EventArgs e)
         {
-            this.lblDescription.Text = cmbCombobox.GetSelectedDescription();
+            string descr = cmbCombobox.GetSelectedDescription();
+
+            this.lblDescription.Text = descr;
+
+            if (this.lblDescription.Visible)
+            {
+                HighlightLabelForInactiveItems(descr);
+            }
+        }
+
+        private void HighlightLabelForInactiveItems(string AItemDescription)
+        {
+            string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
+            bool itemIsActive = !(AItemDescription.StartsWith(inactiveIdentifier));
+
+            if (itemIsActive && (this.lblDescription.BackColor != System.Drawing.SystemColors.Control))
+            {
+                this.lblDescription.BackColor = System.Drawing.SystemColors.Control;
+            }
+            else if (!itemIsActive && (this.lblDescription.BackColor != System.Drawing.Color.PaleVioletRed))
+            {
+                this.lblDescription.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
         }
 
         /// <summary>

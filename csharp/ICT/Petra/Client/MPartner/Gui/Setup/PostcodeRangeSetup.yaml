@@ -12,32 +12,60 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actAccept: {Label=&Accept, ActionClick=BtnAccept_Click}
+        actCancel: {Label=&Cancel, ActionClick=BtnCancel_Click}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlRegionName, pnlGridAndModal, pnlDetails]
+            Dock: Fill
+        pnlRegionName:
+            Dock: Top
+            Controls: [txtRegionName]
+            Visible: false
+        pnlGridAndModal:
+            Controls: [pnlGrid, pnlAcceptCancelButtons]
+            ControlsOrientation: horizontal
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailRange, txtDetailFrom, txtDetailTo]
+            FindControls: [txtDetailRange, txtDetailFrom, txtDetailTo]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
+        pnlAcceptCancelButtons:
+            Dock: Right
+            Controls: [btnAccept, btnCancel]
+            ControlsOrientation: vertical
+            Visible: false
         btnNew:
             Action: actNew
             Width: 80
         btnDelete:
             Action: actDelete
             Width: 80
+        btnAccept:
+            Action: actAccept
+            Width: 80
+        btnCancel:
+            Action: actCancel
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailRange, DetailFrom, DetailTo]
+            SortOrder: DetailRange ASC
             ActionFocusRow: FocusedRowChanged
+            SortOrder: DetailRange ASC
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailRange]
                 Row1: [txtDetailFrom, txtDetailTo]
+        txtRegionName: {ReadOnly=true, Stretch=horizontally}
         txtDetailRange: {Label=Range Name, Width=200}
         txtDetailFrom: {Label=From, Width=120}
         txtDetailTo: {Label=To, Width=120}

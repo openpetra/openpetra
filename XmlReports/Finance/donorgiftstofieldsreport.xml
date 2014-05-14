@@ -123,11 +123,11 @@
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 							
 							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n
 						</value>
@@ -192,7 +192,7 @@
 							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
 							AND gift.a_ledger_number_i ={param_ledger_number_i}
 							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
 							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							
@@ -212,14 +212,14 @@
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
 						<value>
-							AND detail.a_gift_amount_n &gt;= {param_min_amount}
-							AND detail.a_gift_amount_n &lt;= {param_max_amount}
+							AND detail.a_gift_amount_n &gt;= {{param_min_amount}}
+							AND detail.a_gift_amount_n &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, International)">
 						<value>
-							AND detail.a_gift_amount_intl_n &gt;= {param_min_amount}
-							AND detail.a_gift_amount_intl_n &lt;= {param_max_amount}
+							AND detail.a_gift_amount_intl_n &gt;= {{param_min_amount}}
+							AND detail.a_gift_amount_intl_n &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_field_selection}, selected_fields)">
@@ -234,7 +234,7 @@
 					</queryDetail>
 					<queryDetail condition="eq({param_donor}, One Donor)">
 						<value>
-							AND gift.p_donor_key_n = {param_donorkey}
+							AND gift.p_donor_key_n = {{param_donorkey}}
 						</value>
 					</queryDetail>
 					<queryDetail>
@@ -285,9 +285,9 @@
 						WHERE
 								detail.a_ledger_number_i = gift.a_ledger_number_i
 							AND gift.p_donor_key_n = {DonorKey}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
 							AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n 
 							AND gift.a_ledger_number_i ={param_ledger_number_i}
@@ -295,11 +295,11 @@
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							
 							AND PUB_a_motivation_group.a_motivation_group_code_c = detail.a_motivation_group_code_c
-							AND PUB_a_motivation_group.a_ledger_number_i =  {param_ledger_number_i}
+							AND PUB_a_motivation_group.a_ledger_number_i =  {{param_ledger_number_i}}
 							
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
-							AND PUB_a_motivation_detail.a_ledger_number_i  = {param_ledger_number_i}
+							AND PUB_a_motivation_detail.a_ledger_number_i  = {{param_ledger_number_i}{
 				
 						 </value>
 					</queryDetail>
@@ -315,28 +315,28 @@
 					</queryDetail>
 					<queryDetail condition="and(eq({param_currency}, Base), eq({param_report_type}, Complete))">
 						<value>
-							AND detail.a_gift_amount_n &gt;= {param_min_amount}
-							AND detail.a_gift_amount_n &lt;= {param_max_amount}
+							AND detail.a_gift_amount_n &gt;= {{param_min_amount}}
+							AND detail.a_gift_amount_n &lt;= {{param_max_amount}}
 							ORDER BY gift.a_date_entered_d
 						 </value>
 					</queryDetail>
 					<queryDetail condition="and(eq({param_currency}, International), eq({param_report_type}, Complete))">
 						<value>
-							AND detail.a_gift_amount_intl_n &gt;= {param_min_amount}
-							AND detail.a_gift_amount_intl_n &lt;= {param_max_amount}
+							AND detail.a_gift_amount_intl_n &gt;= {{param_min_amount}}
+							AND detail.a_gift_amount_intl_n &lt;= {{param_max_amount}}
 							ORDER BY gift.a_date_entered_d
 						 </value>
 					</queryDetail>
 					<queryDetail condition="and(eq({param_currency}, Base), eq({param_report_type}, Summary))">
 						<value>
-							AND SUM (detail.a_gift_amount_n) &gt;= {param_min_amount}
-							AND SUM (detail.a_gift_amount_n) &lt;= {param_max_amount}
+							AND SUM (detail.a_gift_amount_n) &gt;= {{param_min_amount}}
+							AND SUM (detail.a_gift_amount_n) &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="and(eq({param_currency}, International), eq({param_report_type}, Summary))">
 						<value>
-							AND SUM (detail.a_gift_amount_intl_n) &gt;= {param_min_amount}
-							AND SUM (detail.a_gift_amount_intl_n) &lt;= {param_max_amount}
+							AND SUM (detail.a_gift_amount_intl_n) &gt;= {{param_min_amount}}
+							AND SUM (detail.a_gift_amount_intl_n) &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<!--queryDetail condition="eq({param_report_type}, Complete)">
@@ -396,22 +396,22 @@
 							 PUB_a_motivation_detail
 						WHERE
 								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND gift.p_donor_key_n = {DonorKey}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND gift.p_donor_key_n = {{DonorKey}}
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
 							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
 							AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n 
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							
 							AND PUB_a_motivation_group.a_motivation_group_code_c = detail.a_motivation_group_code_c
-							AND PUB_a_motivation_group.a_ledger_number_i =  {param_ledger_number_i}
+							AND PUB_a_motivation_group.a_ledger_number_i =  {{param_ledger_number_i}}
 							
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
-							AND PUB_a_motivation_detail.a_ledger_number_i  = {param_ledger_number_i}
+							AND PUB_a_motivation_detail.a_ledger_number_i  = {{param_ledger_number_i}}
 				
 							AND ( gift.a_method_of_giving_code_c = 'PO'
 								 OR  gift.a_method_of_giving_code_c = 'CASH'
@@ -437,15 +437,15 @@
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
 						<value>
-							AND detail.a_gift_amount_n &gt;= {param_min_amount}
-							AND detail.a_gift_amount_n &lt;= {param_max_amount}
+							AND detail.a_gift_amount_n &gt;= {{param_min_amount}}
+							AND detail.a_gift_amount_n &lt;= {{param_max_amount}}
 							ORDER BY gift.a_date_entered_d
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, International)">
 						<value>
-							AND detail.a_gift_amount_intl_n &gt;= {param_min_amount}
-							AND detail.a_gift_amount_intl_n &lt;= {param_max_amount}
+							AND detail.a_gift_amount_intl_n &gt;= {{param_min_amount}}
+							AND detail.a_gift_amount_intl_n &lt;= {{param_max_amount}}
 							ORDER BY gift.a_date_entered_d
 						 </value>
 					</queryDetail>
@@ -472,26 +472,26 @@
 							 PUB_a_gift_batch
 						WHERE
 								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND gift.p_donor_key_n = {DonorKey}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND gift.p_donor_key_n = {{DonorKey}}
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 						</value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
 						<value>
-							HAVING SUM (detail.a_gift_amount_n) &gt;= {param_min_amount}
-							AND SUM (detail.a_gift_amount_n) &lt;= {param_max_amount}
+							HAVING SUM (detail.a_gift_amount_n) &gt;= {{param_min_amount}}
+							AND SUM (detail.a_gift_amount_n) &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, International)">
 						<value>
-							HAVING SUM (detail.a_gift_amount_intl_n) &gt;= {param_min_amount}
-							AND SUM (detail.a_gift_amount_intl_n) &lt;= {param_max_amount}
+							HAVING SUM (detail.a_gift_amount_intl_n) &gt;= {{param_min_amount}}
+							AND SUM (detail.a_gift_amount_intl_n) &lt;= {{param_max_amount}}
 						 </value>
 					</queryDetail>
 				</query>

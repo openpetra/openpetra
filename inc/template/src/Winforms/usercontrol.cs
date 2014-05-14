@@ -87,13 +87,25 @@ namespace {#NAMESPACE}
         }
     }
 
-    /// <summary>todoComment</summary>
+    /// <summary>
+    /// Can be used by the Form/Control which contains this UserControl to
+    /// suppress the Change Detection (using FPetraUtilsObject.SuppressChangeDetection = false).
+    /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
+    /// </summary>
     public event System.EventHandler DataLoadingStarted;
 
-    /// <summary>todoComment</summary>
+    /// <summary>
+    /// Can be used by the Form/Control which contains this UserControl to
+    /// activate the Change Detection (using FPetraUtilsObject.SuppressChangeDetection = true).
+    /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
+    /// </summary>
     public event System.EventHandler DataLoadingFinished;
 
-    /// to avoid warning CS0067: unused event
+    /// <summary>
+    /// Raises the DataLoadingStarted Event if it is subscribed to.
+    /// </summary>
+    /// <param name="sender">Ignored.</param>
+    /// <param name="e">Ignored.</param>
     private void OnDataLoadingStarted(object sender, EventArgs e)
     {
         if (DataLoadingStarted != null)
@@ -102,7 +114,11 @@ namespace {#NAMESPACE}
         }
     }
 
-    /// to avoid warning CS0067: unused event
+    /// <summary>
+    /// Raises the DataLoadingFinished Event if it is subscribed to.
+    /// </summary>
+    /// <param name="sender">Ignored.</param>
+    /// <param name="e">Ignored.</param>
     private void OnDataLoadingFinished(object sender, EventArgs e)
     {
         if (DataLoadingFinished != null)
@@ -356,6 +372,7 @@ namespace {#NAMESPACE}
         object[] beforeEdit = ARow.ItemArray;
         ARow.BeginEdit();
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
         if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
         {
             ARow.CancelEdit();
@@ -373,6 +390,7 @@ namespace {#NAMESPACE}
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
 {#ENDIF SAVEDATA}
     }
 {#ENDIFN MASTERTABLE}
@@ -387,6 +405,7 @@ namespace {#NAMESPACE}
             object[] beforeEdit = ARow.ItemArray;
             ARow.BeginEdit();
             {#SAVEDETAILS}
+            {#SAVEDETAILSEXTRA}
             if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
             {
                 ARow.CancelEdit();

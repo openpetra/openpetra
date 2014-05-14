@@ -78,9 +78,9 @@
               FROM
                 PUB_p_partner, PUB_p_person
               WHERE
-                PUB_p_person.p_family_key_n = {FamilyKey}
+                PUB_p_person.p_family_key_n = {{FamilyKey}}
                 AND PUB_p_partner.p_partner_key_n = PUB_p_person.p_partner_key_n
-                AND PUB_p_partner.p_partner_key_n &lt;&gt; {StaffPartnerKey}
+                AND PUB_p_partner.p_partner_key_n &lt;&gt; {{StaffPartnerKey}}
             </value>
           </queryDetail>
         </query>
@@ -104,8 +104,8 @@
               FROM
                 PUB_pm_passport_details, PUB_p_person
               WHERE
-                  PUB_pm_passport_details.p_partner_key_n = {StaffPartnerKey}
-                AND PUB_p_person.p_partner_key_n = {StaffPartnerKey}
+                  PUB_pm_passport_details.p_partner_key_n = {{StaffPartnerKey}}
+                AND PUB_p_person.p_partner_key_n = {{StaffPartnerKey}}
             </value>
           </queryDetail>
         </query>
@@ -128,7 +128,7 @@
               FROM
                 PUB_pm_document
               WHERE
-                PUB_pm_document.p_partner_key_n = {StaffPartnerKey}
+                PUB_pm_document.p_partner_key_n = {{StaffPartnerKey}}
             </value>
           </queryDetail>
         </query>
@@ -143,7 +143,7 @@
         FROM
           PUB_p_partner
         WHERE
-          PUB_p_partner.p_partner_key_n = {pm_contact_partner_key_n}
+          PUB_p_partner.p_partner_key_n = {{pm_contact_partner_key_n}}
       </value>
           </queryDetail>
         </query>
@@ -158,7 +158,7 @@
               FROM
                 PUB_pm_personal_data
               WHERE
-                PUB_pm_personal_data.p_partner_key_n = {StaffPartnerKey}
+                PUB_pm_personal_data.p_partner_key_n = {{StaffPartnerKey}}
             </value>
           </queryDetail>
         </query>
@@ -179,9 +179,9 @@
               LEFT JOIN
                 PUB_pm_special_need
               ON 
-                PUB_pm_special_need.p_partner_key_n = {StaffPartnerKey}
+                PUB_pm_special_need.p_partner_key_n = {{StaffPartnerKey}}
               WHERE
-                PUB_p_partner.p_partner_key_n = {StaffPartnerKey}
+                PUB_p_partner.p_partner_key_n = {{StaffPartnerKey}}
             </value>
           </queryDetail>
         </query>
@@ -200,7 +200,7 @@
               FROM
                 PUB_pm_person_ability, PUB_pt_ability_level
               WHERE
-                PUB_pm_person_ability.p_partner_key_n = {StaffPartnerKey}
+                PUB_pm_person_ability.p_partner_key_n = {{StaffPartnerKey}}
                 AND PUB_pt_ability_level.pt_ability_level_i = PUB_pm_person_ability.pt_ability_level_i
             </value>
           </queryDetail>
@@ -220,7 +220,7 @@
               FROM
                 PUB_pm_person_language, PUB_p_language, PUB_pt_language_level
               WHERE
-                PUB_pm_person_language.p_partner_key_n = {StaffPartnerKey}
+                PUB_pm_person_language.p_partner_key_n = {{StaffPartnerKey}}
                 AND PUB_pm_person_language.pt_language_level_i = PUB_pt_language_level.pt_language_level_i
                 AND PUB_pm_person_language.p_language_code_c = PUB_p_language.p_language_code_c
             </value>
@@ -232,7 +232,7 @@
         <query>
           <queryDetail>
             <value text="NO-SQL"/>
-            <value function="GetPartnerBestAddress({StaffPartnerKey})"/>
+            <value function="GetPartnerBestAddress({{StaffPartnerKey}})"/>
           </queryDetail>
         </query>
       </calculation>
@@ -241,7 +241,7 @@
         <query>
           <queryDetail>
             <value text="NO-SQL"/>
-            <value function="GetPartnerBestAddress({pm_contact_partner_key_n})"/>
+            <value function="GetPartnerBestAddress({{pm_contact_partner_key_n}})"/>
             <value function="assign(TelephoneNumber, concatenate({TelephoneNumber}, {Extension}))"/>
             <value function="assign(TelephoneNumber, not known)" condition="lt(length({TelephoneNumber}), 1)"/>
             <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>

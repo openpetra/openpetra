@@ -30,54 +30,55 @@ RootNode:
             Controls: [grdFamilyMembers, pnlBottomButtons, pnlRightButtons]
             
         pnlRightButtons:
-            Controls: [pnlGridActions, pnlDockFamilyIDHelp]
-            Width: 300
+            Controls: [pnlGridActions]
+            Width: 130
             Dock: Right
         
         pnlGridActions:
-            Controls: [grpChangeFamilyID, pnlDockRefreshGrid]
+            Controls: [grpFamilyID, pnlDockRefreshGrid]
             Dock: Left
             
         grdFamilyMembers:
             Dock: Fill
 
-        grpChangeFamilyID: {Label=Change Family ID}
+        grpFamilyID: {Label=Family ID}
             Dock: Top
-            Width: 130
-            Controls: [btnFamilyMemberDemote, btnFamilyMemberPromote, btnEditFamilyID]
-        pnlDockFamilyIDHelp:
-            Controls: [btnFamilyIDHelp]
-            Dock: Right
-        
+            Width: 100
+            Controls: [pnlLittleButtons, pnlSecondRow]
+        pnlLittleButtons: {ControlsOrientation = horizontal}
+            Controls: [btnFamilyIDHelp, btnFamilyMemberDemote, btnFamilyMemberPromote]
+        pnlSecondRow:
+            Controls: [btnEditFamilyID]
+
         btnFamilyIDHelp: {NoLabel=true}
             Action: actFamilyIDHelp
-            Help: Family ID explained
-
-        txtFamilyPartnerKey: {NoLabel=true, ReadOnly=true, Type=PartnerKey}
-        btnEditFamily:
-            Action: actEditFamily
-        btnChangeFamily:
-            Action: actChangeFamily
-            
+            Width: 14
+            Tooltip: Family ID explained
         btnFamilyMemberDemote: {NoLabel=true}
             Action: actFamilyMemberDemote
-            Width: 110
-            Help: Demote Family ID
+            Width: 14
+            Tooltip: Demote Family ID
         btnFamilyMemberPromote: {NoLabel=true}
             Action: actFamilyMemberPromote
-            Width: 110
-            Help: Promote Family ID
+            Width: 14
+            Tooltip: Promote Family ID
         btnEditFamilyID:
-            # more width because there is no icon
-            Width: 130
+            Width: 108
             Action: actEditFamilyID
+
         pnlDockRefreshGrid:
             Dock: Top
             Controls: [btnRefreshGrid]
         btnRefreshGrid: {NoLabel=true}
             Action: actRefreshGrid
             Width: 14
-            Help: Refresh Family Members List (e.g. after moving Persons from/to Family)
+            Tooltip: Refresh Family Members List (e.g. after moving Persons from/to Family)
+
+        txtFamilyPartnerKey: {NoLabel=true, ReadOnly=true, Type=PartnerKey}
+        btnEditFamily:
+            Action: actEditFamily
+        btnChangeFamily:
+            Action: actChangeFamily
 
         pnlBottomButtons:
             Controls: [btnEditPerson, grpFamilyMembersModify]

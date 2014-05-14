@@ -23,8 +23,8 @@
 //
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
@@ -41,13 +41,9 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmConferenceStandardCostSetup
     {
-        private Int64 FPartnerKey;
-
-        /// constructor
-        public TFrmConferenceStandardCostSetup(Form AParentForm, TSearchCriteria[] ASearchCriteria, long ASelectedConferenceKey) : base()
-        {
-            FPartnerKey = ASelectedConferenceKey;
-            Initialize(AParentForm, ASearchCriteria);
+        /// PartnerKey for selected conference to be set from outside
+        public static Int64 FPartnerKey {
+            private get; set;
         }
 
         private void InitializeManualCode()
@@ -97,13 +93,25 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
         private void ValidateDataDetailsManual(PcConferenceCostRow ARow)
         {
-            // this is used to compare with the row that is being validated
-            DataRowCollection GridData = FMainDS.PcConferenceCost.Rows;
+            StackFrame frame = new StackFrame(2);
 
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            // only validate when data is being saved
+            if (frame.GetMethod().Name == "SaveChanges")
+            {
+                // this is used to compare with the row that is being validated
+                DataRowCollection GridData = FMainDS.PcConferenceCost.Rows;
 
-            TSharedConferenceValidation_Conference.ValidateConferenceStandardCost(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict, GridData);
+                if (txtDetailCharge.Text == "")
+                {
+                    txtDetailCharge.Text = "0.00";
+                    ARow.Charge = 0;
+                }
+
+                TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+                TSharedConferenceValidation_Conference.ValidateConferenceStandardCost(this, ARow, ref VerificationResultCollection,
+                    FPetraUtilsObject.ValidationControlsDict, GridData);
+            }
         }
     }
 }

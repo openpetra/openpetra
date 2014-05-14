@@ -76,6 +76,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod));
 
             dtpDateEffective.Date = DefaultDate;
+
+            this.Activated += new EventHandler(TDlgGLEnterDateEffective_Activated);
+        }
+
+        void TDlgGLEnterDateEffective_Activated(object sender, EventArgs e)
+        {
+            // Position the form on the screen on top of the owner form
+            Form owner = this.Owner;
+
+            if (owner != null)
+            {
+                this.Top = owner.Top + 50;
+                this.Left = owner.Left + 50;
+            }
         }
 
         private void BtnOKClick(object sender, EventArgs e)

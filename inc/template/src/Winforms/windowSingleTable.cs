@@ -34,6 +34,10 @@ namespace {#NAMESPACE}
 {#IFNDEF DATASETTYPE}
     {#INLINETYPEDDATASET}
 {#ENDIFN DATASETTYPE}
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDDECLARATIONS}
+{#ENDIF FILTERANDFIND}
+
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
     {
@@ -67,10 +71,22 @@ namespace {#NAMESPACE}
 {#ENDIF ACTIONENABLING}
       {#INITMANUALCODE}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+{#IFDEF GRIDSORT}
+      myDataView.Sort = "{#GRIDSORT}";
+{#ENDIF GRIDSORT}
+{#IFDEF GRIDFILTER}
+      myDataView.RowFilter = {#GRIDFILTER};
+{#ENDIF GRIDFILTER}
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
       {#INITACTIONSTATE}
+{#IFDEF BUTTONPANEL}
+      FinishButtonPanelSetup();
+{#ENDIF BUTTONPANEL}
+{#IFDEF FILTERANDFIND}
+      SetupFilterAndFindControls();
+{#ENDIF FILTERANDFIND}
     }
 
     #region Show Method overrides
@@ -174,6 +190,39 @@ namespace {#NAMESPACE}
     {
         FPreviouslySelectedDetailRow = GetSelectedDetailRow();
     }
+
+{#IFDEF BUTTONPANEL}
+    ///<summary>
+    /// Finish the set up of the Button Panel.
+    /// </summary>
+    private void FinishButtonPanelSetup()
+    {
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+        lblRecordCounter.AutoSize = true;
+        lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+        lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+        pnlButtonsRecordCounter.AutoSize = true;
+        
+        UpdateRecordNumberDisplay();
+    }
+    
+    private void UpdateRecordNumberDisplay()
+    {
+        int RecordCount;
+        
+        if (grdDetails.DataSource != null) 
+        {
+            RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            lblRecordCounter.Text = String.Format(Catalog.GetPluralString("{0} record", "{0} records", RecordCount, true), RecordCount);
+        }                
+    }
+{#ENDIF BUTTONPANEL}
+
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDMETHODS}
+{#ENDIF FILTERANDFIND}  
+
 #region Implement interface functions
 
     /// auto generated
@@ -229,3 +278,4 @@ namespace {#NAMESPACE}
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE inline_typed_dataset.cs}
+{#INCLUDE findandfilter.cs}

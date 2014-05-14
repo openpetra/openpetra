@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, christophert, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,7 +90,9 @@ namespace Ict.Petra.Server.MFinance.Common
             intForeignCurrencyDigits = DIGIT_INIT_VALUE;
 
             bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             currencyTable = ACurrencyAccess.LoadAll(transaction);
 
@@ -101,7 +103,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (currencyTable.Rows.Count == 0)
             {
-                TVerificationException terminate = new TVerificationException(
+                EVerificationException terminate = new EVerificationException(
                     Catalog.GetString("The table a_currency is empty!"));
                 terminate.Context = "Common Accounting";
                 terminate.ErrorCode = "TCurrencyInfo01";
@@ -124,7 +126,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            TVerificationException terminate = new TVerificationException(
+            EVerificationException terminate = new EVerificationException(
                 String.Format(Catalog.GetString(
                         "No Data for currency {0} found"), ACurrencyCode));
             terminate.Context = "Common Accounting";
@@ -263,7 +265,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (matchCollection.Count != 1)
             {
-                TVerificationException terminate = new TVerificationException(
+                EVerificationException terminate = new EVerificationException(
                     String.Format(Catalog.GetString("The regular expression {0} does not fit for a match in {1}"),
                         sRegex, strFormat));
 
@@ -343,7 +345,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (AccountingPeriodTable.Rows.Count < 1)
             {
-                return -1;
+                return -1; // This is poor (because the caller can blindly use it!)
+                           // I wonder whether an exception would be better. (Tim Ingham, Oct 2013)
             }
 
             DateTime startOfPeriod = AccountingPeriodTable[0].PeriodStartDate;
@@ -381,7 +384,11 @@ namespace Ict.Petra.Server.MFinance.Common
             int pv_period_i,
             int currentFinancialYear)
         {
-            decimal ReturnValue;
+            if (pv_period_i == 0) // I sometimes get asked for this. There's no period 0.
+            {
+                pv_period_i = 12; // Perhaps I should look up this value from number of periods?
+                pv_year_i--;
+            }
 
             foreach (TExchangeRate exchangeRateElement in exchangeRates)
             {
@@ -392,7 +399,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            ReturnValue = GetCorporateExchangeRateFromDB(databaseConnection, pv_ledger_number_i, pv_year_i, pv_period_i, currentFinancialYear);
+            decimal ReturnValue = GetCorporateExchangeRateFromDB(databaseConnection, pv_ledger_number_i, pv_year_i, pv_period_i, currentFinancialYear);
+            //
+            // Cache this for the next time I'm asked...
             TExchangeRate exchangeRateElement2 = new TExchangeRate();
             exchangeRateElement2.ledger_number_i = pv_ledger_number_i;
             exchangeRateElement2.year_i = pv_year_i;
@@ -494,7 +503,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 return fittingRate.RateOfExchange;
             }
 
-            TLogging.Log("Cannot find exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
+            TLogging.Log("Cannot find daily exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
 
             //return 1.0M;
             //Instead, cause a validation error to force the user to select an exchange rate
@@ -520,8 +529,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (!GetCorporateExchangeRate(ACurrencyFrom, ACurrencyTo, AStartDate, AEndDate, out ExchangeRate))
             {
-                ExchangeRate = 1.0M;
-                TLogging.Log("cannot find rate for " + ACurrencyFrom + " " + ACurrencyTo);
+                //ExchangeRate = 1.0M;
+                //Instead return 0 to make it easy to catch error
+                ExchangeRate = 0M;
+                TLogging.Log("cannot find corporate exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
             }
 
             return ExchangeRate;

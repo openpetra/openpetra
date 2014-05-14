@@ -78,7 +78,10 @@ namespace Ict.Petra.Server.MFinance.queries
         {
             Boolean ReturnValue = false;
             Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out NewTransaction);
+            DataTable giftdetails;
+
             string SqlStmt = TDataBase.ReadSqlFile("Gift.Queries.ExtractDonorByAmount.sql");
 
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
@@ -95,12 +98,18 @@ namespace Ict.Petra.Server.MFinance.queries
 
             // Now run the database query. This time it is returning gift detail records.
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-            DataTable giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "giftdetails", Transaction,
-                SqlParameterList.ToArray());
 
-            if (NewTransaction)
+            try
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "giftdetails", Transaction,
+                    SqlParameterList.ToArray());
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
@@ -120,14 +129,11 @@ namespace Ict.Petra.Server.MFinance.queries
             partnerkeys.Columns.Add("3", typeof(Int32));
             ProcessGiftDetailRecords(giftdetails, AddressFilterAdded, AParameters, ref partnerkeys);
 
-            TVerificationResultCollection VerificationResult;
-
             // create an extract with the given name in the parameters
             ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                 AParameters.Get("param_extract_name").ToString(),
                 AParameters.Get("param_extract_description").ToString(),
                 out AExtractId,
-                out VerificationResult,
                 partnerkeys,
                 0,
                 AddressFilterAdded,

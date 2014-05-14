@@ -27,6 +27,8 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -138,7 +140,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     this.Cursor = Cursors.WaitCursor;
 
                     TSubmitChangesResult SubmissionResult;
-                    TVerificationResultCollection VerificationResult;
 
                     //Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.MExtract.GetChangesTyped();
                     MExtractTable SubmitDT = new MExtractTable();
@@ -161,7 +162,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     try
                     {
                         SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtract
-                                               (FExtractId, ref SubmitDT, out VerificationResult);
+                                               (FExtractId, ref SubmitDT);
                     }
                     catch (System.Net.Sockets.SocketException)
                     {
@@ -487,7 +488,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             System.Int64 PartnerKey = 0;
             string PartnerShortName;
-            TPartnerClass PartnerClass;
+            TPartnerClass? PartnerClass;
+            TPartnerClass PartnerClass2;
             TLocationPK ResultLocationPK;
 
             DataRow[] ExistingPartnerDataRows;
@@ -503,6 +505,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         ("",
                         out PartnerKey,
                         out PartnerShortName,
+                        out PartnerClass,
                         out ResultLocationPK,
                         this.ParentForm);
 
@@ -528,14 +531,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
                             PartnerKey,
                             out PartnerShortName,
-                            out PartnerClass);
+                            out PartnerClass2);
 
                         // add new record to extract
                         NewRow = FMainDS.MExtract.NewRowTyped();
                         NewRow.ExtractId = FExtractId;
                         NewRow.PartnerKey = PartnerKey;
                         NewRow.PartnerShortName = PartnerShortName;
-                        NewRow.PartnerClass = SharedTypes.PartnerClassEnumToString(PartnerClass);
+                        NewRow.PartnerClass = SharedTypes.PartnerClassEnumToString(PartnerClass2);
                         NewRow.SiteKey = ResultLocationPK.SiteKey;
                         NewRow.LocationKey = ResultLocationPK.LocationKey;
                         FMainDS.MExtract.Rows.Add(NewRow);
@@ -552,8 +555,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                        exp);
+                    throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                 }
                 // end try
             }

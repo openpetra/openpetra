@@ -29,6 +29,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -37,6 +38,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 
@@ -75,7 +77,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrFamilyTabHeader = Catalog.GetString("Family");
 
-// TODO        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
+        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
         
@@ -311,7 +313,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             tabPartners.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
-            SelectTabPage(FInitiallySelectedTabPage);
+            // We must switch to the selected TabPage only once the the 'Shown' Event of the Form has been run
+            // to make sure that the TabControl does not show the selected TabPage leftmost, but at its' correct
+            // place in the order of the Tabs. (See Bug https://tracker.openpetra.org/view.php?id=2392)
+            if (FPetraUtilsObject.FormHasBeenShown)
+            {
+                SelectTabPage(FInitiallySelectedTabPage);
+            }
 
             CalculateTabHeaderCounters(this);
 
@@ -387,15 +395,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
 
-                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsChurch))
+                    // Special case: The Church UserControl needs to always be initialised in order for the Validation to work also when the Tab was never switched to
+                    // (for checking for empty DenominationList CacheableDataTable)!
+                    if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsChurch))
                     {
-                        TUC_PartnerDetails_Church UCPartnerDetailsChurch =
-                            (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
+                        SetupVariableUserControlForTabPagePartnerDetails();
+                    }
 
-                        if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
-                        {
-                            ReturnValue = false;
-                        }
+                    TUC_PartnerDetails_Church UCPartnerDetailsChurch =
+                        (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
+
+                    if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
                     }
 
                     break;
@@ -532,6 +544,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ReturnValue = false;
                 }
+
+                if (!UCFinanceDetails.GetPartnerDataFromControls())
+                {
+                    ReturnValue = false;
+                }
             }
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucOfficeSpecific))
@@ -540,6 +557,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     (TUC_LocalPartnerData)FTabSetup[TDynamicLoadableUserControls.dlucOfficeSpecific];
 
                 if (!UCLocalPartnerData.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucInterests))
+            {
+                TUC_PartnerInterests UCPartnerInterests =
+                    (TUC_PartnerInterests)FTabSetup[TDynamicLoadableUserControls.dlucInterests];
+
+                if (!UCPartnerInterests.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -729,6 +757,36 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoFinanceDetails.RefreshRecordsAfterMerge();
             }
+
+            if (FUcoPartnerTypes != null)
+            {
+                FUcoPartnerTypes.RefreshDataGrid();
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the Family Members list on the Family tab
+        /// </summary>
+        public void RefreshFamilyMembersList(TFormsMessage AFormsMessage)
+        {
+            IFormsMessagePartnerInterface FormsMessagePartner;
+
+            if (FUcoFamilyMembers != null)
+            {
+                FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessage.MessageObject;
+
+                // return if the partner that has just been deleted/edited is not a member of this partner's family
+                if (((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted)
+                     || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved))
+                    && (FMainDS.FamilyMembers.Rows.Find(new object[] { FormsMessagePartner.PartnerKey }) == null))
+                {
+                    return;
+                }
+
+                FUcoFamilyMembers.BroadcastRefresh = true;
+                FUcoFamilyMembers.RefreshFamilyMembersList(null, null);
+                FUcoFamilyMembers.BroadcastRefresh = false;
+            }
         }
 
         /// <summary>
@@ -909,6 +967,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // see PreInitUserControl below
                     FUcoFinanceDetails.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+                }
+                else if (ATabPageEventArgs.Tab == tpgInterests)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpInterests;
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoInterests.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoInterests.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoInterests.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoInterests.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
                 }
             }
         }
@@ -1101,7 +1173,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-#if TODO
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerInterests))
             {
                 if (FMainDS.Tables.Contains(PPartnerInterestTable.GetTableName()))
@@ -1114,7 +1185,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tpgInterests.Text = StrInterestsTabHeader + " (" + FMainDS.MiscellaneousData[0].ItemsCountInterests.ToString() + ')';
                 }
             }
-#endif
 
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerNotes))
             {
@@ -1278,7 +1348,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!FUserControlInitialised)
             {
-                throw new ApplicationException("SelectTabPage must not be called if the UserControl is not yet initialised");
+                throw new EOPAppException("SelectTabPage must not be called if the UserControl is not yet initialised");
             }
 
             OnDataLoadingStarted();
@@ -1327,11 +1397,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         tabPartners.SelectedTab = tpgOfficeSpecific;
                         break;
 
-#if TODO
                     case TPartnerEditTabPageEnum.petpInterests:
                         tabPartners.SelectedTab = tpgInterests;
                         break;
 
+#if TODO
                     case TPartnerEditTabPageEnum.petpReminders:
                         tabPartners.SelectedTab = tpgReminders;
                         break;
@@ -1358,7 +1428,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
                 }
             }
-            catch (Ict.Common.Controls.TSelectedIndexChangeDisallowedTabPagedIsDisabledException)
+            catch (Ict.Common.Controls.ESelectedIndexChangeDisallowedTabPagedIsDisabledException)
             {
                 // Desired Tab Page isn't selectable because it is disabled; ignoring this Exception to ignore the selection.
             }

@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
@@ -34,7 +35,16 @@ namespace Ict.Petra.Client.MFinance.Gui
     public class TFinanceMain
     {
         /// Open screen for creating "Recipient by Field" Extract
-        public static void RecipientByFieldExtract(Form AParentForm)
+        public static void RecipientByFieldExtract(Form AParentForm, int ALedger)
+        {
+            TFrmRecipientByField frm = new TFrmRecipientByField(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Recipient by Field" Extract (cross ledger)
+        public static void RecipientByFieldExtractCrossLedger(Form AParentForm)
         {
             TFrmRecipientByField frm = new TFrmRecipientByField(AParentForm);
 
@@ -43,7 +53,16 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
 
         /// Open screen for creating "Donor by Field" Extract
-        public static void DonorByFieldExtract(Form AParentForm)
+        public static void DonorByFieldExtract(Form AParentForm, int ALedger)
+        {
+            TFrmDonorByField frm = new TFrmDonorByField(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Donor by Field" Extract (cross ledger)
+        public static void DonorByFieldExtractCrossLedger(Form AParentForm)
         {
             TFrmDonorByField frm = new TFrmDonorByField(AParentForm);
 
@@ -52,7 +71,16 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
 
         /// Open screen for creating "Donor by Motivation" Extract
-        public static void DonorByMotivationExtract(Form AParentForm)
+        public static void DonorByMotivationExtract(Form AParentForm, int ALedger)
+        {
+            TFrmDonorByMotivation frm = new TFrmDonorByMotivation(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Donor by Motivation" Extract (cross ledger)
+        public static void DonorByMotivationExtractCrossLedger(Form AParentForm)
         {
             TFrmDonorByMotivation frm = new TFrmDonorByMotivation(AParentForm);
 
@@ -61,7 +89,16 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
 
         /// Open screen for creating "Donor by Amount" Extract
-        public static void DonorByAmountExtract(Form AParentForm)
+        public static void DonorByAmountExtract(Form AParentForm, int ALedger)
+        {
+            TFrmDonorByAmount frm = new TFrmDonorByAmount(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Donor by Amount" Extract (cross ledger)
+        public static void DonorByAmountExtractCrossLedger(Form AParentForm)
         {
             TFrmDonorByAmount frm = new TFrmDonorByAmount(AParentForm);
 
@@ -70,7 +107,16 @@ namespace Ict.Petra.Client.MFinance.Gui
         }
 
         /// Open screen for creating "Donor by Miscellaneous" Extract
-        public static void DonorByMiscellaneousExtract(Form AParentForm)
+        public static void DonorByMiscellaneousExtract(Form AParentForm, int ALedger)
+        {
+            TFrmDonorByMiscellaneous frm = new TFrmDonorByMiscellaneous(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// Open screen for creating "Donor by Miscellaneous" Extract (cross ledger)
+        public static void DonorByMiscellaneousExtractCrossLedger(Form AParentForm)
         {
             TFrmDonorByMiscellaneous frm = new TFrmDonorByMiscellaneous(AParentForm);
 

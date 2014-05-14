@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -49,11 +50,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FActiveOnly = true;
         private ARecurringGiftBatchRow FBatchRow = null;
         private bool FGiftSelectedForDeletion = false;
+        private bool FSuppressListChanged = false;
+
+        private ARecurringGiftRow FGift = null;
+        private string FFilterAllDetailsOfGift = string.Empty;
+        private DataView FGiftDetailView = null;
 
 
         private void InitialiseControls()
         {
             txtDetailReference.MaxLength = 20;
+
+            txtField.SendToBack();
 
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
         }
@@ -63,9 +71,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
+        /// <returns>True if new gift transactions were loaded, false if transactions had been loaded already.</returns>
+        public bool LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
+            Console.WriteLine("LoadGifts");
+            DateTime dtStart = DateTime.Now;
+
             bool firstLoad = (FLedgerNumber == -1);
 
             if (firstLoad)
@@ -85,17 +96,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (GetSelectedRowIndex() > 0)
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
-
-                    if (AFromTabClick)
-                    {
-                        grdDetails.Focus();
-                    }
+                    grdDetails.Focus();
                 }
 
                 UpdateControlsProtection();
 
-                return;
+                Console.WriteLine("LoadGifts - Quick exit  {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
+                return false;
             }
+
+            grdDetails.SuspendLayout();
+            FSuppressListChanged = true;
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
@@ -104,8 +115,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Apply new filter
             FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
-
-            FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = ARecurringGiftDetailTable.GetBatchNumberDBName() + "=" + FBatchNumber.ToString();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
             if (firstLoad || (FActiveOnly != this.Enabled))
@@ -123,6 +132,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
             }
 
+            // This sets the incomplete filter but does check the panel enabled state
+            ShowData();
+
+            // This sets the main part of the filter but excluding the additional items set by the user GUI
+            // It gets the right sort order
+            SetGiftDetailDefaultView();
+
             // only load from server if there are no transactions loaded yet for this batch
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
@@ -130,19 +146,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            ShowData();
-            ShowDetails();
+            // Now we set the full filter
+            ApplyFilter();
+            UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
 
-            SetGiftDetailDefaultView();
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
-
-            if (AFromTabClick)
-            {
-                grdDetails.Focus();
-            }
+            SelectRowInGrid(1);
 
             UpdateTotals();
             UpdateControlsProtection();
+
+            FSuppressListChanged = false;
+            grdDetails.ResumeLayout();
+            Console.WriteLine("LoadGifts completed  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
+
+            return true;
         }
 
         bool FinRecipientKeyChanging = false;
@@ -442,7 +460,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 RetrieveMotivationDetailAccountCode();
             }
 
-            long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            long PartnerKey = 0;
+            Int64.TryParse(txtDetailRecipientKey.Text, out PartnerKey);
 
             if (PartnerKey == 0)
             {
@@ -460,7 +479,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
-            UpdateTotals();
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+            else
+            {
+                UpdateTotals();
+            }
         }
 
         private void UpdateTotals()
@@ -480,7 +508,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                txtGiftTotal.Text = "";
+                txtGiftTotal.NumberValueDecimal = 0;
                 txtBatchTotal.NumberValueDecimal = 0;
 
                 //If all details have been deleted
@@ -582,10 +610,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                                                                                               AGiftTransactionNumber,
                                                                                                               AGiftDetailNumber });
         }
-
-        ARecurringGiftRow FGift = null;
-        string FFilterAllDetailsOfGift = string.Empty;
-        DataView FGiftDetailView = null;
 
         private bool PreDeleteManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
@@ -745,7 +769,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             for (int j = 3; j < giftRowToCopyDown.Table.Columns.Count; j++)
                             {
                                 //Update all columns except the pk fields that remain the same
-                                giftRowToReceive[j] = giftRowToCopyDown[j];
+                                if (!giftRowToCopyDown.Table.Columns[j].ColumnName.EndsWith("_text"))
+                                {
+                                    giftRowToReceive[j] = giftRowToCopyDown[j];
+                                }
                             }
                         }
 
@@ -798,7 +825,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 SetGiftDetailDefaultView();
+                ApplyFilter();
             }
+
+            UpdateRecordNumberDisplay();
 
             return deletionSuccessful;
         }
@@ -854,16 +884,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetBatchLastGiftNumber()
         {
-            FMainDS.ARecurringGift.DefaultView.RowFilter = String.Format("{0}={1}",
+            DataView dv = new DataView(FMainDS.ARecurringGift);
+
+            dv.RowFilter = String.Format("{0}={1}",
                 ARecurringGiftTable.GetBatchNumberDBName(),
                 FBatchNumber);
 
-            FMainDS.ARecurringGift.DefaultView.Sort = String.Format("{0} DESC",
+            dv.Sort = String.Format("{0} DESC",
                 ARecurringGiftTable.GetGiftTransactionNumberDBName());
 
-            if (FMainDS.ARecurringGift.DefaultView.Count > 0)
+            dv.RowStateFilter = DataViewRowState.CurrentRows;
+
+            if (dv.Count > 0)
             {
-                ARecurringGiftRow transRow = (ARecurringGiftRow)FMainDS.ARecurringGift.DefaultView[0].Row;
+                ARecurringGiftRow transRow = (ARecurringGiftRow)dv[0].Row;
                 FBatchRow.LastGiftNumber = transRow.GiftTransactionNumber;
             }
             else
@@ -872,22 +906,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ClearGiftDetailDefaultView()
-        {
-            FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Empty;
-        }
-
         private void SetGiftDetailDefaultView()
         {
             if (FBatchNumber != -1)
             {
-                ClearGiftDetailDefaultView();
-
-                FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0}={1}",
+                string rowFilter = String.Format("{0}={1}",
                     ARecurringGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = rowFilter;
+                FCurrentActiveFilter = rowFilter;
+                // We don't apply the filter yet!
 
-                FMainDS.ARecurringGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
+                FMainDS.ARecurringGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
                     ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
                     ARecurringGiftDetailTable.GetDetailNumberDBName());
             }
@@ -947,11 +978,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
+                if (!SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1))
+                {
+                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    {
+                        MessageBox.Show(
+                            MCommonResourcestrings.StrNewRecordIsFiltered,
+                            MCommonResourcestrings.StrAddNewRecordTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        FFilterPanelControls.ClearAllDiscretionaryFilters();
 
-                SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
+                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        {
+                            ApplyFilter();
+                        }
+
+                        SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
+                    }
+                }
             }
+
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -1000,8 +1047,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewGiftDetail(System.Object sender, EventArgs e)
         {
-            // this is coded manually, to use the correct gift record
-
             //If grid is empty call NewGift() instead
             if (grdDetails.Rows.Count == 1)
             {
@@ -1017,14 +1062,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
+                if (!SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1))
+                {
+                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    {
+                        MessageBox.Show(
+                            MCommonResourcestrings.StrNewRecordIsFiltered,
+                            MCommonResourcestrings.StrAddNewRecordTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        FFilterPanelControls.ClearAllDiscretionaryFilters();
 
-                SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
+                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        {
+                            ApplyFilter();
+                        }
+
+                        SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
+                    }
+                }
 
                 RetrieveMotivationDetailAccountCode();
-                txtDetailGiftAmount.Focus();
+                dtpStartDonations.Focus();
             }
+
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -1391,6 +1452,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            if ((txtDetailGiftAmount.NumberValueDecimal == null) || !txtDetailGiftAmount.NumberValueDecimal.HasValue)
+            {
+                txtDetailGiftAmount.NumberValueDecimal = 0;
+                ARow.GiftAmount = 0;
+            }
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateRecurringGiftDetailManual(this, ARow, ref VerificationResultCollection,
@@ -1406,6 +1473,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 grdDetails.Focus();
             }
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+        }
+
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[0].Width = 60;
+            grdDetails.Columns[1].Width = 60;
+            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+            grdDetails.Columns[3].Width = 50;
+            grdDetails.Columns[4].Width = 25;
+            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
+
+            Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
         }
     }
 }

@@ -22,14 +22,18 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
-using Ict.Common.Verification;
+
 using Ict.Common;
+using Ict.Common.Exceptions;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference.Validation;
@@ -40,16 +44,14 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmConferenceMasterSettings
     {
-        private Int64 FPartnerKey;
+        /// PartnerKey for selected conference to be set from outside
+        public static Int64 FPartnerKey {
+            private get; set;
+        }
 
         private void InitializeManualCode()
         {
             string ConferenceName;
-
-            // retrieve conference key for selected conference from parent form
-            Form ParentForm = FPetraUtilsObject.GetCallerForm();
-
-            FPartnerKey = Convert.ToInt64(ParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(ParentForm, null));
 
             // load data into dataset
             FMainDS.Clear();
@@ -77,8 +79,16 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 dtpEndDate.Enabled = true;
             }
 
-            // display currency
-            cmbCurrency.SetSelectedString(((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode, -1);
+            // display currency (if currency code in PUnit has changed then use that over the currency code in PcConference)
+            if ((FMainDS.PUnit.Rows.Count == 0)
+                || (((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode == ((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode))
+            {
+                cmbCurrency.SetSelectedString(((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode, -1);
+            }
+            else
+            {
+                cmbCurrency.SetSelectedString(((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode, -1);
+            }
 
             // set radio buttons and checkbox
             Boolean ChargeCampaign = true;
@@ -116,6 +126,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 txtSpecialRoleAccommodation.ReadOnly = false;
                 txtVolunteerAccommodation.ReadOnly = false;
                 txtSpecialRoleCampaignAccommodation.ReadOnly = false;
+
+                txtSpecialRolePreAccommodation.TabStop = true;
+                txtVolunteerPreAccommodation.TabStop = true;
+                txtParticipantPreAccommodation.TabStop = true;
+                txtSpecialRoleAccommodation.TabStop = true;
+                txtVolunteerAccommodation.TabStop = true;
+                txtSpecialRoleCampaignAccommodation.TabStop = true;
             }
 
             // display conference discounts
@@ -230,6 +247,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             txtSpecialRoleAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
             txtVolunteerAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
             txtSpecialRoleCampaignAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
+
+            txtSpecialRolePreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtVolunteerPreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtParticipantPreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtSpecialRoleAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtVolunteerAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtSpecialRoleCampaignAccommodation.TabStop = !AccommodationDiscountsReadOnly;
         }
 
         // Called with Add button. Adds new venue to conference.
@@ -237,6 +261,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         {
             long ResultVenueKey;
             String ResultVenueName;
+            TPartnerClass? PartnerClass;
             TLocationPK ResultLocationPK;
 
             DataRow[] ExistingVenueDataRows;
@@ -245,7 +270,8 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             try
             {
                 // launches partner find screen and returns true if a venue is selected
-                if (TPartnerFindScreenManager.OpenModalForm("VENUE", out ResultVenueKey, out ResultVenueName, out ResultLocationPK, this))
+                if (TPartnerFindScreenManager.OpenModalForm("VENUE", out ResultVenueKey, out ResultVenueName, out PartnerClass, out ResultLocationPK,
+                        this))
                 {
                     // search for selected venue in dataset
                     ExistingVenueDataRows = FMainDS.PcConferenceVenue.Select(ConferenceSetupTDSPcConferenceVenueTable.GetVenueKeyDBName() +
@@ -273,7 +299,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             }
             catch (Exception exp)
             {
-                throw new ApplicationException("Exception occured while calling VenueFindScreen!", exp);
+                throw new EOPAppException("Exception occured while calling VenueFindScreen!", exp);
             }
         }
 
@@ -297,9 +323,19 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         {
             PcConferenceRow ConferenceData = (PcConferenceRow)FMainDS.PcConference.Rows[0];
             PPartnerLocationRow PartnerLocationData = (PPartnerLocationRow)FMainDS.PPartnerLocation.Rows[0];
-            DataRowCollection ConferenceOptionData = FMainDS.PcConferenceOption.Rows;
+            PUnitRow UnitData = (PUnitRow)FMainDS.PUnit.Rows[0];
 
-            ConferenceData.CurrencyCode = cmbCurrency.GetSelectedString();
+            // do not save currency if it is blank but instead change the combo box to display original value
+            if (cmbCurrency.GetSelectedString() != "")
+            {
+                ConferenceData.CurrencyCode = cmbCurrency.GetSelectedString();
+                UnitData.OutreachCostCurrencyCode = cmbCurrency.GetSelectedString();
+            }
+            else
+            {
+                cmbCurrency.SetSelectedString(ConferenceData.CurrencyCode);
+            }
+
             ConferenceData.Start = dtpStartDate.Date;
             ConferenceData.End = dtpEndDate.Date;
             PartnerLocationData.DateEffective = dtpStartDate.Date;
@@ -351,7 +387,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 txtSpecialRoleCampaignAccommodation.NumberValueInt = 0;
             }
 
-            // get data from discount text boxesfor PcDiscount
+            // get data from discount text boxes for PcDiscount
             string[, ] Discounts =
             {
                 { "ROLE", "CONFERENCE", "PRE", txtSpecialRolePreAttendance.Text.TrimEnd(new char[] { ' ', '%' }) },
@@ -371,6 +407,11 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             for (int i = 0; i < 12; i++)
             {
                 DataRow RowExists = FMainDS.PcDiscount.Rows.Find(new object[] { FPartnerKey, Discounts[i, 0], Discounts[i, 1], Discounts[i, 2], -1 });
+
+                if (Discounts[i, 3] == "")
+                {
+                    Discounts[i, 3] = "0";
+                }
 
                 // create new row if needed
                 if ((RowExists == null) && (Convert.ToInt32(Discounts[i, 3]) != 0))
@@ -401,7 +442,9 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         // save data
         private TSubmitChangesResult StoreManualCode(ref ConferenceSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges, out AVerificationResult);
+            AVerificationResult = null;
+
+            return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges);
         }
 
         private void ValidateDataManual(PcConferenceRow ARow)
@@ -409,9 +452,50 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             PcDiscountTable DiscountTable = FMainDS.PcDiscount;
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult = null;
+            DataColumn ValidationColumn;
 
-            TSharedConferenceValidation_Conference.ValidateConferenceMasterSettings(this, DiscountTable, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+            List <string>CriteriaCodesUsed = new List <string>();
+
+            foreach (PcDiscountRow Row in DiscountTable.Rows)
+            {
+                if ((Row.RowState != DataRowState.Deleted) && (Row.DiscountCriteriaCode != "CHILD"))
+                {
+                    if (Row.Discount > 100)
+                    {
+                        ValidationColumn = Row.Table.Columns[PcDiscountTable.ColumnDiscountId];
+
+                        // displays a warning message
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(this, ErrorCodes.GetErrorInfo(
+                                    PetraErrorCodes.ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
+
+                    if (!CriteriaCodesUsed.Exists(element => element == Row.DiscountCriteriaCode))
+                    {
+                        CriteriaCodesUsed.Add(Row.DiscountCriteriaCode);
+                    }
+                }
+            }
+
+            string[] CriteriaCodesUsedArray = CriteriaCodesUsed.ToArray();
+
+            if (!TRemote.MConference.Conference.WebConnectors.CheckDiscountCriteriaCodeExists(CriteriaCodesUsedArray))
+            {
+                ValidationColumn = DiscountTable.Columns[PcDiscountTable.ColumnDiscountCriteriaCodeId];
+
+                // displays a warning message
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(this, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST)),
+                    ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+            }
         }
     }
 }

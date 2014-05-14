@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
@@ -56,8 +57,8 @@ namespace Ict.Petra.Client.MPartner
             "This Partner is linked to a Cost Centre ({0}) in the\r\nFinance Module.  Remove the link before deleting\r\n" +
             "this Special Type.");
         private static readonly string StrPartnerHasCostCentreLinkTitle = Catalog.GetString("Cannot remove Partner Type");
-// TODO        private static readonly string StrTheCodeIsNoLongerActive = Catalog.GetString(
-// TODO            "The code '{0}' is no longer active.\r\nDo you still want to use it?");
+        private static readonly string StrTheCodeIsNoLongerActive = Catalog.GetString(
+            "The code '{0}' is no longer active.\r\nDo you still want to use it?");
         private static readonly string StrSecurityPreventsRemoval = Catalog.GetString(
             "You are not allowed to remove this Partner Type from the Partner\r\n" +
             "because of the security warning you have just received.");
@@ -211,50 +212,18 @@ namespace Ict.Petra.Client.MPartner
             DataRowView TmpDataRowView;
             Boolean IsRemoval;
 
-
             TmpTypeCode = AChangingPartnerTypeRow["TypeCode"].ToString();
 
             if (PerformPartnerTypeAddOrRemoval(AChangingPartnerTypeRow, out IsRemoval))
             {
-                /*
-                 * An entry has been added or removed
-                 * ==> rebuild internal DataTable that is used for the Grid.
-                 * /*
-                 *
-                 * /*
-                 * Rebuild internal DataTable that is used for the Grid.
-                 * This is needed to reflect the re-ordering of Partner Types that took place
-                 * due to the adding/removing of a Partner Type.
-                 */
-                FillTempPartnerTypesTable();
-
                 FPetraUtilsObject.SetChangedFlag();
-
-                if (!IsRemoval)
-                {
-                    // Select row again in the Grid
-                    // MessageBox.Show('Determine Row to select...');
-                    TmpDataRowView = DetermineRowToSelect(TmpTypeCode);
-
-                    // MessageBox.Show('Getting TmpRowIndex');
-                    TmpRowIndex = FDataGrid.DataSourceRowToIndex2(TmpDataRowView);
-
-//                  MessageBox.Show("Selecting TmpRowIndex: " + TmpRowIndex.ToString());
-                    FDataGrid.Selection.ResetSelection(false);
-                    FDataGrid.Selection.SelectRow(TmpRowIndex + 1, true);
-
-                    // Scroll grid to line where the new record is now displayed
-                    FDataGrid.ShowCell(TmpRowIndex + 1);
-                }
             }
             else
             {
-                /*
-                 * Rebuild internal DataTable that is used for the Grid.
-                 * This is needed to ensure that the Check Mark state is again as is was before
-                 * in the case where the Partner Type couldn't be added/removed!
-                 */
-                FillTempPartnerTypesTable();
+                // Uncheck row in the Grid
+                TmpDataRowView = DetermineRowToSelect(TmpTypeCode);
+                TmpRowIndex = FDataGrid.DataSourceRowToIndex2(TmpDataRowView);
+                FPartnerTypesGridTableDV[TmpRowIndex]["Checked"] = false;
             }
 
             // Give Focus back to the Grid and the Cells again so that the Selection can be moved with the Cursor keys
@@ -331,9 +300,16 @@ namespace Ict.Petra.Client.MPartner
 
                         if (!CheckTypeRow.ValidType)
                         {
-                            CheckTypeRowsAnswer = TMessages.MsgQuestion(
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE, TypeCode),
-                                this.GetType(), false);
+                            /*CheckTypeRowsAnswer = TMessages.MsgQuestion(
+                             *  ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE, TypeCode),
+                             *  this.GetType(), false);*/
+
+                            CheckTypeRowsAnswer = MessageBox.Show(
+                                string.Format(StrTheCodeIsNoLongerActive, TypeCode),
+                                Catalog.GetString("Invalid Data Entered"),
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Question,
+                                MessageBoxDefaultButton.Button2);
 
                             if (CheckTypeRowsAnswer == DialogResult.No)
                             {
@@ -628,7 +604,7 @@ namespace Ict.Petra.Client.MPartner
         public void CreateColumns()
         {
             // CheckBox
-            FDataGrid.AddCheckBoxColumn("", FPartnerTypesGridTable.Columns["Checked"], 17);
+            FDataGrid.AddCheckBoxColumn("", FPartnerTypesGridTable.Columns["Checked"], 17, false);
 
             // Special Type
             FDataGrid.AddTextColumn("Special Type", FPartnerTypesGridTable.Columns["TypeCode"]);
@@ -657,12 +633,16 @@ namespace Ict.Petra.Client.MPartner
             this.ChangedRowEvent += new CheckChangedArgs(ChangedRowEventHandler);
         }
 
+        // this is only called when the user clicks on the 'CheckBox' column and the grid automatically checks or unchecks a CheckBox
         private void ChangedRowEventHandler(int ChangedRow)
         {
 //          MessageBox.Show("ChangedRowEventHandler: " + FPartnerTypesGridTableDV[ChangedRow].Row[0].ToString() + " / " + FPartnerTypesGridTableDV[ChangedRow].Row[1].ToString());
+
+            // Our code also checks/uncheck a CheckBox when the user clicks in the 'CheckBox' column so we have a double check.
+            // I.e. the checkbox is returned to the original value. We need to check/uncheck again to redo this.
             DataRow TmpDR = FPartnerTypesGridTableDV[ChangedRow].Row;
 
-            PartnerTypesGridTableColumnChanged(ref TmpDR);
+            FPartnerTypesGridTableDV[ChangedRow]["Checked"] = (System.Object)((!(Boolean)(FPartnerTypesGridTableDV[ChangedRow]["Checked"])));
         }
 
         private class CustomValueChangedEvent : SourceGrid.Cells.Controllers.ControllerBase
@@ -677,8 +657,6 @@ namespace Ict.Petra.Client.MPartner
             public override void OnValueChanged(SourceGrid.CellContext sender, EventArgs e)
             {
                 base.OnValueChanged(sender, e);
-
-//              MessageBox.Show(sender.Position.ToString());
 
                 FParentClass.ChangedRowEvent(sender.Position.Row - 1);
             }

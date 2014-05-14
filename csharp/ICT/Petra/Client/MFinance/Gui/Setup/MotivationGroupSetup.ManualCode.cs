@@ -61,6 +61,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 grdDetails.AutoSizeCells();
 
                 this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
+
+                SelectRowInGrid(1);
+                UpdateRecordNumberDisplay();
             }
         }
 
@@ -91,7 +94,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult result = TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges, out AVerificationResult);
+            AVerificationResult = null;
+
+            TSubmitChangesResult result = TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges);
 
             if (result == TSubmitChangesResult.scrOK)
             {

@@ -71,7 +71,19 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
             string BankStatementFilename = DialogOpen.FileName;
 
             TDlgSelectCSVSeparator DlgSeparator = new TDlgSelectCSVSeparator(false);
-            DlgSeparator.CSVFileName = BankStatementFilename;
+
+            Boolean fileCanOpen = DlgSeparator.OpenCsvFile(DialogOpen.FileName);
+
+            if (!fileCanOpen)
+            {
+                MessageBox.Show(Catalog.GetString("Unable to open file."),
+                    Catalog.GetString("Import Bank Statement"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                AStatementKey = -1;
+                return false;
+            }
+
             String dateFormatString = TUserDefaults.GetStringDefault("BankimportCSVDateFormat", "MDY");
             String impOptions = TUserDefaults.GetStringDefault("BankimportCSVNumberFormat", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
@@ -111,12 +123,9 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
 
             if (MainDS != null)
             {
-                TVerificationResultCollection VerificationResult;
-
                 if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
                         MainDS,
-                        out AStatementKey,
-                        out VerificationResult) == TSubmitChangesResult.scrOK)
+                        out AStatementKey) == TSubmitChangesResult.scrOK)
                 {
                     return AStatementKey != -1;
                 }

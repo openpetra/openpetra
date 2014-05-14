@@ -70,10 +70,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             LoadEventListData();
         }
 
-        private void InitializeManualCode()
-        {
-        }
-
         /// <summary>
         /// only run this code once during activation
         /// </summary>
@@ -138,7 +134,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 110);
             }
 
-            clbEvent.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            clbEvent.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");

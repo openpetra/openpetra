@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.Name = "TUC_CollapsibleSearchPane";
             this.Size = new System.Drawing.Size(451, 152);
-            this.SubCaption = "Find";
+// TODO           this.SubCaption = "Find";
             this.CollapsingEvent += new CollapsingEventHandler(this.TUC_CollapsibleSearchPane_CollapsingEvent);
             this.Controls.SetChildIndex(this.pnlCommonBackGround, 0);
             this.pnlCommonBackGround.ResumeLayout(false);

@@ -1,0 +1,73 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Auto Generate Budget
+    Namespace: Ict.Petra.Client.MFinance.Gui.Budget
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.BudgetTDS
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data]
+    FormType: dialog
+    Template: window
+    WindowWidth: 390
+    WindowHeight: 500
+    Actions:
+        actGenerate: {Label=&Generate, ActionClick=GenerateBudget}
+        actClose: {Label=&Close, ActionClick=CloseForm} 
+        actUnselectAllBudgets: {ActionClick=UnselectAllBudgets}
+        actSelectAllBudgets: {ActionClick=SelectAllBudgets}
+    Controls:
+        pnlDialogContent:
+            Controls: [pnlSettings, pnlGrid]
+            Dock: Fill
+        pnlSettings:
+            Dock: Top
+            Controls:
+                Row0: [rgrBudgetScope]
+                Row1: [grpForecast]
+                Row2: [rgrRemainingPeriods]
+        pnlGrid:
+            Dock: Fill
+            Controls: [clbCostCentreAccountCodes, pnlGridSelection]
+        pnlGridSelection:
+            Dock: Right
+            Controls: 
+                Row0: [btnSelectAllBudgets]
+                Row1: [btnUnselectAllBudgets]
+        clbCostCentreAccountCodes: 
+            List: UserDefinedList
+            NoLabel:true
+            Dock: Fill
+            Width: 284
+            Height: 275
+        btnUnselectAllBudgets: 
+            Label: &Unselect All
+            Action: actUnselectAllBudgets
+            Width: 83
+        btnSelectAllBudgets: 
+            Label: Select &All
+            Action: actSelectAllBudgets
+            Width: 83
+        rgrBudgetScope:
+            Stretch: horizontally            
+            ControlsOrientation: horizontal
+            OptionalValues: [&Selected Budgets, &All Budgets]
+            #NoLabel: true
+            OnChange: NewBudgetScope
+        grpForecast:
+            Stretch: horizontally
+            Controls: [txtForecast]
+        rgrRemainingPeriods:
+            Stretch: horizontally
+            OptionalValues: [&This Year's Budgets, &Last Year's Actuals]
+            ControlsOrientation: horizontal
+            #NoLabel: true
+            OnChange: NewRemainingPeriod
+        txtForecast:
+            Width: 26
+            Label: Forecast is based on actuals of period 1 to
+            ReadOnly: true
+            Text: 6
+        btnOK:
+            Action: actGenerate
+            Label: &Generate
+    Menu:
+    Toolbar:
+        

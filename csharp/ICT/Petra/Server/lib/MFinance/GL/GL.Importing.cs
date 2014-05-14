@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,9 +28,9 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Text;
-
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -102,6 +102,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             Int32 RowNumber = 0;
+            bool ok = false;
 
             try
             {
@@ -116,10 +117,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 AJournalRow NewJournal = null;
                 int BatchPeriodNumber = -1;
                 int BatchYearNr = -1;
-                String ImportedString = "";
                 //AGiftRow gift = null;
                 FImportMessage = Catalog.GetString("Parsing first line");
-                bool ok = false;
 
                 while ((FImportLine = sr.ReadLine()) != null)
                 {
@@ -132,9 +131,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (RowType == "B")
                         {
-                            if (NewBatch != null)
+                            if (NewBatch != null)   // update the totals of the batch that has just been imported
                             {
-                                // update the totals of the batch that has just been imported
                                 GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
                             }
 
@@ -146,24 +144,15 @@ namespace Ict.Petra.Server.MFinance.GL
                             MainDS.ABatch.Rows.Add(NewBatch);
                             NewJournal = null;
 
-                            ImportedString = ImportString(Catalog.GetString("batch description"));
+                            NewBatch.BatchDescription = ImportString(Catalog.GetString("batch description"), ABatchTable.GetBatchDescriptionLength());
 
-                            if ((ImportedString != null) && (ImportedString.Length > ABatchTable.GetBatchDescriptionLength()))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Batch"),
-                                        String.Format(Catalog.GetString("Description is longer than {0} chars."),
-                                            ABatchTable.GetBatchDescriptionLength()),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewBatch.BatchDescription = ImportedString;
-
-                            if ((NewBatch.BatchDescription == null)
+                            if ((NewBatch.BatchDescription == null)   // raise error if empty batch description is imported
                                 || (NewBatch.BatchDescription == ""))
                             {
-                                // raise error if empty batch description is imported
-                                FImportMessage = Catalog.GetString("The batch description must not be empty");
-                                throw new Exception();
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, the batch description must not be empty"),
+                                    RowNumber);
+
+                                throw new EOPAppException();
                             }
 
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("batch hash value"));
@@ -184,23 +173,18 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                             else
                             {
-                                FImportMessage = Catalog.GetString("The effective date of the imported batch is not in an open period:") + " " +
-                                                 StringHelper.DateToLocalizedString(NewBatch.DateEffective);
-                                throw new Exception();
+                                FImportMessage =
+                                    String.Format(Catalog.GetString(
+                                            "At line number {0}, the effective date [{1}] of the imported batch is not in an open period."),
+                                        RowNumber,
+                                        StringHelper.DateToLocalizedString(NewBatch.DateEffective));
+
+                                throw new EOPAppException();
                             }
 
                             FImportMessage = Catalog.GetString("Saving GL batch:");
 
-                            if (!ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AMessages))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O failure"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
+                            ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
 
                             MainDS.ABatch.AcceptChanges();
                         }
@@ -208,8 +192,10 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             if (NewBatch == null)
                             {
-                                FImportMessage = Catalog.GetString("Expected a Batch line, but found a Journal");
-                                throw new Exception();
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, expected a Batch line, but found a Journal"),
+                                    RowNumber);
+
+                                throw new EOPAppException();
                             }
 
                             NewJournal = MainDS.AJournal.NewRowTyped(true);
@@ -233,30 +219,25 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             MainDS.AJournal.Rows.Add(NewJournal);
 
-                            ImportedString = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"));
+                            NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "description"), AJournalTable.GetJournalDescriptionLength());
 
-                            if ((ImportedString != null) && (ImportedString.Length > AJournalTable.GetJournalDescriptionLength()))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Journal"),
-                                        String.Format(Catalog.GetString("Description is longer than {0} chars."),
-                                            AJournalTable.GetJournalDescriptionLength()),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewJournal.JournalDescription = ImportedString;
-
-                            if ((NewJournal.JournalDescription == null)
+                            if ((NewJournal.JournalDescription == null)   // raise error if empty journal description is imported
                                 || (NewJournal.JournalDescription == ""))
                             {
-                                // raise error if empty journal description is imported
-                                FImportMessage = Catalog.GetString("The journal description must not be empty");
-                                throw new Exception();
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, Journal description must not be empty"),
+                                    RowNumber);
+
+                                throw new EOPAppException();
                             }
 
-                            NewJournal.SubSystemCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("sub system code"));
-                            NewJournal.TransactionTypeCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("transaction type"));
+                            NewJournal.SubSystemCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "sub system code"), AJournalTable.GetSubSystemCodeLength());
+                            NewJournal.TransactionTypeCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "transaction type"), AJournalTable.GetTransactionTypeCodeLength());
                             NewJournal.TransactionCurrency =
-                                ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("transaction currency"));
+                                ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                        "transaction currency"), AJournalTable.GetTransactionCurrencyLength());
                             NewJournal.ExchangeRateToBase = ImportDecimal(Catalog.GetString("journal") + " - " + Catalog.GetString("exchange rate"));
                             NewJournal.DateEffective = ImportDate(Catalog.GetString("journal") + " - " + Catalog.GetString("effective date"));
 
@@ -266,8 +247,11 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((NewJournal.TransactionCurrency == LedgerTable[0].BaseCurrency)
                                 && (NewJournal.ExchangeRateToBase != 1.0m))
                             {
-                                FImportMessage = Catalog.GetString("Journal in base currency must have exchange rate 1.0");
-                                throw new Exception();
+                                FImportMessage =
+                                    String.Format(Catalog.GetString("At line number {0}, Journal in base currency must have exchange rate 1.0"),
+                                        RowNumber);
+
+                                throw new EOPAppException();
                             }
 
                             //
@@ -283,23 +267,18 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
                             {
                                 FImportMessage = String.Format(
-                                    Catalog.GetString("The journal effective date {0} is not in the same period as the batch date {1}."),
-                                    journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
-                                throw new Exception();
+                                    Catalog.GetString(
+                                        "At line number {0}, the journal effective date {1} is not in the same period as the batch date {2}."),
+                                    RowNumber,
+                                    journalDate.ToShortDateString(),
+                                    NewBatch.DateEffective.ToShortDateString());
+
+                                throw new EOPAppException();
                             }
 
                             FImportMessage = Catalog.GetString("Saving the journal:");
 
-                            if (!AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction, out AMessages))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O failure"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
+                            AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
 
                             MainDS.AJournal.AcceptChanges();
                         }
@@ -307,7 +286,9 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             if (NewJournal == null)
                             {
-                                FImportMessage = Catalog.GetString("Expected a Journal or Batch line, but found a Transaction");
+                                FImportMessage =
+                                    String.Format(Catalog.GetString("At line number {0}, expected a Journal or Batch line, but found a Transaction"),
+                                        RowNumber);
                                 throw new Exception();
                             }
 
@@ -319,7 +300,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.LastTransactionNumber++;
                             MainDS.ATransaction.Rows.Add(NewTransaction);
 
-                            NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"));
+                            NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"),
+                                ATransactionTable.GetCostCentreCodeLength());
 
                             ACostCentreRow costcentre = (ACostCentreRow)SetupDS.ACostCentre.Rows.Find(new object[] { LedgerNumber,
                                                                                                                      NewTransaction.CostCentreCode });
@@ -344,7 +326,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                         TResultSeverity.Resv_Critical));
                             }
 
-                            NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"));
+                            NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"),
+                                ATransactionTable.GetAccountCodeLength());
 
                             AAccountRow account = (AAccountRow)SetupDS.AAccount.Rows.Find(new object[] { LedgerNumber, NewTransaction.AccountCode });
 
@@ -368,28 +351,20 @@ namespace Ict.Petra.Server.MFinance.GL
                                         TResultSeverity.Resv_Critical));
                             }
 
-                            ImportedString = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"));
+                            NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"),
+                                ATransactionTable.GetNarrativeLength());
 
-                            if ((ImportedString != null) && (ImportedString.Length > ATransactionTable.GetNarrativeLength()))
+                            if ((NewTransaction.Narrative == null)    // raise error if empty narrative is imported
+                                || (NewTransaction.Narrative == ""))
                             {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("Narrative is longer than {0} chars."),
-                                            ATransactionTable.GetNarrativeLength()),
-                                        TResultSeverity.Resv_Critical));
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, the transaction narrative must not be empty."),
+                                    RowNumber);
+
+                                throw new EOPAppException();
                             }
 
-                            NewTransaction.Narrative = ImportedString;
-                            ImportedString = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"));
-
-                            if ((ImportedString != null) && (ImportedString.Length > ATransactionTable.GetReferenceLength()))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("Reference is longer than {0} chars."),
-                                            ATransactionTable.GetReferenceLength()),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewTransaction.Reference = ImportedString;
+                            NewTransaction.Reference = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"),
+                                ATransactionTable.GetReferenceLength());
 
                             DateTime TransactionDate = ImportDate(Catalog.GetString("transaction") + " - " + Catalog.GetString("date"));
                             //
@@ -404,9 +379,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((TransactionYear != BatchYearNr) || (TransactionPeriod != BatchPeriodNumber))
                             {
                                 FImportMessage = String.Format(
-                                    Catalog.GetString("The Transaction date {0} is not in the same period as the batch date {1}."),
-                                    TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
-                                throw new Exception();
+                                    Catalog.GetString("At line number {0}, the Transaction date {1} is not in the same period as the batch date {2}."),
+                                    RowNumber, TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
+
+                                throw new EOPAppException();
                             }
 
                             NewTransaction.TransactionDate = TransactionDate;
@@ -418,21 +394,27 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((DebitAmount == 0) && (CreditAmount == 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."),
+                                        String.Format(Catalog.GetString(
+                                                "At line number {0}, either the debit amount or the credit amount must be greater than 0."),
+                                            RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }
 
                             if ((DebitAmount < 0) || (CreditAmount < 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        Catalog.GetString("Negative amount specified - debits and credits must be positive."),
+                                        String.Format(Catalog.GetString(
+                                                "At line number {0}, negative amount specified - debits and credits must be positive."),
+                                            RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }
 
                             if ((DebitAmount != 0) && (CreditAmount != 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        Catalog.GetString("Transactions cannot have values for both debit and credit amounts."),
+                                        String.Format(Catalog.GetString(
+                                                "At line number {0}, Transactions cannot have values for both debit and credit amounts."),
+                                            RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }
 
@@ -454,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 String type = ImportString(Catalog.GetString("Transaction") + " - " + Catalog.GetString("Analysis Type") + "#" + i);
                                 String val = ImportString(Catalog.GetString("Transaction") + " - " + Catalog.GetString("Analysis Value") + "#" + i);
 
-                                //these data is only be imported if all corresponding values are there
+                                //the analysis data is only imported if all corresponding values are there:
                                 if ((type != null) && (type.Length > 0) && (val != null) && (val.Length > 0))
                                 {
                                     DataRow atrow = SetupDS.AAnalysisType.Rows.Find(new Object[] { type });
@@ -479,49 +461,23 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }
 
-                            if (AMessages.HasCriticalErrors)
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Batch has critical errors"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
-
                             // update the totals of the last batch that has just been imported
                             GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
 
-                            FImportMessage = Catalog.GetString("Saving the transaction:");
-
-                            // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
-                            if (!ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction, out AMessages))
+                            if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O failure"),
-                                    0);
+                                FImportMessage = Catalog.GetString("Saving the transaction:");
 
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                                // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
+                                ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
 
-                                return false;
+                                MainDS.ATransaction.AcceptChanges();
+                                FImportMessage = Catalog.GetString("Saving the attributes:");
+
+                                ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
+
+                                MainDS.ATransAnalAttrib.AcceptChanges();
                             }
-
-                            MainDS.ATransaction.AcceptChanges();
-                            FImportMessage = Catalog.GetString("Saving the attributes:");
-
-                            if (!ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction, out AMessages))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O failure"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
-
-                            MainDS.ATransAnalAttrib.AcceptChanges();
 
                             // Update progress tracker every 40 records
                             if (++ProgressTrackerCounter % 40 == 0)
@@ -536,54 +492,55 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                         else
                         {
-                            throw new Exception();
+                            throw new EOPAppException("Unsuported row type '" + RowType + "' at Row " + RowNumber);
                         }
                     }
+                }
+
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Batch has critical errors"),
+                        0);
+
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+                    return false;
                 }
 
                 FImportMessage = Catalog.GetString("Saving counter fields:");
 
                 //Finally save all pending changes (last xxx number is updated)
-                if (ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AMessages))
-                {
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
-                    {
-                        if (AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction, out AMessages))
-                        {
-                            ok = true;
-                        }
-                    }
-                }
+                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
 
                 MainDS.AcceptChanges();
 
-                if (ok)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    AMessages.Add(new TVerificationResult("Import",
-                            Catalog.GetString("Data could not be saved."),
-                            TResultSeverity.Resv_Critical));
-                }
+                DBAccess.GDBAccessObj.CommitTransaction();
+
+                ok = true;
             }
             catch (Exception ex)
             {
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
+
+                if (AMessages == null)
+                {
+                    AMessages = new TVerificationResultCollection();
+                }
+
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     String.Format(Catalog.GetString("Problem parsing the file in row {0}"), RowNumber),
                     0);
-
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
                 return false;
             }
@@ -593,14 +550,54 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     sr.Close();
                 }
-                catch
+                catch (Exception Exc)
                 {
-                };
+                    TLogging.Log("An Exception occured while closing the Import File:" + Environment.NewLine + Exc.ToString());
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+
+                    AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
+                            Catalog.GetString("A problem was encountered while closing the Import File:"),
+                            TResultSeverity.Resv_Critical));
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Exception Occurred"),
+                        0);
+
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+                    throw;
+                }
+
+                if (ok)
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Gift batch import successful"),
+                        100);
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+
+                    AMessages.Add(new TVerificationResult("Import",
+                            Catalog.GetString("Data could not be saved."),
+                            TResultSeverity.Resv_Critical));
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Data could not be saved."),
+                        0);
+                }
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return true;
         }
@@ -632,15 +629,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
             TLogging.Log("Importing GL batch: " + ex.ToString());
 
-            if (TLogging.DebugLevel > 0)
-            {
-                return ex.ToString();
-            }
-
-            return String.Empty;
+            return ex.Message;
         }
 
-        private String ImportString(String message)
+        private String ImportString(String message, Int32 AmaximumLength = -1)
         {
             FImportMessage = String.Format(Catalog.GetString("Parsing the {0}:"), message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
@@ -648,6 +640,11 @@ namespace Ict.Petra.Server.MFinance.GL
             if (sReturn.Length == 0)
             {
                 return null;
+            }
+
+            if ((AmaximumLength > 0) && (sReturn.Length > AmaximumLength))
+            {
+                throw new Exception(String.Format(Catalog.GetString("Maximum field length ({0}) exceeded."), AmaximumLength));
             }
 
             return sReturn;

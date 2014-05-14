@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="02/14/2014 12:04:44" ReportInfo.CreatorVersion="2013.4.4.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using System.Globalization;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    String OmDate(DateTime fld)
+    {
+      return fld.ToString(&quot;dd-MMM-yyyy&quot;);
+    }
+    
+    String variance(Decimal left, Decimal right)
+    {
+      if(right!= 0)
+        return (Math.Floor(((decimal)left/(decimal)right)*100 - (Decimal)99.5)).ToString() + &quot;%&quot;;
+      else
+        return &quot; &quot;;
+    }
+    
+    private void Data_BeforePrint(object sender, EventArgs e)
+    {
+      Int32 AccountLevel = ((Int32)Report.GetColumnValue(&quot;BalanceSheet.accountlevel&quot;));
+      HeaderBand.Visible = false;
+      TransactionBand.Visible = false;
+      FooterBand.Visible = false;
+      FooterLevel1.Visible = false;
+
+      if(((Boolean)Report.GetColumnValue(&quot;BalanceSheet.haschildren&quot;)))
+      {
+        HeaderBand.Visible = (AccountLevel &gt; 0);
+        HeaderAccountNameField.Left = Units.Millimeters * (AccountLevel * 4);
+      }
+      else
+      {
+        if(((Boolean)Report.GetColumnValue(&quot;BalanceSheet.parentfooter&quot;)))
+        {
+          FooterBand.Visible = (AccountLevel &gt; 1);
+          FooterLevel1.Visible = (AccountLevel &lt;= 1);
+          FooterAccountCodeField.Left = Units.Millimeters * (AccountLevel * 4);
+          FooterAccountNameField.Left = Units.Millimeters * (15 + (AccountLevel * 4));
+        }
+        else
+        {
+          TransactionBand.Visible = true;
+          AccountCodeField.Left = Units.Millimeters * (AccountLevel * 4);
+          AccountNameField.Left = Units.Millimeters * (15 + (AccountLevel * 4));
+        }
+      }
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <TableDataSource Name="BalanceSheet" ReferenceName="BalanceSheet" DataType="System.Int32" Enabled="true">
+      <Column Name="seq" DataType="System.Int32"/>
+      <Column Name="accountlevel" DataType="System.Int32"/>
+      <Column Name="accountpath" DataType="System.String"/>
+      <Column Name="accounttype" DataType="System.String"/>
+      <Column Name="year" DataType="System.Int32"/>
+      <Column Name="period" DataType="System.Int32"/>
+      <Column Name="accountcode" DataType="System.String"/>
+      <Column Name="accountname" DataType="System.String"/>
+      <Column Name="yearstart" DataType="System.Decimal"/>
+      <Column Name="actual" DataType="System.Decimal"/>
+      <Column Name="actualytd" DataType="System.Decimal"/>
+      <Column Name="actuallastyear" DataType="System.Decimal"/>
+      <Column Name="haschildren" DataType="System.Boolean" BindableControl="CheckBox"/>
+      <Column Name="parentfooter" DataType="System.Boolean" BindableControl="CheckBox"/>
+    </TableDataSource>
+    <Parameter Name="param_diff_period_i" DataType="System.Int32"/>
+    <Parameter Name="param_start_period_i" DataType="System.Int32"/>
+    <Parameter Name="param_end_period_i" DataType="System.Int32"/>
+    <Parameter Name="param_account_hierarchy_c" DataType="System.String"/>
+    <Parameter Name="param_currency" DataType="System.String"/>
+    <Parameter Name="param_period" DataType="System.Boolean"/>
+    <Parameter Name="param_date_checked" DataType="System.Boolean"/>
+    <Parameter Name="param_year_i" DataType="System.Int32"/>
+    <Parameter Name="param_start_date" DataType="System.DateTime"/>
+    <Parameter Name="param_end_date" DataType="System.DateTime"/>
+    <Parameter Name="param_costcentreoptions" DataType="System.String"/>
+    <Parameter Name="param_cost_centre_codes" DataType="System.String"/>
+    <Parameter Name="param_cost_centre_list_title" DataType="System.Int32"/>
+    <Parameter Name="param_cost_centre_summary" DataType="System.Boolean"/>
+    <Parameter Name="param_cost_centre_breakdown" DataType="System.Boolean"/>
+    <Parameter Name="param_depth" DataType="System.String"/>
+    <Parameter Name="param_ytd" DataType="System.String"/>
+    <Parameter Name="param_currency_format" DataType="System.String"/>
+    <Parameter Name="param_ledger_number_i" DataType="System.Int32"/>
+    <Parameter Name="param_quarter" DataType="System.String"/>
+    <Parameter Name="param_ledger_name" DataType="System.String"/>
+    <Parameter Name="param_currency_name" DataType="System.String"/>
+    <Parameter Name="param_real_year" DataType="System.Int32"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9">
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="66.15">
+      <TextObject Name="Text1" Left="368.55" Width="283.5" Height="18.9" Text="Balance Sheet" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
+      <TextObject Name="Text9" Left="831.6" Width="85.05" Height="18.9" Text="Printed :" HorzAlign="Right"/>
+      <TextObject Name="Text8" Left="916.65" Width="122.85" Height="18.9" Text="[OmDate([Date])]"/>
+      <TextObject Name="Text20" Width="94.5" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
+      <TextObject Name="Text10" Left="94.5" Width="113.4" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
+      <TextObject Name="Text21" Top="18.9" Width="94.5" Height="18.9" Text="Currency :" HorzAlign="Right"/>
+      <TextObject Name="Text18" Left="94.5" Top="18.9" Width="170.1" Height="18.9" Text="[param_currency_name]"/>
+      <TextObject Name="Text22" Left="793.8" Top="18.9" Width="122.85" Height="18.9" Text="[IIf([param_period],&quot; Period :&quot;,&quot; Quarter:&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text19" Left="916.65" Top="18.9" Width="122.85" Height="18.9" Text="[[param_real_year]+&quot;:&quot;+IIf([param_period],IIf([param_end_period_i]&gt;[param_start_period_i],[param_start_period_i]+&quot;-&quot;+[param_end_period_i],[param_end_period_i]),[param_quarter])]&#13;&#10;" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text42" Left="368.55" Top="18.9" Width="283.5" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
+      <LineObject Name="Line1" Left="1039.5" Top="56.7" Width="-1039.5"/>
+      <TextObject Name="Text50" Left="831.6" Top="37.8" Width="207.9" Height="18.9" Text="[OmDate([param_start_date])] - [OmDate([param_end_date])]" HorzAlign="Right"/>
+      <TextObject Name="Text2" Left="94.5" Top="37.8" Width="274.05" Height="18.9" Text="[param_cost_centre_list_title]"/>
+      <TextObject Name="Text51" Top="37.8" Width="94.5" Height="18.9" Text="Cost Centre :" HorzAlign="Right"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="70.64" Width="1047.06" Height="18.9">
+      <TextObject Name="Text3" Left="113.4" Width="151.2" Height="18.9" Text="Description" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text5" Left="274.05" Width="94.5" Height="18.9" Text="Actual" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text41" Left="37.8" Width="56.7" Height="18.9" Text="Acc" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text43" Left="510.3" Width="94.5" Height="18.9" Text="Actual YTD" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text47" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="Var.%" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text48" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="Var.%" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+    </PageHeaderBand>
+    <GroupHeaderBand Name="AccountTypeGroup" Top="94.04" Width="1047.06" KeepChild="true" KeepWithData="true" Condition="[BalanceSheet.accounttype]" SortOrder="None">
+      <DataBand Name="TransactionBand" Top="98.53" Width="1047.06" Height="18.9" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="BalanceSheet">
+        <TextObject Name="ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[BalanceSheet.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
+        <TextObject Name="ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[BalanceSheet.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
+        <TextObject Name="VarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actual],[BalanceSheet.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
+        <TextObject Name="VarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actualytd],[BalanceSheet.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
+        <TextObject Name="AccountCodeField" Left="45.36" Width="56.7" Height="18.9" Text="[BalanceSheet.accountcode]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt"/>
+        <TextObject Name="AccountNameField" Left="102.06" Width="207.9" Height="18.9" Text="[BalanceSheet.accountname]" Padding="0, 0, 2, 0" Font="Arial, 9pt"/>
+        <ChildBand Name="HeaderBand" Top="121.93" Width="1047.06" Height="18.9" Visible="false">
+          <TextObject Name="HeaderAccountNameField" Left="30.24" Width="217.35" Height="18.9" Text="[BalanceSheet.accountname]:" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+          <ChildBand Name="FooterBand" Top="145.32" Width="1047.06" Height="18.9" Visible="false">
+            <TextObject Name="FooterActualField" Left="274.05" Width="94.5" Height="18.9" Text="[BalanceSheet.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
+            <TextObject Name="FooterActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[BalanceSheet.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
+            <TextObject Name="FooterVarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actual],[BalanceSheet.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray"/>
+            <TextObject Name="FooterVarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actualytd],[BalanceSheet.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray"/>
+            <TextObject Name="FooterAccountNameField" Left="56.7" Width="207.9" Height="18.9" Text="Total [BalanceSheet.accountname]" Padding="0, 0, 2, 0" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
+            <TextObject Name="FooterAccountCodeField" Width="56.7" Height="18.9" Text="[BalanceSheet.accountcode]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt" TextFill.Color="DarkGray"/>
+            <ChildBand Name="FooterLevel1" Top="168.72" Width="1047.06" Height="28.35">
+              <TextObject Name="Level1ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[BalanceSheet.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+              <TextObject Name="Level1ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[BalanceSheet.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+              <TextObject Name="Level1VarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actual],[BalanceSheet.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold"/>
+              <TextObject Name="Level1VarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actualytd],[BalanceSheet.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold"/>
+              <TextObject Name="Level1AccountNameField" Width="207.9" Height="18.9" Text="[BalanceSheet.accountname]" Padding="0, 0, 2, 0" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+            </ChildBand>
+          </ChildBand>
+        </ChildBand>
+      </DataBand>
+      <GroupFooterBand Name="GroupFooter1" Top="201.56" Width="1047.06" Height="9.45" KeepChild="true" KeepWithData="true"/>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="215.51" Width="1047.06" Height="18.9">
+      <TextObject Name="Text17" Left="878.85" Width="170.1" Height="18.9" Text="[PageNofM]" HorzAlign="Right" Font="Arial, 9pt, style=Bold"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

@@ -5,11 +5,14 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     FormType: browse
     Template: windowTDS
-    WindowWidth: 1000
+    WindowWidth: 970
     WindowHeight: 800
 
     Events:
         Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
+    Actions:
+        actEditFind: {ActionClick=mniFilterFind_Click}
+        actEditFilter: {ActionClick=mniFilterFind_Click}
 
     Controls:
         pnlContent:

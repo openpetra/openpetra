@@ -183,6 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
 
             this.ClientSize = new System.Drawing.Size(600, rowY + 50);
+            this.CancelButton = btnCancel;
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnRevaluate);
             this.Controls.Add(this.lblAccountText);

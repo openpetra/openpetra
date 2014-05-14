@@ -100,8 +100,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             unitStructureRow.ChildUnitKey = partnerRow.PartnerKey;
             MainDS.UmUnitStructure.Rows.Add(unitStructureRow);
 
-            TVerificationResultCollection Result;
-            PartnerEditTDSAccess.SubmitChanges(MainDS, out Result);
+            PartnerEditTDSAccess.SubmitChanges(MainDS);
 
             string sqlInsertModule =
                 String.Format("INSERT INTO PUB_{0}({1}, {2}) VALUES ('REG-{3:0000000000}','Registration {4}')",

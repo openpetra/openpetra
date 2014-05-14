@@ -1,0 +1,67 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Merge Partners
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 500
+    WindowHeight: 305
+
+    Controls:
+        pnlDialogContent:
+            Padding: 5,0,8,0
+            Controls: [grpPartnerKeys, pnlReason]
+        grpPartnerKeys:
+            Controls:
+                Row0: [lblFrom]
+                Row1: [txtMergeFrom]
+                Row2: [lblSpace1]
+                Row3: [lblTo]
+                Row4: [txtMergeTo]
+                Row5: [pnlClear]
+            Dock: Top
+        pnlReason:
+            Controls: [lblSpace2, cmbReasonForMerging]
+            Dock: Fill
+        pnlClear:
+            Controls:
+                Row0: [pnlBtnClear, pnlBtnSwitch]
+            Stretch: horizontally
+        lblFrom: {Label=Partner to be merged from (this partner will no longer be used)}
+        lblTo: {Label=Partner to be merged to (the active partner)}
+        lblSpace1: {Text= }
+        lblSpace2: {Text= }
+        txtMergeFrom:
+            Label: Partner Key
+            Type: PartnerKey
+            NoLabel: true
+            Stretch: horizontally
+            OnChange: MergeFromChanged
+        txtMergeTo:
+            Label: Partner Key
+            Type: PartnerKey
+            NoLabel: true
+            Stretch: horizontally
+            OnChange: MergeToChanged
+        cmbReasonForMerging:
+            OptionalValues: [=Duplicate Record Exists, Marriage]
+            Width: 200
+
+        pnlBtnSwitch:
+           Dock: Right
+           Width: 111
+           Controls: [btnSwitch]
+        pnlBtnClear:
+           Dock: Right
+           Width: 116
+           Controls: [btnClear]
+        btnSwitch:
+            ActionClick: Switch_Click
+            Dock: Right
+            Label: Switch Partners
+        btnClear:
+            Width: 111
+            ActionClick: Clear_Click
+            Dock: Right
+            
+        btnOK: {Label=&Merge}

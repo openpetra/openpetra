@@ -41,15 +41,19 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmEarlyLateRegistrationSetup
     {
-        private Int64 FPartnerKey;
-        private DateTime StartDate;
-        private DateTime EndDate;
+        /// PartnerKey for selected conference to be set from outside
+        public static Int64 FPartnerKey {
+            private get; set;
+        }
 
-        /// constructor
-        public TFrmEarlyLateRegistrationSetup(Form AParentForm, TSearchCriteria[] ASearchCriteria, long ASelectedConferenceKey) : base()
-        {
-            FPartnerKey = ASelectedConferenceKey;
-            Initialize(AParentForm, ASearchCriteria);
+        /// Start date for selected conference to be set from outside
+        public static DateTime FStartDate {
+            private get; set;
+        }
+
+        /// End date for selected conference to be set from outside
+        public static DateTime FEndDate {
+            private get; set;
         }
 
         private void InitializeManualCode()
@@ -59,7 +63,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             string ConferenceName;
             TPartnerClass PartnerClass;
 
-            FPartnerKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
+            FPartnerKey = TUserDefaults.GetInt64Default("LASTCONFERENCEWORKEDWITH");
 
             // display the conference name in the title bar and in a text box at the top of the screen
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FPartnerKey, out ConferenceName, out PartnerClass);
@@ -67,9 +71,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             txtConferenceName.Text = ConferenceName;
 
             // display the conference dates in a text box at the top of the screen
-            EndDate = TRemote.MConference.Conference.WebConnectors.GetEndDate(FPartnerKey);
-            StartDate = TRemote.MConference.Conference.WebConnectors.GetStartDate(FPartnerKey);
-            txtConferenceDates.Text = StartDate.ToShortDateString() + " to " + EndDate.ToShortDateString();
+            txtConferenceDates.Text = FStartDate.ToShortDateString() + " to " + FEndDate.ToShortDateString();
 
             // display the conference currency in a text box at the top of the screen and in pnlDetails
             TRemote.MConference.Conference.WebConnectors.GetCurrency(FPartnerKey, out CurrencyCode, out CurrencyName);
@@ -122,7 +124,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
         private DateTime GetLatestAvailableEarlyDate(PcEarlyLateRow ARow)
         {
-            DateTime ApplicableDate = StartDate.AddDays(-1);
+            DateTime ApplicableDate = FStartDate.AddDays(-1);
 
             if (FMainDS.PcEarlyLate.Count >= 1)
             {
@@ -162,7 +164,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
         private DateTime GetEarliestAvailableLateDate(PcEarlyLateRow ARow)
         {
-            DateTime ApplicableDate = StartDate.AddDays(-1);
+            DateTime ApplicableDate = FStartDate.AddDays(-1);
 
             DateTime LatestDate = ApplicableDate;
             DataRowCollection AllRecords = FMainDS.PcEarlyLate.Rows;
@@ -275,7 +277,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedConferenceValidation_Conference.ValidateEarlyLateRegistration(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict, GridData, EndDate);
+                FPetraUtilsObject.ValidationControlsDict, GridData, FEndDate);
         }
     }
 }

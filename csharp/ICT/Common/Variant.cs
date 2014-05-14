@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
@@ -1092,10 +1093,11 @@ namespace Ict.Common
                 ReturnValue = System.DateTime.MinValue;
 
                 // for SQLite, attempt to match eg. 2009-02-28 00:00:00
-                Regex exp = new Regex(@"(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)");
+                // for OpenDocument, attempt to match eg. 2009-02-28T00:00:00
+                Regex exp = new Regex(@"(\d\d\d\d)-(\d\d)-(\d\d)[T ](\d\d):(\d\d):(\d\d)");
                 MatchCollection matches = exp.Matches(StringValue);
 
-                if (matches.Count != 0)
+                if ((matches.Count == 1) && (matches[0].Length == StringValue.Length))
                 {
                     return new DateTime(Convert.ToInt32(matches[0].Groups[1].ToString()),
                         Convert.ToInt32(matches[0].Groups[2].ToString()),
@@ -1103,6 +1105,20 @@ namespace Ict.Common
                         Convert.ToInt32(matches[0].Groups[4].ToString()),
                         Convert.ToInt32(matches[0].Groups[5].ToString()),
                         Convert.ToInt32(matches[0].Groups[6].ToString()));
+                }
+
+                // for OpenDocument, attempt to match eg. 2009-02-28
+                exp = new Regex(@"(\d\d\d\d)-(\d\d)-(\d\d)");
+                matches = exp.Matches(StringValue);
+
+                if ((matches.Count == 1) && (matches[0].Length == StringValue.Length))
+                {
+                    return new DateTime(Convert.ToInt32(matches[0].Groups[1].ToString()),
+                        Convert.ToInt32(matches[0].Groups[2].ToString()),
+                        Convert.ToInt32(matches[0].Groups[3].ToString()),
+                        0,
+                        0,
+                        0);
                 }
             }
             else
@@ -1527,6 +1543,9 @@ namespace Ict.Common
         /// <summary>
         /// serialize TVariant as a string. This helps to avoid problems with .net Remoting and DateTime
         /// </summary>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "The StreamingContext (ctx) is not needed in this Constructor overload for Serialization.",
+             MessageId = "ctx")]
         protected TVariant(SerializationInfo info, StreamingContext ctx)
         {
             this.Assign(DecodeFromString(info.GetString("encoded")));

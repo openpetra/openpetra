@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,10 @@
 //
 using System;
 using System.Data;
+using System.IO;
+using System.Xml;
+using System.Drawing.Printing;
+using System.Collections.Generic;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -35,6 +39,9 @@ using Ict.Petra.Server.MReporting.MFinance;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
+using Ict.Common.Printing;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
@@ -65,9 +72,22 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             get
             {
                 return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(IAsynchronousExecutionProgress),
                     typeof(TAsynchronousExecutionProgressRemote),
                     FAsyncExecProgress);
+            }
+        }
+
+        /// <summary>
+        /// to show the progress of the report calculation;
+        /// prints the current id of the row that is being calculated;
+        /// this is not remoting the progress. useful for unit tests
+        /// </summary>
+        [NoRemoting]
+        public IAsynchronousExecutionProgress AsyncExecProgressServerSide
+        {
+            get
+            {
+                return FAsyncExecProgress;
             }
         }
 
@@ -92,6 +112,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             // setup the logging to go to the FAsyncExecProgress.ProgressInformation
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
             Thread TheThread = new Thread(new ThreadStart(Run));
+            TheThread.CurrentCulture = Thread.CurrentThread.CurrentCulture;
             TheThread.Start();
         }
 
@@ -192,6 +213,165 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         private void WriteToStatusBar(String s)
         {
             FAsyncExecProgress.ProgressInformation = s;
+        }
+
+        private bool ExportToExcelFile(string AFilename)
+        {
+            bool ExportOnlyLowestLevel = false;
+
+            // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
+            // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
+            // output looks much nicer if it doesn't contain the unnecessary higher levels.
+            if (FParameterList.Exists("csv_export_only_lowest_level"))
+            {
+                ExportOnlyLowestLevel = FParameterList.Get("csv_export_only_lowest_level").ToBool();
+            }
+
+            XmlDocument doc = FResultList.WriteXmlDocument(FParameterList, ExportOnlyLowestLevel);
+
+            if (doc != null)
+            {
+                using (FileStream fs = new FileStream(AFilename, FileMode.Create))
+                {
+                    if (TCsv2Xml.Xml2ExcelStream(doc, fs, false))
+                    {
+                        fs.Close();
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool PrintToPDF(string AFilename, bool AWrapColumn)
+        {
+            PrintDocument doc = new PrintDocument();
+
+            TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eReport);
+            TReportPrinterLayout layout = new TReportPrinterLayout(FResultList, FParameterList, pdfPrinter, AWrapColumn);
+
+            pdfPrinter.Init(eOrientation.ePortrait, layout, eMarginType.ePrintableArea);
+
+            pdfPrinter.SavePDF(AFilename);
+
+            return true;
+        }
+
+        private bool ExportToCSVFile(string AFilename)
+        {
+            bool ExportOnlyLowestLevel = false;
+
+            // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
+            // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
+            // output looks much nicer if it doesn't contain the unnecessary higher levels.
+            if (FParameterList.Exists("csv_export_only_lowest_level"))
+            {
+                ExportOnlyLowestLevel = FParameterList.Get("csv_export_only_lowest_level").ToBool();
+            }
+
+            return FResultList.WriteCSV(FParameterList, AFilename, ExportOnlyLowestLevel);
+        }
+
+        /// <summary>
+        /// send report as email
+        /// </summary>
+        public Boolean SendEmail(string AEmailAddresses,
+            bool AAttachExcelFile,
+            bool AAttachCSVFile,
+            bool AAttachPDF,
+            bool AWrapColumn,
+            out TVerificationResultCollection AVerification)
+        {
+            TSmtpSender EmailSender = new TSmtpSender();
+
+            AVerification = new TVerificationResultCollection();
+
+            if (!EmailSender.ValidateEmailConfiguration())
+            {
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Missing configuration for sending emails. Please edit your server configuration file"),
+                        CommonErrorCodes.ERR_MISSINGEMAILCONFIGURATION,
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+                return false;
+            }
+
+            List <string>FilesToAttach = new List <string>();
+
+            if (AAttachExcelFile)
+            {
+                string ExcelFile = TFileHelper.GetTempFileName(
+                    FParameterList.Get("currentReport").ToString(),
+                    ".xlsx");
+
+                if (ExportToExcelFile(ExcelFile))
+                {
+                    FilesToAttach.Add(ExcelFile);
+                }
+            }
+
+            if (AAttachCSVFile)
+            {
+                string CSVFile = TFileHelper.GetTempFileName(
+                    FParameterList.Get("currentReport").ToString(),
+                    ".csv");
+
+                if (ExportToCSVFile(CSVFile))
+                {
+                    FilesToAttach.Add(CSVFile);
+                }
+            }
+
+            if (AAttachPDF)
+            {
+                string PDFFile = TFileHelper.GetTempFileName(
+                    FParameterList.Get("currentReport").ToString(),
+                    ".pdf");
+
+                if (PrintToPDF(PDFFile, AWrapColumn))
+                {
+                    FilesToAttach.Add(PDFFile);
+                }
+            }
+
+            if (FilesToAttach.Count == 0)
+            {
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Missing any attachments, not sending the email"),
+                        "Missing Attachments",
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+                return false;
+            }
+
+            // TODO use the email address of the user, from s_user
+            if (EmailSender.SendEmail("<" + TAppSettingsManager.GetValue("Reports.Email.Sender") + ">",
+                    "OpenPetra Reports",
+                    AEmailAddresses,
+                    FParameterList.Get("currentReport").ToString(),
+                    Catalog.GetString("Please see attachment!"),
+                    FilesToAttach.ToArray()))
+            {
+                foreach (string file in FilesToAttach)
+                {
+                    File.Delete(file);
+                }
+
+                return true;
+            }
+
+            AVerification.Add(new TVerificationResult(
+                    Catalog.GetString("Sending Email"),
+                    Catalog.GetString("Problem sending email"),
+                    "server problems",
+                    TResultSeverity.Resv_Critical,
+                    new System.Guid()));
+
+            return false;
         }
     }
 }

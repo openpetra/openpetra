@@ -98,16 +98,16 @@
 					</queryDetail>
 					<queryDetail>
 						<value>
-								detail.a_ledger_number_i =  {param_ledger_number_i}
+								detail.a_ledger_number_i =  {{param_ledger_number_i}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							AND gift.a_date_entered_d BETWEEN {#param_last_year_start_date#}
 								AND {#param_last_year_end_date#}
-							AND gift.a_ledger_number_i = {param_ledger_number_i}
+							AND gift.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 						GROUP BY 
 							gift.p_donor_key_n, 
 							PUB_p_partner.p_partner_short_name_c,
@@ -137,16 +137,16 @@
 							 PUB_a_gift_detail as detail,
 							 PUB_a_gift_batch
 						WHERE
-								detail.a_ledger_number_i = {param_ledger_number_i}
+								detail.a_ledger_number_i = {{param_ledger_number_i}}
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							AND gift.a_date_entered_d BETWEEN {#param_this_year_start_date#}
 								AND {#param_this_year_end_date#}
-							AND gift.a_ledger_number_i = {param_ledger_number_i}
+							AND gift.a_ledger_number_i = {{param_ledger_number_i}}
 							AND  gift.p_donor_key_n = {DonorKey}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 						</value>
 					</queryDetail>
 				</query>

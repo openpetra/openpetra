@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -256,6 +256,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.PrintDocument = new System.Drawing.Printing.PrintDocument();
             this.dlgSaveTextFile = new System.Windows.Forms.SaveFileDialog();
             this.dlgSaveCSVFile = new System.Windows.Forms.SaveFileDialog();
+            this.dlgSaveXLSXFile = new System.Windows.Forms.SaveFileDialog();
             this.ImageList1 = new System.Windows.Forms.ImageList(this.components);
             this.tabPreview = new System.Windows.Forms.TabControl();
             this.tbpText = new System.Windows.Forms.TabPage();
@@ -273,8 +274,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtPrint = new System.Windows.Forms.ToolStripButton();
             this.XPToolBarSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tbtExportCSV = new System.Windows.Forms.ToolStripButton();
+            this.tbtExportExcelFile = new System.Windows.Forms.ToolStripButton();
             this.tbtExportText = new System.Windows.Forms.ToolStripButton();
             this.tbtGenerateChart = new System.Windows.Forms.ToolStripButton();
+            this.tbtSendEmail = new System.Windows.Forms.ToolStripButton();
             this.tabPreview.SuspendLayout();
             this.tbpText.SuspendLayout();
             this.tbpPreview.SuspendLayout();
@@ -289,7 +292,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                     this.tbtPrint,
                     this.XPToolBarSeparator1,
                     this.tbtExportCSV,
+                    this.tbtExportExcelFile,
                     this.tbtExportText,
+                    this.tbtSendEmail,
                     this.tbtGenerateChart
                 });
             this.tbrMain.Name = "tbrMain";
@@ -318,6 +323,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             //
             this.dlgSaveCSVFile.DefaultExt = "csv";
             this.dlgSaveCSVFile.Title = "Save report as CSV file";
+
+            //
+            // dlgSaveXLSXFile
+            //
+            this.dlgSaveXLSXFile.DefaultExt = "xlsx";
+            this.dlgSaveXLSXFile.Filter = "Excel file|*.xlsx";
+            this.dlgSaveXLSXFile.Title = "Save report as Excel file";
 
             //
             // ImageList1
@@ -493,9 +505,17 @@ namespace Ict.Petra.Client.MReporting.Gui
             // tbtExportCSV
             //
             this.tbtExportCSV.Text = "Export to CSV";
-            this.tbtExportCSV.ToolTipText = "Export to CSV or directly into Excel, if" + " it is available";
+            this.tbtExportCSV.ToolTipText = "Export to CSV text file";
             this.tbtExportCSV.Click += new System.EventHandler(this.tbtExportCSVClick);
             this.tbtExportCSV.Width = 60;
+
+            //
+            // tbtExportExcelFile
+            //
+            this.tbtExportExcelFile.Text = "Export to Excel";
+            this.tbtExportExcelFile.ToolTipText = "Export to Excel xlsx file or directly into Excel, if" + " it is available";
+            this.tbtExportExcelFile.Click += new System.EventHandler(this.tbtExportExcelFileClick);
+            this.tbtExportExcelFile.Width = 60;
 
             //
             // tbtExportText
@@ -504,6 +524,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtExportText.ToolTipText = "Save as a text file (e.g. for email)";
             this.tbtExportText.Click += new System.EventHandler(this.tbtExportTextClick);
             this.tbtExportText.Width = 70;
+
+            //
+            // tbtSendEmail
+            //
+            this.tbtSendEmail.Text = "Send Email";
+            this.tbtSendEmail.ToolTipText = "Send the Report as an Email with Excel attachment";
+            this.tbtSendEmail.Click += new System.EventHandler(this.tbtSendEmailClick);
+            this.tbtSendEmail.Width = 70;
 
             //
             // tbtGenerateChart
@@ -543,6 +571,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.Drawing.Printing.PrintDocument PrintDocument;
         private System.Windows.Forms.SaveFileDialog dlgSaveTextFile;
         private System.Windows.Forms.SaveFileDialog dlgSaveCSVFile;
+        private System.Windows.Forms.SaveFileDialog dlgSaveXLSXFile;
         private System.Windows.Forms.ImageList ImageList1;
         private System.Windows.Forms.TabControl tabPreview;
         private System.Windows.Forms.TabPage tbpText;
@@ -551,8 +580,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         private System.Windows.Forms.ToolStripButton tbtPrint;
         private System.Windows.Forms.ToolStripSeparator XPToolBarSeparator1;
         private System.Windows.Forms.ToolStripButton tbtExportCSV;
+        private System.Windows.Forms.ToolStripButton tbtExportExcelFile;
         private System.Windows.Forms.ToolStripButton tbtExportText;
         private System.Windows.Forms.ToolStripButton tbtGenerateChart;
+        private System.Windows.Forms.ToolStripButton tbtSendEmail;
         private System.Windows.Forms.TabPage tbpGridView;
         private TSgrdDataGrid sgGridView;
         private System.Windows.Forms.ContextMenu ContextMenu1;

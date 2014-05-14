@@ -50,6 +50,11 @@ namespace Ict.Petra.Shared
 
             if (AMessageHeadline == null)
             {
+                if (AVerificationResult == null)
+                {
+                    throw new ArgumentNullException("AVerificationResult must not be null if AMessageHeadline is null!");
+                }
+
                 if (AVerificationResult.HasCriticalErrors)
                 {
                     AMessageHeadline = Catalog.GetString("Saving of data failed!\r\n\r\nReasons:");

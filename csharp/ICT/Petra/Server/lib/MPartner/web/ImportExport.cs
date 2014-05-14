@@ -1318,6 +1318,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         AddVerificationResult(ref ReferenceResults, "Adding Document Code " + rv.DocCode);
                         PmDocumentTypeRow Row = MainDS.PmDocumentType.NewRowTyped();
                         Row.DocCode = rv.DocCode;
+                        Row.DocCategory = rv.DocCategory;
                         Row.Description = FNewRowDescription;
                         MainDS.PmDocumentType.Rows.Add(Row);
                     }
@@ -1376,6 +1377,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     NewRow.PublicationDescription = FNewRowDescription;
                     NewRow.FrequencyCode = "Daily"; // I can't leave this blank, so I need to make something up...
                     MainDS.PPublication.Rows.Add(NewRow);
+                }
+            }
+        }
+
+        private static void CheckJobRefs(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
+        {
+            // Position: We can't have jobs for positions we've not heard of
+            foreach (UmJobRow rv in MainDS.UmJob.Rows)
+            {
+                if ((rv.PositionName != "") && (!PtPositionAccess.Exists(rv.PositionName, rv.PositionScope, Transaction)))
+                {
+                    MainDS.PtPosition.DefaultView.RowFilter = String.Format("{0}='{1}'", PtPositionTable.GetPositionNameDBName(), rv.PositionName);
+
+                    if (MainDS.PtPosition.DefaultView.Count == 0) // Check I've not just added this a moment ago..
+                    {
+                        AddVerificationResult(ref ReferenceResults, "Adding new Position " + rv.PositionName);
+                        PtPositionRow Row = MainDS.PtPosition.NewRowTyped();
+                        Row.PositionName = rv.PositionName;
+                        Row.PositionScope = rv.PositionScope;
+                        Row.PositionDescr = FNewRowDescription;
+                        MainDS.PtPosition.Rows.Add(Row);
+                    }
                 }
             }
         }
@@ -1467,6 +1492,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckPassportType(MainDS, ref ReferenceResults, Transaction);
             CheckDocumentRefs(MainDS, ref ReferenceResults, Transaction);
             CheckSubscriptions(MainDS, ref ReferenceResults, Transaction);
+            CheckJobRefs(MainDS, ref ReferenceResults, Transaction);
             return true;
         }
 
@@ -1493,12 +1519,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             DBAccess.GDBAccessObj.CommitTransaction();
 
-            TVerificationResultCollection SubmitResults = new TVerificationResultCollection();
             TSubmitChangesResult Res = TSubmitChangesResult.scrError;
 
             if (CanImport)
             {
-                Res = PartnerImportExportTDSAccess.SubmitChanges(MainDS, out SubmitResults);
+                PartnerImportExportTDSAccess.SubmitChanges(MainDS);
+
+                Res = TSubmitChangesResult.scrOK;
             }
 
             if (((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass == "")
@@ -1511,13 +1538,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1}\r\n {2}",
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName,
-                        Res == 0 ? "Successful" : "Error"
+                        Res == TSubmitChangesResult.scrOK ? "Successful" : "Error"
                         ),
                     TResultSeverity.Resv_Status);
             }
 
             AVerificationResult = ReferenceResults;
-            AVerificationResult.AddCollection(SubmitResults);
 
             return TSubmitChangesResult.scrOK == Res;
         }
@@ -1567,7 +1593,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <returns>One partner in EXT format</returns>
         [RequireModulePermission("PTNRUSER")]
         public static string ExportPartnerExt(Int64 APartnerKey,
-            Int32 ASiteKey,
+            Int64 ASiteKey,
             Int32 ALocationKey,
             Boolean ANoFamily,
             StringCollection ASpecificBuildingInfo)
@@ -1620,6 +1646,31 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             extRecord += Exporter.ExportPartnerExt(AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
             return extRecord;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>Export all partners of an extract into an EXT file.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static String ExportExtractPartnersExt(int AExtractId, Boolean AIncludeFamilyMembers)
+        {
+            String ExtText = GetExtFileHeader();
+            MExtractTable ExtractPartners = MExtractAccess.LoadViaMExtractMaster(AExtractId, null);
+            TPartnerFileExport Exporter = new TPartnerFileExport();
+            PartnerImportExportTDS MainDS;
+
+            foreach (MExtractRow ExtractPartner in ExtractPartners.Rows)
+            {
+                if (ExtractPartner.PartnerKey != 0)
+                {
+                    MainDS = TExportAllPartnerData.ExportPartner(ExtractPartner.PartnerKey);
+                    ExtText += Exporter.ExportPartnerExt(MainDS, /*ASiteKey*/ 0, /*ALocationKey*/ 0, null);
+                }
+            }
+
+            ExtText += GetExtFileFooter();
+            return ExtText;
         }
 
         /// <summary>

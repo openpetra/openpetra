@@ -205,6 +205,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             TControlDef ctrl = FGrid[columnCounter, rowCounter];
 
                             int CellWidth = ctrl.Width;
+                            TLogging.LogAtLevel(1, "Control '" + ctrl.controlName + "' Width in WriteTableLayout: " + CellWidth.ToString());
 
                             if ((spanRunCounter == 0) && (ctrl.colSpanWithLabel == 1))
                             {
@@ -394,7 +395,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (LayoutCtrl.IsHorizontalGridButtonPanel)
                 {
-//Console.WriteLine("Setting CurrentTopPosition to 3 for all Controls on Control '" + LayoutCtrl.controlName + "' as it is a horizontal Grid Button Panel (used for Buttons).");
+                    TLogging.LogAtLevel(1,
+                        "Setting CurrentTopPosition to 3 for all Controls on Control '" + LayoutCtrl.controlName +
+                        "' as it is a horizontal Grid Button Panel (used for Buttons).");
                     CurrentTopPosition = 3;
                 }
                 else
@@ -427,14 +430,38 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                             if (concatenatedColumnWidth > 0)
                             {
+                                TControlDef ParentControl = childctrl.FCodeStorage.GetControl(childctrl.parentName);
+                                System.Windows.Forms.Padding? ParentPad = null;
+
+                                if (ParentControl.HasAttribute("Padding"))
+                                {
+                                    string ParentPadding = ParentControl.GetAttribute("Padding");
+                                    TLogging.LogAtLevel(1, "ParentControl '" + ParentControl.controlName + "' Padding: " + ParentPadding);
+
+                                    if (ParentPadding.IndexOf(',') == -1)
+                                    {
+                                        ParentPad = new Padding(Convert.ToInt32(ParentPadding));
+                                    }
+                                    else
+                                    {
+                                        string[] Paddings = ParentPadding.Split(',');
+                                        ParentPad = new Padding(Convert.ToInt32(Paddings[0]), Convert.ToInt32(Paddings[1]),
+                                            Convert.ToInt32(Paddings[2]), Convert.ToInt32(Paddings[3]));
+                                    }
+
+                                    TLogging.LogAtLevel(1, "ParentControl Padding (parsed): " + ParentPad.ToString());
+                                }
+
                                 writer.SetControlProperty(childctrl, "Size",
-                                    String.Format("new System.Drawing.Size({0}, {1})", concatenatedColumnWidth, childctrl.Height));
+                                    String.Format("new System.Drawing.Size({0}, {1})", concatenatedColumnWidth -
+                                        (ParentPad.HasValue ? ParentPad.Value.Right : 0),
+                                        childctrl.Height));
                             }
                         }
 
                         int ControlTopPosition = CurrentTopPosition;
                         int ControlLeftPosition = CurrentLeftPosition;
-
+                        TLogging.LogAtLevel(1, "WriteTableLayout for Control '" + childctrl.controlName + "'");
                         // add margin or padding
                         string padding = writer.GetControlProperty(childctrl.controlName, "Padding");
 
@@ -443,6 +470,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             string[] values = padding.Substring(padding.IndexOf("(") + 1).Replace(")", "").Split(new char[] { ',' });
                             ControlLeftPosition += Convert.ToInt32(values[0]);
                             ControlTopPosition += Convert.ToInt32(values[1]);
+                            TLogging.LogAtLevel(1, "Removing Padding Property from Control '" + childctrl.controlName + "'!");
                             writer.ClearControlProperty(childctrl.controlName, "Padding");
                         }
 
@@ -461,7 +489,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             && !((childctrl.HasAttribute("StartNewButtonGroup"))
                                  && (childctrl.GetAttribute("StartNewButtonGroup").ToLower() == "true")))
                         {
-//Console.WriteLine("Adjusted ControlLeftPosition for Control '" + childctrl.controlName + "' as it is on a horizontal Grid Button Panel.");
+                            TLogging.LogAtLevel(1,
+                                "Adjusted ControlLeftPosition for Control '" + childctrl.controlName +
+                                "' as it is on a horizontal Grid Button Panel.");
                             ControlLeftPosition -= 8;
                         }
 

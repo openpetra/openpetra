@@ -59,12 +59,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FTypeCode = value;
-                //save the position of the actual row
-                int rowIndex = GetSelectedRowIndex();
-                FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+
+                string rowFilter = String.Format("{0} = '{1}'",
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);
-                SelectRowInGrid(rowIndex);
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                ApplyFilter();
+
+                grdDetails.SelectRowWithoutFocus(FPrevRowChangedRow);
             }
         }
         private void NewRow(System.Object sender, EventArgs e)
@@ -111,6 +113,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             myAT.Merge(AT);
             //FMainDS.AFreeformAnalysis.Merge(TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber).AFreeformAnalysis);
             FMainDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
+
+            SelectRowInGrid(1);
         }
 
         private void ShowDetailsManual(AFreeformAnalysisRow ARow)

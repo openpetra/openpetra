@@ -26,6 +26,7 @@ using System.Data.Odbc;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.DB;
@@ -262,6 +263,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
         private static Int64 GetDonorByBankAccountNumber(BankImportTDS AMainDS, string ABankSortCode, string ABankAccountNumber)
         {
+            if (Regex.IsMatch(ABankAccountNumber, "^[A-Z]"))
+            {
+                // TODO search for IBAN / BIC instead of bank sort code and account number
+
+                // For the moment, we try to assume sort code and account number
+                // it might be wrong, but then we would not find a donor anyway.
+                // we should definitely not store these calculated numbers
+                // perhaps do validation against https://kontocheck.solidcharity.com
+                string IBAN = ABankAccountNumber;
+                ABankSortCode = IBAN.Substring(4, 8);
+                ABankAccountNumber = IBAN.Substring(12).TrimStart(new char[] { '0' });
+                // TLogging.Log("IBAN " + IBAN + " converted to sort code " + ABankSortCode + " and account number + " + ABankAccountNumber);
+            }
+
             DataRowView[] bankingDetails = AMainDS.PBankingDetails.DefaultView.FindRows(new object[] { ABankSortCode, ABankAccountNumber });
 
             if (bankingDetails.Length > 0)
@@ -638,6 +653,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             matchtext += tr.TransactionAmount.ToString("0.##");
 
             matchtext = matchtext.Replace(",", "").Replace("/", "").Replace("-", "").Replace(";", "").Replace(".", "");
+            matchtext = matchtext.Replace("PURP+RINPRATENZAHLUNG", "");
+            matchtext = matchtext.Replace("SVWZ+", "");
 
             string oldMatchText = String.Empty;
 
@@ -801,7 +818,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             AMatchDS.AGiftDetail.Clear();
             AMatchDS.AGift.Clear();
 
-            TVerificationResultCollection Verification;
             AMatchDS.ThrowAwayAfterSubmitChanges = true;
 
             if (TLogging.DebugLevel > 0)
@@ -809,7 +825,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 TLogging.Log("before submitchanges");
             }
 
-            BankImportTDSAccess.SubmitChanges(AMatchDS, out Verification);
+            BankImportTDSAccess.SubmitChanges(AMatchDS);
 
             if (TLogging.DebugLevel > 0)
             {

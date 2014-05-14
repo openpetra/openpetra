@@ -159,7 +159,7 @@ namespace Ict.Common.Remoting.Shared
         /// add a new user
         /// </summary>
         /// <returns></returns>
-        bool AddUser(string AUserID);
+        bool AddUser(string AUserID, string APassword = "");
 
         /// Allows the server or admin console to run a timed job now
         void PerformTimedProcessingNow(string AProcessName);

@@ -33,6 +33,8 @@ using System.Runtime.Remoting;
 using Ict.Common;
 using Ict.Common.Remoting.Client;
 
+using Npgsql;
+
 namespace Ict.Petra.Client.App.Core
 {
     /// <summary>
@@ -98,6 +100,7 @@ namespace Ict.Petra.Client.App.Core
             set
             {
                 string ApplicationVersion = String.Empty;
+                Npgsql.NpgsqlException NpgEx;
 
                 FException = value;
 
@@ -108,8 +111,27 @@ namespace Ict.Petra.Client.App.Core
                 }
 
                 /* Build error details String */
-                FErrorDetails = FException.ToString() + Environment.NewLine + Environment.NewLine + "--------------------------------------" +
-                                Environment.NewLine;
+                FErrorDetails = FException.ToString();
+
+                // To get full details incl. Severity, Error, Position in SQL, etc. of a PostgreSQL Exception we need to
+                // call .ToString() on an Exception of Type Npgsql.NpgsqlException
+                NpgEx = FException as Npgsql.NpgsqlException;
+
+                if (NpgEx == null)
+                {
+                    NpgEx = FException.InnerException as Npgsql.NpgsqlException;
+                }
+
+                if (NpgEx != null)
+                {
+                    FErrorDetails += Environment.NewLine + "----------------" + Environment.NewLine +
+                                     "Npgsql.NpgsqlException Detail Information:" + Environment.NewLine;
+
+                    FErrorDetails += NpgEx.ToString();
+                }
+
+                FErrorDetails += Environment.NewLine + "--------------------------------------" +
+                                 Environment.NewLine;
 
                 if (ApplicationVersion != String.Empty)
                 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Globalization;
 using System.Threading;
+using Ict.Common.Exceptions;
 
 namespace Ict.Common.Controls
 {
@@ -109,10 +110,13 @@ namespace Ict.Common.Controls
         #region Properties
 
         /// <summary>
-        /// This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.
+        /// This Property throws an exception unless ControlMode is 'NormalTextMode'!
+        /// For all other cases, the value to be displayed needs to be set programmatically
+        /// through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue'
+        /// method.
         /// </summary>
         [Description(
-             "This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.")
+             "This Property throws an exception unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue' method.")
         ]
         public override string Text
         {
@@ -123,12 +127,23 @@ namespace Ict.Common.Controls
 
             set
             {
-                if ((FControlMode == TNumericTextBoxMode.NormalTextBox)
-                    || (FControlMode == TNumericTextBoxMode.Currency))
+                if (FControlMode == TNumericTextBoxMode.NormalTextBox)
                 {
                     base.Text = value;
                 }
+                else
+                {
+                    throw new Exception("Text property cannot be set directly in Numeric TextBox.");
+                }
             }
+        }
+
+        /// <summary>
+        /// set currency values with format
+        /// </summary>
+        public void SetCurrencyValue(decimal AValue, string ACurrencyFormat)
+        {
+            base.Text = StringHelper.FormatCurrency(new TVariant(AValue), ACurrencyFormat);
         }
 
         /// <summary>
@@ -200,7 +215,7 @@ namespace Ict.Common.Controls
 
             set
             {
-                if (FControlMode == TNumericTextBoxMode.Decimal)
+                if ((FControlMode == TNumericTextBoxMode.Decimal) || (FControlMode == TNumericTextBoxMode.Currency))
                 {
                     FDecimalPlaces = value;
                 }
@@ -331,7 +346,7 @@ namespace Ict.Common.Controls
 //                {
 //                    if (!DesignMode)
 //                    {
-//                        throw new ApplicationException(
+//                        throw new EOPAppException(
 //                            "The 'NumberValueDecimal' Property can only be set if the 'ControlMode' Property is 'Decimal'!");
 //                    }
 //                }
@@ -392,7 +407,7 @@ namespace Ict.Common.Controls
                 {
                     if (!DesignMode)
                     {
-                        throw new ApplicationException(
+                        throw new EOPAppException(
                             "The 'NumberValueDouble' Property can only be set if the 'ControlMode' Property is 'Decimal'!");
                     }
                 }
@@ -469,7 +484,7 @@ namespace Ict.Common.Controls
                 {
                     if (!DesignMode)
                     {
-                        throw new ApplicationException(
+                        throw new EOPAppException(
                             "The 'NumberValueInt' Property can only be set if the 'ControlMode' Property is 'Integer'!");
                     }
                 }
@@ -548,7 +563,7 @@ namespace Ict.Common.Controls
                 {
                     if (!DesignMode)
                     {
-                        throw new ApplicationException(
+                        throw new EOPAppException(
                             "The 'NumberValueLongInt' Property can only be set if the 'ControlMode' Property is 'LongInteger'!");
                     }
                 }
@@ -1103,6 +1118,7 @@ namespace Ict.Common.Controls
                     switch (FControlMode)
                     {
                         case TNumericTextBoxMode.Decimal:
+                        case TNumericTextBoxMode.Currency:
 
                             if (FNumberPrecision == TNumberPrecision.Double)
                             {

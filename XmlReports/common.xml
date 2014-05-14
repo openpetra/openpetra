@@ -29,7 +29,7 @@
 			</calculation>
 
 			<calculation id="Select DetailAccountChildren"
-					returns="line_a_account_code_c, line_a_account_alias_c, account_code_short_desc, debit_credit_indicator"
+					returns="line_a_account_alias_c, line_a_account_code_c, account_code_short_desc, debit_credit_indicator"
 					returnsFormat="row">
 				<query>
 					<queryDetail><value function="getAllAccountDescendants({{param_ledger_number_i}}, {line_a_account_code_c}, {{param_account_hierarchy_c}})"/>
@@ -56,7 +56,7 @@
 					  AND ahd.a_reporting_account_code_c = acc.a_account_code_c
 					  AND acc.a_ledger_number_i = {{param_ledger_number_i}} 
 					  AND ahd.a_account_code_to_report_to_c = {param_parentaccountcode}
-					  AND ahd.a_account_hierarchy_code_c = "STANDARD"
+					  AND ahd.a_account_hierarchy_code_c = 'STANDARD'
           			 			</value>
           			 		</case>
           			 		<default>
@@ -182,7 +182,7 @@
 					<queryDetail><value>
 					SELECT a_cost_centre_code_c AS line_a_cost_centre_code_c FROM
             		PUB_a_cost_centre WHERE a_ledger_number_i = {{param_ledger_number_i}} AND 
-            		(a_cost_centre_to_report_to_c IS NULL OR a_cost_centre_to_report_to_c = "")
+            		(a_cost_centre_to_report_to_c IS NULL OR a_cost_centre_to_report_to_c = '')
  					</value></queryDetail>
 				</query>
 			</calculation>

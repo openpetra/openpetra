@@ -81,6 +81,15 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /// <summary>returns true if the ComboBox portion of the control is DroppedDown</summary>
+        public bool DroppedDown
+        {
+            get
+            {
+                return cmbCountry.cmbCombobox.DroppedDown;
+            }
+        }
+
         /// <summary>
         /// This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
         ///
@@ -122,6 +131,7 @@ namespace Ict.Petra.Client.CommonControls
                 cmbCountry.Tag = this.Tag;
                 cmbCountry.cmbCombobox.Tag = this.Tag;
                 FDataCache_CountryListTable = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
+                FDataCache_CountryListTable.DefaultView.Sort = "p_country_code_c";
                 cmbCountry.cmbCombobox.BeginUpdate();
                 cmbCountry.cmbCombobox.DisplayMember = "p_country_code_c";
                 cmbCountry.cmbCombobox.ValueMember = "p_country_code_c";

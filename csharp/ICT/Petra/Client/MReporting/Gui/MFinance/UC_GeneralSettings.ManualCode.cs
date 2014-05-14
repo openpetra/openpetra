@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     {
         private int FLedgerNumber = -1;
         private ALedgerRow FLedgerRow = null;
+        Boolean OnlyEndPeriodShown = false;
 
         /// <summary>
         /// Initialisation
@@ -61,24 +62,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtDate.Enabled = false;
             txtQuarter.Enabled = false;
             cmbQuarterYear.Enabled = false;
-
-            /* This is not required because of a fix in cmbAutoComplete:
-             *
-             * cmbAccountHierarchy.Leave += new EventHandler(RequireCmbValue);
-             * cmbCurrency.Leave += new EventHandler(RequireCmbValue);
-             * cmbPeriodYear.Leave += new EventHandler(RequireCmbValue);
-             * cmbQuarterYear.Leave += new EventHandler(RequireCmbValue);
-             */
-        }
-
-        void RequireCmbValue(object sender, EventArgs e)
-        {
-            ComboBox cmb = (sender is TCmbLabelled) ? ((TCmbLabelled)sender).cmbCombobox : (ComboBox)sender;
-
-            if (cmb.SelectedIndex < 0)
-            {
-                cmb.SelectedIndex = 0;
-            }
+            cmbBreakdownYear.Enabled = false;
+            EnableBreakdownByPeriod(false);
         }
 
         /// <summary>
@@ -93,23 +78,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbPeriodYear, FLedgerNumber);
             cmbPeriodYear.SelectedIndex = 0;
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbQuarterYear, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbQuarterYear, FLedgerNumber);
             cmbQuarterYear.SelectedIndex = 0;
+
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbBreakdownYear, FLedgerNumber);
+            cmbBreakdownYear.SelectedIndex = 0;
 
             TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
             cmbAccountHierarchy.SelectedIndex = 0;
 
             // if there is only one hierarchy, disable the control
-//			cmbAccountHierarchy.Enabled = (cmbAccountHierarchy.Count > 1);
+//          cmbAccountHierarchy.Enabled = (cmbAccountHierarchy.Count > 1);
 
             /* select the latest year TODO ??? */
-            //            if (this.CbB_AvailableYears.Items.Count > 0)
-            //            {
-            //                this.CbB_AvailableYears.SelectedIndex = 0; /// first item is the most current year
-            //            }
+//            if (this.CbB_AvailableYears.Items.Count > 0)
+//            {
+//                this.CbB_AvailableYears.SelectedIndex = 0; /// first item is the most current year
+//            }
         }
 
         #region Parameter/Settings Handling
@@ -139,21 +127,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             //            DiffPeriod = DiffPeriod - 12;
             ACalculator.AddParameter("param_diff_period_i", DiffPeriod);
+            ACalculator.AddParameter("param_start_period_i", 0);
+            ACalculator.AddParameter("param_end_period_i", 0);
 
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
-            ACalculator.AddParameter("param_currency", this.cmbCurrency.GetSelectedString());
+
+            String CurrencySelection = this.cmbCurrency.GetSelectedString();
+            ACalculator.AddParameter("param_currency", CurrencySelection);
+
+            String CurrencyName = (CurrencySelection == "Base") ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
+            ACalculator.AddParameter("param_currency_name", CurrencyName);
 
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
+            ACalculator.AddParameter("param_period_breakdown", rbtBreakdown.Checked && rbtBreakdown.Visible);
+
+            ACalculator.AddParameter("param_period_checked", rbtPeriod.Checked);
             ACalculator.AddParameter("param_date_checked", rbtDate.Checked);
+            ACalculator.AddParameter("param_quarter_checked", rbtQuarter.Checked);
 
             if (rbtQuarter.Checked)
             {
                 Year = cmbQuarterYear.GetSelectedInt32();
+                ACalculator.AddParameter("param_year_i", Year);
+                ACalculator.AddParameter("param_real_year", cmbQuarterYear.GetSelectedString(1));
+                ACalculator.AddParameter("param_real_year_ending", cmbPeriodYear.GetSelectedString(2));
 
                 int Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
                 ACalculator.AddParameter("param_quarter", (System.Object)(Quarter));
                 ACalculator.AddParameter("param_start_period_i", (System.Object)(Quarter * 3 - 2));
                 ACalculator.AddParameter("param_end_period_i", (System.Object)(Quarter * 3));
+                ACalculator.AddParameter("param_start_date",
+                    TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3 - 2));
+                ACalculator.AddParameter("param_end_date",
+                    TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3));
 
                 //VerificationResult = TFinancialPeriodChecks.ValidQuarter(DiffPeriod, Year, Quarter, "Quarter");
                 if (AReportAction == TReportActionEnum.raGenerate)
@@ -167,28 +173,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             else if (rbtPeriod.Checked)
             {
                 Year = cmbPeriodYear.GetSelectedInt32();
+                ACalculator.AddParameter("param_year_i", Year);
+                ACalculator.AddParameter("param_real_year", cmbPeriodYear.GetSelectedString(1));
+                ACalculator.AddParameter("param_real_year_ending", cmbPeriodYear.GetSelectedString(2));
 
-                int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
-                ACalculator.AddParameter("param_start_period_i", StartPeriod);
                 ACalculator.AddParameter("param_end_period_i", EndPeriod);
-
-                if (AReportAction == TReportActionEnum.raGenerate)
-                {
-                    CheckPeriod(Year, StartPeriod);
-                    CheckPeriod(Year, EndPeriod);
-
-                    if (StartPeriod > EndPeriod)
-                    {
-                        FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
-                                Catalog.GetString("Start Period must not be bigger than End Period."),
-                                Catalog.GetString("Invalid Data entered."),
-                                TResultSeverity.Resv_Critical));
-                    }
-                }
-
-                dtpStartDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, StartPeriod);
+                ACalculator.AddParameter("param_end_date",
+                    TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod));
+                CheckPeriod(Year, EndPeriod);
                 dtpEndDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
+
+                if (!OnlyEndPeriodShown)
+                {
+                    int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
+                    ACalculator.AddParameter("param_start_period_i", StartPeriod);
+                    ACalculator.AddParameter("param_start_date",
+                        TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, StartPeriod));
+
+                    if (AReportAction == TReportActionEnum.raGenerate)
+                    {
+                        CheckPeriod(Year, StartPeriod);
+
+                        if (StartPeriod > EndPeriod)
+                        {
+                            FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                                    Catalog.GetString("Start Period must not be bigger than End Period."),
+                                    Catalog.GetString("Invalid Data entered."),
+                                    TResultSeverity.Resv_Critical));
+                        }
+                    }
+
+                    dtpStartDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, StartPeriod);
+                }
             }
             else if (rbtDate.Checked)
             {
@@ -197,16 +214,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     if (dtpStartDate.Date.Value > dtpEndDate.Date.Value)
                     {
                         FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
-                                Catalog.GetString("Start Date must not be later than End Date."),
+                                Catalog.GetString("Start Date must not be later than End Date"),
                                 Catalog.GetString("Invalid Data entered."),
                                 TResultSeverity.Resv_Critical));
                     }
+                    else
+                    {
+                        ACalculator.AddParameter("param_start_date", dtpStartDate.Date.Value);
+                        ACalculator.AddParameter("param_end_date", dtpEndDate.Date.Value);
+                        ACalculator.AddParameter("param_real_year", dtpEndDate.Date.Value.Year);
+                    }
                 }
             }
+            else if (rbtBreakdown.Checked)
+            {
+                Year = cmbBreakdownYear.GetSelectedInt32();
+                ACalculator.AddParameter("param_real_year", cmbBreakdownYear.GetSelectedString(1));
+                ACalculator.AddParameter("param_year_i", Year);
+                ACalculator.AddParameter("param_start_date", TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1));
+                ACalculator.AddParameter("param_end_date", TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12));
+            }
 
-            ACalculator.AddParameter("param_year_i", Year);
-            ACalculator.AddParameter("param_start_date", dtpStartDate.Date);
-            ACalculator.AddParameter("param_end_date", dtpEndDate.Date);
+            if (Year < 0)
+            {
+                FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                        Catalog.GetString("Accounting Year was not specified"),
+                        Catalog.GetString("Invalid Data entered."),
+                        TResultSeverity.Resv_Critical));
+            }
         }
 
         /// <summary>
@@ -232,12 +267,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbCurrency.SetSelectedString(AParameters.Get("param_currency").ToString());
             cmbPeriodYear.SetSelectedInt32(AParameters.Get("param_year_i").ToInt());
             cmbQuarterYear.SetSelectedInt32(AParameters.Get("param_year_i").ToInt());
+            cmbBreakdownYear.SetSelectedInt32(AParameters.Get("param_year_i").ToInt());
 
             rbtQuarter.Checked = AParameters.Get("param_quarter").ToBool();
             rbtDate.Checked = AParameters.Get("param_date_checked").ToBool();
             rbtPeriod.Checked = AParameters.Get("param_period").ToBool();
+            rbtBreakdown.Checked = AParameters.Get("param_period_breakdown").ToBool();
 
-            if (!rbtPeriod.Checked && !rbtDate.Checked && !rbtQuarter.Checked)
+            if (!rbtPeriod.Checked && !rbtDate.Checked && !rbtQuarter.Checked && !rbtBreakdown.Checked)
             {
                 rbtPeriod.Checked = true;
             }
@@ -274,29 +311,60 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         #endregion
 
         /// <summary>
-        /// Hide all Period Range selcection elements except of the year selection
+        /// Hide all Period Range selection elements except of the year selection
         /// </summary>
         public void ShowOnlyYearSelection()
         {
-            bool IsVisible = false;
-
-            rbtPeriod.Visible = IsVisible;
-            rbtQuarter.Visible = IsVisible;
-            rbtDate.Visible = IsVisible;
-            lblStartPeriod.Visible = IsVisible;
-            lblEndPeriod.Visible = IsVisible;
-            lblQuarter.Visible = IsVisible;
-            lblQuarterYear.Visible = IsVisible;
-            lblStartDate.Visible = IsVisible;
-            lblEndDate.Visible = IsVisible;
-            txtStartPeriod.Visible = IsVisible;
-            txtEndPeriod.Visible = IsVisible;
-            txtQuarter.Visible = IsVisible;
-            cmbQuarterYear.Visible = IsVisible;
-            dtpStartDate.Visible = IsVisible;
-            dtpEndDate.Visible = IsVisible;
+            rbtPeriod.Visible = false;
+            rbtQuarter.Visible = false;
+            rbtDate.Visible = false;
+            lblStartPeriod.Visible = false;
+            lblEndPeriod.Visible = false;
+            lblQuarter.Visible = false;
+            lblQuarterYear.Visible = false;
+            lblStartDate.Visible = false;
+            lblEndDate.Visible = false;
+            txtStartPeriod.Visible = false;
+            txtEndPeriod.Visible = false;
+            txtQuarter.Visible = false;
+            cmbQuarterYear.Visible = false;
+            dtpStartDate.Visible = false;
+            dtpEndDate.Visible = false;
             cmbPeriodYear.Enabled = true;
             cmbPeriodYear.Visible = true;
+        }
+
+        /// <summary>
+        /// For BalanceSheet, quarters and periods are not appropriate -
+        /// I just want a single date.
+        /// </summary>
+        public void ShowOnlyEndPeriod()
+        {
+            lblStartPeriod.Visible = false;
+            txtStartPeriod.Visible = false;
+
+            rbtQuarter.Visible = false;
+            lblQuarter.Visible = false;
+            txtQuarter.Visible = false;
+            lblQuarterYear.Visible = false;
+            cmbQuarterYear.Visible = false;
+
+            rbtDate.Visible = false;
+            lblStartDate.Visible = false;
+            dtpStartDate.Visible = false;
+            lblEndDate.Visible = false;
+            dtpEndDate.Visible = false;
+
+            rbtPeriod.Visible = true;
+            rbtPeriod.Checked = true;
+            lblEndPeriod.Visible = true;
+            lblEndPeriod.Location = new System.Drawing.Point(50, 12);
+            lblEndPeriod.Size = new System.Drawing.Size(68, 17);
+            lblEndPeriod.Text = "At end of:";
+            txtEndPeriod.Visible = true;
+            cmbPeriodYear.Visible = true;
+
+            OnlyEndPeriodShown = true;
         }
 
         /// <summary>
@@ -321,12 +389,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
+        /// Show these currency choices (Instead of the usual list)
+        /// </summary>
+        /// <param name="items"></param>
+        public void CurrencyOptions(object[] items)
+        {
+            this.cmbCurrency.Items.Clear();
+            this.cmbCurrency.Items.AddRange(items);
+        }
+
+        /// <summary>
         /// Enable / Disable the radio button date
         /// </summary>
         /// <param name="AValue">true to enable the radio button</param>
         public void EnableDateSelection(bool AValue)
         {
             rbtDate.Enabled = AValue;
+        }
+
+        /// <summary>
+        /// Allow Breakdown By Period (in Income Expense Statement only)
+        /// </summary>
+        /// <param name="AValue"></param>
+        public void EnableBreakdownByPeriod(bool AValue)
+        {
+            rbtBreakdown.Visible = AValue;
+            lblYear.Visible = AValue;
+            cmbBreakdownYear.Visible = AValue;
+            grpPeriodRange.Height = (AValue) ? 240 : 164;
         }
 
         private void UnselectAll(System.Object sender, System.EventArgs e)
@@ -359,7 +449,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if ((APeriodNr <= 0)
                 || ((RealYear == FLedgerRow.CurrentFinancialYear) && (RealPeriod > FLedgerRow.CurrentPeriod + FLedgerRow.NumberFwdPostingPeriods))
-                || ((RealYear < FLedgerRow.CurrentFinancialYear) && (APeriodNr > FLedgerRow.NumberFwdPostingPeriods)))
+                || ((RealYear < FLedgerRow.CurrentFinancialYear) && (APeriodNr > FLedgerRow.NumberOfAccountingPeriods)))
             {
                 FPetraUtilsObject.AddVerificationResult(new TVerificationResult("",
                         Catalog.GetString("Invalid Period entered.") + Environment.NewLine + Catalog.GetString("Period must be between ") +

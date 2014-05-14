@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, christiank
+//       timop, christiank, alanP
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,6 +39,7 @@ using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -51,6 +52,11 @@ namespace Ict.Petra.Client.CommonForms
     public class TFrmPetraUtils
     {
         /// <summary>
+        /// This sets a limit on the cascading reference count when checking for GUI deletion of a row.
+        /// </summary>
+        private const int FMaxReferenceCountOnDelete = 1000;
+
+        /// <summary>
         /// will set the help text for each control, when it gets the focus
         /// </summary>
         private TExtStatusBarHelp FStatusBar;
@@ -60,6 +66,11 @@ namespace Ict.Petra.Client.CommonForms
         /// this object implements the IFrmPetra interface
         /// </summary>
         protected IFrmPetra FTheForm;
+
+        /// <summary>
+        /// ToolTip instance for the Form.
+        /// </summary>
+        protected System.Windows.Forms.ToolTip FtipForm;
 
         /// <summary>
         /// ToolTip instance which is used to show Data Validation messages.
@@ -78,6 +89,10 @@ namespace Ict.Petra.Client.CommonForms
 
         private Form FCallerForm;
 
+        /// This helper class handles the extensions to TFrmPetraUtils that deal with opening and closing windows
+        /// and loading and saving window sizes, positions and states
+        private TFrmPetraWindowExtensions FWindowExtensions;
+
         /// Tells whether the Form is activated for the first time (after loading the Form) or not
         protected Boolean FFormActivatedForFirstTime;
 
@@ -93,6 +108,10 @@ namespace Ict.Petra.Client.CommonForms
         /// Used for keeping track of data verification errors
         protected TVerificationResultCollection FVerificationResultCollection;
 
+        /// <summary>Whether the Form's Shown Event already occured. ATTENTION: See comment on
+        /// <see cref="FormHasBeenShown" /> Property for important implementation details!</summary>
+        protected Boolean FFormHasBeenShown = false;
+
         /// Used for keeping track of data verification errors
         public TVerificationResultCollection VerificationResultCollection
         {
@@ -103,6 +122,31 @@ namespace Ict.Petra.Client.CommonForms
             set
             {
                 FVerificationResultCollection = value;
+            }
+        }
+
+        /// <summary>
+        /// Whether the Form's Shown Event has already occured. ATTENTION: This Property's value is
+        /// NOT AUTOMATICALLY SET once a Forms Shown Event has run!!! - A Form that wants to have
+        /// that Property's value reflect the fact that a Form has been shown needs to
+        /// hook up its .Shown Event to this Classes' <see cref="OnFormShown" /> Method!!!
+        /// </summary>
+        public Boolean FormHasBeenShown
+        {
+            get
+            {
+                return FFormHasBeenShown;
+            }
+        }
+
+        /// <summary>
+        /// Gets the maximum number of references to find before abandoning the count when deleting a record.
+        /// </summary>
+        public int MaxReferenceCountOnDelete
+        {
+            get
+            {
+                return FMaxReferenceCountOnDelete;
             }
         }
 
@@ -126,6 +170,8 @@ namespace Ict.Petra.Client.CommonForms
             {
                 TFormsList.GFormsList.NotifyWindowOpened(ACallerForm.Handle, FWinForm.Handle);
             }
+
+            FWindowExtensions = new TFrmPetraWindowExtensions(FWinForm, FCallerForm);
 
             //
             // Initialise the Data Validation ToolTip
@@ -169,12 +215,28 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /** used to allow subforms to initialise
+         * Also, now that the form is shown we can set the splitter bar distances
          */
         public void LocalRunOnceOnActivation()
         {
             if (!FNoAutoHookupOfAllControls)
             {
                 HookupAllControls();
+            }
+
+            // Are we saving/restoring the window position?  This option is stored in User Defaults.
+            if (TUserDefaults.IsInitialised)
+            {
+                if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
+                {
+                    // (Note: Nant tests do not have a caller so we need to allow for this possibility)
+                    if ((FWinForm.Name == "TFrmMainWindowNew") || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
+                    {
+                        // Either we are loading the main window or we have been opened by the main window
+                        // Now that the window has been activated we are ok to restore things like splitter distances
+                        RestoreAdditionalWindowPositionProperties();
+                    }
+                }
             }
         }
 
@@ -459,10 +521,25 @@ namespace Ict.Petra.Client.CommonForms
         {
             if (e.KeyCode == Keys.Escape)
             {
-                ExecuteAction(eActionId.eClose);
+                if (FWindowExtensions.AContainerControlWantsEscape(sender)
+                    || (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, true) == false)
+                    || (this.FWinForm.Name == "TFrmMainWindowNew"))
+                {
+                    // Either the user default is NOT to use the ESC key to close screens
+                    // or there is a control on the form that needs to handle the escape key,
+                    // or we are the main window
+                    //  so we do nothing and the keyDown message will get passed to the control - which will do something if it needs to
+                }
+                else
+                {
+                    // No control wants the escape key so we are free to handle the KeyDown message at the Form level
+                    e.Handled = true;
+                    ExecuteAction(eActionId.eClose);
+                }
             }
             else if (e.KeyCode == Keys.F1)
             {
+                e.Handled = true;
                 ExecuteAction(eActionId.eHelp);
             }
         }
@@ -539,13 +616,15 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// add the form to the forms list
+        /// add the form to the forms list and set its window position/size
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void TFrmPetra_Load(System.Object sender, System.EventArgs e)
         {
             TFormsList.GFormsList.Add(FWinForm);
+
+            FWindowExtensions.TForm_Load();
         }
 
         /**
@@ -569,7 +648,20 @@ namespace Ict.Petra.Client.CommonForms
                 // MessageBox.Show('TFrmPetra.TFrmPetra_Closing: GFormsList.Remove(Self as Form)');
                 TFormsList.GFormsList.NotifyWindowClose(this.FWinForm.Handle);
                 TFormsList.GFormsList.Remove(FWinForm);
+
+                FWindowExtensions.TForm_Closing();
             }
+        }
+
+        /// <summary>
+        /// Hook up this Event to a Forms' Shown Event to allow the <see cref="FormHasBeenShown" />
+        /// Property to reflect that.
+        /// </summary>
+        /// <param name="sender">Ignored.</param>
+        /// <param name="e">Ignored.</param>
+        public void OnFormShown(System.Object sender, System.EventArgs e)
+        {
+            FFormHasBeenShown = true;
         }
 
         #endregion
@@ -595,6 +687,11 @@ namespace Ict.Petra.Client.CommonForms
         {
             if (FStatusBar != null)
             {
+                if (!FStatusBar.IsHandleCreated)
+                {
+                    return;
+                }
+
                 if (FStatusBar.InvokeRequired)
                 {
                     FStatusBar.Invoke(new WriteCallback(WriteToStatusBar), new object[] { s });
@@ -618,6 +715,23 @@ namespace Ict.Petra.Client.CommonForms
             return true;
         }
 
+        /// <summary>
+        /// Method that restores splitter bar positions.  If you have a tabbed control that hosts a split container
+        /// you need to call this method when the tab page changes.
+        /// </summary>
+        public void RestoreAdditionalWindowPositionProperties()
+        {
+            FWindowExtensions.RestoreAdditionalWindowPositionProperties();
+        }
+
+        /// <summary>
+        /// Loads the file that stores windows sizes/positions for the active user
+        /// </summary>
+        public void LoadWindowPositionsFromFile()
+        {
+            FWindowExtensions.LoadWindowPositionsFromFile();
+        }
+
         #endregion
 
         /// <summary>
@@ -627,7 +741,10 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AHelpText"></param>
         public void SetStatusBarText(Control AControl, string AHelpText)
         {
-            FStatusBar.SetHelpText(AControl, AHelpText);
+            if (FStatusBar != null)
+            {
+                FStatusBar.SetHelpText(AControl, AHelpText);
+            }
         }
 
         const Int16 MAX_COMBOBOX_HISTORY = 30;
@@ -679,6 +796,19 @@ namespace Ict.Petra.Client.CommonForms
         public Form GetForm()
         {
             return FWinForm;
+        }
+
+        /// <summary>
+        /// Sets the tooltip for a Control.
+        /// </summary>
+        public void SetToolTip(Control AControl, string AToolTipText)
+        {
+            if (FtipForm == null)
+            {
+                FtipForm = new ToolTip();
+            }
+
+            FtipForm.SetToolTip(AControl, AToolTipText);
         }
     }
 

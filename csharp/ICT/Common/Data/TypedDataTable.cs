@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -109,6 +109,12 @@ namespace Ict.Common.Data
         /// This will increase the speed significantly: no updating of modificationID, no slow AcceptChanges.
         /// </summary>
         public bool ThrowAwayAfterSubmitChanges = false;
+
+        /// <summary>
+        /// if you want no warning about that the datatable should be cleared after submitchanges.
+        /// in some cases you must keep the data, eg when you need the new keys after INSERT
+        /// </summary>
+        public bool DontThrowAwayAfterSubmitChanges = false;
 
         /// <summary>
         /// our own version of GetChanges
@@ -413,7 +419,8 @@ namespace Ict.Common.Data
         {
             TTypedColumnInfo columnInfo = TableInfo[ATableNumber].columns[AColumnNr];
 
-            if (columnInfo.odbctype == OdbcType.VarChar)
+            if ((columnInfo.odbctype == OdbcType.VarChar)
+                || (columnInfo.odbctype == OdbcType.Text))
             {
                 return new System.Data.Odbc.OdbcParameter("", columnInfo.odbctype, columnInfo.length);
             }

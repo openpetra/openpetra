@@ -6,14 +6,14 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
     FormType: edit
     Template: windowMaintainTable
-    WindowWidth: 800
+    WindowWidth: 600
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
-            Controls: [pnlConferenceDetails, pnlGrid, pnlDetails]
+            Controls: [pnlConferenceDetails, pnlDetails, pnlGrid]
             Dock: Fill
         pnlConferenceDetails:
             Dock: Top
@@ -21,16 +21,21 @@ RootNode:
         txtConferenceName: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlFilterAndFind, grdDetails, pnlButtons]
+        pnlFilterAndFind:
+            ExpandedWidth: 185
+            FilterControls: [txtDetailUpToAge, txtDetailDiscount, cmbDetailCostTypeCode]
+            FindControls: [txtDetailUpToAge, txtDetailDiscount, cmbDetailCostTypeCode]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailUpToAge, DetailDiscount, DetailCostTypeCode]
@@ -51,6 +56,3 @@ RootNode:
             OptionalValues: [=ACCOMMODATION, CONFERENCE]
             Label: Apply discount to
         txtDetailDiscount: {Width=50, Format=PercentInteger}
-    Toolbar:
-        tbbNew:
-            Label: New Child Discount

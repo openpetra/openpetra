@@ -1,0 +1,62 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    FormTitle: Find Extract
+    FormType: dialog
+    Template: window
+    WindowWidth: 700
+    WindowHeight: 500    
+    Icon: petraico-big.ico
+    Actions:
+        actAccept: {ActionClick=AcceptExtract}
+        actClose: {ActionClick=CloseScreen}
+        actSearch: {ActionClick=RefreshExtractList}
+        actClear: {ActionClick=ClearSearchCriteria}
+    Controls:
+        pnlDialogContent:
+            Controls: [pnlFilter, pnlExtractMasterList]
+        pnlFilter:
+            Controls: [pnlFilterCriteria, pnlFilterButtons]
+            Dock: Top
+        pnlFilterCriteria:
+            NoLabel: true
+            Controls: 
+                Row0: [txtExtractName]
+                Row1: [txtExtractDesc]
+                Row2: [cmbUserCreated]
+                Row3: [dtpCreatedFrom, dtpCreatedTo]
+                Row4: [cmbUserModified]
+                Row5: [dtpModifiedFrom, dtpModifiedTo]
+        pnlFilterButtons: {ControlsOrientation=horizontal}
+            AutoButtonMaxWidths: true
+            AutoButtonMaxWidthsAutoSizesContainerWidth: true
+            NoLabel: true
+            Controls: [btnSearch, btnClear]
+        pnlExtractMasterList:
+            Padding: 4,0,8,0
+            Dock: Fill
+            Controls: [clbDetails]
+        txtExtractName: {Label=Extract Name, ColSpan=2, Width=200}
+        txtExtractDesc: {Label=Description, ColSpan=2, Width=350}
+        cmbUserCreated: {Label=Created by, List=UserList, ColSpan=2}
+        dtpCreatedFrom: {Label=Created between}
+        dtpCreatedTo: {Label=and}
+        cmbUserModified: {Label=Modified/Verified by, List=UserList, ColSpan=2}
+        dtpModifiedFrom: {Label=Modified between}
+        dtpModifiedTo: {Label=and}
+
+        btnSearch:
+            Label: Search
+            Action: actSearch
+        btnClear:
+            Label: Clear
+            Action: actClear
+
+        clbDetails:
+            Dock: Fill
+            Columns: []
+
+        btnOK:
+            Label: &Accept
+            Action: actAccept
+        btnCancel: {Action=actClose}

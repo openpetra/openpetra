@@ -103,6 +103,10 @@ namespace Ict.Petra.Server.MPersonnel.queries
             if (paramSelection == "one partner")
             {
                 ADefines.Add("ONEPARTNER", string.Empty);
+                ASqlParameterList.Add(new OdbcParameter("personkey", OdbcType.Decimal)
+                    {
+                        Value = AParameters.Get("param_partnerkey").ToDecimal()
+                    });
                 ASqlParameterList.Add(new OdbcParameter("partnerkey", OdbcType.Decimal)
                     {
                         Value = AParameters.Get("param_partnerkey").ToDecimal()
@@ -198,13 +202,13 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     else
                     {
                         Defines.Add("WITHOUTDATERANGE", string.Empty);
-                        SqlParameterList.Add(new OdbcParameter("startdate", OdbcType.Date)
-                            {
-                                Value = FromDate
-                            });
                         SqlParameterList.Add(new OdbcParameter("enddate", OdbcType.Date)
                             {
                                 Value = ToDate
+                            });
+                        SqlParameterList.Add(new OdbcParameter("startdate", OdbcType.Date)
+                            {
+                                Value = FromDate
                             });
                     }
                 }
@@ -232,10 +236,16 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     return null;
                 }
 
-                // if end date is not set, use today
-                if (AParameters.Get("param_chkUseDate").ToBool() != true)
+                // if end date is not set, use the end of this year
+                DateTime AgeDay = DateTime.Now;
+
+                if (AParameters.Get("param_chkUseDate").ToBool() == true)
                 {
-                    AParameters.Add("param_dtpToDate", DateTime.Now);
+                    AgeDay = AParameters.Get("param_dtpToDate").ToDate();
+                }
+                else
+                {
+                    AgeDay = new DateTime(AgeDay.Year, 12, 31);
                 }
 
                 // Calculate the age, in new column
@@ -244,11 +254,11 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 foreach (DataRow r in resultTable.Rows)
                 {
                     int age = 0;
-                    DateTime BDay = Convert.ToDateTime(r["DOB"]);
 
-                    while (BDay.AddYears(age) <= AParameters.Get("param_dtpToDate").ToDate())
+                    if (r["DOB"] != DBNull.Value)
                     {
-                        age++;
+                        DateTime BDay = Convert.ToDateTime(r["DOB"]);
+                        age = AgeDay.Year - BDay.Year;
                     }
 
                     r["Age"] = age;

@@ -22,8 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
+using System.Collections.Generic;
 using Ict.Common;
 
 namespace Ict.Common.IO
@@ -85,10 +87,29 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// check if smtp host has been configured
+        /// </summary>
+        /// <returns></returns>
+        public bool ValidateEmailConfiguration()
+        {
+            if (FSmtpClient.DeliveryMethod == SmtpDeliveryMethod.Network)
+            {
+                return FSmtpClient.Host.Length > 0 && !FSmtpClient.Host.Contains("example.org");
+            }
+            else if (FSmtpClient.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
+            {
+                return Directory.Exists(FSmtpClient.PickupDirectoryLocation);
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// create a mail message and send it
         /// </summary>
         /// <returns></returns>
-        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body, string attachfile)
+        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body,
+            string[] attachfiles = null)
         {
             try
             {
@@ -104,27 +125,31 @@ namespace Ict.Common.IO
                     email.Body = body;
                     email.IsBodyHtml = false;
 
-                    Attachment data = null;
+                    List <Attachment>attachments = new List <Attachment>();
 
-                    //Attachement if any:
-                    if ((attachfile != null) && (attachfile.Length > 0))
+                    //Attachment if any:
+                    if (attachfiles != null)
                     {
-                        if (System.IO.File.Exists(attachfile) == true)
+                        foreach (string attachfile in attachfiles)
                         {
-                            data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
-                            email.Attachments.Add(data);
-                        }
-                        else
-                        {
-                            TLogging.Log("Could not send email");
-                            TLogging.Log("File to attach '" + attachfile + "' does not exist!");
-                            return false;
+                            if (System.IO.File.Exists(attachfile) == true)
+                            {
+                                Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
+                                email.Attachments.Add(data);
+                                attachments.Add(data);
+                            }
+                            else
+                            {
+                                TLogging.Log("Could not send email");
+                                TLogging.Log("File to attach '" + attachfile + "' does not exist!");
+                                return false;
+                            }
                         }
                     }
 
                     bool Result = SendMessage(email);
 
-                    if (data != null)
+                    foreach (Attachment data in attachments)
                     {
                         // make sure that the file is not locked any longer
                         data.Dispose();

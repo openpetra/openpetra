@@ -85,10 +85,10 @@
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							AND gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							AND gift.a_first_time_gift_l = 1
 							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n
-							AND PUB_a_motivation_detail.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_detail.a_receipt_l = 1
@@ -98,12 +98,12 @@
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
 						<value>
-							SUM(detail.a_gift_amount_n) &gt;= {param_minimum_amount}
+							SUM(detail.a_gift_amount_n) &gt;= {{param_minimum_amount}}
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, International)">
 						<value>
-							SUM(detail.a_gift_amount_intl_n) &gt;= {param_minimum_amount}
+							SUM(detail.a_gift_amount_intl_n) &gt;= {{param_minimum_amount}}
 						 </value>
 					</queryDetail>
 					
@@ -163,15 +163,15 @@
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							AND gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
+							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
 							AND gift.a_first_time_gift_l = 1
-							AND PUB_a_motivation_detail.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_detail.a_receipt_l = 1
-							AND PUB_a_motivation_group.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_motivation_group.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_motivation_group.a_motivation_group_code_c = PUB_a_motivation_detail.a_motivation_group_code_c
-							AND gift.p_donor_key_n = {DonorKey}
+							AND gift.p_donor_key_n = {{DonorKey}}
 							AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n
 						</value>
 					</queryDetail>

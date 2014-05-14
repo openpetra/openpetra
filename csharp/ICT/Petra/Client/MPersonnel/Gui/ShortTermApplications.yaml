@@ -1,0 +1,118 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraForm.yaml
+    FormTitle: Browse Short-Term Applications
+    Namespace: Ict.Petra.Client.MPersonnel.Gui
+    DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.ApplicationTDS
+    MasterTable: PmShortTermApplication
+    UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Personnel.Validation]
+    FormType: browse
+    Template: windowFind
+    TemplateParameters:
+        INITMANUALCODE: InitGridManually();
+    WindowWidth: 600
+    WindowHeight: 600
+    Actions:
+        actEditApplication: {Label=Edit Application, ActionClick=EditApplication}
+        actSelectEvent_Click: {ActionClick=SelectEvent_Click}
+        actSelectStatuses: {ActionClick=SelectStatuses_Click}
+    Controls:
+        pnlContent:
+            Controls: [pnlControls, pnlGrid]
+            Dock: Fill
+        pnlControls:
+            Dock: Top
+            Height: 175
+            Controls: [pnlSelectEvent, rgrApplicationStatusFilter]
+        pnlSelectEvent:
+            Dock: Top
+            Controls:
+                Row0: [btnSelectEvent, txtEventName]
+                Row1: [Empty, chkShowAllOutreaches]
+        rgrApplicationStatusFilter:
+            Dock: Fill
+            Controls: [rbtAll, rbtGeneral, rbtDetailed]
+            ControlsOrientation: vertical
+            ColWidths: [0=Fixed:190]
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdApplications]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnEditApplication]
+            ControlsOrientation: horizontal
+        grdApplications:
+            Dock: Fill
+            Columns: [PPartner.PartnerShortName, PmGeneralApplication.GenApplicationStatus, PmShortTermApplication.StAppDate]
+            ActionClick: GridRowSelected
+            CustomColumns:
+                PPartner.PartnerShortName: {Label=Attendee Name}
+                PmShortTermApplication.StAppDate: {Label=Date Entered}
+
+        rbtAll:
+            Height: 15
+            Padding: 5,5,0,0
+            ActionClick: FilterChange
+        rbtGeneral:
+            Controls: [chkAccepted, chkCancelled, chkHold, chkEnquiry, chkRejected]
+            ControlsOrientation: horizontal
+            Height: 15
+            Padding: 5,17,0,0
+            ActionClick: FilterChange
+        rbtDetailed:
+            Controls: [btnSelectDetailedStatuses, txtDetailedStatuses]
+            ControlsOrientation: horizontal
+            Padding: 5,10,0,0
+            Height: 15
+            ActionClick: FilterChange
+
+        txtEventName: 
+            ReadOnly: true
+            BorderStyle: None
+            Stretch: horizontally
+        chkShowAllOutreaches:
+            Label: Show all outreaches in conference
+            CheckBoxAttachedLabel: right
+            ActionClick: FilterChange
+            Enabled: false
+        chkAccepted:
+            CheckBoxAttachedLabel: right
+            Padding: 0,7,0,0
+            ActionClick: FilterChange
+            Checked: true
+        chkCancelled:
+            CheckBoxAttachedLabel: right
+            Padding: 0,7,0,0
+            ActionClick: FilterChange
+        chkHold:
+            CheckBoxAttachedLabel: right
+            Padding: 0,7,0,0
+            ActionClick: FilterChange
+        chkEnquiry:
+            CheckBoxAttachedLabel: right
+            Padding: 0,7,0,0
+            ActionClick: FilterChange
+        chkRejected:
+            CheckBoxAttachedLabel: right
+            Padding: 0,7,0,0
+            ActionClick: FilterChange
+        txtDetailedStatuses: 
+            ReadOnly: true
+            BorderStyle: None
+            Stretch: horizontally
+            NoLabel: true
+            Padding: 0,-1,0,0
+            ActionClick: FilterChange
+            Width: 300
+
+        btnSelectEvent:
+            Action: actSelectEvent_Click
+        btnEditApplication:
+            Action: actEditApplication
+            Enabled: false
+        btnSelectDetailedStatuses:
+            Height: 25
+            Padding: 0,-1,0,0
+            Label: Select Detailed Statuses...
+            Action: actSelectStatuses
+
+        Empty:

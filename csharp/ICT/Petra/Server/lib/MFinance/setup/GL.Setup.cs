@@ -55,6 +55,9 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MFinance.AP.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Cascading;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -108,6 +111,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
             AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            ALedgerInitFlagAccess.LoadViaALedger(MainDS, ALedgerNumber, null, Transaction);
 
             // retrieve calendar start date (start date of financial year)
             AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
@@ -198,6 +202,39 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// returns number of accounting periods for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static int NumberOfAccountingPeriods(Int32 ALedgerNumber)
+        {
+            Boolean NewTransaction;
+            int NumberOfAccountingPeriods = 0;
+            ALedgerTable LedgerTable;
+            ALedgerRow LedgerRow;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+
+            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+            if (LedgerTable.Count > 0)
+            {
+                LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                NumberOfAccountingPeriods = LedgerRow.NumberOfAccountingPeriods;
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return NumberOfAccountingPeriods;
+        }
+
+        /// <summary>
         /// returns true if subsystem is activated for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -238,12 +275,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// returns true if gift receipting subsystem is activated for given ledger
+        /// returns true if gift processing subsystem is activated for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool IsGiftReceiptingSubsystemActivated(Int32 ALedgerNumber)
+        public static bool IsGiftProcessingSubsystemActivated(Int32 ALedgerNumber)
         {
             return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
         }
@@ -260,55 +297,57 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// activate subsystem for gift receipting for given ledger
+        /// activate subsystem for gift processing for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AStartingReceiptNumber"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult ActivateGiftReceiptingSubsystem(Int32 ALedgerNumber,
-            Int32 AStartingReceiptNumber,
-            out TVerificationResultCollection AVerificationResult)
+        public static void ActivateGiftProcessingSubsystem(Int32 ALedgerNumber,
+            Int32 AStartingReceiptNumber)
         {
-            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
             Boolean NewTransaction;
-
-            AVerificationResult = new TVerificationResultCollection();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            // if subsystem already active then no need to go further
-            if (!IsGiftReceiptingSubsystemActivated(ALedgerNumber))
+            try
             {
-                // create or update account for Creditor's Control
-
-                // make sure transaction type exists for gift receipting subsystem
-                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.GR.ToString(), Transaction) == 0)
+                // if subsystem already active then no need to go further
+                if (!IsGiftProcessingSubsystemActivated(ALedgerNumber))
                 {
-                    ATransactionTypeTable TransactionTypeTable;
-                    ATransactionTypeRow TransactionTypeRow;
+                    // create or update account for Creditor's Control
 
-                    TransactionTypeTable = new ATransactionTypeTable();
-                    TransactionTypeRow = TransactionTypeTable.NewRowTyped();
-                    TransactionTypeRow.LedgerNumber = ALedgerNumber;
-                    TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
-                    TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
-                    TransactionTypeRow.DebitAccountCode = "CASH";
-                    TransactionTypeRow.CreditAccountCode = "GIFT";
-                    TransactionTypeRow.TransactionTypeDescription = "Gift Receipting";
-                    TransactionTypeRow.SpecialTransactionType = true;
-                    TransactionTypeTable.Rows.Add(TransactionTypeRow);
+                    // make sure transaction type exists for gift processing subsystem
+                    ATransactionTypeTable TemplateTransactionTypeTable;
+                    ATransactionTypeRow TemplateTransactionTypeRow;
+                    StringCollection TemplateTransactionTypeOperators;
 
-                    if (!ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction, out AVerificationResult))
+                    TemplateTransactionTypeTable = new ATransactionTypeTable();
+                    TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                    TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                    TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                    TemplateTransactionTypeOperators = new StringCollection();
+                    TemplateTransactionTypeOperators.Add("=");
+
+                    if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
                     {
-                        ReturnValue = TSubmitChangesResult.scrError;
-                    }
-                }
+                        ATransactionTypeTable TransactionTypeTable;
+                        ATransactionTypeRow TransactionTypeRow;
 
-                if (ReturnValue == TSubmitChangesResult.scrOK)
-                {
+                        TransactionTypeTable = new ATransactionTypeTable();
+                        TransactionTypeRow = TransactionTypeTable.NewRowTyped();
+                        TransactionTypeRow.LedgerNumber = ALedgerNumber;
+                        TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                        TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
+                        TransactionTypeRow.DebitAccountCode = "CASH";
+                        TransactionTypeRow.CreditAccountCode = "GIFT";
+                        TransactionTypeRow.TransactionTypeDescription = "Gift Processing";
+                        TransactionTypeRow.SpecialTransactionType = true;
+                        TransactionTypeTable.Rows.Add(TransactionTypeRow);
+
+                        ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction);
+                    }
+
                     ASystemInterfaceTable SystemInterfaceTable;
                     ASystemInterfaceRow SystemInterfaceRow;
                     SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber,
@@ -329,15 +368,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         SystemInterfaceRow.SetUpComplete = true;
                     }
 
-                    if (!ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction, out AVerificationResult))
-                    {
-                        ReturnValue = TSubmitChangesResult.scrError;
-                    }
-                }
+                    ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction);
 
-                // now set the starting receipt number
-                if (ReturnValue == TSubmitChangesResult.scrOK)
-                {
+                    // now set the starting receipt number
+
                     ALedgerTable LedgerTable;
                     ALedgerRow LedgerRow;
 
@@ -345,108 +379,114 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
                     LedgerRow.LastHeaderRNumber = AStartingReceiptNumber;
 
-                    if (!ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AVerificationResult))
-                    {
-                        ReturnValue = TSubmitChangesResult.scrError;
-                    }
+                    ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                }
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-
-            if ((ReturnValue == TSubmitChangesResult.scrOK)
-                && NewTransaction)
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                TLogging.Log("An Exception occured while activating the Gift Receipting Subsystem:" + Environment.NewLine + Exc.ToString());
 
-            return ReturnValue;
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
+            }
         }
 
         /// <summary>
         /// activate subsystem for accounts payable for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult ActivateAccountsPayableSubsystem(Int32 ALedgerNumber,
-            out TVerificationResultCollection AVerificationResult)
+        public static void ActivateAccountsPayableSubsystem(Int32 ALedgerNumber)
         {
-            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
             Boolean NewTransaction;
-
-            AVerificationResult = new TVerificationResultCollection();
-
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            // if subsystem already active then no need to go further
-            if (!IsAccountsPayableSubsystemActivated(ALedgerNumber))
+            try
             {
-                // make sure transaction type exists for accounts payable subsystem
-                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.AP.ToString(), Transaction) == 0)
+                // if subsystem already active then no need to go further
+                if (!IsAccountsPayableSubsystemActivated(ALedgerNumber))
                 {
-                    ATransactionTypeTable TransactionTypeTable;
-                    ATransactionTypeRow TransactionTypeRow;
+                    // make sure transaction type exists for accounts payable subsystem
+                    ATransactionTypeTable TemplateTransactionTypeTable;
+                    ATransactionTypeRow TemplateTransactionTypeRow;
+                    StringCollection TemplateTransactionTypeOperators;
 
-                    TransactionTypeTable = new ATransactionTypeTable();
-                    TransactionTypeRow = TransactionTypeTable.NewRowTyped();
-                    TransactionTypeRow.LedgerNumber = ALedgerNumber;
-                    TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-                    TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
-                    TransactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
-                    TransactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_CREDITORS;
-                    TransactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
-                    TransactionTypeRow.SpecialTransactionType = true;
-                    TransactionTypeTable.Rows.Add(TransactionTypeRow);
+                    TemplateTransactionTypeTable = new ATransactionTypeTable();
+                    TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                    TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                    TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                    TemplateTransactionTypeOperators = new StringCollection();
+                    TemplateTransactionTypeOperators.Add("=");
 
-                    if (!ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction, out AVerificationResult))
+                    if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
                     {
-                        ReturnValue = TSubmitChangesResult.scrError;
+                        ATransactionTypeTable TransactionTypeTable;
+                        ATransactionTypeRow TransactionTypeRow;
+
+                        TransactionTypeTable = new ATransactionTypeTable();
+                        TransactionTypeRow = TransactionTypeTable.NewRowTyped();
+                        TransactionTypeRow.LedgerNumber = ALedgerNumber;
+                        TransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                        TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
+                        TransactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+                        TransactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_CREDITORS;
+                        TransactionTypeRow.TransactionTypeDescription = "Input Creditor's Invoice";
+                        TransactionTypeRow.SpecialTransactionType = true;
+                        TransactionTypeTable.Rows.Add(TransactionTypeRow);
+
+                        ATransactionTypeAccess.SubmitChanges(TransactionTypeTable, Transaction);
                     }
+
+                    // create or update system interface record for accounts payable
+                    ASystemInterfaceTable SystemInterfaceTable;
+                    ASystemInterfaceRow SystemInterfaceRow;
+                    SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber,
+                        CommonAccountingSubSystemsEnum.AP.ToString(),
+                        Transaction);
+
+                    if (SystemInterfaceTable.Count == 0)
+                    {
+                        SystemInterfaceRow = SystemInterfaceTable.NewRowTyped();
+                        SystemInterfaceRow.LedgerNumber = ALedgerNumber;
+                        SystemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                        SystemInterfaceRow.SetUpComplete = true;
+                        SystemInterfaceTable.Rows.Add(SystemInterfaceRow);
+                    }
+                    else
+                    {
+                        SystemInterfaceRow = (ASystemInterfaceRow)SystemInterfaceTable.Rows[0];
+                        SystemInterfaceRow.SetUpComplete = true;
+                    }
+
+                    ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction);
                 }
 
-                // create or update system interface record for accounts payable
-                ASystemInterfaceTable SystemInterfaceTable;
-                ASystemInterfaceRow SystemInterfaceRow;
-                SystemInterfaceTable = ASystemInterfaceAccess.LoadByPrimaryKey(ALedgerNumber,
-                    CommonAccountingSubSystemsEnum.AP.ToString(),
-                    Transaction);
-
-                if (SystemInterfaceTable.Count == 0)
+                if (NewTransaction)
                 {
-                    SystemInterfaceRow = SystemInterfaceTable.NewRowTyped();
-                    SystemInterfaceRow.LedgerNumber = ALedgerNumber;
-                    SystemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-                    SystemInterfaceRow.SetUpComplete = true;
-                    SystemInterfaceTable.Rows.Add(SystemInterfaceRow);
-                }
-                else
-                {
-                    SystemInterfaceRow = (ASystemInterfaceRow)SystemInterfaceTable.Rows[0];
-                    SystemInterfaceRow.SetUpComplete = true;
-                }
-
-                if (!ASystemInterfaceAccess.SubmitChanges(SystemInterfaceTable, Transaction, out AVerificationResult))
-                {
-                    ReturnValue = TSubmitChangesResult.scrError;
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-
-            if ((ReturnValue == TSubmitChangesResult.scrOK)
-                && NewTransaction)
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                TLogging.Log("An Exception occured while activating the Accounts Payable Subsystem:" + Environment.NewLine + Exc.ToString());
 
-            return ReturnValue;
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -466,7 +506,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (ASubsystemCode == CommonAccountingSubSystemsEnum.GR.ToString())
             {
-                // for gift receipting don't allow to deactivate if 'Posted' or 'Unposted' gift batches exist
+                // for gift processing don't allow to deactivate if 'Posted' or 'Unposted' gift batches exist
                 AGiftBatchTable TemplateGiftBatchTable;
                 AGiftBatchRow TemplateGiftBatchRow;
                 StringCollection TemplateGiftBatchOperators;
@@ -535,12 +575,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// returns true if gift receipting subsystem can be deactivated for given ledger
+        /// returns true if gift processing subsystem can be deactivated for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool CanGiftReceiptingSubsystemBeDeactivated(Int32 ALedgerNumber)
+        public static bool CanGiftProcessingSubsystemBeDeactivated(Int32 ALedgerNumber)
         {
             return CanSubsystemBeDeactivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
         }
@@ -594,12 +634,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// deactivate subsystem for gift receipting for given ledger
+        /// deactivate subsystem for gift processing for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool DeactivateGiftReceiptingSubsystem(Int32 ALedgerNumber)
+        public static bool DeactivateGiftProcessingSubsystem(Int32 ALedgerNumber)
         {
             return DeactivateSubsystem(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
         }
@@ -683,15 +723,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable LoadLocalSummaryCostCentres(Int32 ALedgerNumber)
+        public static DataTable LoadLocalCostCentres(Int32 ALedgerNumber)
         {
             String SqlQuery = "SELECT a_cost_centre_code_c AS CostCentreCode, " +
-                              "a_cost_centre_name_c AS CostCentreName" +
+                              "a_cost_centre_name_c AS CostCentreName, " +
+                              "a_posting_cost_centre_flag_l AS Posting, " +
+                              "a_cost_centre_to_report_to_c AS ReportsTo" +
                               " FROM PUB_a_cost_centre" +
                               " WHERE a_ledger_number_i = " + ALedgerNumber +
-                              " AND a_posting_cost_centre_flag_l=FALSE" +
-                              " AND a_cost_centre_type_c = 'Local'" +
-                              " AND a_cost_centre_to_report_to_c <> '';";
+                              " AND a_cost_centre_type_c = 'Local';";
             DataTable ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", null);
 
             return ParentCostCentreTbl;
@@ -742,14 +782,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="PartnerCostCentreTbl"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult SaveCostCentrePartnerLinks(
-            Int32 ALedgerNumber, DataTable PartnerCostCentreTbl, out TVerificationResultCollection AVerificationResult)
+        public static void SaveCostCentrePartnerLinks(
+            Int32 ALedgerNumber, DataTable PartnerCostCentreTbl)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
 
             try
             {
@@ -777,6 +814,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             NewCostCentreRow.PostingCostCentreFlag = true;
                             NewCostCentreRow.CostCentreActiveFlag = true;
                             CostCentreTbl.Rows.Add(NewCostCentreRow);
+                        }
+                        else    // The cost Centre was found, but the match above was case-insensitive.
+                        {       // So I'm going to use the actual name from the table, otherwise it might break the DB Constraint.
+                            RowCCCode = CostCentreTbl.DefaultView[CostCentreRowIdx].Row["a_cost_centre_code_c"].ToString();
                         }
 
                         Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
@@ -808,29 +849,23 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     }
                 }
 
-                if (ACostCentreAccess.SubmitChanges(CostCentreTbl, Transaction, out AVerificationResult))
-                {
-                    if (AValidLedgerNumberAccess.SubmitChanges(LinksTbl, Transaction, out AVerificationResult))
-                    {
-                        ReturnValue = TSubmitChangesResult.scrOK;
-                    }
-                }
-            }
-            finally
-            {
-                if (ReturnValue == TSubmitChangesResult.scrOK)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                ACostCentreAccess.SubmitChanges(CostCentreTbl, Transaction);
 
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                        TCacheableFinanceTablesEnum.CostCentresLinkedToPartnerList.ToString());
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                AValidLedgerNumberAccess.SubmitChanges(LinksTbl, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheableFinanceTablesEnum.CostCentresLinkedToPartnerList.ToString());
             }
-            return ReturnValue;
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the saving of the Cost Centre Partner Links:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
 
         private static void DropAccountProperties(
@@ -838,24 +873,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ALedgerNumber,
             String AAccountCode)
         {
-            AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
-                AAccountPropertyTable.GetLedgerNumberDBName(),
-                ALedgerNumber,
-                AAccountPropertyTable.GetAccountCodeDBName(),
-                AAccountCode);
-
-            foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+            if (AInspectDS.AAccountProperty != null)
             {
-                AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
-                accountPropertyRow.Delete();
-            }
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AAccountPropertyTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    AAccountPropertyTable.GetAccountCodeDBName(),
+                    AAccountCode);
 
-            AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+                foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+                {
+                    AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
+                    accountPropertyRow.Delete();
+                }
+
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+            }
         }
 
         private static void AddOrRemoveLedgerInitFlag(Int32 ALedgerNumber, String AInitFlagName,
-            Boolean AAdd, TDBTransaction ATransaction,
-            ref TVerificationResultCollection AVerificationResult)
+            Boolean AAdd, TDBTransaction ATransaction)
         {
             if (AAdd)
             {
@@ -863,11 +900,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (!ALedgerInitFlagAccess.Exists(ALedgerNumber, AInitFlagName, ATransaction))
                 {
                     ALedgerInitFlagTable InitFlagTable = new ALedgerInitFlagTable();
+
                     ALedgerInitFlagRow InitFlagRow = InitFlagTable.NewRowTyped();
                     InitFlagRow.LedgerNumber = ALedgerNumber;
                     InitFlagRow.InitOptionName = AInitFlagName;
                     InitFlagTable.Rows.Add(InitFlagRow);
-                    ALedgerInitFlagAccess.SubmitChanges(InitFlagTable, ATransaction, out AVerificationResult);
+
+                    ALedgerInitFlagAccess.SubmitChanges(InitFlagTable, ATransaction);
                 }
             }
             else
@@ -886,16 +925,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ACalendarStartDate"></param>
         /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static TSubmitChangesResult SaveLedgerSettings(
             Int32 ALedgerNumber,
             DateTime ACalendarStartDate,
-            ref GLSetupTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+            ref GLSetupTDS AInspectDS)
         {
-            TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
             Boolean NewTransaction;
             ALedgerTable LedgerTable;
             ALedgerRow LedgerRow;
@@ -912,16 +948,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AGeneralLedgerMasterPeriodRow TempGLMPeriodRow;
             AGeneralLedgerMasterPeriodRow NewGLMPeriodRow;
 
+            int CurrentNumberPeriods;
+            int NewNumberPeriods;
             int CurrentNumberFwdPostingPeriods;
             int NewNumberFwdPostingPeriods;
             int CurrentLastFwdPeriod;
             int NewLastFwdPeriod;
             int Period;
+            Boolean ExtendFwdPeriods = false;
             DateTime PeriodStartDate;
             DateTime CurrentCalendarStartDate;
-            Boolean CreateDefaultCalendar = false;
-
-            AVerificationResult = new TVerificationResultCollection();
+            Boolean CreateCalendar = false;
 
             if (AInspectDS == null)
             {
@@ -937,190 +974,244 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                 LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
 
-                // retrieve currently saved calendar start date (start date of financial year)
-                AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
-                CurrentCalendarStartDate = DateTime.MinValue;
-
-                if (CalendarTable.Count > 0)
+                if (AInspectDS.ALedger != null)
                 {
-                    CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
-                }
+                    // initialize variables for accounting periods and forward periods
+                    CurrentNumberPeriods = LedgerRow.NumberOfAccountingPeriods;
+                    NewNumberPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods;
 
-                // update accounting periods (calendar): this only needs to be done if the calendar mode is changed
-                // or if calendar mode is monthly and the start date has changed
-                if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode != LedgerRow.CalendarMode)
-                {
-                    if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode)
+                    CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
+                    NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
+
+                    // retrieve currently saved calendar start date (start date of financial year)
+                    AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+                    CurrentCalendarStartDate = DateTime.MinValue;
+
+                    if (CalendarTable.Count > 0)
                     {
-                        // non-monthly: no need to modify accounting periods as they can be used as basis for calendar
-                        // however, if no accounting periods exist yet then make sure they are created based on month initially
-                        if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) == 0)
+                        CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
+                    }
+
+                    // update accounting periods (calendar):
+                    // this only needs to be done if the calendar mode is changed
+                    // or if calendar mode is monthly and the start date has changed
+                    // or if not monthly and number of periods has changed
+                    if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode != LedgerRow.CalendarMode)
+                    {
+                        CreateCalendar = true;
+                    }
+                    else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                             && (ACalendarStartDate != CurrentCalendarStartDate))
+                    {
+                        CreateCalendar = true;
+                    }
+                    else if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                             && (NewNumberPeriods != CurrentNumberPeriods))
+                    {
+                        CreateCalendar = true;
+                    }
+
+                    if (!CreateCalendar
+                        && (NewNumberFwdPostingPeriods < CurrentNumberFwdPostingPeriods))
+                    {
+                        CreateCalendar = true;
+                    }
+
+                    if (!CreateCalendar
+                        && (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods))
+                    {
+                        // in this case only extend the periods (as there may already be existing transactions)
+                        ExtendFwdPeriods = true;
+                    }
+
+                    // now perform the actual update of accounting periods (calendar)
+                    if (CreateCalendar)
+                    {
+                        // first make sure all accounting period records are deleted
+                        if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
                         {
-                            CreateDefaultCalendar = true;
+                            AAccountingPeriodTable TemplateTable = new AAccountingPeriodTable();
+                            AAccountingPeriodRow TemplateRow = TemplateTable.NewRowTyped(false);
+                            TemplateRow.LedgerNumber = ALedgerNumber;
+                            AAccountingPeriodAccess.DeleteUsingTemplate(TemplateRow, null, Transaction);
                         }
-                    }
-                    else
-                    {
-                        CreateDefaultCalendar = true;
-                    }
-                }
-                else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
-                         && (ACalendarStartDate != CurrentCalendarStartDate))
-                {
-                    CreateDefaultCalendar = true;
-                }
 
-                // now perform the actual update of accounting periods (calendar)
-                if (CreateDefaultCalendar)
-                {
-                    // first make sure all accounting period records are deleted
-                    if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
-                    {
-                        AAccountingPeriodTable TemplateTable = new AAccountingPeriodTable();
-                        AAccountingPeriodRow TemplateRow = TemplateTable.NewRowTyped(false);
-                        TemplateRow.LedgerNumber = ALedgerNumber;
-                        AAccountingPeriodAccess.DeleteUsingTemplate(TemplateRow, null, Transaction);
-                    }
+                        // now create all accounting period records according to monthly calendar mode
+                        // (at the same time create forwarding periods. If number of forwarding periods also
+                        // changes with this saving method then this will be dealt with further down in the code)
+                        NewAccountingPeriodTable = new AAccountingPeriodTable();
 
-                    // now create all accounting period records according to monthly calendar mode
-                    // (at the same time create forwarding periods. If number of forwarding periods also
-                    // changes with this saving method then this will be dealt with further down in the code)
-                    NewAccountingPeriodTable = new AAccountingPeriodTable();
+                        PeriodStartDate = ACalendarStartDate;
 
-                    PeriodStartDate = ACalendarStartDate;
-
-                    for (Period = 1; Period <= 12 + LedgerRow.NumberFwdPostingPeriods; Period++)
-                    {
-                        NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
-                        NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
-                        NewAccountingPeriodRow.AccountingPeriodNumber = Period;
-                        NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
-                        NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
-                        NewAccountingPeriodRow.AccountingPeriodDesc = PeriodStartDate.ToString("MMMM");
-                        NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
-                        PeriodStartDate = PeriodStartDate.AddMonths(1);
-                    }
-
-                    AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
-
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                        TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-                }
-
-                // check if any new forwarding periods need to be created
-                CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
-                NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
-
-                if (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods)
-                {
-                    // now create new forwarding posting periods (if at all needed)
-                    NewAccountingPeriodTable = new AAccountingPeriodTable();
-
-                    Period = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods + 1;
-
-                    while (Period <= LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods)
-                    {
-                        AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                            Period - LedgerRow.NumberOfAccountingPeriods,
-                            Transaction);
-                        AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                        NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
-                        NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
-                        NewAccountingPeriodRow.AccountingPeriodNumber = Period;
-                        NewAccountingPeriodRow.AccountingPeriodDesc = AccountingPeriodRow.AccountingPeriodDesc;
-                        NewAccountingPeriodRow.PeriodStartDate = AccountingPeriodRow.PeriodStartDate.AddYears(1);
-                        NewAccountingPeriodRow.PeriodEndDate = AccountingPeriodRow.PeriodEndDate.AddYears(1);
-
-                        NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
-
-                        Period++;
-                    }
-
-                    AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
-
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                        TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-
-                    // also create new general ledger master periods with balances
-                    CurrentLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods;
-                    NewLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods;
-                    // TODO: the following 2 lines would need to replace the 2 lines above if not all possible forward periods are created initially
-                    //CurrentLastFwdPeriod = LedgerRow.CurrentPeriod + CurrentNumberFwdPostingPeriods;
-                    //NewLastFwdPeriod = LedgerRow.CurrentPeriod + NewNumberFwdPostingPeriods;
-
-                    GLMTable = new AGeneralLedgerMasterTable();
-                    AGeneralLedgerMasterRow template = GLMTable.NewRowTyped(false);
-
-                    template.LedgerNumber = ALedgerNumber;
-                    template.Year = LedgerRow.CurrentFinancialYear;
-
-                    // find all general ledger master records of the current financial year for given ledger
-                    GLMTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(template, Transaction);
-
-                    NewGLMPeriodTable = new AGeneralLedgerMasterPeriodTable();
-
-                    foreach (DataRow Row in GLMTable.Rows)
-                    {
-                        // for each of the general ledger master records of the current financial year set the
-                        // new, extended forwarding glm period records (most likely they will not exist yet
-                        // but if they do then update values)
-                        GLMRow = (AGeneralLedgerMasterRow)Row;
-                        GLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMRow.GlmSequence, CurrentLastFwdPeriod, Transaction);
-
-                        if (GLMPeriodTable.Count > 0)
+                        for (Period = 1; Period <= NewNumberPeriods; Period++)
                         {
-                            GLMPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodTable.Rows[0];
+                            NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
+                            NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
+                            NewAccountingPeriodRow.AccountingPeriodNumber = Period;
+                            NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
 
-                            for (Period = CurrentLastFwdPeriod + 1; Period <= NewLastFwdPeriod; Period++)
+                            if ((((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
+                                && (Period == 12))
                             {
-                                if (AGeneralLedgerMasterPeriodAccess.Exists(GLMPeriodRow.GlmSequence, Period, Transaction))
-                                {
-                                    // if the record already exists then just change values
-                                    TempGLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMPeriodRow.GlmSequence,
-                                        Period,
-                                        Transaction);
-                                    TempGLMPeriodRow = (AGeneralLedgerMasterPeriodRow)TempGLMPeriodTable.Rows[0];
-                                    TempGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
-                                    TempGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
+                                // in case of 12 periods the second last period represents the last month except for the very last day
+                                NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-2);
+                            }
+                            else if ((((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
+                                     && (Period == 13))
+                            {
+                                // in case of 13 periods the last period just represents the very last day of the financial year
+                                NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate;
+                            }
+                            else
+                            {
+                                NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
+                            }
 
-                                    if (!GLMPeriodRow.IsActualForeignNull())
+                            NewAccountingPeriodRow.AccountingPeriodDesc = PeriodStartDate.ToString("MMMM");
+                            NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
+                            PeriodStartDate = NewAccountingPeriodRow.PeriodEndDate.AddDays(1);
+                        }
+
+                        AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction);
+
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                        CurrentNumberPeriods = NewNumberPeriods;
+                    }
+
+                    // check if any new forwarding periods need to be created
+                    if (CreateCalendar || ExtendFwdPeriods)
+                    {
+                        // now create new forwarding posting periods (if at all needed)
+                        NewAccountingPeriodTable = new AAccountingPeriodTable();
+
+                        // if calendar was created then there are no forward periods yet
+                        if (CreateCalendar)
+                        {
+                            Period = CurrentNumberPeriods + 1;
+                        }
+                        else
+                        {
+                            Period = CurrentNumberPeriods + CurrentNumberFwdPostingPeriods + 1;
+                        }
+
+                        while (Period <= NewNumberPeriods + NewNumberFwdPostingPeriods)
+                        {
+                            AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                                Period - CurrentNumberPeriods,
+                                Transaction);
+                            AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
+
+                            NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
+                            NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
+                            NewAccountingPeriodRow.AccountingPeriodNumber = Period;
+                            NewAccountingPeriodRow.AccountingPeriodDesc = AccountingPeriodRow.AccountingPeriodDesc;
+                            NewAccountingPeriodRow.PeriodStartDate = AccountingPeriodRow.PeriodStartDate.AddYears(1);
+                            NewAccountingPeriodRow.PeriodEndDate = AccountingPeriodRow.PeriodEndDate.AddYears(1);
+
+                            NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
+
+                            Period++;
+                        }
+
+                        AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction);
+
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                        // also create new general ledger master periods with balances
+                        CurrentLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods;
+                        NewLastFwdPeriod = LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods;
+                        // TODO: the following 2 lines would need to replace the 2 lines above if not all possible forward periods are created initially
+                        //CurrentLastFwdPeriod = LedgerRow.CurrentPeriod + CurrentNumberFwdPostingPeriods;
+                        //NewLastFwdPeriod = LedgerRow.CurrentPeriod + NewNumberFwdPostingPeriods;
+
+                        GLMTable = new AGeneralLedgerMasterTable();
+                        AGeneralLedgerMasterRow template = GLMTable.NewRowTyped(false);
+
+                        template.LedgerNumber = ALedgerNumber;
+                        template.Year = LedgerRow.CurrentFinancialYear;
+
+                        // find all general ledger master records of the current financial year for given ledger
+                        GLMTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(template, Transaction);
+
+                        NewGLMPeriodTable = new AGeneralLedgerMasterPeriodTable();
+
+                        foreach (DataRow Row in GLMTable.Rows)
+                        {
+                            // for each of the general ledger master records of the current financial year set the
+                            // new, extended forwarding glm period records (most likely they will not exist yet
+                            // but if they do then update values)
+                            GLMRow = (AGeneralLedgerMasterRow)Row;
+                            GLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMRow.GlmSequence, CurrentLastFwdPeriod, Transaction);
+
+                            if (GLMPeriodTable.Count > 0)
+                            {
+                                GLMPeriodRow = (AGeneralLedgerMasterPeriodRow)GLMPeriodTable.Rows[0];
+
+                                for (Period = CurrentLastFwdPeriod + 1; Period <= NewLastFwdPeriod; Period++)
+                                {
+                                    if (AGeneralLedgerMasterPeriodAccess.Exists(GLMPeriodRow.GlmSequence, Period, Transaction))
                                     {
-                                        TempGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
+                                        // if the record already exists then just change values
+                                        TempGLMPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(GLMPeriodRow.GlmSequence,
+                                            Period,
+                                            Transaction);
+                                        TempGLMPeriodRow = (AGeneralLedgerMasterPeriodRow)TempGLMPeriodTable.Rows[0];
+                                        TempGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
+                                        TempGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
+
+                                        if (!GLMPeriodRow.IsActualForeignNull())
+                                        {
+                                            TempGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
+                                        }
+                                        else
+                                        {
+                                            TempGLMPeriodRow.SetActualForeignNull();
+                                        }
+
+                                        NewGLMPeriodTable.Merge(TempGLMPeriodTable, true);
                                     }
                                     else
                                     {
-                                        TempGLMPeriodRow.SetActualForeignNull();
-                                    }
+                                        // add new row since it does not exist yet
+                                        NewGLMPeriodRow = NewGLMPeriodTable.NewRowTyped();
+                                        NewGLMPeriodRow.GlmSequence = GLMPeriodRow.GlmSequence;
+                                        NewGLMPeriodRow.PeriodNumber = Period;
+                                        NewGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
+                                        NewGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
 
-                                    NewGLMPeriodTable.Merge(TempGLMPeriodTable, true);
+                                        if (!GLMPeriodRow.IsActualForeignNull())
+                                        {
+                                            NewGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
+                                        }
+                                        else
+                                        {
+                                            NewGLMPeriodRow.SetActualForeignNull();
+                                        }
+
+                                        NewGLMPeriodTable.Rows.Add(NewGLMPeriodRow);
+                                    }
                                 }
-                                else
+
+                                // remove periods if the number of periods + forwarding periods has been reduced
+                                int NumberOfExistingPeriods = LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods;
+
+                                while ((NewNumberPeriods + NewNumberFwdPostingPeriods) < NumberOfExistingPeriods)
                                 {
-                                    // add new row since it does not exist yet
-                                    NewGLMPeriodRow = NewGLMPeriodTable.NewRowTyped();
-                                    NewGLMPeriodRow.GlmSequence = GLMPeriodRow.GlmSequence;
-                                    NewGLMPeriodRow.PeriodNumber = Period;
-                                    NewGLMPeriodRow.ActualBase = GLMPeriodRow.ActualBase;
-                                    NewGLMPeriodRow.ActualIntl = GLMPeriodRow.ActualIntl;
+                                    AGeneralLedgerMasterPeriodAccess.DeleteByPrimaryKey(GLMPeriodRow.GlmSequence,
+                                        NumberOfExistingPeriods,
+                                        Transaction);
 
-                                    if (!GLMPeriodRow.IsActualForeignNull())
-                                    {
-                                        NewGLMPeriodRow.ActualForeign = GLMPeriodRow.ActualForeign;
-                                    }
-                                    else
-                                    {
-                                        NewGLMPeriodRow.SetActualForeignNull();
-                                    }
-
-                                    NewGLMPeriodTable.Rows.Add(NewGLMPeriodRow);
+                                    NumberOfExistingPeriods--;
                                 }
                             }
                         }
-                    }
 
-                    // just one SubmitChanges for all records needed
-                    AGeneralLedgerMasterPeriodAccess.SubmitChanges(NewGLMPeriodTable, Transaction, out AVerificationResult);
+                        // just one SubmitChanges for all records needed
+                        AGeneralLedgerMasterPeriodAccess.SubmitChanges(NewGLMPeriodTable, Transaction);
+                    }
                 }
 
                 // update a_ledger_init_flag records for:
@@ -1131,36 +1222,34 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // international currency: "INTL-CURRENCY" (this is a new flag for OpenPetra)
                 // current period (start of ledger date): CURRENT-PERIOD
                 // calendar settings: CAL
-                AddOrRemoveLedgerInitFlag(ALedgerNumber, "SUSP-ACCT", LedgerRow.SuspenseAccountFlag, Transaction, ref AVerificationResult);
-                AddOrRemoveLedgerInitFlag(ALedgerNumber, "BUDGET", LedgerRow.BudgetControlFlag, Transaction, ref AVerificationResult);
-                AddOrRemoveLedgerInitFlag(ALedgerNumber, "BRANCH-PROCESS", LedgerRow.BranchProcessing, Transaction, ref AVerificationResult);
-                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENCY", !LedgerRow.IsBaseCurrencyNull(), Transaction, ref AVerificationResult);
-                AddOrRemoveLedgerInitFlag(ALedgerNumber, "INTL-CURRENCY", !LedgerRow.IsIntlCurrencyNull(), Transaction, ref AVerificationResult);
-                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENT-PERIOD", !LedgerRow.IsCurrentPeriodNull(), Transaction, ref AVerificationResult);
-                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CAL", !LedgerRow.IsNumberOfAccountingPeriodsNull(), Transaction, ref AVerificationResult);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "SUSP-ACCT", LedgerRow.SuspenseAccountFlag, Transaction);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "BUDGET", LedgerRow.BudgetControlFlag, Transaction);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "BRANCH-PROCESS", LedgerRow.BranchProcessing, Transaction);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENCY", !LedgerRow.IsBaseCurrencyNull(), Transaction);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "INTL-CURRENCY", !LedgerRow.IsIntlCurrencyNull(), Transaction);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENT-PERIOD", !LedgerRow.IsCurrentPeriodNull(), Transaction);
+                AddOrRemoveLedgerInitFlag(ALedgerNumber, "CAL", !LedgerRow.IsNumberOfAccountingPeriodsNull(), Transaction);
 
-                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                GLSetupTDSAccess.SubmitChanges(AInspectDS);
 
-                if (AVerificationResult.Count > 0)
-                {
-                    // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
-                    // Serialisation (needed for .NET Remoting).
-                    TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
-                }
-            }
-            finally
-            {
-                if ((ReturnValue == TSubmitChangesResult.scrOK)
-                    && NewTransaction)
+                if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                else if (NewTransaction)
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the saving of the Ledger Settings:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
+
+                throw;
             }
-            return ReturnValue;
+
+            return TSubmitChangesResult.scrOK;
         }
 
         /// <summary>
@@ -1178,7 +1267,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1278,10 +1366,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 if (AInspectDS.AAnalysisType.Rows.Count > 0)
                 {
-                    ValidateAAnalysisType(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
-                    ValidateAAnalysisTypeManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
+                    ValidateAAnalysisType(ref AVerificationResult, AInspectDS.AAnalysisType);
+                    ValidateAAnalysisTypeManual(ref AVerificationResult, AInspectDS.AAnalysisType);
 
-                    if (AVerificationResult.HasCriticalErrors)
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
                         ReturnValue = TSubmitChangesResult.scrError;
                     }
@@ -1290,7 +1378,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
-                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                GLSetupTDSAccess.SubmitChanges(AInspectDS);
+
+                ReturnValue = TSubmitChangesResult.scrOK;
             }
 
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
@@ -1357,14 +1447,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="AAccountCode"></param>
         /// <param name="ACanBeParent"></param>
         /// <param name="ACanDelete"></param>
+        /// <param name="AMsg"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean GetAccountCodeAttributes(Int32 ALedgerNumber, String AAccountCode, out bool ACanBeParent, out bool ACanDelete)
+        public static Boolean GetAccountCodeAttributes(Int32 ALedgerNumber,
+            String AAccountCode,
+            out bool ACanBeParent,
+            out bool ACanDelete,
+            out String AMsg)
         {
 //        public static Boolean AccountCodeCanHaveChildren(Int32 ALedgerNumber, String AAccountCode)
             ACanBeParent = true;
             ACanDelete = true;
             bool DbSuccess = true;
+            AMsg = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AAccountCode, Transaction);
 
@@ -1379,11 +1475,33 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
                 ACanDelete = !IsParent;
 
+                if (!ACanDelete)
+                {
+                    AMsg = Catalog.GetString("Account is a summary account with other accounts reporting into it.");
+                }
+
                 if (!ACanBeParent || ACanDelete)
                 {
                     bool IsInUse = AccountCodeHasBeenUsed(ALedgerNumber, AAccountCode, Transaction);
                     ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
                     ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+
+                    if (!ACanDelete)
+                    {
+                        AMsg = Catalog.GetString("Account has been used in Transactions.");
+                    }
+                }
+
+                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
+                {                // and do the low-level database check to see if a deletion would succeed:
+                    TVerificationResultCollection ReferenceResults;
+                    Int32 RefCount = AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, 50, Transaction, false, out ReferenceResults);
+
+                    if (RefCount > 0)
+                    {
+                        ACanDelete = false;
+                        AMsg = ReferenceResults.BuildVerificationResultString();
+                    }
                 }
             }
 
@@ -1393,10 +1511,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         #region Data Validation
 
-        static partial void ValidateAAnalysisType(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateAAnalysisTypeManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateAAnalysisType(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateAAnalysisTypeManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
 
@@ -1644,6 +1760,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             newAccountHDetail.AccountHierarchyCode = AMainDS.AAccountHierarchy[0].AccountHierarchyCode;
             newAccountHDetail.AccountCodeToReportTo = AParentAccountCode;
             newAccountHDetail.ReportingAccountCode = AccountCode;
+            newAccountHDetail.ReportOrder = AMainDS.AAccountHierarchyDetail.Rows.Count;
 
             AMainDS.AAccountHierarchyDetail.Rows.Add(newAccountHDetail);
 
@@ -1779,12 +1896,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// only works if there are no balances/transactions yet for the cost centres that are deleted
+        /// only works if there are no balances/transactions yet for the cost centres that are deleted.
+        /// Returns false with helpful error message otherwise.
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
-        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy)
+        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy, out TVerificationResultCollection VerificationResult)
         {
             XmlDocument doc = new XmlDocument();
+
+            VerificationResult = new TVerificationResultCollection();
 
             doc.LoadXml(AXmlHierarchy);
 
@@ -1802,12 +1922,28 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // TODO: delete costcentres that don't exist anymore in the new hierarchy, or deactivate them?
                     // (check if their balance is empty and no transactions exist, or catch database constraint violation)
                     // TODO: what about system cost centres? probably alright to ignore here
+                    bool CanBeParent;
+                    bool CanDelete;
+                    String ErrorMsg;
+                    GetCostCentreAttributes(ALedgerNumber,
+                        costCentreRow.CostCentreCode,
+                        out CanBeParent,
+                        out CanDelete,
+                        out ErrorMsg);
+
+                    if (!CanDelete)
+                    {
+                        ErrorMsg = String.Format(Catalog.GetString("Unable to delete Cost Centre {0}"), costCentreRow.CostCentreCode) +
+                                   "\r\n" +
+                                   ErrorMsg;
+                        VerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
+                        return false;
+                    }
 
                     costCentreRow.Delete();
                 }
             }
 
-            TVerificationResultCollection VerificationResult;
             return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
@@ -1889,6 +2025,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         private static void ImportDefaultCostCentreHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, string ALedgerName)
         {
+            if (ALedgerName.Length == 0)
+            {
+                throw new Exception("We need a name for the ledger, otherwise the yml will be invalid");
+            }
+
             // load XmlCostCentreHierarchy from a default file
 
             string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
@@ -1901,11 +2042,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNUMBER}", ALedgerNumber.ToString());
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNUMBERWITHLEADINGZEROS}", ALedgerNumber.ToString("00"));
-
-            if (ALedgerName.Length == 0)
-            {
-                throw new Exception("We need a name for the ledger, otherwise the yml will be invalid");
-            }
 
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNAME}", ALedgerName);
 
@@ -2217,290 +2353,350 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ANumberOfPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberOfFwdPostingPeriods,
-            bool AActivateGiftReceipting,
+            bool AActivateGiftProcessing,
             Int32 AStartingReceiptNumber,
             bool AActivateAccountsPayable,
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
+            bool AllOK = false;
 
-            // check if such a ledger already exists
-            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, null);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            if (tempLedger.Count > 0)
+            try
             {
-                AVerificationResult = new TVerificationResultCollection();
-                string msg = String.Format(Catalog.GetString(
-                        "There is already a ledger with number {0}. Please choose another number."), ANewLedgerNumber);
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Ledger"), msg, TResultSeverity.Resv_Critical));
-                return false;
-            }
+                // check if such a ledger already exists
+                ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, Transaction);
 
-            if ((ANewLedgerNumber <= 1) || (ANewLedgerNumber > 9999))
-            {
-                // ledger number 1 does not work, because the root unit has partner key 1000000.
-                AVerificationResult = new TVerificationResultCollection();
-                string msg = String.Format(Catalog.GetString(
-                        "Invalid number {0} for a ledger. Please choose a number between 2 and 9999."), ANewLedgerNumber);
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Ledger"), msg, TResultSeverity.Resv_Critical));
-                return false;
-            }
-
-            Int64 PartnerKey = Convert.ToInt64(ANewLedgerNumber) * 1000000L;
-            GLSetupTDS MainDS = new GLSetupTDS();
-
-            ALedgerRow ledgerRow = MainDS.ALedger.NewRowTyped();
-            ledgerRow.LedgerNumber = ANewLedgerNumber;
-            ledgerRow.LedgerName = ALedgerName;
-            ledgerRow.CurrentPeriod = ACurrentPeriod;
-            ledgerRow.NumberOfAccountingPeriods = ANumberOfPeriods;
-            ledgerRow.NumberFwdPostingPeriods = ANumberOfFwdPostingPeriods;
-            ledgerRow.BaseCurrency = ABaseCurrency;
-            ledgerRow.IntlCurrency = AIntlCurrency;
-            ledgerRow.ActualsDataRetention = 11;
-            ledgerRow.GiftDataRetention = 5;
-            ledgerRow.BudgetDataRetention = 2;
-            ledgerRow.CountryCode = ACountryCode;
-            ledgerRow.ForexGainsLossesAccount = "5003";
-            ledgerRow.PartnerKey = PartnerKey;
-            MainDS.ALedger.Rows.Add(ledgerRow);
-
-            PPartnerRow partnerRow;
-
-            if (!PPartnerAccess.Exists(PartnerKey, null))
-            {
-                partnerRow = MainDS.PPartner.NewRowTyped();
-                ledgerRow.PartnerKey = PartnerKey;
-                partnerRow.PartnerKey = PartnerKey;
-                partnerRow.PartnerShortName = ALedgerName;
-                partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
-                partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
-                MainDS.PPartner.Rows.Add(partnerRow);
-            }
-            else
-            {
-                // partner record already exists in database -> update ledger name
-                PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, null);
-                partnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
-                partnerRow.PartnerShortName = ALedgerName;
-            }
-
-            PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, null);
-            PPartnerTypeRow partnerTypeRow;
-
-            if (MainDS.PPartnerType.Rows.Count > 0)
-            {
-                partnerTypeRow = MainDS.PPartnerType[0];
-                partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
-            }
-            else
-            {
-                partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
-                partnerTypeRow.PartnerKey = PartnerKey;
-                partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
-                MainDS.PPartnerType.Rows.Add(partnerTypeRow);
-            }
-
-            if (!PUnitAccess.Exists(PartnerKey, null))
-            {
-                PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
-                unitRow.PartnerKey = PartnerKey;
-                MainDS.PUnit.Rows.Add(unitRow);
-            }
-
-            if (!PLocationAccess.Exists(PartnerKey, 0, null))
-            {
-                PLocationRow locationRow = MainDS.PLocation.NewRowTyped();
-                locationRow.SiteKey = PartnerKey;
-                locationRow.LocationKey = 0;
-                locationRow.StreetName = Catalog.GetString("No valid address on file");
-                locationRow.CountryCode = ACountryCode;
-                MainDS.PLocation.Rows.Add(locationRow);
-
-                PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
-                partnerLocationRow.SiteKey = PartnerKey;
-                partnerLocationRow.PartnerKey = PartnerKey;
-                partnerLocationRow.LocationKey = 0;
-                MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
-            }
-
-            if (!PPartnerLedgerAccess.Exists(PartnerKey, null))
-            {
-                PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
-                partnerLedgerRow.PartnerKey = PartnerKey;
-
-                // calculate last partner id, from older uses of this ledger number
-                object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
-                    String.Format("SELECT MAX(p_partner_key_n) FROM PUB_p_partner " +
-                        "WHERE p_partner_key_n > {0} AND p_partner_key_n < {1}",
-                        PartnerKey,
-                        PartnerKey + 500000), IsolationLevel.ReadCommitted);
-
-                if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
+                if (tempLedger.Count > 0)
                 {
-                    partnerLedgerRow.LastPartnerId = Convert.ToInt32(Convert.ToInt64(MaxExistingPartnerKeyObj) - PartnerKey);
+                    AVerificationResult = new TVerificationResultCollection();
+                    string msg = String.Format(Catalog.GetString(
+                            "There is already a ledger with number {0}. Please choose another number."), ANewLedgerNumber);
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Ledger"), msg, TResultSeverity.Resv_Critical));
+
+                    return false;
+                }
+
+                if ((ANewLedgerNumber <= 1) || (ANewLedgerNumber > 9999))
+                {
+                    // ledger number 1 does not work, because the root unit has partner key 1000000.
+                    AVerificationResult = new TVerificationResultCollection();
+                    string msg = String.Format(Catalog.GetString(
+                            "Invalid number {0} for a ledger. Please choose a number between 2 and 9999."), ANewLedgerNumber);
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Ledger"), msg, TResultSeverity.Resv_Critical));
+
+                    return false;
+                }
+
+                Int64 PartnerKey = Convert.ToInt64(ANewLedgerNumber) * 1000000L;
+                GLSetupTDS MainDS = new GLSetupTDS();
+
+                ALedgerRow ledgerRow = MainDS.ALedger.NewRowTyped();
+                ledgerRow.LedgerNumber = ANewLedgerNumber;
+                ledgerRow.LedgerName = ALedgerName;
+                ledgerRow.CurrentPeriod = ACurrentPeriod;
+                ledgerRow.NumberOfAccountingPeriods = ANumberOfPeriods;
+                ledgerRow.NumberFwdPostingPeriods = ANumberOfFwdPostingPeriods;
+                ledgerRow.BaseCurrency = ABaseCurrency;
+                ledgerRow.IntlCurrency = AIntlCurrency;
+                ledgerRow.ActualsDataRetention = 11;
+                ledgerRow.GiftDataRetention = 11;
+                ledgerRow.BudgetDataRetention = 2;
+                ledgerRow.CountryCode = ACountryCode;
+                ledgerRow.ForexGainsLossesAccount = "5003";
+                ledgerRow.PartnerKey = PartnerKey;
+
+                if (ANumberOfPeriods == 12)
+                {
+                    ledgerRow.CalendarMode = true;
                 }
                 else
                 {
-                    partnerLedgerRow.LastPartnerId = 5000;
+                    ledgerRow.CalendarMode = false;
                 }
 
-                MainDS.PPartnerLedger.Rows.Add(partnerLedgerRow);
-            }
+                MainDS.ALedger.Rows.Add(ledgerRow);
 
-            String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
+                PPartnerRow partnerRow;
 
-            if (!SModuleAccess.Exists(ModuleId, null))
-            {
-                SModuleRow moduleRow = MainDS.SModule.NewRowTyped();
-                moduleRow.ModuleId = ModuleId;
-                moduleRow.ModuleName = moduleRow.ModuleId;
-                MainDS.SModule.Rows.Add(moduleRow);
-            }
+                if (!PPartnerAccess.Exists(PartnerKey, Transaction))
+                {
+                    partnerRow = MainDS.PPartner.NewRowTyped();
+                    ledgerRow.PartnerKey = PartnerKey;
+                    partnerRow.PartnerKey = PartnerKey;
+                    partnerRow.PartnerShortName = ALedgerName;
+                    partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
+                    partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
+                    MainDS.PPartner.Rows.Add(partnerRow);
 
-            // if this is the first ledger, make it the default site
-            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", null);
+                    // create or use addresses (only if partner record is created here as
+                    // otherwise we assume that Partner has address already)
+                    PLocationRow locationRow;
+                    PLocationTable LocTemplateTable;
+                    PLocationTable LocResultTable;
+                    PLocationRow LocTemplateRow;
+                    StringCollection LocTemplateOperators;
 
-            if (systemDefaults.Rows.Count == 0)
-            {
-                SSystemDefaultsRow systemDefaultsRow = MainDS.SSystemDefaults.NewRowTyped();
-                systemDefaultsRow.DefaultCode = SharedConstants.SYSDEFAULT_SITEKEY;
-                systemDefaultsRow.DefaultDescription = "there has to be one site key for the database";
-                systemDefaultsRow.DefaultValue = PartnerKey.ToString("0000000000");
-                MainDS.SSystemDefaults.Rows.Add(systemDefaultsRow);
-            }
+                    // find address with country set
+                    LocTemplateTable = new PLocationTable();
+                    LocTemplateRow = LocTemplateTable.NewRowTyped(false);
+                    LocTemplateRow.SiteKey = 0;
+                    LocTemplateRow.StreetName = Catalog.GetString("No valid address on file");
+                    LocTemplateRow.CountryCode = ACountryCode;
+                    LocTemplateOperators = new StringCollection();
 
-            // create calendar
-            // at the moment we only support financial years that start on the first day of a month
-            DateTime periodStartDate = ACalendarStartDate;
+                    LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, Transaction);
 
-            for (Int32 periodNumber = 1; periodNumber <= ANumberOfPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
-            {
-                AAccountingPeriodRow accountingPeriodRow = MainDS.AAccountingPeriod.NewRowTyped();
-                accountingPeriodRow.LedgerNumber = ANewLedgerNumber;
-                accountingPeriodRow.AccountingPeriodNumber = periodNumber;
-                accountingPeriodRow.PeriodStartDate = periodStartDate;
-                accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
-                accountingPeriodRow.AccountingPeriodDesc = periodStartDate.ToString("MMMM");
-                MainDS.AAccountingPeriod.Rows.Add(accountingPeriodRow);
-                periodStartDate = periodStartDate.AddMonths(1);
-            }
+                    if (LocResultTable.Count > 0)
+                    {
+                        locationRow = (PLocationRow)LocResultTable.Rows[0];
+                    }
+                    else
+                    {
+                        // no location record exists yet: create new one
+                        locationRow = MainDS.PLocation.NewRowTyped();
+                        locationRow.SiteKey = 0;
+                        locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(
+                            TSequenceNames.seq_location_number.ToString(), Transaction);
+                        locationRow.StreetName = Catalog.GetString("No valid address on file");
+                        locationRow.CountryCode = ACountryCode;
+                        MainDS.PLocation.Rows.Add(locationRow);
+                    }
 
-            AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
-            accountingSystemParameterRow.LedgerNumber = ANewLedgerNumber;
-            accountingSystemParameterRow.ActualsDataRetention = ledgerRow.ActualsDataRetention;
-            accountingSystemParameterRow.GiftDataRetention = ledgerRow.GiftDataRetention;
-            accountingSystemParameterRow.NumberFwdPostingPeriods = ledgerRow.NumberFwdPostingPeriods;
-            accountingSystemParameterRow.NumberOfAccountingPeriods = ledgerRow.NumberOfAccountingPeriods;
-            accountingSystemParameterRow.BudgetDataRetention = ledgerRow.BudgetDataRetention;
-            MainDS.AAccountingSystemParameter.Rows.Add(accountingSystemParameterRow);
+                    // now create partner location record
+                    PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
+                    partnerLocationRow.SiteKey = locationRow.SiteKey;
+                    partnerLocationRow.PartnerKey = PartnerKey;
+                    partnerLocationRow.LocationKey = locationRow.LocationKey;
+                    partnerLocationRow.DateEffective = DateTime.Today;
+                    MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
+                }
+                else
+                {
+                    // partner record already exists in database -> update ledger name
+                    PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, Transaction);
+                    partnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
+                    partnerRow.PartnerShortName = ALedgerName;
+                }
 
-            // activate GL subsystem (this is always active)
-            ASystemInterfaceRow systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
-            systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
+                PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, Transaction);
+                PPartnerTypeRow partnerTypeRow;
 
-            systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
-            systemInterfaceRow.SetUpComplete = true;
-            MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
+                // only create special type "LEDGER" if it does not exist yet
+                if (MainDS.PPartnerType.Rows.Find(new object[] { PartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) == null)
+                {
+                    partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
+                    partnerTypeRow.PartnerKey = PartnerKey;
+                    partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
+                    MainDS.PPartnerType.Rows.Add(partnerTypeRow);
+                }
+
+                if (!PUnitAccess.Exists(PartnerKey, Transaction))
+                {
+                    PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
+                    unitRow.PartnerKey = PartnerKey;
+                    unitRow.UnitName = ALedgerName;
+                    MainDS.PUnit.Rows.Add(unitRow);
+                }
+
+                if (!PPartnerLedgerAccess.Exists(PartnerKey, Transaction))
+                {
+                    PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
+                    partnerLedgerRow.PartnerKey = PartnerKey;
+
+                    // calculate last partner id, from older uses of this ledger number
+                    object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
+                        String.Format("SELECT MAX(p_partner_key_n) FROM PUB_p_partner " +
+                            "WHERE p_partner_key_n > {0} AND p_partner_key_n < {1}",
+                            PartnerKey,
+                            PartnerKey + 500000), Transaction);
+
+                    if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
+                    {
+                        partnerLedgerRow.LastPartnerId = Convert.ToInt32(Convert.ToInt64(MaxExistingPartnerKeyObj) - PartnerKey);
+                    }
+                    else
+                    {
+                        partnerLedgerRow.LastPartnerId = 5000;
+                    }
+
+                    MainDS.PPartnerLedger.Rows.Add(partnerLedgerRow);
+                }
+
+                String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
+
+                if (!SModuleAccess.Exists(ModuleId, Transaction))
+                {
+                    SModuleRow moduleRow = MainDS.SModule.NewRowTyped();
+                    moduleRow.ModuleId = ModuleId;
+                    moduleRow.ModuleName = moduleRow.ModuleId;
+                    MainDS.SModule.Rows.Add(moduleRow);
+                }
+
+                // if this is the first ledger, make it the default site
+                SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", Transaction);
+
+                if (systemDefaults.Rows.Count == 0)
+                {
+                    SSystemDefaultsRow systemDefaultsRow = MainDS.SSystemDefaults.NewRowTyped();
+                    systemDefaultsRow.DefaultCode = SharedConstants.SYSDEFAULT_SITEKEY;
+                    systemDefaultsRow.DefaultDescription = "there has to be one site key for the database";
+                    systemDefaultsRow.DefaultValue = PartnerKey.ToString("0000000000");
+                    MainDS.SSystemDefaults.Rows.Add(systemDefaultsRow);
+                }
+
+                // create calendar
+                // at the moment we only support financial years that start on the first day of a month
+                // and currently only 12 or 13 periods are allowed and a maximum of 8 forward periods
+                DateTime periodStartDate = ACalendarStartDate;
+
+                for (Int32 periodNumber = 1; periodNumber <= ANumberOfPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
+                {
+                    AAccountingPeriodRow accountingPeriodRow = MainDS.AAccountingPeriod.NewRowTyped();
+                    accountingPeriodRow.LedgerNumber = ANewLedgerNumber;
+                    accountingPeriodRow.AccountingPeriodNumber = periodNumber;
+                    accountingPeriodRow.PeriodStartDate = periodStartDate;
+
+                    if ((ANumberOfPeriods == 13)
+                        && (periodNumber == 12))
+                    {
+                        // in case of 12 periods the second last period represents the last month except for the very last day
+                        accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-2);
+                    }
+                    else if ((ANumberOfPeriods == 13)
+                             && (periodNumber == 13))
+                    {
+                        // in case of 13 periods the last period just represents the very last day of the financial year
+                        accountingPeriodRow.PeriodEndDate = periodStartDate;
+                    }
+                    else
+                    {
+                        accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
+                    }
+
+                    accountingPeriodRow.AccountingPeriodDesc = periodStartDate.ToString("MMMM");
+                    MainDS.AAccountingPeriod.Rows.Add(accountingPeriodRow);
+                    periodStartDate = accountingPeriodRow.PeriodEndDate.AddDays(1);
+                }
+
+                // mark cached table for accounting periods to be refreshed
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
+                accountingSystemParameterRow.LedgerNumber = ANewLedgerNumber;
+                accountingSystemParameterRow.ActualsDataRetention = ledgerRow.ActualsDataRetention;
+                accountingSystemParameterRow.GiftDataRetention = ledgerRow.GiftDataRetention;
+                accountingSystemParameterRow.NumberFwdPostingPeriods = ledgerRow.NumberFwdPostingPeriods;
+                accountingSystemParameterRow.NumberOfAccountingPeriods = ledgerRow.NumberOfAccountingPeriods;
+                accountingSystemParameterRow.BudgetDataRetention = ledgerRow.BudgetDataRetention;
+                MainDS.AAccountingSystemParameter.Rows.Add(accountingSystemParameterRow);
+
+                // activate GL subsystem (this is always active)
+                ASystemInterfaceRow systemInterfaceRow = MainDS.ASystemInterface.NewRowTyped();
+                systemInterfaceRow.LedgerNumber = ANewLedgerNumber;
+
+                systemInterfaceRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+                systemInterfaceRow.SetUpComplete = true;
+                MainDS.ASystemInterface.Rows.Add(systemInterfaceRow);
 
 
-            ATransactionTypeRow transactionTypeRow;
+                ATransactionTypeRow transactionTypeRow;
 
-            // TODO: this might be different for other account or costcentre names
-            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.ALLOC.ToString();
-            transactionTypeRow.DebitAccountCode = "BAL SHT";
-            transactionTypeRow.CreditAccountCode = "BAL SHT";
-            transactionTypeRow.TransactionTypeDescription = "Allocation Journal";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+                // TODO: this might be different for other account or costcentre names
+                transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
+                transactionTypeRow.LedgerNumber = ANewLedgerNumber;
+                transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+                transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.ALLOC.ToString();
+                transactionTypeRow.DebitAccountCode = "BAL SHT";
+                transactionTypeRow.CreditAccountCode = "BAL SHT";
+                transactionTypeRow.TransactionTypeDescription = "Allocation Journal";
+                transactionTypeRow.SpecialTransactionType = true;
+                MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 
-            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REALLOC.ToString();
-            transactionTypeRow.DebitAccountCode = "BAL SHT";
-            transactionTypeRow.CreditAccountCode = "BAL SHT";
-            transactionTypeRow.TransactionTypeDescription = "Reallocation Journal";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+                transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
+                transactionTypeRow.LedgerNumber = ANewLedgerNumber;
+                transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+                transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REALLOC.ToString();
+                transactionTypeRow.DebitAccountCode = "BAL SHT";
+                transactionTypeRow.CreditAccountCode = "BAL SHT";
+                transactionTypeRow.TransactionTypeDescription = "Reallocation Journal";
+                transactionTypeRow.SpecialTransactionType = true;
+                MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 
-            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
-            transactionTypeRow.DebitAccountCode = "5003";
-            transactionTypeRow.CreditAccountCode = "5003";
-            transactionTypeRow.TransactionTypeDescription = "Foreign Exchange Revaluation";
-            transactionTypeRow.SpecialTransactionType = true;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
+                transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
+                transactionTypeRow.LedgerNumber = ANewLedgerNumber;
+                transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+                transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
+                transactionTypeRow.DebitAccountCode = "5003";
+                transactionTypeRow.CreditAccountCode = "5003";
+                transactionTypeRow.TransactionTypeDescription = "Foreign Exchange Revaluation";
+                transactionTypeRow.SpecialTransactionType = true;
+                MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 
-            transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
-            transactionTypeRow.LedgerNumber = ANewLedgerNumber;
-            transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
-            transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
-            transactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
-            transactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
-            transactionTypeRow.TransactionTypeDescription = "Standard Journal";
-            transactionTypeRow.SpecialTransactionType = false;
-            MainDS.ATransactionType.Rows.Add(transactionTypeRow);
-
-
-            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, null);
-
-            if (validLedgerNumberTable.Rows.Count == 0)
-            {
-                AValidLedgerNumberRow validLedgerNumberRow = MainDS.AValidLedgerNumber.NewRowTyped();
-                validLedgerNumberRow.PartnerKey = PartnerKey;
-                validLedgerNumberRow.LedgerNumber = ANewLedgerNumber;
-
-                // TODO can we assume that ledger 4 is used for international clearing?
-                // but in the empty database, that ledger and therefore p_partner with key 4000000 does not exist
-                // validLedgerNumberRow.IltProcessingCentre = 4000000;
-
-                validLedgerNumberRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
-                MainDS.AValidLedgerNumber.Rows.Add(validLedgerNumberRow);
-            }
-
-            ACostCentreTypesRow costCentreTypesRow = MainDS.ACostCentreTypes.NewRowTyped();
-            costCentreTypesRow.LedgerNumber = ANewLedgerNumber;
-            costCentreTypesRow.CostCentreType = "Local";
-            costCentreTypesRow.Deletable = false;
-            MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
-            costCentreTypesRow = MainDS.ACostCentreTypes.NewRowTyped();
-            costCentreTypesRow.LedgerNumber = ANewLedgerNumber;
-            costCentreTypesRow.CostCentreType = "Foreign";
-            costCentreTypesRow.Deletable = false;
-            MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
+                transactionTypeRow = MainDS.ATransactionType.NewRowTyped();
+                transactionTypeRow.LedgerNumber = ANewLedgerNumber;
+                transactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+                transactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+                transactionTypeRow.DebitAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+                transactionTypeRow.CreditAccountCode = MFinanceConstants.ACCOUNT_BAL_SHT;
+                transactionTypeRow.TransactionTypeDescription = "Standard Journal";
+                transactionTypeRow.SpecialTransactionType = false;
+                MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 
 
-            ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber);
-            ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
-            ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
-            ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
+                AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, Transaction);
+
+                if (validLedgerNumberTable.Rows.Count == 0)
+                {
+                    AValidLedgerNumberRow validLedgerNumberRow = MainDS.AValidLedgerNumber.NewRowTyped();
+                    validLedgerNumberRow.PartnerKey = PartnerKey;
+                    validLedgerNumberRow.LedgerNumber = ANewLedgerNumber;
+
+                    // TODO can we assume that ledger 4 is used for international clearing?
+                    // but in the empty database, that ledger and therefore p_partner with key 4000000 does not exist
+                    // validLedgerNumberRow.IltProcessingCentre = 4000000;
+
+                    validLedgerNumberRow.CostCentreCode = (ANewLedgerNumber * 100).ToString("0000");
+                    MainDS.AValidLedgerNumber.Rows.Add(validLedgerNumberRow);
+                }
+
+                ACostCentreTypesRow costCentreTypesRow = MainDS.ACostCentreTypes.NewRowTyped();
+                costCentreTypesRow.LedgerNumber = ANewLedgerNumber;
+                costCentreTypesRow.CostCentreType = "Local";
+                costCentreTypesRow.Deletable = false;
+                MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
+                costCentreTypesRow = MainDS.ACostCentreTypes.NewRowTyped();
+                costCentreTypesRow.LedgerNumber = ANewLedgerNumber;
+                costCentreTypesRow.CostCentreType = "Foreign";
+                costCentreTypesRow.Deletable = false;
+                MainDS.ACostCentreTypes.Rows.Add(costCentreTypesRow);
 
 
-            // TODO: modify UI navigation yml file etc?
-            // TODO: permissions for which users?
+                ImportDefaultAccountHierarchy(ref MainDS, ANewLedgerNumber);
+                ImportDefaultCostCentreHierarchy(ref MainDS, ANewLedgerNumber, ALedgerName);
+                ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
+                ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
-            TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
 
-            // activate gift receipting subsystem
-            if (AActivateGiftReceipting)
-            {
-                ActivateGiftReceiptingSubsystem(ANewLedgerNumber, AStartingReceiptNumber, out AVerificationResult);
-            }
+                // TODO: modify UI navigation yml file etc?
+                // TODO: permissions for which users?
 
-            // activate accounts payable subsystem
-            if (AActivateAccountsPayable)
-            {
-                ActivateAccountsPayableSubsystem(ANewLedgerNumber, out AVerificationResult);
-            }
+                GLSetupTDSAccess.SubmitChanges(MainDS);
 
-            if (result == TSubmitChangesResult.scrOK)
-            {
+                // activate gift processing subsystem
+                if (AActivateGiftProcessing)
+                {
+                    ActivateGiftProcessingSubsystem(ANewLedgerNumber, AStartingReceiptNumber);
+                }
+
+                // activate accounts payable subsystem
+                if (AActivateAccountsPayable)
+                {
+                    ActivateAccountsPayableSubsystem(ANewLedgerNumber);
+                }
+
                 // give the current user access permissions to this new ledger
                 SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
 
@@ -2510,24 +2706,32 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 moduleAccessPermissionRow.CanAccess = true;
                 moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-                try
+                SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction);
+
+                AllOK = true;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the creation of a new Ledger:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
+            finally
+            {
+                if (AllOK)
                 {
-                    if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out AVerificationResult))
-                    {
-                        return false;
-                    }
-
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                finally
+                else
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
 
-            return result == TSubmitChangesResult.scrOK;
+            return AllOK;
         }
 
         /// <summary>
@@ -2770,7 +2974,72 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// Check if a value in  AFREEFORMANALSYSIS cand be deleted (count the references in ATRansANALATTRIB)
+        /// Check if a AnalysisAttribute Row can be removed from an Account (not if it's in use!)
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean CanDetachTypeCodeFromAccount(Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String Message)
+        {
+            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                {
+                    AApAnalAttribTable tbl = new AApAnalAttribTable();
+                    AApAnalAttribRow Template = tbl.NewRowTyped(false);
+                    Template.LedgerNumber = ALedgerNumber;
+                    Template.AccountCode = AAccountCode;
+                    Template.AnalysisTypeCode = ATypeCode;
+                    tbl = AApAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
+                    if (tbl.Rows.Count > 0)
+                    {
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                  String.Format(Catalog.GetString("Analysis Type is used in AP documents ({0} entries)."), tbl.Rows.Count);
+                        return false;
+                    }
+                }
+
+                {
+                    ATransAnalAttribTable tbl = new ATransAnalAttribTable();
+                    ATransAnalAttribRow Template = tbl.NewRowTyped(false);
+                    Template.LedgerNumber = ALedgerNumber;
+                    Template.AccountCode = AAccountCode;
+                    Template.AnalysisTypeCode = ATypeCode;
+                    tbl = ATransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
+                    if (tbl.Rows.Count > 0)
+                    {
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                  String.Format(Catalog.GetString("Analysis Type is used in Transactions ({0} entries)."), tbl.Rows.Count);
+                        return false;
+                    }
+                }
+                {
+                    ARecurringTransAnalAttribTable tbl = new ARecurringTransAnalAttribTable();
+                    ARecurringTransAnalAttribRow Template = tbl.NewRowTyped(false);
+                    Template.LedgerNumber = ALedgerNumber;
+                    Template.AccountCode = AAccountCode;
+                    Template.AnalysisTypeCode = ATypeCode;
+                    tbl = ARecurringTransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+
+                    if (tbl.Rows.Count > 0)
+                    {
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode) +
+                                  String.Format(Catalog.GetString("Analysis Type is used in recurring Transactions ({0} entries)."), tbl.Rows.Count);
+                        return false;
+                    }
+                }
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            Message = "";
+            return true;
+        }
+
+        /// <summary>
+        /// Check if a value in  AFREEFORMANALSYSIS can be deleted (count the references in ATRansANALATTRIB)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber, String ATypeCode, String AAnalysisValue)
@@ -2788,24 +3057,155 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// Check if a account code for Ledger ALedgerNumber has analysis attributes set up
+        /// Get a list of Analysis Attributes that must be used with this account.
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static bool HasAccountSetupAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode)
+        public static StringCollection RequiredAnalysisAttributesForAccount(Int32 ALedgerNumber, String AAccountCode, Boolean AActiveOnly = false)
+        {
+            StringCollection Ret = new StringCollection();
+            AAnalysisAttributeTable tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, null);
+
+            foreach (AAnalysisAttributeRow Row in tbl.Rows)
+            {
+                if (!AActiveOnly || Row.Active)
+                {
+                    Ret.Add(Row.AnalysisTypeCode);
+                }
+            }
+
+            return Ret;
+        }
+
+        /// <summary>
+        /// Check if this account code for Ledger ALedgerNumber requires one or more analysis attributes
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool AccountHasAnalysisAttributes(Int32 ALedgerNumber,
+            String AAccountCode,
+            out Int32 ANumberOfAttributes,
+            bool AActiveOnly = false)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            bool HasAccountAnalysisAttributes = false;
 
-            HasAccountAnalysisAttributes = (AAnalysisAttributeAccess.CountViaAAccount(ALedgerNumber, AAccountCode, Transaction) > 0);
+            ANumberOfAttributes = 0;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            AAnalysisAttributeTable AnalysisAttributeTable = null;
+            bool AccountAnalysisAttributeExists = false;
 
-            return HasAccountAnalysisAttributes;
+            try
+            {
+                if (!AActiveOnly)
+                {
+                    AnalysisAttributeTable = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, Transaction);
+                }
+                else
+                {
+                    AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                    AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                    TemplateAARow.LedgerNumber = ALedgerNumber;
+                    TemplateAARow.AccountCode = AAccountCode;
+                    TemplateAARow.Active = true;
+
+                    AnalysisAttributeTable = AAnalysisAttributeAccess.LoadUsingTemplate(TemplateAARow, Transaction);
+                }
+
+                ANumberOfAttributes = AnalysisAttributeTable.Count;
+
+                AccountAnalysisAttributeExists = (ANumberOfAttributes > 0);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("Unexpected error in AccountHasAnalysisAttributes: " + ex.Message);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return AccountAnalysisAttributeExists;
+        }
+
+        /// <summary>
+        /// Check if this account code for Ledger ALedgerNumber requires one or more analysis attributes
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool AccountHasAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode, bool AActiveOnly = false)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            AAnalysisAttributeTable AnalysisAttributeTable = null;
+            bool AccountAnalysisAttributeExists = false;
+
+            try
+            {
+                if (!AActiveOnly)
+                {
+                    AnalysisAttributeTable = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, Transaction);
+                }
+                else
+                {
+                    AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                    AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                    TemplateAARow.LedgerNumber = ALedgerNumber;
+                    TemplateAARow.AccountCode = AAccountCode;
+                    TemplateAARow.Active = true;
+
+                    AnalysisAttributeTable = AAnalysisAttributeAccess.LoadUsingTemplate(TemplateAARow, Transaction);
+                }
+
+                AccountAnalysisAttributeExists = (AnalysisAttributeTable.Count > 0);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("Unexpected error in AccountHasAnalysisAttributes: " + ex.Message);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return AccountAnalysisAttributeExists;
+        }
+
+        /// <summary>
+        /// Check if this account type code for Ledger ALedgerNumber requires one or more analysis attribute values
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool AccountAnalysisAttributeRequiresValues(Int32 ALedgerNumber, string AAnalysisTypeCode, bool AActiveOnly)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool AccountAnalysisAttributeValueRequired = false;
+
+            try
+            {
+                AFreeformAnalysisTable FFATable = new AFreeformAnalysisTable();
+                AFreeformAnalysisRow TemplateFFARow = FFATable.NewRowTyped(false);
+                TemplateFFARow.LedgerNumber = ALedgerNumber;
+                TemplateFFARow.AnalysisTypeCode = AAnalysisTypeCode;
+
+                if (AActiveOnly)
+                {
+                    TemplateFFARow.Active = AActiveOnly;
+                }
+
+                AFreeformAnalysisTable FreeformAnalysisTable = AFreeformAnalysisAccess.LoadUsingTemplate(TemplateFFARow, Transaction);
+
+                AccountAnalysisAttributeValueRequired = (FreeformAnalysisTable.Count > 0);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("Unexpected error in AccountAnalysisAttributeRequiresValues: " + ex.Message);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return AccountAnalysisAttributeValueRequired;
         }
 
         //
         //    Rename Account: to rename an AccountCode or a CostCentreCode, we need to update lots of values all over the database:
-
         private static void UpdateAccountField(String ATblName,
             String AFldName,
             String AOldName,
@@ -2878,10 +3278,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 NewAccountRow.AccountCode = ANewCode;
                 TempAccountTbl.Rows.Add(NewAccountRow);
 
-                if (!AAccountAccess.SubmitChanges(TempAccountTbl, Transaction, out VerificationResults))
-                {
-                    return false;
-                }
+                AAccountAccess.SubmitChanges(TempAccountTbl, Transaction);
 
                 TempAccountTbl.AcceptChanges();
 
@@ -2943,18 +3340,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
 
-                foreach (AAnalysisAttributeRow OldAnalAttribRow in TempAnalAttrTbl.Rows)
+                for (Int32 Idx = TempAnalAttrTbl.Rows.Count - 1; Idx >= 0; Idx--)
                 {
+                    AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
                     // "a_analysis_attribute"  is the referrent in foreign keys, so I can't just go changing it - I need to make a copy?
                     AAnalysisAttributeRow NewAnalAttribRow = TempAnalAttrTbl.NewRowTyped();
                     DataUtilities.CopyAllColumnValues(OldAnalAttribRow, NewAnalAttribRow);
                     NewAnalAttribRow.AccountCode = ANewCode;
                     TempAnalAttrTbl.Rows.Add(NewAnalAttribRow);
 
-                    if (!AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction, out VerificationResults))
-                    {
-                        return false;
-                    }
+                    AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
 
                     TempAnalAttrTbl.AcceptChanges();
 
@@ -2964,20 +3359,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     UpdateAccountField("a_recurring_trans_anal_attrib",
                         "a_account_code_c",
                         AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_thisyearold_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_prev_year_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                     OldAnalAttribRow.Delete();
 
-                    if (!AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction, out VerificationResults))
-                    {
-                        return false;
-                    }
+                    AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
                 }
 
                 UpdateAccountField("a_suspense_account",
@@ -3016,10 +3402,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 PrevAccountRow.Delete();
 
-                if (!AAccountAccess.SubmitChanges(TempAccountTbl, Transaction, out VerificationResults))
-                {
-                    return false;
-                }
+                AAccountAccess.SubmitChanges(TempAccountTbl, Transaction);
 
                 RenameComplete = true;
             }
@@ -3045,6 +3428,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
+
             return RenameComplete;
         }
 
@@ -3086,7 +3470,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>I can add child accounts to this account if it's a summary account,
-        ///          or if there have never been transactions posted to it.
+        ///          or if there have never been transactions posted to it,
+        ///          or if it's linked to a partner.
         ///
         ///          (If children are added to this account, it will be promoted to a summary account.)
         ///
@@ -3097,12 +3482,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ACostCentreCode"></param>
         /// <param name="ACanBeParent"></param>
         /// <param name="ACanDelete"></param>
+        /// <param name="AMsg"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber, String ACostCentreCode, out bool ACanBeParent, out bool ACanDelete)
+        public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber,
+            String ACostCentreCode,
+            out bool ACanBeParent,
+            out bool ACanDelete,
+            out String AMsg)
         {
-            ACanBeParent = true;
-            ACanDelete = true;
+            ACanBeParent = false;
+            ACanDelete = false;
+            AMsg = "";
             bool DbSuccess = true;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
@@ -3110,19 +3501,67 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (TempTbl.Rows.Count < 1)  // This shouldn't happen..
             {
                 DbSuccess = false;
+                AMsg = Catalog.GetString("Not Found!");
             }
             else
             {
                 bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
-                ACostCentreRow AccountRow = TempTbl[0];
-                ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
-                ACanDelete = !IsParent;
+                ACostCentreRow CostCentreRow = TempTbl[0];
+                ACanBeParent = !CostCentreRow.PostingCostCentreFlag; // If it's a summary Cost Centre, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+
+                if (IsParent)
+                {
+                    ACanDelete = false;
+                    AMsg = Catalog.GetString("Cost Centre has children.");
+                }
+                else
+                {
+                    ACanDelete = true;
+                }
 
                 if (!ACanBeParent || ACanDelete)
                 {
                     bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
-                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
-                    ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+
+                    if (IsInUse)
+                    {
+                        ACanBeParent = false;
+                        ACanDelete = false;      // Once it has transactions posted, I can't delete it, ever.
+                        AMsg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                    }
+                    else
+                    {
+                        ACanBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
+                    }
+                }
+
+                if (ACanBeParent || ACanDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
+                {                                   // If it has, the link must be deleted first.
+                    AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
+
+                    if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                    {
+                        ACanBeParent = false;
+                        ACanDelete = false;
+                        AMsg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
+                    }
+                }
+
+                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
+                {                // and do the low-level database check to see if a deletion would succeed:
+                    TVerificationResultCollection ReferenceResults;
+                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
+                        ACostCentreCode,
+                        50,
+                        Transaction,
+                        false,
+                        out ReferenceResults);
+
+                    if (RefCount > 0)
+                    {
+                        ACanDelete = false;
+                        AMsg = ReferenceResults.BuildVerificationResultString();
+                    }
                 }
             }
 
@@ -3194,10 +3633,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 NewRow.CostCentreCode = ANewCode;
                 TempTbl.Rows.Add(NewRow);
 
-                if (!ACostCentreAccess.SubmitChanges(TempTbl, Transaction, out VerificationResults))
-                {
-                    return false;
-                }
+                ACostCentreAccess.SubmitChanges(TempTbl, Transaction);
 
                 TempTbl.AcceptChanges();
 
@@ -3264,28 +3700,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     Transaction,
                     ref AttemptedOperation);
 
-
-/*
- * These tables were previously checked in the 4GL, but they don't exist in Open Petra:
- *
- * "a_previous_year_transaction"
- * "a_ich_stewardship"
- */
-
                 PrevRow.Delete();
 
-                if (!ACostCentreAccess.SubmitChanges(TempTbl, Transaction, out VerificationResults))
-                {
-                    return false;
-                }
+                ACostCentreAccess.SubmitChanges(TempTbl, Transaction);
 
                 RenameComplete = true;
-            } // try
-              //
-              // There's no "catch" - if any of the calls above fails (with an SQL problem),
-              // the server task will fail, and cause a descriptive exception on the client.
-              // (And the VerificationResults might also contain a useful string because of "finally" below.)
-              //
+            }
+            //
+            // There's no "catch" - if any of the calls above fails (with an SQL problem),
+            // the server task will fail, and cause a descriptive exception on the client.
+            // (And the VerificationResults might also contain a useful string because of "finally" below.)
+            //
             finally
             {
                 if (RenameComplete)

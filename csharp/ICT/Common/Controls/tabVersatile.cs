@@ -23,6 +23,7 @@
 //
 using System;
 using System.Drawing;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -31,6 +32,8 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Globalization;
 using Ict.Common;
+
+using Ict.Common.Exceptions;
 
 namespace Ict.Common.Controls
 {
@@ -138,7 +141,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TSelectedIndexChangeDisallowedTabPagedIsDisabledException(
+                    throw new ESelectedIndexChangeDisallowedTabPagedIsDisabledException(
                         "TabPage with Index " + value.ToString() + " is disabled and therefore cannot be Selected");
                 }
             }
@@ -160,7 +163,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TSelectedIndexChangeDisallowedTabPagedIsDisabledException(
+                    throw new ESelectedIndexChangeDisallowedTabPagedIsDisabledException(
                         "TabPage '" + value.Name + "' is disabled and therefore cannot be Selected");
                 }
             }
@@ -172,6 +175,9 @@ namespace Ict.Common.Controls
         /// parent window), or drawn by the operating system.
         ///
         /// </summary>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "By ignoring 'value' in the setter we are ensuring that the Tab Control is always owner drawn",
+             MessageId = "value")]
         public new TabDrawMode DrawMode
         {
             get
@@ -192,6 +198,9 @@ namespace Ict.Common.Controls
         /// parent window), or drawn by the operating system.
         ///
         /// </summary>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "By ignoring 'value' in the setter we are ensuring that the HotTrack feature is never Enabled for the Tab Control",
+             MessageId = "value")]
         public new Boolean HotTrack
         {
             get
@@ -843,7 +852,7 @@ namespace Ict.Common.Controls
             {
                 if ((e.KeyCode == Keys.Left) || (e.KeyCode == Keys.Up))
                 {
-                    for (Counter1 = (short)(SelIndex - 1); Counter1 <= 0; Counter1 -= 1)
+                    for (Counter1 = (short)(SelIndex - 1); Counter1 >= 0; Counter1 -= 1)
                     {
                         if (this.TabPages[Counter1].Enabled)
                         {
@@ -971,7 +980,7 @@ namespace Ict.Common.Controls
             else if ((e.KeyCode == Keys.Tab) && (e.Control && e.Shift))
             {
                 // MessageBox.Show('CTRL+SHIFT+TAB pressed. Current SelectedIndex: ' + SelIndex.ToString);
-                for (Counter1 = SelIndex - 1; Counter1 <= 0; Counter1 -= 1)
+                for (Counter1 = SelIndex - 1; Counter1 >= 0; Counter1 -= 1)
                 {
                     if (this.TabPages[Counter1].Enabled)
                     {
@@ -992,7 +1001,7 @@ namespace Ict.Common.Controls
 
                 if (!TabFound)
                 {
-                    for (Counter2 = this.TabPages.Count - 1; Counter2 <= 0; Counter2 -= 1)
+                    for (Counter2 = this.TabPages.Count - 1; Counter2 >= 0; Counter2 -= 1)
                     {
                         if (this.TabPages[Counter2].Enabled)
                         {
@@ -1281,28 +1290,37 @@ namespace Ict.Common.Controls
         #endregion
     }
 
+    #region ESelectedIndexChangeDisallowedTabPagedIsDisabledException
+
     /// <summary>
-    /// tab page is disabled and therefore cannot be selected
+    /// Tab page is disabled and therefore cannot be selected.
     /// </summary>
-    public class TSelectedIndexChangeDisallowedTabPagedIsDisabledException : ApplicationException
+    public class ESelectedIndexChangeDisallowedTabPagedIsDisabledException : EOPAppException
     {
-        #region TSelectedIndexChangeDisallowedTabPagedIsDisabledException
-
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TSelectedIndexChangeDisallowedTabPagedIsDisabledException() : base()
+        public ESelectedIndexChangeDisallowedTabPagedIsDisabledException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TSelectedIndexChangeDisallowedTabPagedIsDisabledException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ESelectedIndexChangeDisallowedTabPagedIsDisabledException(String AMessage) : base(AMessage)
         {
         }
 
-        #endregion
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ESelectedIndexChangeDisallowedTabPagedIsDisabledException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
     }
+
+    #endregion
 }

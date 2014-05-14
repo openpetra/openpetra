@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui
     FormType: dialog
     Template: window
-    WindowWidth: 400
+    WindowWidth: 385
     WindowHeight: 200
     
     Events:
@@ -12,15 +12,19 @@ RootNode:
 
     Controls:
         pnlDialogContent:
+            Padding: 0,0,3,0
             Controls:
                 Row0: [lblExplanation]
                 Row1: [Empty]
                 Row2: [txtPassportName]
                 
         lblExplanation:
-            
+            Width: 360
+            Height: 75
+
         Empty:
 
         txtPassportName:
+            Stretch: horizontally
             Label: Passport Name
-            Width: 250
+            

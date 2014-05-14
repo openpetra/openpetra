@@ -15,9 +15,11 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
-using Ict.Common.Verification;
-using Ict.Common.Remoting.Shared;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
@@ -141,8 +143,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
-
         if (FUIConnector != null)
         {
             // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
@@ -198,6 +198,7 @@ namespace {#NAMESPACE}
         object[] beforeEdit = ARow.ItemArray;
         ARow.BeginEdit();
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
         if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
         {
             ARow.CancelEdit();
@@ -218,6 +219,7 @@ namespace {#NAMESPACE}
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
 {#ENDIF SAVEDATA}
     }
 {#ENDIFN MASTERTABLE}
@@ -231,6 +233,7 @@ namespace {#NAMESPACE}
             object[] beforeEdit = ARow.ItemArray;
             ARow.BeginEdit();
             {#SAVEDETAILS}
+            {#SAVEDETAILSEXTRA}
             if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
             {
                 ARow.CancelEdit();

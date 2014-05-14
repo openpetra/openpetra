@@ -212,7 +212,9 @@ namespace SourceGrid
 				(Selection.ActivePosition.IsEmpty() == false && complete.Contains(Selection.ActivePosition) == false) ||
 				(Selection.IsEmpty() == false && completeRegion.Contains(Selection.GetSelectionRegion()) == false)
 			)
-				Selection.ResetSelection(false);
+                // AlanP: Sep 2013.  This gets called when we delete rows (eg FPreviouslySelectedDetailRow.Delete())
+                //  so we want to suppress selection_changed at this point because we will call SelectRowInGrid next
+				Selection.ResetSelection(false, true);
 		}
 		#endregion
 
@@ -1192,7 +1194,10 @@ namespace SourceGrid
                 m_firstCellShiftSelected = Selection.ActivePosition;
 			}
 
-			if ((keyData == Keys.Enter ||
+			// AlanP: Nov 2013.  Added SHIFT and CTRL ENTER
+            if ((keyData == Keys.Enter ||
+                 keyData == (Keys.Enter | Keys.Shift) ||
+                 keyData == (Keys.Enter | Keys.Control) ||
 			     keyData == Keys.Escape ||
 			     keyData == Keys.Tab ||
 			     keyData == (Keys.Tab | Keys.Shift)) &&
@@ -1271,50 +1276,150 @@ namespace SourceGrid
 			if ( (SpecialKeys & GridSpecialKeys.Enter) == GridSpecialKeys.Enter)
 				enableEnter = true;
 
+            // AlanP: March 2014 - Work out which is the first column that is displayed after any fixed columns
+            // We use firstActiveColumn in multiple places below
+            int firstActiveColumn = this.FixedColumns;
+            while ((firstActiveColumn < this.Columns.Count - 1) && !((ColumnInfoCollection)this.Columns)[firstActiveColumn].Visible)
+            {
+                firstActiveColumn++;
+            }
+
 			#region Processing keys
+            // AlanP: Nov 2013. Made some changes to the behaviours of ENTER and Esc so we move to the next editable cell
+            //   Also there was a bug in the code that checked if a cell IsEditing
 			//Escape
 			if (e.KeyCode == Keys.Escape && enableEscape)
 			{
 				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-				if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+                ICellVirtual contextCell = focusCellContext.Cell;
+				if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
 				{
-					if (focusCellContext.EndEdit(true))
-						e.Handled = true;
+                    if (focusCellContext.EndEdit(true))
+                    {
+                        // Move to next editable cell if there is one
+                        bool bFound = false;
+                        do
+                        {
+                            Selection.MoveActiveCell(0, 1, 0, int.MinValue);
+                            ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
+                            bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
+                        }
+                        while (Selection.ActivePosition.Column != firstActiveColumn && !bFound);
+
+                        e.Handled = true;
+                    }
 				}
 			}
 
 			//Enter
 			if (e.KeyCode == Keys.Enter && enableEnter)
 			{
+                // This is the main special key for dealing with edit-in-place in OpenPetra
+                bool isLastColumn = (Selection.ActivePosition.Column == this.Columns.Count - 1);
+                bool isFirstColumn = (Selection.ActivePosition.Column == firstActiveColumn);
+
 				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-				if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+                //if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+                // AlanP: Nov 2013.  Replcaed the line above with this because focusCellContext.IsEditing() returns false for a reason I don't understand.
+                ICellVirtual contextCell = focusCellContext.Cell;
+                
+                // Pressing ENTER always completes an outstanding edit
+                if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
 				{
 					focusCellContext.EndEdit(false);
-
-					e.Handled = true;
 				}
-			}
+
+                if (isFirstColumn)
+                {
+                    // If we are on the first column and columns exist to the right then ENTER moves us to the next editable cell
+                    //  or back to column 0 if there are no more editable cells
+                    if (!isLastColumn)
+                    {
+                        bool bFound = false;
+                        do
+                        {
+                            Selection.MoveActiveCell(0, 1, 0, int.MinValue);
+                            ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
+                            bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
+                        }
+                        while (Selection.ActivePosition.Column != firstActiveColumn && !bFound);
+
+                        e.Handled = bFound;
+                    }
+                    else
+                    {
+                        e.Handled = false;
+                    }
+                }
+                else
+                {
+                    // If we are NOT on the first column we go somewhere else depending on SHIFT or CTRL
+                    if (e.Modifiers == Keys.Shift)
+                    {
+                        // Go down 1 row in the current column and then ultimately back to column 0 on the last row
+                        this.Selection.MoveActiveCell(1, 0, 0, int.MinValue);
+                    }
+                    else if (e.Modifiers == Keys.Control)
+                    {
+                        // Go down 1 row in column 0
+                        this.Selection.MoveActiveCell(1, -this.Selection.ActivePosition.Column, 0, int.MinValue);
+                    }
+                    else
+                    {
+                        // Neither SHIFT nor CTRL so go across to the right in the current row to the next editable control
+                        //  or go back to column 0 in the current row
+                        bool bFound = false;
+                        do
+                        {
+                            Selection.MoveActiveCell(0, 1, 0, int.MinValue);
+                            ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
+                            bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
+                        }
+                        while (Selection.ActivePosition.Column != firstActiveColumn && !bFound);
+                    }
+
+                    e.Handled = true;
+                }
+
+                return;
+            }
 
 			//Tab
 			if (e.KeyCode == Keys.Tab && enableTab)
 			{
+                // All we need to do is close down any edit
 				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-				if (focusCellContext.Cell != null && focusCellContext.IsEditing())
-				{
-					//se l'editing non riesce considero il tasto processato
-					// altrimenti no, in questo modo il tab ha effetto anche per lo spostamento
-					if (focusCellContext.EndEdit(false) == false)
-					{
-						e.Handled = true;
-						return;
-					}
+                //if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+                // AlanP: Nov 2013.  Replcaed the line above with this because focusCellContext.IsEditing() returns false for a reason I don't understand.
+                ICellVirtual contextCell = focusCellContext.Cell;
+
+                // Pressing TAB always completes an outstanding edit
+                if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
+                {
+                    focusCellContext.EndEdit(false);
 				}
-			}
+
+                // Be sure to go back to column 0 in the current row
+                if (Selection.ActivePosition.Column != firstActiveColumn)
+                {
+                    this.Selection.Focus(new Position(Selection.ActivePosition.Row, firstActiveColumn), true);
+                }
+
+                return;
+            }
 			#endregion
 
 			#region Navigate keys: arrows, tab and PgDown/Up
 			var shiftPressed = e.Modifiers == Keys.Shift;
 			var resetSelection = shiftPressed == false;
+
+            // AlanP: Sep 2013. We need this because the first time we press SHIFT we may be on any row in the grid
+            // This ensures that, if m_firstCellShiftSelected has never been set, it gets the current position before any move
+            if (shiftPressed && (m_firstCellShiftSelected.Row < this.FixedRows))
+            {
+                m_firstCellShiftSelected = Selection.ActivePosition;
+            }
+
 			if (e.KeyCode == Keys.Down && enableArrows)
 			{
 				Selection.MoveActiveCell(1, 0, resetSelection);
@@ -1325,33 +1430,35 @@ namespace SourceGrid
 				Selection.MoveActiveCell(-1, 0, resetSelection);
 				e.Handled = true;
 			}
-			else if (e.KeyCode == Keys.Right && enableArrows)
-			{
-				Selection.MoveActiveCell(0, 1, resetSelection);
-				e.Handled = true;
-			}
-			else if (e.KeyCode == Keys.Left && enableArrows)
-			{
-				Selection.MoveActiveCell(0, -1, resetSelection);
-				e.Handled = true;
-			}
-			else if (e.KeyCode == Keys.Tab && enableTab)
-			{
-				//If the tab failed I automatically select the next control in the form (SelectNextControl)
+            else if (e.KeyCode == Keys.Right && enableArrows && SelectionMode == GridSelectionMode.Column)
+            {
+                // AlanP: Jan 2014 support left and right when in column selection mode only 
+                //  (actually our column mode screens cannot take advantage of this feature because the ActivePosition has intentionally been set to -1,-1)
+                Selection.MoveActiveCell(0, 1, resetSelection);
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Left && enableArrows && SelectionMode == GridSelectionMode.Column)
+            {
+                Selection.MoveActiveCell(0, -1, resetSelection);
+                e.Handled = true;
+            }
+            //else if (e.KeyCode == Keys.Tab && enableTab)
+            //{
+            //    //If the tab failed I automatically select the next control in the form (SelectNextControl)
 
-				if (e.Modifiers == Keys.Shift) // backward
-				{
-					if (Selection.MoveActiveCell(0, -1, -1, int.MaxValue) == false)
-						FindForm().SelectNextControl(this, false, true, true, true);
-					e.Handled = true;
-				}
-				else //forward
-				{
-					if (Selection.MoveActiveCell(0, 1, 1, int.MinValue) == false)
-						FindForm().SelectNextControl(this, true, true, true, true);
-					e.Handled = true;
-				}
-			}
+            //    if (e.Modifiers == Keys.Shift) // backward
+            //    {
+            //        if (Selection.MoveActiveCell(0, -1, -1, int.MaxValue) == false)
+            //            FindForm().SelectNextControl(this, false, true, true, true);
+            //        e.Handled = true;
+            //    }
+            //    else //forward
+            //    {
+            //        if (Selection.MoveActiveCell(0, 1, 1, int.MinValue) == false)
+            //            FindForm().SelectNextControl(this, true, true, true, true);
+            //        e.Handled = true;
+            //    }
+            //}
 			else if ( (e.KeyCode == Keys.PageUp || e.KeyCode == Keys.PageDown)
 			         && enablePageDownUp)
 			{
@@ -1379,7 +1486,9 @@ namespace SourceGrid
             //  2. SHIFT+mouse click did not work.
             if (shiftPressed && e.Handled)
             {
-                Selection.ResetSelection(true);
+                // AlanP: Sep 2013  Inhibit the change event on this one
+                Selection.ResetSelection(true, true);
+                // This fires the selection_changed event, then we are done
                 Selection.SelectRange(new Range(m_firstCellShiftSelected, Selection.ActivePosition), true);
             }
 
@@ -1514,12 +1623,16 @@ namespace SourceGrid
 
 				if ((SpecialKeys & GridSpecialKeys.Tab) == GridSpecialKeys.Tab)
 				{
-					switch (keyData)
-					{
-						case Keys.Tab:
-						case (Keys.Tab | Keys.Shift):
-							return true;
-					}
+                    // AlanP: Nov 2013.  In OpenPetra, TAB is only a special key if not in the left column
+                    if (Selection.ActivePosition.Column > 0)
+                    {
+                        switch (keyData)
+                        {
+                            case Keys.Tab:
+                            case (Keys.Tab | Keys.Shift):
+                                return true;
+                        }
+                    }
 				}
 			}
 
@@ -1691,6 +1804,28 @@ namespace SourceGrid
 				Cells.ICellVirtual cellMouseDown = GetCell(position);
 				if (cellMouseDown != null)
 				{
+                    // AlanP: Nov 2013.  Added this if/else clause to set the position to the first column unless the click is on an editable cell
+                    if (cellMouseDown.Editor != null && cellMouseDown.Editor.EditableMode == EditableMode.Focus)
+                    {
+                        // The position is ok
+                    }
+                    else if (position.Row >= this.FixedRows)
+                    {
+                        // AlanP: Jan 2014.  Added this test that we are doing full row selection because on some grids we do column selection
+                        if (this.SelectionMode == GridSelectionMode.Row)
+                        {
+                            // always imagine that the click was on the first column
+                            // AlanP: March 2014 - the column is now the first VISIBLE column (in the normal sense, not visible in the display window)
+                            //    AP screens may or may not display a checkbox column in column 0
+                            int column = this.FixedColumns;
+                            while (column < this.Columns.Count - 1 && !((ColumnInfoCollection)this.Columns)[column].Visible)
+                            {
+                                column++;
+                            }
+                            position = new Position(position.Row, column);
+                        }
+                    }
+
 					ChangeMouseDownCell(position, position);
 
 					//Cell.OnMouseDown
@@ -1868,6 +2003,11 @@ namespace SourceGrid
 			{
 				Selection.FocusFirstCell(false);
 			}
+
+            // AlanP: Sep 2013.  We need to reset the first cell shift selected because the highlighted cell could have moved anywhere
+            //   while the focus was away from the grid.
+            // We may have SHIFT+Tab'bed back to the grid so the shift key may or may not already be pressed when OnEnter is called
+            m_firstCellShiftSelected = Selection.ActivePosition;
 		}
 		protected override void OnValidated(EventArgs e)
 		{
@@ -1971,19 +2111,21 @@ namespace SourceGrid
 			{
 				if (AutoStretchColumnsToFitWidth && AutoStretchRowsToFitHeight)
 				{
-					Rows.AutoSize(false);
-					Columns.AutoSize(false);
+                    // AlanP: Jan 2014 - commented out the AutoSize because it has already happened before this call and 
+                    //  for some reason it takes progressively longer every time you maximize and restore the window
+                    //Rows.AutoSize(false);
+                    //Columns.AutoSize(false);
 					Columns.StretchToFit();
 					Rows.StretchToFit();
 				}
 				else if (AutoStretchColumnsToFitWidth)
 				{
-					Columns.AutoSize(true);
+                    //Columns.AutoSize(true);
 					Columns.StretchToFit();
 				}
 				else if (AutoStretchRowsToFitHeight)
 				{
-					Rows.AutoSize(true);
+                    //Rows.AutoSize(true);
 					Rows.StretchToFit();
 				}
 			}
@@ -2477,7 +2619,8 @@ namespace SourceGrid
 			int firstVisibleRow = rows[ActualFixedRows];
 			int lastVisibleRow = rows[rows.Count - 1];
 
-
+            // AlanP: Sep 2013  We need to know if SHIFT is pressed
+            bool shiftPressed = Control.ModifierKeys == Keys.Shift;
 
 			if (IsThisRowVisibleOnScreen(rngFocusedCell.Start.Row))
 			{   //focus is on the screen
@@ -2514,7 +2657,8 @@ namespace SourceGrid
 				{   //this time only move focus, wihout actual scrolling
 
 					Position newPosition = new Position(BottommostFocusableRow, Selection.ActivePosition.Column);
-					Selection.Focus(newPosition, true);
+                    // AlanP: Sep 2013  We inhibit change events if SHIFT is pressed because we still have more calls to do
+					Selection.Focus(newPosition, true, shiftPressed);
 				}
 
 			}
@@ -2539,7 +2683,8 @@ namespace SourceGrid
 				if (rngFocusedCell.ContainsRow(NewFocusedRow) == false)
 				{
 					Position newPosition = new Position(NewFocusedRow, Selection.ActivePosition.Column);
-					Selection.Focus(newPosition, true);
+                    // AlanP: Sep 2013  We inhibit change events if SHIFT is pressed because we still have more calls to do
+                    Selection.Focus(newPosition, true, shiftPressed);
 				}
 
 			}
@@ -2707,9 +2852,10 @@ namespace SourceGrid
 				}
 			}
 
+            // AlanP: Sep 2013  We need to know if SHIFT is pressed
+            bool shiftPressed = Control.ModifierKeys == Keys.Shift;
 
-
-			if (IsThisRowVisibleOnScreen(FocusedRow))
+            if (IsThisRowVisibleOnScreen(FocusedRow))
 			{   //focus is on the screen
 
 				int TopmostFocusableRow = GetTopmostFocusableRowFromRange(firstVisibleRow, lastVisibleRow);
@@ -2744,7 +2890,8 @@ namespace SourceGrid
 				{   //this time only move focus, wihout actual scrolling
 
 					Position newPosition = new Position(TopmostFocusableRow, Selection.ActivePosition.Column);
-					Selection.Focus(newPosition, true);
+                    // AlanP: Sep 2013  We inhibit change events if SHIFT is pressed because we still have more calls to do
+                    Selection.Focus(newPosition, true, shiftPressed);
 				}
 
 			}
@@ -2773,7 +2920,8 @@ namespace SourceGrid
 				if (NewFocusedRow != FocusedRow)
 				{
 					Position newPosition = new Position(NewFocusedRow, Selection.ActivePosition.Column);
-					Selection.Focus(newPosition, true);
+                    // AlanP: Sep 2013  We inhibit change events if SHIFT is pressed because we still have more calls to do
+                    Selection.Focus(newPosition, true, shiftPressed);
 				}
 
 			}

@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Drawing;
 using System.IO;
+using Ict.Common.Exceptions;
 
 namespace Ict.Common.Controls
 {
@@ -222,24 +223,29 @@ namespace Ict.Common.Controls
     /// Thrown if an attempt is made to access an Icon in the Cache, but the Icon
     /// does not exist in the Cache.
     /// </summary>
-    public class EIconNotInCacheException : Exception
+    public class EIconNotInCacheException : EOPAppException
     {
         /// <summary>
-        /// Constructor with inner Exception
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public EIconNotInCacheException(Exception innerException, string message)
-            : base(message, innerException)
+        public EIconNotInCacheException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor without inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="message"></param>
-        public EIconNotInCacheException(string message)
-            : base(message)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EIconNotInCacheException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EIconNotInCacheException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }

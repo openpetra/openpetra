@@ -1,25 +1,42 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Setup Analysis Types and Values
+    FormTitle: Maintain Analysis Types and Values
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     DetailTable: AAnalysisType
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowEdit
-    WindowWidth: 660
-    WindowHeight: 550
+    WindowWidth: 760
+    WindowHeight: 600
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails, pnlValues]
+            Controls: [sptValues]
             Dock: Fill
+        #This screen now features a splitter bar
+        sptValues:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlGridAndDetails
+            Panel2: pnlValues
+        pnlGridAndDetails:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
         pnlGrid:
-            Dock: Top
-            Height: 150
-            Controls: [grdDetails, pnlButtons]
+            Dock: Fill
+            #Height: 150
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailAnalysisTypeCode, txtDetailAnalysisTypeDescription, chkDetailSystemAnalysisType]
+            FindControls: [txtDetailAnalysisTypeCode, txtDetailAnalysisTypeDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNewType, btnDelete]
@@ -27,6 +44,7 @@ RootNode:
         btnNewType:
             Action: actNew
             Width: 80
+            Tooltip: Click to create a new Analysis Type record
         btnDelete:
             Action: actDelete
             Width: 80
@@ -34,22 +52,24 @@ RootNode:
             Dock: Fill
             Height: 148
             Columns: [AAnalysisType.AnalysisTypeCode, AAnalysisType.AnalysisTypeDescription]
+            SortOrder: AAnalysisType.AnalysisTypeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Dock: Top
+            Dock: Bottom
             Controls:
-                Row0: [txtDetailAnalysisTypeCode]
+                Row0: [txtDetailAnalysisTypeCode, chkDetailSystemAnalysisType]
                 Row1: [txtDetailAnalysisTypeDescription]
-                Row2: [chkDetailSystemAnalysisType]
+                #Row2: [chkDetailSystemAnalysisType]
         pnlValues:
-            Dock: Top
-            Height: 250
+            Dock: Fill
             Controls: [ucoValues]
+            MinimumSize: 200
+            BackColor: System.Drawing.SystemColors.Control
         ucoValues:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_SetupAnalysisValues
             Dock: Fill
           
-        txtDetailAnalysisTypeCode: {Label=&Analysis Type Code}
+        txtDetailAnalysisTypeCode: {Label=&Analysis Type Code, CharacterCasing=Upper}
         txtDetailAnalysisTypeDescription: {Label=Description, Width=400, Validation=true}
         chkDetailSystemAnalysisType: {Label=System Analysis Type, ReadOnly=true}
     Menu:

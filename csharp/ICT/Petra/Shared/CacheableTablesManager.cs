@@ -30,6 +30,8 @@ using Ict.Common.Data;
 using Ict.Common;
 using Ict.Common.Remoting.Shared;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Petra.Shared
 {
     /// <summary>
@@ -1480,46 +1482,77 @@ namespace Ict.Petra.Shared
         #endregion
     }
 
+    #region ECacheableTablesMgrException
+
     /// <summary>
     /// This Exception is thrown on several occasions by TCacheableTablesManager.
     /// </summary>
     [Serializable()]
-    public class ECacheableTablesMgrException : ApplicationException
+    public class ECacheableTablesMgrException : EOPAppException
     {
-        #region ECacheableTablesMgrException
-
         /// <summary>
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ECacheableTablesMgrException() : base()
         {
         }
 
         /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ECacheableTablesMgrException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ECacheableTablesMgrException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ECacheableTablesMgrException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ECacheableTablesMgrException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ECacheableTablesMgrException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
 
         #endregion
     }
+
+    #endregion
+
+    #region ECacheableTablesMgrTableNotUpToDateException
 
     /// <summary>
     /// This Exception is thrown by GetCachedDataTable if the Cacheable DataTable
@@ -1529,38 +1562,65 @@ namespace Ict.Petra.Shared
     [Serializable()]
     public class ECacheableTablesMgrTableNotUpToDateException : ECacheableTablesMgrException
     {
-        #region ECacheableTablesMgrTableNotUpToDateException
-
         /// <summary>
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ECacheableTablesMgrTableNotUpToDateException() : base()
         {
         }
 
         /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ECacheableTablesMgrTableNotUpToDateException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ECacheableTablesMgrTableNotUpToDateException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ECacheableTablesMgrTableNotUpToDateException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ECacheableTablesMgrTableNotUpToDateException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ECacheableTablesMgrTableNotUpToDateException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
 
         #endregion
     }
+
+    #endregion
 }

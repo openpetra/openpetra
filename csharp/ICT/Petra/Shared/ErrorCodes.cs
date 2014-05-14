@@ -83,9 +83,9 @@ namespace Ict.Petra.Shared
 
         /// <summary>Value is no longer assignable (just give warning).</summary>
         [ErrCodeAttribute("Value is no longer assignable.",
-             ErrorMessageText = "The code '{0}' is no longer assignable.\r\nIt should no longer be used.",
+             ErrorMessageText = "{0} '{1}' is no longer assignable.\r\nIt should no longer be used.",
              ErrorMessageTitle = "Unassignable Code Used")]
-        public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007N";
+        public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007V";
 
         /// <summary>No permission to access DB Table.</summary>
         [ErrCodeAttribute("You don't have permission to access the specified database table.")]
@@ -106,6 +106,12 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUESIDENTICAL_ERROR = "GEN.00008V";
 
+        /// <summary>Values must not be the same.</summary>
+        [ErrCodeAttribute("Value outside of range.",
+             ErrorMessageText = "Value for '{0}' must be between {1} and {2}",
+             ErrorMessageTitle = "Invalid Data Entered")]
+        public const String ERR_VALUE_OUTSIDE_OF_RANGE = "GEN.00009V";
+
         #endregion
 
         #region Conference Module-specific error codes
@@ -113,7 +119,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>Standard cost inconsistency</summary>
         [ErrCodeAttribute("Standard cost inconsistency.",
-             ErrorMessageText = "{0} day/s at the conference costs more than {1} days!\r\n" + "Are you sure this is correct?",
+             ErrorMessageText = "{0} day(s) at the conference costs more than {1} days!\r\n" + "Are you sure this is correct?",
              ErrorMessageTitle = "Standard cost inconsistency")]
         public const String ERR_STANDARD_COST_INCONSISTENCY = "CON.00001N";
 
@@ -136,6 +142,16 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("Invalid discount percentage.",
              ErrorMessageText = "Discount percentages cannot be greater than 100%")]
         public const String ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100 = "CON.00005V";
+
+        /// <summary>DiscountCriteraCode does not exist</summary>
+        [ErrCodeAttribute("Internal data is missing.",
+             ErrorMessageText = "Necessary internal data is missing from the database. A record is missing from the table PcDiscountCriteria.")]
+        public const String ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST = "CON.00006E";
+
+        /// <summary>CostTypeCode does not exist</summary>
+        [ErrCodeAttribute("Internal data is missing.",
+             ErrorMessageText = "Necessary internal data is missing from the database. A record is missing from the table PcCostType.")]
+        public const String ERR_COST_TYPE_CODE_DOES_NOT_EXIST = "CON.00007E";
 
         #endregion
 
@@ -166,7 +182,27 @@ namespace Ict.Petra.Shared
         /// <summary>Period date ranges need to make sure that there is no overlap and no gaps in calendar.</summary>
         [ErrCodeAttribute("Period date range incorrect.",
              ErrorMessageText = "Period {0} must end one day before the next period begins.")]
-        public const String ERR_PERIOD_DATE_RANGE = "FIN.00005V";
+        public const String ERR_PERIOD_DATE_RANGE_WARNING = "FIN.00005N";
+
+        /// <summary>Period date ranges need to make sure that there is no overlap and no gaps in calendar.</summary>
+        [ErrCodeAttribute("Period date range incorrect.",
+             ErrorMessageText = "Period {0} must end one day before the next period begins.")]
+        public const String ERR_PERIOD_DATE_RANGE = "FIN.00006V";
+
+        /// <summary>Period date ranges need to make sure that there is no overlap and no gaps in calendar.</summary>
+        [ErrCodeAttribute("Current Period incorrect.",
+             ErrorMessageText = "Current Period cannot be greater than Number of Periods.")]
+        public const String ERR_CURRENT_PERIOD_TOO_LATE = "FIN.00007V";
+
+        /// <summary>Partner Key must represent a Key Ministry.</summary>
+        [ErrCodeAttribute("Not a Key Ministry.",
+             ErrorMessageText = "Partner Key in Key Ministry field does not represent a Key Ministry.")]
+        public const String ERR_NOT_A_KEY_MINISTRY = "FIN.00008V";
+
+        /// <summary>Make sure that Key Ministry is active.</summary>
+        [ErrCodeAttribute("Key Ministry not active.",
+             ErrorMessageText = "Key Ministry has been deactivated and cannot be used.")]
+        public const String ERR_KEY_MINISTRY_DEACTIVATED = "FIN.00009V";
 
         #endregion
 
@@ -209,6 +245,40 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Invalid International Postal Type entered.",
              FullDescription = "The International Postal Code entered is not a valid International Postal Type.")]
         public const String ERR_INVALIDINTERNATIONALPOSTALCODE = "PARTN.00008V";
+
+        /// <summary>Interest must not be empty if category is set.</summary>
+        [ErrCodeAttribute("Interest not set.",
+             ErrorMessageText = "Interest must be selected since category '{0}' is set.",
+             ErrorMessageTitle = "Interest not set")]
+        public const String ERR_INTEREST_NOT_SET = "PARTN.00016V";
+
+        /// <summary>One of Interest, Country or Field must be set for Partner Interest record.</summary>
+        [ErrCodeAttribute("Insufficient Data.",
+             ErrorMessageText = "At least one of Interest, Country or Field must be set.",
+             ErrorMessageTitle = "Insufficient Data")]
+        public const String ERR_INTEREST_NO_DATA_SET_AT_ALL = "PARTN.00017V";
+
+        /// <summary>Partner Key is invalid (must not be null).</summary>
+        [ErrCodeAttribute("Invalid Partner.",
+             ErrorMessageText = "Partner Key for {0} must be set.")]
+        public const String ERR_PARTNERKEY_INVALID_NOTNULL = "PARTN.00019V";
+
+        /// <summary>Expired date must come after date effective from.</summary>
+        [ErrCodeAttribute("Invalid Dates",
+             ErrorMessageText = "The 'Date Effective From' cannot be after the 'Date Expired.'")]
+        public const String ERR_INVALID_DATES = "PARTN.00028V";
+
+        /// <summary>Cannot have more than one active Gift Destination.</summary>
+        [ErrCodeAttribute("More than one open Gift Destination.",
+             ErrorMessageText =
+                 "You can only have one open Gift Destination record (no Expiry Date) per Family. All other records must have a valid Expiry Date.")]
+        public const String ERR_MORETHANONE_OPEN_GIFTDESTINATION = "PARTN.00029V";
+
+        /// <summary>Gift Destination records cannot overlap.</summary>
+        [ErrCodeAttribute("Invalid Dates.",
+             ErrorMessageText =
+                 "The dates overlap for two of more Gift Destination records. Please ensure that no two records are active on the same day.")]
+        public const String ERR_DATES_OVERLAP = "PARTN.00030V";
 
         #region Subscriptions
 
@@ -255,7 +325,79 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "You must set at least one bank account as main account.")]
         public const String ERR_BANKINGDETAILS_ATLEASTONEMAINACCOUNT = "PARTN.00014V";
 
+        /// <summary>Partner Key is invalid (must be non-zero).</summary>
+        [ErrCodeAttribute("No Bank selected.",
+             ErrorMessageText = "You must select a Bank for this bank account")]
+        public const String ERR_BANKINGDETAILS_NO_BANK_SELECTED = "PARTN.000017V";
+
+        /// <summary>Account Number and IBAN cannot both be empty</summary>
+        [ErrCodeAttribute("No Account Number or IBAN.",
+             ErrorMessageText = "You must include an Account Number and/or IBAN for this bank account")]
+        public const String ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN = "PARTN.000019V";
+
+        /// <summary>IBAN must always have 34 or less characters</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText =
+                 "The IBAN is longer than 34 characters. IBANs must not be longer than 34 characters (spaces are not counted). " +
+                 "This is defined in the European Banking Standard (EBS).\n\n" + "The IBAN could be invalid! Check the IBAN carefully!")
+        ]
+        public const String ERR_IBAN_TOO_LONG = "PARTN.00020V";
+
+        /// <summary>IBAN must begin with two letters</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The first two characters of an IBAN must be alphabetic.")
+        ]
+        public const String ERR_IBAN_NOTBEGINWITHTWOLETTERS = "PARTN.00021V";
+
+        /// <summary>Third and forth characters of IBAN must be digits</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The third and fourth characters of an IBAN must be digits.")
+        ]
+        public const String ERR_IBAN_THIRDANDFORTHNOTDIGITS = "PARTN.00022V";
+
+        /// <summary>Check Digits (3rd and 4th characters) must be within range 02-98</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The check digits of the IBAN are wrong (third and fourth character of the IBAN).")
+        ]
+        public const String ERR_IBAN_CHECKDIGITSAREWRONG = "PARTN.00023V";
+
+        /// <summary>IBAN country is not defined</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The country {0} is not defined and so IBAN's length can not be checked.")
+        ]
+        public const String ERR_IBAN_COUNTRYNOTDEFINIED = "PARTN.00024N";
+
+        /// <summary>IBAN's length must be equal to a defined length for it's country (if included)</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The length of the IBAN is wrong. IBANs for {0} ({1}) need to be {2} characters long (spaces not counted), " +
+                                "but this IBAN is {3} characters long.")]
+        public const String ERR_IBAN_WRONGLENGTH = "PARTN.00025V";
+
+        /// <summary>IBAN must pass checksum check</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The IBAN is incorrect (checksum mismatch).")
+        ]
+        public const String ERR_IBAN_CHECKSUMMISMATCH = "PARTN.00026V";
+
+        /// <summary>IBAN must pass checksum check</summary>
+        [ErrCodeAttribute("Invalid Account Number.",
+             ErrorMessageText = "The Bank Account Number is not valid.")
+        ]
+        public const String ERR_ACCOUNTNUMBER_INVALID = "PARTN.00027V";
+
         #endregion
+
+        /// <summary>Partner Interest: Level needs to be within valid range.</summary>
+        [ErrCodeAttribute("Level must be within valid range.",
+             ErrorMessageText = "Level must be between {0} and {1}.")]
+        public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
+
+        /// <summary>Partner of Partner Class Church: Denomination must be assigned, but no Denominations are set up to choose from.</summary>
+        [ErrCodeAttribute("Denominations must be set up.",
+             ErrorMessageText =
+                 "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")
+        ]
+        public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
 
         #endregion
 
@@ -267,6 +409,30 @@ namespace Ict.Petra.Shared
                                 "Please choose a different event.",
              ErrorMessageTitle = "Duplicate application for event")]
         public const String ERR_APPLICATION_DUPLICATE_EVENT = "PES.00001V";
+
+        /// <summary>Passport Name must contain an opening and a closing parenthesis.</summary>
+        [ErrCodeAttribute("Passport Name must contain an opening and a closing parenthesis.",
+             ErrorMessageText = "The Family Name/Last Name of the Passport Name must be enclosed\r\n" +
+                                "in parenthesis ['(' and ')'] but one or both parenthesis are missing!\r\n" +
+                                "  Correct Example: Joseph (Meyer)",
+             ErrorMessageTitle = "Invalid Passport Name")]
+        public const String ERR_INDIV_DATA_PASSPORT_NAME_MISSING_PARAS = "PES.00002V";
+
+        #endregion
+
+        #region SysMan Module-specific error codes
+
+        /// <summary>Password missing.</summary>
+        [ErrCodeAttribute("Missing password.",
+             ErrorMessageText = "You must create a new password for user {0}.",
+             ErrorMessageTitle = "Missing password")]
+        public const String ERR_MISSING_PASSWORD = "SYS.00001V";
+
+        /// <summary>Password missing.</summary>
+        [ErrCodeAttribute("Invalid password.",
+             ErrorMessageText = "Your password must have at least {0} characters, and must contain at least one digit and one letter.",
+             ErrorMessageTitle = "Invalid password")]
+        public const String ERR_INVALID_PASSWORD = "SYS.00002V";
 
         #endregion
     }

@@ -94,7 +94,7 @@
 			</queryDetail>
 			<queryDetail>
 				<value>
-						AND PUB_p_subscription.p_publication_copies_i &gt; "1"
+						AND PUB_p_subscription.p_publication_copies_i &gt; '1'
 						
 				</value>
 			</queryDetail>

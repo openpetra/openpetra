@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 660
+    WindowWidth: 750
     WindowHeight: 700
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailOccupationCode, txtDetailOccupationDescription, chkDetailValidOccupation, chkDetailDeletable]
+            FindControls: [txtDetailOccupationCode, txtDetailOccupationDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -32,6 +36,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailOccupationCode, DetailOccupationDescription, DetailValidOccupation, DetailDeletable]
+            SortOrder: DetailOccupationCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

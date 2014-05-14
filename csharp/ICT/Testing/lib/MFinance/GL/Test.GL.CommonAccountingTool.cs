@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -137,13 +137,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             if (!AccountTestCasesAvailable)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-account-data.sql");
+                    "test-sql\\gl-test-account-data.sql", LedgerNumber);
             }
 
             if (!CostCentreTestCasesAvailable)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-costcentre-data.sql");
+                    "test-sql\\gl-test-costcentre-data.sql", LedgerNumber);
             }
         }
 
@@ -220,7 +220,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     MFinanceConstants.IS_CREDIT, 100, 333.33m);
                 Assert.Fail("Exception does not appear!");
             }
-            catch (TVerificationException)
+            catch (EVerificationException)
             {
                 // Exception was thrown, which is expected
                 // Assert.Pass will throw an exception NUnit.Framework.SuccessException and fail the test???
@@ -239,7 +239,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             TPetraServerConnector.Connect();
-            // ResetDatabase();
         }
 
         /// <summary>

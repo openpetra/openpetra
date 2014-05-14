@@ -84,105 +84,96 @@ RootNode:
             Name: Arrival Type
             Parameter: 2.0
         Para19:
-            Name: Booking Fee Received
-            Parameter: 4.5
-        Para20:
             Name: Charged Field Key
             Parameter: 3.0
-        Para21:
+        Para20:
             Name: Charged Field Name
             Parameter: 4.0
-        Para22:
+        Para21:
             Name: Church Name
             Parameter: 3.0
-        Para23:
+        Para22:
             Name: Church Address Line 1
             Parameter: 4.0
-        Para24:
+        Para23:
             Name: Church Address Street
             Parameter: 3.0
-        Para25:
+        Para24:
             Name: Church Address Line 3
             Parameter: 4.0
-        Para26:
+        Para25:
             Name: Church Address Post Code
             Parameter: 2.0
-        Para27:
+        Para26:
             Name: Church Address City
             Parameter: 3.0
-        Para28:
+        Para27:
             Name: Church Address Country
             Parameter: 1.5
-        Para29:
+        Para30:
             Name: Church Address State / County / Province
             Parameter: 3.0
-        Para30:
+        Para31:
             Name: Church Address Telephone
             Parameter: 3.0
-        Para31:
+        Para32:
             Name: Church Address Email
             Parameter: 3.0
-        Para32:
+        Para33:
             Name: Church Address Fax
             Parameter: 3.0
-        Para33:
+        Para34:
             Name: Church Address Mobile
             Parameter: 3.0
-        Para34:
+        Para35:
             Name: Church Address Alternate Telephone
             Parameter: 3.0
-        Para35:
+        Para36:
             Name: Conference Role
             Parameter: 3.0
-        Para36:
+        Para37:
             Name: Date of birth
             Parameter: 2.0
-        Para37:
+        Para38:
             Name: Departure Date
             Parameter: 2.0
-        Para38:
+        Para39:
             Name: Departure Details
             Parameter: 2.0
-        Para39:
+        Para40:
             Name: Departure Location
             Parameter: 3.5
-        Para40:
+        Para41:
             Name: Departure Time
             Parameter: 2.0
-        Para41:
+        Para42:
             Name: Departure Transport
             Parameter: 2.0
-        Para42:
+        Para43:
             Name: Departure Type
             Parameter: 2.0
-        Para43:
+        Para44:
             Name: Dietary Needs
             Parameter: 5.0
-        Para44:
+        Para45:
             Name: Driver Status
             Parameter: 4.0
-        Para45:
+        Para46:
             Name: Event Code
             Parameter: 3.0
-        Para46:
+        Para47:
             Name: Event Name
             Parameter: 5.0
-        Para47:
-            Name: Event Preference 1 Code
-            Parameter: 3.0
         Para48:
-            Name: Event Preference 2 Code
-            Parameter: 3.0
-        Para49:
             Name: Fellowship Group
             Parameter: 2.0
-        Para50:
+        Para49:
             Name: First Language
             Parameter: 3.0
-        Para51:
+        Para50:
             Name: Gender
             Parameter: 2.0
-        Para511:
+        Para51:
             Name: Leader
             Parameter: 2.0
         Para52:
@@ -197,9 +188,9 @@ RootNode:
         Para55:
             Name: Missing Information
             Parameter: 7.0
-        Para56:
-            Name: Nationality
-            Parameter: 2.0
+#        Para56:
+#            Name: Nationalities
+#            Parameter: 5.0
         Para57:
             Name: Other Needs and Notes
             Parameter: 5.0
@@ -210,47 +201,38 @@ RootNode:
             Name: Partner Name
             Parameter: 4.0
         Para60:
-            Name: Party Contact
-            Parameter: 6.0
-        Para61:
-            Name: Party Type
-            Parameter: 4.5
-        Para62:
             Name: Passport County of Issue
             Parameter: 4.0
-        Para63:
+        Para61:
             Name: Passport Date of Birth
             Parameter: 2.0
-        Para64:
+        Para62:
             Name: Passport Date of Issue
             Parameter: 2.0
-        Para65:
+        Para63:
             Name: Passport Expiry Date
             Parameter: 2.0
-        Para66:
+        Para64:
             Name: Passport Name
             Parameter: 4.0
-        Para67:
+        Para65:
             Name: Passport Number
             Parameter: 4.0
-        Para68:
+        Para66:
             Name: Passport Place of Birth
             Parameter: 4.0
-        Para69:
+        Para67:
             Name: Passport Place of Issue
             Parameter: 4.0
-        Para70:
+        Para68:
             Name: Passport Type
             Parameter: 4.0
-        Para71:
+        Para69:
             Name: Preferred Name
             Parameter: 4.0
-        Para72:
+        Para70:
             Name: Profession
             Parameter: 3.0
-        Para73:
-            Name:  Program Fee Received
-            Parameter: 4.5
-        Para74:
+        Para71:
             Name: Spoken Languages
             Parameter: 7.0

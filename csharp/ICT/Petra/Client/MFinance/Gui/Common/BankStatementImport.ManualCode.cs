@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
         private void RunOnceOnActivationManual()
         {
-            TFrmSelectBankStatement DlgSelect = new TFrmSelectBankStatement(FPetraUtilsObject.GetCallerForm());
+            TFrmSelectBankStatementDialog DlgSelect = new TFrmSelectBankStatementDialog(FPetraUtilsObject.GetCallerForm());
 
             DlgSelect.LedgerNumber = FLedgerNumber;
 
@@ -410,6 +410,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 txtDonorKey.Text = StringHelper.FormatStrToPartnerKeyString(match.DonorKey.ToString());
 
                 grdGiftDetails.SelectRowInGrid(1);
+                // grdGiftDetails.SelectRowInGrid does not seem to update the gift details, so we call that manually
+                GiftDetailsFocusedRowChanged(null, null);
                 grdAllTransactions.Focus();
             }
             else if (match.Action == MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL)
@@ -648,7 +650,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private void CreateGiftBatchThread()
         {
             TVerificationResultCollection VerificationResult;
-            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
+            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(
                 FLedgerNumber,
                 CurrentStatement.StatementKey,
                 -1,
@@ -669,7 +671,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 else
                 {
                     MessageBox.Show(
-                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Unknown error"),
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
             }
@@ -728,7 +730,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private void ExportGiftBatchThread()
         {
             TVerificationResultCollection VerificationResult;
-            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
+            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(
                 FLedgerNumber,
                 CurrentStatement.StatementKey,
                 -1,
@@ -977,7 +979,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", "<br/><br/><br/>");
                 }
 
-                if (!match.IsDonorKeyNull() && (match.DonorKey > 0))
+                if ((match != null) && !match.IsDonorKeyNull() && (match.DonorKey > 0))
                 {
                     string DonorDescription = "<br/>" + thinLine + match.DonorKey.ToString() + " " + match.DonorShortName;
 

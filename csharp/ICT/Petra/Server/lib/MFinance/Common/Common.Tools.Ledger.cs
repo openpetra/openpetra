@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,11 +28,16 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.App.Core;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
+using Ict.Common.Remoting.Server;
 
 namespace Ict.Petra.Server.MFinance.Common
 {
@@ -64,7 +69,9 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, transaction);
                 row = (ALedgerRow)ledger[0];
             }
@@ -121,13 +128,19 @@ namespace Ict.Petra.Server.MFinance.Common
                 ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
                 ParametersArray[1].Value = ledgerNumber;
 
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
                 string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
                 strSQL += "SET " + ALedgerTable.GetProvisionalYearEndFlagDBName() + " = ? ";
                 strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     strSQL, transaction, ParametersArray);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+
                 LoadInfoLine();
             }
         }
@@ -175,6 +188,30 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 return row.CurrentFinancialYear;
             }
+            set
+            {
+                OdbcParameter[] ParametersArray;
+                ParametersArray = new OdbcParameter[2];
+                ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+                ParametersArray[0].Value = value;
+                ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
+                ParametersArray[1].Value = ledgerNumber;
+
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
+                strSQL += "SET " + ALedgerTable.GetCurrentFinancialYearDBName() + " = ? ";
+                strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    strSQL, transaction, ParametersArray);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+
+                LoadInfoLine();
+            }
         }
 
 
@@ -219,13 +256,19 @@ namespace Ict.Petra.Server.MFinance.Common
                 ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
                 ParametersArray[1].Value = ledgerNumber;
 
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
                 string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
                 strSQL += "SET " + ALedgerTable.GetYearEndProcessStatusDBName() + " = ? ";
                 strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
                 DBAccess.GDBAccessObj.ExecuteNonQuery(
                     strSQL, transaction, ParametersArray);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+
                 LoadInfoLine();
             }
         }
@@ -280,6 +323,52 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             return String.Format("{0:##00}00", ALedgerNumber);
         }
+
+        /// <summary>
+        /// get the default bank account for this ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        public static string GetDefaultBankAccount(int ALedgerNumber)
+        {
+            string BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
+
+            if (BankAccountCode.Length == 0)
+            {
+                bool NewTransaction;
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                try
+                {
+                    // use the first bank account
+                    AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                    accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
+                                                              MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
+                                                              AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
+
+                    if (accountProperties.DefaultView.Count > 0)
+                    {
+                        BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
+                    }
+                    else
+                    {
+                        // needed for old Petra 2.x database
+                        BankAccountCode = "6000";
+                    }
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+            }
+
+            return BankAccountCode;
+        }
     }
 
     /// <summary>
@@ -297,26 +386,57 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public TLedgerLock(int ALedgerNum)
         {
+            bool NewTransaction;
+
             intLegerNumber = ALedgerNum;
-            TVerificationResultCollection tvr;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
             ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
                 intLegerNumber, TLedgerInitFlagEnum.LedgerLock.ToString(), Transaction);
+
             ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
             aLedgerInitFlagRow.LedgerNumber = intLegerNumber;
             aLedgerInitFlagRow.InitOptionName = TLedgerInitFlagEnum.LedgerLock.ToString();
-            lock (synchRoot) {
+
+            lock (synchRoot)
+            {
                 try
                 {
                     aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
-                    ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction, out tvr);
+                    ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction);
                     blnResult = true;
-                    DBAccess.GDBAccessObj.CommitTransaction();
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
                 }
-                catch (System.Data.ConstraintException)
+                catch (System.Data.ConstraintException Exc)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.Log("A ConstraintException occured during a call to the TLedgerLock constructor:" + Environment.NewLine + Exc.ToString());
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+
                     blnResult = false;
+
+                    throw;
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("An Exception occured during during a call to the TLedgerLock constructor:" + Environment.NewLine + Exc.ToString());
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+
+                    blnResult = false;
+
+                    throw;
                 }
             }
         }
@@ -355,13 +475,21 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 try
                 {
-                    TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                    bool NewTransaction;
+                    TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        out NewTransaction);
                     ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
                         intLegerNumber, TLedgerInitFlagEnum.LedgerLock.ToString(), Transaction);
                     ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0];
                     string strAnswer = aLedgerInitFlagRow.CreatedBy + " - " +
                                        DateTime.Parse(aLedgerInitFlagRow.DateCreated.ToString()).ToLongDateString();
-                    DBAccess.GDBAccessObj.CommitTransaction();
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+
                     return strAnswer;
                 }
                 catch (Exception)
@@ -401,12 +529,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         ///
         /// </summary>
-        DatabaseAllocation,
-
-        /// <summary>
-        /// Used for the period end year as a marker for the year ...
-        /// </summary>
-        ActualYear
+        DatabaseAllocation
     }
 
     /// <summary>
@@ -417,7 +540,6 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TLedgerInitFlagHandler
     {
-        private TVerificationResultCollection VerificationResult = null;
         private int intLedgerNumber;
         private string strFlagName;
         private string strFlagNameHelp;
@@ -487,71 +609,146 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public void SetFlagAndName(string AName)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out NewTransaction);
+
             ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                intLedgerNumber, strFlagName, Transaction);
+                intLedgerNumber, strFlagName, WriteTransaction);
+
             ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
 
             aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
             aLedgerInitFlagRow.InitOptionName = strFlagName;
+
             aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
-            ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction, out VerificationResult);
-            DBAccess.GDBAccessObj.CommitTransaction();
-            HandleVerificationResuls();
+
+            try
+            {
+                ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, WriteTransaction);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured in SetFlagAndName:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
+            }
         }
 
         private bool FindRecord()
         {
             bool boolValue;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                intLedgerNumber, strFlagName, Transaction);
+            bool NewTransaction;
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            boolValue = (aLedgerInitFlagTable.Rows.Count == 1);
-            DBAccess.GDBAccessObj.CommitTransaction();
-            HandleVerificationResuls();
+            try
+            {
+                ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                    intLedgerNumber, strFlagName, ReadTransaction);
+
+                boolValue = (aLedgerInitFlagTable.Rows.Count == 1);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured in FindRecord:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
+            }
+
             return boolValue;
         }
 
         private void CreateRecord()
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                intLedgerNumber, strFlagName, Transaction);
-            ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
+            bool NewTransaction;
+            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out NewTransaction);
 
-            aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
-            aLedgerInitFlagRow.InitOptionName = strFlagName;
-            aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
-            ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction, out VerificationResult);
-            DBAccess.GDBAccessObj.CommitTransaction();
-            HandleVerificationResuls();
+            try
+            {
+                ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                    intLedgerNumber, strFlagName, ReadWriteTransaction);
+
+                ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
+                aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
+                aLedgerInitFlagRow.InitOptionName = strFlagName;
+                aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
+
+                ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, ReadWriteTransaction);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured in CreateRecord:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
+            }
         }
 
         private void DeleteRecord()
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                intLedgerNumber, strFlagName, Transaction);
+            bool NewTransaction;
+            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out NewTransaction);
 
-            if (aLedgerInitFlagTable.Rows.Count == 1)
+            try
             {
-                ((ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0]).Delete();
-                ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, Transaction, out VerificationResult);
-            }
+                ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                    intLedgerNumber, strFlagName, ReadWriteTransaction);
 
-            DBAccess.GDBAccessObj.CommitTransaction();
-            HandleVerificationResuls();
-        }
-
-        private void HandleVerificationResuls()
-        {
-            if (VerificationResult != null)
-            {
-                if (VerificationResult.HasCriticalErrors)
+                if (aLedgerInitFlagTable.Rows.Count == 1)
                 {
-                    throw new ApplicationException("TLedgerInitFlagHandler does not work");
+                    ((ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0]).Delete();
+
+                    ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, ReadWriteTransaction);
                 }
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured in DeleteRecord:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
             }
         }
     }

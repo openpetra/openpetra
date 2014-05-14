@@ -6,6 +6,7 @@
 //       Tim Ingham
 //
 // Copyright 2004-2013 by OM International
+// Copyright 2013-2014 by SolidCharity
 //
 // This file is part of OpenPetra.org.
 //
@@ -81,60 +82,65 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            // get the local country code
-            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
-
-            // first get all donors in the given date range
-            string SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql");
-
-            OdbcParameter[] parameters = new OdbcParameter[3];
-            parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
-            parameters[0].Value = ALedgerNumber;
-            parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
-            parameters[1].Value = AStartDate;
-            parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
-            parameters[2].Value = AEndDate;
-
-            DataTable donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
-
-            string ResultDocument = "";
-
-            foreach (DataRow donorrow in donorkeys.Rows)
+            try
             {
-                Int64 donorKey = Convert.ToInt64(donorrow[0]);
-                string donorName = donorrow[1].ToString();
+                // get the local country code
+                string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
 
-                SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonationsOfDonor.sql");
-                parameters = new OdbcParameter[4];
+                // first get all donors in the given date range
+                string SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql");
+
+                OdbcParameter[] parameters = new OdbcParameter[3];
                 parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
                 parameters[0].Value = ALedgerNumber;
                 parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
                 parameters[1].Value = AStartDate;
                 parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
                 parameters[2].Value = AEndDate;
-                parameters[3] = new OdbcParameter("DonorKey", OdbcType.BigInt);
-                parameters[3].Value = donorKey;
 
-                // TODO: should we print each gift detail, or just one row per gift?
-                DataTable donations = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Donations", Transaction, parameters);
+                DataTable donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
 
-                if (donations.Rows.Count > 0)
+                string ResultDocument = "";
+
+                foreach (DataRow donorrow in donorkeys.Rows)
                 {
-                    string letter = FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, Transaction);
+                    Int64 donorKey = Convert.ToInt64(donorrow[0]);
+                    string donorName = donorrow[1].ToString();
 
-                    if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
+                    SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonationsOfDonor.sql");
+                    parameters = new OdbcParameter[4];
+                    parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
+                    parameters[1].Value = AStartDate;
+                    parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
+                    parameters[2].Value = AEndDate;
+                    parameters[3] = new OdbcParameter("DonorKey", OdbcType.BigInt);
+                    parameters[3].Value = donorKey;
+
+                    // TODO: should we print each gift detail, or just one row per gift?
+                    DataTable donations = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Donations", Transaction, parameters);
+
+                    if (donations.Rows.Count > 0)
                     {
-                        // TODO: store somewhere that the receipt has been printed?
-                        // TODO also store each receipt with the donor in document management, and in contact management?
+                        string letter = FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, Transaction);
+
+                        if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
+                        {
+                            // TODO: store somewhere that the receipt has been printed?
+                            // TODO also store each receipt with the donor in document management, and in contact management?
+                        }
                     }
                 }
+
+                TFormLettersTools.CloseDocument(ref ResultDocument);
+
+                return ResultDocument;
             }
-
-            TFormLettersTools.CloseDocument(ref ResultDocument);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            return ResultDocument;
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
         }
 
         private static string GetStringOrEmpty(object obj)
@@ -209,6 +215,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // recognise detail lines automatically
             string RowTemplate;
             msg = TPrinterHtml.GetTableRow(msg, "#AMOUNT", out RowTemplate);
+            string OrigRowTemplate = RowTemplate;
             string rowTexts = "";
             decimal sum = 0;
 
@@ -229,6 +236,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
                 string gifttype = rowGifts["GiftType"].ToString();
+                RowTemplate = OrigRowTemplate;
 
                 sum += Convert.ToDecimal(rowGifts["AmountInBaseCurrency"]);
 
@@ -290,6 +298,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (prevDateEntered != DateTime.MaxValue)
             {
+                RowTemplate = OrigRowTemplate;
+
                 if (prevgifttype == MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
                 {
                     RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT);
@@ -503,7 +513,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
                     GiftTotal += DetailRow.GiftAmount;
 
-                    if (DetailRow.TaxDeductable)
+                    if (DetailRow.TaxDeductible)
                     {
                         FormValues["GiftTxd"].Add("Y");
                         TxdTotal += DetailRow.GiftAmount;
@@ -695,39 +705,39 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <param name="ATransactionNumber"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool MarkReceiptsPrinted(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ATransactionNumber)
+        public static void MarkReceiptsPrinted(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ATransactionNumber)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             AGiftTable Tbl = new AGiftTable();
 
-            Tbl.Merge(AGiftAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, ATransactionNumber, Transaction));
-
-            foreach (AGiftRow Row in Tbl.Rows)
+            try
             {
-                Row.ReceiptPrinted = true;
-            }
+                Tbl.Merge(AGiftAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, ATransactionNumber, Transaction));
 
-            TVerificationResultCollection SubmitResults;
+                foreach (AGiftRow Row in Tbl.Rows)
+                {
+                    Row.ReceiptPrinted = true;
+                }
 
-            bool CommitRes = AGiftAccess.SubmitChanges(Tbl, Transaction, out SubmitResults);
+                AGiftAccess.SubmitChanges(Tbl, Transaction);
 
-            if (CommitRes)
-            {
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            else
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                TLogging.Log("An Exception occured while marking Receipts as printed:" + Environment.NewLine + Exc.ToString());
 
-            return CommitRes;
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
 
         /// <summary>Mark selected gifts as receipted in the AGift table.</summary>
         /// <param name="AGiftTbl">Custom DataTable from GetUnreceiptedGifts, above.
         /// For this method, only {bool}Selected, LedgerNumber, BatchNumber and TransactionNumber fields are needed.</param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool MarkReceiptsPrinted(DataTable AGiftTbl)
+        public static void MarkReceiptsPrinted(DataTable AGiftTbl)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             AGiftTable Tbl = new AGiftTable();
@@ -749,20 +759,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 Row.ReceiptPrinted = true;
             }
 
-            TVerificationResultCollection SubmitResults;
-
-            bool CommitRes = AGiftAccess.SubmitChanges(Tbl, Transaction, out SubmitResults);
-
-            if (CommitRes)
+            try
             {
+                AGiftAccess.SubmitChanges(Tbl, Transaction);
+
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            else
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                TLogging.Log("An Exception occured while marking Receipts as printed:" + Environment.NewLine + Exc.ToString());
 
-            return CommitRes;
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -773,9 +783,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static Int32 GetLastReceiptNumber(Int32 ALedgerNumber)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            ALedgerTable LedgerTbl;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            try
+            {
+                LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the getting of the last Receipt Number:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
 
             if (LedgerTbl.Rows.Count > 0)
             {
@@ -794,17 +817,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static void SetLastReceiptNumber(Int32 ALedgerNumber, Int32 AReceiptNumber)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            TVerificationResultCollection Results;
+            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            ALedgerTable LedgerTbl;
 
-            if (LedgerTbl.Rows.Count > 0)
+            try
             {
-                LedgerTbl[0].LastHeaderRNumber = AReceiptNumber;
-                ALedgerAccess.SubmitChanges(LedgerTbl, Transaction, out Results);
-            }
+                LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadWriteTransaction);
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+                if (LedgerTbl.Rows.Count > 0)
+                {
+                    LedgerTbl[0].LastHeaderRNumber = AReceiptNumber;
+
+                    ALedgerAccess.SubmitChanges(LedgerTbl, ReadWriteTransaction);
+
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the setting of the last Receipt Number:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
     }
 }

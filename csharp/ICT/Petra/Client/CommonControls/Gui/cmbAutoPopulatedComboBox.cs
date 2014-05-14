@@ -842,32 +842,8 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PostCodeRegionList:
 
-                    /* Region table contains several records per actual region, depending on how many
-                    * postcode ranges there are in a region. Therefore it is important to remove "duplicate"
-                    * rows and just have one row per actual region code in the combobox. It is important
-                    *                     that region rows arrive in "order by Region" from server */
-                    PPostcodeRegionTable RegionTable = (PPostcodeRegionTable)TDataCache.TMPartner.GetCacheableMailingTable(
-                    TCacheableMailingTablesEnum.PostCodeRegionList);
-                    PPostcodeRegionRow RegionRow;
-                    int CountRegionRows = RegionTable.Rows.Count;
-                    string CurrentRegion = "";
-
-                    // go through table in reverse order so rows can be deleted and only one row per region code remains
-                    for (int Index = CountRegionRows - 1; Index >= 0; Index--)
-                    {
-                        RegionRow = (PPostcodeRegionRow)RegionTable.Rows[Index];
-
-                        if (RegionRow.Region != CurrentRegion)
-                        {
-                            CurrentRegion = RegionRow.Region;
-                        }
-                        else
-                        {
-                            RegionRow.Delete();
-                        }
-                    }
-
-                    InitialiseUserControl(RegionTable,
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.PostcodeRegionList),
                     PPostcodeRegionTable.GetRegionDBName(),
                     null,
                     null);
@@ -1183,7 +1159,8 @@ namespace Ict.Petra.Client.CommonControls
         /// it might be better to do this in other functions, see also Client/lib/MFinance/gui/FinanceComboboxes.cs
         private void AppearanceSetup(TListTableEnum AListTable)
         {
-            this.ComboBoxWidth = 0;
+            this.ComboBoxWidth = 0;     // This line ensures that setting ComboBoxWidth in YAML is useless,
+            // but even without this line here the YAML setting will get overruled by AppearanceSetup(Int32[] AColumnWidth, Int32 AMaxDropDownItems).
             this.ColumnWidthCol1 = 100;
             this.ColumnWidthCol2 = 0;
             this.ColumnWidthCol3 = 0;
@@ -1334,7 +1311,7 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.LedgerNameList:
-                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol1 = 55;
                     this.ColumnWidthCol2 = 200;
                     break;
 
@@ -1423,7 +1400,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.SkillCategoryList:
                     this.ColumnWidthCol1 = 110;
-                    this.ColumnWidthCol2 = 130;
+                    this.ColumnWidthCol2 = 250;
                     break;
 
                 case TListTableEnum.SkillLevelList:

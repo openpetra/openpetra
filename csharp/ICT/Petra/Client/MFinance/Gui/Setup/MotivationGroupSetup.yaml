@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
     FormType: edit
     Template: windowEdit
-    WindowWidth: 660
+    WindowWidth: 700
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailMotivationGroupCode, txtDetailMotivationGroupDescription, chkDetailGroupStatus]
+            FindControls: [txtDetailMotivationGroupCode, txtDetailMotivationGroupDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -36,6 +40,7 @@ RootNode:
                 DetailMotivationGroupDescription: {Label=Description}
                 DetailGroupStatus: {Label=Assignable, Type=Boolean}
                 DetailMotivationGroupDescLocal: {Label=Description (local)}
+            SortOrder: DetailMotivationGroupCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

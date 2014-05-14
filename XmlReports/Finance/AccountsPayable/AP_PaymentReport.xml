@@ -33,7 +33,6 @@
     </pageheader>
 
     <calculations>
-
       <calculation id="SelectSupplier" returns="Automatic" returnsFormat="row">
         <query>
           <queryDetail>
@@ -41,6 +40,43 @@
               SELECT DISTINCT
               PUB_a_ap_supplier.p_partner_key_n AS SupplierKey,
               PUB_p_partner.p_partner_short_name_c AS SupplierName,
+              PUB_a_ap_supplier.a_currency_code_c AS SupplierCurrency
+              FROM
+              PUB_a_ap_document, PUB_a_ap_supplier, PUB_a_ap_payment, PUB_a_ap_document_payment, PUB_p_partner
+              WHERE
+              PUB_a_ap_payment.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i
+              AND PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i
+              AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
+              AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({{param_filter_by_payment_num}}, 1)">
+            <value>
+                AND PUB_a_ap_payment.a_payment_number_i &gt;= {{param_payment_num_from_i}}
+                AND PUB_a_ap_payment.a_payment_number_i &lt;= {{param_payment_num_to_i}}
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({{param_filter_by_date}}, 1)">
+            <value>
+                AND PUB_a_ap_payment.a_payment_date_d BETWEEN {#param_payment_date_from_i#} AND {#param_payment_date_to_i#}
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+                ORDER BY PUB_p_partner.p_partner_short_name_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectPayment" returns="Automatic" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT DISTINCT
               PUB_a_ap_payment.a_payment_number_i AS PaymentNumber,
               PUB_a_ap_payment.a_bank_account_c AS PaymentBank,
               PUB_a_ap_payment.a_payment_date_d AS PaymentDate,
@@ -55,24 +91,28 @@
               AND PUB_a_ap_document_payment.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i
               AND PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i
-              AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
-              AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
-          </value>
+              AND PUB_a_ap_document.p_partner_key_n = {{SupplierKey}}
+              AND PUB_p_partner.p_partner_key_n = {{SupplierKey}}
+            </value>
           </queryDetail>
           <queryDetail condition="eq({{param_filter_by_payment_num}}, 1)">
             <value>
                 AND PUB_a_ap_payment.a_payment_number_i &gt;= {{param_payment_num_from_i}}
                 AND PUB_a_ap_payment.a_payment_number_i &lt;= {{param_payment_num_to_i}}
-              </value>
+            </value>
           </queryDetail>
           <queryDetail condition="eq({{param_filter_by_date}}, 1)">
             <value>
                 AND PUB_a_ap_payment.a_payment_date_d BETWEEN {#param_payment_date_from_i#} AND {#param_payment_date_to_i#}
-              </value>
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+                ORDER BY PUB_a_ap_payment.a_payment_number_i
+            </value>
           </queryDetail>
         </query>
       </calculation>
-
 
       <calculation id="SupplierName" returnsFormat="text" returns="text">
         <caption>
@@ -180,6 +220,7 @@
               AND PUB_a_ap_document_payment.a_payment_number_i = {{PaymentNumber}}
               AND PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i
               AND PUB_a_ap_document.p_partner_key_n = {{SupplierKey}}
+              ORDER BY PUB_a_ap_document.a_ap_number_i
             </value>
           </queryDetail>
         </query>
@@ -280,39 +321,37 @@
           </queryDetail>
         </query>
       </calculation>
-
-
     </calculations>
 
     <levels>
       <level name="main">
         <detail>
-          <lowerLevelReport level="SupplierListLevel" calculation="SelectSupplier"/>
+          <lowerLevelReport level="SupplierLevel" calculation="SelectSupplier"/>
         </detail>
       </level>
 
-      <level name="SupplierListLevel">
-        <detail>
-          <lowerLevelReport level="SupplierLevel"/>
-        </detail>
-        <footer space="above">
-          <field whichfield="column 5">
-            <value text="Total Payment"/>
-          </field>
-          <field whichfield="column 6" format="currency" pos="indented">
-            <value function="getSumLowerReport({{lineId}}, 6)"/>
-            <value text=" "/>
-            <value variable="PaymentCurrency"/>
-          </field>
-        </footer>
-      </level>
-
-      <level name="SupplierLevel" identification ="p_partner_key_n">
+      <level name="SupplierLevel" identification ="SupplierKey">
         <header>
           <field whichfield="header 1" pos="0 cm" width="8cm">
             <value variable="SupplierName"/>
           </field>
         </header>
+        <detail>
+          <lowerLevelReport level="PaymentLevel" calculation="SelectPayment"/>
+        </detail>
+        <footer space="above">
+          <field whichfield="column 5">
+            <value text="Total Payment"/>
+          </field>
+          <field whichfield="column 6" line="below" format="currency">
+            <value function="getSumLowerReport({{lineId}}, 6)"/>
+            <value text=" "/>
+            <value variable="SupplierCurrency"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="PaymentLevel">
         <detail>
           <lowerLevelReport level="DocumentLevel" calculation="SelectDocuments"/>
         </detail>

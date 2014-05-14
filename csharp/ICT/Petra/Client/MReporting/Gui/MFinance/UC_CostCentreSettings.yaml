@@ -18,6 +18,7 @@ RootNode:
         rbtSelectedCostCentres:
             Controls: [clbCostCentres, btnUnselectAllCostCentres]
             ControlsOrientation: horizontal
+            OnChange: rbtSelectedCostCentresChanged
         rbtAllCostCentres:
         rbtAllActiveCostCentres:
         rbtAccountLevel:
@@ -30,13 +31,13 @@ RootNode:
             List: UserDefinedList
             NoLabel:true
             ParameterName: param_cost_centre_codes
-            Width: 365
+            Width: 350
         btnUnselectAllCostCentres: 
             Label: Unselect All
             Action: actUnselectAll
         chkCostCentreBreakdown: 
             ParameterName: param_cost_centre_breakdown
-            Help: group not by costcentre but by account
+            Tooltip: group not by costcentre but by account
             CheckBoxAttachedLabel: right
         rgrDepth:
             ParameterName: param_depth

@@ -136,7 +136,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Occupation")
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Conference")
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Event")
-                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Hyperlink"))
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Hyperlink")
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Bank"))
                 {
                     return false;
                 }
@@ -356,6 +357,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     return true;
                 }
+                else if (TYml2Xml.GetAttribute(curNode, "Type") == "Bank")
+                {
+                    FButtonLabelType = "Bank";
+
+                    if (!(TYml2Xml.HasAttribute(curNode,
+                              "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
+                    {
+                        FDefaultWidth = 370;
+                    }
+                    else
+                    {
+                        FDefaultWidth = 80;
+                    }
+
+                    FHasReadOnlyProperty = true;
+
+                    return true;
+                }
             }
 
             return false;
@@ -381,7 +400,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (AFieldTypeDotNet == null)
             {
-                return ctrl.controlName + ".Text.Length == 0";
+                if (FButtonLabelType != "PartnerKey")
+                {
+                    return ctrl.controlName + ".Text.Length == 0";
+                }
+                else
+                {
+                    return ctrl.controlName + ".Text == \"0000000000\"";
+                }
             }
 
             if (AFieldTypeDotNet.ToLower().Contains("int64"))

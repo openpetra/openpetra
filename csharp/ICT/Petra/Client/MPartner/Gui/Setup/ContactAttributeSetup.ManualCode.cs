@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ucoContactDetail.PetraUtilsObject = FPetraUtilsObject;
 
             // The auto-generator does not dock our user control correctly
-            grpExtraDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
+            //grpExtraDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
 
             // We need to capture the 'DataSaved' event, so we can save our Extra DataSet
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
@@ -86,6 +86,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // add a column to the grid and bind it to our new data set column
             grdDetails.AddTextColumn(Catalog.GetString("Number of Detail Codes"), FMainDS.PContactAttribute.Columns[NumDetailCodesColumnOrdinal]);
+
+            SelectRowInGrid(1);
         }
 
         private void NewRowManual(ref PContactAttributeRow ARow)

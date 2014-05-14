@@ -17,7 +17,13 @@ RootNode:
             Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlDetailButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [txtDetailBatchDescription]
+            FindControls: [txtDetailBatchDescription]
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnSubmitBatch]
@@ -35,7 +41,7 @@ RootNode:
                 BatchControlTotal: {Label=Hash Total, Type=Currency}
                 BatchDescription: {Label=Description}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowJournalTab
+            #ActionDoubleClickCell: ShowJournalTab     #Not supported by generator
             ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ARecurringBatch.BatchNumber DESC
             EnableMultiSelection: false

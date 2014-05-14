@@ -7,7 +7,7 @@ RootNode:
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 800
-    WindowHeight: 550
+    WindowHeight: 600
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -17,7 +17,14 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [cmbDetailCurrencyCode, cmbDetailLanguageCode, txtDetailUnitLabelSingular, txtDetailDecimalLabelSingular]
+            FindControls: [cmbDetailCurrencyCode, cmbDetailLanguageCode]
+            ControlAttributes:
+                txtDetailUnitLabelSingular: {Label=Unit Label}
+                txtDetailDecimalLabelSingular: {Label=Decimal Label}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -39,6 +46,7 @@ RootNode:
                 DetailDecimalLabelPlural: {Label=Plural Decimal}
                 DetailDecimalOptions: {Label=Decimal Format}
                 DetailSpecialCode: {Label=Gender}
+            SortOrder: DetailCurrencyCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

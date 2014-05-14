@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 165
+            FilterControls: [txtDetailAssignmentTypeCode, txtDetailAssignmentCodeDescr, chkDetailUnassignableFlag, chkDetailDeletableFlag]
+            FindControls: [txtDetailAssignmentTypeCode, txtDetailAssignmentCodeDescr]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -37,6 +41,7 @@ RootNode:
                 DetailAssignmentCodeDescr: {Label=Description}
                 DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailAssignmentTypeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

@@ -22,20 +22,23 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Net;
+using System.Collections;
 using System.Data;
 using System.Data.Odbc;
 using System.Data.Common;
-using System.Collections;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
+
 using Npgsql;
 using NpgsqlTypes;
-using System.Text.RegularExpressions;
+
+using Ict.Common.DB.Exceptions;
 
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// this class allows access to PostgreSQL databases
+    /// Allows access to PostgreSQL databases using the 'Npgsql' .NET Data Provider.
     /// </summary>
     public class TPostgreSQL : IDataBaseRDBMS
     {
@@ -44,25 +47,30 @@ namespace Ict.Common.DB
 #endif
 
         /// <summary>
-        /// Create a PostgreSQL connection using the Npgsql .NET Data Provider.
+        /// Creates a PostgreSQL connection using the 'Npgsql' .NET Data Provider.
+        /// This works on Windows and on Linux.
         /// </summary>
-        /// <param name="AServer">The Database Server</param>
-        /// <param name="APort">the port that the db server is running on</param>
-        /// <param name="ADatabaseName">the database that we want to connect to</param>
-        /// <param name="AUsername">The username for opening the PostgreSQL connection</param>
-        /// <param name="APassword">The password for opening the PostgreSQL connection</param>
-        /// <param name="AConnectionString">The connection string; if it is not empty, it will overrule the previous parameters</param>
-        /// <param name="AStateChangeEventHandler">for connection state changes</param>
-        /// <returns>NpgsqlConnection, but not opened yet (null if connection could not be established).
+        /// <param name="AServer">Database Server.</param>
+        /// <param name="APort">Port that the DB server is running on.</param>
+        /// <param name="ADatabaseName">Name of the database that we want to connect to.</param>
+        /// <param name="AUsername">Username for opening the PostgreSQL connection.</param>
+        /// <param name="APassword">Password for opening the PostgreSQL connection.</param>
+        /// <param name="AConnectionString">Connection string; if it is not empty, it will
+        /// overrule the previous parameters.</param>
+        /// <param name="AStateChangeEventHandler">Event Handler for connection state changes
+        /// (NOTE: This doesn't work yet with the Npgsql driver - see code comments in this Methods'
+        /// source code)!</param>
+        /// <returns>
+        /// Instantiated NpgsqlConnection, but not opened yet (null if connection could not be established).
         /// </returns>
-        public IDbConnection GetConnection(String AServer, String APort,
+        public DbConnection GetConnection(String AServer, String APort,
             String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
         {
             ArrayList ExceptionList;
-            NpgsqlConnection TheConnection;
+            NpgsqlConnection TheConnection = null;
 
 #if EXTREME_DEBUGGING
             NpgsqlEventLog.Level = LogLevel.Debug;
@@ -70,23 +78,21 @@ namespace Ict.Common.DB
             NpgsqlEventLog.EchoMessages = false;
 #endif
 
-            if (AConnectionString.Length == 0)
+            if (String.IsNullOrEmpty(AConnectionString))
             {
-                if (AUsername == "")
+                if (String.IsNullOrEmpty(AUsername))
                 {
-                    throw new ArgumentException("AUsername", "AUsername must not be an empty string!");
+                    throw new ArgumentException("AUsername", "AUsername must not be null or an empty string!");
                 }
 
-                if (APassword == "")
+                if (String.IsNullOrEmpty(APassword))
                 {
-                    throw new ArgumentException("APassword", "APassword must not be an empty string!");
+                    throw new ArgumentException("APassword", "APassword must not be null or an empty string!");
                 }
-            }
 
-            TheConnection = null;
-
-            if (AConnectionString == "")
-            {
+                // TODO: Make 'ConnectionLifeTime' and 'CommandTimeout' configurable somehow. That would allow
+                // us to cater better for server environments where the server is quite busy and the RDBMS could
+                // therefore be slow to respond! See https://tracker.openpetra.org/view.php?id=2330.
                 AConnectionString = "Server=" + AServer + ";Port=" + APort + ";User Id=" + AUsername +
                                     ";Database=" + ADatabaseName + ";ConnectionLifeTime=60;CommandTimeout=3600;Password=";
             }
@@ -110,31 +116,34 @@ namespace Ict.Common.DB
 
             if (TheConnection != null)
             {
-                /* Somehow the StateChange Event is never fired for an NpgsqlConnection, although it is documented.
-                 * As a result of that we cannot rely on the FConnectionReady variable to contain valid values for
-                 * NpgsqlConnection. Therefore I (ChristianK) wrote a wrapper routine, ConnectionReady, which
-                 * handles this difference. FConnectionReady must therefore never be inquired directly, but only
-                 * through calling ConnectionReady()!
-                 */
+                // Somehow the StateChange Event is never fired for an NpgsqlConnection, although it is documented.
+                // As a result of that we cannot rely on the FConnectionReady variable to contain valid values for
+                // NpgsqlConnection. Therefore I (ChristianK) wrote a wrapper routine, ConnectionReady, which
+                // handles this difference. FConnectionReady must therefore never be inquired directly, but only
+                // through calling ConnectionReady()!
+                // (As of Npgsql 2.0.11.92 the Event still isn't raised)
 
-                // TODO: need to test this
+                // TODO: need to test this again
                 ((NpgsqlConnection)TheConnection).StateChange += AStateChangeEventHandler;
             }
 
             return TheConnection;
         }
 
-        /// init the connection after it was opened
-        public void InitConnection(IDbConnection AConnection)
+        /// <summary>
+        /// Initialises the connection after it was opened. Doesn't do anything with PostgreSQL!
+        /// </summary>
+        /// <param name="AConnection">DB Connection.</param>
+        public void InitConnection(DbConnection AConnection)
         {
         }
 
         /// <summary>
-        /// format an error message if the exception is of type NpgsqlException
+        /// Formats an error message if the Exception is of Type 'NpgsqlException'.
         /// </summary>
         /// <param name="AException"></param>
         /// <param name="AErrorMessage"></param>
-        /// <returns>true if this is an NpgsqlException</returns>
+        /// <returns>True if this is an NpgsqlException.</returns>
         public bool LogException(Exception AException, ref string AErrorMessage)
         {
             if (AException is NpgsqlException)
@@ -157,20 +166,19 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// format the sql query so that it works for PostgreSQL
-        /// see also the comments for TDataBase.FormatQueryRDBMSSpecific
+        /// Formats a SQL query so that it works for PostgreSQL.
+        /// See also the comments for TDataBase.FormatQueryRDBMSSpecific.
         /// </summary>
-        /// <param name="ASqlQuery"></param>
-        /// <returns></returns>
+        /// <param name="ASqlQuery">SQL Query.</param>
+        /// <returns>Formatted SQL Query.</returns>
         public String FormatQueryRDBMSSpecific(String ASqlQuery)
         {
             string ReturnValue = ASqlQuery;
 
-            ReturnValue = ReturnValue.Replace("PUB_", "public.");
-            ReturnValue = ReturnValue.Replace("PUB.", "public.");
-            ReturnValue = ReturnValue.Replace("pub_", "public.");
-            ReturnValue = ReturnValue.Replace("pub.", "public.");
-            ReturnValue = ReturnValue.Replace("\"", "'");
+            ReturnValue = Regex.Replace(ReturnValue, "PUB_|PUB\\.", "public.", RegexOptions.IgnoreCase);
+
+//          ReturnValue = ReturnValue.Replace("\"", "'");   // I guess this was intended to ensure that single quotes are used for literals,
+            //  but it also changes quotes within strings!  (Tim Ingham, March 2014)
 
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
@@ -212,7 +220,7 @@ namespace Ict.Common.DB
         /// ':paramX' placeholders (where 'paramX' is the name of the Parameter).</para>
         /// </summary>
         /// <param name="AParameterArray">Array of DbParameter that is to be converted.</param>
-        /// <param name="ASqlStatement">SQL Statement that is to be converted.</param>
+        /// <param name="ASqlStatement">SQL Statement. It will be converted!</param>
         /// <returns>Array of NpgsqlParameter (converted from <paramref name="AParameterArray" />.</returns>
         public DbParameter[] ConvertOdbcParameters(DbParameter[] AParameterArray, ref string ASqlStatement)
         {
@@ -317,6 +325,13 @@ namespace Ict.Common.DB
 
                             break;
 
+                        case OdbcType.Text:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Text);
+
+                            break;
+
                         default:
                             ReturnValue[Counter] = new NpgsqlParameter(
                             ParamName,
@@ -367,17 +382,17 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create a IDbCommand object
-        /// this formats the sql query for PostgreSQL, and transforms the parameters
+        /// Creates a DbCommand object.
+        /// This formats the sql query for PostgreSQL, and transforms the parameters.
         /// </summary>
         /// <param name="ACommandText"></param>
         /// <param name="AConnection"></param>
         /// <param name="AParametersArray"></param>
         /// <param name="ATransaction"></param>
-        /// <returns></returns>
-        public IDbCommand NewCommand(ref string ACommandText, IDbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
+        /// <returns>Instantiated NpgsqlCommand.</returns>
+        public DbCommand NewCommand(ref string ACommandText, DbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
         {
-            IDbCommand ObjReturn = null;
+            DbCommand ObjReturn = null;
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
@@ -400,16 +415,16 @@ namespace Ict.Common.DB
             if ((AParametersArray != null)
                 && (AParametersArray.Length > 0))
             {
+                // Check for characters that indicate a parameter in query text
+                if (ACommandText.IndexOf('?') == -1)
+                {
+                    throw new EDBParameterisedQueryMissingParameterPlaceholdersException(
+                        "Question marks (?) must be present in query text if Parameters are passed in");
+                }
+
                 if (AParametersArray != null)
                 {
                     NpgsqlParametersArray = (NpgsqlParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
-                }
-
-                // Check for characters that indicate a parameter in query text
-                if (ACommandText.IndexOf(':') == -1)
-                {
-                    throw new EDBParameterisedQueryMissingParameterPlaceholdersException(
-                        "Colons must be present in query text if Parameters are passed in");
                 }
             }
 
@@ -428,25 +443,30 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create an IDbDataAdapter for PostgreSQL
+        /// Creates a DbDataAdapter for PostgreSQL.
         /// </summary>
-        /// <returns></returns>
-        public IDbDataAdapter NewAdapter()
+        /// <remarks>
+        /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits
+        /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
+        /// </remarks>
+        /// <returns>Instantiated NpgsqlDataAdapter.</returns>
+        public DbDataAdapter NewAdapter()
         {
-            IDbDataAdapter TheAdapter = new NpgsqlDataAdapter();
+            DbDataAdapter TheAdapter = new NpgsqlDataAdapter();
 
             return TheAdapter;
         }
 
         /// <summary>
-        /// fill an IDbDataAdapter that was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataSet"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
         /// <param name="ADataTableName"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataSet AFillDataSet,
             Int32 AStartRecord,
             Int32 AMaxRecords,
@@ -470,14 +490,14 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// overload of FillAdapter, just for one table
-        /// IDbDataAdapter was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
+        /// <remarks>Overload of FillAdapter, just for one table.</remarks>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataTable"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataTable AFillDataTable,
             Int32 AStartRecord,
             Int32 AMaxRecords)
@@ -493,13 +513,15 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// some databases have some problems with certain Isolation levels
+        /// Some RDMBS's have some problems with certain Isolation Levels - not so PostgreSQL.
         /// </summary>
-        /// <param name="AIsolationLevel"></param>
-        /// <returns>true if isolation level was modified</returns>
+        /// <param name="AIsolationLevel">Isolation Level.</param>
+        /// <returns>True if Isolation Level was modified.</returns>
         public bool AdjustIsolationLevel(ref IsolationLevel AIsolationLevel)
         {
-            // all isolation levels work fine for PostgreSQL
+            // All isolation levels work fine for PostgreSQL (though internally the Npgsql driver only
+            // supports ReadCommited and Serializable [see Npgsql driver source code: Method
+            // 'internal NpgsqlTransaction(NpgsqlConnection conn, IsolationLevel isolation)' in NpgsqlTransaction.cs]!)
             return false;
         }
 
@@ -509,10 +531,9 @@ namespace Ict.Common.DB
         /// <param name="ASequenceName">Name of the Sequence.</param>
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
-        /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
+        /// <param name="ADatabase">Database object that can be used for querying.</param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             // TODO problem: sequence should be committed? separate transaction?
             // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=44
@@ -526,21 +547,19 @@ namespace Ict.Common.DB
         /// <param name="ASequenceName">Name of the Sequence.</param>
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
-        /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
+        /// <param name="ADatabase">Database object that can be used for querying.</param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT last_value FROM " + ASequenceName + "", ATransaction));
         }
 
         /// <summary>
-        /// restart a sequence with the given value
+        /// Restart a sequence with the given value.
         /// </summary>
         public void RestartSequence(String ASequenceName,
             TDBTransaction ATransaction,
             TDataBase ADatabase,
-            IDbConnection AConnection,
             Int64 ARestartValue)
         {
             ADatabase.ExecuteScalar(
@@ -548,8 +567,8 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Replace DAYOFYEAR(p_param) with to_char(p_param, 'DDD')
-        /// Replace DAYOFYEAR('2010-01-30') with to_char(to_date('2010-01-30', 'YYYY-MM-DD'), 'DDD')
+        /// Replace DAYOFYEAR(p_param) with to_char(p_param, 'DDD').
+        /// Replace DAYOFYEAR('2010-01-30') with to_char(to_date('2010-01-30', 'YYYY-MM-DD'), 'DDD').
         /// </summary>
         /// <param name="ASqlCommand"></param>
         /// <returns></returns>
@@ -582,7 +601,7 @@ namespace Ict.Common.DB
                 ReplacedDate = ASqlCommand.Substring(StartIndex + 10, ParameterLength);
             }
 
-            ReplacedDate = ReplacedDate + ", 'DDD'";
+            ReplacedDate = ReplacedDate + ", 'MMDD'";
 
             return ASqlCommand.Substring(0, StartIndex) + "to_char(" + ReplacedDate + ASqlCommand.Substring(EndBracketIndex);
         }
@@ -591,7 +610,7 @@ namespace Ict.Common.DB
         public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
             string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
         {
-            throw new Exception(
+            throw new EDBUnsupportedDBUpgradeException(
                 "Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
         }
     }

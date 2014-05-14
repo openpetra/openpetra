@@ -13,7 +13,7 @@ RootNode:
         actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetailsSection]
+            Controls: [pnlInfo, pnlFilterAndFind, pnlDetailGrid, pnlDetailsSection]
             Dock: Fill
         pnlInfo:
             Controls:
@@ -26,8 +26,20 @@ RootNode:
             Width: 600
         pnlDetailsSection:
             Dock: Bottom
-            Controls: [pnlDetails, pnlTransAnalysisAttributes]
-            Height: 320
+            Controls: [pnlTransAnalysisAttributes, pnlDetails]
+            Height: 360
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate-1, dtpDetailTransactionDate-2, Column:TransactionAmount-1, Column:TransactionAmount-2]
+            FindControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate-1, dtpDetailTransactionDate-2, Column:TransactionAmount-1, Column:TransactionAmount-2]
+            ControlAttributes:
+                dtpDetailTransactionDate-1: {Label=From Transaction date, Comparison=gte}
+                dtpDetailTransactionDate-2: {Label=To Transaction date, Comparison=lte}
+                txtTransactionAmount-1: {Label=From Dr/Cr amount, Comparison=gte}
+                txtTransactionAmount-2: {Label=To Dr/Cr amount, Comparison=lte}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnDeleteAll]
@@ -39,17 +51,16 @@ RootNode:
         pnlTransAnalysisAttributes:
             Dock: Right
             Controls: [lblAnalAttributes, grdAnalAttributes]
-            Width: 300
+            Width: 240
 
         grdAnalAttributes:
             TableName: ATransAnalAttrib
             Width: 220
-            Height: 100
+            Height: 110
             Columns: [AnalysisTypeCode]
             CustomColumns:
                 AnalysisTypeCode: {Label=Type, Type=String}
-            ActionFocusRow: AnalysisAttributesGridFocusRow
-            ActionClick: AnalysisAttributesGridClick
+            Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
         lblAnalAttributes:
             Label: Analysis Attributes
@@ -68,23 +79,25 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: ATransaction.TransactionNumber
+            SortOrder: ATransaction.TransactionNumber ASC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
             EnableMultiSelection: false
         pnlDetails:
-            Dock: Left
+            Dock: Fill
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, OnChange=CostCentreCodeDetailChanged}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
         txtDetailNarrative:
             Label: Narrative
-            Width: 330
-            Height: 50
+            Width: 230
+            Height: 84
             Multiline: true
+            Stretch: horizontally
             ScrollBars: Vertical
-        txtDetailReference: {Label=Reference}
+            Validation: true
+        txtDetailReference: {Label=Reference, Validation=true}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
-        cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, List=UserDefinedList}
+        cmbDetailKeyMinistryKey: {Label=Key Ministry, List=UserDefinedList, Stretch=horizontally}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency, lblBaseCurrency]
@@ -94,11 +107,11 @@ RootNode:
                 Row4: [txtCreditTotalAmount, txtCreditTotalAmountBase]
         lblTransactionCurrency: {Label=TransactionCurrency}
         lblBaseCurrency: {Label=Base Currency}
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
-        txtDebitAmount: {Label=Dr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
-        txtCreditAmount: {Label=Cr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
+        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true, SuppressChangeDetection=true}
+        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=DebitAmountChanged}
+        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=CreditAmountChanged}
         txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
         txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}

@@ -149,17 +149,22 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 return;
             }
 
-            // 'Date of Birth' must be valid
+            // 'Date of Birth' must have a sensible value (must not be below 1850 and must not lie in the future)
             ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnDateOfBirthId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.DateOfBirth,
-                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, false,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                if (!ARow.IsDateOfBirthNull())
+                {
+                    VerificationResult = TDateChecks.IsDateBetweenDates(
+                        ARow.DateOfBirth, new DateTime(1850, 1, 1), DateTime.Today,
+                        ValidationControlsData.ValidationControlLabel,
+                        TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
             }
 
             // 'MaritalStatusSince' must be valid
@@ -209,6 +214,81 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Detail data of a Partner of PartnerClass CHURCH.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="ADenominationCacheableDT">The contents of the Cacheable DataTable 'DenominationList'.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePartnerChurchManual(object AContext, PChurchRow ARow, DataTable ADenominationCacheableDT,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // Special check: 'Denominations' must exist and must not be unassignable!
+            ValidationColumn = ARow.Table.Columns[PChurchTable.ColumnDenominationCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ADenominationCacheableDT != null)
+                {
+                    if (ADenominationCacheableDT.Rows.Count == 0)
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NO_DENOMINATIONS_SET_UP,
+                                    String.Empty)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+                // 'Denomination' must be valid
+                PDenominationTable DenominationTable;
+                PDenominationRow DenominationRow = null;
+
+                VerificationResult = null;
+
+                if (!ARow.IsDenominationCodeNull())
+                {
+                    DenominationTable = (PDenominationTable)TSharedDataCache.TMPartner.GetCacheablePartnerTableDelegate(
+                        TCacheablePartnerTablesEnum.DenominationList);
+                    DenominationRow = (PDenominationRow)DenominationTable.Rows.Find(ARow.DenominationCode);
+
+                    // 'Denomination' must be valid
+                    if ((DenominationRow != null)
+                        && !DenominationRow.ValidDenomination)
+                    {
+                        // if 'Denomination' is invalid then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PChurchTable.GetDenominationCodeDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.DenominationCode })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
@@ -687,7 +767,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         && !RelationRow.ValidRelation)
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.RelationName })),
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                    new string[] { ValidationControlsData.ValidationControlLabel, ARow.RelationName })),
                             ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                 }
@@ -883,12 +964,13 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="ABankingDetails">test if there is only one main account</param>
+        /// <param name="ACountryCode">Country Code for ARow's corresponding Bank's country</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         public static void ValidateBankingDetails(object AContext, PBankingDetailsRow ARow,
-            PBankingDetailsTable ABankingDetails,
+            PBankingDetailsTable ABankingDetails, string ACountryCode,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -906,10 +988,21 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = IsValidPartner(
-                    ARow.BankKey, new TPartnerClass[] { TPartnerClass.BANK }, false, string.Empty,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl
-                    );
+                // more specific error message if a bank has not been selected
+                if (ARow.BankKey == 0)
+                {
+                    VerificationResult = new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_BANKINGDETAILS_NO_BANK_SELECTED, new string[] { ARow.BankKey.ToString() }));
+
+                    VerificationResult = new TScreenVerificationResult(VerificationResult, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+                else
+                {
+                    VerificationResult = IsValidPartner(
+                        ARow.BankKey, new TPartnerClass[] { TPartnerClass.BANK }, false, string.Empty,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl
+                        );
+                }
 
                 // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
                 // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
@@ -919,7 +1012,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
 
-            // validate that there is at least one main account, but not multiple?
+            // validate that there are not multiple main accounts
             int countMainAccount = 0;
 
             foreach (PartnerEditTDSPBankingDetailsRow bdrow in ABankingDetails.Rows)
@@ -933,8 +1026,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 }
             }
 
-            if (countMainAccount == 0)
+            if (countMainAccount > 1)
             {
+                // will we ever get here?
                 AVerificationResultCollection.Add(
                     new TScreenVerificationResult(
                         new TVerificationResult(
@@ -944,17 +1038,308 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         ValidationControlsData.ValidationControl
                         ));
             }
-            else if (countMainAccount > 1)
+
+            // Account Number and IBAN cannot both be empty
+            if (((ARow.BankAccountNumber == null) || (ARow.BankAccountNumber == ""))
+                && ((ARow.Iban == null) || (ARow.Iban == "")))
             {
-                // will we ever get here?
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
+                    ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    AContext, VerificationResult, ARow.Table.Columns[PartnerEditTDSPBankingDetailsTable.ColumnBankAccountNumberId]);
+            }
+
+            // validate the account number (if validation exists for bank's country)
+            CommonRoutines Routines = new CommonRoutines();
+
+            if ((ARow.BankAccountNumber != null) && (Routines.CheckAccountNumber(ARow.BankAccountNumber, ACountryCode) == 0))
+            {
                 AVerificationResultCollection.Add(
                     new TScreenVerificationResult(
                         new TVerificationResult(
                             AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_ATLEASTONEMAINACCOUNT)),
-                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ACCOUNTNUMBER_INVALID)),
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
                         ValidationControlsData.ValidationControl
                         ));
+            }
+
+            // validate the IBAN (if it exists)
+            if ((ARow.Iban != "") && (CommonRoutines.CheckIBAN(ARow.Iban, out VerificationResult) == false))
+            {
+                AVerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        VerificationResult,
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnIban,
+                        ValidationControlsData.ValidationControl
+                        ));
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Interest screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <param name="AInterestCategory">The chosen interest category.</param>
+        public static void ValidatePartnerInterestManual(object AContext, PPartnerInterestRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            string AInterestCategory)
+        {
+            DataColumn ValidationColumn;
+            DataColumn ValidationColumn2;
+            DataColumn ValidationColumn3;
+            TValidationControlsData ValidationControlsData;
+            TValidationControlsData ValidationControlsData2;
+            TValidationControlsData ValidationControlsData3;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // remove possible previous columns from result collection
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnLevelId];
+            AVerificationResultCollection.Remove(ValidationColumn);
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+            AVerificationResultCollection.Remove(ValidationColumn);
+
+            // check that level is entered within valid range (depending on interest category)
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnLevelId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PInterestCategoryTable CategoryTable;
+                PInterestCategoryRow CategoryRow;
+                int LevelRangeLow;
+                int LevelRangeHigh;
+
+                // check if level is within valid range (retrieve valid range from cached tables)
+                CategoryTable = (PInterestCategoryTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                    TCacheablePartnerTablesEnum.InterestCategoryList);
+                CategoryRow = (PInterestCategoryRow)CategoryTable.Rows.Find(new object[] { AInterestCategory });
+
+                if ((CategoryRow != null)
+                    && !ARow.IsLevelNull())
+                {
+                    LevelRangeLow = 0;
+                    LevelRangeHigh = 0;
+
+                    if (!CategoryRow.IsLevelRangeLowNull())
+                    {
+                        LevelRangeLow = CategoryRow.LevelRangeLow;
+                    }
+
+                    if (!CategoryRow.IsLevelRangeHighNull())
+                    {
+                        LevelRangeHigh = CategoryRow.LevelRangeHigh;
+                    }
+
+                    if ((!CategoryRow.IsLevelRangeLowNull()
+                         && (ARow.Level < CategoryRow.LevelRangeLow))
+                        || (!CategoryRow.IsLevelRangeHighNull()
+                            && (ARow.Level > CategoryRow.LevelRangeHigh)))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUE_OUTSIDE_OF_RANGE,
+                                    new string[] { ValidationControlsData.ValidationControlLabel, LevelRangeLow.ToString(), LevelRangeHigh.ToString() })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
+            }
+
+            // check that at least one of interest, country or field is filled
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                ValidationColumn2 = ARow.Table.Columns[PPartnerInterestTable.ColumnCountryId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    ValidationColumn3 = ARow.Table.Columns[PPartnerInterestTable.ColumnFieldKeyId];
+
+                    if (AValidationControlsDict.TryGetValue(ValidationColumn3, out ValidationControlsData3))
+                    {
+                        if ((ARow.IsInterestNull() || (ARow.Interest == String.Empty))
+                            && (ARow.IsCountryNull() || (ARow.Country == String.Empty))
+                            && (ARow.IsFieldKeyNull() || (ARow.FieldKey == 0)))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INTEREST_NO_DATA_SET_AT_ALL, new string[] { })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+
+                            // Handle addition to/removal from TVerificationResultCollection
+                            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                        }
+                    }
+                }
+            }
+
+            // check that interest is filled if a category is set
+            if (AInterestCategory != "")
+            {
+                ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    if (ARow.IsInterestNull()
+                        || (ARow.Interest == String.Empty))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INTEREST_NOT_SET, new string[] { AInterestCategory })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
+            }
+
+            // 'Field' must be a valid UNIT partner (if set at all)
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnFieldKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsFieldKeyNull())
+                {
+                    VerificationResult = IsValidPartner(
+                        ARow.FieldKey, new TPartnerClass[] { TPartnerClass.UNIT }, true, string.Empty,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl
+                        );
+                }
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates a Gift Destination record
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateGiftDestinationRowManual(object AContext, PPartnerGiftDestinationRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'Field Key' must be a Partner of Class 'UNIT' and must not be 0
+            ValidationColumn = ARow.Table.Columns[PPartnerGiftDestinationTable.ColumnFieldKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = IsValidUNITPartner(
+                    ARow.FieldKey, false, THelper.NiceValueDescription(
+                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
+            // Date Effective must not be after Date Expired (it can be equal)
+            ValidationColumn = ARow.Table.Columns[PPartnerGiftDestinationTable.ColumnDateEffectiveId];
+
+            if (ARow.DateEffective > ARow.DateExpires)
+            {
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_DATES)),
+                    ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates whole Gift Destination data of a Partner.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ATable">The <see cref="DataTable" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateGiftDestinationManual(object AContext, PPartnerGiftDestinationTable ATable,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+            DataColumn ValidationColumn = ATable.Columns[PPartnerGiftDestinationTable.ColumnDateExpiresId];
+
+            bool MoreThanOneOpenGiftDestination = false;
+
+            foreach (PPartnerGiftDestinationRow Row in ATable.Rows)
+            {
+                foreach (PPartnerGiftDestinationRow CompareToRow in ATable.Rows)
+                {
+                    if (Row != CompareToRow)
+                    {
+                        // make sure there is no more than one open ended record
+                        if (Row.IsDateExpiresNull() && CompareToRow.IsDateExpiresNull())
+                        {
+                            MoreThanOneOpenGiftDestination = true;
+                        }
+
+                        // Make sure no records overlap
+                        if ((CompareToRow.DateEffective != CompareToRow.DateExpires) && (Row.DateEffective != Row.DateExpires)
+                            && (((Row.DateEffective < CompareToRow.DateEffective)
+                                 && ((Row.DateExpires >= CompareToRow.DateEffective) || (Row.IsDateExpiresNull() && !CompareToRow.IsDateExpiresNull())))
+                                || (Row.DateEffective == CompareToRow.DateEffective)))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_DATES_OVERLAP)),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+
+                            // Handle addition to/removal from TVerificationResultCollection
+                            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                        }
+                    }
+                }
+            }
+
+            if (MoreThanOneOpenGiftDestination)
+            {
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_MORETHANONE_OPEN_GIFTDESTINATION)),
+                    ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
     }

@@ -61,14 +61,122 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPPostcodeRange();
+
+            btnAccept.Enabled = true;
         }
 
-        private void ValidateDataDetailsManual(PPostcodeRangeRow ARow)
+        /// <summary>
+        /// Returns all the rows selected in the grid.
+        /// </summary>
+        public DataRowView[] GetSelectedRows()
         {
-            /*TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-             *
-             * TSharedPartnerValidation_Partner.ValidatePostcodeRangesSetup(this, ARow, ref VerificationResultCollection,
-             *  FPetraUtilsObject.ValidationControlsDict);*/
+            return grdDetails.SelectedDataRowsAsDataRowView;
+        }
+
+        private void BtnAccept_Click(System.Object sender, System.EventArgs e)
+        {
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Close();
+        }
+
+        private void BtnCancel_Click(System.Object sender, System.EventArgs e)
+        {
+            this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.Close();
+        }
+
+        /// <summary>
+        /// Used for passing parameters to the screen before it is actually shown.
+        ///
+        /// </summary>
+        /// <param name="ARegionName">Pass in the selected Region's name.
+        /// </param>
+        /// <returns>void</returns>
+        public void SetParameters(String ARegionName)
+        {
+            txtRegionName.Text = ARegionName;
+
+            pnlRegionName.Visible = true;
+            pnlAcceptCancelButtons.Visible = true;
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                btnAccept.Enabled = false;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Manages the opening of a new/showing of an existing Instance of the Postcode Ranges Find Screen.
+    /// </summary>
+    public static class TPostcodeRangeSetupManager
+    {
+        /// <summary>
+        /// Opens a Modal instance of the Partner Find screen.
+        /// </summary>
+        /// <param name="ARegionName">Pass in the selected Region's name.</param>
+        /// <param name="ARangeName">Name of the found Range.</param>
+        /// <param name="AFrom">'From' field of the found Partner.</param>
+        /// <param name="ATo">'To' field of the found Partner.</param>
+        /// <param name="AParentForm"></param>
+        /// <returns>True if a Partner was found and accepted by the user,
+        /// otherwise false.</returns>
+        public static bool OpenModalForm(String ARegionName,
+            out String[] ARangeName,
+            out String[] AFrom,
+            out String[] ATo,
+            Form AParentForm)
+        {
+            DialogResult dlgResult;
+
+            ARangeName = null;
+            AFrom = null;
+            ATo = null;
+
+            TFrmPostcodeRangeSetup SelectRange = new TFrmPostcodeRangeSetup(AParentForm);
+            SelectRange.SetParameters(ARegionName);
+
+            dlgResult = SelectRange.ShowDialog();
+
+            if (dlgResult == DialogResult.OK)
+            {
+                DataRowView[] HighlightedRows = SelectRange.GetSelectedRows();
+                int NumberOfRows = HighlightedRows.Length;
+                PPostcodeRangeTable CachedRangeTable = (PPostcodeRangeTable)TDataCache.GetCacheableDataTableFromCache("PostcodeRangeList");
+                bool NoRangesSelected = true;
+
+                ARangeName = new string[NumberOfRows];
+                AFrom = new string[NumberOfRows];
+                ATo = new string[NumberOfRows];
+
+                for (int i = 0; i < NumberOfRows; i++)
+                {
+                    if (CachedRangeTable.Rows.Find(new object[] { ((PPostcodeRangeRow)HighlightedRows[i].Row).Range }) != null)
+                    {
+                        ARangeName[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).Range;
+                        AFrom[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).From;
+                        ATo[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).To;
+
+                        NoRangesSelected = false;
+                    }
+                    else
+                    {
+                        ARangeName[i] = null;
+                        AFrom[i] = null;
+                        ATo[i] = null;
+                    }
+                }
+
+                if (NoRangesSelected)
+                {
+                    MessageBox.Show(String.Format("No valid ranges have been selected."), String.Format("Add Range"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

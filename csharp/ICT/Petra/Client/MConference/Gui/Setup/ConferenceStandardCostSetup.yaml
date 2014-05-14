@@ -6,7 +6,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
     FormType: edit
     Template: windowMaintainTable
-    WindowWidth: 800
+    WindowWidth: 500
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
@@ -23,16 +23,21 @@ RootNode:
         txtConferenceCurrency: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlFilterAndFind, grdDetails, pnlButtons]
+        pnlFilterAndFind:
+            ExpandedWidth: 185
+            FilterControls: [txtDetailOptionDays]
+            FindControls: [txtDetailOptionDays]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailOptionDays, DetailCharge]
@@ -44,6 +49,4 @@ RootNode:
                 Row0: [txtDetailOptionDays, txtDetailCharge]
         txtDetailOptionDays: {Label=Option Days, Width=40, Format=Integer}
         txtDetailCharge: {Label=Charge, Width=100, Format=Currency}
-    Toolbar:
-        tbbNew:
-            Label: New Conference Standard Cost
+

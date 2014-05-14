@@ -213,6 +213,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FFormSetupFinished)
             {
+                txtPartnerKey.PartnerClass = cmbPartnerClass.GetSelectedString();
+
                 if (cmbPartnerClass.GetSelectedString() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
                     ShowFamilyPartnerSelection(true);
@@ -321,6 +323,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerClass != "")
             {
                 cmbPartnerClass.SetSelectedString(FPartnerClass);
+                txtPartnerKey.PartnerClass = cmbPartnerClass.GetSelectedString();
             }
             else
             {

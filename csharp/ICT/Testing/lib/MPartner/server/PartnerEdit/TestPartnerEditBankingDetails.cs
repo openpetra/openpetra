@@ -24,10 +24,11 @@
 using System;
 using System.Data;
 using System.Configuration;
+using System.IO;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-using System.IO;
 using Ict.Testing.NUnitPetraServer;
+using Tests.MPartner.shared.CreateTestPartnerData;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
@@ -54,6 +55,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
+using Ict.Testing.NUnitTools;
 
 namespace Tests.MPartner.Server.PartnerEdit
 {
@@ -97,20 +99,17 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            PPartnerRow PartnerRow = TPartnerEditTest.CreateNewFamilyPartner(MainDS, connector);
+            PPartnerRow PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
 
-            TPartnerEditTest.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
+            TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
 
             DataSet ResponseDS = new PartnerEditTDS();
             TVerificationResultCollection VerificationResult;
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
 
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "TPartnerEditUIConnector SubmitChanges return value");
 
@@ -133,11 +132,8 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving 2. Please check the logs");
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving 2:");
 
             foreach (DataTable t in MainDS.Tables)
             {
@@ -206,11 +202,8 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             MainDS.AcceptChanges();
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving 3. Please check the logs");
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving 3:");
 
             // now delete the main bank account
             PartnerEditTDSPBankingDetailsRow toDelete = null;
@@ -233,7 +226,10 @@ namespace Tests.MPartner.Server.PartnerEdit
             result = connector.SubmitChanges(ref ChangedDS, ref ResponseDS, out VerificationResult);
 
             Assert.AreEqual(1, VerificationResult.Count, "should fail because we have no main account anymore");
-            Assert.AreEqual("there is no main account", VerificationResult[0].ResultText, "should fail because we have no main account anymore");
+            Assert.AreEqual(
+                "One Bank Account of a Partner must be set as the 'Main Account'. Please select the record that should become the 'Main Account' and choose 'Set Main Account'.",
+                VerificationResult[0].ResultText,
+                "should fail because we have no main account anymore");
 
             PartnerEditTDSPBankingDetailsRow otherAccount = null;
 
@@ -254,11 +250,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             MainDS.Merge(ChangedDS);
             MainDS.AcceptChanges();
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving 4. Please check the logs");
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving 4:");
 
             // now delete the last remaining bank account
             toDelete = MainDS.PBankingDetails[0];
@@ -270,11 +263,8 @@ namespace Tests.MPartner.Server.PartnerEdit
             MainDS.Merge(ChangedDS);
             MainDS.AcceptChanges();
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving 5. Please check the logs");
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving 5:");
         }
     }
 }

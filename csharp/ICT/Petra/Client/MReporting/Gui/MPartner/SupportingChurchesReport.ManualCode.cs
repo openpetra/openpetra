@@ -40,6 +40,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     /// </summary>
     public partial class TFrmSupportingChurchesReport
     {
+        private void InitializeManualCode()
+        {
+            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON,FAMILY,ORGANISATION,BANK,UNIT,VENUE");
+        }
+
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("ControlSource", "", ReportingConsts.HEADERCOLUMN);

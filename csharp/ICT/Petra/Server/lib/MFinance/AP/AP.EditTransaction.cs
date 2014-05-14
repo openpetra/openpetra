@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -282,6 +282,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
+            bool NewTransaction;
+
             AVerificationResult = new TVerificationResultCollection();
 
             if (AInspectDS == null)
@@ -323,10 +325,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             } // if {there's actually a document}
 
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out IsMyOwnTransaction);
+                out NewTransaction);
+
             try
             {
                 if (AInspectDS.AApDocument != null)
@@ -342,65 +343,48 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
                     }
 
-                    if (!AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction, out AVerificationResult))
+                    AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction);
+                }
+
+                if (AInspectDS.AApDocumentDetail != null) // Document detail lines
+                {
+                    ValidateApDocumentDetail(ref AVerificationResult, AInspectDS.AApDocumentDetail);
+                    ValidateApDocumentDetailManual(ref AVerificationResult, AInspectDS.AApDocumentDetail);
+
+                    if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
-                        SubmissionResult = TSubmitChangesResult.scrError;
+                        AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction);
                     }
                 }
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && (AInspectDS.AApDocumentDetail != null)) // Document detail lines
+                if (AInspectDS.AApAnalAttrib != null) // Analysis attributes
                 {
-                    bool DetailsaveOK = false;
-                    TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-                    ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
-                    ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
-
-                    if (!AVerificationResult.HasCriticalErrors)
-                    {
-                        DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
-                            out AVerificationResult);
-                    }
-
-                    if (!DetailsaveOK)
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
+                    AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction);
                 }
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && (AInspectDS.AApAnalAttrib != null)) // Analysis attributes
+                if (NewTransaction)
                 {
-                    if (!AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction, out AVerificationResult))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
-                }
-
-                if (IsMyOwnTransaction)
-                {
-                    if (SubmissionResult == TSubmitChangesResult.scrOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-            catch (Exception e)
+            catch (Exception Exc)
             {
-                TLogging.Log("after submitchanges: exception " + e.Message);
-                TLogging.Log(e.StackTrace);
+                TLogging.Log("An Exception occured while saving an AP Document:" + Environment.NewLine + Exc.ToString());
 
-                if (IsMyOwnTransaction)
+                if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
-                AVerificationResult.Add(new TVerificationResult("Save AP Document", e.Message,
+                if (AVerificationResult == null)
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+
+                AVerificationResult.Add(new TVerificationResult("Save AP Document", Exc.Message,
                         TResultSeverity.Resv_Critical));
-                throw new Exception(e.ToString() + " " + e.Message);
+
+                throw;
             }
 
             if ((AVerificationResult != null) && (AVerificationResult.Count > 0))
@@ -410,7 +394,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
 
-            return SubmissionResult;
+            return TSubmitChangesResult.scrOK;
         }
 
         /// <summary>
@@ -946,16 +930,78 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
+        /// Approve documents that have an OPEN status
+        /// This is called by a client
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AApproveTheseDocs"></param>
+        /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ApproveAPDocuments(Int32 ALedgerNumber,
+            List <Int32>AApproveTheseDocs,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            bool ResultValue = false;
+
+            AccountsPayableTDS TempDS = new AccountsPayableTDS();
+
+            if (AApproveTheseDocs.Count == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Nothing to do - the document list is empty",
+                        TResultSeverity.Resv_Noncritical));
+                return false;
+            }
+
+            foreach (Int32 ApDocumentId in AApproveTheseDocs)
+            {
+                TempDS.Merge(LoadAApDocument(ALedgerNumber, ApDocumentId)); // This gives me documents, details, and potentially ap_anal_attrib records.
+            }
+
+            foreach (AApDocumentRow ApDocumentRow in TempDS.AApDocument.Rows)
+            {
+                if (ApDocumentRow.DocumentStatus == MFinanceConstants.AP_DOCUMENT_OPEN)
+                {
+                    ApDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+                }
+                else
+                {
+                    AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Only OPEN documents can be approved",
+                            TResultSeverity.Resv_Noncritical));
+                    return false;
+                }
+            }
+
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                AApDocumentAccess.SubmitChanges(TempDS.AApDocument, SubmitChangesTransaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+                ResultValue = true;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the approval of AP Documents:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                AVerificationResult.Add(new TVerificationResult("Approve AP Documents", Exc.Message, TResultSeverity.Resv_Critical));
+
+                throw;
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
         /// Documents can only be deleted if they're not posted yet.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADeleteTheseDocs"></param>
-        /// <param name="AVerifications"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static bool DeleteAPDocuments(Int32 ALedgerNumber, List <Int32>ADeleteTheseDocs, out TVerificationResultCollection AVerifications)
+        public static void DeleteAPDocuments(Int32 ALedgerNumber, List <Int32>ADeleteTheseDocs)
         {
-            AVerifications = new TVerificationResultCollection();
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
             foreach (Int32 ApDocumentId in ADeleteTheseDocs)
@@ -980,28 +1026,24 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            bool DeleteOK = AApAnalAttribAccess.SubmitChanges(TempDS.AApAnalAttrib, SubmitChangesTransaction, out AVerifications);
-
-            if (DeleteOK)
+            try
             {
-                DeleteOK = AApDocumentDetailAccess.SubmitChanges(TempDS.AApDocumentDetail, SubmitChangesTransaction, out AVerifications);
-            }
+                AApAnalAttribAccess.SubmitChanges(TempDS.AApAnalAttrib, SubmitChangesTransaction);
 
-            if (DeleteOK)
-            {
-                DeleteOK = AApDocumentAccess.SubmitChanges(TempDS.AApDocument, SubmitChangesTransaction, out AVerifications);
-            }
+                AApDocumentDetailAccess.SubmitChanges(TempDS.AApDocumentDetail, SubmitChangesTransaction);
 
-            if (DeleteOK)
-            {
+                AApDocumentAccess.SubmitChanges(TempDS.AApDocument, SubmitChangesTransaction);
+
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            else
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                TLogging.Log("An Exception occured during the deletion of AP Documents:" + Environment.NewLine + Exc.ToString());
 
-            return DeleteOK;
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -1023,17 +1065,22 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             Boolean Reversal,
             out TVerificationResultCollection AVerificationResult)
         {
+            TDBTransaction SubmitChangesTransaction;
+            bool NewTransaction = false;
+            bool PostingWorkedOk;
+            ABatchRow batch;
+
             AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, out AVerificationResult);
 
-            if (AVerificationResult.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
                 return false;
             }
 
             GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS);
-            Boolean PostingWorkedOk = true;
+            PostingWorkedOk = true;
 
-            ABatchRow batch = GLDataset.ABatch[0];
+            batch = GLDataset.ABatch[0];
 
             // save the batch
             if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
@@ -1074,45 +1121,33 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
             }
 
-            TDBTransaction SubmitChangesTransaction;
-            bool IsMyOwnTransaction = false; // If I create a transaction here, then I need to Commit when I'm done.
+            SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
-                SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                               (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction);
 
-                bool SubmitOK = AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction,
-                    out AVerificationResult);
-
-                if (IsMyOwnTransaction)
+                if (NewTransaction)
                 {
-                    if (SubmitOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-            catch (Exception e)
+            catch (Exception Exc)
             {
-                // we should not get here; how would the database get broken?
                 // Now I've got GL entries, but "unposted" AP documents!
 
-                TLogging.Log("PostApDocuments: exception " + e.Message);
+                TLogging.Log("An Exception occured during the Posting of an AP Document:" + Environment.NewLine + Exc.ToString());
 
-                if (IsMyOwnTransaction)
+                if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
-                AVerificationResult.Add(new TVerificationResult("Post AP Document", e.Message,
+                AVerificationResult.Add(new TVerificationResult("Post AP Document", Exc.Message,
                         TResultSeverity.Resv_Critical));
 
-                throw new Exception(e.ToString() + " " + e.Message);
+                throw;
             }
 
             return true;
@@ -1455,7 +1490,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 return null;
             }
 
-            return Tbl[indexSupplier];
+            return (AApSupplierRow)Tbl.DefaultView[indexSupplier].Row;
         }
 
         /// <summary>
@@ -1601,6 +1636,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DateTime APostingDate,
             out TVerificationResultCollection AVerificationResult)
         {
+            bool NewTransaction;
+            TDBTransaction ReadTransaction;
+
             AVerificationResult = new TVerificationResultCollection();
             bool ResultValue = false;
 
@@ -1613,9 +1651,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 return false;
             }
 
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             foreach (AccountsPayableTDSAApDocumentPaymentRow row in MainDS.AApDocumentPayment.Rows)
             {
@@ -1666,7 +1703,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 ReadTransaction);
             Int32 maxPaymentNumberInLedger = (maxPaymentCanBeNull == System.DBNull.Value ? 0 : Convert.ToInt32(maxPaymentCanBeNull));
 
-            if (IsMyOwnTransaction)
+            if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -1726,42 +1763,35 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
 
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                               (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                                               (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
                 // store ApPayment and ApDocumentPayment to database
-                if (AApPaymentAccess.SubmitChanges(MainDS.AApPayment, SubmitChangesTransaction,
-                        out AVerificationResult))
-                {
-                    if (AApDocumentPaymentAccess.SubmitChanges(MainDS.AApDocumentPayment, SubmitChangesTransaction,
-                            out AVerificationResult))
-                    {
-                        // save changed status of AP documents to database
-                        if (AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction, out AVerificationResult))
-                        {
-                            ResultValue = true;
-                        }
-                    }
-                }
+                AApPaymentAccess.SubmitChanges(MainDS.AApPayment, SubmitChangesTransaction);
+                AApDocumentPaymentAccess.SubmitChanges(MainDS.AApDocumentPayment, SubmitChangesTransaction);
+
+                // save changed status of AP documents to database
+                AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction);
+
+                ResultValue = true;
             }
             catch (Exception e)
             {
-                // we should not get here; how would the database get broken?
                 // Now I've got payment entries in the GL, and "unposted" payment records.
 
-                TLogging.Log("Posting payments: exception " + e.Message);
+                TLogging.Log("Posting AP payments: exception " + e.Message);
 
-                if ((SubmitChangesTransaction != null) && IsMyOwnTransaction)
+                if ((SubmitChangesTransaction != null) && NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
-                AVerificationResult.Add(new TVerificationResult("Post Payment",
+                AVerificationResult.Add(new TVerificationResult("Post AP Payment",
                         e.Message, TResultSeverity.Resv_Critical));
 
-                throw new Exception(e.ToString() + " " + e.Message);
+                throw;
             }
 
-            if ((SubmitChangesTransaction != null) && IsMyOwnTransaction)
+            if ((SubmitChangesTransaction != null) && NewTransaction)
             {
                 if (ResultValue)
                 {
@@ -2106,10 +2136,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
         #region Data Validation
 
-        static partial void ValidateApDocumentDetail(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateApDocumentDetailManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateApDocumentDetail(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateApDocumentDetailManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
     }

@@ -38,7 +38,7 @@
         rgrPartnerSelection:
             Label: Select Recipient
             Controls: [rbtAllPartner, rbtExtract, rbtPartner]
-            ParameterName: param_donor
+            ParameterName: param_recipient_selection
         grpCurrencySelection:
             Label: Currency
             Controls: [cmbCurrency]

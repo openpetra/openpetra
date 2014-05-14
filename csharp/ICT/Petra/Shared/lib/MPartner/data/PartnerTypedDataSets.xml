@@ -40,7 +40,10 @@
     <Table sqltable="p_foundation_deadline"/>
     <Table sqltable="p_foundation_proposal"/>
     <Table sqltable="p_foundation_proposal_detail"/>
-    <Table sqltable="p_partner_interest"/>
+    <Table sqltable="p_partner_gift_destination"/>
+    <Table sqltable="p_partner_interest">
+      <Field name="InterestCategory" sqltable="p_interest" sqlfield="p_category_c"/>
+    </Table>
     <Table sqltable="p_interest"/>
     <!-- will not be filled on the server, but using the cached table. needed for the relation PartnerInterestCategory, which is needed for the grid for partner interests -->
     <Table sqltable="p_partner_reminder"/>
@@ -316,6 +319,15 @@
       <CustomField name="ExactPartnerKeyMatch" type="bool" initial="false"/>
       <CustomField name="PhoneNumber" type="string"/>
       <CustomField name="PhoneNumberMatch" type="string" initial="BEGINS"/>
+      <CustomField name="AccountName" type="string"/>
+      <CustomField name="AccountNameMatch" type="string" initial="BEGINS"/>
+      <CustomField name="Iban" type="string"/>
+      <CustomField name="IbanMatch" type="string" initial="BEGINS"/>
+      <CustomField name="AccountNumber" type="string"/>
+      <CustomField name="AccountNumberMatch" type="string" initial="BEGINS"/>
+      <CustomField name="BankKey" type="Int64" initial="0"/>
+      <CustomField name="Bic" type="string"/>
+      <CustomField name="BicMatch" type="string" initial="BEGINS"/>
     </CustomTable>
     <CustomTable name="SearchResult">
       <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
@@ -344,6 +356,13 @@
       <Field sqltable="p_location" sqlfield="p_county_c"/>
       <Field sqltable="p_location" sqlfield="p_country_code_c"/>
       <Field sqltable="p_location" sqlfield="p_location_key_i"/>
+ 
+      <Field sqltable="p_banking_details" sqlfield="p_banking_details_key_i"/>
+      <Field sqltable="p_banking_details" sqlfield="p_account_name_c"/>
+      <Field sqltable="p_banking_details" sqlfield="p_bank_account_number_c"/>
+      <Field sqltable="p_banking_details" sqlfield="p_iban_c"/>
+      <Field sqltable="p_bank" sqlfield="p_branch_code_c"/>
+      <Field sqltable="p_bank" sqlfield="p_bic_c"/>
     </CustomTable>
   </DataSet>
 
@@ -435,13 +454,14 @@
       <CustomField name="Category" type="string"/>
     </Table>
 
+    <Table sqltable="pt_position"/>
     <Table sqltable="um_job"/>
       
     <Table sqltable="pm_personal_data"/>
     <Table sqltable="pt_passport_type"/>
     <Table sqltable="pm_passport_details"/>
-    <Table sqltable="pm_document_type"/>
     <Table sqltable="pm_document_category"/>
+    <Table sqltable="pm_document_type"/>
     <Table sqltable="pm_document">
       <CustomField name="DocCategory" type="string"/>
     </Table>
@@ -464,7 +484,6 @@
     <Table sqltable="pt_contact"/>
     <Table sqltable="pm_general_application"/>
     <Table sqltable="pt_congress_code"/>
-    <Table sqltable="pt_position"/>
     <Table sqltable="pt_special_applicant"/>
     <Table sqltable="pt_leadership_rating"/>
     <Table sqltable="pm_short_term_application"/>
@@ -498,6 +517,22 @@
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
   </DataSet>   
+
+  <DataSet name="PostcodeRegionsTDS">
+    <Table sqltable="p_postcode_region"/>
+    <Table sqltable="p_postcode_region_range">
+      <Field name="From" sqltable="p_postcode_range" sqlfield="p_from_c"/>
+      <Field name="To" sqltable="p_postcode_range" sqlfield="p_to_c"/>
+    </Table>
+  </DataSet>
+
+  <DataSet name="BankTDS">
+    <Table sqltable="p_bank">
+      <Field name="StatusCode" sqltable="p_partner" sqlfield="p_status_code_c"/>
+    </Table>
+    <Table sqltable="p_partner_location"/>
+    <Table sqltable="p_location"/>
+  </DataSet>
 
 
   <DataSet name="PartnerContactSetupTDS">

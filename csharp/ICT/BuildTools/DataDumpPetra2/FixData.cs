@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -28,6 +28,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Tools.DBXML;
+using ICSharpCode.SharpZipLib.GZip;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -38,6 +39,7 @@ namespace Ict.Tools.DataDumpPetra2
     public class TFixData
     {
         private static int FormSequence = 1;
+        private static List <string>PostcodeRegionsList = new List <string>();
 
         /// <summary>
         /// set a value of a row, position given by AColumnNames
@@ -254,6 +256,14 @@ namespace Ict.Tools.DataDumpPetra2
 
             string[] NewRow = CreateRow(NewColumnNames);
 
+            // This existing and populated table's data is completely changed. We do not want to import any of it's contents.
+            if (ANewTable.strName == "pt_language_level")
+            {
+                RowCounter += FixData(ANewTable.strName, NewColumnNames, ref NewRow, AWriter, AWriterTest);
+
+                return RowCounter;
+            }
+
             while (true)
             {
                 string[] OldRow = AParser.ReadNextRow();
@@ -310,6 +320,16 @@ namespace Ict.Tools.DataDumpPetra2
         /// <returns>false if the row should be dropped</returns>
         public static bool FixData(string ATableName, StringCollection AColumnNames, ref string[] ANewRow)
         {
+            if (ATableName == "a_budget")
+            {
+                return false;
+            }
+
+            if (ATableName == "a_budget_period")
+            {
+                return false;
+            }
+
             // update pub.a_account_property set a_property_value_c = 'true' where a_property_code_c = 'Bank Account';
             if (ATableName == "a_account_property")
             {
@@ -425,7 +445,8 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
-            // pm_person_language, language code cannot be null, should be 99
+            // pm_person_language, language code cannot be null, should be 99.
+            // Old language levels need mapped to new levels.
             if (ATableName == "pm_person_language")
             {
                 string val = GetValue(AColumnNames, ANewRow, "p_language_code_c");
@@ -433,6 +454,67 @@ namespace Ict.Tools.DataDumpPetra2
                 if ((val.Length == 0) || (val == "\\N"))
                 {
                     SetValue(AColumnNames, ref ANewRow, "p_language_code_c", "99");
+                }
+
+                int val2 = Convert.ToInt32(GetValue(AColumnNames, ANewRow, "pt_language_level_i"));
+
+                if (val2 <= 3)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "1");
+                }
+                else if ((val2 >= 4) && (val2 <= 7))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "2");
+                }
+                else if (val2 >= 8)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "3");
+                }
+            }
+
+            // um_unit_language, language code cannot be null, should be 99.
+            // Old language levels need mapped to new levels.
+            if (ATableName == "um_unit_language")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "p_language_code_c");
+
+                if ((val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_language_code_c", "99");
+                }
+
+                int val2 = Convert.ToInt32(GetValue(AColumnNames, ANewRow, "pt_language_level_i"));
+
+                if (val2 <= 3)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "1");
+                }
+                else if ((val2 >= 4) && (val2 <= 7))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "2");
+                }
+                else if (val2 >= 8)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "3");
+                }
+            }
+
+            // Old language levels need mapped to new levels.
+            if (ATableName == "um_job_language")
+            {
+                int val = Convert.ToInt32(GetValue(AColumnNames, ANewRow, "pt_language_level_i"));
+
+                if (val <= 3)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "1");
+                }
+                else if ((val >= 4) && (val <= 7))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "2");
+                }
+                else if (val >= 8)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "3");
                 }
             }
 
@@ -454,7 +536,12 @@ namespace Ict.Tools.DataDumpPetra2
 
             if (ATableName == "a_budget_type")
             {
-                return TFinanceGeneralLedgerUpgrader.FixABudgetType(AColumnNames, ref ANewRow);
+                return TFinanceBudgetUpgrader.FixABudgetType(AColumnNames, ref ANewRow);
+            }
+
+            if (ATableName == "a_account")
+            {
+                return TFinanceBudgetUpgrader.FixABudgetType(AColumnNames, ref ANewRow);
             }
 
             if (ATableName == "a_motivation_detail")
@@ -600,6 +687,110 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
+            if (ATableName == "p_postcode_region")
+            {
+                string CurrentRegion = ANewRow[0];
+
+                foreach (string OldRegion in PostcodeRegionsList)
+                {
+                    if (CurrentRegion == OldRegion)
+                    {
+                        return false;
+                    }
+                }
+
+                PostcodeRegionsList.Add(CurrentRegion);
+            }
+
+            // p_partner_status, 'DIED', 'INACTIVE' and 'MERGED' partners are not active
+            if (ATableName == "p_partner_status")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "p_status_code_c");
+
+                if ((val == "DIED") || (val == "INACTIVE") || (val == "MERGED"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_is_active_l", "0");
+                }
+            }
+
+            // phone and fax extensions should be '0' rather than null
+            if (ATableName == "p_partner_location")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "p_extension_i");
+
+                if ((val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_extension_i", "0");
+                }
+
+                val = GetValue(AColumnNames, ANewRow, "p_fax_extension_i");
+
+                if ((val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_fax_extension_i", "0");
+                }
+            }
+
+            // renaming "Gift Receipting" to "Gift Processing" (Mantis 1930)
+            if (ATableName == "a_sub_system")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "a_sub_system_name_c");
+
+                if (val == "Gift Receipting")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "a_sub_system_name_c", "Gift Processing");
+                }
+            }
+
+            // renaming "Gift Receipting" to "Gift Processing" (Mantis 1930)
+            if (ATableName == "a_transaction_type")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "a_transaction_type_description_c");
+
+                if (val == "Gift Receipting")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "a_transaction_type_description_c", "Gift Processing");
+                }
+            }
+
+            // A new password and password salt needs to be generated for every user.
+            // Passwords are writed to a file in the fulldump folder.
+            if (ATableName == "s_user")
+            {
+                string Password;
+                string Salt;
+                string PasswordHash;
+
+                PasswordHelper.GetNewPasswordSaltAndHash(out Password, out Salt, out PasswordHash);
+
+                SetValue(AColumnNames, ref ANewRow, "s_password_salt_c", Salt);
+                SetValue(AColumnNames, ref ANewRow, "s_password_hash_c", PasswordHash);
+
+                // the user will have to change their password the first time they log in
+                SetValue(AColumnNames, ref ANewRow, "s_password_needs_change_l", "true");
+
+                // write userIDs and new passwords to a file
+                string UserPasswordsDir = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                          Path.DirectorySeparatorChar + "_credentials.txt";
+                StreamWriter MyWriter;
+
+                if (File.Exists(UserPasswordsDir))
+                {
+                    MyWriter = File.AppendText(UserPasswordsDir);
+                }
+                else
+                {
+                    FileStream outStreamCount = File.Create(UserPasswordsDir);
+                    MyWriter = new StreamWriter(outStreamCount);
+                }
+
+                string UserID = GetValue(AColumnNames, ANewRow, "s_user_id_c");
+
+                MyWriter.WriteLine(UserID + "\t" + Password);
+
+                MyWriter.Close();
+            }
+
             return true;
         }
 
@@ -613,57 +804,22 @@ namespace Ict.Tools.DataDumpPetra2
 
             if (ATableName == "a_budget_revision")
             {
-                // in Petra 2.x, there never has been a record in this table.
-                // so if there is a budget, we need to create a revision 0 for each year
+                RowCounter = TFinanceBudgetUpgrader.PopulateABudgetRevision(AColumnNames, ref ANewRow, AWriter, AWriterTest);
+            }
 
-                // load the file a_budget.d.gz so that we can access the values for each person
-                TTable budgetTableOld = TDumpProgressToPostgresql.GetStoreOld().GetTable("a_budget");
+            if (ATableName == "a_budget")
+            {
+                RowCounter = TFinanceBudgetUpgrader.FixABudget(AColumnNames, ref ANewRow, AWriter, AWriterTest);
+            }
 
-                TParseProgressCSV Parser = new TParseProgressCSV(
-                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "a_budget.d.gz",
-                    budgetTableOld.grpTableField.Count);
+            if (ATableName == "a_budget_period")
+            {
+                RowCounter = TFinanceBudgetUpgrader.FixABudgetPeriod(AColumnNames, ref ANewRow, AWriter, AWriterTest);
+            }
 
-                StringCollection BudgetColumnNames = GetColumnNames(budgetTableOld);
-
-                List <string>Revisions = new List <string>();
-
-                string LedgerNumber = string.Empty;
-                string YearNumber = string.Empty;
-                SetValue(AColumnNames, ref ANewRow, "a_revision_i", "0");
-                SetValue(AColumnNames, ref ANewRow, "a_description_c", "default");
-                SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
-                SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
-                SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
-                SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
-                SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
-
-                while (true)
-                {
-                    string[] OldRow = Parser.ReadNextRow();
-
-                    if (OldRow == null)
-                    {
-                        break;
-                    }
-
-                    LedgerNumber = GetValue(BudgetColumnNames, OldRow, "a_ledger_number_i");
-                    YearNumber = GetValue(BudgetColumnNames, OldRow, "a_year_i");
-
-                    if (!Revisions.Contains(LedgerNumber + "_" + YearNumber))
-                    {
-                        SetValue(AColumnNames, ref ANewRow, "a_ledger_number_i", LedgerNumber);
-                        SetValue(AColumnNames, ref ANewRow, "a_year_i", YearNumber);
-
-                        AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                        AWriterTest.WriteLine("\\.");
-                        AWriterTest.WriteLine("ROLLBACK;");
-                        RowCounter++;
-
-                        Revisions.Add(LedgerNumber + "_" + YearNumber);
-                    }
-                }
+            if (ATableName == "p_partner_gift_destination")
+            {
+                RowCounter = TPartnerGiftDestination.PopulatePPartnerGiftDestination(AColumnNames, ref ANewRow, AWriter, AWriterTest);
             }
 
             if (ATableName == "s_system_defaults")
@@ -699,6 +855,645 @@ namespace Ict.Tools.DataDumpPetra2
                     AWriterTest.WriteLine("\\.");
                     AWriterTest.WriteLine("ROLLBACK;");
                     RowCounter++;
+                }
+            }
+
+            // this is a new table with new data (also in basedata)
+            if (ATableName == "pt_skill_category")
+            {
+                // Default categories that old abilities and qualifications are mapped to. Basedata - pt_skill_category
+                string[, ] SkillCategories = new string[, ] {
+                    {
+                        "COMMUNICATION", "e.g. Graphic Designer, Journalist, Photographer"
+                    },
+                    {
+                        "EDUCATION", "e.g. Teacher, Lecturer"
+                    },
+                    {
+                        "FINANCE", "e.g. Accountant, Auditor, Bookkeeper"
+                    },
+                    {
+                        "FOOD", "e.g. Caterer, Baker, Cook"
+                    },
+                    {
+                        "LAW", "e.g. Solicitor, Lawyer, Judge"
+                    },
+                    {
+                        "MEDICAL", "e.g. Dentist, Doctor, Nurse"
+                    },
+                    {
+                        "MINISTRY", "e.g. Pastor, Evangelist, Counsellor"
+                    },
+                    {
+                        "MUSIC", "e.g. Musician, Singer"
+                    },
+                    {
+                        "OFFICE", "e.g. Manager, Secretary, Computer Programmer"
+                    },
+                    {
+                        "OTHER", ""
+                    },
+                    {
+                        "PEOPLE", "e.g. Personnel Administrator, Social Worker"
+                    },
+                    {
+                        "PRACTICAL", "e.g. Cleaner, Driver, Farmer"
+                    },
+                    {
+                        "SEA", "e.g. Captain, Engineer, Deck Hand"
+                    },
+                    {
+                        "TECHNICAL", "e.g. Engineer, Carpenter, Electrician"
+                    }
+                };
+
+                for (int i = 0; i < SkillCategories.GetLength(0); i++)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_code_c", SkillCategories[i, 0]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_description_c", SkillCategories[i, 1]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_date_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "pt_deletable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+            }
+
+            // this is a new table with new data (also in basedata)
+            if (ATableName == "pt_skill_level")
+            {
+                // Default levels that old abilities and qualifications levels are mapped to. Basedata - pt_skill_level
+                string[] SkillLevel = new string[] {
+                    "1", "2", "3", "4", "99"
+                };
+                string[] SkillLevelDescription = new string[] {
+                    "Basic", "Moderate", "Competent", "Professional", "Level of ability not known"
+                };
+
+                for (int i = 0; i < SkillLevel.Length; i++)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_level_i", SkillLevel[i]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_description_c", SkillLevelDescription[i]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_date_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "pt_deletable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+            }
+
+            // data from pm_person_ability and pm_person_qualification are copied into this new table
+            if (ATableName == "pm_person_skill")
+            {
+                // Default categories that old abilities and qualifications are mapped to. Basedata - pt_skill_category
+                string[] SkillCategories = new string[] {
+                    "COMMUNICATION", "EDUCATION", "FINANCE", "FOOD", "LAW", "MEDICAL", "MINISTRY", "MUSIC", "OFFICE",
+                    "PEOPLE", "PRACTICAL", "SEA", "TECHNICAL"
+                };
+
+                String SkillCategory;
+                String Description;
+                int SkillLevel;
+
+                //*** Copy from pm_person_ability ***//
+
+                // load the file pm_person_ability.d.gz
+                TTable PersonAbility = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_person_ability");
+
+                TParseProgressCSV ParserAbility = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_person_ability.d.gz",
+                    PersonAbility.grpTableField.Count);
+
+                StringCollection PersonAbilityColumnNames = GetColumnNames(PersonAbility);
+
+                // these columns will be the same for all records
+                SetValue(AColumnNames, ref ANewRow, "pm_description_local_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_description_language_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_current_occupation_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "pm_degree_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_year_of_degree_i", "0");
+
+                while (true)
+                {
+                    string[] OldRow = ParserAbility.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+
+                    // map old ability_area_name to new skill category
+                    String AbilityAreaName = GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_area_name_c");
+                    SkillCategory = "OTHER";
+                    Description = "";
+
+                    foreach (string Category in SkillCategories)
+                    {
+                        if (AbilityAreaName.Substring(0, 3) == Category.Substring(0, 3))
+                        {
+                            SkillCategory = Category;
+                            break;
+                        }
+                    }
+
+                    // copy old ability_area description from pt_ability_area to new description
+
+                    // load the file pt_ability_area.d.gz so that we can access the values for each person
+                    TTable AbilityArea = TDumpProgressToPostgresql.GetStoreOld().GetTable("pt_ability_area");
+
+                    TParseProgressCSV ParserAbilityArea = new TParseProgressCSV(
+                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_ability_area.d.gz",
+                        AbilityArea.grpTableField.Count);
+
+                    StringCollection AbilityAreaColumnNames = GetColumnNames(AbilityArea);
+
+                    while (true)
+                    {
+                        string[] OldAbilityRow = ParserAbilityArea.ReadNextRow();
+
+                        if (OldAbilityRow == null)
+                        {
+                            break;
+                        }
+
+                        if (GetValue(AbilityAreaColumnNames, OldAbilityRow, "pt_ability_area_name_c") == AbilityAreaName)
+                        {
+                            Description = GetValue(AbilityAreaColumnNames, OldAbilityRow, "pt_ability_area_descr_c");
+                            break;
+                        }
+                    }
+
+                    // map old ability level to new skill level
+                    int AbilityLevel = Convert.ToInt32(GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_level_i"));
+                    SkillLevel = 99; // remains 99 if unknown
+
+                    if ((AbilityLevel >= 0) && (AbilityLevel <= 3))
+                    {
+                        SkillLevel = 1;
+                    }
+                    else if ((AbilityLevel >= 4) && (AbilityLevel <= 5))
+                    {
+                        SkillLevel = 2;
+                    }
+                    else if ((AbilityLevel >= 6) && (AbilityLevel <= 7))
+                    {
+                        SkillLevel = 3;
+                    }
+                    else if ((AbilityLevel >= 8) && (AbilityLevel <= 10))
+                    {
+                        SkillLevel = 4;
+                    }
+
+                    string Comment = GetValue(PersonAbilityColumnNames, OldRow, "pm_comment_c");
+
+                    if (SkillCategory == "OTHER")
+                    {
+                        Comment += " Copied from Petra (Ability Area Name: " + AbilityAreaName;
+                    }
+
+                    SetValue(AColumnNames, ref ANewRow, "pm_person_skill_key_i", RowCounter.ToString());
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(PersonAbilityColumnNames, OldRow, "p_partner_key_n"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_skill_category_code_c", SkillCategory);
+                    SetValue(AColumnNames, ref ANewRow, "pm_description_english_c", Description);
+                    SetValue(AColumnNames, ref ANewRow, "pm_skill_level_i", SkillLevel.ToString());
+                    SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_i",
+                        GetValue(PersonAbilityColumnNames, OldRow, "pm_years_of_experience_i"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_as_of_d",
+                        GetValue(PersonAbilityColumnNames, OldRow, "pm_years_of_experience_as_of_d"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_professional_skill_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pm_comment_c", Comment);
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_created_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_created_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_modified_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_modified_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, OldRow, "s_modification_id_t"));
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+
+                //*** Copy from pm_person_qualification ***//
+
+                // load the file pm_person_qualification.d.gz
+                TTable PersonQualification = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_person_qualification");
+
+                TParseProgressCSV ParserQualification = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_person_qualification.d.gz",
+                    PersonQualification.grpTableField.Count);
+
+                StringCollection PersonQualificationColumnNames = GetColumnNames(PersonQualification);
+
+                while (true)
+                {
+                    string[] OldRow = ParserQualification.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+
+                    // map old qualification_area_name to new skill category
+                    String QualificationAreaName = GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_area_name_c");
+                    SkillCategory = "OTHER";
+                    Description = "";
+
+                    foreach (string Category in SkillCategories)
+                    {
+                        if (QualificationAreaName.Substring(0, 3) == Category.Substring(0, 3))
+                        {
+                            SkillCategory = Category;
+                            break;
+                        }
+                    }
+
+                    // copy old qualification_area description from pt_qualification_area to new description
+
+                    // load the file pt_ability_area.d.gz so that we can access the values for each person
+                    TTable QualificationArea = TDumpProgressToPostgresql.GetStoreOld().GetTable("pt_qualification_area");
+
+                    TParseProgressCSV ParserQualificationArea = new TParseProgressCSV(
+                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_qualification_area.d.gz",
+                        QualificationArea.grpTableField.Count);
+
+                    StringCollection QualificationAreaColumnNames = GetColumnNames(QualificationArea);
+
+                    while (true)
+                    {
+                        string[] OldQualificationRow = ParserQualificationArea.ReadNextRow();
+
+                        if (OldQualificationRow == null)
+                        {
+                            break;
+                        }
+
+                        if (GetValue(QualificationAreaColumnNames, OldQualificationRow, "pt_qualification_area_name_c") == QualificationAreaName)
+                        {
+                            Description = GetValue(QualificationAreaColumnNames, OldQualificationRow, "pt_qualification_area_descr_c");
+                            break;
+                        }
+                    }
+
+                    // map old Qualification level to new skill level
+                    int QualificationLevel = Convert.ToInt32(GetValue(PersonQualificationColumnNames, OldRow, "pt_qualification_level_i"));
+                    SkillLevel = 99; // remains 99 if unknown
+
+                    if ((QualificationLevel >= 0) && (QualificationLevel <= 3))
+                    {
+                        SkillLevel = 1;
+                    }
+                    else if ((QualificationLevel >= 4) && (QualificationLevel <= 5))
+                    {
+                        SkillLevel = 2;
+                    }
+                    else if ((QualificationLevel >= 6) && (QualificationLevel <= 7))
+                    {
+                        SkillLevel = 3;
+                    }
+                    else if ((QualificationLevel >= 8) && (QualificationLevel <= 10))
+                    {
+                        SkillLevel = 4;
+                    }
+
+                    string Comment = GetValue(PersonQualificationColumnNames, OldRow, "pm_comment_c");
+
+                    if (SkillCategory == "OTHER")
+                    {
+                        Comment += " Copied from Petra (Qualification Area Name: " + QualificationAreaName;
+                    }
+
+                    // copy old qualification level description from pt_qualification_area to new comment
+
+                    // load the file pt_qualification_level.d.gz so that we can access the values for each person
+                    TTable QualificationLevelTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("pt_qualification_level");
+
+                    TParseProgressCSV ParserQualificationLevel = new TParseProgressCSV(
+                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_qualification_level.d.gz",
+                        QualificationLevelTable.grpTableField.Count);
+
+                    StringCollection QualificationLevelColumnNames = GetColumnNames(QualificationLevelTable);
+
+                    while (true)
+                    {
+                        string[] OldQualificationLevelRow = ParserQualificationLevel.ReadNextRow();
+
+                        if (OldQualificationLevelRow == null)
+                        {
+                            break;
+                        }
+
+                        if (GetValue(QualificationLevelColumnNames, OldQualificationLevelRow,
+                                "pt_qualification_level_i") == QualificationLevel.ToString())
+                        {
+                            Comment += " Qualification Level from Petra: " + QualificationLevel + " - " +
+                                       GetValue(QualificationLevelColumnNames, OldQualificationLevelRow, "pt_qualification_level_descr_c");
+                            break;
+                        }
+                    }
+
+                    SetValue(AColumnNames, ref ANewRow, "pm_person_skill_key_i", RowCounter.ToString());
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(PersonQualificationColumnNames, OldRow, "p_partner_key_n"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_skill_category_code_c", SkillCategory);
+                    SetValue(AColumnNames, ref ANewRow, "pm_description_english_c", Description);
+                    SetValue(AColumnNames, ref ANewRow, "pm_skill_level_i", SkillLevel.ToString());
+                    SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_i",
+                        GetValue(PersonQualificationColumnNames, OldRow, "pm_years_of_experience_i"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_as_of_d",
+                        GetValue(PersonQualificationColumnNames, OldRow, "pm_years_of_experience_as_of_d"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_professional_skill_l", "1");
+                    SetValue(AColumnNames, ref ANewRow, "pm_comment_c", Comment);
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_created_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_created_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_modified_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_modified_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, OldRow, "s_modification_id_t"));
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+            }
+
+            // This existing and populated table's data is completely changed. We do not want to import any of it's contents.
+            // This data is also in the basedata
+            if (ATableName == "pt_language_level")
+            {
+                // Default language levels data
+                string[] LanguageLevels = new string[] {
+                    "1", "2", "3", "99"
+                };
+                string[] LanguageLevelDescriptions = new string[] {
+                    "BASIC", "INTERMEDIATE", "ADVANCED", "UNKNOWN"
+                };
+                string[] LanguageComments = new string[] {
+                    "Uses a narrow range of language, adequate for basic needs and simple situations. " +
+                    "Does not really have sufficient language to cope with normal day-to-day, real-life communication, " +
+                    "but basic communication is possible with adequate opportunities for assistance.",
+                    "Uses the language independently and effectively in familiar situations. Rather frequent lapses in accuracy, fluency, " +
+                    "appropriateness and organisation, but usually succeeds in communication and comprehending the general message.",
+                    "Uses a full range of language with proficiency approaching that in the learner's own mother tongue. " +
+                    "Copes well even with demanding and complex language situations. Makes minor lapses in accuracy, fluency, " +
+                    "appropriateness and organisation which do not affect communication.",
+                    "Speaks the language to some extent, level unknown."
+                };
+
+                for (int i = 0; i < 4; i++)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", LanguageLevels[i]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_descr_c", LanguageLevelDescriptions[i]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_date_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "pt_deletable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_comment_c", LanguageComments[i]);
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+            }
+
+            // One record which we need to make sure is in this table
+            if (ATableName == "pm_document_category")
+            {
+                // load the file pm_document_category.d.gz
+                TTable Table = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_document_category");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_document_category.d.gz",
+                    Table.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(Table);
+
+                // check if record already exists. If it does then return.
+                while (true)
+                {
+                    string[] Row = Parser.ReadNextRow();
+
+                    if (Row == null)
+                    {
+                        break;
+                    }
+                    else if (GetValue(ColumnNames, Row, "pm_code_c") == "GENERAL")
+                    {
+                        return RowCounter;
+                    }
+                }
+
+                SetValue(AColumnNames, ref ANewRow, "pm_code_c", "GENERAL");
+                SetValue(AColumnNames, ref ANewRow, "pm_description_c", "General Documents");
+                SetValue(AColumnNames, ref ANewRow, "pm_extendable_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "pm_unassignable_flag_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "pm_unassignable_date_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_deletable_flag_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                AWriterTest.WriteLine("\\.");
+                AWriterTest.WriteLine("ROLLBACK;");
+                RowCounter++;
+            }
+
+            // One record which we need to make sure is in this table
+            if (ATableName == "pm_document_type")
+            {
+                // load the file pm_document_type.d.gz
+                TTable Table = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_document_type");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_document_type.d.gz",
+                    Table.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(Table);
+
+                // check if record already exists. If it does then return.
+                while (true)
+                {
+                    string[] Row = Parser.ReadNextRow();
+
+                    if (Row == null)
+                    {
+                        break;
+                    }
+                    else if (GetValue(ColumnNames, Row, "pm_doc_code_c") == "DRIVINGLICENCE")
+                    {
+                        return RowCounter;
+                    }
+                }
+
+                SetValue(AColumnNames, ref ANewRow, "pm_doc_code_c", "DRIVINGLICENCE");
+                SetValue(AColumnNames, ref ANewRow, "pm_doc_category_c", "GENERAL");
+                SetValue(AColumnNames, ref ANewRow, "pm_description_c", "Driving Licence");
+                SetValue(AColumnNames, ref ANewRow, "pm_unassignable_flag_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "pm_unassignable_date_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_deletable_flag_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                AWriterTest.WriteLine("\\.");
+                AWriterTest.WriteLine("ROLLBACK;");
+                RowCounter++;
+            }
+
+            // add new documents for driving licences recorded in pm_personal_data
+            if (ATableName == "pm_document")
+            {
+                // find the site key
+                string SiteKey = "0";
+
+                TTable SystemParameterTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("s_system_parameter");
+
+                TParseProgressCSV SystemParameterParser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "s_system_parameter.d.gz",
+                    SystemParameterTable.grpTableField.Count);
+
+                StringCollection SystemParameterColumnNames = GetColumnNames(SystemParameterTable);
+
+                while (true)
+                {
+                    string[] SystemParameterRow = SystemParameterParser.ReadNextRow();
+
+                    if (SystemParameterRow == null)
+                    {
+                        break;
+                    }
+
+                    SiteKey = GetValue(SystemParameterColumnNames, SystemParameterRow, "s_site_key_n");
+
+                    if (SiteKey != "0")
+                    {
+                        break;
+                    }
+                }
+
+                // load the file pm_personal_data.d.gz
+                TTable Table = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_personal_data");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_personal_data.d.gz",
+                    Table.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(Table);
+
+                // move sequence on by 1
+                TSequenceWriter.GetNextSequenceValue("seq_document");
+
+                while (true)
+                {
+                    string[] Row = Parser.ReadNextRow();
+
+                    if (Row == null)
+                    {
+                        break;
+                    }
+
+                    if (GetValue(ColumnNames, Row, "pm_gen_driver_license_l") == "yes")
+                    {
+                        // create comment from old data
+                        string Comment = "";
+                        string DriverStatus = GetValue(ColumnNames, Row, "pm_driver_status_c");
+
+                        if (GetValue(ColumnNames, Row, "pm_om_driver_license_l") == "yes")
+                        {
+                            Comment = Catalog.GetString("Approved to drive for us.") + " ";
+                        }
+
+                        if (!string.IsNullOrEmpty(DriverStatus))
+                        {
+                            // load the file pt_driver_status.d.gz
+                            TTable DriverStatusTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("pt_driver_status");
+
+                            TParseProgressCSV DriverStatusParser = new TParseProgressCSV(
+                                TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_driver_status.d.gz",
+                                DriverStatusTable.grpTableField.Count);
+
+                            while (true)
+                            {
+                                string[] DriverStatusRow = DriverStatusParser.ReadNextRow();
+
+                                if (DriverStatusRow == null)
+                                {
+                                    break;
+                                }
+
+                                if (DriverStatusRow[0] == DriverStatus)
+                                {
+                                    Comment += Catalog.GetString("Driver status") + ": " + DriverStatusRow[1];
+                                    break;
+                                }
+                            }
+                        }
+
+                        SetValue(AColumnNames, ref ANewRow, "p_site_key_n", SiteKey);
+                        SetValue(AColumnNames, ref ANewRow, "pm_document_key_n", TSequenceWriter.GetNextSequenceValue("seq_document").ToString());
+                        SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(ColumnNames, Row, "p_partner_key_n"));
+                        SetValue(AColumnNames, ref ANewRow, "pm_doc_code_c", "DRIVINGLICENCE");
+                        SetValue(AColumnNames, ref ANewRow, "pm_document_id_c", GetValue(ColumnNames, Row, "pm_driving_license_number_c"));
+                        SetValue(AColumnNames, ref ANewRow, "pm_place_of_issue_c", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_date_of_issue_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_date_of_start_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_date_of_expiration_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_doc_comment_c", Comment);
+                        SetValue(AColumnNames, ref ANewRow, "pm_assoc_doc_id_c", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_contact_partner_key_n", "0");
+                        SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                        AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                        RowCounter++;
+                    }
                 }
             }
 

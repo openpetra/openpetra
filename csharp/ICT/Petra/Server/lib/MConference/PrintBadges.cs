@@ -244,7 +244,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
             try
             {
-                TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
+                TAttendeeManagement.RefreshAttendees(AEventPartnerKey);
 
                 ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
                 TApplicationManagement.GetApplications(
@@ -323,11 +323,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 if (ADoNotReprint)
                 {
                     // store modified date printed for badges
-                    TVerificationResultCollection VerificationResult;
-
                     MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                    ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+                    ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
                 }
 
                 return PDFPath;
@@ -366,7 +364,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 if (indexAttendee == -1)
                 {
-                    TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
+                    TAttendeeManagement.RefreshAttendees(AEventPartnerKey);
                 }
 
                 string ResultDocument = string.Empty;
@@ -422,7 +420,7 @@ namespace Ict.Petra.Server.MConference.Applications
             string ATemplate,
             bool APrintAll)
         {
-            TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
+            TAttendeeManagement.RefreshAttendees(AEventPartnerKey);
 
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
             TApplicationManagement.GetApplications(

@@ -84,12 +84,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FLedgerNumber = value;
 
                 LoadBudgets();
+
+                //UpdateRecordNumberDisplay();
             }
         }
 
         private void LoadBudgets()
         {
+            Console.WriteLine("LoadBudgets() ...");
+            DateTime dtStart = DateTime.Now;
+
             FMainDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
+
+            Console.WriteLine("Budgets loaded -- {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
 
             //Prepare form for correct number of periods
             //FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerInfo(FLedgerNumber));
@@ -100,10 +107,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             FHas13Periods = (FNumberOfPeriods == 13);
             FHas14Periods = (FNumberOfPeriods == 14);
-
-            FCostCentreTable = (ACostCentreTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                FLedgerNumber);
-            FAccountTable = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
             // to get an empty ABudgetFee table, instead of null reference
             FMainDS.Merge(new BudgetTDS());
@@ -118,11 +121,86 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             SetBudgetDefaultView();
-            grdDetails.AutoSizeCells();
+            //grdDetails.AutoSizeCells();
 
             SelectRowInGrid(1);
 
+            RefreshComboLabels();
+
+            Console.WriteLine("Load complete  {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
             FLoadCompleted = true;
+        }
+
+        private void RefreshComboLabels()
+        {
+            //Force a refresh of the combo labels if the first highlighted row contains inactive codes
+            // as the colour does not show up for a first row
+            if (!AccountIsActive(cmbDetailAccountCode.GetSelectedString())
+                && (cmbDetailAccountCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed))
+            {
+                cmbDetailAccountCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
+
+            if (!CostCentreIsActive(cmbDetailCostCentreCode.GetSelectedString())
+                && (cmbDetailCostCentreCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed))
+            {
+                cmbDetailCostCentreCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
+        }
+
+        private void SetupExtraGridFunctionality()
+        {
+            //Populate CostCentreList variable
+            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            FCostCentreTable = (ACostCentreTable)costCentreList;
+
+            //Populate AccountList variable
+            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            FAccountTable = (AAccountTable)accountList;
+
+            //Prepare grid to highlight inactive accounts/cost centres
+            // Create a cell view for special conditions
+            SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
+            strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
+            //strikeoutCell.ForeColor = Color.Crimson;
+
+            // Create a condition, apply the view when true, and assign a delegate to handle it
+            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
+            conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
+            {
+                DataRowView row = (DataRowView)itemRow;
+                string accountCode = row[ABudgetTable.ColumnAccountCodeId].ToString();
+                return !AccountIsActive(accountCode);
+            };
+
+            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
+            conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
+            {
+                DataRowView row = (DataRowView)itemRow;
+                string costCentreCode = row[ABudgetTable.ColumnCostCentreCodeId].ToString();
+                return !CostCentreIsActive(costCentreCode);
+            };
+
+            //Add conditions to columns
+            int indexOfCostCentreCodeDataColumn = 0;
+            int indexOfAccountCodeDataColumn = 1;
+
+            grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
+            grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
         }
 
         private void SetBudgetDefaultView()
@@ -130,96 +208,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             DataView myDataView = FMainDS.ABudget.DefaultView;
 
             myDataView.AllowNew = false;
-            myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
             myDataView.Sort = String.Format("{0} ASC, {1} ASC", ABudgetTable.GetCostCentreCodeDBName(), ABudgetTable.GetAccountCodeDBName());
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+            string rowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
+            FFilterPanelControls.SetBaseFilter(rowFilter, true);
+            ApplyFilter();
+            UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
         }
 
         private void InitialiseControls()
         {
             ClearBudgetTextboxCurrencyFormat();
 
+            SetupExtraGridFunctionality();
+
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true);
 
-            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
+            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false, true);
 
             // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
-            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true, true);
 
-            if (FNumberOfPeriods == 12)
-            {
-                txtPeriod07Amount.Top = txtPeriod08Amount.Top;
-                txtPeriod07Amount.Left = txtPeriod08Amount.Left;
-                txtPeriod08Amount.Top = txtPeriod09Amount.Top;
-                txtPeriod08Amount.Left = txtPeriod09Amount.Left;
-                txtPeriod09Amount.Top = txtPeriod10Amount.Top;
-                txtPeriod09Amount.Left = txtPeriod10Amount.Left;
-                txtPeriod10Amount.Top = txtPeriod11Amount.Top;
-                txtPeriod10Amount.Left = txtPeriod11Amount.Left;
-                txtPeriod11Amount.Top = txtPeriod12Amount.Top;
-                txtPeriod11Amount.Left = txtPeriod12Amount.Left;
-                txtPeriod12Amount.Top = txtPeriod13Amount.Top;
-                txtPeriod12Amount.Left = txtPeriod13Amount.Left;
-                txtTotalAdhocAmount.Top = txtPeriod14Amount.Top;
-                txtTotalAdhocAmount.Left = txtPeriod14Amount.Left;
-                lblPeriod14Amount.Text = lblTotalAdhocAmount.Text;
-                lblPeriod13Amount.Text = lblPeriod12Amount.Text;
-                lblPeriod12Amount.Text = lblPeriod11Amount.Text;
-                lblPeriod11Amount.Text = lblPeriod10Amount.Text;
-                lblPeriod10Amount.Text = lblPeriod09Amount.Text;
-                lblPeriod09Amount.Text = lblPeriod08Amount.Text;
-                lblPeriod08Amount.Text = lblPeriod07Amount.Text;
-                lblPeriod07Amount.Visible = false;
-                txtPeriod14Amount.Visible = false;
-                lblPeriod14Amount.Visible = true;
-                lblTotalAdhocAmount.Visible = false;
+            bool bMoreThan12 = (FNumberOfPeriods > 12);
+            bool bMoreThan13 = (FNumberOfPeriods > 13);
 
-                txtPeriod07Index.Top = txtPeriod08Index.Top;
-                txtPeriod07Index.Left = txtPeriod08Index.Left;
-                txtPeriod08Index.Top = txtPeriod09Index.Top;
-                txtPeriod08Index.Left = txtPeriod09Index.Left;
-                txtPeriod09Index.Top = txtPeriod10Index.Top;
-                txtPeriod09Index.Left = txtPeriod10Index.Left;
-                txtPeriod10Index.Top = txtPeriod11Index.Top;
-                txtPeriod10Index.Left = txtPeriod11Index.Left;
-                txtPeriod11Index.Top = txtPeriod12Index.Top;
-                txtPeriod11Index.Left = txtPeriod12Index.Left;
-                txtPeriod12Index.Top = txtPeriod13Index.Top;
-                txtPeriod12Index.Left = txtPeriod13Index.Left;
-                txtInflateBaseTotalAmount.Top = txtPeriod14Index.Top;
-                txtInflateBaseTotalAmount.Left = txtPeriod14Index.Left;
-                lblPeriod14Index.Text = lblInflateBaseTotalAmount.Text;
-                lblPeriod13Index.Text = lblPeriod12Index.Text;
-                lblPeriod12Index.Text = lblPeriod11Index.Text;
-                lblPeriod11Index.Text = lblPeriod10Index.Text;
-                lblPeriod10Index.Text = lblPeriod09Index.Text;
-                lblPeriod09Index.Text = lblPeriod08Index.Text;
-                lblPeriod08Index.Text = lblPeriod07Index.Text;
-                lblPeriod07Index.Visible = false;
-                txtPeriod14Index.Visible = false;
-                lblPeriod14Index.Visible = true;
-                lblInflateBaseTotalAmount.Visible = false;
-            }
-            else if (FNumberOfPeriods == 13)
-            {
-                txtPeriod14Amount.Visible = false;
-                lblPeriod14Amount.Visible = false;
+            txtPeriod13Amount.Visible = bMoreThan12;
+            lblPeriod13Amount.Visible = bMoreThan12;
+            txtPeriod13Index.Visible = bMoreThan12;
+            lblPeriod13Index.Visible = bMoreThan12;
 
-                txtPeriod14Index.Visible = false;
-                lblPeriod14Index.Visible = false;
-            }
-            else if (FNumberOfPeriods == 14)
-            {
-                txtPeriod13Amount.Visible = true;
-                lblPeriod13Amount.Visible = true;
-                txtPeriod14Amount.Visible = true;
-                lblPeriod14Amount.Visible = true;
-
-                txtPeriod13Index.Visible = true;
-                lblPeriod13Index.Visible = true;
-                txtPeriod14Index.Visible = true;
-                lblPeriod14Index.Visible = true;
-            }
+            txtPeriod14Amount.Visible = bMoreThan13;
+            lblPeriod14Amount.Visible = bMoreThan13;
+            txtPeriod14Index.Visible = bMoreThan13;
+            lblPeriod14Index.Visible = bMoreThan13;
 
             lblPerPeriodAmount.Text = "Amount for periods 1 to " + (FNumberOfPeriods - 1).ToString() + ":";
             lblLastPeriodAmount.Text = "Amount for period " + FNumberOfPeriods.ToString() + ":";
@@ -308,7 +331,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
+            AVerificationResult = null;
+
+            TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges);
 
             //Reset this flag if the save was successful
             FRejectYearChange = !(TSCR == TSubmitChangesResult.scrOK);
@@ -332,10 +357,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             ADeletionQuestion = String.Format(Catalog.GetString(
                     "You have chosen to delete this budget (Cost Centre: {0}, Account: {1}, Type: {2}, Revision: {3}).{4}{4}Do you really want to delete it?"),
-                FPreviouslySelectedDetailRow.CostCentreCode,
-                FPreviouslySelectedDetailRow.AccountCode,
-                FPreviouslySelectedDetailRow.BudgetTypeCode,
-                FPreviouslySelectedDetailRow.Revision,
+                ARowToDelete.CostCentreCode,
+                ARowToDelete.AccountCode,
+                ARowToDelete.BudgetTypeCode,
+                ARowToDelete.Revision,
                 Environment.NewLine);
             return true;
         }
@@ -350,7 +375,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             ACompletionMessage = String.Empty;
 
-            int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            int budgetSequence = ARowToDelete.BudgetSequence;
             DeleteBudgetPeriodData(budgetSequence);
             ARowToDelete.Delete();
 
@@ -397,7 +422,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 try
                 {
-                    FdlgSeparator.CSVFileName = dialog.FileName;
+                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+
+                    if (!fileCanOpen)
+                    {
+                        throw new Exception(String.Format(Catalog.GetString("File {0} Cannot be opened."), dialog.FileName));
+                    }
 
                     FdlgSeparator.DateFormat = dateFormatString;
 
@@ -963,7 +993,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     }
                     else
                     {
-                        periodValues[i - 1] = (currentPeriodAmount - priorPeriodAmount) / priorPeriodAmount * 100;
+                        if (priorPeriodAmount == 0)
+                        {
+                            periodValues[i - 1] = 0;
+                        }
+                        else
+                        {
+                            periodValues[i - 1] = (currentPeriodAmount - priorPeriodAmount) / priorPeriodAmount * 100;
+                        }
                     }
 
                     priorPeriodAmount = currentPeriodAmount;
@@ -1186,9 +1223,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             FBudgetSequence = ARow.BudgetSequence;
 
-            AccountIsActive();
-            CostCentreIsActive();
-
             pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
             pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
@@ -1306,15 +1340,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             cmbDetailAccountCode.GetSelectedString()));
                     cmbDetailCostCentreCode.SelectedIndex = -1;
                 }
-                else if (!costCentreActive
-                         && (MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
-                                     currentCostCentre),
-                                 Catalog.GetString("Confirm Cost Centre"),
-                                 MessageBoxButtons.YesNo,
-                                 MessageBoxIcon.Question,
-                                 MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
+                else if (!costCentreActive)
                 {
-                    cmbDetailCostCentreCode.SelectedIndex = -1;
+                    if (MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
+                                currentCostCentre),
+                            Catalog.GetString("Confirm Cost Centre"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+                    {
+                        cmbDetailCostCentreCode.SelectedIndex = -1;
+                    }
                 }
             }
         }
@@ -1334,7 +1370,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             currentAccount = cmbDetailAccountCode.GetSelectedString();
-            accountActive = AccountIsActive();
+            accountActive = AccountIsActive(currentAccount);
 
             //If change from combo action as opposed to moving rows
             if (FPreviouslySelectedDetailRow.BudgetSequence == FBudgetSequence)
@@ -1347,15 +1383,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             cmbDetailAccountCode.GetSelectedString()));
                     cmbDetailAccountCode.SelectedIndex = -1;
                 }
-                else if (!accountActive
-                         && (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
-                                     currentAccount),
-                                 Catalog.GetString("Confirm Account"),
-                                 MessageBoxButtons.YesNo,
-                                 MessageBoxIcon.Question,
-                                 MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
+                else if (!accountActive)
                 {
-                    cmbDetailAccountCode.SelectedIndex = -1;
+                    if (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
+                                currentAccount),
+                            Catalog.GetString("Confirm Account"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+                    {
+                        cmbDetailAccountCode.SelectedIndex = -1;
+                    }
                 }
             }
 
@@ -1381,42 +1419,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             return foundRows.Length == 0;
         }
 
-        private bool AccountIsActive()
+        private bool AccountIsActive(string AAccountCode = "")
         {
-            bool retVal = false;
+            bool retVal = true;
 
             AAccountRow currentAccountRow = null;
 
-            if ((FAccountTable != null) && (cmbDetailAccountCode.SelectedIndex != -1) && (cmbDetailAccountCode.Count > 0)
-                && (cmbDetailAccountCode.GetSelectedString() != null))
+            //If empty, read value from combo
+            if (AAccountCode == string.Empty)
             {
-                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, cmbDetailAccountCode.GetSelectedString() });
-
-                if (currentAccountRow != null)
+                if ((FAccountTable != null) && (cmbDetailAccountCode.SelectedIndex != -1) && (cmbDetailAccountCode.Count > 0)
+                    && (cmbDetailAccountCode.GetSelectedString() != null))
                 {
-                    retVal = currentAccountRow.AccountActiveFlag;
+                    AAccountCode = cmbDetailAccountCode.GetSelectedString();
                 }
+            }
+
+            currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+
+            if (currentAccountRow != null)
+            {
+                retVal = currentAccountRow.AccountActiveFlag;
             }
 
             return retVal;
         }
 
-        private bool CostCentreIsActive()
+        private bool CostCentreIsActive(string ACostCentreCode = "")
         {
             bool retVal = true;
 
             ACostCentreRow currentCostCentreRow = null;
 
-            if ((FCostCentreTable != null) && (cmbDetailCostCentreCode.SelectedIndex != -1) && (cmbDetailCostCentreCode.Count > 0)
-                && (cmbDetailCostCentreCode.GetSelectedString() != null))
+            //If empty, read value from combo
+            if (ACostCentreCode == string.Empty)
             {
-                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber,
-                                                                                                 cmbDetailCostCentreCode.GetSelectedString() });
-
-                if (currentCostCentreRow != null)
+                if ((FCostCentreTable != null) && (cmbDetailCostCentreCode.SelectedIndex != -1) && (cmbDetailCostCentreCode.Count > 0)
+                    && (cmbDetailCostCentreCode.GetSelectedString() != null))
                 {
-                    retVal = currentCostCentreRow.CostCentreActiveFlag;
+                    ACostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
                 }
+            }
+
+            currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+
+            if (currentCostCentreRow != null)
+            {
+                retVal = currentCostCentreRow.CostCentreActiveFlag;
             }
 
             return retVal;

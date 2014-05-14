@@ -42,7 +42,7 @@ using Ict.Petra.Shared.MPartner.Partner.Validation;
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>Delegate declaration</summary>
-    public delegate void TDelegateMaintainWorkerField();
+    public delegate void TDelegateMaintainGiftDestination();
 
     /// <summary>
     /// Event Arguments declaration
@@ -69,10 +69,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private String FPartnerClass;
 
         // <summary>
-        // Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
+        // Delegate for telling the Partner Edit screen that the 'Gift Destination' button has been clicked.
         // </summary>
         // <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
-        private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
+        private TDelegateMaintainGiftDestination FDelegateMaintainGiftDestination;
 
         private bool FIgnorePartnerStatusChange = true;
 
@@ -139,13 +139,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             #region Show fields according to Partner Class
 
+            txtPartnerKey.PartnerClass = FPartnerClass;
+
             switch (SharedTypes.PartnerClassStringToEnum(FPartnerClass))
             {
                 case TPartnerClass.PERSON:
                     pnlPerson.Visible = true;
                     pnlWorkerField.Visible = true;
                     pnlPerson2ndLine.Visible = true;
-                    txtPartnerClass.BackColor = System.Drawing.Color.Yellow;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
                     FTipMain.SetToolTip(this.txtPersonTitle, PPersonTable.GetTitleHelp());
@@ -241,6 +242,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Updates the 'Status Update' Date TextBox to reflect today's date if the 'Partner Status' was just changed
+        /// </summary>
+        public void UpdateStatusUpdatedDate()
+        {
+            if (FMainDS.PPartner[0].IsStatusChangeNull())
+            {
+                dtpStatusUpdated.Date = null;
+            }
+            else
+            {
+                dtpStatusUpdated.Date = FMainDS.PPartner[0].StatusChange;
+            }
+        }
+
+        /// <summary>
         /// Retrieves data that is in the Controls and puts it into the Tables in FMainDS
         /// </summary>
         public void GetDataFromControls()
@@ -251,12 +267,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Initialises Delegate Function to handle click on the "Worker Field..." button.
+        /// Initialises Delegate Function to handle click on the "Gift Destination" button.
         /// </summary>
         /// <returns>void</returns>
-        public void InitialiseDelegateMaintainWorkerField(TDelegateMaintainWorkerField ADelegateFunction)
+        public void InitialiseDelegateMaintainGiftDestination(TDelegateMaintainGiftDestination ADelegateFunction)
         {
-            FDelegateMaintainWorkerField = ADelegateFunction;
+            FDelegateMaintainGiftDestination = ADelegateFunction;
         }
 
         /// <summary>
@@ -284,12 +300,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Sets the Text of the Worker Field.
+        /// Sets the Text of the Gift Destination.
         /// </summary>
-        /// <param name="AWorkerField">Worker Field.</param>
-        public void SetWorkerFieldText(String AWorkerField)
+        /// <param name="AGiftDestination">Gift Destination.</param>
+        public void SetGiftDestinationText(String AGiftDestination)
         {
-            txtWorkerField.Text = AWorkerField;
+            txtGiftDestination.Text = AGiftDestination;
+            FPetraUtilsObject.SetStatusBarText(txtGiftDestination, AGiftDestination);
         }
 
         #endregion
@@ -312,10 +329,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
             {
                 ARow.NoSolicitations = chkFamilyNoSolicitations.Checked;
+                ARow.AddresseeTypeCode = cmbFamilyAddresseeTypeCode.GetSelectedString();
             }
             else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
                 ARow.NoSolicitations = chkPersonNoSolicitations.Checked;
+                ARow.AddresseeTypeCode = cmbPersonAddresseeTypeCode.GetSelectedString();
             }
         }
 
@@ -863,15 +882,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Actions
 
-        private void MaintainWorkerField(System.Object sender, System.EventArgs e)
+        private void MaintainGiftDestination(System.Object sender, System.EventArgs e)
         {
-            if (this.FDelegateMaintainWorkerField != null)
+            if (this.FDelegateMaintainGiftDestination != null)
             {
-                this.FDelegateMaintainWorkerField();
+                this.FDelegateMaintainGiftDestination();
             }
             else
             {
-                throw new EVerificationMissing("FDelegateMaintainWorkerField");
+                throw new EVerificationMissing("FDelegateMaintainGiftDestination");
             }
         }
 

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using DevAge.ComponentModel;
+using Ict.Common.Exceptions;
 using SourceGrid;
 using SourceGrid.Cells;
 using SourceGrid.Cells.Controllers;
@@ -162,6 +163,17 @@ namespace Ict.Common.Controls
         private static ColourInformation FColourInfo;
         private static bool FColourInfoSetup = false;
 
+        /// <summary>
+        /// Used to refresh grid colours after they have been changed in user preferences.
+        /// </summary>
+        public static bool ColourInfoSetup
+        {
+            set
+            {
+                FColourInfoSetup = value;
+            }
+        }
+
         /// <summary> Required designer variable. </summary>
         private System.ComponentModel.IContainer components = null;
 
@@ -221,11 +233,11 @@ namespace Ict.Common.Controls
         private Boolean FSortableHeaders;
 
         /// <summary>
-        /// Keeps track of the the selected rows before sorting in order to be able
-        /// to select them again after sorting the Grid.
+        /// Keeps track of the the selected row before sorting in order to be able
+        /// to select it again after sorting the Grid.
         ///
         /// </summary>
-        private DataRowView[] FRowsSelectedBeforeSort;
+        private DataRowView FRowSelectedBeforeSort;
 
         /// <summary>
         /// Maintains the state of whether the currently selected row should stay
@@ -265,9 +277,25 @@ namespace Ict.Common.Controls
         private Boolean FAutoFindListRebuildNeeded;
 
         /// <summary>
+        /// A flag that is true while the mouse is down.
+        /// </summary>
+        private Boolean FMouseIsDown;
+
+        /// <summary>
         /// A flag that is true during the 'Sorted' event.
         /// </summary>
         private Boolean FSorting;
+
+        /// <summary>
+        /// Returns true when the mouse is down inside the grid.
+        /// </summary>
+        public Boolean IsMouseDown
+        {
+            get
+            {
+                return FMouseIsDown;
+            }
+        }
 
         /// <summary>
         /// Returns true when the grid is re-ordering rows after a sort operation.  Can be used to ignore updates from a panel to the grid
@@ -606,7 +634,7 @@ namespace Ict.Common.Controls
                 {
                     if (DesignMode)
                     {
-                        throw new TDataGridAutoFindModeNotImplementedYetException(
+                        throw new EDataGridAutoFindModeNotImplementedYetException(
                             "Sorry, AutoFindMode 'FullString' is not implemented yet! You could implement it, though, if you really need it!");
                     }
                 }
@@ -747,6 +775,9 @@ namespace Ict.Common.Controls
             this.Controller.AddController(new DoubleClickController());
             SpecialKeys = SourceGrid.GridSpecialKeys.Default ^ SourceGrid.GridSpecialKeys.Tab;
 
+            this.MouseDown += new MouseEventHandler(TSgrdDataGrid_MouseDown);
+            this.MouseUp += new MouseEventHandler(TSgrdDataGrid_MouseUp);
+
             TToolTipModel.InitializeUnit();
         }
 
@@ -816,7 +847,7 @@ namespace Ict.Common.Controls
             this.SortableHeaders = true;
             this.KeepRowSelectedAfterSort = true;
             this.AutoFindColumn = -1;
-            this.Selection.FocusStyle = SourceGrid.FocusStyle.FocusFirstCellOnEnter | SourceGrid.FocusStyle.RemoveFocusCellOnLeave;
+            this.Selection.FocusStyle = FocusStyle.None;        // We handle all focus issues ourselves.  In a multi-selection world this is important
             this.Invalidate();
         }
 
@@ -990,7 +1021,7 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
         {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null, true);
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, AColumnWidth, null, true);
         }
 
         /// <summary>
@@ -1003,7 +1034,7 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, bool AReadOnly)
         {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null, AReadOnly);
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, AColumnWidth, null, AReadOnly);
         }
 
         /// <summary>
@@ -1250,7 +1281,14 @@ namespace Ict.Common.Controls
                 object value,
                 Type destinationType)
             {
-                return String.Format("{0:0000000000}", (Int64)value);
+                if (value != null)
+                {
+                    return String.Format("{0:0000000000}", (Int64)value);
+                }
+                else
+                {
+                    return String.Format("{0:0000000000}", 0);
+                }
             }
         }
 
@@ -1341,19 +1379,11 @@ namespace Ict.Common.Controls
         {
             base.OnSortedRangeRows(e);
 
-            FSorting = true;
-
-            if (FRowsSelectedBeforeSort.Length > 0)
+            if ((FRowSelectedBeforeSort != null) && FKeepRowSelectedAfterSort)
             {
-                if (FKeepRowSelectedAfterSort)
-                {
-                    this.SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, false);
-                }
-
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
+                int nNewRowIndex = this.Rows.DataSourceRowToIndex(FRowSelectedBeforeSort) + 1;
+                SelectRowAfterSort(nNewRowIndex);
             }
-
-            FSorting = false;
         }
 
         /// <summary>
@@ -1362,8 +1392,41 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected override void OnSortingRangeRows(SourceGrid.SortRangeRowsEventArgs e)
         {
-            FRowsSelectedBeforeSort = this.SelectedDataRowsAsDataRowView;
+            FRowSelectedBeforeSort = (DataRowView) this.Rows.IndexToDataSourceRow(this.Selection.ActivePosition.Row);
             base.OnSortingRangeRows(e);
+        }
+
+        /// <summary>
+        /// Selects a grid row after a row has moved due to sorting without putting the focus on the grid.
+        /// Note that no FocusRowLeaving event is called so this call will by-pass any validation (so it can be called from within a validation routine)
+        /// Note also that this will give rise to a RowChanged event, but the grid's 'Sorting' property will be true.
+        /// </summary>
+        public void SelectRowAfterSort(Int32 ARowNumberInGrid)
+        {
+            FSorting = true;
+            SelectRowWithoutFocus(ARowNumberInGrid);
+            FSorting = false;
+        }
+
+        /// <summary>
+        /// Used as a way of selecting a grid row without putting the focus on the grid.
+        /// Note that no FocusRowLeaving event is called so this call will by-pass any validation (so it can be called from within a validation routine)
+        /// However a SelectionChanged event will be fired.
+        /// </summary>
+        public void SelectRowWithoutFocus(Int32 ARowNumberInGrid)
+        {
+            if (this.Rows.Count > this.FixedRows)
+            {
+                ARowNumberInGrid = Math.Max(Math.Min(ARowNumberInGrid, this.Rows.Count - 1), this.FixedRows);
+            }
+            else
+            {
+                ARowNumberInGrid = -1;
+            }
+
+            this.Selection.ResetSelection(false, true);
+            this.Selection.SelectRow(ARowNumberInGrid, true);
+            this.ShowCell(ARowNumberInGrid);
         }
 
         #endregion
@@ -1378,6 +1441,16 @@ namespace Ict.Common.Controls
         private void OnDataViewChanged(Object sender, ListChangedEventArgs e)
         {
             FAutoFindListRebuildNeeded = true;
+        }
+
+        private void TSgrdDataGrid_MouseUp(object sender, MouseEventArgs e)
+        {
+            FMouseIsDown = false;
+        }
+
+        private void TSgrdDataGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            FMouseIsDown = true;
         }
 
         /// <summary>
@@ -1572,25 +1645,42 @@ namespace Ict.Common.Controls
         /// DataSourceRowToIndex2 manually iterates through the Grid's DataView and compares Rows objects. This works!
         /// </summary>
         /// <returns>The 0-based index of the specified DataRowView in the grid's DataView</returns>
-        public int DataSourceRowToIndex2(DataRowView ADataRowView)
+        public int DataSourceRowToIndex2(DataRowView ADataRowView, int AHintRowToTryFirst = -1)
         {
-            return DataSourceRowToIndex2(ADataRowView.Row);
+            return DataSourceRowToIndex2(ADataRowView.Row, AHintRowToTryFirst);
         }
 
         /// <summary>
         /// This overload takes a DataRow as the parameter in place of a DataRowView.  See also the comment for the DataRowView overload.
         /// </summary>
         /// <param name="ADataRow">The Row object whose rowindex is required</param>
+        /// <param name="AHintRowToTryFirst">You can supply a 0-based row number where you expect the row to be.
+        /// If you are correct, this saves the code from iterating through all the grid rows!</param>
         /// <returns>The 0-based index of the specified DataRow in the grid's DataView</returns>
-        public int DataSourceRowToIndex2(DataRow ADataRow)
+        public int DataSourceRowToIndex2(DataRow ADataRow, int AHintRowToTryFirst = -1)
         {
             int RowIndex = -1;
 
-            for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).DataView.Count; Counter2++)
+            if (ADataRow != null)
             {
-                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRow)
+                DataView dv = (this.DataSource as BoundDataView).DataView;
+
+                if ((AHintRowToTryFirst >= 0) && (AHintRowToTryFirst < dv.Count))
                 {
-                    RowIndex = Counter2;
+                    if (dv[AHintRowToTryFirst].Row == ADataRow)
+                    {
+                        // Good hint!
+                        return AHintRowToTryFirst;
+                    }
+                }
+
+                for (int Counter2 = 0; Counter2 < dv.Count; Counter2++)
+                {
+                    if (dv[Counter2].Row == ADataRow)
+                    {
+                        RowIndex = Counter2;
+                        break;
+                    }
                 }
             }
 
@@ -1624,11 +1714,6 @@ namespace Ict.Common.Controls
         /// select a row in the grid.  By default generate the event(s) for focus changes.
         public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
         {
-            if (Rows.Count <= 1)
-            {
-                return;
-            }
-
             if (ASelectBorderIfOutsideLimit)
             {
                 if (ARowNumberInGrid >= Rows.Count)
@@ -1642,17 +1727,35 @@ namespace Ict.Common.Controls
                 }
             }
 
-            // These two calls will generate rowLeaving events ONLY WHEN the grid is the current focussed control.
-            // Normally when this is called from manual code the grid will not have the focus.  Instead the control
-            // whose click event you are responding to will be focussed, so these calls will simply select the desired row without
-            // any consequent events.
-            // When events are fired they will probably result in updating a details panel
-            // When events are not fired you may need to update the details manually
-            this.Selection.ResetSelection(false);
-            this.Selection.SelectRow(ARowNumberInGrid, true);
+            Position newPosition;
 
-            // scroll to the row
-            ShowCell(ARowNumberInGrid);
+            if (ARowNumberInGrid >= this.FixedRows)
+            {
+                int column = 0;
+
+                while ((column < this.FixedColumns) && (column < this.Columns.Count - 1) && !this.Columns[column].Visible)
+                {
+                    column++;
+                }
+
+                newPosition = new Position(ARowNumberInGrid, column);
+            }
+            else
+            {
+                newPosition = Position.Empty;
+            }
+
+            // This call will set the active cell.
+            // If the cell row to activate is not the current row a FocusRowLeaving event (which can be cancelled) will be fired.
+            // In all cases a SelectionChanged event will be fired after that, even if the row to select is the current row.
+            //  (This is a good thing because the data in the row may have changed)
+            this.Selection.Focus(newPosition, true);
+
+            if (newPosition != Position.Empty)
+            {
+                // scroll to the row
+                ShowCell(newPosition.Row);
+            }
         }
 
         /// <summary>
@@ -1727,13 +1830,13 @@ namespace Ict.Common.Controls
                 if ((FAutoFindColumn < 0) || (FAutoFindColumn >= this.Columns.Count))
                 {
                     // GridDataTable.Columns.Count
-                    throw new TDataGridInvalidAutoFindColumnException(
+                    throw new EDataGridInvalidAutoFindColumnException(
                         "The specified AutoFindColumn is out of the range of DataGridColumns that the Grid has");
                 }
 
                 if (this.Columns[FAutoFindColumn].PropertyName == null)
                 {
-                    throw new TDataGridInvalidAutoFindColumnException(
+                    throw new EDataGridInvalidAutoFindColumnException(
                         "The specified AutoFindColumn is not a DataBound DataGridColumn! AutoFind can only be used with DataBound DataGridColumns.");
                 }
                 else
@@ -1877,18 +1980,12 @@ namespace Ict.Common.Controls
                 // Key for scrolling to and selecting the first row in the Grid
                 // MessageBox.Show('Home pressed!');
                 SelectRowInGrid(1);
-
-                // keep the focus on the grid
-                this.Selection.Focus(new Position(1, 0), true);
             }
             // Key for scrolling to and selecting the last row in the Grid
             else if (AKeyEventArgs.KeyCode == Keys.End)
             {
                 // MessageBox.Show('End pressed!  Rows: ' + this.Rows.Count.ToString);
                 SelectRowInGrid(this.Rows.Count - 1);
-
-                // keep the focus on the grid
-                this.Selection.Focus(new Position(this.Rows.Count - 1, 0), true);
             }
             // Key for firing OnInsertKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Insert)
@@ -2030,51 +2127,71 @@ namespace Ict.Common.Controls
     public delegate void TDoubleClickHeaderCellEventHandler(System.Object Sender, ColumnEventArgs e);
 
 
-    #region TDataGridInvalidAutoFindColumnException
+    #region EDataGridInvalidAutoFindColumnException
 
     /// <summary>
-    /// cannot find
+    /// Cannot find.
     /// </summary>
-    public class TDataGridInvalidAutoFindColumnException : ApplicationException
+    public class EDataGridInvalidAutoFindColumnException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridInvalidAutoFindColumnException() : base()
+        public EDataGridInvalidAutoFindColumnException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridInvalidAutoFindColumnException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDataGridInvalidAutoFindColumnException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridInvalidAutoFindColumnException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+
     #endregion
 
-    #region TDataGridAutoFindModeNotImplementedYetException
+    #region EDataGridAutoFindModeNotImplementedYetException
 
     /// <summary>
-    /// Auto Find not implemented yet
+    /// Auto Find not implemented yet.
     /// </summary>
-    public class TDataGridAutoFindModeNotImplementedYetException : ApplicationException
+    public class EDataGridAutoFindModeNotImplementedYetException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridAutoFindModeNotImplementedYetException() : base()
+        public EDataGridAutoFindModeNotImplementedYetException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridAutoFindModeNotImplementedYetException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDataGridAutoFindModeNotImplementedYetException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridAutoFindModeNotImplementedYetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+
     #endregion
 }

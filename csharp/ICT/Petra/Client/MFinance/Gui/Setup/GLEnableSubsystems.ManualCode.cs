@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -37,10 +38,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TFrmGLEnableSubsystems
     {
         private Int32 FLedgerNumber;
-        private Boolean FGiftReceiptingActivated;
+        private Boolean FGiftProcessingActivated;
         private Boolean FAccountsPayableActivated;
-        private Boolean FCanGiftReceiptingBeDeactivated;
+        private Boolean FCanGiftProcessingBeDeactivated;
         private Boolean FCanAccountsPayableBeDeactivated;
+
+        /// <summary>Delegate to update subsystem link status which needs to be updated by caller.</summary>
+        public delegate void UpdateFinanceSubsystemLinkStatus();
+
+        /// <summary>Store Delegate to update subsystem link status</summary>
+        private static UpdateFinanceSubsystemLinkStatus FFinanceSubSystemLinkStatus;
 
         /// <summary>
         /// The applicable Ledger number
@@ -55,12 +62,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                FGiftReceiptingActivated = TRemote.MFinance.Setup.WebConnectors.IsGiftReceiptingSubsystemActivated(FLedgerNumber);
+                FGiftProcessingActivated = TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(FLedgerNumber);
                 FAccountsPayableActivated = TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(FLedgerNumber);
 
-                if (FGiftReceiptingActivated)
+                if (FGiftProcessingActivated)
                 {
-                    FCanGiftReceiptingBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanGiftReceiptingSubsystemBeDeactivated(FLedgerNumber);
+                    FCanGiftProcessingBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanGiftProcessingSubsystemBeDeactivated(FLedgerNumber);
                 }
 
                 if (FAccountsPayableActivated)
@@ -72,30 +79,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        /// <summary>
+        /// Delegate for determinig a help topic for a given Form and Control.
+        /// </summary>
+        public static UpdateFinanceSubsystemLinkStatus FinanceSubSystemLinkStatus
+        {
+            get
+            {
+                return FFinanceSubSystemLinkStatus;
+            }
+            set
+            {
+                FFinanceSubSystemLinkStatus = value;
+            }
+        }
+
         private void InitializeManualCode()
         {
-            txtGiftReceiptingStatus.ReadOnly = true;
+            txtGiftProcessingStatus.ReadOnly = true;
             txtAccountsPayableStatus.ReadOnly = true;
             txtStartingReceiptNumber.NumberValueInt = 1;
         }
 
         private void UpdateControls()
         {
-            btnActivateGiftReceipting.Enabled = !FGiftReceiptingActivated;
+            btnActivateGiftProcessing.Enabled = !FGiftProcessingActivated;
 
-            lblStartingReceiptNumber.Visible = !FGiftReceiptingActivated;
-            txtStartingReceiptNumber.Visible = !FGiftReceiptingActivated;
+            lblStartingReceiptNumber.Visible = !FGiftProcessingActivated;
+            txtStartingReceiptNumber.Visible = !FGiftProcessingActivated;
 
-            if (FGiftReceiptingActivated)
+            if (FGiftProcessingActivated)
             {
-                txtGiftReceiptingStatus.Text = Catalog.GetString("Activated");
-                btnActivateGiftReceipting.Text = Catalog.GetString("Deactivate Gift Receipting");
-                btnActivateGiftReceipting.Enabled = FCanGiftReceiptingBeDeactivated;
+                txtGiftProcessingStatus.Text = Catalog.GetString("Activated");
+                btnActivateGiftProcessing.Text = Catalog.GetString("Deactivate Gift Processing");
+                btnActivateGiftProcessing.Enabled = FCanGiftProcessingBeDeactivated;
             }
             else
             {
-                txtGiftReceiptingStatus.Text = Catalog.GetString("Not activated yet");
-                btnActivateGiftReceipting.Text = Catalog.GetString("Activate Gift Receipting");
+                txtGiftProcessingStatus.Text = Catalog.GetString("Not activated yet");
+                btnActivateGiftProcessing.Text = Catalog.GetString("Activate Gift Processing");
             }
 
             btnActivateAccountsPayable.Enabled = !FAccountsPayableActivated;
@@ -111,32 +133,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtAccountsPayableStatus.Text = Catalog.GetString("Not activated yet");
                 btnActivateAccountsPayable.Text = Catalog.GetString("Activate Accounts Payable");
             }
+
+            // now update menu links for gift processing and accounts payable in caller window (may need to be enabled/disabled)
+            if (FFinanceSubSystemLinkStatus != null)
+            {
+                FFinanceSubSystemLinkStatus();
+            }
         }
 
-        private void BtnActivateGiftReceipting_Click(System.Object sender, EventArgs e)
+        private void BtnActivateGiftProcessing_Click(System.Object sender, EventArgs e)
         {
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult Result;
-
-            if (FGiftReceiptingActivated)
+            if (FGiftProcessingActivated)
             {
-                // deactivate gift receipting
-                if (MessageBox.Show(Catalog.GetString("Do you want to deactivate Gift Receipting Subsystem?"),
-                        Catalog.GetString("Deactivate Gift Receipting"),
+                // deactivate gift processing
+                if (MessageBox.Show(Catalog.GetString("Do you want to deactivate Gift Processing Subsystem?"),
+                        Catalog.GetString("Deactivate Gift Processing"),
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    FGiftReceiptingActivated = !TRemote.MFinance.Setup.WebConnectors.DeactivateGiftReceiptingSubsystem(FLedgerNumber);
+                    FGiftProcessingActivated = !TRemote.MFinance.Setup.WebConnectors.DeactivateGiftProcessingSubsystem(FLedgerNumber);
 
                     UpdateControls();
                 }
             }
             else
             {
-                // activate gift receipting
-                if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to activate Gift Receipting Subsystem " +
+                // activate gift processing
+                if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to activate Gift Processing Subsystem " +
                                 "with Receipting Start Number {0}?"), txtStartingReceiptNumber.NumberValueInt),
-                        Catalog.GetString("Activate Gift Receipting"),
+                        Catalog.GetString("Activate Gift Processing"),
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == DialogResult.Yes)
                 {
@@ -144,20 +169,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         || (txtStartingReceiptNumber.NumberValueInt <= 0))
                     {
                         MessageBox.Show(Catalog.GetString("Starting Receipt Number must be 1 or higher!"),
-                            Catalog.GetString("Activate Gift Receipting"),
+                            Catalog.GetString("Activate Gift Processing"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
                         return;
                     }
 
-                    Result = TRemote.MFinance.Setup.WebConnectors.
-                             ActivateGiftReceiptingSubsystem(FLedgerNumber, Convert.ToInt32(
-                            txtStartingReceiptNumber.NumberValueInt) - 1, out VerificationResult);
-                    FGiftReceiptingActivated = (Result == TSubmitChangesResult.scrOK);
+                    TRemote.MFinance.Setup.WebConnectors.
+                    ActivateGiftProcessingSubsystem(FLedgerNumber, Convert.ToInt32(
+                            txtStartingReceiptNumber.NumberValueInt) - 1);
+                    FGiftProcessingActivated = true;
 
-                    if (FGiftReceiptingActivated)
+                    if (FGiftProcessingActivated)
                     {
-                        FCanGiftReceiptingBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanGiftReceiptingSubsystemBeDeactivated(FLedgerNumber);
+                        FCanGiftProcessingBeDeactivated = TRemote.MFinance.Setup.WebConnectors.CanGiftProcessingSubsystemBeDeactivated(FLedgerNumber);
                     }
 
                     UpdateControls();
@@ -167,9 +192,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void BtnActivateAccountsPayable_Click(System.Object sender, EventArgs e)
         {
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult Result;
-
             if (FAccountsPayableActivated)
             {
                 // deactivate accounts payable
@@ -191,9 +213,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    Result = TRemote.MFinance.Setup.WebConnectors.
-                             ActivateAccountsPayableSubsystem(FLedgerNumber, out VerificationResult);
-                    FAccountsPayableActivated = (Result == TSubmitChangesResult.scrOK);
+                    TRemote.MFinance.Setup.WebConnectors.
+                    ActivateAccountsPayableSubsystem(FLedgerNumber);
+                    FAccountsPayableActivated = true;
 
                     if (FAccountsPayableActivated)
                     {

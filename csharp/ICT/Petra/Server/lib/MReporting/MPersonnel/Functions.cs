@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,11 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MReporting;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting.MPartner;
@@ -112,9 +115,9 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 return true;
             }
 
-            if (StringHelper.IsSame(f, "GetDriverStatus"))
+            if (StringHelper.IsSame(f, "GetNationalities"))
             {
-                value = new TVariant(GetDriverStatus(ops[1].ToInt64()));
+                value = new TVariant(GetNationalities(ops[1].ToInt64()));
                 return true;
             }
 
@@ -195,7 +198,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             strSql = "SELECT PUB_s_system_defaults.s_default_value_c " + "FROM PUB_s_system_defaults " +
                      "WHERE PUB_s_system_defaults.s_default_code_c = 'SiteKey'";
 
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
@@ -251,7 +254,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             formatQuery = new TRptFormatQuery(null, -1, -1);
             strSql = formatQuery.ReplaceVariables(strSql).ToString();
             formatQuery = null;
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
@@ -265,7 +268,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 // no commitment period for the given date was found, so find the most recent commitment
                 strSql = "SELECT pm_start_of_commitment_d, pm_end_of_commitment_d " + "FROM PUB_pm_staff_data " +
                          "WHERE PUB_pm_staff_data.p_partner_key_n = " + APartnerKey.ToString() + ' ' + "ORDER BY pm_start_of_commitment_d ASC";
-                tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+                tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
                 if (tab.Rows.Count > 0)
                 {
@@ -801,30 +804,26 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             return ResultPassportRow != null;
         }
 
-        private String GetDriverStatus(Int64 APartnerKey)
+        /// <summary>
+        /// Gets nationalities from all of a Partner's recorded passports
+        /// </summary>
+        /// <param name="APartnerKey">Partner key</param>
+        /// <returns>returns nationalities in a comma seperated string</returns>
+        private string GetNationalities(Int64 APartnerKey)
         {
-            String DriverStatus = "";
-            PmPersonalDataTable PersonalDataTable;
-            PtDriverStatusTable DriverStatusTable;
+            TCacheable CommonCacheable = new TCacheable();
 
-            PersonalDataTable = PmPersonalDataAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
+            StringCollection PassportColumns = StringHelper.StrSplit(
+                PmPassportDetailsTable.GetDateOfIssueDBName() + "," +
+                PmPassportDetailsTable.GetDateOfExpirationDBName() + "," +
+                PmPassportDetailsTable.GetPassportNationalityCodeDBName() + "," +
+                PmPassportDetailsTable.GetMainPassportDBName(), ",");
 
-            if (PersonalDataTable.Rows.Count > 0)
-            {
-                if (!((PmPersonalDataRow)PersonalDataTable.Rows[0]).IsDriverStatusNull())
-                {
-                    String DriverStatusCode = ((PmPersonalDataRow)PersonalDataTable.Rows[0]).DriverStatus;
+            PmPassportDetailsTable PassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey,
+                PassportColumns, situation.GetDatabaseConnection().Transaction, null, 0, 0);
 
-                    DriverStatusTable = PtDriverStatusAccess.LoadByPrimaryKey(DriverStatusCode, situation.GetDatabaseConnection().Transaction);
-
-                    if (DriverStatusTable.Rows.Count > 0)
-                    {
-                        DriverStatus = ((PtDriverStatusRow)DriverStatusTable.Rows[0]).Description;
-                    }
-                }
-            }
-
-            return DriverStatus;
+            return Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
+                @CommonCacheable.GetCacheableTable, PassportDetailsDT);
         }
 
         /// <summary>
@@ -1062,7 +1061,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>The calculated age as a string</returns>
         private String CalculateAge(DateTime ABirthday)
         {
-            return Calculations.CalculateAge(ABirthday).ToString();
+            return Ict.Petra.Shared.MPartner.Calculations.CalculateAge(ABirthday).ToString();
         }
 
         /// <summary>
@@ -1073,7 +1072,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>The calculated age as a string</returns>
         private String CalculateAgeAtDate(DateTime ABirthday, DateTime ATestDate)
         {
-            return Calculations.CalculateAge(ABirthday, ATestDate).ToString();
+            return Ict.Petra.Shared.MPartner.Calculations.CalculateAge(ABirthday, ATestDate).ToString();
         }
 
         /// <summary>

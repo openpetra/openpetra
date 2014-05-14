@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
@@ -440,17 +441,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadATransactionATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             string strAnalAttr = string.Empty;
+            bool newTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out newTransaction);
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
-            ATransAnalAttribAccess.LoadViaAJournal(MainDS,
-                ALedgerNumber,
-                ABatchNumber,
-                AJournalNumber,
-                Transaction);
+            ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
             foreach (GLBatchTDSATransactionRow transRow in MainDS.ATransaction.Rows)
             {
@@ -478,7 +479,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             MainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            if (newTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
             return MainDS;
         }
 
@@ -546,17 +551,38 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// loads some necessary analysis attributes tables for the given ledger number
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="AActiveOnly"></param>
         /// <returns>GLSetupTDS</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber)
+        public static GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber, Boolean AActiveOnly = false)
         {
             GLSetupTDS CacheDS = new GLSetupTDS();
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             AAnalysisTypeAccess.LoadAll(CacheDS, Transaction);
-            AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
-            AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+
+            if (!AActiveOnly)
+            {
+                AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+                AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+            }
+            else
+            {
+                AFreeformAnalysisTable FFTable = new AFreeformAnalysisTable();
+                AFreeformAnalysisRow TemplateFFRow = FFTable.NewRowTyped(false);
+                TemplateFFRow.LedgerNumber = ALedgerNumber;
+                TemplateFFRow.Active = true;
+
+                AFreeformAnalysisAccess.LoadUsingTemplate(CacheDS, TemplateFFRow, Transaction);
+
+                AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                TemplateAARow.LedgerNumber = ALedgerNumber;
+                TemplateAARow.Active = true;
+
+                AAnalysisAttributeAccess.LoadUsingTemplate(CacheDS, TemplateAARow, Transaction);
+            }
 
             if (NewTransaction)
             {
@@ -693,14 +719,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AJournalNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadARecurringTransactionWithAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        public static GLBatchTDS LoadARecurringTransactionARecurringTransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             string strAnalAttr = string.Empty;
-            Boolean NewTransaction = false;
+            bool newTransaction = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+                out newTransaction);
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
@@ -734,7 +760,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             MainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
-            if (NewTransaction)
+            if (newTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
@@ -842,7 +868,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         "SaveGLBatchTDS: need to call GetChangesTyped before saving, otherwise confusion about recurring or normal gl batch");
                 }
 
-                return SaveRecurringGLBatchTDS(ref AInspectDS, ref AVerificationResult);
+                return SaveRecurringGLBatchTDS(ref AInspectDS);
             }
 
             if (batchTableInDataSet)
@@ -1061,15 +1087,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
-            if (AVerificationResult.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
                 return TSubmitChangesResult.scrError;
             }
 
             //Need to save changes before deleting any transactions
-            TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            GLBatchTDSAccess.SubmitChanges(AInspectDS);
 
-            if ((SubmissionResult == TSubmitChangesResult.scrOK) && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
+
+            if ((transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
             {
                 //Accept deletion of Attributes to allow deletion of transactions
                 if (attrTableInDataSet)
@@ -1113,7 +1141,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
 
                             //Submit all changes
-                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                            GLBatchTDSAccess.SubmitChanges(AInspectDS);
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                     }
                     catch (Exception ex)
@@ -1267,8 +1297,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             int ALedgerNumber,
             int ABatchNumber,
             int AJournalNumber,
-            ref TSubmitChangesResult ASubmissionResult,
-            ref TVerificationResultCollection AVerificationResult)
+            ref TSubmitChangesResult ASubmissionResult)
         {
             //check if the necessary rows for the given account are there, automatically add/update account
             GLSetupTDS glSetupCacheDS = LoadAAnalysisAttributes(ALedgerNumber);
@@ -1369,7 +1398,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                GLBatchTDSAccess.SubmitChanges(AInspectDS);
+
+                ASubmissionResult = TSubmitChangesResult.scrOK;
+
                 AInspectDS.ATransAnalAttrib.AcceptChanges();
             }
 
@@ -1380,8 +1412,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             int ALedgerNumber,
             int ABatchNumber,
             int AJournalNumber,
-            ref TSubmitChangesResult ASubmissionResult,
-            ref TVerificationResultCollection AVerificationResult)
+            ref TSubmitChangesResult ASubmissionResult)
         {
             //check if the necessary rows for the given account are there, automatically add/update account
             GLSetupTDS glSetupCacheDS = LoadAAnalysisAttributes(ALedgerNumber);
@@ -1483,7 +1514,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                GLBatchTDSAccess.SubmitChanges(AInspectDS);
+
+                ASubmissionResult = TSubmitChangesResult.scrOK;
+
                 AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
             }
 
@@ -1494,11 +1528,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// this will store all new and modified recurring batches, journals, transactions
         /// </summary>
         /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        private static TSubmitChangesResult SaveRecurringGLBatchTDS(ref GLBatchTDS AInspectDS,
-            ref TVerificationResultCollection AVerificationResult)
+        private static TSubmitChangesResult SaveRecurringGLBatchTDS(ref GLBatchTDS AInspectDS)
         {
             bool NewTransaction = false;
             Int32 LedgerNumber;
@@ -1655,9 +1687,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             // now submit the changes
-            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            GLBatchTDSAccess.SubmitChanges(AInspectDS);
 
-            if ((SubmissionResult == TSubmitChangesResult.scrOK) && (recurrTransactionTableInDataSet))
+            SubmissionResult = TSubmitChangesResult.scrOK;
+
+            if (recurrTransactionTableInDataSet)
             {
                 //Accept deletion of Attributes to allow deletion of transactions
                 if (recurrTransAnalTableInDataSet)
@@ -1701,7 +1735,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
 
                             //save changes
-                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                            GLBatchTDSAccess.SubmitChanges(AInspectDS);
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                     }
                     catch (Exception ex)
@@ -1720,6 +1756,24 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             return SubmissionResult;
+        }
+
+        /// <summary>
+        /// reverse a GL Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumberToReverse"></param>
+        /// <param name="ADateForReversal"></param>
+        /// <param name="AReversalBatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool ReverseBatch(Int32 ALedgerNumber, Int32 ABatchNumberToReverse,
+            DateTime ADateForReversal,
+            out Int32 AReversalBatchNumber,
+            out TVerificationResultCollection AVerifications)
+        {
+            return TGLPosting.ReverseBatch(ALedgerNumber, ABatchNumberToReverse,
+                ADateForReversal, out AReversalBatchNumber, out AVerifications);
         }
 
         /// <summary>
@@ -1823,15 +1877,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// including journals, transactions and attributes
         /// </summary>
         /// <param name="requestParams">HashTable with many parameters</param>
-        /// <param name="AMessages">Output structure for user error messages</param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean SubmitRecurringGLBatch(Hashtable requestParams, out TVerificationResultCollection AMessages)
+        public static void SubmitRecurringGLBatch(Hashtable requestParams)
         {
             Boolean NewTransaction = false;
-            Boolean success = false;
-
-            AMessages = new TVerificationResultCollection();
             GLBatchTDS GLMainDS = new GLBatchTDS();
             ABatchRow BatchRow;
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
@@ -1892,7 +1941,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 JournalRow.JournalCreditTotal = recJournal.JournalCreditTotal;
                                 JournalRow.JournalDebitTotal = recJournal.JournalDebitTotal;
 
-                                AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
+                                Decimal.TryParse(
+                                    requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()].ToString(),
+                                    out AExchangeRateToBase);
+                                //AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
                                 JournalRow.ExchangeRateToBase = AExchangeRateToBase;
 
                                 JournalRow.DateEffective = AEffectiveDate;
@@ -1937,6 +1989,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         TransactionRow.Reference = recTransaction.Reference;
 
                                         GLMainDS.ATransaction.Rows.Add(TransactionRow);
+
+                                        foreach (ARecurringTransAnalAttribRow recAnalAttrib in RGLMainDS.ARecurringTransAnalAttrib.Rows)
+                                        {
+                                            if ((recAnalAttrib.TransactionNumber == recTransaction.TransactionNumber)
+                                                && (recTransaction.JournalNumber == recJournal.JournalNumber)
+                                                && (recTransaction.BatchNumber == ABatchNumber)
+                                                && (recTransaction.LedgerNumber == ALedgerNumber))
+                                            {
+                                                ATransAnalAttribRow TransAnalAttribRow = GLMainDS.ATransAnalAttrib.NewRowTyped();
+
+                                                TransAnalAttribRow.LedgerNumber = JournalRow.LedgerNumber;
+                                                TransAnalAttribRow.BatchNumber = JournalRow.BatchNumber;
+                                                TransAnalAttribRow.JournalNumber = JournalRow.JournalNumber;
+                                                TransAnalAttribRow.TransactionNumber = recTransaction.TransactionNumber;
+                                                TransAnalAttribRow.AnalysisTypeCode = recAnalAttrib.AnalysisTypeCode;
+
+                                                TransAnalAttribRow.AccountCode = recAnalAttrib.AccountCode;
+                                                TransAnalAttribRow.CostCentreCode = recAnalAttrib.CostCentreCode;
+                                                TransAnalAttribRow.AnalysisAttributeValue = recAnalAttrib.AnalysisAttributeValue;
+
+                                                GLMainDS.ATransAnalAttrib.Rows.Add(TransAnalAttribRow);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1944,40 +2019,34 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction, out AMessages))
-                {
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
-                    {
-                        if (AJournalAccess.SubmitChanges(GLMainDS.AJournal, Transaction, out AMessages))
-                        {
-                            if (ATransactionAccess.SubmitChanges(GLMainDS.ATransaction, Transaction, out AMessages))
-                            {
-                                if (ATransAnalAttribAccess.SubmitChanges(GLMainDS.ATransAnalAttrib, Transaction, out AMessages))
-                                {
-                                    success = true;
-                                }
-                            }
-                        }
-                    }
-                }
+                ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction);
 
-                if (success)
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+
+                AJournalAccess.SubmitChanges(GLMainDS.AJournal, Transaction);
+
+                ATransactionAccess.SubmitChanges(GLMainDS.ATransaction, Transaction);
+
+                ATransAnalAttribAccess.SubmitChanges(GLMainDS.ATransAnalAttrib, Transaction);
+
+                if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-                    GLMainDS.AcceptChanges();
                 }
-                else
+
+                GLMainDS.AcceptChanges();
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the submission of a Recurring GL Batch:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    GLMainDS.RejectChanges();
                 }
+
+                throw new EOPAppException("Error in SubmitRecurringGLBatch", Exc);
             }
-            catch (Exception ex)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw new Exception("Error in SubmitRecurringGLBatch", ex);
-            }
-            return success;
         }
 
         /// <summary>

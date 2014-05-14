@@ -31,6 +31,7 @@ using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 
@@ -66,6 +67,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// International To Base Exchange Rate
+        /// </summary>
+        public decimal FInternationalToBaseExchangeRate;
 
         /// <summary>
         /// use this ledger
@@ -76,6 +81,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = value;
                 ucoBatches.LoadBatches(FLedgerNumber);
+
+                this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             }
         }
 
@@ -105,6 +112,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tpgTransactions.Enabled = false;
         }
 
+        /// <summary>
+        /// Handles the click event for filter/find.
+        /// </summary>
+        /// <param name="sender">Pass this on to the user control.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void mniFilterFind_Click(object sender, System.EventArgs e)
+        {
+            switch (tabGiftBatch.SelectedIndex)
+            {
+                case (int)eGiftTabs.Batches:
+                    ucoBatches.MniFilterFind_Click(sender, e);
+                    break;
+
+                case (int)eGiftTabs.Transactions:
+                    ucoTransactions.MniFilterFind_Click(sender, e);
+                    break;
+            }
+        }
+
         private int standardTabIndex = 0;
 
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
@@ -120,6 +146,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.Focus();
             HookupAllInContainer(ucoBatches);
             HookupAllInContainer(ucoTransactions);
+            this.Resize += new EventHandler(TFrmGiftBatch_Resize);
+        }
+
+        private bool FWindowIsMaximized = false;
+        void TFrmGiftBatch_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                // set the flag that we are maximized
+                FWindowIsMaximized = true;
+
+                if (tabGiftBatch.SelectedTab == this.tpgBatches)
+                {
+                    ucoTransactions.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing transactions");
+                }
+                else
+                {
+                    ucoBatches.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing batches");
+                }
+            }
+            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
+            {
+                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
+                ucoBatches.AutoSizeGrid();
+                ucoTransactions.AutoSizeGrid();
+                FWindowIsMaximized = false;
+                Console.WriteLine("Normal - autosizing both");
+            }
         }
 
         /// <summary>
@@ -128,23 +184,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadTransactions(Int32 ALedgerNumber,
+        /// <returns>True if new transactions were actually loaded, False if transactions have already been loaded for the ledger/batch</returns>
+        public bool LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
-            bool AFromTabClick = true)
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
-//            try
-//            {
-//                //this.tpgTransactions.Enabled = true;
-//                FPetraUtilsObject.DisableDataChangedEvent();
-//                this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
-//            }
-//            finally
-//            {
-//                FPetraUtilsObject.EnableDataChangedEvent();
-//            }
+            return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus);
+        }
+
+        /// <summary>
+        /// Check for any errors
+        /// </summary>
+        /// <param name="AShowMessage"></param>
+        public void ProcessRecipientCostCentreCodeUpdateErrors(bool AShowMessage = true)
+        {
+            //Process update errors
+            if (FMainDS.Tables.Contains("AUpdateErrors"))
+            {
+                //TODO remove this code when the worker field issue is sorted out
+                AShowMessage = false;
+
+                //--------------------------------------------------------------
+                if (AShowMessage)
+                {
+                    string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
+
+                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
+                            Environment.NewLine,
+                            loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                FMainDS.Tables.Remove("AUpdateErrors");
+            }
         }
 
         /// <summary>
@@ -207,15 +278,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!SaveChanges())
+            if (!ValidateAllData(false, true))
             {
                 e.Cancel = true;
 
                 FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
             }
         }
-
-        bool FChangeTabEventHasRun = false;
 
         private void SelectTabManual(int ASelectedTabIndex)
         {
@@ -233,27 +302,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        /// <param name="AFromTabClick"></param>
-        public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
+        public void SelectTab(eGiftTabs ATab)
         {
-            if (FChangeTabEventHasRun && AFromTabClick)
-            {
-                FChangeTabEventHasRun = false;
-                return;
-            }
-            else
-            {
-                FChangeTabEventHasRun = !AFromTabClick;
-            }
+            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
 
             if (ATab == eGiftTabs.Batches)
             {
-                //If from grid double click then invoke tab changed event
-                if (!AFromTabClick)
-                {
-                    this.tabGiftBatch.SelectedTab = this.tpgBatches;
-                }
-
+                this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.FocusGrid();
             }
@@ -261,11 +316,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
+                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
+                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+
                     AGiftBatchRow SelectedRow = ucoBatches.GetSelectedDetailRow();
 
-                    //
                     // If there's only one GiftBatch row, I'll not require that the user has selected it!
-
                     if (FMainDS.AGiftBatch.Rows.Count == 1)
                     {
                         SelectedRow = FMainDS.AGiftBatch[0];
@@ -273,18 +330,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (SelectedRow != null)
                     {
-                        LoadTransactions(SelectedRow.LedgerNumber,
-                            SelectedRow.BatchNumber,
-                            SelectedRow.BatchStatus, AFromTabClick);
+                        this.Cursor = Cursors.WaitCursor;
+
+                        if (LoadTransactions(SelectedRow.LedgerNumber,
+                                SelectedRow.BatchNumber,
+                                SelectedRow.BatchStatus))
+                        {
+                            // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
+                            ucoTransactions.AutoSizeGrid();
+                        }
+
+                        this.Cursor = Cursors.Default;
                     }
 
-                    //If from grid double click then invoke tab changed event
-                    if (!AFromTabClick)
-                    {
-                        this.tabGiftBatch.SelectedTab = this.tpgTransactions;
-                    }
-
-                    //this.ucoTransactions.FocusGrid();
+                    ucoTransactions.FocusGrid();
                 }
             }
         }

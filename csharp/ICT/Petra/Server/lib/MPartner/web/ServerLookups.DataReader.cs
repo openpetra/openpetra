@@ -31,10 +31,12 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -372,42 +374,238 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
-        /// Create a new default Range
+        /// Check if a PUnit record has a corresponding PcConference record in the db
         /// </summary>
-        /// <param name="ADefaultRangeName">new Range name</param>
+        /// <param name="APartnerKey">match long for partner key</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static void CreateNewDefaultRange(string ADefaultRangeName)
+        public static Boolean IsPUnitAConference(Int64 APartnerKey)
         {
-            TDBTransaction Transaction;
-            TVerificationResultCollection VerificationResult;
-            PPostcodeRangeTable RangeTable;
-
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             try
             {
-                RangeTable = PPostcodeRangeAccess.LoadByPrimaryKey(ADefaultRangeName, Transaction);
+                PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
-                if (RangeTable.Rows.Count == 0)
+                if (ConferenceTable.Count == 0)
                 {
-                    PPostcodeRangeRow AddRow = RangeTable.NewRowTyped(true);
-                    AddRow.Range = ADefaultRangeName;
-
-                    // add new row to database table
-                    RangeTable.Rows.Add(AddRow);
-                    PPostcodeRangeAccess.SubmitChanges(RangeTable, Transaction, out VerificationResult);
+                    return false;
                 }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
+                else
+                {
+                    return true;
+                }
             }
             finally
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.CreateNewDefaultRangee: commit own transaction.");
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.IsPUnitAConference: commit own transaction.");
+                }
             }
+        }
+
+        /// <summary>
+        /// Finds and returns a BankingDetailsRow with given BankingDetailsKey
+        /// </summary>
+        /// <param name="ABankingDetailsKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PBankingDetailsTable GetBankingDetailsRow(int ABankingDetailsKey)
+        {
+            PBankingDetailsTable ReturnRow = null;
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+            try
+            {
+                ReturnRow = PBankingDetailsAccess.LoadByPrimaryKey(ABankingDetailsKey, ReadTransaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetBankingDetailsRow: committed own transaction.");
+                }
+            }
+
+            return ReturnRow;
+        }
+
+        /// <summary>
+        /// Finds any Partners that share ABankingDetailsKey
+        /// </summary>
+        /// <param name="ABankingDetailsKey"></param>
+        /// <param name="APartnerKey">Partner key for current partner</param>
+        /// <returns>Table containing records of Partners that share this Bank Account</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PPartnerTable SharedBankAccountPartners(int ABankingDetailsKey, long APartnerKey)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+
+            PPartnerTable PartnerTable = new PPartnerTable();
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            try
+            {
+                PPartnerBankingDetailsTable PartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPBankingDetails(ABankingDetailsKey,
+                    ReadTransaction);
+
+                foreach (PPartnerBankingDetailsRow Row in PartnerBankingDetailsTable.Rows)
+                {
+                    // if record exists with a different partner key then the Bank Account is shared
+                    if (Row.PartnerKey != APartnerKey)
+                    {
+                        PPartnerRow PartnerRow = (PPartnerRow)PPartnerAccess.LoadByPrimaryKey(Row.PartnerKey, ReadTransaction).Rows[0];
+
+                        PPartnerRow NewRow = PartnerTable.NewRowTyped(false);
+                        NewRow.PartnerKey = Row.PartnerKey;
+                        NewRow.PartnerShortName = PartnerRow.PartnerShortName;
+                        PartnerTable.Rows.Add(NewRow);
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.IsBankingDetailsRowShared: committed own transaction.");
+                }
+            }
+
+            return PartnerTable;
+        }
+
+        /// <summary>
+        /// Gets all Bank records
+        /// </summary>
+        /// <returns>Dataset containing data for all Bank partners</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static BankTDS GetPBankRecords(bool AIncludeLocations)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+
+            BankTDS ReturnValue = new BankTDS();
+
+            List <long>PartnerKeys = new List <long>();
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            try
+            {
+                string QueryBankRecords =
+                    "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c " +
+                    "FROM PUB_p_bank, PUB_p_partner " +
+                    "WHERE PUB_p_partner.p_partner_key_n = PUB_p_bank.p_partner_key_n";
+
+                DBAccess.GDBAccessObj.Select(ReturnValue,
+                    QueryBankRecords,
+                    ReturnValue.PBank.TableName, ReadTransaction, null);
+
+                foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)
+                {
+                    // mark inactive bank accounts
+                    if (Row.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+                    {
+                        Row.BranchCode = "<" + Catalog.GetString("INACTIVE") + "> " + Row.BranchCode;
+                    }
+
+                    if (AIncludeLocations)
+                    {
+                        PartnerKeys.Add(Row.PartnerKey);
+                    }
+                }
+
+                if (AIncludeLocations)
+                {
+                    PPartnerLocationTable PartnerLocationTable = PPartnerLocationAccess.LoadAll(ReadTransaction);
+                    PLocationTable LocationTable = PLocationAccess.LoadAll(ReadTransaction);
+
+                    foreach (PPartnerLocationRow Row in PartnerLocationTable.Rows)
+                    {
+                        if (PartnerKeys.Contains(Row.PartnerKey))
+                        {
+                            PPartnerLocationRow NewPartnerLocationRow = ReturnValue.PPartnerLocation.NewRowTyped(false);
+                            NewPartnerLocationRow.PartnerKey = Row.PartnerKey;
+                            NewPartnerLocationRow.SiteKey = Row.SiteKey;
+                            NewPartnerLocationRow.LocationKey = Row.LocationKey;
+                            NewPartnerLocationRow.DateGoodUntil = Row.DateGoodUntil;
+                            ReturnValue.PPartnerLocation.Rows.Add(NewPartnerLocationRow);
+
+                            if (!ReturnValue.PLocation.Rows.Contains(new object[] { Row.SiteKey, Row.LocationKey }))
+                            {
+                                PLocationRow LocationRow = ((PLocationRow)LocationTable.Rows.Find(new object[] { Row.SiteKey, Row.LocationKey }));
+                                PLocationRow NewLocationRow = ReturnValue.PLocation.NewRowTyped(false);
+                                NewLocationRow.SiteKey = Row.SiteKey;
+                                NewLocationRow.LocationKey = Row.LocationKey;
+                                NewLocationRow.CountryCode = LocationRow.CountryCode;
+                                NewLocationRow.City = LocationRow.City;
+                                ReturnValue.PLocation.Rows.Add(NewLocationRow);
+                            }
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetPBankRecords: committed own transaction.");
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Gets the next available key for PPartnerGiftDestination
+        /// </summary>
+        /// <returns>The next available key</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static int GetNewKeyForPartnerGiftDestination()
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            int ReturnValue = 0;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            try
+            {
+                PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(ReadTransaction);
+
+                foreach (PPartnerGiftDestinationRow Row in Table.Rows)
+                {
+                    if (Row.Key >= ReturnValue)
+                    {
+                        ReturnValue = Row.Key + 1;
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination: committed own transaction.");
+                }
+            }
+
+            return ReturnValue;
         }
     }
 }

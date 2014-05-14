@@ -91,6 +91,11 @@ namespace Ict.Common
              FullDescription = "The value entered is not a number in the required number format.")]
         public const String ERR_INVALIDNUMBER = "GENC.00005V";
 
+        /// <summary>Invalid value entered.</summary>
+        [ErrCodeAttribute("Invalid value entered.",
+             FullDescription = "The value you selected is not valid. Please choose a valid value.")]
+        public const String ERR_INVALIDVALUE = "GENC.00019V";
+
         /// <summary>Invalid numbers entered (numbers do not conform to a certain rule).</summary>
         [ErrCodeAttribute("Invalid numbers entered.",
              FullDescription = "The numeric values entered do not conform to a certain rule (that rule should be mentioned in the error message).")]
@@ -157,6 +162,11 @@ namespace Ict.Common
              ErrorMessageText = "The record cannot be deleted because it is referenced from elsewhere.",
              FullDescription = "The user tried to delete a record that is referenced from another DB Table.")]
         public const String ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED = "GENC.00018V";
+
+        /// <summary>Missing configuration for sending Emails</summary>
+        [ErrCodeAttribute("Missing configuration for sending Emails",
+             FullDescription = "No email can be sent because the configuration is missing on the server side.")]
+        public const String ERR_MISSINGEMAILCONFIGURATION = "GENC.00020V";
 
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";

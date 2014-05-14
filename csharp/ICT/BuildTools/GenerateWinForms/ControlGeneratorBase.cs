@@ -687,10 +687,43 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddToActionEnabledEvent(writer, ActionToPerform, ctrl.controlName);
 
                 // deal with action handler
-                AssignEventHandlerToControl(writer, ctrl, "Click", ActionToPerform);
+                if (((ActionToPerform == "actEditFilter")
+                     || (ActionToPerform == "actEditFind")) && !writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                {
+                    // Do nothing
+                }
+                else
+                {
+                    AssignEventHandlerToControl(writer, ctrl, "Click", ActionToPerform);
+                }
 
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
                 SetControlActionProperties(writer, ctrl, ActionHandler);
+
+                if ((ActionToPerform == "actEditFind") && (ctrl.controlName == "mniEditFind")
+                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                {
+                    ProcessTemplate snipCtrlF = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLF");
+                    snipCtrlF.SetCodelet("ACTIONCLICK", ctrl.GetAction().actionClick);
+                    writer.FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlF);
+                    writer.SetControlProperty("mniEditFind", "ShortcutKeys", "Keys.F | Keys.Control", false);
+                }
+
+                if ((ActionToPerform == "actEditFilter") && (ctrl.controlName == "mniEditFilter")
+                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                {
+                    ProcessTemplate snipCtrlR = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLR");
+                    snipCtrlR.SetCodelet("ACTIONCLICK", ctrl.GetAction().actionClick);
+                    writer.FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlR);
+                    writer.SetControlProperty("mniEditFilter", "ShortcutKeys", "Keys.R | Keys.Control", false);
+                }
+
+                if ((ActionToPerform == "actSave") && (ctrl.controlName == "mniFileSave"))
+                {
+                    ProcessTemplate snipCtrlS = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLS");
+                    writer.FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlS);
+                    writer.SetControlProperty("mniFileSave", "ShortcutKeys", "Keys.S | Keys.Control", false);
+                }
 
                 if (FCodeStorage.ManualFileExistsAndContains(" " + ActionHandler.actionName.Substring(3) + "(Form AParentForm)"))
                 {
@@ -700,7 +733,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.HasAttribute("ActionClick"))
             {
-                AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                if (ctrl.GetAttribute("ActionClick").EndsWith("FilterFind_Click"))
+                {
+                    // MniFilterFind_Click is part of the base template for many forms.
+                    // We only create an action handler if the screen has a pnlFilterAndFind
+                    if (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                    {
+                        AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                    }
+                }
+                else
+                {
+                    // The control is not mniEditFilter or mniEditFind, so just write the resource file item
+                    // The manual code file will have the event handler itself
+                    AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                }
             }
             else if (ctrl.HasAttribute("ActionDoubleClick"))
             {
@@ -835,6 +882,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.controlTypePrefix == "uco")
             {
+                writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION",
+                    ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
                     ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);

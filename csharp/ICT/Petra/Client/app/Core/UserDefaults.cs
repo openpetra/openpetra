@@ -55,6 +55,12 @@ namespace Ict.Petra.Client.App.Core
             /// <summary>todoComment</summary>
             public const String WINDOW_POSITION_AND_SIZE_PREFIX = "WINDOW_POS_AND_SIZE_";
 
+            /// <summary>Key name for Esc Closes Screen</summary>
+            public const String USERDEFAULT_ESC_CLOSES_SCREEN = "EscClosesScreen";
+
+            /// <summary>Key name for saving window size/state/position</summary>
+            public const String USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE = "SaveWindowPosAndSize";
+
             /// <summary>Colour of the background of all SourceGrid DataGrid instances.</summary>
             public const String COLOUR_GRID_BACKGROUND = "COLOUR_GRID_BACKGROUND";
 
@@ -70,6 +76,12 @@ namespace Ict.Petra.Client.App.Core
             /// <summary>Colour of the Grid Lines of all SourceGrid DataGrid instances.</summary>
             public const String COLOUR_GRID_GRIDLINES = "COLOUR_GRID_GRIDLINES";
 
+            /// <summary>Colour of the Filter panel background.</summary>
+            public const String COLOUR_FILTER_PANEL = "COLOUR_FILTER_PANEL";
+
+            /// <summary>Colour of the Find panel background.</summary>
+            public const String COLOUR_FIND_PANEL = "COLOUR_FIND_PANEL";
+
             #region TUserDefaults.TNamedDefaults
 
             /// <summary>
@@ -82,40 +94,43 @@ namespace Ict.Petra.Client.App.Core
             /// <returns>void</returns>
             public static void SetLastPartnerWorkedWith(Int64 APartnerKey, TLastPartnerUse ALastPartnerUse)
             {
-                String LastPartnerDefaultCode;
+                String PartnerName;
+                TPartnerClass PartnerClass;
 
                 /*
                  * Store the fact that this Partner is the 'Last Partner' that was worked with
                  */
 
-                // set the given partner key as the last used partner for the given module
-                LastPartnerDefaultCode = "";
-
                 switch (ALastPartnerUse)
                 {
                     case TLastPartnerUse.lpuMailroomPartner:
-                        LastPartnerDefaultCode = TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM;
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey);
+
+                        // if partner is person then also set this for personnel module
+                        TServerLookup.TMPartner.GetPartnerShortName(APartnerKey, out PartnerName, out PartnerClass);
+
+                        if (PartnerClass == TPartnerClass.PERSON)
+                        {
+                            TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey);
+                        }
+
                         break;
 
                     case TLastPartnerUse.lpuPersonnelPerson:
-                        LastPartnerDefaultCode = TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL;
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey);
                         break;
 
                     case TLastPartnerUse.lpuPersonnelUnit:
-                        LastPartnerDefaultCode = TUserDefaults.USERDEFAULT_LASTUNITPERSONNEL;
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTUNITPERSONNEL, (object)APartnerKey);
                         break;
 
                     case TLastPartnerUse.lpuConferencePerson:
-                        LastPartnerDefaultCode = TUserDefaults.USERDEFAULT_LASTPERSONCONFERENCE;
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONCONFERENCE, (object)APartnerKey);
+
+                        // if partner is person then also set this for personnel module
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey);
                         break;
                 }
-
-                TUserDefaults.SetDefault(LastPartnerDefaultCode, (object)APartnerKey);
-
-                // This needs to be saved instantaneously because Progress 4GL will read it
-                // (eg. when when 'Partner' > 'Work with Last Partner' is chosen in Partner
-                // Module main screen [mailroom.w])!
-                TUserDefaults.SaveChangedUserDefault(LastPartnerDefaultCode);
             }
 
             #endregion
@@ -123,6 +138,7 @@ namespace Ict.Petra.Client.App.Core
 
         private static SUserDefaultsTable UUserDefaultsDataTable;
         private static DataView UUserDefaults;
+        private static Boolean FIsInitialised = false;
 
         /// <summary>
         /// todoComment
@@ -253,18 +269,6 @@ namespace Ict.Petra.Client.App.Core
         public const String PARTNER_FINDOPTIONS_EXACTPARTNERKEYMATCHSEARCH = "findopt_exactpartnerkeymatchsearch";
 
         /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FORM = "partnfindscr_splitpos_form";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_CRITERIA = "partnfindscr_splitpos_criteria";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FINDBYDETAILS = "partnfindscr_splitpos_findbydetails";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FINDBYDETAILS_CRIT = "partnfindscr_splitpos_findbydetails_crit";
-
-        /// <summary>todoComment</summary>
         public const String PARTNER_FIND_PARTNERDETAILS_OPEN = "partnfindscr_partnerdetails_open";
 
         /// <summary>todoComment</summary>
@@ -296,6 +300,9 @@ namespace Ict.Petra.Client.App.Core
 
         /// <summary>Name of the last created extract </summary>
         public const String PARTNER_EXTRAC_LAST_EXTRACT_NAME = "Extract";
+
+        /// <summary>todoComment</summary>
+        public const String PERSONNEL_APPLICATION_STATUS = "ApplicationStatus";
 
         /// <summary>
         /// ------------------------------------------------------------------------------
@@ -348,6 +355,16 @@ namespace Ict.Petra.Client.App.Core
                 out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);
             UUserDefaults.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
+            FIsInitialised = true;
+        }
+
+        /// <summary>False if there's no user yet</summary>
+        public static Boolean IsInitialised
+        {
+            get
+            {
+                return FIsInitialised;
+            }
         }
 
         /// <summary>
@@ -363,7 +380,6 @@ namespace Ict.Petra.Client.App.Core
             SUserDefaultsRow SubmittedUserDefaultRow;
             SUserDefaultsTable DesiredUserDefaultsDataTable;
             Int32 FoundInRow;
-            TVerificationResultCollection VerificationResult;
 
             ReturnValue = false;
             FoundInRow = UUserDefaults.Find(AKey);
@@ -394,25 +410,16 @@ namespace Ict.Petra.Client.App.Core
                     }
 
                     // MessageBox.Show('Saving single User Default ''' + DesiredUserDefaultsDataTable.Rows[0].Item['s_default_code_c'].ToString + '''');
-                    if (TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
-                            ref DesiredUserDefaultsDataTable,
-                            out VerificationResult))
-                    {
-                        // Copy over ModificationId that was changed on the Server side!
-                        UUserDefaults[FoundInRow].Row.ItemArray = DesiredUserDefaultsDataTable.Rows.Find(new Object[] { UUserDefaults[FoundInRow][0],
-                                                                                                                        UUserDefaults[FoundInRow][1] })
-                                                                  .ItemArray;
+                    TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                        ref DesiredUserDefaultsDataTable);
 
-                        // Mark this User Default as saved (unchanged)
-                        UUserDefaults[FoundInRow].Row.AcceptChanges();
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult("Saving of User Defaults failed!" + Environment.NewLine +
-                                "Reasons:", VerificationResult));
-                        ReturnValue = false;
-                    }
+                    // Copy over ModificationId that was changed on the Server side!
+                    UUserDefaults[FoundInRow].Row.ItemArray = DesiredUserDefaultsDataTable.Rows.Find(
+                        new Object[] { UUserDefaults[FoundInRow][0], UUserDefaults[FoundInRow][1] }).ItemArray;
+
+                    // Mark this User Default as saved (unchanged)
+                    UUserDefaults[FoundInRow].Row.AcceptChanges();
+                    ReturnValue = true;
                 }
             }
             else
@@ -429,31 +436,18 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         /// <returns>true if successful, false if not.
         /// </returns>
-        public static Boolean SaveChangedUserDefaults()
+        public static void SaveChangedUserDefaults()
         {
-            Boolean ReturnValue;
             SUserDefaultsTable UserDefaultsDataTableChanges;
-            TVerificationResultCollection VerificationResult;
 
             UserDefaultsDataTableChanges = UUserDefaultsDataTable.GetChangesTyped();
 
             // MessageBox.Show('Changed/added User Defaults: ' + UserDefaultsDataTableChanges.Rows.Count.ToString);
-            if (TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
-                    ref UserDefaultsDataTableChanges,
-                    out VerificationResult))
-            {
-                // TODO 1 oChristianK cUserDefaults / ModificationID : Copy the ModificationID into the Client's DataTable so that the PetraClient's ModificationID's of UserDefaults are the same than the ones of the PetraServer.
-                UUserDefaultsDataTable.AcceptChanges();
-                ReturnValue = true;
-            }
-            else
-            {
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult("Saving of User Defaults failed!" + Environment.NewLine + "Reasons:",
-                        VerificationResult));
-                ReturnValue = false;
-            }
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                ref UserDefaultsDataTableChanges);
 
-            return ReturnValue;
+            // TODO 1 oChristianK cUserDefaults / ModificationID : Copy the ModificationID into the Client's DataTable so that the PetraClient's ModificationID's of UserDefaults are the same than the ones of the PetraServer.
+            UUserDefaultsDataTable.AcceptChanges();
         }
 
         /// <summary>

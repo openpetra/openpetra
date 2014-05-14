@@ -195,6 +195,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             base.SetControlProperties(writer, ctrl);
 
+            writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".CancelEditingWithEscapeKey = false;" + Environment.NewLine);
+
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SelectedRowActivates"))
             {
                 // TODO: this function needs to be called by the manual code at the moment when eg a search finishes
@@ -305,16 +307,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            if (ctrl.HasAttribute("ActionLeavingRow"))
+            if (ctrl.controlName != "grdDetails")
             {
-                AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowLeaving", "SourceGrid.RowCancelEventHandler",
-                    ctrl.GetAttribute("ActionLeavingRow"));
-            }
+                if (ctrl.HasAttribute("ActionLeavingRow"))
+                {
+                    AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowLeaving", "SourceGrid.RowCancelEventHandler",
+                        ctrl.GetAttribute("ActionLeavingRow"));
+                }
 
-            if (ctrl.HasAttribute("ActionFocusRow"))
-            {
-                AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowEntered", "SourceGrid.RowEventHandler",
-                    ctrl.GetAttribute("ActionFocusRow"));
+                if (ctrl.HasAttribute("ActionFocusRow"))
+                {
+                    AssignEventHandlerToControl(writer, ctrl, "Selection.FocusRowEntered", "SourceGrid.RowEventHandler",
+                        ctrl.GetAttribute("ActionFocusRow"));
+                }
             }
 
             if (ctrl.HasAttribute("ActionEnterKeyPressed"))
@@ -401,24 +406,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     writer.Template.SetCodelet("GRIDMULTISELECTION",
                         "grdDetails.Selection.EnableMultiSelection = true;" + Environment.NewLine);
-                }
-
-                if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletable")
-                    || FCodeStorage.FControlList.ContainsKey("chkDeletable")
-                    || FCodeStorage.FControlList.ContainsKey("chkDetailDeletableFlag")
-                    || FCodeStorage.FControlList.ContainsKey("chkDeletableFlag")
-                    || FCodeStorage.FControlList.ContainsKey("chkDetailTypeDeletable"))
-                {
-                    if (FCodeStorage.FControlList.ContainsKey("btnDelete"))
-                    {
-                        writer.Template.SetCodelet(
-                            "SELECTIONCHANGEDEVENT",
-                            "grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(Selection_SelectionChanged);" +
-                            Environment.NewLine);
-
-                        ProcessTemplate snippet = writer.Template.GetSnippet("SNIPSELECTIONCHANGEDHANDLER");
-                        writer.Template.InsertSnippet("SELECTIONCHANGEDHANDLER", snippet);
-                    }
                 }
             }
 

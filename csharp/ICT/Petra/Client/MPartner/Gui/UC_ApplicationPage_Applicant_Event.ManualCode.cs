@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //FApplicationDR = ARow;
 
             ShowData(ARow);
+            EnableDisableStatusRelatedDateFields(null, null);
             EnableDisableReceivingFieldAcceptanceDate(null, null);
         }
 
@@ -118,17 +119,74 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, true, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
 
             TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this,
                 FMainDS.PmShortTermApplication[0],
                 ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
+        }
+
+        private void EnableDisableStatusRelatedDateFields(Object sender, EventArgs e)
+        {
+            String ApplicationStatus = cmbApplicationStatus.GetSelectedString();
+
+            dtpCancellationDate.Enabled = false;
+            dtpAcceptanceDate.Enabled = false;
+
+            if (ApplicationStatus != "")
+            {
+                if (ApplicationStatus.StartsWith("A"))
+                {
+                    dtpAcceptanceDate.Enabled = true;
+                    dtpCancellationDate.Enabled = false;
+                }
+                else if (ApplicationStatus.StartsWith("C")
+                         || ApplicationStatus.StartsWith("R"))
+                {
+                    dtpAcceptanceDate.Enabled = false;
+                    dtpCancellationDate.Enabled = true;
+                }
+            }
         }
 
         private void EnableDisableReceivingFieldAcceptanceDate(Object sender, EventArgs e)
         {
             dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
+        }
+
+        private void ApplicationStatusChanged(object sender, EventArgs e)
+        {
+            EnableDisableStatusRelatedDateFields(sender, e);
+
+            if (dtpCancellationDate.Enabled)
+            {
+                if (dtpCancellationDate.TextLength == 0)
+                {
+                    dtpCancellationDate.Date = DateTime.Now.Date;
+                }
+            }
+            else
+            {
+                dtpCancellationDate.Clear();
+            }
+
+            if (dtpAcceptanceDate.Enabled)
+            {
+                if (dtpAcceptanceDate.TextLength == 0)
+                {
+                    dtpAcceptanceDate.Date = DateTime.Now.Date;
+                }
+            }
+            else
+            {
+                dtpAcceptanceDate.Clear();
+            }
+        }
+
+        private void ReceivingFieldAcceptanceChanged(object sender, EventArgs e)
+        {
+            EnableDisableReceivingFieldAcceptanceDate(sender, e);
 
             if (!chkAcceptedByReceivingField.Checked)
             {

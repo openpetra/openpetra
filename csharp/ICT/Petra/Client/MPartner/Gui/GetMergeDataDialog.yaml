@@ -1,0 +1,24 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Merge Partners
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 800
+    WindowHeight: 300
+
+    Controls:
+        pnlDialogContent:
+            Padding: 5,0,7,0
+            Controls: [lblInfo, clbAddress]
+            Dock: Fill
+        lblInfo:
+            Multiline: true
+            Dock: Top
+            Height: 60
+        clbAddress:
+            Dock: Fill
+            Stretch: horizontally
+            NoLabel: true 
+                        
+        btnOK: {Label=&OK (00)}            

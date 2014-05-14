@@ -489,7 +489,7 @@ CheckAllClientsDisconnected:
         /// <summary>
         /// AddUser
         /// </summary>
-        public virtual bool AddUser(string AUserId)
+        public virtual bool AddUser(string AUserId, string APassword = "")
         {
             // implemented in derived class
             return false;

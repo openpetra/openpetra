@@ -57,13 +57,15 @@ namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.ReferenceCount.WebConnectors
         /// <param name="APrimaryKeyValues">Values of the Primary Key of the DataRow in question represented as an Array of object.
         /// (This can easily be obtained using the Method 'Ict.Common.Data.DataUtilities.GetPKValuesFromDataRow()'). The reason why
         /// a DataRow isn't passed for this Argument is that the 'DataRow' Class is not Serializable. </param>
+        /// <param name="AMaxReferences">Use this argument to limit the time taken to search for references.
+        /// A value of 0 implies no limit.  A non-zero value will return from the method when the specified number of references has been found. </param>
         /// <param name="AVerificationResult">A 'TVerificationResultCollection' containing a single
         /// 'TVerificationResult' that contains information about DB Table references created by a cascading count
         /// Method if the count yielded more than 0 referencing DataRows.</param>
         /// <returns>The number records that reference a 'DataRow' of a cachable DataTable.</returns>
         [RequireModulePermission("NONE")]
-        public static int GetCacheableRecordReferenceCount(String ACacheableTable,
-            object[] APrimaryKeyValues, out TVerificationResultCollection AVerificationResult)
+        public static int GetCacheableRecordReferenceCount(String ACacheableTable, object[] APrimaryKeyValues, 
+            int AMaxReferences, out TVerificationResultCollection AVerificationResult)
         {
             int ReturnValue = 0;
 
@@ -100,12 +102,15 @@ namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.ReferenceCount.WebConnectors
         /// <param name="APrimaryKeyValues">Values of the Primary Key of the DataRow in question represented as an Array of object.
         /// (This can easily be obtained using the Method 'Ict.Common.Data.DataUtilities.GetPKValuesFromDataRow()'). The reason why
         /// a DataRow isn't passed for this Argument is that the 'DataRow' Class is not Serializable. </param>
+        /// <param name="AMaxReferences">Use this argument to limit the time taken to search for references.
+        /// A value of 0 implies no limit.  A non-zero value will return from the method when the specified number of references has been found. </param>
         /// <param name="AVerificationResult">A 'TVerificationResultCollection' containing a single
         /// 'TVerificationResult' that contains information about DB Table references created by a cascading count
         /// Method if the count yielded more than 0 referencing DataRows.</param>
         /// <returns>The number records that reference a 'DataRow' of a non-cachable DataTable.</returns>
         [RequireModulePermission("NONE")]
-        public static int GetNonCacheableRecordReferenceCount(TTypedDataTable ADataTable, object[] APrimaryKeyValues, out TVerificationResultCollection AVerificationResult)
+        public static int GetNonCacheableRecordReferenceCount(TTypedDataTable ADataTable, object[] APrimaryKeyValues,
+            int AMaxReferences, out TVerificationResultCollection AVerificationResult)
         {
             int ReturnValue = 0;
 
@@ -130,7 +135,7 @@ namespace Ict.Petra.Server.M{#TOPLEVELMODULE}.ReferenceCount.WebConnectors
 {##CACHEABLETABLECASE}
 case "{#CACHEABLETABLELISTNAME}":
 {
-    ReturnValue = {#CACHEABLETABLENAME}Cascading.CountByPrimaryKey(APrimaryKeyValues,
+    ReturnValue = {#CACHEABLETABLENAME}Cascading.CountByPrimaryKey(APrimaryKeyValues, AMaxReferences,
         ReadTransaction, true, out AVerificationResult);
     break;
 }
@@ -138,13 +143,13 @@ case "{#CACHEABLETABLELISTNAME}":
 {##TABLEIF}
 if (ADataTable is {#TABLENAME}Table)
 {
-    ReturnValue = {#TABLENAME}Cascading.CountByPrimaryKey(APrimaryKeyValues, ReadTransaction, true, out AVerificationResult);
+    ReturnValue = {#TABLENAME}Cascading.CountByPrimaryKey(APrimaryKeyValues, AMaxReferences, ReadTransaction, true, out AVerificationResult);
 }
 
 {##TABLEELSEIF}
 else if (ADataTable is {#TABLENAME}Table)
 {
-    ReturnValue = {#TABLENAME}Cascading.CountByPrimaryKey(APrimaryKeyValues, ReadTransaction, true, out AVerificationResult);
+    ReturnValue = {#TABLENAME}Cascading.CountByPrimaryKey(APrimaryKeyValues, AMaxReferences, ReadTransaction, true, out AVerificationResult);
 }
 
 {##TABLEELSE}

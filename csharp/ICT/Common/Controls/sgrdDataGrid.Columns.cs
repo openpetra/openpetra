@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using DevAge.Drawing;
 using SourceGrid;
@@ -53,6 +54,19 @@ namespace Ict.Common.Controls
         /// the currently selected cell
         /// </summary>
         protected SourceGrid.Cells.ICellVirtual FDataCellSelected;
+
+        private bool FBoldRightBorder;
+
+        /// <summary>
+        /// Set the right border of a cell to bold
+        /// </summary>
+        public bool BoldRightBorder
+        {
+            set
+            {
+                FBoldRightBorder = value;
+            }
+        }
 
         /// <summary>
         /// constructor
@@ -138,6 +152,7 @@ namespace Ict.Common.Controls
             SourceGrid.Cells.ICellVirtual ReturnValue;
             SourceGrid.Cells.ICellVirtual BaseDataCell = base.GetDataCell(AGridRow);
             SourceGrid.Cells.ICellVirtual AlternatingDataCellSelected;
+            SourceGrid.Cells.ICellVirtual BoldBorderDataCellSelected;
             TSgrdDataGrid GridWrapper = (TSgrdDataGrid)FGrid;
 
             int Reminder;
@@ -172,6 +187,18 @@ namespace Ict.Common.Controls
                 {
                     ReturnValue = FDataCellSelected;
                 }
+            }
+
+            if (FBoldRightBorder)
+            {
+                BoldBorderDataCellSelected = ReturnValue.Copy();
+
+                BoldBorderDataCellSelected.View.Border = new DevAge.Drawing.RectangleBorder(new BorderLine(GridWrapper.GridLinesColour, 0.5f),
+                    new BorderLine(GridWrapper.GridLinesColour, 0.5f),
+                    new BorderLine(GridWrapper.GridLinesColour, 0.5f),
+                    new BorderLine(GridWrapper.GridLinesColour, 5f));
+
+                ReturnValue = BoldBorderDataCellSelected;
             }
 
             return ReturnValue;

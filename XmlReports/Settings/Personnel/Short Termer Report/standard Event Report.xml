@@ -32,19 +32,15 @@
   <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
   <Parameter id="param_calculation" column="2" value="eString:Event Code" />
   <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
-  <Parameter id="param_calculation" column="3" value="eString:Event Preference 1 Code" />
-  <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
-  <Parameter id="param_calculation" column="4" value="eString:Event Preference 2 Code" />
-  <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
-  <Parameter id="param_calculation" column="5" value="eString:Partner Key" />
-  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
-  <Parameter id="param_calculation" column="6" value="eString:Partner Name" />
-  <Parameter id="ColumnWidth" column="6" value="eInteger:4" />
-  <Parameter id="param_calculation" column="7" value="eString:Nationality" />
-  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
-  <Parameter id="param_calculation" column="8" value="eString:Conference Role" />
-  <Parameter id="ColumnWidth" column="8" value="eInteger:3" />
+  <Parameter id="param_calculation" column="3" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_calculation" column="4" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:4" />
+  <Parameter id="param_calculation" column="5" value="eString:Nationalities" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:6" />
+  <Parameter id="param_calculation" column="6" value="eString:Conference Role" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:3" />
   <Parameter id="param_address_detail" value="eString:false" />
-  <Parameter id="param_passport_detail" value="eString:true" />
+  <Parameter id="param_nationalities" value="eString:true" />
   <Parameter id="param_church_detail" value="eString:false" />
 </Parameters>

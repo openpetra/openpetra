@@ -81,7 +81,6 @@ namespace Ict.Petra.Client.CommonDialogs
 
         private void BtnCreateExtractClick(object sender, EventArgs e)
         {
-            TVerificationResultCollection VerificationResult;
             Int32 ExtractID;
             bool ExtractAlreadyExists;
 
@@ -96,7 +95,6 @@ namespace Ict.Petra.Client.CommonDialogs
                     txtDescription.Text,
                     out ExtractID,
                     out ExtractAlreadyExists,
-                    out VerificationResult,
                     FBestAddress,
                     IncludeNonValidAddresses))
             {

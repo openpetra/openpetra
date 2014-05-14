@@ -1221,6 +1221,7 @@
   </table>
   <table name="s_patch_log"
          descr="Logs each patch procedure that is run"
+         label="Patch Log"
          area="Petra Data"
          dumpname="s_patch_"
          group="sysman">
@@ -1248,6 +1249,70 @@
                 otherTable="s_user"
                 otherFields="s_user_id_c"/>
     <!-- Explicit Indexes on table s_patch_log  -->
+  </table>
+  <table name="s_report_template"
+        descr="filesystem for storage of XML report templates - those provided initially and also tweaks saved by users."
+        area="Petra Data"
+        label="Report templates"
+        dumpname="reptempl"
+        group="sysman">
+      <tablefield name="s_template_id_i"
+                type="integer"
+                descr="Template Id"
+                label="Template Id"
+                sequence="seq_report_template"
+                notnull="yes"/>
+      <tablefield name="s_report_type_c"
+                type="varchar"
+                descr="Report Type"
+                format="X(50)"
+                label="Report Type"
+                notnull="yes"/>
+      <tablefield name="s_report_variant_c"
+                type="varchar"
+                descr="Report Title"
+                format="X(50)"
+                label="Report variant title"
+                notnull="yes"/>
+      <tablefield name="s_author_c"
+                type="varchar"
+                descr="Tempate author"
+                format="X(50)"
+                label="Tempate author"
+                notnull="yes"/>
+      <tablefield name="s_default_l"
+                type="bit"
+                descr="Template will be selected by default"
+                label="Default"
+                initial="false"
+                notnull="yes"/>
+      <tablefield name="s_private_l"
+                type="bit"
+                descr="Template only available to me"
+                label="Private"
+                initial="false"
+                notnull="yes"/>
+      <tablefield name="s_private_default_l"
+                type="bit"
+                descr="Private template will be selected over public default"
+                label="Private default"
+                initial="false"
+                notnull="yes"/>
+      <tablefield name="s_readonly_l"
+                type="bit"
+                descr="Template cannot be modified"
+                label="Read only"
+                initial="false"
+                notnull="yes"/>
+      <tablefield name="s_xml_text_c"
+                type="text"
+                descr="Compressed XML text"
+                label="Template text"
+                notnull="yes"/>
+      <!-- Constraints on table s_report_template -->
+      <primarykey name="s_report_templates_pk"
+                descr=""
+                thisFields="s_template_id_i"/>
   </table>
   <table name="s_reports_to_archive"
          descr="Contains the titles of reports that should be archived, not deleted, when Purge Reports is run."
@@ -1369,6 +1434,7 @@
   </table>
   <table name="s_system_defaults"
          descr="The settings that are system wide (iso per user)"
+         label="System Defaults"
          area="Petra Data"
          dumpname="s_sysdef"
          group="sysman">
@@ -3971,11 +4037,11 @@
                 format="Confidential/Open"
                 label="Confidential Gift"
                 initial="Open"/>
-    <tablefield name="a_tax_deductable_l"
+    <tablefield name="a_tax_deductible_l"
                 type="bit"
-                descr="Whether the gifts to this bank account are tax deductable"
+                descr="Whether the gifts to this bank account are tax deductible"
                 format="Yes/No"
-                label="Tax Deductable"
+                label="Tax Deductible"
                 initial="Yes"/>
     <tablefield name="a_motivation_group_code_c"
                 type="varchar"
@@ -4187,12 +4253,12 @@
                 help="Make a selection"
                 notnull="yes"
                 initial="Open"/>
-    <tablefield name="a_tax_deductable_l"
+    <tablefield name="a_tax_deductible_l"
                 type="bit"
-                descr="Whether this gift is tax deductable"
+                descr="Whether this gift is tax deductaible"
                 format="Yes/No"
-                label="Tax Deductable"
-                help="Is this gift tax deductable?"
+                label="Tax Deductible"
+                help="Is this gift tax deductible?"
                 initial="Yes"/>
     <tablefield name="p_recipient_key_n"
                 type="number"
@@ -5824,9 +5890,33 @@
     <!-- Explicit Indexes on table p_postcode_range  -->
   </table>
   <table name="p_postcode_region"
-         descr="Postcode regions and the ranges they contain."
+         descr="List postcode regions"
          area="Petra Data"
          label="Postcode Region"
+         dumpname="p_postre"
+         group="mailroom">
+    <tablefield name="p_region_c"
+                type="varchar"
+                descr="Name of a postcode region"
+                format="X(32)"
+                label="Region Name"
+                notnull="yes"/>
+    <tablefield name="p_description_c"
+                type="varchar"
+                descr="This describes the region."
+                format="X(50)"
+                label="Description"
+                help="This describes the region."/>
+    <!-- Constraints on table p_postcode_region -->
+    <primarykey name="p_postcode_region_pk"
+                descr=""
+                thisFields="p_region_c"/>
+    <!-- Explicit Indexes on table p_postcode_region  -->
+  </table>
+  <table name="p_postcode_region_range"
+         descr="Links ranges to a region."
+         area="Petra Data"
+         label="Postcode Region Range"
          dumpname="p_postco"
          group="mailroom">
     <tablefield name="p_region_c"
@@ -5841,16 +5931,21 @@
                 format="X(32)"
                 label="Range Name"
                 notnull="yes"/>
-    <!-- Constraints on table p_postcode_region -->
-    <primarykey name="p_postcode_region_pk"
+    <!-- Constraints on table p_postcode_region_range -->
+    <primarykey name="p_postcode_region_range_pk"
                 descr=""
                 thisFields="p_region_c, p_range_c"/>
     <foreignkey name="p_postcode_region_fk1"
                 descr=""
+                thisFields="p_region_c"
+                otherTable="p_postcode_region"
+                otherFields="p_region_c"/>
+    <foreignkey name="p_postcode_region_fk2"
+                descr=""
                 thisFields="p_range_c"
                 otherTable="p_postcode_range"
                 otherFields="p_range_c"/>
-    <!-- Explicit Indexes on table p_postcode_region  -->
+    <!-- Explicit Indexes on table p_postcode_region_range  -->
   </table>
   <table name="p_publication"
          descr="Details of a publication"
@@ -6172,8 +6267,7 @@
                 descr=""
                 format="9999999999"
                 label="Gift Given By"
-                help="Who gave this subscription as a gift"
-                initial="0"/>
+                help="Who gave this subscription as a gift"/>
     <!-- Constraints on table p_subscription -->
     <primarykey name="p_subscription_pk"
                 descr=""
@@ -6212,6 +6306,7 @@
   </table>
   <table name="p_contact_attribute"
          descr="Possible attributes for partner contacts.  Gives the description of each attribute code.  An attribute is a type of contact that was made or which occurred with a partner."
+         label="Contact Attribute"
          area="Petra Data"
          dumpname="p_conatt"
          group="mailroom">
@@ -6244,6 +6339,7 @@
   </table>
   <table name="p_contact_attribute_detail"
          descr="Possible attribute details for each contact attribute.  Breaks down the attribute into more specifice information that applies to a contact with a partner."
+         label="Contact Attribute Detail"
          area="Petra Data"
          dumpname="p_conatd"
          group="mailroom">
@@ -6478,6 +6574,7 @@
   </table>
   <table name="p_partner_contact_attribute"
          descr="Associates a p_contact_attribute_detail with a p_partner_contact.  A contact with a partner may have more than one p_contact_attribute_detail associated with it."
+         label="Partner Contact Attribute"
          area="Petra Data"
          dumpname="p_conatp"
          group="mailroom">
@@ -6777,7 +6874,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Suspense Account Flag"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Allow suspense accounts"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_bank_accounts_flag_l"
@@ -7227,6 +7324,7 @@
   </table>
   <table name="a_ledger_init_flag"
          descr="Ledger Init Flags"
+         label="Ledger Init Flag"
          area="Petra Data"
          dumpname="a_ldinfl"
          group="account">
@@ -7513,6 +7611,7 @@
   </table>
   <table name="a_account_hierarchy"
          descr="hierarchy of accounts; what is the root account of the hierarchy"
+         label="Account Hierarchy"
          area="Petra Data"
          dumpname="a_acchie"
          group="account">
@@ -7547,6 +7646,7 @@
   </table>
   <table name="a_account_hierarchy_detail"
          descr="the elements of the hierarchy of accounts; which account is reporting to which other account"
+         label="Account Hierarchy Detail"
          area="Petra Data"
          dumpname="a_acchid"
          group="account">
@@ -7956,6 +8056,7 @@
   </table>
   <table name="a_budget_period"
          descr="This is the budget data for one period (e.g. a month)"
+         label="Budget Period"
          area="Petra Data"
          dumpname="a_budper"
          group="account">
@@ -9144,6 +9245,7 @@
   </table>
   <table name="a_general_ledger_master_period"
          descr="The General Ledger Master data for one period (e.g. a month)"
+         label="GL Master Period"
          area="Petra Data"
          dumpname="a_genlep"
          group="account">
@@ -9660,12 +9762,12 @@
                 label="Print Receipt"
                 help="Do you want receipts for gifts with this motivation code?"
                 initial="Yes"/>
-    <tablefield name="a_tax_deductable_l"
+    <tablefield name="a_tax_deductible_l"
                 type="bit"
-                descr="Whether this gift is tax deductable"
+                descr="Whether this gift is tax deductible"
                 format="Yes/No"
-                label="Tax Deductable"
-                help="Should gifts with this motivation code be tax deductable?"
+                label="Tax Deductible"
+                help="Should gifts with this motivation code be tax deductible?"
                 initial="Yes"/>
     <tablefield name="a_motivation_detail_desc_local_c"
                 type="varchar"
@@ -9673,14 +9775,15 @@
                 format="X(80)"
                 label="Detail Description (Local Language)"
                 columnlabel="Description"
-                help="Enter a description"/>
+                help="Enter a description in local language"/>
     <tablefield name="a_short_code_c"
                 type="varchar"
                 descr="A short code for the motivation which can then be used on receipts"
+                charlength="4"
                 format="X(4)"
                 label="Short Code"
                 columnlabel="Short Code"
-                help="Enter a short code for the motivation detail"/>
+                help="Use this if you want to show a special code on receipts"/>
     <tablefield name="a_restricted_l"
                 type="bit"
                 descr="Indicates whether or not the motivation has restricted access. If it does then the access will be controlled by s_group_motivation"
@@ -9730,6 +9833,7 @@
   </table>
   <table name="a_motivation_detail_fee"
          descr="motivation details can have several fees"
+         label="Motivation Detail Fee"
          area="Petra Data"
          dumpname="a_motdtf"
          group="gift">
@@ -10945,12 +11049,12 @@
                 help="Make a selection"
                 notnull="yes"
                 initial="Open"/>
-    <tablefield name="a_tax_deductable_l"
+    <tablefield name="a_tax_deductible_l"
                 type="bit"
-                descr="Whether this gift is tax deductable"
+                descr="Whether this gift is tax deductible"
                 format="Yes/No"
-                label="Tax Deductable"
-                help="Should gifts with this motivation code be tax deductable?"
+                label="Tax Deductible"
+                help="Should gifts with this motivation code be tax deductible?"
                 initial="Yes"/>
     <tablefield name="p_recipient_key_n"
                 type="number"
@@ -11495,12 +11599,12 @@
                 help="Make a selection"
                 notnull="yes"
                 initial="Open"/>
-    <tablefield name="a_tax_deductable_l"
+    <tablefield name="a_tax_deductible_l"
                 type="bit"
-                descr="Whether this gift is tax deductable"
+                descr="Whether this gift is tax deductible"
                 format="Yes/No"
-                label="Tax Deductable"
-                help="Is this gift tax deductable?"
+                label="Tax Deductible"
+                help="Is this gift tax deductible?"
                 initial="Yes"/>
     <tablefield name="p_recipient_key_n"
                 type="number"
@@ -12507,6 +12611,7 @@
   </table>
   <table name="a_ap_supplier"
          descr="This table defines the concept of a supplier in the AP system and is the centre of the AP system."
+         label="AP Supplier"
          area=""
          dumpname="a_apsupp"
          group="ap">
@@ -12598,6 +12703,7 @@
   </table>
   <table name="a_ap_document"
          descr="Either an invoice or a credit note in the Accounts Payable system."
+         label="AP Document"
          area=""
          dumpname="a_apdoc"
          group="ap">
@@ -12741,6 +12847,7 @@
   </table>
   <table name="a_crdt_note_invoice_link"
          descr="This table receives a new entry when a credit note is applied to an invoice. Since the invoices and credit notes share the same table, we need a way to link the two, and this is the role of this table."
+         label="CR Note Invoice Link"
          area=""
          dumpname="a_crdtn"
          group="ap">
@@ -12785,6 +12892,7 @@
   </table>
   <table name="a_ap_document_detail"
          descr="An invoice or credit note consists out of several items, or details. This table contains all these details."
+         label="AP Document Detail"
          area=""
          dumpname="a_apdocd"
          group="ap">
@@ -13638,7 +13746,7 @@
                 type="integer"
                 descr="A unique number for this detail for its invoice."
                 format="&gt;,&gt;&gt;&gt;,&gt;&gt;9"
-                label="Invoice Key"
+                label="Detail Number"
                 notnull="yes" />
     <tablefield name="a_ar_article_code_c"
                 type="varchar"
@@ -13784,7 +13892,7 @@
                 type="integer"
                 descr="A unique number for this detail for its invoice."
                 format="&gt;,&gt;&gt;&gt;,&gt;&gt;9"
-                label="Invoice Key"
+                label="Detail Number"
                 notnull="yes" />
     <tablefield name="a_ar_discount_code_c"
                 type="varchar"
@@ -15245,9 +15353,6 @@
     <primarykey name="pm_year_program_application_pk"
                 descr=""
                 thisFields="p_partner_key_n, pm_application_key_i, pm_registration_office_n"/>
-    <uniquekey name="pm_year_program_application_nk"
-               descr=""
-               thisFields="p_partner_key_n, pm_yp_app_date_d, pm_yp_basic_app_type_c"/>
     <foreignkey name="pm_year_program_application_fk1"
                 descr=""
                 thisFields="p_partner_key_n, pm_application_key_i, pm_registration_office_n"
@@ -16701,61 +16806,7 @@
                 otherFields="p_country_code_c"/>
     <!-- Explicit Indexes on table pm_formal_education  -->
   </table>
-  <table name="pt_driver_status"
-         descr="This table contains the codes that indicate the level of ability a drive has."
-         area="Petra Data"
-         label="Driver Status"
-         dumpname="pt_dr_st"
-         group="personnel">
-    <tablefield name="pt_code_c"
-                type="varchar"
-                descr="This code indicates the driver status of a person."
-                format="X(16)"
-                label="Driver Status"
-                columnlabel="Driver Status"
-                help="This code indicates the driver status of a person."
-                notnull="yes">
-      <trigger type="assign"
-               procname="pe1450a.p"
-               overrideble="no"
-               usecrc="yes"/>
-    </tablefield>
-    <tablefield name="pt_description_c"
-                type="varchar"
-                descr="This describes the driver status."
-                format="X(40)"
-                label="Description"
-                columnlabel="Description"
-                help="This describes the driver status."/>
-    <tablefield name="pt_unassignable_flag_l"
-                type="bit"
-                descr="Indicates if this code can still be assigned?"
-                format="Yes/No"
-                label="Unassignable?"
-                columnlabel="Unassignable?"
-                help="Indicates if this code can still be assigned?"
-                initial="no"/>
-    <tablefield name="pt_unassignable_date_d"
-                type="date"
-                descr="Date from which this code was made unassignable."
-                format="99/99/9999"
-                label="Date"
-                columnlabel="Date"
-                help="Date from which this code was made unassignable."/>
-    <tablefield name="pt_deletable_flag_l"
-                type="bit"
-                descr="Indicates if a record can be deleted."
-                format="Yes/No"
-                label="Deletable"
-                columnlabel="Deletable"
-                help="Indicates if a record can be deleted."
-                initial="yes"/>
-    <!-- Constraints on table pt_driver_status -->
-    <primarykey name="pt_driver_status_pk"
-                descr=""
-                thisFields="pt_code_c"/>
-    <!-- Explicit Indexes on table pt_driver_status  -->
-  </table>
+  
   <table name="pm_personal_data"
          descr="This table contains personal data about our staff, eg. tax id."
          area="Petra Data"
@@ -16917,36 +16968,6 @@
                 label=""
                 columnlabel=""
                 help="User defined field-6 for personal information."/>
-    <tablefield name="pm_driving_license_number_c"
-                type="varchar"
-                descr="Driving Licence Number"
-                format="X(25)"
-                label=""
-                columnlabel=""
-                help="Enter Driving Licence Number."/>
-    <tablefield name="pm_internal_driver_license_l"
-                type="bit"
-                descr="This field indicates if the person has approval to drive for us."
-                format="Yes/No"
-                label="Drive for us?"
-                columnlabel="Internal Driving license ?"
-                help="Is this person allowed to drive for us"
-                initial="no"/>
-    <tablefield name="pm_gen_driver_license_l"
-                type="bit"
-                descr="This field indicates if the person is a licensed driver."
-                format="Yes/No"
-                label="Licensed Driver ?"
-                columnlabel="Licensed Driver ?"
-                help="This field indicates if the person is a licensed driver."
-                initial="no"/>
-    <tablefield name="pm_driver_status_c"
-                type="varchar"
-                descr="Indicates the level of driving ability. "
-                format="X(16)"
-                label="Driver Status"
-                columnlabel="Driver Status"
-                help="Indicates the level of driving ability."/>
     <tablefield name="p_language_code_c"
                 type="varchar"
                 descr="Name of the person&apos;s first language."
@@ -16976,11 +16997,6 @@
                 thisFields="p_partner_key_n"
                 otherTable="p_person"
                 otherFields="p_partner_key_n"/>
-    <foreignkey name="pm_personal_data_fk2"
-                descr=""
-                thisFields="pm_driver_status_c"
-                otherTable="pt_driver_status"
-                otherFields="pt_code_c"/>
     <foreignkey name="pm_personal_data_fk3"
                 descr=""
                 thisFields="p_language_code_c"
@@ -17747,7 +17763,7 @@
                 format="9999999999"
                 label="Receiving Field"
                 columnlabel="Field Office"
-                help="The person&apos;s is serving for that field."
+                help="The person is serving for that field."
                 notnull="yes"/>
     <tablefield name="pm_receiving_field_office_n"
                 type="number"
@@ -19333,7 +19349,7 @@
                 length="10"
                 descr="This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number."
                 format="9999999999"
-                label="Partner Key"
+                label="Conference Key"
                 help="Conference Key"
                 notnull="yes"
                 initial="0"/>
@@ -20699,11 +20715,11 @@
       <indexfield name="p_next_reminder_date_d" order="descending"/>
     </index>
   </table>
-  <table name="p_partner_field_of_service"
-         descr="Tracks the current field of service for the Partner and maintains a history"
+  <table name="p_partner_gift_destination"
+         descr="Tracks the current gift destination for the Partner and maintains a history"
          area="Petra Data"
-         label="Partner Field of Service"
-         dumpname="p_pt_fos"
+         label="Partner Gift Destination"
+         dumpname="p_pt_gd"
          group="partner">
     <tablefield name="p_key_i"
                 type="integer"
@@ -20727,7 +20743,8 @@
                 type="date"
                 descr="Date from which field assignment is valid"
                 format="99/99/9999"
-                label="Date Effective From"/>
+                label="Date Effective From"
+                notnull="yes"/>
     <tablefield name="p_date_expires_d"
                 type="date"
                 descr="Date on which field assignment expires"
@@ -20749,8 +20766,7 @@
                 type="varchar"
                 descr="Is this the field for a person or a family?"
                 format="X(12)"
-                label="Partner Class"
-                notnull="yes"/>
+                label="Partner Class"/>
     <tablefield name="p_commitment_site_key_n"
                 type="number"
                 length="10"
@@ -20767,26 +20783,26 @@
                 format="X(200)"
                 label="Comments"
                 help="Enter any additional comments"/>
-    <!-- Constraints on table p_partner_field_of_service -->
-    <primarykey name="p_partner_field_of_service_pk"
+    <!-- Constraints on table p_partner_gift_destination -->
+    <primarykey name="p_partner_gift_destination_pk"
                 descr=""
                 thisFields="p_key_i"/>
-    <foreignkey name="p_partner_field_of_service_fk1"
+    <foreignkey name="p_partner_gift_destination_fk1"
                 descr=""
                 thisFields="p_partner_key_n"
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
-    <foreignkey name="p_partner_field_of_service_fk2"
+    <foreignkey name="p_partner_gift_destination_fk2"
                 descr=""
                 thisFields="p_field_key_n"
                 otherTable="p_unit"
                 otherFields="p_partner_key_n"/>
-    <foreignkey name="p_partner_field_of_service_fk3"
+    <foreignkey name="p_partner_gift_destination_fk3"
                 descr=""
                 thisFields="p_partner_class_c"
                 otherTable="p_partner_classes"
                 otherFields="p_partner_class_c"/>
-    <foreignkey name="p_partner_field_of_service_fk4"
+    <foreignkey name="p_partner_gift_destination_fk4"
                 descr=""
                 thisFields="p_commitment_site_key_n, p_commitment_key_n"
                 otherTable="pm_staff_data"
@@ -22819,7 +22835,7 @@
                 type="varchar"
                 descr="Identifier for related function"
                 format="X(15)"
-                label="Function ID"
+                label="Function ID of related function"
                 notnull="yes"/>
     <tablefield name="s_code_to_run_c"
                 type="varchar"
@@ -23515,7 +23531,7 @@
             minval="0"
             maxval="999999999"
             area=""/>
-  <sequence name="seq_ap_document"
+    <sequence name="seq_ap_document"
             descr=""
             initial="0"
             increment="1"
@@ -23715,6 +23731,14 @@
   <sequence name="seq_login_process_id"
             descr=""
             initial="2000"
+            increment="1"
+            cycleonlimit="no"
+            minval="0"
+            maxval="999999999"
+            area=""/>
+  <sequence name="seq_report_template"
+            descr="Template Unique ID"
+            initial="100"
             increment="1"
             cycleonlimit="no"
             minval="0"

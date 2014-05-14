@@ -31,9 +31,11 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
@@ -60,6 +62,7 @@ namespace Ict.Petra.Client.MConference.Gui
     {
         private String FSelectedConferenceName;
         private Int64 FSelectedConferenceKey;
+        private bool FIsModal;
 
         /// <summary>
         /// publish the selected conference name
@@ -83,8 +86,25 @@ namespace Ict.Petra.Client.MConference.Gui
             }
         }
 
+        /// <summary>
+        /// true if screen has been opened modally
+        /// </summary>
+        public bool IsModal
+        {
+            set
+            {
+                FIsModal = value;
+            }
+        }
+
+        /// <remarks>
+        /// For NUnit tests that just try to open the Conference Find screen but which don't instantiate a Main Form
+        /// we need to work around the fact that there is no Main Window!
+        /// </remarks>
         private void InitGridManually()
         {
+            MethodInfo Method = null;
+
             LoadDataGrid(true);
 
             grdConferences.DoubleClickCell += new TDoubleClickCellEventHandler(grdConferences_DoubleClickCell);
@@ -92,11 +112,20 @@ namespace Ict.Petra.Client.MConference.Gui
             // Attempt to obtain conference key from parent form or parent's parent form and use this to focus the currently selected
             // conference in the grid. If no conference key is found then the first conference in the grid will be focused.
             Form MainWindow = FPetraUtilsObject.GetCallerForm();
-            MethodInfo Method = MainWindow.GetType().GetMethod("GetSelectedConferenceKey");
+
+            // Main Window will not be available if run from within NUnit Test without Main Form instance...
+            if (MainWindow != null)
+            {
+                Method = MainWindow.GetType().GetMethod("GetSelectedConferenceKey");
+            }
 
             if (Method == null)
             {
-                Method = MainWindow.GetType().GetMethod("GetPetraUtilsObject");
+                // Main Window will not be available if run from within NUnit Test without Main Form instance...
+                if (MainWindow != null)
+                {
+                    Method = MainWindow.GetType().GetMethod("GetPetraUtilsObject");
+                }
 
                 if (Method != null)
                 {
@@ -123,6 +152,7 @@ namespace Ict.Petra.Client.MConference.Gui
                     RowPos++;
                 }
 
+                // automatically select the current conference
                 grdConferences.SelectRowInGrid(RowPos, true);
             }
         }
@@ -177,7 +207,7 @@ namespace Ict.Petra.Client.MConference.Gui
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Exception occured while calling OpenEventFindScreen Delegate!", exp);
+                    throw new EOPAppException("Exception occured while calling OpenEventFindScreen Delegate!", exp);
                 }
             }
         }
@@ -189,7 +219,15 @@ namespace Ict.Petra.Client.MConference.Gui
                 FSelectedConferenceKey = (Int64)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PcConferenceTable.GetConferenceKeyDBName()];
                 FSelectedConferenceName = (String)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerShortNameDBName()];
 
-                ReloadNavigation();
+                if (!FIsModal)
+                {
+                    ReloadNavigation();
+                }
+                else
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
             }
         }
 
@@ -224,9 +262,31 @@ namespace Ict.Petra.Client.MConference.Gui
             this.Close();
         }
 
-        private void Search(System.Object sender, EventArgs e)
+        private void Filter(System.Object sender, EventArgs e)
         {
-            LoadDataGrid(false);
+            DataView MyDataView = FMainDS.PcConference.DefaultView;
+
+            String Filter = "";
+
+            if (!string.IsNullOrEmpty(txtConference.Text))
+            {
+                Filter += FMainDS.PcConference.Columns[PPartnerTable.GetPartnerShortNameDBName()] + " LIKE '" + "%" + txtConference.Text + "%'";
+            }
+
+            if (!string.IsNullOrEmpty(txtPrefix.Text))
+            {
+                if (Filter != "")
+                {
+                    Filter += " AND ";
+                }
+
+                Filter += FMainDS.PcConference.Columns[PcConferenceTable.GetOutreachPrefixDBName()] + " LIKE '" + txtPrefix.Text + "%'";
+            }
+
+            MyDataView.RowFilter = Filter;
+            grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            UpdateRecordNumberDisplay();
         }
 
         private void LoadDataGrid(bool AFirstTime)
@@ -234,7 +294,7 @@ namespace Ict.Petra.Client.MConference.Gui
             FMainDS.PcConference.Clear();
             FMainDS.PPartner.Clear();
 
-            FMainDS.Merge(TRemote.MConference.WebConnectors.GetConferences(txtConference.Text, txtPrefix.Text));
+            FMainDS.Merge(TRemote.MConference.WebConnectors.GetConferences("", ""));
 
             if (FMainDS.PcConference.Rows.Count == FMainDS.PPartner.Rows.Count)
             {
@@ -251,225 +311,38 @@ namespace Ict.Petra.Client.MConference.Gui
                 }
             }
 
-            grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PcConference.DefaultView);
+            // sort order for grid
+            DataView MyDataView = FMainDS.PcConference.DefaultView;
+            MyDataView.Sort = "p_partner_short_name_c ASC";
+            grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            UpdateRecordNumberDisplay();
         }
 
-        // TODO validation is not completed
-        // Delete functionality needs to be done manually. Automatic delete is not included for this template.
+        // Deletes the conference
         private void RemoveRecord(System.Object sender, EventArgs e)
         {
-            string CompletionMessage = String.Empty;
+            FSelectedConferenceKey = (Int64)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PcConferenceTable.GetConferenceKeyDBName()];
+            FSelectedConferenceName = (String)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerShortNameDBName()];
 
-            if (grdConferences.SelectedDataRows.Length != 1)
-            {
-                return;
-            }
+            TDeleteConference.DeleteConference(FPetraUtilsObject.GetCallerForm(), FSelectedConferenceKey, FSelectedConferenceName);
 
-            PcConferenceRow SelectedPcConferenceRow = (PcConferenceRow)(((DataRowView)grdConferences.SelectedDataRows[0]).Row);
-
-            TVerificationResultCollection VerificationResults = null;
-
-            if (!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
-            {
-                this.Cursor = Cursors.WaitCursor;
-
-                // TODO this does not work yet
-                TRemote.MConference.Conference.WebConnectors.GetNonCacheableRecordReferenceCountManual(
-                    //TRemote.MConference.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
-                    FMainDS.PcConference,
-                    DataUtilities.GetPKValuesFromDataRow(SelectedPcConferenceRow),
-                    out VerificationResults);
-
-
-                this.Cursor = Cursors.Default;
-            }
-
-            if ((VerificationResults != null)
-                && (VerificationResults.Count > 0))
-            {
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult(
-                        Catalog.GetString("Record cannot be deleted!") +
-                        Environment.NewLine +
-                        Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
-                        VerificationResults),
-                    Catalog.GetString("Record Deletion"));
-                return;
-            }
-
-            string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
-            DeletionQuestion += String.Format("{0}{0}({1})",
-                Environment.NewLine,
-                "Conference Key: " + FSelectedConferenceKey);
-
-            bool AllowDeletion = true;
-            bool DeletionPerformed = false;
-
-            if (AllowDeletion)
-            {
-                if ((MessageBox.Show(DeletionQuestion,
-                         Catalog.GetString("Confirm Delete"),
-                         MessageBoxButtons.YesNo,
-                         MessageBoxIcon.Question,
-                         MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
-                {
-                    try
-                    {
-                        SelectedPcConferenceRow.Delete();
-                        DeletionPerformed = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString("An error occurred while deleting this record.{0}{0}{1}"),
-                                Environment.NewLine, ex.Message),
-                            Catalog.GetString("Error"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                    }
-
-                    if (DeletionPerformed)
-                    {
-                        // no save option to save on this screen so save automatically
-                        SaveDelete();
-                    }
-
-                    // Clear any errors left over from  the deleted row
-                    FPetraUtilsObject.VerificationResultCollection.Clear();
-                }
-            }
-
-            if (DeletionPerformed && (CompletionMessage.Length > 0))
-            {
-                MessageBox.Show(CompletionMessage,
-                    Catalog.GetString("Deletion Completed"));
-            }
+            LoadDataGrid(false);
         }
 
-        private bool SaveDelete()
+        // update the record counter
+        private void UpdateRecordNumberDisplay()
         {
-            bool ReturnValue = false;
+            int RecordCount;
 
-            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
-            this.Cursor = Cursors.WaitCursor;
-
-            TSubmitChangesResult SubmissionResult;
-            TVerificationResultCollection VerificationResult;
-
-            Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.PcConference.GetChangesTyped();
-
-            if (SubmitDT == null)
+            if (grdConferences.DataSource != null)
             {
-                // There is nothing to be saved.
-                // Update UI
-                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
-                this.Cursor = Cursors.Default;
-
-                return true;
+                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdConferences.DataSource).Count;
+                lblRecordCounter.Text = String.Format(
+                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
+                        true),
+                    RecordCount);
             }
-
-            // Submit changes to the PETRAServer
-            try
-            {
-                SubmissionResult = TRemote.MCommon.DataReader.WebConnectors.SaveData(
-                    PcConferenceTable.GetTableDBName(), ref SubmitDT, out VerificationResult);
-            }
-            catch (ESecurityDBTableAccessDeniedException Exp)
-            {
-                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                this.Cursor = Cursors.Default;
-
-                TMessages.MsgSecurityException(Exp, this.GetType());
-
-                ReturnValue = false;
-                //FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                return ReturnValue;
-            }
-            catch (EDBConcurrencyException Exp)
-            {
-                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                this.Cursor = Cursors.Default;
-
-                TMessages.MsgDBConcurrencyException(Exp, this.GetType());
-
-                ReturnValue = false;
-                //FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                return ReturnValue;
-            }
-            catch (Exception)
-            {
-                FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                this.Cursor = Cursors.Default;
-
-                //FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                throw;
-            }
-
-            switch (SubmissionResult)
-            {
-                case TSubmitChangesResult.scrOK:
-                    // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                    FMainDS.PcConference.AcceptChanges();
-
-                    // Merge back with data from the Server (eg. for getting Sequence values)
-                    SubmitDT.AcceptChanges();
-                    FMainDS.PcConference.Merge(SubmitDT, false);
-
-                    // need to accept the new modification ID
-                    FMainDS.PcConference.AcceptChanges();
-
-                    // Update UI
-                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
-                    this.Cursor = Cursors.Default;
-
-                    // We don't have unsaved changes anymore
-                    //FPetraUtilsObject.DisableSaveButton();
-
-                    //SetPrimaryKeyReadOnly(true);
-
-                    ReturnValue = true;
-                    //FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-
-                    if ((VerificationResult != null)
-                        && (VerificationResult.HasCriticalOrNonCriticalErrors))
-                    {
-                        TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
-                            this.GetType(), null);
-                    }
-
-                    break;
-
-                case TSubmitChangesResult.scrError:
-                    this.Cursor = Cursors.Default;
-                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
-
-                    TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
-                    this.GetType(), null);
-
-                    //FPetraUtilsObject.SubmitChangesContinue = false;
-
-                    ReturnValue = false;
-                    //FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    break;
-
-                case TSubmitChangesResult.scrNothingToBeSaved:
-
-                    this.Cursor = Cursors.Default;
-                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
-
-                    // We don't have unsaved changes anymore
-                    //FPetraUtilsObject.DisableSaveButton();
-
-                    ReturnValue = true;
-                    //FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-                    break;
-
-                case TSubmitChangesResult.scrInfoNeeded:
-
-                    // TODO scrInfoNeeded
-                    this.Cursor = Cursors.Default;
-                    break;
-            }
-
-            return ReturnValue;
         }
     }
 
@@ -496,10 +369,11 @@ namespace Ict.Petra.Client.MConference.Gui
         {
             DialogResult dlgResult;
 
-            AConferenceKey = -1;
+            AConferenceKey = 0;
             AConferenceName = String.Empty;
 
             TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentForm);
+            FindConference.IsModal = true;
 
             dlgResult = FindConference.ShowDialog();
 

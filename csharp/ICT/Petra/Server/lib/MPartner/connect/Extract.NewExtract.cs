@@ -22,7 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
@@ -65,27 +67,62 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         /// <param name="AExtractDescription">Description of the extract to be created</param>
         /// <param name="AExtractID">Extract Id of the new created extract. -1 if not successfull</param>
         /// <param name="AExtractAlreadyExists">True if there is already an extract with the given name. Otherwise false</param>
-        /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
         /// <returns>true if the new extract was created. Otherwise false</returns>
         public bool CreateNewExtract(String AExtractName,
             String AExtractDescription,
             out Int32 AExtractID,
-            out Boolean AExtractAlreadyExists,
-            out TVerificationResultCollection AVerificationResults)
+            out Boolean AExtractAlreadyExists)
         {
             bool Success;
 
             Success = TExtractsHandling.CreateNewExtract(AExtractName,
                 AExtractDescription,
                 out AExtractID,
-                out AExtractAlreadyExists,
-                out AVerificationResults);
+                out AExtractAlreadyExists);
 
             if (Success)
             {
                 FNewExtractID = AExtractID;
+            }
+
+            return Success;
+        }
+
+        /// <summary>
+        /// create an extract from a list of best addresses
+        /// </summary>
+        /// <param name="AExtractName">Name of the Extract to be created.</param>
+        /// <param name="AExtractDescription">Description of the Extract to be created.</param>
+        /// <param name="ANewExtractId">Extract Id of the created Extract, or -1 if the
+        /// creation of the Extract was not successful.</param>
+        /// <param name="APartnerKeysTable"></param>
+        /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
+        /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
+        /// <param name="ACommitTransaction">true if transaction should committed at end of method</param>
+        /// <returns>True if the new Extract was created, otherwise false.</returns>
+        public bool CreateExtractFromListOfPartnerKeys(
+            String AExtractName,
+            String AExtractDescription,
+            out Int32 ANewExtractId,
+            DataTable APartnerKeysTable,
+            Int32 APartnerKeyColumn,
+            bool AAddressFilterAdded,
+            bool ACommitTransaction)
+        {
+            bool Success;
+
+            Success = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                AExtractName,
+                AExtractDescription,
+                out ANewExtractId,
+                APartnerKeysTable,
+                APartnerKeyColumn,
+                AAddressFilterAdded,
+                ACommitTransaction);
+
+            if (Success)
+            {
+                FNewExtractID = ANewExtractId;
             }
 
             return Success;
@@ -108,17 +145,17 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 {
                     if (ExtractNotDeletable)
                     {
-                        throw new ApplicationException("Cannot delete Extract because it is not deletable");
+                        throw new EOPAppException("Cannot delete Extract because it is not deletable");
                     }
                     else
                     {
-                        throw new ApplicationException("Cannot delete Extract. Reason: " + VerificationResult.ResultText);
+                        throw new EOPAppException("Cannot delete Extract. Reason: " + VerificationResult.ResultText);
                     }
                 }
             }
             else
             {
-                throw new ApplicationException("Cannot delete Extract that wasn't yet created by " +
+                throw new EOPAppException("Cannot delete Extract that wasn't yet created by " +
                     "this UIConnector!");
             }
         }

@@ -22,14 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Text;
+using System.Data;
 using System.Collections;
 using System.Collections.Specialized;
-using Ict.Common;
 using System.Globalization;
 using System.Security.Cryptography;
-using System.Data;
+using System.Text;
 using System.Threading;
+
+using Ict.Common;
+using Ict.Common.Exceptions;
 
 namespace Ict.Common
 {
@@ -375,6 +377,12 @@ namespace Ict.Common
 
             while (counter < s.Length)
             {
+/*
+ *              if ((s[counter] == '\\') && (s[counter + 1] == '"'))  // escaped quote
+ *              {
+ *                  counter += 2;
+ *              }
+ */
                 if (s[counter] == '"')
                 {
                     if ((counter + 1 == s.Length) || (s[counter + 1] != '"'))
@@ -833,24 +841,13 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// adds a new value to a comma separated list, adding a comma if necessary
-        /// </summary>
-        /// <param name="line">the existing line, could be empty or hold already values</param>
-        /// <param name="value">the new value</param>
-        /// <returns>the new list, consisting of the old list plus the new value</returns>
-        public static string AddCSV(string line, string value)
-        {
-            return AddCSV(line, value, ",");
-        }
-
-        /// <summary>
         /// adds a new value to a comma separated list, adding a delimiter if necessary
         /// </summary>
-        /// <param name="line">existing list</param>
+        /// <param name="line">the existing line, could be empty or hold already values</param>
         /// <param name="value">value to be added</param>
         /// <param name="separator">delimiter to use</param>
         /// <returns>the new list containing the old list and the new value</returns>
-        public static string AddCSV(string line, string value, string separator)
+        public static string AddCSV(string line, string value, string separator = ",")
         {
             string ReturnValue = "";
             Boolean containsSeparator;
@@ -870,6 +867,8 @@ namespace Ict.Common
                 value = " ";
             }
 
+            // escape the backslash. this is just the reversal of the behaviour in GetNextCSV
+            value = value.Replace("\\", "\\\\");
             value = value.Replace("\"", "\"\"");
             containsSeparator = (value.IndexOf(separator) != -1);
 
@@ -1742,6 +1741,10 @@ namespace Ict.Common
             {
                 ReturnValue = "#,##0.00;(#,##0.00);0.00;0";
             }
+            else if (IsSame(format, "CurrencyCSV"))
+            {
+                ReturnValue = "#,##0.00;-#,##0.00;0.00;0";
+            }
             else if (IsSame(format, "CurrencyWithoutDecimals"))
             {
                 ReturnValue = "#,##0;(#,##0);0;";
@@ -2032,11 +2035,11 @@ namespace Ict.Common
         /// <returns>the printed date</returns>
         public static String DateToLocalizedString(DateTime ADateTime, Boolean AIncludeTime)
         {
-            return DateToLocalizedString(ADateTime, true, false);
+            return DateToLocalizedString(ADateTime, AIncludeTime, false);
         }
 
         /// <summary>
-        /// print a date to string, optionally with time and even seconds
+        /// Print a date to string, optionally with time and even seconds
         /// </summary>
         /// <param name="ADateTime">the date to print</param>
         /// <param name="AIncludeTime">want to print time</param>
@@ -2048,22 +2051,16 @@ namespace Ict.Common
 
             ReturnValue = ADateTime.ToString("dd-MMM-yyyy").ToUpper();
 
-            // need to do something about german, Month March, should be rather M&Auml;R than MRZ?
-            // see also http:www.codeproject.com/csharp/csdatetimelibrary.asp?df=100&forumid=157955&exp=0&select=1387944
-            // and http:www.nntp.perl.org/group/perl.datetime/2003/05/msg2250.html
-            // better solution has been implemented: for export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
+            // For export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
 
-            // Mono and .Net return different strings for month of March in german culture
-            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
+            // Mono and .Net return different strings for month of March in German culture
+            if ((CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de") && (ADateTime.Month == 3))
             {
-                if (ADateTime.Month == 3)
-                {
-                    ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
-                }
+                ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
             }
 
             // todo use short month names from local array, similar to GetLongMonthName
-            if (ATimeWithSeconds)
+            if (AIncludeTime)
             {
                 if (ATimeWithSeconds)
                 {
@@ -2207,5 +2204,47 @@ namespace Ict.Common
         {
             return AEmailAddress.Split(",;".ToCharArray());
         }        
-    }    
+    }
+
+    /// <summary>
+    /// This small class has several string constants relating to strings that can be part of a control's Tag property
+    /// </summary>
+    public static class CommonTagString
+    {
+        /// <summary>
+        /// When this is included in a control's Tag the automatic detection of changed data is suppressed on this control
+        /// </summary>
+        public const string SUPPRESS_CHANGE_DETECTION = "SuppressChangeDetection";
+
+        /// <summary>
+        /// Tag for a Filter/Find 'Argument Panel': Instructs the TUcoFilterAndFind UserControl to not change the Argument Panels' BackColour to Transparent.
+        /// </summary>
+        public const string ARGUMENTPANELTAG_KEEPBACKCOLOUR = "KeepBackColour";
+
+        /// <summary>
+        /// Tag for a Filter/Find 'Argument Panel': Instructs the TUcoFilterAndFind UserControl to not create 'Argument Clear' Buttons for Argument Controls.
+        /// </summary>
+        public const string ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON = "NoAutomaticArgumentClearButton";
+
+        /// <summary>
+        /// Tag for a Filter/Find Argument Control: Specifies what value is the 'Clear Value' for that Control (depends on the kind of Control!).
+        /// </summary>
+        /// <remarks>The 'Clear Value' is what gets set on the Control when its 'Clear Value' Button gets clicked.</remarks>
+        public const string ARGUMENTCONTROLTAG_CLEARVALUE = "ClearValue";
+
+        /// <summary>
+        /// Tag for Filter/Find where multiple instances of a control are cloned (e.g. for date ranges)
+        /// </summary>
+        public const string INSTANCE_EQUALS = "Instance=";
+
+        /// <summary>
+        /// Tag for Filter/Find to modify the default comparison (e.g. gte, lt, eq etc).  Used paticularly for numeric and date comparisons
+        /// </summary>
+        public const string COMPARISON_EQUALS = "Comparison=";
+
+        /// <summary>
+        /// Tag for 'Find' to use a different comparison from the Filter one (e.g. gte, lt, eq, StartsWith etc).  Used paticularly for numeric and date comparisons
+        /// </summary>
+        public const string FIND_COMPARISON_EQUALS = "FindComparison=";
+    }
 }

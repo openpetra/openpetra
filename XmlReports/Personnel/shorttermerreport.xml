@@ -3,1035 +3,982 @@
 <reports>
 
   <report id="ShortTermer report">
-	<description>
-		General calculations for short termer reports
-	</description>
-	<reportparameters>
-		<reportparameter name="param_source"></reportparameter>
-		<reportparameter name="param_event_code"></reportparameter>
-		<reportparameter name="param_extract_name"></reportparameter>
-		<reportparameter name="param_event_name"></reportparameter>
-		<reportparameter name="param_conference_code"></reportparameter>
-		<reportparameter name="param_unit_key"></reportparameter>
-		<reportparameter name="param_event_selection"></reportparameter>
-		<reportparameter name="param_hide_empty_lines"></reportparameter>
-		<reportparameter name="param_print_two_lines"></reportparameter>
-		<reportparameter name="param_address_detail"></reportparameter>
-		<reportparameter name="param_passport_detail"></reportparameter>
-		<reportparameter name="param_application_status_accepted"></reportparameter>
-		<reportparameter name="param_application_status_cancelled"></reportparameter>
-		<reportparameter name="param_application_status_enquiry"></reportparameter>
-		<reportparameter name="param_application_status_hold"></reportparameter>
-		<reportparameter name="param_application_status_rejected"></reportparameter>
-	</reportparameters>
-	
-	<reportheader/>
-	<pageheader/>
+    <description>
+        General calculations for short termer reports
+    </description>
+    <reportparameters>
+        <reportparameter name="param_source"></reportparameter>
+        <reportparameter name="param_event_code"></reportparameter>
+        <reportparameter name="param_extract_name"></reportparameter>
+        <reportparameter name="param_event_name"></reportparameter>
+        <reportparameter name="param_conference_code"></reportparameter>
+        <reportparameter name="param_unit_key"></reportparameter>
+        <reportparameter name="param_event_selection"></reportparameter>
+        <reportparameter name="param_hide_empty_lines"></reportparameter>
+        <reportparameter name="param_print_two_lines"></reportparameter>
+        <reportparameter name="param_address_detail"></reportparameter>
+        <reportparameter name="param_passport_detail"></reportparameter>
+        <reportparameter name="param_nationalities"></reportparameter>
+        <reportparameter name="param_application_status_accepted"></reportparameter>
+        <reportparameter name="param_application_status_cancelled"></reportparameter>
+        <reportparameter name="param_application_status_enquiry"></reportparameter>
+        <reportparameter name="param_application_status_hold"></reportparameter>
+        <reportparameter name="param_application_status_rejected"></reportparameter>
+    </reportparameters>
+    
+    <reportheader/>
+    <pageheader/>
 
     <calculations>
-	
-	<calculation id="Select Partners" returns="PartnerKey, PartnerName, FirstLanguage, Gender, MaritalStatus, DateOfBirth, PreferredName,
-				ApplicationStatus, ApplicationKey, ApplicationComment, RegistrationOffice, pm_gen_app_srv_fld_accept_l,
-				ConferenceRole, EventCode, EventPartnerKey, EventPreference1, EventPreference2,
-				FellowshipGroup, IsLeader, ChargedFieldKey, pm_st_party_together_c, pm_st_party_contact_n, pm_st_booking_fee_received_l, pm_program_fee_received_l,
-				ArrivalDate,   ArrivalLocation,   ArrivalType,   ArrivalDetails,   ArrivalTransportNeeded,   pm_arrival_hour_i, pm_arrival_minute_i,
-				DepartureDate, DepartureLocation, DepartureType, DepartureDetails, DepartureTransportNeeded, pm_departure_hour_i, pm_departure_minute_i
-				" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT
-					PUB_p_partner.p_partner_key_n AS PartnerKey,
-					PUB_p_partner.p_partner_short_name_c AS PartnerName,
-					PUB_p_partner.p_language_code_c AS FirstLanguage,
-					
-					PUB_p_person.p_gender_c AS Gender,
-					PUB_p_person.p_marital_status_c AS MaritalStatus,
-					PUB_p_person.p_date_of_birth_d AS DateOfBirth,
-					PUB_p_person.p_prefered_name_c AS PreferredName,
-				
-					PUB_pm_general_application.pm_gen_application_status_c AS ApplicationStatus,
-					PUB_pm_general_application.pm_application_key_i AS ApplicationKey,
-					PUB_pm_general_application.pm_comment_c AS ApplicationComment,
-					PUB_pm_general_application.pm_registration_office_n AS RegistrationOffice,
-					PUB_pm_general_application.pm_gen_app_srv_fld_accept_l AS pm_gen_app_srv_fld_accept_l,
-					
-					PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
-					PUB_pm_short_term_application.pm_confirmed_option_code_c AS EventCode,
-					PUB_pm_short_term_application.pm_st_confirmed_option_n AS EventPartnerKey,
-					PUB_pm_short_term_application.pm_option1_code_c AS EventPreference1,
-					PUB_pm_short_term_application.pm_option2_code_c AS EventPreference2,
-					PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
-					PUB_pm_short_term_application.pm_st_fg_leader_l AS IsLeader,
-					PUB_pm_short_term_application.pm_st_field_charged_n AS ChargedFieldKey,
-					
-					PUB_pm_short_term_application.pm_st_party_together_c AS pm_st_party_together_c,
-					PUB_pm_short_term_application.pm_st_party_contact_n AS pm_st_party_contact_n,
-					PUB_pm_short_term_application.pm_st_booking_fee_received_l AS pm_st_booking_fee_received_l,
-					PUB_pm_short_term_application.pm_st_program_fee_received_l AS pm_program_fee_received_l,
-					
-					PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
-					PUB_pm_short_term_application.pm_arrival_hour_i AS pm_arrival_hour_i,
-					PUB_pm_short_term_application.pm_arrival_minute_i AS pm_arrival_minute_i,
-					PUB_pm_short_term_application.pt_travel_type_to_cong_code_c AS ArrivalType,
-					PUB_pm_short_term_application.pm_to_cong_travel_info_c AS ArrivalDetails,
-					PUB_pm_short_term_application.pm_arrival_transport_needed_l AS ArrivalTransportNeeded,
-					PUB_pt_arrival_point.pt_description_c AS ArrivalLocation,
-					
-					PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
-					PUB_pm_short_term_application.pm_departure_hour_i AS pm_departure_hour_i,
-					PUB_pm_short_term_application.pm_departure_minute_i AS pm_departure_minute_i,
-					PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureType,
-					PUB_pm_short_term_application.pm_from_cong_travel_info_c AS DepartureDetails,
-					PUB_pm_short_term_application.pm_departure_transport_needed_l AS DepartureTransportNeeded,
-					DEPARTUREPOINT.pt_description_c AS DepartureLocation
-				FROM
-					PUB_p_person, PUB_p_partner, PUB_pt_arrival_point, PUB_pt_arrival_point AS DEPARTUREPOINT,
-			</value></queryDetail>
-			
-			<!-- event and related options -->
-			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, related))"><value>
-					PUB_pm_general_application, PUB_pm_short_term_application
-				WHERE
-					PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
-			</value></queryDetail>
-			
-			<!-- this event only -->
-			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, this))"><value>
-					PUB_p_unit,  PUB_pm_general_application, PUB_pm_short_term_application
-				WHERE
-					PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
-			</value></queryDetail>
-			
-			<!-- all events -->
-			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, all))"><value>
-						PUB_pm_general_application, PUB_pm_short_term_application
-				WHERE
-					PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
-			</value></queryDetail>
-			
-			<!-- extract and this event only -->
-			<queryDetail condition="and(eq({param_event_selection}, this), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_general_application, PUB_p_unit, PUB_pm_short_term_application
-				WHERE
-					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
-					AND PUB_p_unit.p_partner_key_n = {param_unit_key}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
-			</value></queryDetail>
-			
-			<!-- extract and event related options -->
-			<queryDetail condition="and(eq({param_event_selection}, related), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_general_application, PUB_p_unit, PUB_pm_short_term_application
-				WHERE
-					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
-					AND PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
-			</value></queryDetail>
-			
-			<!-- extract and all events -->
-			<queryDetail condition="and(eq({param_event_selection}, all), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_general_application, PUB_p_unit, PUB_pm_short_term_application
-				WHERE
-					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
-			</value></queryDetail>
-			
-			<queryDetail><value>
-					AND 
-					( PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c
-						OR((PUB_pm_short_term_application.pt_arrival_point_code_c IS NULL) AND
-							PUB_pt_arrival_point.pt_code_c = ' ' ))
-					AND 
-					( DEPARTUREPOINT.pt_code_c = PUB_pm_short_term_application.pt_departure_point_code_c 
-						OR((PUB_pm_short_term_application.pt_departure_point_code_c IS NULL) AND
-							DEPARTUREPOINT.pt_code_c = ' '))
-					AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
-					AND PUB_pm_short_term_application.p_partner_key_n = PUB_p_partner.p_partner_key_n
-					AND NOT PUB_pm_short_term_application.pm_st_basic_delete_flag_l = 1
-					AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
-					AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n
-					AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
-					AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
-					AND ( PUB_pm_general_application.pm_gen_application_status_c = ''
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_accepted}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'A'
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_cancelled}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C1'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C2'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C3'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C4'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C5'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C6'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'C7' 
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_enquiry}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'E'
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_hold}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-LANG'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-MED'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-REF'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'H-SUP' 
-			</value></queryDetail>
-			<queryDetail condition="eq({param_application_status_rejected}, true)"><value>
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R1'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R2'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R3'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R4'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R5'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R6'
-							OR PUB_pm_general_application.pm_gen_application_status_c = 'R7' 
-			</value></queryDetail>
-			<queryDetail><value>
-							)
-			</value></queryDetail>
-			<queryDetail condition="eq({param_print_two_lines}, true)"><value>
-							ORDER BY  PartnerName
-							
-			</value></queryDetail>
-		</query>
-	</calculation>
-	<!-- When we run on PostgreSql DB, we can add Dietary, Medical, Other Needs, LeadershipRating..
-	public.pt_leadership_rating.pt_description_c AS LeadershipRating,
-	
-	LEFT JOIN PUB_pm_special_need
-		ON PUB_pm_special_need.p_partner_key_n = PUB_p_partner.p_partner_key_n
-	
-	LEFT JOIN public.pt_leadership_rating
-					ON public.pt_leadership_rating.pt_code_c = public.pm_short_term_application.pm_st_leadership_rating_c 
-	-->
-	<calculation id="CleanUp" returns="ArrivalTime, DepartureTime, MissingInfo, ArrivalTransport, DepartureTransport, Leader" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
-				<value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
-				<value function="assign(EventName, getPartnerShortname({EventPartnerKey})"/>
-				<value function="assign(ChargedFieldName, getPartnerShortname({ChargedFieldKey})"/>
-			</queryDetail>
-			
-			<!-- todo... -->
-			<queryDetail condition="eq({param_church_detail}, true)">
-				<value function="GetChurch({PartnerKey})"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Driver Status)">
-				<value function="assign(DriverStatus, GetDriverStatus({PartnerKey}))"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Dietary Needs)">
-				<value function="assign(Dietary, GetDietary({PartnerKey}))"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Spoken Languages)">
-				<value function="assign(SpokenLanguages, GetPersonLanguages({PartnerKey})"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Leadership Rating)">
-				<value function="assign(LeadershipRating, GetLeadershipRating({PartnerKey}, {ApplicationKey}, {RegistrationOffice}))"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Medical Info)">
-				<value function="assign(MedicalInfo, GetMedicalInfo({PartnerKey}))"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Missing Information)">
-				<value function="assign(MissingInfo, GetMissingInfo({PartnerKey}, {ApplicationKey}, {RegistrationOffice}))"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Other Needs and Notes)">
-				<value function="assign(OtherNeeds, GetOtherNeeds({PartnerKey}))"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Party Contact)">
-				<value function="assign(PartyContact, GetPartnerContact({pm_st_party_contact_n}))"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Party Type)">
-				<value function="assign(PartyType, GetPartyType({pm_st_party_together_c}))"/>
-			</queryDetail>
-			<queryDetail condition="eq({param_passport_detail}, true)">
-				<value function="GetPassport({PartnerKey})"/>
-			</queryDetail>
-			<queryDetail condition="columnexist(eString:Profession)">
-				<value function="assign(Profession, GetProfession({PartnerKey}))"/>
-			</queryDetail>
-			<queryDetail condition="eq({param_address_detail}, true)">
-				<value function="GetPartnerBestAddress({PartnerKey})"/>
-				<value function="assign(Telephone, concatenate({TelephoneNumber},{Extension}))"/>
-			</queryDetail>
-			
-			<queryDetail condition="eq({ArrivalTransportNeeded}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(ArrivalTransport, Needs Transport to)"/>
-			</queryDetail>
-			<queryDetail condition="eq({ArrivalTransportNeeded}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(ArrivalTransport, No Transport needed)"/>
-			</queryDetail>
-			<queryDetail condition="eq({DepartureTransportNeeded}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(DepartureTransport, Needs Transport to)"/>
-			</queryDetail>
-			<queryDetail condition="eq({DepartureTransportNeeded}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(DepartureTransport, No Transport needed)"/>
-			</queryDetail>
-			<queryDetail condition="eq({IsLeader}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(Leader, yes)"/>
-			</queryDetail>
-			<queryDetail condition="eq({IsLeader}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(Leader, no)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_st_booking_fee_received_l}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(BookingFeeReceived, yes)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_st_booking_fee_received_l}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(BookingFeeReceived, no)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_program_fee_received_l}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(ProgramFeeReceived, yes)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_program_fee_received_l}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(ProgramFeeReceived, no)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_gen_app_srv_fld_accept_l}, true)">
-				<value text="NO-SQL"/>
-				<value function="assign(ServingFieldAccepted, yes)"/>
-			</queryDetail>
-			<queryDetail condition="eq({pm_gen_app_srv_fld_accept_l}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(ServingFieldAccepted, no)"/>
-			</queryDetail>
-			
-		</query>
-	</calculation>
-	
-	
-	<calculation id="MakePartnerName" returns="PartnerNameAndKey" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(PartnerNameAndKey, {PartnerKey})"/>
-				<value function="assign(PartnerNameAndKey, concatenateww({PartnerNameAndKey},{PartnerName}, 2))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Accepted by Serving Field" returns="text" returnsFormat="text">
-		<caption><value text="Accepted by Serving Field"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ServingFieldAccepted"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Line 1" returns="text" returnsFormat="text">
-		<caption><value text="Address Line 1"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Locality"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Line 3" returns="text" returnsFormat="text">
-		<caption><value text="Address Line 3"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Address3"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Application Comment" returns="text" returnsFormat="text">
-		<caption><value text="Application Comment"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ApplicationComment"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Application Key" returns="text" returnsFormat="text">
-		<caption><value text="Application Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ApplicationKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Application Status" returns="text" returnsFormat="text">
-		<caption><value text="App. Status"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ApplicationStatus"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Arrival Date" returns="text" returnsFormat="formatteddate">
-		<caption><value text="Arrival Date"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ArrivalDate"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Arrival Details" returns="text" returnsFormat="text">
-		<caption><value text="Arrival Details"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ArrivalDetails"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Arrival Location" returns="text" returnsFormat="text">
-		<caption><value text="Arrival Location"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ArrivalLocation"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Arrival Time" returns="text" returnsFormat="text">
-		<caption><value text="Arrival Time"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ArrivalTime"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Arrival Transport" returns="text" returnsFormat="text">
-		<caption><value text="Arrival Transport"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ArrivalTransport"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Arrival Type" returns="text" returnsFormat="text">
-		<caption><value text="Arrival Type"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ArrivalType"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Booking Fee Received" returns="text" returnsFormat="text">
-		<caption><value text="Booking Fee Received"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="BookingFeeReceived"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Charged Field Key" returns="text" returnsFormat="text">
-		<caption><value text="Charged Field Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ChargedFieldKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Charged Field Name" returns="text" returnsFormat="text">
-		<caption><value text="Charged Field Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ChargedFieldName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Name" returns="text" returnsFormat="text">
-		<caption><value text="Church Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-Name"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Line 1" returns="text" returnsFormat="text">
-		<caption><value text="Church Address Line 1"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-Locality"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Line 3" returns="text" returnsFormat="text">
-		<caption><value text="Church Address Line 3"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-Address3"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address City" returns="text" returnsFormat="text">
-		<caption><value text="Church City"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-City"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Country" returns="text" returnsFormat="text">
-		<caption><value text="Church Country"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-CountryCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address State / County / Province" returns="text" returnsFormat="text">
-		<caption><value text="Church State / County"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-County"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Post Code" returns="text" returnsFormat="text">
-		<caption><value text="Church Post Code"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-PostalCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Street" returns="text" returnsFormat="text">
-		<caption><value text="Church Street"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-StreetName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Telephone" returns="text" returnsFormat="text">
-		<caption><value text="Church Telephone"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-Telephone"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Fax" returns="text" returnsFormat="text">
-		<caption><value text="Church Fax"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-FaxNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Email" returns="text" returnsFormat="text">
-		<caption><value text="Church Email"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-EmailAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Mobile" returns="text" returnsFormat="text">
-		<caption><value text="Church Mobile"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-MobileNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address Alternate Telephone" returns="text" returnsFormat="text">
-		<caption><value text="Church Alt. Telephone"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Church-AlternateTelephone"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address City" returns="text" returnsFormat="text">
-		<caption><value text="City"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="City"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Conference Role" returns="text" returnsFormat="text">
-		<caption><value text="Conference Role"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ConferenceRole"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Country" returns="text" returnsFormat="text">
-		<caption><value text="Country"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="CountryCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address State / County / Province" returns="text" returnsFormat="text">
-		<caption><value text="State / County"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="County"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
-		<caption><value text="DOB"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DateOfBirth"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Departure Date" returns="text" returnsFormat="formatteddate">
-		<caption><value text="Departure Date"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DepartureDate"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Departure Details" returns="text" returnsFormat="text">
-		<caption><value text="Departure Details"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DepartureDetails"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Departure Location" returns="text" returnsFormat="text">
-		<caption><value text="Departure Location"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DepartureLocation"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Departure Time" returns="text" returnsFormat="text">
-		<caption><value text="Departure Time"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DepartureTime"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Departure Transport" returns="text" returnsFormat="text">
-		<caption><value text="Departure Transport"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DepartureTransport"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Departure Type" returns="text" returnsFormat="text">
-		<caption><value text="Departure Type"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DepartureType"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Dietary Needs" returns="text" returnsFormat="text">
-		<caption><value text="Dietary Needs"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Dietary"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Driver Status" returns="text" returnsFormat="text">
-		<caption><value text="Dirver Status"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DriverStatus"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+    
+    <calculation id="Select Partners" returns="PartnerKey, PartnerName, FirstLanguage, Gender, MaritalStatus, DateOfBirth, PreferredName,
+                ApplicationStatus, ApplicationKey, ApplicationComment, RegistrationOffice, pm_gen_app_srv_fld_accept_l,
+                ConferenceRole, EventCode, EventPartnerKey,
+                FellowshipGroup, IsLeader, ChargedFieldKey, 
+                ArrivalDate,   ArrivalLocation,   ArrivalType,   ArrivalDetails,   ArrivalTransportNeeded,   pm_arrival_hour_i, pm_arrival_minute_i,
+                DepartureDate, DepartureLocation, DepartureType, DepartureDetails, DepartureTransportNeeded, pm_departure_hour_i, pm_departure_minute_i
+                " returnsFormat="row">
+        <query>
+            <queryDetail><value>
+                SELECT DISTINCT
+                    PUB_p_partner.p_partner_key_n AS PartnerKey,
+                    PUB_p_partner.p_partner_short_name_c AS PartnerName,
+                    PUB_p_partner.p_language_code_c AS FirstLanguage,
+                    
+                    PUB_p_person.p_gender_c AS Gender,
+                    PUB_p_person.p_marital_status_c AS MaritalStatus,
+                    PUB_p_person.p_date_of_birth_d AS DateOfBirth,
+                    PUB_p_person.p_prefered_name_c AS PreferredName,
+                
+                    PUB_pm_general_application.pm_gen_application_status_c AS ApplicationStatus,
+                    PUB_pm_general_application.pm_application_key_i AS ApplicationKey,
+                    PUB_pm_general_application.pm_comment_c AS ApplicationComment,
+                    PUB_pm_general_application.pm_registration_office_n AS RegistrationOffice,
+                    PUB_pm_general_application.pm_gen_app_srv_fld_accept_l AS pm_gen_app_srv_fld_accept_l,
+                    
+                    PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
+                    PUB_pm_short_term_application.pm_confirmed_option_code_c AS EventCode,
+                    PUB_pm_short_term_application.pm_st_confirmed_option_n AS EventPartnerKey,
+                    PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
+                    PUB_pm_short_term_application.pm_st_fg_leader_l AS IsLeader,
+                    PUB_pm_short_term_application.pm_st_field_charged_n AS ChargedFieldKey,
+                    
+                    PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
+                    PUB_pm_short_term_application.pm_arrival_hour_i AS pm_arrival_hour_i,
+                    PUB_pm_short_term_application.pm_arrival_minute_i AS pm_arrival_minute_i,
+                    PUB_pm_short_term_application.pt_travel_type_to_cong_code_c AS ArrivalType,
+                    PUB_pm_short_term_application.pm_to_cong_travel_info_c AS ArrivalDetails,
+                    PUB_pm_short_term_application.pm_arrival_transport_needed_l AS ArrivalTransportNeeded,
+                    PUB_pt_arrival_point.pt_description_c AS ArrivalLocation,
+                    
+                    PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
+                    PUB_pm_short_term_application.pm_departure_hour_i AS pm_departure_hour_i,
+                    PUB_pm_short_term_application.pm_departure_minute_i AS pm_departure_minute_i,
+                    PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureType,
+                    PUB_pm_short_term_application.pm_from_cong_travel_info_c AS DepartureDetails,
+                    PUB_pm_short_term_application.pm_departure_transport_needed_l AS DepartureTransportNeeded,
+                    DEPARTUREPOINT.pt_description_c AS DepartureLocation
+                FROM
+                    PUB_p_person, PUB_p_partner, PUB_pt_arrival_point, PUB_pt_arrival_point AS DEPARTUREPOINT,
+            </value></queryDetail>
+            
+            <!-- event and related options -->
+            <queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, related))"><value>
+                    PUB_pm_general_application, PUB_pm_short_term_application
+                WHERE
+                    PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
+            </value></queryDetail>
+            
+            <!-- this event only -->
+            <queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, this))"><value>
+                    PUB_p_unit,  PUB_pm_general_application, PUB_pm_short_term_application
+                WHERE
+                    PUB_p_unit.p_partner_key_n = {param_unit_key}
+                    AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
+            </value></queryDetail>
+            
+            <!-- all events -->
+            <queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, all))"><value>
+                        PUB_pm_general_application, PUB_pm_short_term_application
+                WHERE
+                    PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+            </value></queryDetail>
+            
+            <!-- extract and this event only -->
+            <queryDetail condition="and(eq({param_event_selection}, this), eq({param_source}, Extract))"><value>
+                    PUB_m_extract, PUB_m_extract_master,  PUB_pm_general_application, PUB_p_unit, PUB_pm_short_term_application
+                WHERE
+                     PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                    AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                    AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+                    AND PUB_p_unit.p_partner_key_n = {{param_unit_key}}
+                    AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
+            </value></queryDetail>
+            
+            <!-- extract and event related options -->
+            <queryDetail condition="and(eq({param_event_selection}, related), eq({param_source}, Extract))"><value>
+                    PUB_m_extract, PUB_m_extract_master,  PUB_pm_general_application, PUB_p_unit, PUB_pm_short_term_application
+                WHERE
+                     PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                    AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                    AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+                    AND PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
+            </value></queryDetail>
+            
+            <!-- extract and all events -->
+            <queryDetail condition="and(eq({param_event_selection}, all), eq({param_source}, Extract))"><value>
+                    PUB_m_extract, PUB_m_extract_master,  PUB_pm_general_application, PUB_p_unit, PUB_pm_short_term_application
+                WHERE
+                     PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                    AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                    AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+            </value></queryDetail>
+            
+            <queryDetail><value>
+                    AND 
+                    ( PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c
+                        OR((PUB_pm_short_term_application.pt_arrival_point_code_c IS NULL) AND
+                            PUB_pt_arrival_point.pt_code_c = ' ' ))
+                    AND 
+                    ( DEPARTUREPOINT.pt_code_c = PUB_pm_short_term_application.pt_departure_point_code_c 
+                        OR((PUB_pm_short_term_application.pt_departure_point_code_c IS NULL) AND
+                            DEPARTUREPOINT.pt_code_c = ' '))
+                    AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+                    AND PUB_pm_short_term_application.p_partner_key_n = PUB_p_partner.p_partner_key_n
+                    AND NOT PUB_pm_short_term_application.pm_st_basic_delete_flag_l = 1
+                    AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
+                    AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n
+                    AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+                    AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
+                    AND ( PUB_pm_general_application.pm_gen_application_status_c = ''
+            </value></queryDetail>
+            <queryDetail condition="eq({param_application_status_accepted}, true)"><value>
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'A'
+            </value></queryDetail>
+            <queryDetail condition="eq({param_application_status_cancelled}, true)"><value>
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'C1'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'C2'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'C3'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'C4'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'C5'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'C6'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'C7' 
+            </value></queryDetail>
+            <queryDetail condition="eq({param_application_status_enquiry}, true)"><value>
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'E'
+            </value></queryDetail>
+            <queryDetail condition="eq({param_application_status_hold}, true)"><value>
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'H'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'H-LANG'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'H-MED'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'H-REF'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'H-SUP' 
+            </value></queryDetail>
+            <queryDetail condition="eq({param_application_status_rejected}, true)"><value>
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'R1'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'R2'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'R3'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'R4'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'R5'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'R6'
+                            OR PUB_pm_general_application.pm_gen_application_status_c = 'R7' 
+            </value></queryDetail>
+            <queryDetail><value>
+                            )
+            </value></queryDetail>
+            <queryDetail condition="eq({param_print_two_lines}, true)"><value>
+                            ORDER BY  PartnerName
+                            
+            </value></queryDetail>
+        </query>
+    </calculation>
+    <!-- When we run on PostgreSql DB, we can add Dietary, Medical, Other Needs, LeadershipRating..
+    public.pt_leadership_rating.pt_description_c AS LeadershipRating,
+    
+    LEFT JOIN PUB_pm_special_need
+        ON PUB_pm_special_need.p_partner_key_n = PUB_p_partner.p_partner_key_n
+    
+    LEFT JOIN public.pt_leadership_rating
+                    ON public.pt_leadership_rating.pt_code_c = public.pm_short_term_application.pm_st_leadership_rating_c 
+    -->
+    <calculation id="CleanUp" returns="ArrivalTime, DepartureTime, MissingInfo, ArrivalTransport, DepartureTransport, Leader" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
+                <value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
+                <value function="assign(EventName, getPartnerShortname({EventPartnerKey})"/>
+                <value function="assign(ChargedFieldName, getPartnerShortname({ChargedFieldKey})"/>
+            </queryDetail>
+            
+            <!-- todo... -->
+            <queryDetail condition="eq({param_church_detail}, true)">
+                <value function="GetChurch({PartnerKey})"/>
+            </queryDetail>
+            <queryDetail condition="columnexist(eString:Driver Status)">
+                <value function="assign(DriverStatus, GetDriverStatus({PartnerKey}))"/>
+            </queryDetail>
+            <queryDetail condition="columnexist(eString:Dietary Needs)">
+                <value function="assign(Dietary, GetDietary({PartnerKey}))"/>
+            </queryDetail>
+            <queryDetail condition="columnexist(eString:Spoken Languages)">
+                <value function="assign(SpokenLanguages, GetPersonLanguages({PartnerKey})"/>
+            </queryDetail>
+            <queryDetail condition="columnexist(eString:Leadership Rating)">
+                <value function="assign(LeadershipRating, GetLeadershipRating({PartnerKey}, {ApplicationKey}, {RegistrationOffice}))"/>
+            </queryDetail>
+            <queryDetail condition="columnexist(eString:Medical Info)">
+                <value function="assign(MedicalInfo, GetMedicalInfo({PartnerKey}))"/>
+            </queryDetail>
+            <queryDetail condition="columnexist(eString:Missing Information)">
+                <value function="assign(MissingInfo, GetMissingInfo({PartnerKey}, {ApplicationKey}, {RegistrationOffice}))"/>
+            </queryDetail>
+            <queryDetail condition="columnexist(eString:Other Needs and Notes)">
+                <value function="assign(OtherNeeds, GetOtherNeeds({PartnerKey}))"/>
+            </queryDetail>
+            <queryDetail condition="eq({param_passport_detail}, true)">
+                <value function="GetPassport({PartnerKey})"/>
+            </queryDetail>
+            <queryDetail condition="eq({param_nationalities}, true)">
+                <value function="assign(Nationalities, GetNationalities({PartnerKey}))"/>
+            </queryDetail>
+            <queryDetail condition="columnexist(eString:Profession)">
+                <value function="assign(Profession, GetProfession({PartnerKey}))"/>
+            </queryDetail>
+            <queryDetail condition="eq({param_address_detail}, true)">
+                <value function="GetPartnerBestAddress({PartnerKey})"/>
+                <value function="assign(Telephone, concatenate({TelephoneNumber},{Extension}))"/>
+            </queryDetail>
+            
+            <queryDetail condition="eq({ArrivalTransportNeeded}, true)">
+                <value text="NO-SQL"/>
+                <value function="assign(ArrivalTransport, Needs Transport to)"/>
+            </queryDetail>
+            <queryDetail condition="eq({ArrivalTransportNeeded}, false)">
+                <value text="NO-SQL"/>
+                <value function="assign(ArrivalTransport, No Transport needed)"/>
+            </queryDetail>
+            <queryDetail condition="eq({DepartureTransportNeeded}, true)">
+                <value text="NO-SQL"/>
+                <value function="assign(DepartureTransport, Needs Transport to)"/>
+            </queryDetail>
+            <queryDetail condition="eq({DepartureTransportNeeded}, false)">
+                <value text="NO-SQL"/>
+                <value function="assign(DepartureTransport, No Transport needed)"/>
+            </queryDetail>
+            <queryDetail condition="eq({IsLeader}, true)">
+                <value text="NO-SQL"/>
+                <value function="assign(Leader, yes)"/>
+            </queryDetail>
+            <queryDetail condition="eq({IsLeader}, false)">
+                <value text="NO-SQL"/>
+                <value function="assign(Leader, no)"/>
+            </queryDetail>
+            <queryDetail condition="eq({pm_gen_app_srv_fld_accept_l}, true)">
+                <value text="NO-SQL"/>
+                <value function="assign(ServingFieldAccepted, yes)"/>
+            </queryDetail>
+            <queryDetail condition="eq({pm_gen_app_srv_fld_accept_l}, false)">
+                <value text="NO-SQL"/>
+                <value function="assign(ServingFieldAccepted, no)"/>
+            </queryDetail>            
+        </query>
+    </calculation>
+    
+    
+    <calculation id="MakePartnerName" returns="PartnerNameAndKey" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(PartnerNameAndKey, {PartnerKey})"/>
+                <value function="assign(PartnerNameAndKey, concatenateww({PartnerNameAndKey},{PartnerName}, 2))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Accepted by Serving Field" returns="text" returnsFormat="text">
+        <caption><value text="Accepted by Serving Field"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ServingFieldAccepted"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Line 1" returns="text" returnsFormat="text">
+        <caption><value text="Address Line 1"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Locality"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Line 3" returns="text" returnsFormat="text">
+        <caption><value text="Address Line 3"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Address3"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Application Comment" returns="text" returnsFormat="text">
+        <caption><value text="Application Comment"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ApplicationComment"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Application Key" returns="text" returnsFormat="text">
+        <caption><value text="Application Key"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ApplicationKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Application Status" returns="text" returnsFormat="text">
+        <caption><value text="App. Status"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ApplicationStatus"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Arrival Date" returns="text" returnsFormat="formatteddate">
+        <caption><value text="Arrival Date"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ArrivalDate"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Arrival Details" returns="text" returnsFormat="text">
+        <caption><value text="Arrival Details"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ArrivalDetails"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Arrival Location" returns="text" returnsFormat="text">
+        <caption><value text="Arrival Location"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ArrivalLocation"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Arrival Time" returns="text" returnsFormat="text">
+        <caption><value text="Arrival Time"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ArrivalTime"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Arrival Transport" returns="text" returnsFormat="text">
+        <caption><value text="Arrival Transport"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ArrivalTransport"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Arrival Type" returns="text" returnsFormat="text">
+        <caption><value text="Arrival Type"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ArrivalType"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Booking Fee Received" returns="text" returnsFormat="text">
+        <caption><value text="Booking Fee Received"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="BookingFeeReceived"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Charged Field Key" returns="text" returnsFormat="text">
+        <caption><value text="Charged Field Key"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ChargedFieldKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Charged Field Name" returns="text" returnsFormat="text">
+        <caption><value text="Charged Field Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ChargedFieldName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Name" returns="text" returnsFormat="text">
+        <caption><value text="Church Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-Name"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Line 1" returns="text" returnsFormat="text">
+        <caption><value text="Church Address Line 1"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-Locality"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Line 3" returns="text" returnsFormat="text">
+        <caption><value text="Church Address Line 3"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-Address3"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address City" returns="text" returnsFormat="text">
+        <caption><value text="Church City"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-City"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Country" returns="text" returnsFormat="text">
+        <caption><value text="Church Country"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-CountryCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address State / County / Province" returns="text" returnsFormat="text">
+        <caption><value text="Church State / County"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-County"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Post Code" returns="text" returnsFormat="text">
+        <caption><value text="Church Post Code"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-PostalCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Street" returns="text" returnsFormat="text">
+        <caption><value text="Church Street"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-StreetName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Telephone" returns="text" returnsFormat="text">
+        <caption><value text="Church Telephone"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-Telephone"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Fax" returns="text" returnsFormat="text">
+        <caption><value text="Church Fax"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-FaxNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Email" returns="text" returnsFormat="text">
+        <caption><value text="Church Email"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-EmailAddress"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Mobile" returns="text" returnsFormat="text">
+        <caption><value text="Church Mobile"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-MobileNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address Alternate Telephone" returns="text" returnsFormat="text">
+        <caption><value text="Church Alt. Telephone"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Church-AlternateTelephone"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address City" returns="text" returnsFormat="text">
+        <caption><value text="City"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="City"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Conference Role" returns="text" returnsFormat="text">
+        <caption><value text="Conference Role"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ConferenceRole"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Country" returns="text" returnsFormat="text">
+        <caption><value text="Country"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="CountryCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address State / County / Province" returns="text" returnsFormat="text">
+        <caption><value text="State / County"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="County"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
+        <caption><value text="DOB"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DateOfBirth"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Departure Date" returns="text" returnsFormat="formatteddate">
+        <caption><value text="Departure Date"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DepartureDate"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Departure Details" returns="text" returnsFormat="text">
+        <caption><value text="Departure Details"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DepartureDetails"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Departure Location" returns="text" returnsFormat="text">
+        <caption><value text="Departure Location"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DepartureLocation"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Departure Time" returns="text" returnsFormat="text">
+        <caption><value text="Departure Time"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DepartureTime"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Departure Transport" returns="text" returnsFormat="text">
+        <caption><value text="Departure Transport"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DepartureTransport"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Departure Type" returns="text" returnsFormat="text">
+        <caption><value text="Departure Type"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DepartureType"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Dietary Needs" returns="text" returnsFormat="text">
+        <caption><value text="Dietary Needs"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Dietary"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Driver Status" returns="text" returnsFormat="text">
+        <caption><value text="Dirver Status"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DriverStatus"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation align="left" id="Address Email" returns="text" returnsFormat="text">
-		<caption><value text="Email"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EmailAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Event Code" returns="text" returnsFormat="text">
-		<caption><value text="Event Code"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EventCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Event Name" returns="text" returnsFormat="text">
-		<caption><value text="Event Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EventName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Event Preference 1 Code" returns="text" returnsFormat="text">
-		<caption><value text="Event Preference 1"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EventPreference1"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Event Preference 2 Code" returns="text" returnsFormat="text">
-		<caption><value text="Event Preference 2"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EventPreference2"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gender" returns="text" returnsFormat="text">
-		<caption><value text="Gender"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Gender"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Fellowship Group" returns="text" returnsFormat="text">
-		<caption><value text="Fellowship Group"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="FellowshipGroup"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+    <calculation align="left" id="Address Email" returns="text" returnsFormat="text">
+        <caption><value text="Email"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="EmailAddress"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Event Code" returns="text" returnsFormat="text">
+        <caption><value text="Event Code"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="EventCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Event Name" returns="text" returnsFormat="text">
+        <caption><value text="Event Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="EventName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gender" returns="text" returnsFormat="text">
+        <caption><value text="Gender"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Gender"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Fellowship Group" returns="text" returnsFormat="text">
+        <caption><value text="Fellowship Group"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="FellowshipGroup"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation align="left" id="IsLeader" returns="text" returnsFormat="text">
-		<caption><value text="IsLeader"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="IsLeader"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="First Language" returns="text" returnsFormat="text">
-		<caption><value text="First Language"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="FirstLanguage"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Spoken Languages" returns="text" returnsFormat="text">
-		<caption><value text="Spoken Languages"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="SpokenLanguages"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Leader" returns="text" returnsFormat="text">
-		<caption><value text="Leader"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Leader"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Leadership Rating" returns="text" returnsFormat="text">
-		<caption><value text="Leadership Rating"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="LeadershipRating"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Marital Status" returns="text" returnsFormat="text">
-		<caption><value text="Mar"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="MaritalStatus"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Medical Info" returns="text" returnsFormat="text">
-		<caption><value text="Medical Info"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="MedicalInfo"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Missing Information" returns="text" returnsFormat="text">
-		<caption><value text="Missing Information"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="MissingInfo"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Nationality" returns="text" returnsFormat="text">
-		<caption><value text="Nationality"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PassportNationalityCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Other Needs and Notes" returns="text" returnsFormat="text">
-		<caption><value text="Other Needs and Notes"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="OtherNeeds"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
-		<caption><value text="Partner Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="PartnerNameAndKey" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="PartnerNameAndKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Party Contact" returns="text" returnsFormat="text">
-		<caption><value text="Party Contact"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartyContact"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Party Type" returns="text" returnsFormat="text">
-		<caption><value text="Party Type"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartyType"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Country of Issue" returns="text" returnsFormat="text">
-		<caption><value text="Passport Country of Issue"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="CountryOfIssue"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Date of Birth" returns="text" returnsFormat="formatteddate">
-		<caption><value text="Passport Date of Birth"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PassportDob"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Date of Issue" returns="text" returnsFormat="formatteddate">
-		<caption><value text="Passport Date of Issue"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DateOfIssue"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Expiry Date" returns="text" returnsFormat="formatteddate">
-		<caption><value text="Passport Expiry Date"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DateOfExpiration"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Name" returns="text" returnsFormat="text">
-		<caption><value text="Passport Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="FullPassportName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Number" returns="text" returnsFormat="text">
-		<caption><value text="Passport Number"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PassportNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Place of Birth" returns="text" returnsFormat="text">
-		<caption><value text="Passport Place of Birth"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PlaceOfBirth"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Place of Issue" returns="text" returnsFormat="text">
-		<caption><value text="Passport Place of Issue"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PlaceOfIssue"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Passport Type" returns="text" returnsFormat="text">
-		<caption><value text="Passport Type"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PassportDetailsType"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Preferred Name" returns="text" returnsFormat="text">
-		<caption><value text="Preferred Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PreferredName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Post Code" returns="text" returnsFormat="text">
-		<caption><value text="Post Code"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PostalCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Profession" returns="text" returnsFormat="text">
-		<caption><value text="Profession"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Profession"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Program Fee Received" returns="text" returnsFormat="text">
-		<caption><value text="Program Fee Received"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ProgramFeeReceived"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Registration Office" returns="text" returnsFormat="text">
-		<caption><value text="Registration Office"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="RegistrationOffice"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Street" returns="text" returnsFormat="text">
-		<caption><value text="Street"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="StreetName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Telephone" returns="text" returnsFormat="text">
-		<caption><value text="Telephone"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Telephone"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
+    <calculation align="left" id="IsLeader" returns="text" returnsFormat="text">
+        <caption><value text="IsLeader"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="IsLeader"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="First Language" returns="text" returnsFormat="text">
+        <caption><value text="First Language"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="FirstLanguage"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Spoken Languages" returns="text" returnsFormat="text">
+        <caption><value text="Spoken Languages"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="SpokenLanguages"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Leader" returns="text" returnsFormat="text">
+        <caption><value text="Leader"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Leader"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Leadership Rating" returns="text" returnsFormat="text">
+        <caption><value text="Leadership Rating"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="LeadershipRating"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Marital Status" returns="text" returnsFormat="text">
+        <caption><value text="Mar"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="MaritalStatus"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Medical Info" returns="text" returnsFormat="text">
+        <caption><value text="Medical Info"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="MedicalInfo"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Missing Information" returns="text" returnsFormat="text">
+        <caption><value text="Missing Information"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="MissingInfo"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Nationality" returns="text" returnsFormat="text">
+        <caption><value text="Nationality"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PassportNationalityCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Nationalities" returns="text" returnsFormat="text">
+        <caption><value text="Nationalities"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Nationalities"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Other Needs and Notes" returns="text" returnsFormat="text">
+        <caption><value text="Other Needs and Notes"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="OtherNeeds"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Partner Key"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <caption><value text="Partner Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="PartnerNameAndKey" returns="text" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value variable="PartnerNameAndKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Country of Issue" returns="text" returnsFormat="text">
+        <caption><value text="Passport Country of Issue"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="CountryOfIssue"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Date of Birth" returns="text" returnsFormat="formatteddate">
+        <caption><value text="Passport Date of Birth"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PassportDob"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Date of Issue" returns="text" returnsFormat="formatteddate">
+        <caption><value text="Passport Date of Issue"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DateOfIssue"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Expiry Date" returns="text" returnsFormat="formatteddate">
+        <caption><value text="Passport Expiry Date"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DateOfExpiration"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Name" returns="text" returnsFormat="text">
+        <caption><value text="Passport Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="FullPassportName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Number" returns="text" returnsFormat="text">
+        <caption><value text="Passport Number"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PassportNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Place of Birth" returns="text" returnsFormat="text">
+        <caption><value text="Passport Place of Birth"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PlaceOfBirth"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Place of Issue" returns="text" returnsFormat="text">
+        <caption><value text="Passport Place of Issue"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PlaceOfIssue"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Passport Type" returns="text" returnsFormat="text">
+        <caption><value text="Passport Type"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PassportDetailsType"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Preferred Name" returns="text" returnsFormat="text">
+        <caption><value text="Preferred Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PreferredName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Post Code" returns="text" returnsFormat="text">
+        <caption><value text="Post Code"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PostalCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Profession" returns="text" returnsFormat="text">
+        <caption><value text="Profession"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Profession"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Program Fee Received" returns="text" returnsFormat="text">
+        <caption><value text="Program Fee Received"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ProgramFeeReceived"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Registration Office" returns="text" returnsFormat="text">
+        <caption><value text="Registration Office"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="RegistrationOffice"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Street" returns="text" returnsFormat="text">
+        <caption><value text="Street"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="StreetName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Telephone" returns="text" returnsFormat="text">
+        <caption><value text="Telephone"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Telephone"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
     </calculations>
    <levels/>
   </report>

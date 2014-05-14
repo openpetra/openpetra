@@ -1,0 +1,31 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Send Email
+    Namespace: Ict.Petra.Client.MReporting.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 520
+    WindowHeight: 175
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Padding: 0,0,3,0
+            Controls:
+                Row0: [txtEmail]
+                Row1: [chkExcelFile]
+                Row2: [chkCSVFile]
+                Row3: [chkPDF]
+                
+        txtEmail:
+            Label: Send to these Emails Addresses
+            Stretch: horizontally
+
+        chkExcelFile:
+            Label: Attach Excel file (.xlsx)
+        chkCSVFile:
+            Label: Attach CSV file
+        chkPDF:
+            Label: Attach Report as PDF

@@ -129,11 +129,9 @@ namespace Ict.Petra.Server.MPartner.Common
             PPartnerLocationRow PartnerLocationDR2;
             PLocationTable LocationDT;
             PPartnerLocationTable PartnerLocationDT;
-            TVerificationResultCollection VerificationResult;
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
@@ -154,8 +152,7 @@ namespace Ict.Petra.Server.MPartner.Common
                      * Get the Partner's Address data of its 'Best' Address
                      */
                     if (TMailing.GetPartnersBestLocationData(APartnerKey, out BestLocationPK,
-                            out LocationDR, out PartnerLocationDR,
-                            out VerificationResult))
+                            out LocationDR, out PartnerLocationDR))
                     {
                         #region Process Address
 
@@ -698,8 +695,8 @@ namespace Ict.Petra.Server.MPartner.Common
                 "PUB_" + PPartnerTable.GetTableDBName() + '.' +
                 PPartnerTable.GetPartnerKeyDBName() + ' ' +
                 "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +
-                "AND " + PPartnerTable.GetStatusCodeDBName() + " <> " + '"' +
-                SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + "\" " +                            // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
+                "AND " + PPartnerTable.GetStatusCodeDBName() + " <> '" +
+                SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + "' " +    // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
                 "ORDER BY " + PPersonTable.GetFamilyIdDBName() + " ASC",
                 PPersonTable.GetTableName(), AReadTransaction, ParametersArray, 0, 0);
 

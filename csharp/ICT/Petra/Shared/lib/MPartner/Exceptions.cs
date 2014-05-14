@@ -23,7 +23,7 @@
 //
 using System;
 using System.Runtime.Serialization;
-using Ict.Common.Remoting.Shared;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Shared.MPartner
@@ -87,59 +87,85 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ESecurityPartnerAccessDeniedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ESecurityPartnerAccessDeniedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ESecurityPartnerAccessDeniedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="msg"></param>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ESecurityPartnerAccessDeniedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        /// <summary>
+        /// /// Initializes a new instance of this Exception Class with a specified error message and further data.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="APartnerKey"></param>
         /// <param name="APartnerShortName"></param>
         /// <param name="AAccessLevel"></param>
-        public ESecurityPartnerAccessDeniedException(String msg, Int64 APartnerKey,
+        public ESecurityPartnerAccessDeniedException(String AMessage, Int64 APartnerKey,
             string APartnerShortName,
-            TPartnerAccessLevelEnum AAccessLevel) : base(msg)
+            TPartnerAccessLevelEnum AAccessLevel) : base(AMessage)
         {
             FPartnerKey = APartnerKey;
             FPartnerShortName = APartnerShortName;
             FAccessLevel = (byte)AAccessLevel; // (byte)Enum.Parse(typeof(TPartnerAccessLevelEnum), Enum.GetName(typeof(TPartnerAccessLevelEnum), AAccessLevel));
         }
 
+        #region Remoting and serialization
+
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ESecurityPartnerAccessDeniedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESecurityPartnerAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
-            FPartnerKey = info.GetInt64("PartnerKey");
-            FPartnerShortName = info.GetString("PartnerShortName");
-            FAccessLevel = info.GetByte("AccessLevel");
+            FPartnerKey = AInfo.GetInt64("PartnerKey");
+            FPartnerShortName = AInfo.GetString("PartnerShortName");
+            FAccessLevel = AInfo.GetByte("AccessLevel");
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
-            info.AddValue("PartnerKey", FPartnerKey);
-            info.AddValue("PartnerShortName", FPartnerShortName);
-            info.AddValue("AccessLevel", FAccessLevel);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("PartnerKey", FPartnerKey);
+            AInfo.AddValue("PartnerShortName", FPartnerShortName);
+            AInfo.AddValue("AccessLevel", FAccessLevel);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+
+        #endregion
     }
 }

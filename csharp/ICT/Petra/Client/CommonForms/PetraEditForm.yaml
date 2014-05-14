@@ -11,30 +11,36 @@ RootNode:
             #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.S]
             Tooltip: Saves changed data
             Image: Save.ico
+        actEditFilter: 
+            Label:Filte&r...
+            ActionClick:MniFilterFind_Click
+            Tooltip: Filter the displayed records by one or more criteria
+            Image: FilterActive.ico
+        actEditFind: 
+            Label:&Find...
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find a record that matches one or more criteria
+            Image: Find.ico
     Menu:
         mniFile:
-           mniFileSave: {Action=actSave}
-           mniSeparator: {Label=-}
-           mniFilePrint:
-              Label:&Print...
-              Image: Print.ico
-#              ActionClick:MniFile_Click
-              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.P]
-           mniSeparator: {Label=-}
+            mniFileSave: {Action=actSave}
+            mniSeparator: {Label=-}
+            mniFilePrint:
+                Label:&Print...
+                Image: Print.ico
+#               ActionClick:MniFile_Click
+#               ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.P]
+            mniFileSeparator: {Label=-}
         mniEdit: 
             Label:&Edit
             mniEditUndoCurrentField: 
               Label:Undo &Current Field
 #              ActionClick:MniEdit_Click
-              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
             mniEditUndoScreen: 
               Label:&Undo Screen
 #             ActionClick:MniEdit_Click
-              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
-            mniSeparator: {Label=-}
-            mniEditFind: 
-              Label:&Find...
-#             ActionClick:MniEdit_Click
-              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.F]
+            mniEditSeparator: {Label=-}
+            mniEditFilter: {Action=actEditFilter}
+            mniEditFind: {Action=actEditFind}
     Toolbar:
         tbbSave: {Action=actSave, Order=AlwaysFirst}

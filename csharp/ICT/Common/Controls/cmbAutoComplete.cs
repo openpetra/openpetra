@@ -73,6 +73,7 @@ namespace Ict.Common.Controls
         private bool UPressedKey;
         private String UInitialString;
         private bool FAcceptNewValues;
+        private bool FIgnoreNewValues;
         private bool FCaseSensitiveSearch;
         private bool FSuppressSelectionColor;
         private String FColumnsToSearchDesignTime;
@@ -98,6 +99,28 @@ namespace Ict.Common.Controls
             set
             {
                 this.FAcceptNewValues = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is similar to AcceptNewValues - if you set it to true you also set AcceptNewValues to true.
+        /// The difference is that while new values are accepted the comboBox does not add them to its content.
+        /// This behaviour is used in particular in the Filter/Find combo boxes.  You can tab away from the control and leave
+        /// the 'Text' property as something that has no match in the drop down list.  The new text is not added to the data source.
+        /// If, instead, you set AcceptNewValues then when you tab away the control will ask if you want to add the text to the data source.
+        /// Note that this behaviour only is useful when the combo box contains a single column of strings, or
+        /// a data source where the value and display members are the same.
+        /// </summary>
+        public bool IgnoreNewValues
+        {
+            get
+            {
+                return this.FIgnoreNewValues;
+            }
+
+            set
+            {
+                this.FIgnoreNewValues = value;
             }
         }
 
@@ -264,6 +287,8 @@ namespace Ict.Common.Controls
             this.UPressedKey = false;
             ProhibitChangeToDataSource();
             this.FSuppressSelectionColor = true;
+            this.FAcceptNewValues = false;
+            this.FIgnoreNewValues = false;
         }
 
         /// <summary>
@@ -397,6 +422,11 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void OnAcceptNewEntryEvent(TAcceptNewEntryEventArgs Args)
         {
+            if (FIgnoreNewValues == true)
+            {
+                return;
+            }
+
             System.Int32 mNumDataSourceCols = this.GetNumberOfDataSourceCols();
 
             if ((mNumDataSourceCols != 1) || (Args.Cancel == true))
@@ -583,7 +613,10 @@ namespace Ict.Common.Controls
                     {
                         FoundIndex = this.FindStringSortedByLength(this.Text);
                         this.SelectedIndex = FoundIndex;
-                        SendKeys.Send("{TAB}");
+
+                        this.SelectionStart = 0;
+                        this.SelectionLength = 9999;
+
                         e.Handled = true;
                     }
                 }
@@ -662,7 +695,7 @@ namespace Ict.Common.Controls
             else
             {
                 // Text could not be found.
-                if (this.AcceptNewValues == true)
+                if ((this.FAcceptNewValues == true) || (this.FIgnoreNewValues == true))
                 {
                     // User may enter new values.
                     if (AcceptNewEntries != null)
@@ -778,10 +811,9 @@ namespace Ict.Common.Controls
         /// shortest item is returned
         /// </summary>
         /// <param name="SearchString">The string which is search for in the ComboBox</param>
-        /// <param name="StartIndex">The index where the comparison should start.</param>
         /// <returns>The index of the item if found or -1 if nothing is found.
         /// </returns>
-        public int FindStringSortedByLength(string SearchString, int StartIndex)
+        public int FindStringSortedByLength(string SearchString)
         {
             if (DataSource == null)
             {
@@ -872,21 +904,6 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// This function returns the index of the combobox items with the following
-        /// characteristics:
-        /// - item starts with the specified string
-        /// - if there are more items which fulfill this criterion the index of the
-        /// shortest item is returned
-        /// </summary>
-        /// <param name="SearchString">The string which is search for in the ComboBox</param>
-        /// <returns>The index of the item if found or -1 if nothing is found.
-        /// </returns>
-        public int FindStringSortedByLength(string SearchString)
-        {
-            return FindStringSortedByLength(SearchString, 0);
-        }
-
-        /// <summary>
         /// This function searches the ObjectCollection of a given ComboBox for a
         /// string specified by SearchString.
         /// </summary>
@@ -964,6 +981,20 @@ namespace Ict.Common.Controls
             System.Data.DataRowView TmpRowView;
             int ReturnValue = -1;
 
+            if (DataSource == null)
+            {
+                // use the normal Items list with integer object
+                foreach (int value in Items)
+                {
+                    if (value == SearchInt32)
+                    {
+                        return Items.IndexOf(value);
+                    }
+                }
+
+                return -1;
+            }
+
             foreach (object Item in Items)
             {
                 TmpRowView = (System.Data.DataRowView)Item;
@@ -1001,6 +1032,20 @@ namespace Ict.Common.Controls
         /// </returns>
         public int FindInt64InComboBox(Int64 SearchInt64)
         {
+            if (DataSource == null)
+            {
+                // use the normal Items list with integer object
+                foreach (Int64 value in Items)
+                {
+                    if (value == SearchInt64)
+                    {
+                        return Items.IndexOf(value);
+                    }
+                }
+
+                return -1;
+            }
+
             foreach (object Item in Items)
             {
                 System.Data.DataRowView TmpRowView = (System.Data.DataRowView)Item;
@@ -1050,6 +1095,15 @@ namespace Ict.Common.Controls
         /// </returns>
         public Int32 GetSelectedInt32(int ColumnNumber)
         {
+            if (DataSource == null)
+            {
+                if ((Items.Count > 0) && (this.SelectedIndex != -1))
+                {
+                    // use the normal Items values, not the datasource etc
+                    return Convert.ToInt32(Items[this.SelectedIndex]);
+                }
+            }
+
             if (ColumnNumber == -1)
             {
                 ColumnNumber = GetColumnNr(ValueMember);
@@ -1091,6 +1145,15 @@ namespace Ict.Common.Controls
         /// </returns>
         public Int64 GetSelectedInt64(int ColumnNumber)
         {
+            if (DataSource == null)
+            {
+                if ((Items.Count > 0) && (this.SelectedIndex != -1))
+                {
+                    // use the normal Items values, not the datasource etc
+                    return Convert.ToInt64(Items[this.SelectedIndex]);
+                }
+            }
+
             if (ColumnNumber == -1)
             {
                 ColumnNumber = GetColumnNr(ValueMember);
@@ -1124,7 +1187,7 @@ namespace Ict.Common.Controls
         /// <param name="ColumnNumber">The column number of the data source; if -1, then the value column is used</param>
         /// <returns>empty string if nothing is selected
         /// </returns>
-        public string GetSelectedString(int ColumnNumber)
+        public string GetSelectedString(int ColumnNumber = -1)
         {
             string ReturnValue = "";
 
@@ -1155,15 +1218,6 @@ namespace Ict.Common.Controls
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// get selected value as a string, from the default column
-        /// </summary>
-        /// <returns>get selected string value</returns>
-        public string GetSelectedString()
-        {
-            return GetSelectedString(-1);
         }
 
         /// <summary>

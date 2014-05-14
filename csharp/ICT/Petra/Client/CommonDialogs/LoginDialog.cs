@@ -40,11 +40,16 @@ using Ict.Petra.Client.App.Core;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Shared.MSysMan.Validation;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.CommonDialogs
@@ -222,6 +227,11 @@ namespace Ict.Petra.Client.CommonDialogs
             }
         }
 
+        private void TxtPasswordOnEntering(object sender, EventArgs e)
+        {
+            this.txtPassword.SelectAll();
+        }
+
         void TxtUserNameKeyPress(object sender, KeyPressEventArgs e)
         {
             // If the ENTER key is pressed, the Handled property is set to true,
@@ -294,6 +304,17 @@ namespace Ict.Petra.Client.CommonDialogs
                 this.Cursor = Cursors.Default;
                 TLogging.UserNamePrefix = UserInfo.GUserInfo.UserID + '_' +
                                           TConnectionManagement.GConnectionManagement.ClientID.ToString();
+
+                // If the user is required to change their password before using OpenPetra.
+                // (This LoginMessage is set in Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors.TUserManagerWebConnector)
+                if (UserInfo.GUserInfo.LoginMessage == Catalog.GetString("You need to change your password immediately."))
+                {
+                    if (!CreateNewPassword(FSelUserName, FSelPassWord, false))
+                    {
+                        // do nothing if password has not been successfully changed
+                        return;
+                    }
+                }
 
                 DialogResult = System.Windows.Forms.DialogResult.OK;
                 Close();
@@ -401,10 +422,10 @@ namespace Ict.Petra.Client.CommonDialogs
                     {
                         string line = sr.ReadLine();
 
-                        if (line.Contains("System.Exception: Unsupported upgrade"))
+                        if (line.Contains("Unsupported upgrade"))
                         {
                             countExceptionLine = 12;
-                            ErrorMessage = line.Substring("System.Exception: Unsupported upgrade".Length + 2);
+                            ErrorMessage = line.Substring(line.IndexOf("Unsupported upgrade"));
                         }
                         else
                         {
@@ -608,6 +629,85 @@ namespace Ict.Petra.Client.CommonDialogs
         }
 
         #endregion
+
+        /// <summary>
+        /// create a new password for the current user
+        /// </summary>
+        public static bool CreateNewPassword(string AUserName, string AOldPassword, bool APasswordNeedsChanged)
+        {
+            // repeat if an invalid password is entered
+            while (true)
+            {
+                PetraInputBox input = new PetraInputBox(
+                    Catalog.GetString("Change your password"),
+                    Catalog.GetString("Please enter the new password:"),
+                    "", true);
+
+                if (input.ShowDialog() == DialogResult.OK)
+                {
+                    string password = input.GetAnswer();
+
+                    TVerificationResultCollection VerificationResultCollection;
+                    TVerificationResult VerificationResult;
+
+                    if (password == AOldPassword)
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString(
+                                    "Password not changed as the old password was entered. Please enter a new password."), AUserName));
+                    }
+                    else if (TSharedSysManValidation.CheckPasswordQuality(password, out VerificationResult))
+                    {
+                        // if first password is valid then ask user to enter it again
+                        input = new PetraInputBox(
+                            Catalog.GetString("Change your password"),
+                            Catalog.GetString("Please enter the new password once more:"),
+                            "", true);
+
+                        if (input.ShowDialog() == DialogResult.OK)
+                        {
+                            // if both passwords are the same then save
+                            if (password == input.GetAnswer())
+                            {
+                                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(AUserName, password, AOldPassword,
+                                        APasswordNeedsChanged,
+                                        out VerificationResultCollection))
+                                {
+                                    MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), AUserName));
+                                    return true;
+                                }
+                                else
+                                {
+                                    MessageBox.Show(String.Format(Catalog.GetString(
+                                                "There was a problem setting the password for user {0}."), AUserName) +
+                                        Environment.NewLine + VerificationResultCollection.BuildVerificationResultString());
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Passwords do not match! Please try again...");
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString(
+                                    "There was a problem setting the password for user {0}."), AUserName) +
+                            Environment.NewLine + VerificationResult.ResultText);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// todoComment

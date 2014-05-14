@@ -87,11 +87,14 @@ namespace Tests.MFinance.Server.ICH
             string testFile = TAppSettingsManager.GetValue("GiftBatch.file",
                 CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
 
+            TLogging.Log(testFile);
+
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
 
             sr.Close();
 
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
             FileContent = FileContent.Replace("2010-09-30", AGiftDateEffective.ToString("yyyy-MM-dd"));
 
             Hashtable parameters = new Hashtable();
@@ -105,8 +108,8 @@ namespace Tests.MFinance.Server.ICH
 
             importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
 
-            Assert.IsFalse(
-                VerificationResult.HasCriticalErrors, "error when importing gift batch: " + VerificationResult.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "error when importing gift batch:");
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
@@ -114,7 +117,18 @@ namespace Tests.MFinance.Server.ICH
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
-                Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
+                string VerifResStr;
+
+                if (VerificationResult != null)
+                {
+                    VerifResStr = ": " + VerificationResult.BuildVerificationResultString();
+                }
+                else
+                {
+                    VerifResStr = String.Empty;
+                }
+
+                Assert.Fail("Gift Batch was not posted" + VerifResStr);
             }
 
             return BatchNumber;
@@ -167,13 +181,13 @@ namespace Tests.MFinance.Server.ICH
             if (FeesPayableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feespayable-data.sql");
+                    "test-sql\\gl-test-feespayable-data.sql", FLedgerNumber);
             }
 
             if (FeesReceivableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feesreceivable-data.sql");
+                    "test-sql\\gl-test-feesreceivable-data.sql", FLedgerNumber);
             }
         }
 
@@ -225,8 +239,8 @@ namespace Tests.MFinance.Server.ICH
             // run possibly empty stewardship calculation, to process all gifts that do not belong to this test
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber, out VerificationResults);
-            Assert.IsFalse(VerificationResults.HasCriticalErrors, "Performing initial Stewardship Calculation Failed! " +
-                VerificationResults.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+                "Performing initial Stewardship Calculation Failed!");
 
             // make sure we have some admin fees
             ImportAdminFees();
@@ -251,8 +265,8 @@ namespace Tests.MFinance.Server.ICH
 
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber, out VerificationResults);
-            Assert.IsFalse(VerificationResults.HasCriticalErrors, "Performing Stewardship Calculation Failed!" +
-                VerificationResults.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+                "Performing Stewardship Calculation Failed!");
 
             // Home office keeps 1.40 => 4300/3400 Admin Grant income
             decimal AdminGrantIncomeAfter = new TGet_GLM_Info(FLedgerNumber,

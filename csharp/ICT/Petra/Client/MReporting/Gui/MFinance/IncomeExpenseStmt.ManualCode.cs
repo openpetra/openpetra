@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +26,14 @@ using System;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using System.Data;
+using System.Collections;
+using System.Collections.Generic;
+using Ict.Common;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -45,13 +54,94 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
-                uco_GeneralSettings.DisableToPeriod();
+
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
+                else
+                {
+                    MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
+                }
             }
+        }
+
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            Int32 ParamNestingDepth = 99;
+            String DepthOption = paramsDictionary["param_depth"].ToString();
+
+            if (DepthOption == "summary")
+            {
+                ParamNestingDepth = 2;
+            }
+
+            if (DepthOption == "standard")
+            {
+                ParamNestingDepth = 3;
+            }
+
+            paramsDictionary.Add("param_nesting_depth", new TVariant(ParamNestingDepth));
+
+
+            //
+            // The table contains Actual and Budget figures, both this period and YTD, also last year and budget last year.
+            // It does not contain any variance (actual / budget) figures - these are calculated in the report.
+
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("IncomeExpense", paramsDictionary);
+
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
+
+            //
+            // I need to get the name of the current ledger..
+
+            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+            DataView LedgerView = new DataView(LedgerNameTable);
+            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+            String LedgerName = "";
+
+            if (LedgerView.Count > 0)
+            {
+                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+            }
+
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            return true;
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            {
+                this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // These tabs represent settings that are not supported
+                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.
+            }
         }
 
         private void SetControlsManual(TParameterList AParameters)

@@ -15,7 +15,7 @@ RootNode:
             Image: Delete_Record.ico
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlInfo, pnlFilterAndFind, pnlDetailGrid, pnlDetails]
             Dock: Fill
         pnlInfo:
             Dock: Top
@@ -23,20 +23,31 @@ RootNode:
                 Row0: [txtCurrentPeriod] 
                 Row1: [txtLedgerNumber, txtBatchNumber]
                 Row2: [txtDebit, txtCredit, txtControl]
-        txtCurrentPeriod: {ReadOnly=true, Label=Current Period, Align=right, Unbound=true}
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Decimal, Width=150}
-        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Decimal, Width=150}
-        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147}
+        txtCurrentPeriod: {ReadOnly=true, Label=Current Period, Align=right, Unbound=true, SuppressChangeDetection=true}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
+        txtDebit: {ReadOnly=true, Label=Debit, Unbound=true, Format=Decimal, Width=150, SuppressChangeDetection=true}
+        txtCredit: {ReadOnly=true, Label=Credit, Unbound=true, Format=Decimal, Width=150, SuppressChangeDetection=true}
+        txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147, SuppressChangeDetection=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective]
+            ControlAttributes:
+                dtpDetailDateEffective-1: {Label=From Effective date, Comparison=gte}
+                dtpDetailDateEffective-2: {Label=To Effective date, Comparison=lte}
+                dtpDetailDateEffective: {Label=Effective date, FindComparison=eq}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnAdd, btnCancel]
             ControlsOrientation: horizontal
-        btnAdd: {Action=actNew, Width=120}
+        btnAdd: {Action=actNew, Width=120, Tooltip=Click to add a new journal}
         btnCancel: {Action=actCancel, Width=120}
         grdDetails:
             Dock: Fill
@@ -51,13 +62,14 @@ RootNode:
                 SubSystemCode: {Label=Subsystem Code}
                 TransactionTypeCode: {Label=Transaction Type}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowTransactionTab
+            #ActionDoubleClickCell: ShowTransactionTab     #Not supported by generator
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: AJournal.JournalNumber DESC
             RowFilter: AJournal.BatchNumber
             EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
+            Height: 185
             Controls: 
                 Row0: [txtDetailJournalDescription]
                 Row1: [cmbDetailSubSystemCode]

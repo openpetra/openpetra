@@ -432,10 +432,7 @@ namespace Ict.Common.IO
         public void AddChart(String chartSheetName,
             String title,
             System.Object valueRange,
-            XlChartType typeOfChart,
-            bool withCategoryName,
-            bool withValue,
-            bool withPercentage)
+            XlChartType typeOfChart)
         {
             System.Object charts;
             System.Object chartObj;
@@ -543,50 +540,6 @@ namespace Ict.Common.IO
             parameters[0] = (Object)XlChartLocation.xlLocationAsNewSheet;
             parameters[1] = (String)(chartSheetName);
             MSExcelType.InvokeMember("Location", BindingFlags.InvokeMethod, null, chart, parameters);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="chartSheetName"></param>
-        /// <param name="title"></param>
-        /// <param name="valueRange"></param>
-        /// <param name="typeOfChart"></param>
-        /// <param name="withCategoryName"></param>
-        /// <param name="withValue"></param>
-        public void AddChart(String chartSheetName,
-            String title,
-            System.Object valueRange,
-            XlChartType typeOfChart,
-            bool withCategoryName,
-            bool withValue)
-        {
-            AddChart(chartSheetName, title, valueRange, typeOfChart, withCategoryName, withValue, true);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="chartSheetName"></param>
-        /// <param name="title"></param>
-        /// <param name="valueRange"></param>
-        /// <param name="typeOfChart"></param>
-        /// <param name="withCategoryName"></param>
-        public void AddChart(String chartSheetName, String title, System.Object valueRange, XlChartType typeOfChart, bool withCategoryName)
-        {
-            AddChart(chartSheetName, title, valueRange, typeOfChart, withCategoryName, true, true);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="chartSheetName"></param>
-        /// <param name="title"></param>
-        /// <param name="valueRange"></param>
-        /// <param name="typeOfChart"></param>
-        public void AddChart(String chartSheetName, String title, System.Object valueRange, XlChartType typeOfChart)
-        {
-            AddChart(chartSheetName, title, valueRange, typeOfChart, true, true, true);
         }
 
         /// <summary>

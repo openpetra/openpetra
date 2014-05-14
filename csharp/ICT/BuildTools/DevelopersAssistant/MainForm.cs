@@ -352,7 +352,20 @@ namespace Ict.Tools.DevelopersAssistant
                 return;                                                                         // no change
             }
 
-            if (!File.Exists(dlg.SelectedPath + @"\OpenPetra.Build"))
+            string tryPath = dlg.SelectedPath;
+            bool bValidChoice = true;
+
+            if (!File.Exists(tryPath + @"\OpenPetra.Build"))
+            {
+                tryPath = Path.Combine(tryPath, "trunk");
+
+                if (!File.Exists(tryPath + @"\OpenPetra.Build"))
+                {
+                    bValidChoice = false;
+                }
+            }
+
+            if (!bValidChoice)
             {
                 MessageBox.Show(
                     "The location that you have chosen is not a recognised OpenPetra source folder.  The file 'OpenPetra.Build' could not be found.",
@@ -362,7 +375,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            txtBranchLocation.Text = dlg.SelectedPath;
+            txtBranchLocation.Text = tryPath;
 
             SetBranchDependencies();
             SetEnabledStates();
@@ -860,6 +873,7 @@ namespace Ict.Tools.DevelopersAssistant
         private void linkLabelStartServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -885,11 +899,14 @@ namespace Ict.Tools.DevelopersAssistant
 
                 PrepareWarnings();
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void linkLabelStopServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -915,11 +932,14 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 SetEnabledStates();
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void linkLabelRestartServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -945,6 +965,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             PrepareWarnings();
+            TickTimer.Enabled = true;
         }
 
         private void btnCodeGeneration_Click(object sender, EventArgs e)
@@ -952,6 +973,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             NantTask task = new NantTask(cboCodeGeneration.Items[cboCodeGeneration.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
@@ -996,6 +1018,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnCompilation_Click(object sender, EventArgs e)
@@ -1003,6 +1027,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             NantTask task = new NantTask(cboCompilation.Items[cboCompilation.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
@@ -1038,6 +1063,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnMiscellaneous_Click(object sender, EventArgs e)
@@ -1045,6 +1072,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             NantTask task = new NantTask(cboMiscellaneous.Items[cboMiscellaneous.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
@@ -1082,6 +1110,35 @@ namespace Ict.Tools.DevelopersAssistant
                 // Ready to run - overriding the usual root location with the specified folder
                 RunSimpleNantTarget(task, dlg.SelectedPath, ref NumFailures, ref NumWarnings);
             }
+            else if ((task.Item == NantTask.TaskItem.test) || (task.Item == NantTask.TaskItem.testWithoutDisplay)
+                     || (task.Item == NantTask.TaskItem.mainNavigationTests))
+            {
+                BuildConfiguration dbBldConfig = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+                string curConfig = dbBldConfig.CurrentConfig;
+                string searchFor = "Database name: ";
+                int pos = curConfig.IndexOf(searchFor) + searchFor.Length;
+                int pos2 = curConfig.IndexOf(';', pos);
+                string dbName = curConfig.Substring(pos, pos2 - pos);
+
+                if (String.Compare(dbName, "nantTest", true) != 0)
+                {
+                    string msg = String.Format(
+                        "You are about to run tests using the '{0}' database.  This is a friendly reminder that all the data in the database will be lost.\r\n\r\n",
+                        dbName);
+                    msg +=
+                        "Click OK to continue, or 'Cancel' if you want to select a different database for testing (by moving to the 'database' tab of the Assistant).\r\n\r\n";
+                    msg += "The best advice is to create a specific database for testing purposes using PgAdmin or equivalent.\r\n\r\n";
+                    msg += "Tip: if you call your test database 'nantTest', it will be used without displaying this message!";
+
+                    if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OKCancel,
+                            MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        return;
+                    }
+                }
+
+                RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
+            }
             else
             {
                 RunSimpleNantTarget(task, ref NumFailures, ref NumWarnings);
@@ -1101,6 +1158,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnDatabase_Click(object sender, EventArgs e)
@@ -1108,6 +1167,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             NantTask task = new NantTask(cboDatabase.Items[cboDatabase.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
@@ -1143,11 +1203,14 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnStartClient_Click(object sender, EventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             DateTime dtStart = DateTime.UtcNow;
             NantTask task = new NantTask(NantTask.TaskItem.startPetraClient);
             int NumFailures = 0;
@@ -1184,6 +1247,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnGenerateWinform_Click(object sender, EventArgs e)
@@ -1191,26 +1256,11 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
-            if (chkAutoStartServer.Checked && chkStartClientAfterGenerateWinform.Checked)
-            {
-                // This is a case where we need to auto-start the server first
-                GetServerState();
-
-                if (!_serverIsRunning)
-                {
-                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumFailures, ref NumWarnings);
-                }
-            }
-
-            // Now we are ready to perform the original task
-            if (NumFailures == 0)
-            {
-                // This is the one that is different from the rest
-                RunGenerateWinform(ref NumFailures, ref NumWarnings);
-            }
+            RunGenerateWinform(ref NumFailures, ref NumWarnings);
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
@@ -1226,11 +1276,14 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnPreviewWinform_Click(object sender, EventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -1244,6 +1297,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             PrepareWarnings();
+            TickTimer.Enabled = true;
         }
 
         private void btnRunSequence_Click(object sender, EventArgs e)
@@ -1404,8 +1458,7 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", task.LogText));
             dlg.Refresh();
 
-            if (NantExecutor.RunGenerateWinform(txtBranchLocation.Text, txtYAMLPath.Text, chkCompileWinform.Checked,
-                    chkStartClientAfterGenerateWinform.Checked))
+            if (NantExecutor.RunGenerateWinform(txtBranchLocation.Text, txtYAMLPath.Text))
             {
                 // It ran successfully - let us check the output ...
                 OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
@@ -1415,7 +1468,67 @@ namespace Ict.Tools.DevelopersAssistant
                 NumFailures++;
             }
 
+            if ((NumFailures == 0) && ((NumWarnings == 0) || !chkTreatWarningsAsErrors.Checked) && chkCompileWinform.Checked)
+            {
+                RunNestedTask(NantTask.TaskItem.quickCompileClient, dlg, ref NumFailures, ref NumWarnings);
+
+                if ((NumFailures == 0) && ((NumWarnings == 0) || !chkTreatWarningsAsErrors.Checked) && chkStartClientAfterGenerateWinform.Checked)
+                {
+                    GetServerState();
+
+                    if (!_serverIsRunning)
+                    {
+                        RunNestedTask(NantTask.TaskItem.startPetraServer, dlg, ref NumFailures, ref NumWarnings);
+                    }
+
+                    RunNestedTask(NantTask.TaskItem.startPetraClient, dlg, ref NumFailures, ref NumWarnings);
+                }
+            }
+
             dlg.Close();
+        }
+
+        /// <summary>
+        /// Method that will run a task inside the context of another task
+        /// </summary>
+        /// <param name="NestedTask">Task to run</param>
+        /// <param name="SplashDialog">Reference to the splash dialog that the parent task launched</param>
+        /// <param name="NumFailures">Ongoing number of failures</param>
+        /// <param name="NumWarnings">Ongoing number of errors/warnings</param>
+        private void RunNestedTask(NantTask.TaskItem NestedTask, ProgressDialog SplashDialog, ref int NumFailures, ref int NumWarnings)
+        {
+            NantTask nestedTask = new NantTask(NestedTask);
+
+            OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", nestedTask.LogText));
+            SplashDialog.lblStatus.Text = nestedTask.StatusText;
+            SplashDialog.lblStatus.Refresh();
+
+            if (NestedTask == NantTask.TaskItem.startPetraServer)
+            {
+                if (NantExecutor.StartServer(txtBranchLocation.Text, _localSettings.MinimiseServerAtStartup))
+                {
+                    // It ran successfully - let us check the output ...
+                    OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
+                    GetServerState();
+                    SetEnabledStates();
+                }
+                else
+                {
+                    NumFailures++;
+                }
+            }
+            else
+            {
+                if (NantExecutor.RunGenericNantTarget(txtBranchLocation.Text, nestedTask.TargetName))
+                {
+                    // It ran successfully - let us check the output ...
+                    OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
+                }
+                else
+                {
+                    NumFailures++;
+                }
+            }
         }
 
         // Generic method to run previewWinform because it is in a different disk location to all the rest and takes additional parameters.
@@ -1452,6 +1565,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             bool bShowOutputTab = false;
 
             for (int i = 0; i < Sequence.Count; i++)
@@ -1537,6 +1651,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         // Call this method at the end of a task or sequence of tasks to initialise the verbose output warnings handler.
@@ -1675,6 +1791,38 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             return path;
+        }
+
+        private void TickTimer_Tick(object sender, EventArgs e)
+        {
+            // Every 10 seconds we just check that opda.txt got deleted.  Some tasks lock it until they are complete.
+            // For example StartPetraClient: nant does not complete until the client window closes
+            // There are two places to look ...
+            string path = Path.Combine(txtBranchLocation.Text, "opda.txt");
+
+            if (File.Exists(path))
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            path = Path.Combine(txtBranchLocation.Text, @"csharp\ICT\Petra\Client\opda.txt");
+
+            if (File.Exists(path))
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
     }
 }

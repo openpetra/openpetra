@@ -107,8 +107,8 @@ namespace Tests.MFinance.Server.ICH
 
             TGenHOSAFilesReportsWebConnector.ReplaceHeaderInFile(fileName, TableForExportHeader, ref VerificationResults);
 
-            Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "Header Replacement in File Failed! " + VerificationResults.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+                "Header Replacement in File Failed!");
 
             File.Delete(fileName);
         }
@@ -135,8 +135,8 @@ namespace Tests.MFinance.Server.ICH
                 FileName,
                 out VerificationResults);
 
-            Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "HOSA File Generation Failed!" + VerificationResults.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+                "HOSA File Generation Failed!");
 
             Assert.IsTrue(File.Exists(FileName),
                 "HOSA File did not create!");
@@ -158,8 +158,8 @@ namespace Tests.MFinance.Server.ICH
 
             TGenHOSAFilesReportsWebConnector.GenerateHOSAReports(LedgerNumber, PeriodNumber, IchNumber, Currency, out VerificationResults);
 
-            Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "Performing HOSA Report Generation Failed!" + VerificationResults.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+                "Performing HOSA Report Generation Failed!");
         }
 
         /// <summary>
@@ -173,8 +173,8 @@ namespace Tests.MFinance.Server.ICH
             string AcctCode = "0200";
             string MonthName = "January";
             int PeriodNumber = 1;
-            DateTime PeriodStartDate = new DateTime(2013, 1, 1);
-            DateTime PeriodEndDate = new DateTime(2013, 1, 31);
+            DateTime PeriodStartDate = new DateTime(DateTime.Today.Year, 1, 1);
+            DateTime PeriodEndDate = new DateTime(DateTime.Today.Year, 1, 31);
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();
@@ -219,8 +219,8 @@ namespace Tests.MFinance.Server.ICH
 
             DataRow[] DR = TableForExport.Select();
 
-            Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "HOSA - Performing Export of gifts Failed!" + VerificationResults.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+                "HOSA - Performing Export of gifts Failed!");
 
             Assert.IsTrue((DR.Length > 0),
                 "HOSA - Performing Export of gifts Failed to return any rows!");

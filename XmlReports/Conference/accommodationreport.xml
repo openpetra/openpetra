@@ -137,7 +137,7 @@
 					<queryDetail><value>
 							AND PUB_pm_short_term_application.p_partner_key_n = PUB_p_partner.p_partner_key_n
 							AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
-							AND PUB_pm_general_application.pm_gen_application_status_c = "A"
+							AND PUB_pm_general_application.pm_gen_application_status_c = 'A'
 							ORDER BY
 								PUB_p_partner.p_partner_short_name_c
 					</value></queryDetail>

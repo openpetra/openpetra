@@ -10,32 +10,52 @@ RootNode:
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
         actCancel: {Label=&Cancel Batch, ActionClick=CancelRow, Image=Delete_Record.ico}
-        actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
+        actPostBatch: {Label=P&ost Batch, ActionClick=PostBatch}
         actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
-        actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
+        actImportFromClipboard: {Label=Import from Clip&board, ActionClick=ImportFromClipboard}
+        actExportBatches: {Label=E&xport Batches, ActionClick=ExportBatches}
+        actReverseBatch: {Label=Re&verse Batch, ActionClick=ReverseBatch}
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
-        pnlInfo: 
-            ControlsOrientation: horizontal
-            Controls: [rgrShowBatches, pnlPeriodFilter]
-            Dock: Top
-        rgrShowBatches: 
-            Label: Show batches available for
-            ControlsOrientation: horizontal
-            SuppressChangeDetection: true
-            OptionalValues: [Posting, =Editing, All]
-            OnChange: RefreshFilter
-        cmbYearFilter: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
-        cmbPeriodFilter: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
-        pnlPeriodFilter:
-            Controls: [cmbYearFilter, cmbPeriodFilter]
+            #Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlFilterAndFind, pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 180
+            InitiallyExpanded: true     
+            ShowApplyFilterButton: FilterContext.ExtraFilterOnly
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.ExtraFilterOnly
+            FilterControls: [pnlBatchFilter]
+            ExtraFilterControls: [Column:BatchNumber-1, Column:BatchNumber-2, txtDetailBatchDescription, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            FindControls: [Column:BatchNumber, txtDetailBatchDescription, dtpDetailDateEffective]
+            ControlAttributes:
+                txtBatchNumber: {Label=Batch number, FindComparison=StartsWith}
+                txtBatchNumber-1: {Label=From Batch number, Comparison=gte}
+                txtBatchNumber-2: {Label=To Batch number, Comparison=lte}
+                dtpDetailDateEffective-1: {Label=From Effective date, Comparison=gte}
+                dtpDetailDateEffective-2: {Label=To Effective date, Comparison=lte}
+                dtpDetailDateEffective: {Label=Effective date, FindComparison=eq}
+            Panels:
+                pnlBatchFilter:
+                    Controls: [rgrShowBatches, cmbYearFilter, cmbPeriodFilter]
+                    
+                    rgrShowBatches: 
+                        Label: Show batches for
+                        ClearButton: false
+                        OptionalValues: [Posting, =Editing, All]
+                        
+                    cmbYearFilter: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
+                    cmbPeriodFilter: {OnChange=RefreshFilter, Width=250}
+                    rbtPosting: {OnChange=RefreshFilter}
+                    rbtEditing: {OnChange=RefreshFilter}
+                    rbtAll: {OnChange=RefreshFilter}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
@@ -56,7 +76,7 @@ RootNode:
                 BatchControlTotal: {Label=Hash Total, Type=Currency}
                 BatchDescription: {Label=Description}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowJournalTab
+            #ActionDoubleClickCell: ShowJournalTab     #Not supported by generator
             ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
             EnableMultiSelection: false
@@ -77,12 +97,12 @@ RootNode:
             Label: &Batch
             mniPostBatch:
             mniTestPostBatch:
-            #mniImportFromSpreadSheet:
+            mniReverseBatch:
             mniImportBatches:
+            mniImportFromClipboard:
             mniExportBatches:
     Toolbar:
-        tbbTestPostBatch:
-        tbbPostBatch:
-        #tbbImportFromSpreadSheet:
+        tbbReverseBatch:
         tbbImportBatches:
+        tbbImportFromClipboard:
         tbbExportBatches:

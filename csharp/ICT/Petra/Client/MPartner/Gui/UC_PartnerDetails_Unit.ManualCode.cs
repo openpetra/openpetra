@@ -22,9 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPersonnel.Gui.Setup;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -68,7 +70,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             lblParentName.Left = 250;
             btnOrganise.Left = 430;
 
-            if (FMainDS.UmUnitStructure.Rows.Count > 0)
+            if ((FMainDS.UmUnitStructure != null)
+                && (FMainDS.UmUnitStructure.Rows.Count > 0))
             {
                 txtParentKey.Text = FMainDS.UmUnitStructure[0].ParentUnitKey.ToString("D10");
                 SetParentLabel(FMainDS.UmUnitStructure[0].ParentUnitKey);
@@ -77,6 +80,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 btnOrganise.Enabled = false;
+            }
+
+            // If this unit has a corresponding conference in the database then the user should not be able to change the currency code from
+            // the partner edit screen. They can change it in the Conference Master Settings screen.
+            if (TRemote.MPartner.Partner.WebConnectors.IsPUnitAConference(UnitRow.PartnerKey))
+            {
+                cmbOutreachCostCurrencyCode.Enabled = false;
+                FPetraUtilsObject.SetStatusBarText(txtOutreachCost, Catalog.GetString("Enter the cost of this outreach" +
+                        Catalog.GetString(" (The currency can be modified in 'Conference Master Settings' in the the Conference module)")));
             }
         }
 

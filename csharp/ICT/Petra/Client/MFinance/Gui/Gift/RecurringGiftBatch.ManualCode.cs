@@ -27,6 +27,7 @@ using Ict.Common;
 using Ict.Common.Data;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -60,6 +61,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tpgTransactions.Enabled = false;
         }
 
+        /// <summary>
+        /// Handles the click event for filter/find.
+        /// </summary>
+        /// <param name="sender">Pass this on to the user control.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void mniFilterFind_Click(object sender, System.EventArgs e)
+        {
+            switch (tabGiftBatch.SelectedIndex)
+            {
+                case (int)eGiftTabs.Batches:
+                    ucoBatches.MniFilterFind_Click(sender, e);
+                    break;
+
+                case (int)eGiftTabs.Transactions:
+                    ucoTransactions.MniFilterFind_Click(sender, e);
+                    break;
+            }
+        }
+
         private int standardTabIndex = 0;
 
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
@@ -75,6 +95,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.Focus();
             HookupAllInContainer(ucoBatches);
             HookupAllInContainer(ucoTransactions);
+            this.Resize += new EventHandler(TFrmGiftBatch_Resize);
+        }
+
+        private bool FWindowIsMaximized = false;
+        void TFrmGiftBatch_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                // set the flag that we are maximized
+                FWindowIsMaximized = true;
+
+                if (tabGiftBatch.SelectedTab == this.tpgBatches)
+                {
+                    ucoTransactions.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing transactions");
+                }
+                else
+                {
+                    ucoBatches.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing batches");
+                }
+            }
+            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
+            {
+                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
+                ucoBatches.AutoSizeGrid();
+                ucoTransactions.AutoSizeGrid();
+                FWindowIsMaximized = false;
+                Console.WriteLine("Normal - autosizing both");
+            }
         }
 
         /// <summary>
@@ -82,14 +132,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, bool AFromTabClick = true)
+        /// <returns>True if new transactions were actually loaded, False if transactions have already been loaded for the ledger/batch</returns>
+        public bool LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             try
             {
                 //this.tpgTransactions.Enabled = true;
                 FPetraUtilsObject.DisableDataChangedEvent();
-                this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, AFromTabClick);
+                return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
             }
             finally
             {
@@ -163,8 +213,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        bool FChangeTabEventHasRun = false;
-
         private void SelectTabManual(int ASelectedTabIndex)
         {
             if (ASelectedTabIndex == (int)eGiftTabs.Batches)
@@ -181,27 +229,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        /// <param name="AFromTabClick"></param>
-        public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
+        public void SelectTab(eGiftTabs ATab)
         {
-            if (FChangeTabEventHasRun && AFromTabClick)
-            {
-                FChangeTabEventHasRun = false;
-                return;
-            }
-            else
-            {
-                FChangeTabEventHasRun = !AFromTabClick;
-            }
+            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
 
             if (ATab == eGiftTabs.Batches)
             {
-                //If from grid double click then invoke tab changed event
-                if (!AFromTabClick)
-                {
-                    this.tabGiftBatch.SelectedTab = this.tpgBatches;
-                }
-
+                this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.FocusGrid();
             }
@@ -209,14 +243,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    //ucoBatches.Controls["grdDetails"].Focus;
-                    LoadTransactions(ucoBatches.GetSelectedDetailRow().LedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber, AFromTabClick);
+                    // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
+                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
+                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                    ARecurringGiftBatchRow SelectedRow = ucoBatches.GetSelectedDetailRow();
 
-                    //If from grid double click then invoke tab changed event
-                    if (!AFromTabClick)
+                    if (SelectedRow != null)
                     {
-                        this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                        this.Cursor = Cursors.WaitCursor;
+
+                        if (LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber))
+                        {
+                            // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
+                            ucoTransactions.AutoSizeGrid();
+                        }
+
+                        this.Cursor = Cursors.Default;
                     }
 
                     this.ucoTransactions.FocusGrid();

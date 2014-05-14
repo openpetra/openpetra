@@ -30,8 +30,9 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
-using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -267,9 +268,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
 
             //Set up our checked list box columns and bind to our DTUsedBy table
-            clbUsedBy.AddCheckBoxColumn(GUIUsedBy, DTUsedBy.Columns[0], 70, false);
-            clbUsedBy.AddTextColumn(GUICol2, DTUsedBy.Columns[2], 125);
-            clbUsedBy.DataBindGrid(DTUsedBy, DBCol3, DBCol1, DBCol2, DBCol2, false, false, false);
+            clbUsedBy.AddCheckBoxColumn(GUIUsedBy, DTUsedBy.Columns[0], 17, false);
+            clbUsedBy.AddTextColumn(GUICol2, DTUsedBy.Columns[2], 169);
+            clbUsedBy.DataBindGrid(DTUsedBy, DBCol3, DBCol1, DBCol2, false, false, false);
             FPetraUtilsObject.SetStatusBarText(clbUsedBy, Catalog.GetString("Choose the screens when this label will be used"));
 
             // Now we have to deal with the form controls that depend on the selection of DataType
@@ -323,7 +324,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
 
-            SelectRowInGrid(1);
+            grdDetails.SelectRowWithoutFocus(1);
         }
 
         private void NewRowManual(ref PDataLabelRow ARow)
@@ -485,7 +486,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
             DataRowView[] HighlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
 
-            if ((HighlightedRows.Length == 1) && FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+            if ((HighlightedRows.Length == 1) && (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection)))
             {
                 // If we only have 1 row highlighted and it has validation errors we can quit because the standard code will work fine
                 return;
@@ -503,6 +504,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 int NumReferences = TRemote.MCommon.ReferenceCount.WebConnectors.GetCacheableRecordReferenceCount(
                     "DataLabelList",
                     DataUtilities.GetPKValuesFromDataRow(rv.Row),
+                    FPetraUtilsObject.MaxReferenceCountOnDelete,
                     out VerificationResults);
                 int NumDataLabelUses = rv.Row[UsedByColumnOrdinal].ToString().Split(new char[] { ',' }).Length;
 

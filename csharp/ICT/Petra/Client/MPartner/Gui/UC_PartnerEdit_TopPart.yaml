@@ -9,7 +9,7 @@ RootNode:
     MasterTable: PPartner    
     
     Actions:
-        actMaintainWorkerField: {Label=&Worker Field..., ActionClick=MaintainWorkerField, Image: OMField.ico}
+        actMaintainGiftDestination: {Label=Gift Destination, ActionClick=MaintainGiftDestination}
         
     Controls:
         pnlContent:
@@ -20,7 +20,7 @@ RootNode:
             Controls:
                 Row0: [pnlPartnerInfo, pnlWorkerField]
                 Row1: [pnlClassSpecificName, cmbPartnerStatus]
-                Row2: [pnlClassSpecificDetails, txtStatusUpdated]
+                Row2: [pnlClassSpecificDetails, dtpStatusUpdated]
                 Row3: [pnlAdditionalInfo, txtLastContact]
             ColWidths: [0=Fixed:550, 1=Fixed:200]
             Label: Key Partner Data
@@ -40,21 +40,28 @@ RootNode:
 # Right-hand Panel (misc. information)            
         pnlWorkerField: {Visible=false}
             Controls: 
-                Row0: [btnWorkerField, txtWorkerField] 
+                Row0: [btnGiftDestination, txtGiftDestination] 
             Height: 30
-        btnWorkerField:
-            Action: actMaintainWorkerField
-            Width: 100
+            Padding: -20,0,0,0
+        btnGiftDestination:
+            Action: actMaintainGiftDestination
+            Width: 110
             Height: 22
-        txtWorkerField:
+        txtGiftDestination:
             ReadOnly: true
             NoLabel: true
             BorderStyle: None
-            Tooltip: Field where the Partner is working
             Width: 100
             
-        cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100, Validation=true, OnChange=PartnerStatusCodeChangePromotion}
-        txtStatusUpdated:
+        cmbPartnerStatus: 
+            Label: Partner &Status
+            DataField: StatusCode
+            List: PartnerStatusList
+            Width: 100
+            Validation: true
+            OnChange: PartnerStatusCodeChangePromotion
+        dtpStatusUpdated:
+            DataField: PPartner.StatusChange
             ReadOnly: true
             Width: 100
             Tooltip: Date of the last change of the Partner Status
@@ -134,12 +141,13 @@ RootNode:
             DataField: PFamily.FirstName            
         txtFamilyFamilyName:
             NoLabel: true
+            Width: 180
             DataField: PFamily.FamilyName
 
         pnlFamily2ndLine:        
             Controls: [EmptyFamily, cmbFamilyAddresseeTypeCode, chkFamilyNoSolicitations]
             ControlsOrientation: horizontal
-            ColWidths: [0=Fixed:80, 1=Fixed:220, 2=Fixed:120]
+            ColWidths: [0=Fixed:169, 1=Fixed:210, 2=Fixed:110]
             Visible: false
             Margin: 0
             Dock: Fill
@@ -177,11 +185,12 @@ RootNode:
         txtPersonFamilyName:
             NoLabel: true
             DataField: PPerson.FamilyName
+            Width: 170
 
         pnlPerson2ndLine:        
             Controls: [cmbPersonGender, cmbPersonAddresseeTypeCode, chkPersonNoSolicitations]
             ControlsOrientation: horizontal
-            ColWidths: [0=Fixed:80, 1=Fixed:100, 2=Fixed:120, 3=Fixed:80, 4=Fixed:60, 5=Fixed:50]
+            ColWidths: [0=Fixed:80, 1=Fixed:70, 2=Fixed:120, 3=Fixed:120, 4=Fixed:80, 5=Fixed:70]
             Visible: false
             Margin: 0
             Dock: Fill
@@ -262,7 +271,7 @@ RootNode:
 # Data Fields for all other Partner Classes
         pnlOther2ndLine: {ControlsOrientation=horizontal, Visible=false}
             Controls: [Empty, cmbOtherAddresseeTypeCode, chkOtherNoSolicitations]
-            ColWidths: [0=Fixed:80, 1=Fixed:220, 2=Fixed:120]
+            ColWidths: [0=Fixed:169, 1=Fixed:210, 2=Fixed:110]
             Margin: 0
             Dock: Fill
 

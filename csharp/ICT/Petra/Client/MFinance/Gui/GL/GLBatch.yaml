@@ -5,16 +5,20 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     FormType: browse
     Template: windowTDS
-    WindowWidth: 760
-    WindowHeight: 700
+    WindowWidth: 900
+    WindowHeight: 710
     UsingNamespaces: [Ict.Petra.Shared.Interfaces.MFinance]
 
     Events:
         Load: {class=System.EventHandler, method=TFrmGLBatch_Load}    
+    Actions:
+        actEditFind: {ActionClick=mniFilterFind_Click}
+        actEditFilter: {ActionClick=mniFilterFind_Click}
 
     Controls:
         pnlContent:
             Controls: [tabGLBatch]
+            Tooltip: Use the tabs on this panel
             Dock: Fill
         tabGLBatch: {Dock=Fill, DragTabPageEnabled=false}
         tpgBatches:

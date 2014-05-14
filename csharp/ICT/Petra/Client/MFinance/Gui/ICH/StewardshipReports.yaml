@@ -1,0 +1,104 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Stewardship Reports
+    Namespace: Ict.Petra.Client.MFinance.Gui.ICH
+    FormType: dialog
+    Template: window
+    WindowWidth: 650
+    WindowHeight: 400
+    Events:
+        #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
+    Actions:
+        actGenerateHOSAFiles: {ActionClick=GenerateHOSAFiles}
+    
+    Controls:
+        pnlDialogContent:
+            Controls: [pnlDialogContentTop, pnlDialogContentMiddle]
+            Dock: Fill
+                
+        pnlDialogContentTop:
+            Dock: Fill            
+            Controls:
+                Row0: [grpSelection, rgrCurrency]
+                Row1: [Empty1]
+                
+        pnlDialogContentMiddle:
+            Dock: Bottom            
+            Controls:
+                Row0: [grpHOSA, grpStewardship, grpOther]
+
+        grpSelection: {Width:410, Height:120}
+            Controls: 
+                Row0: [Empty2]
+                Row1: [cmbYearEnding]
+                Row2: [cmbReportPeriod]
+                Row3: [cmbICHNumber]
+                Row4: [lblFullReport]
+                
+        grpHOSA: {Label:HOSA, Width:150, Height:180}
+            Controls: 
+                Row0: [chkHOSAReport]
+                Row1: [chkEmailHOSAReport]
+                Row2: [chkHOSAFile]
+                Row3: [txtHOSAPrefix]
+                Row4: [chkEmailHOSAFile]
+
+        grpStewardship: {Label: Stewardship, Width:290, Height:180}
+            Controls: 
+                Row0: [chkEmailStewardshipFileAndReport]
+                Row1: [chkStewardshipReport]
+                Row2: [chkStewardshipFile]
+                Row3: [txtBrowseStewardshipFile, btnBrowse]
+                
+        grpOther: {NoLabel:true, Width:165, Height:180}
+            Controls: 
+                Row0: [lblFees]
+                Row1: [chkFeesReport]
+                Row2: [Empty4]
+                Row3: [lblGift]
+                Row4: [chkRecipientStatement]
+                Row5: [Empty5]
+                Row6: [lblBranchProcessing]
+                Row7: [chkEmailToHeadOffice]
+
+        rgrCurrency:
+            Height: 85
+            ParameterName: param_sortby
+            Controls: [rbtBase, rbtInternational]
+        rbtBase: 
+            Label: Base
+            ParameterValue: 0
+        rbtInternational: 
+            Label: International
+            ParameterValue: 1
+
+        cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
+        cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList}
+        cmbICHNumber: {Label=Run Number, List=UserDefinedList}
+        lblFullReport: {Label=(0=Full report)}
+        lblFees: {Label=Fees}
+        chkFeesReport: {Label=Report, CheckBoxAttachedLabel=right}
+        lblGift: {Label=Gift}
+        chkRecipientStatement: {Label=Recipient Statement, CheckBoxAttachedLabel=right}
+        lblBranchProcessing: {Label=Branch Processing}
+        chkEmailToHeadOffice: {Label=Email to Head Office, CheckBoxAttachedLabel=right}
+        chkHOSAReport: {Label=Report, CheckBoxAttachedLabel=right}
+        chkEmailHOSAReport: {Label=Email Report, CheckBoxAttachedLabel=right}
+        chkHOSAFile: {Label=File, CheckBoxAttachedLabel=right, OnChange=EnableHOSAFileOptions}
+        txtHOSAPrefix: {Label=Prefix, Width=70, Enabled=false}
+        chkEmailHOSAFile: {Label=Email File, CheckBoxAttachedLabel=right, Enabled=false}
+        chkEmailStewardshipFileAndReport: {Label=Email File and Report, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
+        chkStewardshipReport: {Label=Report, CheckBoxAttachedLabel=right}
+        chkStewardshipFile: {Label=Email File, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
+        txtBrowseStewardshipFile: {NoLabel=true, Width=195, Enabled=false}
+        btnBrowse: {Label=&Browse..., Height=20, Enabled=false}
+        
+        Empty1: #{Label=None, Visible=false}
+        Empty2:
+        #Empty3:
+        Empty4:
+        Empty5:
+        
+        btnOK:
+            Label: &Generate HOSAs
+            Action: actGenerateHOSAFiles

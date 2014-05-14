@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             TSubmitChangesResult SubmissionResult;
-            TVerificationResultCollection VerificationResult;
 
             MExtractTable SubmitDT = new MExtractTable();
 
@@ -96,7 +95,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             // Submit changes to the PETRAServer
             SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtract
-                                   (AExtractId, ref SubmitDT, out VerificationResult);
+                                   (AExtractId, ref SubmitDT);
 
             if (SubmissionResult == TSubmitChangesResult.scrError)
             {
@@ -328,6 +327,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Export partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExportPartnersInExtract(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.ExportPartnersInExtract(sender, e);
+        }
+
+        /// <summary>
         /// Open screen to maintain contents of an extract
         /// </summary>
         /// <param name="sender"></param>
@@ -385,7 +394,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             TFrmExtractCombineIntersectSubtractDialog ExtractCombineDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
 
             List <Int32>ACombineExtractIdList;
-            TVerificationResultCollection VerificationResult;
 
             // initialize dialog
             ExtractCombineDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisCombineMode);
@@ -421,7 +429,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 if (TRemote.MPartner.Partner.WebConnectors.CombineExtracts
                         (NewExtractName, NewExtractDescription, ACombineExtractIdList,
-                        out NewExtractId, out VerificationResult))
+                        out NewExtractId))
                 {
                     ucoExtractMasterList.RefreshExtractList(sender, e);
                 }
@@ -440,7 +448,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             TFrmExtractCombineIntersectSubtractDialog ExtractIntersectDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
 
             List <Int32>AIntersectExtractIdList;
-            TVerificationResultCollection VerificationResult;
 
             // initialize dialog
             ExtractIntersectDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisIntersectMode);
@@ -476,7 +483,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 if (TRemote.MPartner.Partner.WebConnectors.IntersectExtracts
                         (NewExtractName, NewExtractDescription, AIntersectExtractIdList,
-                        out NewExtractId, out VerificationResult))
+                        out NewExtractId))
                 {
                     ucoExtractMasterList.RefreshExtractList(sender, e);
                 }
@@ -496,7 +503,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             String BaseExtractName;
 
             List <Int32>AIntersectExtractIdList;
-            TVerificationResultCollection VerificationResult;
 
             // initialize dialog
             ExtractSubtractDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisSubtractMode);
@@ -532,7 +538,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 if (TRemote.MPartner.Partner.WebConnectors.SubtractExtracts
                         (NewExtractName, NewExtractDescription, BaseExtractName, AIntersectExtractIdList,
-                        out NewExtractId, out VerificationResult))
+                        out NewExtractId))
                 {
                     ucoExtractMasterList.RefreshExtractList(sender, e);
                 }
@@ -679,26 +685,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CreatePartnerByConferenceExtract(System.Object sender, EventArgs e)
+        private void CreatePartnerByEventExtract(System.Object sender, EventArgs e)
         {
             TFrmPartnerByEvent frm = new TFrmPartnerByEvent(FindForm());
 
             frm.CalledFromExtracts = true;
             frm.CalledForConferences = true;
-            frm.Show();
-        }
-
-        /// <summary>
-        /// Create Partner By Outreach Extract
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CreatePartnerByOutreachExtract(System.Object sender, EventArgs e)
-        {
-            TFrmPartnerByEvent frm = new TFrmPartnerByEvent(FindForm());
-
-            frm.CalledFromExtracts = true;
-            frm.CalledForConferences = false;
             frm.Show();
         }
 
@@ -888,5 +880,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Manages the opening of a new Instance of the Extract Master screen.
+    /// </summary>
+    public static class TExtractMasterScreenManager
+    {
+        /// <summary>
+        /// Opens an instance of the Extract Master screen.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void OpenForm(Form AParentForm)
+        {
+            new TFrmExtractMaster(AParentForm).Show();
+        }
     }
 }

@@ -29,9 +29,9 @@ using System.Security.Principal;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
-using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -93,7 +93,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             SUserRow ReturnValue;
 
             Ict.Petra.Shared.Security.TPetraIdentity PetraIdentity;
+
             ReturnValue = LoadUser(AUserID, out PetraIdentity);
+
             APetraPrincipal = new TPetraPrincipal(PetraIdentity, TGroupManager.LoadUserGroups(
                     AUserID), TTableAccessPermissionManager.LoadTableAccessPermissions(
                     AUserID), TModuleAccessManager.LoadUserModules(AUserID));
@@ -229,7 +231,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         [NoRemoting]
         public static TPetraPrincipal PerformUserAuthentication(String AUserID, String APassword, out Int32 AProcessID, out Boolean ASystemEnabled)
         {
-            TVerificationResultCollection VerificationResults;
             DateTime LoginDateTime;
             TPetraPrincipal PetraPrincipal = null;
 
@@ -255,7 +256,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 // Check if user is retired
                 if (PetraPrincipal.PetraIdentity.Retired)
                 {
-                    throw new EUserRetiredException(StrUserIsRetired);
+                    throw new EUserRetiredException(StrInvalidUserIDPassword);
                 }
 
                 // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +
@@ -264,26 +265,23 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 if ((PetraPrincipal.PetraIdentity.FailedLogins >= 5) && ((!PetraPrincipal.PetraIdentity.Retired)))
                 {
                     UserDR.Retired = true;
-                    UserDR.FailedLogins = 4;
+                    UserDR.FailedLogins = 0;
 
-                    if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
-                    {
-                        TLogging.LogAtLevel(8,
-                            Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
-                    }
+                    SaveUser(AUserID, (SUserTable)UserDR.Table);
 
-                    throw new EAccessDeniedException(StrUserIsRetired);
+                    throw new EAccessDeniedException(StrInvalidUserIDPassword);
                 }
 
                 // Check SystemLoginStatus (Petra enabled/disabled) in the SystemStatus table (always holds only one record)
                 Boolean NewTransaction = false;
                 SSystemStatusTable SystemStatusDT;
 
+                TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
                 try
                 {
-                    TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        out NewTransaction);
                     SystemStatusDT = SSystemStatusAccess.LoadAll(ReadTransaction);
                 }
                 finally
@@ -311,7 +309,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     }
                     else
                     {
-                        TLoginLog.AddLoginLogEntry(AUserID, "System disabled", true, out AProcessID, out VerificationResults);
+                        TLoginLog.AddLoginLogEntry(AUserID, "System disabled", true, out AProcessID);
 
                         throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
                                 SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
@@ -334,9 +332,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                         LoginDateTime = DateTime.Now;
                         UserDR.FailedLoginDate = LoginDateTime;
                         UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
-                        SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults);
+                        SaveUser(AUserID, (SUserTable)UserDR.Table);
 
-                        throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
+                        throw new EPasswordWrongException(StrInvalidUserIDPassword);
                     }
                 }
                 else
@@ -351,7 +349,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                         LoginDateTime = DateTime.Now;
                         UserDR.FailedLoginDate = LoginDateTime;
                         UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
-                        SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults);
+                        SaveUser(AUserID, (SUserTable)UserDR.Table);
 
                         throw new EPasswordWrongException(ErrorMessage);
                     }
@@ -363,11 +361,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 UserDR.LastLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
                 UserDR.FailedLogins = 0;
 
-                if (!SaveUser(AUserID, (SUserTable)UserDR.Table, out VerificationResults))
-                {
-                    TLogging.LogAtLevel(8,
-                        Messages.BuildMessageFromVerificationResult("Error while trying to auto-retire user: ", VerificationResults));
-                }
+                SaveUser(AUserID, (SUserTable)UserDR.Table);
 
                 PetraPrincipal.PetraIdentity.CurrentLogin = LoginDateTime;
 
@@ -375,15 +369,21 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
                 if (PetraPrincipal.IsInGroup("SYSADMIN"))
                 {
-                    TLoginLog.AddLoginLogEntry(AUserID, "Successful  SYSADMIN", out AProcessID, out VerificationResults);
+                    TLoginLog.AddLoginLogEntry(AUserID, "Successful  SYSADMIN", out AProcessID);
                 }
                 else
                 {
-                    TLoginLog.AddLoginLogEntry(AUserID, "Successful", out AProcessID, out VerificationResults);
+                    TLoginLog.AddLoginLogEntry(AUserID, "Successful", out AProcessID);
                 }
 
                 PetraPrincipal.ProcessID = AProcessID;
                 AProcessID = 0;
+
+                if (UserDR.PasswordNeedsChange)
+                {
+                    // The user needs to change their password before they can use OpenPetra
+                    PetraPrincipal.LoginMessage = Catalog.GetString("You need to change your password immediately.");
+                }
             }
             finally
             {
@@ -401,9 +401,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
         private static readonly string StrSystemDisabled2Admin = Catalog.GetString("Proceed with caution.");
 
-        private static readonly string StrUserIsRetired = Catalog.GetString("User is retired.");
-
-        private static readonly string StrInvalidUserIDPassword = Catalog.GetString("Invalid User ID/Password.");
+        private static readonly string StrInvalidUserIDPassword = Catalog.GetString("Invalid User ID or Password.");
 
         #endregion
 
@@ -424,9 +422,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
 
             // default to SHA1
-            return BitConverter.ToString(
-                SHA1.Create().
-                ComputeHash(Encoding.UTF8.GetBytes(APasswordAndSalt))).Replace("-", "");
+            return PasswordHelper.GetPasswordHash(APasswordAndSalt);
         }
 
         /// <summary>
@@ -455,44 +451,36 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// save user details (last login time, failed logins etc)
         /// </summary>
         [NoRemoting]
-        private static Boolean SaveUser(String AUserID, SUserTable AUserDataTable, out TVerificationResultCollection AVerificationResult)
+        private static Boolean SaveUser(String AUserID, SUserTable AUserDataTable)
         {
-            Boolean ReturnValue;
             TDBTransaction TheTransaction;
-            Boolean SubmissionOK;
-
-            SubmissionOK = false;
-            AVerificationResult = null;
 
             if ((AUserDataTable != null) && (AUserDataTable.Rows.Count > 0))
             {
                 TheTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
                 try
                 {
-                    SubmissionOK = SUserAccess.SubmitChanges(AUserDataTable,
-                        TheTransaction,
-                        out AVerificationResult);
+                    SUserAccess.SubmitChanges(AUserDataTable, TheTransaction);
+
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                finally
+                catch (Exception Exc)
                 {
-                    if (SubmissionOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
+                    TLogging.Log("An Exception occured during the saving of a User:" + Environment.NewLine + Exc.ToString());
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw;
                 }
-                ReturnValue = SubmissionOK;
             }
             else
             {
                 // nothing to save!
-                ReturnValue = false;
+                return false;
             }
 
-            return ReturnValue;
+            return true;
         }
 
         /// <summary>
@@ -523,10 +511,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// <summary>
         /// add a new user
         /// </summary>
-        public bool AddUser(string AUserID)
+        public bool AddUser(string AUserID, string APassword = "")
         {
             return TMaintenanceWebConnector.CreateUser(AUserID,
-                string.Empty,
+                APassword,
                 string.Empty,
                 string.Empty,
                 TMaintenanceWebConnector.DEMOMODULEPERMISSIONS);

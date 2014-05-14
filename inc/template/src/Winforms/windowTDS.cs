@@ -19,6 +19,8 @@ using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -171,8 +173,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
-
 {#IFDEF UICONNECTORCREATE}
         if (FUIConnector != null)
         {
@@ -215,6 +215,7 @@ namespace {#NAMESPACE}
         object[] beforeEdit = ARow.ItemArray;
         ARow.BeginEdit();
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
         if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
         {
             ARow.CancelEdit();
@@ -232,6 +233,7 @@ namespace {#NAMESPACE}
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
 {#ENDIF SAVEDATA}
     }
 {#ENDIFN MASTERTABLE}
@@ -245,6 +247,7 @@ namespace {#NAMESPACE}
             object[] beforeEdit = ARow.ItemArray;
             ARow.BeginEdit();
             {#SAVEDETAILS}
+            {#SAVEDETAILSEXTRA}
             if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
             {
                 ARow.CancelEdit();
@@ -467,6 +470,7 @@ namespace {#NAMESPACE}
     {
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#USERCONTROLSRUNONCEONACTIVATION}
     }
 
     /// <summary>
@@ -675,6 +679,12 @@ namespace {#NAMESPACE}
                 ReturnValue = true;
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
             }                
+        }
+        else
+        {
+            // validation failed
+            ReturnValue = false;
+            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
         }
 
         return ReturnValue;
@@ -887,8 +897,8 @@ namespace {#NAMESPACE}
             FPetraUtilsObject.ValidationToolTip.RemoveAll();
 
 {#IFDEF SELECTTABMANUAL}
-			{#SELECTTABMANUAL}
-			SelectTabManual({#TABPAGECTRL}.SelectedIndex);
+            {#SELECTTABMANUAL}
+            SelectTabManual({#TABPAGECTRL}.SelectedIndex);
 {#ENDIF SELECTTABMANUAL}
 
         }

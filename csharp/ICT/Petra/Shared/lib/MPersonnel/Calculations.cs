@@ -38,6 +38,12 @@ namespace Ict.Petra.Shared.MPersonnel
     /// </summary>
     public class Calculations
     {
+        /// <summary>Passport expired</summary>
+        public static String PASSPORT_EXPIRED = " (" + Catalog.GetString("exp.") + ")";
+
+        /// <summary>Main passport expired</summary>
+        public static String PASSPORTMAIN_EXPIRED = " (" + Catalog.GetString("exp.") + " " + Catalog.GetString("MAIN") + "!)";
+
         /// <summary>
         /// Determines a PERSON's Nationalities (deduced from its passports).
         /// </summary>
@@ -153,15 +159,15 @@ namespace Ict.Petra.Shared.MPersonnel
             if ((APassportDR.DateOfExpiration.HasValue)
                 && (APassportDR.DateOfExpiration.Value.Date < DateTime.Now.Date))
             {
-                ReturnValue += " (" + Catalog.GetString("exp.");
-
                 if ((!APassportDR.IsMainPassportNull())
                     && (APassportDR.MainPassport))
                 {
-                    ReturnValue += " MAIN!";
+                    ReturnValue += PASSPORTMAIN_EXPIRED;
                 }
-
-                ReturnValue += ")";
+                else
+                {
+                    ReturnValue += PASSPORT_EXPIRED;
+                }
             }
 
             return ReturnValue;

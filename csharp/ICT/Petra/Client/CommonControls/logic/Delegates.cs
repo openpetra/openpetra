@@ -22,8 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
+
+using Ict.Common.Data;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.CommonControls.Logic
 {
@@ -31,7 +36,21 @@ namespace Ict.Petra.Client.CommonControls.Logic
     public delegate bool TDelegateOpenPartnerFindScreen(String ARestrictToPartnerClass,
         out Int64 APartnerKey,
         out String AShortName,
+        out TPartnerClass? APartnerClass,
         out TLocationPK ALocationPK,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Partner Find screen with only the Find By Bank Details tab enabled.</summary>
+    public delegate bool TDelegateOpenPartnerFindByBankDetailsScreen(String ARestrictToPartnerClass,
+        out Int64 APartnerKey,
+        out String AShortName,
+        out TPartnerClass? APartnerClass,
+        out int ABankingDetailsKey,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Bank Find dialog.</summary>
+    public delegate bool TDelegateOpenBankFindDialog(ref BankTDS ABankDataset,
+        ref Int64 ABankKey,
         Form AParentForm);
 
     /// <summary>Delegate for a call to open a Modal Conference Find screen</summary>
@@ -52,5 +71,25 @@ namespace Ict.Petra.Client.CommonControls.Logic
     public delegate bool TDelegateOpenExtractFindScreen(out int AExtractId,
         out String AExtractName,
         out String AExtractDesc,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open the Extract Master screen</summary>
+    public delegate void TDelegateOpenExtractMasterScreen(Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Range Find screen</summary>
+    public delegate bool TDelegateOpenRangeFindScreen(String ARegionName,
+        out String[] ARangeName,
+        out String[] RangeFrom,
+        out String[] RangeTo,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Range Find screen</summary>
+    public delegate bool TDelegateOpenGetMergeDataDialog(long AFromPartnerKey,
+        long AToPartnerKey,
+        string ADataType,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Print Partner report screen</summary>
+    public delegate bool TDelegateOpenPrintPartnerDialog(long APartnerKey,
         Form AParentForm);
 }

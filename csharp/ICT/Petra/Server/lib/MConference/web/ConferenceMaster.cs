@@ -30,7 +30,7 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -40,7 +40,6 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Server.App.Core.Security;
 
 
 namespace Ict.Petra.Server.MConference.Conference.WebConnectors
@@ -67,12 +66,13 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            
+
             PPartnerLocationAccess.LoadViaPPartner(MainDS, AConferenceKey, Transaction);
             PcConferenceAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
             PcConferenceOptionAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
             PcDiscountAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
             PcConferenceVenueAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+            PUnitAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
             AConferenceName = PPartnerAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction).PartnerShortName;
 
             foreach (ConferenceSetupTDSPcConferenceVenueRow VenueRow in MainDS.PcConferenceVenue.Rows)
@@ -90,7 +90,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
-            
+
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -103,13 +103,74 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         /// this will store ConferenceSetupTDS
         /// </summary>
         /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("CONFERENCE")]
-        public static TSubmitChangesResult SaveConferenceSetupTDS(ref ConferenceSetupTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SaveConferenceSetupTDS(ref ConferenceSetupTDS AInspectDS)
         {
-            return ConferenceSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            // check that conference option types exist and if not then create them
+            CreateOptionTypes();
+
+            ConferenceSetupTDSAccess.SubmitChanges(AInspectDS);
+
+            return TSubmitChangesResult.scrOK;
+        }
+
+        private static void CreateOptionTypes()
+        {
+            TDBTransaction Transaction;
+
+            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            bool RowsToAdd = false;
+
+            string[, ] OptionTypes = new string[, ]
+            { {
+                  "ADD_ACCOMM_COST_FOR_TOTAL", "Add accommodation costs to get total costs"
+              },
+              {
+                  "COST_PER_DAY", "Calculate conference cost per day"
+              },
+              {
+                  "COST_PER_NIGHT", "Calculate conference cost per night"
+              } };
+
+            try
+            {
+                PcConferenceOptionTypeTable OptionTypeTable = PcConferenceOptionTypeAccess.LoadAll(Transaction);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    if (OptionTypeTable.Rows.Find(new object[] { OptionTypes[i, 0] }) == null)
+                    {
+                        PcConferenceOptionTypeRow NewRow = OptionTypeTable.NewRowTyped(false);
+                        NewRow.OptionTypeCode = OptionTypes[i, 0];
+                        NewRow.OptionTypeDescription = OptionTypes[i, 1];
+                        NewRow.UnassignableFlag = false;
+                        NewRow.DeletableFlag = false;
+
+                        OptionTypeTable.Rows.Add(NewRow);
+
+                        RowsToAdd = true;
+                    }
+                }
+
+                if (RowsToAdd)
+                {
+                    // add any new rows to database
+                    PcConferenceOptionTypeAccess.SubmitChanges(OptionTypeTable, Transaction);
+                }
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+                TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateOptionTypes: commit own transaction.");
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the creation of option types:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
     }
 }

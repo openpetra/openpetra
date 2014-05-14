@@ -26,6 +26,9 @@ using Ict.Petra.Client.CommonControls;
 {#IFDEF SHAREDVALIDATIONNAMESPACEMODULE}
 using {#SHAREDVALIDATIONNAMESPACEMODULE};
 {#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}
+{#IFDEF FILTERANDFIND}
+using Ict.Petra.Client.MCommon;
+{#ENDIF FILTERANDFIND}
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -43,6 +46,9 @@ namespace {#NAMESPACE}
     private Control FPrimaryKeyControl = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
 {#ENDIF MASTERTABLE OR DETAILTABLE}
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDDECLARATIONS}
+{#ENDIF FILTERANDFIND}
 
 {#IFDEF UICONNECTORTYPE}
 
@@ -87,6 +93,9 @@ namespace {#NAMESPACE}
       BuildValidationControlsDict();
       SetPrimaryKeyControl();
 {#ENDIF MASTERTABLE OR DETAILTABLE}
+{#IFDEF FILTERANDFIND}
+      SetupFilterAndFindControls();
+{#ENDIF FILTERANDFIND}
     }
 
     #region Show Method overrides
@@ -142,8 +151,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
-
 {#IFDEF UICONNECTORCREATE}
         if (FUIConnector != null)
         {
@@ -172,6 +179,7 @@ namespace {#NAMESPACE}
         object[] beforeEdit = ARow.ItemArray;
         ARow.BeginEdit();
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
         if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
         {
             ARow.CancelEdit();
@@ -189,6 +197,7 @@ namespace {#NAMESPACE}
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
 {#ENDIF SAVEDATA}
     }
 {#ENDIFN MASTERTABLE}
@@ -202,6 +211,7 @@ namespace {#NAMESPACE}
             object[] beforeEdit = ARow.ItemArray;
             ARow.BeginEdit();
             {#SAVEDETAILS}
+            {#SAVEDETAILSEXTRA}
             if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
             {
                 ARow.CancelEdit();
@@ -235,6 +245,12 @@ namespace {#NAMESPACE}
         {#UNDODATA}
     }
 {#ENDIF UNDODATA}
+{#IFDEF FILTERANDFIND}
+
+#region Filter and Find
+    {#FILTERANDFINDMETHODS}
+#endregion
+{#ENDIF FILTERANDFIND}    
 
     /// <summary>
     /// Performs data validation.
@@ -388,6 +404,7 @@ namespace {#NAMESPACE}
     {
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#USERCONTROLSRUNONCEONACTIVATION}
     }
 
     /// <summary>
@@ -481,6 +498,18 @@ namespace {#NAMESPACE}
                 }
             }
         }
+{#IFDEF FILTERANDFIND}
+        else if (FFailedValidation_CtrlChangeEventArgsInfo != null)
+        {
+            // The validation is all ok...  But we do have an outstanding filter update that we did not show due to previous invalid data
+            //  So we can call that now and update the display.
+            FucoFilterAndFind_ArgumentCtrlValueChanged(FFailedValidation_CtrlChangeEventArgsInfo.Sender,
+                (TUcoFilterAndFind.TContextEventExtControlValueArgs)FFailedValidation_CtrlChangeEventArgsInfo.EventArgs);
+            
+            // Reset our cached change event
+            FFailedValidation_CtrlChangeEventArgsInfo = null;
+        }
+{#ENDIF FILTERANDFIND}    
     }
 {#IFDEF MASTERTABLE}
     private void ValidateData({#MASTERTABLE}Row ARow)
@@ -556,8 +585,26 @@ namespace {#NAMESPACE}
 
 #endregion
 
+#region Keyboard handler
+
+    /// Our main keyboard handler    
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+{#IFDEF FILTERANDFIND}
+        {#PROCESSCMDKEYCTRLF}
+        {#PROCESSCMDKEYCTRLR}
+{#ENDIF FILTERANDFIND}
+        {#PROCESSCMDKEY}    
+        {#PROCESSCMDKEYMANUAL}    
+
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+#endregion
+
   }
 }
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
+{#INCLUDE findandfilter.cs}

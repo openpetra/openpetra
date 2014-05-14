@@ -11,18 +11,18 @@ AND PUB_p_banking_details.p_banking_details_key_i = PUB_p_partner_banking_detail
 AND PUB_p_bank.p_partner_key_n = PUB_p_banking_details.p_bank_key_n
 --AND PUB_p_banking_details_usage.p_banking_details_key_i = PUB_p_banking_details.p_banking_details_key_i
 --AND PUB_p_banking_details_usage.p_partner_key_n = PUB_p_partner_banking_details.p_partner_key_n
---AND ((PUB_p_banking_details_usage.p_type_c = "MAIN" AND 
+--AND ((PUB_p_banking_details_usage.p_type_c = 'MAIN' AND 
 --    NOT EXISTS(SELECT * 
 --               FROM PUB_p_banking_details_usage 
 --               WHERE PUB_p_banking_details_usage.p_banking_details_key_i = PUB_p_banking_details.p_banking_details_key_i
 --               AND PUB_p_banking_details_usage.p_partner_key_n = PUB_p_partner_banking_details.p_partner_key_n
---               AND PUB_p_banking_details_usage.p_type_c = "DONATIONS"))
+--               AND PUB_p_banking_details_usage.p_type_c = 'DONATIONS'))
 --     OR
---     PUB_p_banking_details_usage.p_type_c = "DONATIONS"
+--     PUB_p_banking_details_usage.p_type_c = 'DONATIONS'
 --     OR
 --        NOT EXISTS(SELECT * 
 --               FROM PUB_p_banking_details_usage
 --               WHERE PUB_p_banking_details_usage.p_banking_details_key_i = PUB_p_banking_details.p_banking_details_key_i
 --               AND PUB_p_banking_details_usage.p_partner_key_n = PUB_p_partner_banking_details.p_partner_key_n
---               AND PUB_p_banking_details_usage.p_type_c = "MAIN")
+--               AND PUB_p_banking_details_usage.p_type_c = 'MAIN')
 --     )

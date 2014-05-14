@@ -33,10 +33,12 @@
 //
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
+using Ict.Common.Exceptions;
 
 namespace Ict.Common.Verification
 {
@@ -697,9 +699,15 @@ namespace Ict.Common.Verification
         /// Checks whether there are any <see cref="TVerificationResult" />s  in the collection that denote a
         /// critical error.
         /// </summary>
-        /// <remarks>Does not check/count any <see cref="TVerificationResult" /> whose
-        /// <see cref="TVerificationResult.ResultSeverity" /> </remarks> is <see cref="TResultSeverity.Resv_Noncritical" />
-        /// or <see cref="TResultSeverity.Resv_Info" />.
+        /// <remarks>
+        /// Prefer using Method <see cref="TVerificationHelper.IsNullOrOnlyNonCritical" /> over the use of
+        /// this Method as using the latter takes care of a null check on the <see cref="TVerificationResultCollection" />
+        /// to guard against a <see cref="NullReferenceException" /> in case the
+        /// <see cref="TVerificationResultCollection" /> is null.
+        /// <p>This Method does not check/count any <see cref="TVerificationResult" /> instances whose
+        /// <see cref="TVerificationResult.ResultSeverity" /> is <see cref="TResultSeverity.Resv_Noncritical" />
+        /// or <see cref="TResultSeverity.Resv_Info" /></p>
+        /// </remarks> .
         public bool HasCriticalErrors
         {
             get
@@ -1456,11 +1464,20 @@ namespace Ict.Common.Verification
         /// Type checking events
         /// </summary>
         /// <returns>void</returns>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "This Method only verifies that the Type is correct and makes no use of the index Argument for that",
+             MessageId = "index")]
         private new void OnInsert(int index, object value)
         {
             VerifyType(value);
         }
 
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "This Method only verifies that the Type is correct and makes no use of the index Argument for that",
+             MessageId = "index")]
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "This Method only verifies that the Type is correct and makes no use of the oldvalue Argument for that",
+             MessageId = "oldvalue")]
         private new void OnSet(int index, object oldValue, object newValue)
         {
             VerifyType(newValue);
@@ -1755,6 +1772,40 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// Checks that a <see cref="TVerificationResultCollection" /> is either null or that it doesn't contain
+        /// any <see cref="TVerificationResult" /> items that are 'CriticalErrors'!
+        /// </summary>
+        /// <remarks>
+        /// Prefer using this Method over the use of the <see cref="TVerificationResultCollection.HasCriticalErrors" />
+        /// Method, as using the latter involves a null check on the <see cref="TVerificationResultCollection" />
+        /// to guard against a <see cref="NullReferenceException" /> in case the <see cref="TVerificationResultCollection" />
+        /// is null --- <see cref="IsNullOrOnlyNonCritical"/> takes care of that!
+        /// In the context of Unit Testing this Method can be used for 'Guard Asserts' to check that the
+        /// <see cref="TVerificationResultCollection" /> that is returned from server calls is null or
+        /// holds only non-critical <see cref="TVerificationResult" /> items (see also Method
+        /// 'EnsureNullOrOnlyNonCriticalVerificationResults' of the CommonNUnitFunctions Class for a convenient 'wrapper'!!!)
+        /// </remarks>
+        /// <param name="AVerificationResult"><see cref="TVerificationResultCollection" /> reference (can be null!).</param>
+        /// <returns>True if <paramref name="AVerificationResult" /> is null. If isn't null and it contains any <see cref="TVerificationResult" />
+        /// items that are CriticalErrors then this Method returns false, otherwise true.</returns>
+        public static bool IsNullOrOnlyNonCritical(TVerificationResultCollection AVerificationResult)
+        {
+            if (AVerificationResult == null)
+            {
+                return true;
+            }
+
+            if (AVerificationResult.HasCriticalErrors)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Creates a string that contains the data of all the <see cref="TVerificationResult" />s in the Collection.
         /// </summary>
         /// <returns>
@@ -1832,24 +1883,29 @@ namespace Ict.Common.Verification
     /// TVerificationResultCollection object, so that the user gets this message on the
     /// "normal" message box.
     /// </summary>
-    public class TVerificationException : Exception
+    public class EVerificationException : EOPAppException
     {
         /// <summary>
-        /// Constructor with inner exception
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public TVerificationException(Exception innerException, string message)
-            : base(message, innerException)
+        public EVerificationException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor without inner exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="message"></param>
-        public TVerificationException(string message)
-            : base(message)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EVerificationException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EVerificationException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
 

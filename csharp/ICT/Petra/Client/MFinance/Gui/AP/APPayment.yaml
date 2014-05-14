@@ -55,10 +55,10 @@ RootNode:
             Width: 80
             Enabled: false
         grpDetails:
-            Controls: [grdDetails, pnlDetails]
+            Controls: [grdDocuments, pnlDetails]
             Label: Invoices in this payment
             Dock: Fill
-        grdDetails:
+        grdDocuments:
             Dock: Fill
             DetailTable: true
             ActionFocusRow: FocusedRowChangedDetails
@@ -111,5 +111,6 @@ RootNode:
             ReadOnly: true
             Format: Decimal(2)
     Toolbar:
+        tbbRemove: {ActionClick=RemoveSelectedDocument }
         tbbMakePayment:
         tbbPrintReport:

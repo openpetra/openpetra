@@ -1,0 +1,32 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Stewardship Calculation
+    Namespace: Ict.Petra.Client.MFinance.Gui.ICH
+    FormType: dialog
+    Template: window
+    WindowWidth: 420
+    WindowHeight: 110
+    Events:
+        #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
+    Actions:
+        actRunCalculation: {ActionClick=StewardshipCalculation}
+    
+    Controls:
+        pnlDialogContent:
+            Controls: [pnlDialogContentTop]
+            Dock: Fill
+                
+        pnlDialogContentTop:
+            Dock: Top            
+            Controls:
+                Row0: [Empty1]
+                Row1: [cmbReportPeriod]
+                
+        cmbReportPeriod: {Label=Report Period, List=UserDefinedList}
+
+        Empty1: #{Label=None, Visible=false}
+        
+        btnOK:
+            Label: &Run Calculation
+            Action: actRunCalculation
+        

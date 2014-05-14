@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,8 +66,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
-            out Int32 AFirstStatementKey,
-            out TVerificationResultCollection AVerificationResult)
+            out Int32 AFirstStatementKey)
         {
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Processing new bank statements"),
@@ -81,21 +80,22 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             try
             {
-                SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
+                // Must not throw away the changes because we need the correct statement keys
+                AStatementAndTransactionsDS.DontThrowAwayAfterSubmitChanges = true;
+                BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS);
+
+                SubmissionResult = TSubmitChangesResult.scrOK;
 
                 AFirstStatementKey = -1;
 
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                        Catalog.GetString("starting to train"),
-                        1);
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("starting to train"),
+                    1);
 
-                    AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
+                AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
 
-                    // search for already posted gift batches, and do the matching for these imported statements
-                    TBankImportMatching.Train(AStatementAndTransactionsDS);
-                }
+                // search for already posted gift batches, and do the matching for these imported statements
+                TBankImportMatching.Train(AStatementAndTransactionsDS);
 
                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
@@ -161,10 +161,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 transactionRow.Delete();
             }
 
-            TVerificationResultCollection VerificationResult;
-            BankImportTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+            MainDS.ThrowAwayAfterSubmitChanges = true;
 
-            return !VerificationResult.HasCriticalErrors;
+            BankImportTDSAccess.SubmitChanges(MainDS);
+
+            return true;
         }
 
         private static bool FindDonorByAccountNumber(AEpMatchRow AMatchRow,
@@ -191,8 +192,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber)
         {
-            TVerificationResultCollection VerificationResult;
-
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             BankImportTDS ResultDataset = new BankImportTDS();
@@ -406,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 TempDataset.ThrowAwayAfterSubmitChanges = true;
                 // only store a_ep_transactions and a_ep_matches, but without additional typed fields (ie MatchAction)
-                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true), out VerificationResult);
+                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true));
             }
             catch (Exception e)
             {
@@ -462,9 +461,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool CommitMatches(BankImportTDS AMainDS)
         {
-            TVerificationResultCollection VerificationResult;
+            AMainDS.ThrowAwayAfterSubmitChanges = true;
 
-            return BankImportTDSAccess.SubmitChanges(AMainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
+            BankImportTDSAccess.SubmitChanges(AMainDS);
+
+            return true;
         }
 
         /// <summary>
@@ -472,27 +473,29 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// </summary>
         /// <returns>the gift batch number</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int32 CreateGiftBatch(BankImportTDS AMainDS,
+        public static Int32 CreateGiftBatch(
             Int32 ALedgerNumber,
             Int32 AStatementKey,
             Int32 AGiftBatchNumber,
             out TVerificationResultCollection AVerificationResult)
         {
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Creating gift batch"),
-                AMainDS.AEpTransaction.DefaultView.Count + 10);
+                MainDS.AEpTransaction.DefaultView.Count + 10);
 
             AVerificationResult = new TVerificationResultCollection();
 
-            AMainDS.AEpTransaction.DefaultView.RowFilter =
+            MainDS.AEpTransaction.DefaultView.RowFilter =
                 String.Format("{0}={1}",
                     AEpTransactionTable.GetStatementKeyDBName(),
                     AStatementKey);
-            AMainDS.AEpStatement.DefaultView.RowFilter =
+            MainDS.AEpStatement.DefaultView.RowFilter =
                 String.Format("{0}={1}",
                     AEpStatementTable.GetStatementKeyDBName(),
                     AStatementKey);
-            AEpStatementRow stmt = (AEpStatementRow)AMainDS.AEpStatement.DefaultView[0].Row;
+            AEpStatementRow stmt = (AEpStatementRow)MainDS.AEpStatement.DefaultView[0].Row;
 
             // TODO: optional: use the preselected gift batch, AGiftBatchNumber
 
@@ -512,18 +515,27 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Info));
             }
 
-            ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
-            AMotivationDetailAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
+            ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
-            AMainDS.AEpMatch.DefaultView.Sort =
+            MainDS.AEpMatch.DefaultView.Sort =
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
 
-            foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
+            if (MainDS.AEpTransaction.DefaultView.Count == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult(
+                        Catalog.GetString("Creating Gift Batch"),
+                        String.Format(Catalog.GetString("There are no transactions for statement #{0}."), AStatementKey),
+                        TResultSeverity.Resv_Info));
+                return -1;
+            }
+
+            foreach (DataRowView dv in MainDS.AEpTransaction.DefaultView)
             {
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
-                DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
+                DataRowView[] matches = MainDS.AEpMatch.DefaultView.FindRows(new object[] {
                         MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT,
                         transactionRow.MatchText
                     });
@@ -570,20 +582,21 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
+            giftbatchRow.BankAccountCode = stmt.BankAccountCode;
 
             decimal HashTotal = 0.0M;
 
-            AMainDS.AEpTransaction.DefaultView.Sort =
+            MainDS.AEpTransaction.DefaultView.Sort =
                 AEpTransactionTable.GetNumberOnPaperStatementDBName();
 
-            AMainDS.AEpMatch.DefaultView.RowFilter = String.Empty;
-            AMainDS.AEpMatch.DefaultView.Sort =
+            MainDS.AEpMatch.DefaultView.RowFilter = String.Empty;
+            MainDS.AEpMatch.DefaultView.Sort =
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
 
             int counter = 5;
 
-            foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
+            foreach (DataRowView dv in MainDS.AEpTransaction.DefaultView)
             {
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     Catalog.GetString("Preparing the gifts"),
@@ -591,7 +604,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
-                DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
+                DataRowView[] matches = MainDS.AEpMatch.DefaultView.FindRows(new object[] {
                         MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT,
                         transactionRow.MatchText
                     });
@@ -634,21 +647,30 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.RecipientKey = match.RecipientKey;
                         detail.RecipientLedgerNumber = match.RecipientLedgerNumber;
 
+                        AMotivationDetailRow motivation = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
+                            new object[] { ALedgerNumber, detail.MotivationGroupCode, detail.MotivationDetailCode });
+
+                        if (motivation == null)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    String.Format(Catalog.GetString("creating gift for match {0}"), transactionRow.Description),
+                                    String.Format(Catalog.GetString("Cannot find motivation group '{0}' and motivation detail '{1}'"),
+                                        detail.MotivationGroupCode, detail.MotivationDetailCode),
+                                    TResultSeverity.Resv_Critical));
+                        }
+
                         if (detail.CostCentreCode.Length == 0)
                         {
                             // try to retrieve the current costcentre for this recipient
                             if (detail.RecipientKey != 0)
                             {
-                                detail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(detail.RecipientKey);
+                                detail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(detail.RecipientKey);
 
                                 detail.CostCentreCode = TGiftTransactionWebConnector.IdentifyPartnerCostCentre(detail.LedgerNumber,
                                     detail.RecipientLedgerNumber);
                             }
                             else
                             {
-                                AMotivationDetailRow motivation = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                                    new object[] { ALedgerNumber, detail.MotivationGroupCode, detail.MotivationDetailCode });
-
                                 if (motivation != null)
                                 {
                                     detail.CostCentreCode = motivation.CostCentreCode;
@@ -657,7 +679,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         }
 
                         // check for active cost centre
-                        ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, detail.CostCentreCode });
+                        ACostCentreRow costcentre = (ACostCentreRow)MainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, detail.CostCentreCode });
 
                         if ((costcentre == null) || !costcentre.CostCentreActiveFlag)
                         {
@@ -676,7 +698,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 Catalog.GetString("Submit to database"),
                 counter++);
 
-            if (AVerificationResult.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
                 return -1;
             }

@@ -103,7 +103,6 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 }
 
                 return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(IAsynchronousExecutionProgress),
                     typeof(TAsynchronousExecutionProgressRemote),
                     FAsyncExecProgress);
             }
@@ -173,8 +172,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         private void SubmitChangesInternal()
         {
             TDBTransaction SubmitChangesTransaction;
-            TSubmitChangesResult SubmissionResult;
-            TVerificationResultCollection SingleVerificationResultCollection;
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
             MExtractTable ExtractDT;
             PSubscriptionTable SubscriptionTable;
 
@@ -261,44 +259,29 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                         FAsyncExecProgress.ProgressPercentage = MAX_PERCENTAGE_CHECKS;
 //                      TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: " + FAsyncExecProgress.ProgressInformation);
 
-                        if (!PSubscriptionAccess.SubmitChanges((PSubscriptionTable)FSubmissionDT, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                            FVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            TLogging.LogAtLevel(7, "TExtractsAddSubscriptionsUIConnectorSubmitChangesInternal returned not ok");
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
+                        PSubscriptionAccess.SubmitChanges((PSubscriptionTable)FSubmissionDT, SubmitChangesTransaction);
                     }
                     else
                     {
                         TLogging.LogAtLevel(
                             7,
                             "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: no Subscriptions were added to Partners because all the Partners in the Extract already had this Subscription.");
-                        SubmissionResult = TSubmitChangesResult.scrOK;
                     }
 
-                    if (SubmissionResult == TSubmitChangesResult.scrOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
                 catch (Exception Exp)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(
-                        7,
+
+                    TLogging.LogAtLevel(7,
                         "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Exception occured, Transaction ROLLED BACK. Exception: " +
                         Exp.ToString());
+
+                    FSubmitResult = TSubmitChangesResult.scrError;
                     FSubmitException = Exp;
                     FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
+
                     return;
                 }
             }

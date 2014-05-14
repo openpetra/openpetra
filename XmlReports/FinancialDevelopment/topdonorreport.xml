@@ -138,16 +138,16 @@
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							AND gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
-							AND gift.a_ledger_number_i ={param_ledger_number_i}
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND ( PUB_a_gift_batch.a_batch_status_c = "Posted" OR
-								  PUB_a_gift_batch.a_batch_status_c = "posted")
+							AND ( PUB_a_gift_batch.a_batch_status_c = 'Posted' OR
+								  PUB_a_gift_batch.a_batch_status_c = 'posted')
 						</value>
 					</queryDetail>
 					<queryDetail condition="not(eq({param_recipientkey}, 0))">
 						<value>
-							AND detail.p_recipient_key_n = {param_recipientkey}
+							AND detail.p_recipient_key_n = {{param_recipientkey}}
 						</value>
 					</queryDetail>
 					<queryDetail condition="not(eq({param_motivation_group}, %))">

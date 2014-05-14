@@ -33,6 +33,7 @@ using System.Runtime.Remoting.Lifetime;
 using System.Runtime.InteropServices;
 using GNU.Gettext;
 using SourceGrid;
+using Owf.Controls;
 
 using Ict.Common;
 using Ict.Common.Verification;
@@ -92,6 +93,9 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>todoComment</summary>
         public event TDataSavingStartHandler DataSavingStarted;
+
+        /// <summary>Fired when any control is changed</summary>
+        public event TValueChangedHandler ControlChanged;
 
         /// <summary>todoComment</summary>
         public event TDataSavedHandler DataSaved;
@@ -225,8 +229,8 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // If the control is used for dataentry then hookup the event
                 // for data changing
-                // This will call LocalControlValueChanged
-                // and ControlValueChanged (virtual method)
+                // This will call Local ControlValueChanged
+                // and Control ValueChanged (virtual method)
                 //
                 // The first group are the important controls, (actually used for data entry )
                 if (ctrl.GetType() == typeof(TextBox))
@@ -303,8 +307,9 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(TTrvTreeView))
                          || (ctrl.GetType() == typeof(TbtnCreated))
                          || (ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel))
+                         || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))
                          || ((ctrl.GetType() == typeof(System.Windows.Forms.RichTextBox))
-                         || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))))
+                         || (ctrl.GetType() == typeof(Owf.Controls.A1Panel))))
                 {
                     // nothing to do
                 }
@@ -400,87 +405,157 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Recursively clears the content of all the controls in the specified container without
+        /// Returns a reference to the control that has the focus on the specified container.  The method is recursive so looks in its own container controls.
+        /// </summary>
+        /// <param name="AContainerControl">The container control to search (often pnlDetails)</param>
+        /// <returns>The focused control or null if no control has the focus</returns>
+        public Control GetFocusedControl(Control AContainerControl)
+        {
+            foreach (Control c in AContainerControl.Controls)
+            {
+                if (c.Controls.Count > 0)
+                {
+                    Control c1 = GetFocusedControl(c);
+
+                    if (c1 != null)
+                    {
+                        return c1;
+                    }
+                }
+                else if (c.Focused)
+                {
+                    return c;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Clears the content of the specified control
+        /// </summary>
+        /// <param name="AControlToClear">The control whose content is to be cleared</param>
+        /// <returns>True if the control was a known control type and was cleared successfully.
+        /// If the control was a container control (such as a Panel), the method will return false.</returns>
+        public bool ClearControl(Control AControlToClear)
+        {
+            bool ReturnValue = false;
+
+            DisableDataChangedEvent();
+
+            try
+            {
+                if (AControlToClear.GetType() == typeof(TextBox))
+                {
+                    ((TextBox)AControlToClear).Clear();
+                    ReturnValue = true;
+                }
+                else if (AControlToClear.GetType() == typeof(TTxtMaskedTextBox))
+                {
+                    ((TTxtMaskedTextBox)AControlToClear).Clear();
+                    ReturnValue = true;
+                }
+                else if (AControlToClear.GetType() == typeof(ComboBox))
+                {
+                    ((ComboBox)AControlToClear).SelectedIndex = -1;
+                    ReturnValue = true;
+                }
+                else if (AControlToClear.GetType() == typeof(CheckBox))
+                {
+                    ((CheckBox)AControlToClear).Checked = false;
+                    ReturnValue = true;
+                }
+                else if (AControlToClear is NumericUpDown)
+                {
+                    ((NumericUpDown)AControlToClear).Value = ((NumericUpDown)AControlToClear).Minimum;
+                    ReturnValue = true;
+                }
+                else if ((AControlToClear.GetType() == typeof(TCmbAutoComplete))
+                         || (AControlToClear.GetType() == typeof(TCmbVersatile)))
+                {
+                    // NOTE from AlanP: This code looks odd, but it is the way to clear these boxes....
+                    // The first call to set the index to -1 actually sets it to 0 (if it isn't 0 already)
+                    // Then the second call sets it from 0 to -1
+                    // Then we can clear the text
+                    // This behaviour applies particularly on bound data sources.
+                    // Don't know if this is a Windows quirk or whether it also applies to Linux - but if it is just Windows, calling twice won't do any harm
+                    ((TCmbAutoComplete)AControlToClear).SelectedIndex = -1;
+                    ((TCmbAutoComplete)AControlToClear).SelectedIndex = -1;
+                    ((TCmbAutoComplete)AControlToClear).Text = String.Empty;
+                    ReturnValue = true;
+                }
+                else if (AControlToClear.GetType() == typeof(TCmbAutoPopulated))
+                {
+                    ((TCmbAutoPopulated)AControlToClear).cmbCombobox.SelectedIndex = -1;
+                    ((TCmbAutoPopulated)AControlToClear).cmbCombobox.SelectedIndex = -1;
+                    ((TCmbAutoPopulated)AControlToClear).cmbCombobox.Text = String.Empty;
+                    ReturnValue = true;
+                }
+                else if (AControlToClear.GetType() == typeof(TClbVersatile))
+                {
+                    ((TClbVersatile)AControlToClear).ClearSelected();
+                    ReturnValue = true;
+                }
+                else if (AControlToClear.GetType() == typeof(TtxtPetraDate))
+                {
+                    ((TtxtPetraDate)AControlToClear).Clear();
+                    ReturnValue = true;
+                }
+                else if (AControlToClear.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
+                {
+                    ((Ict.Common.Controls.TTxtNumericTextBox)AControlToClear).ClearBox();
+                    ReturnValue = true;
+                }
+                else if (AControlToClear.GetType() == typeof(Ict.Common.Controls.TTxtCurrencyTextBox))
+                {
+                    ((Ict.Common.Controls.TTxtCurrencyTextBox)AControlToClear).NumberValueDecimal = 0;
+                    ReturnValue = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogAtLevel(7,
+                    "Exception caught in TFrmPetraEditUtils.ClearControl(): " + AControlToClear.Name + "(" + AControlToClear.ToString() + "): " +
+                    ex.Message);
+            }
+
+            EnableDataChangedEvent();
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Recursively clears the content of all the controls in the specified container
         /// </summary>
         /// <param name="AParentControl">The container control whose controls are to be cleared (often this will be pnlDetails)</param>
         public void ClearControls(Control AParentControl)
         {
-            DisableDataChangedEvent();
-
             foreach (Control ctrl in AParentControl.Controls)
             {
-                try
+                if (ClearControl(ctrl))
                 {
-                    if (ctrl.GetType() == typeof(TextBox))
-                    {
-                        ((TextBox)ctrl).Clear();
-                    }
-                    else if (ctrl.GetType() == typeof(TTxtMaskedTextBox))
-                    {
-                        ((TTxtMaskedTextBox)ctrl).Clear();
-                    }
-                    else if (ctrl.GetType() == typeof(ComboBox))
-                    {
-                        ((ComboBox)ctrl).SelectedIndex = -1;
-                    }
-                    else if (ctrl.GetType() == typeof(CheckBox))
-                    {
-                        ((CheckBox)ctrl).Checked = false;
-                    }
-                    else if (ctrl is NumericUpDown)
-                    {
-                        ((NumericUpDown)ctrl).Value = ((NumericUpDown)ctrl).Minimum;
-                    }
-                    else if (ctrl.GetType() == typeof(TCmbAutoComplete))
-                    {
-                        ((TCmbAutoComplete)ctrl).SetSelectedString(String.Empty);
-                    }
-                    else if (ctrl.GetType() == typeof(TCmbVersatile))
-                    {
-                        ((TCmbVersatile)ctrl).SetSelectedString(String.Empty);
-                    }
-                    else if (ctrl.GetType() == typeof(TClbVersatile))
-                    {
-                        ((TClbVersatile)ctrl).ClearSelected();
-                    }
-                    else if (ctrl.GetType() == typeof(TtxtPetraDate))
-                    {
-                        ((TtxtPetraDate)ctrl).Clear();
-                    }
-                    else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
-                    {
-                        ((Ict.Common.Controls.TTxtNumericTextBox)ctrl).ClearBox();
-                    }
-                    else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtCurrencyTextBox))
-                    {
-                        ((Ict.Common.Controls.TTxtCurrencyTextBox)ctrl).NumberValueDecimal = 0;
-                    }
-                    else if (ctrl.Controls.Count > 0)
-                    {
-                        // Clear these controls as well
-                        ClearControls(ctrl);
-                    }
+                    continue;
                 }
-                catch (Exception ex)
+                else if (ctrl.Controls.Count > 0)
                 {
-                    TLogging.LogAtLevel(7,
-                        "Exception caught in TFrmPetraEditUtils.ClearControls(): " + ctrl.Name + "(" + ctrl.ToString() + "): " + ex.Message);
+                    // Clear these controls as well
+                    ClearControls(ctrl);
                 }
             }
-
-            EnableDataChangedEvent();
         }
 
         /** This is available for the child form to respond to by overriding
          */
-        protected void ControlValueChanged()
+        protected void ControlValueChanged(Control Actrl)
         {
-            // Virtual procedure, for overiding only
+            if (ControlChanged != null)
+            {
+                ControlChanged(Actrl);
+            }
         }
 
         /** This responds to the fact data has changed at this level
          */
-        public void LocalControlValueChanged()
+        public void LocalControlValueChanged(Control Actrl)
         {
             SetChangedFlag();
         }
@@ -503,11 +578,10 @@ namespace Ict.Petra.Client.CommonForms
             if ((this.SuppressChangeDetection == false)
                 && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string))
                     || !((string)ctrl.Tag).Contains(MCommonResourcestrings.StrCtrlSuppressChangeDetection))
-                && ((Control)sender).Visible
-                && ((Control)sender).Enabled)
+                && ctrl.Visible && ctrl.Enabled)
             {
-                LocalControlValueChanged();
-                ControlValueChanged();
+                LocalControlValueChanged(ctrl);
+                ControlValueChanged(ctrl);
 
                 // string ctrltype = sender.GetType().FullName;
                 //  TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);

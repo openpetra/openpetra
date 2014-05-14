@@ -17,6 +17,7 @@
           <Field name="VenueName" sqltable="p_venue" sqlfield="p_venue_name_c"/>
         </Table>
         <Table sqltable="pc_discount"/>
+        <Table sqltable="p_unit"/>
     </DataSet>
 
     <DataSet name="ConferenceApplicationTDS">

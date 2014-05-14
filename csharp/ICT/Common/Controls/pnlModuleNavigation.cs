@@ -77,6 +77,12 @@ namespace Ict.Common.Controls
         /// <summary>Fired when a Ledger got selected by the user (by clicking on it's LinkLabel).</summary>
         public event LedgerSelected LedgerChanged;
 
+        /// <summary>Delegate to update subsystem link status which needs to be updated by caller.</summary>
+        public delegate void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible);
+
+        /// <summary>Store Delegate to update subsystem link status</summary>
+        private static UpdateSubsystemLinkStatus FSubSystemLinkStatus;
+
         #endregion
 
         #region Properties
@@ -91,6 +97,30 @@ namespace Ict.Common.Controls
             set
             {
                 FCollapsibleNavigation.Text = value;
+            }
+        }
+
+        /// <summary>Task List Xml Node</summary>
+        public string TaskListNodeName
+        {
+            get
+            {
+                return FCollapsibleNavigation.TaskListNode.Name;
+            }
+        }
+
+        /// <summary>
+        /// Delegate for determinig a help topic for a given Form and Control.
+        /// </summary>
+        public static UpdateSubsystemLinkStatus SubSystemLinkStatus
+        {
+            get
+            {
+                return FSubSystemLinkStatus;
+            }
+            set
+            {
+                FSubSystemLinkStatus = value;
             }
         }
 
@@ -155,9 +185,9 @@ namespace Ict.Common.Controls
             FCollapsibleNavigation.Expanded += delegate(object sender, EventArgs e) {
                 OnExpanded();
             };
-            FCollapsibleNavigation.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+            FCollapsibleNavigation.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
             {
-                OnItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                OnItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
             };
 
             if (AMultiLedgerSite
@@ -356,24 +386,50 @@ namespace Ict.Common.Controls
             }
         }
 
-        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
         {
             if (ATaskListNode.Attributes["LedgerNumber"] == null)
             {
+                if ((AOtherData != null)
+                    && (FSubSystemLinkStatus != null)
+                    && (AOtherData.GetType() == typeof(TPnlCollapsible)))
+                {
+                    FSubSystemLinkStatus(FCurrentLedger, (TPnlCollapsible)AOtherData);
+                }
+
                 LinkClicked(AItemClicked, null);
             }
             else
             {
                 if (!FSuppressLedgerChangedEvent)
                 {
-                    OnLedgerChanged(Convert.ToInt32(ATaskListNode.Attributes["LedgerNumber"].Value), ATaskListNode.Attributes["LedgerName"].Value);
+                    int NewLedger = Convert.ToInt32(ATaskListNode.Attributes["LedgerNumber"].Value);
+
+                    if (FCurrentLedger != NewLedger)
+                    {
+                        OnLedgerChanged(NewLedger, ATaskListNode.Attributes["LedgerName"].Value);
+
+                        if ((AOtherData != null)
+                            && (FSubSystemLinkStatus != null)
+                            && (AOtherData.GetType() == typeof(TPnlCollapsible)))
+                        {
+                            FSubSystemLinkStatus(FCurrentLedger, (TPnlCollapsible)AOtherData);
+                        }
+
+                        // If ledger has been changed then possibly the functional menu item (panel above ledger panel) may be disabled.
+                        // Therefore reselect first active menu item to make sure that menu is initialized properly.
+                        if (FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0) != null)
+                        {
+                            FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0).SelectFirstTaskItem();
+                        }
+                    }
                 }
             }
 
             // Re-fire Event
             if (ItemActivation != null)
             {
-                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
             }
         }
 

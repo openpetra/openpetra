@@ -12,22 +12,24 @@ RootNode:
         pnlDetails:
             Controls: [grpArrivalInfo, grpDepartureInfo]
             Dock: Fill
-        grpArrivalInfo: {Label=Arrival Details, Stretch=horizontally}
+        grpArrivalInfo: {Label=Arrival Details}
             Controls: 
                 Row0: [cmbArrivalTravelMethod]
                 Row1: [cmbArrivalPoint]
                 Row2: [dtpArrival, txtArrivalTimeHour, txtArrivalTimeMinute]
                 Row3: [txtArrivalTransportCode, chkArrivalTransportNeeded]
                 Row4: [txtArrivalComment]
-        grpDepartureInfo: {Label=Departure Details, Stretch=horizontally}
+            Dock: Top
+        grpDepartureInfo: {Label=Departure Details}
             Controls: 
                 Row0: [cmbDepartureTravelMethod]
                 Row1: [cmbDeparturePoint]
                 Row2: [dtpDeparture, txtDepartureTimeHour, txtDepartureTimeMinute]
                 Row3: [txtDepartureTransportCode, chkDepartureTransportNeeded]
                 Row4: [txtDepartureComment]
+            Dock: Top
                 
-        cmbArrivalTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeToCongCode, ColSpan=3}
+        cmbArrivalTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeToCongCode, ColSpan=3, Validation=true}
         cmbArrivalPoint: {Label=Arrival Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.ArrivalPointCode, ColSpan=3}
         dtpArrival: {Label=Arrival Date, DataField=PmShortTermApplication.Arrival, Validation=true}
         txtArrivalTimeHour: {Label=Time, Width=25, Format=Integer, DataField=PmShortTermApplication.ArrivalHour, Validation=true}
@@ -39,7 +41,7 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
 
-        cmbDepartureTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeFromCongCode,ColSpan=3}
+        cmbDepartureTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeFromCongCode,ColSpan=3, Validation=true}
         cmbDeparturePoint: {Label=Departure Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.DeparturePointCode, ColSpan=3}
         dtpDeparture: {Label=Departure Date, DataField=PmShortTermApplication.Departure, Validation=Pair(dtpArrival)}
         txtDepartureTimeHour: {Label=Time, Width=25, Format=Integer, DataField=PmShortTermApplication.DepartureHour, Validation=true}

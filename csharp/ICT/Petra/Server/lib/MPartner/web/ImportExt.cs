@@ -56,6 +56,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private PartnerImportExportTDS FMainDS = null;
         private List <Int64>FRequiredOfficeKeys = new List <long>();
         private List <Int64>FRequiredOptionKeys = new List <long>();
+        private List <Int64>FExistingPartnerOptions = new List <long>();
+        private List <string>FExistingPartnerOldLinks = new List <string>();
         private List <Int64>FPartnerAlreadyLoaded = new List <long>();
         private TVerificationResultCollection FResultList = new TVerificationResultCollection();
         private string FLimitToOption = string.Empty;
@@ -375,18 +377,48 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// If I'm importing an unknown Language level, use 99 instead
         /// </summary>
         /// <param name="ALanguageLevel"></param>
+        /// <param name="APetraVersion"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
-        private int CheckLanguageLevel(int ALanguageLevel, TDBTransaction ATransaction)
+        private int CheckLanguageLevel(int ALanguageLevel, TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
-            if (PtLanguageLevelAccess.Exists(ALanguageLevel, ATransaction))
+            if (APetraVersion.FileMajorPart < 3)
             {
-                return ALanguageLevel;
+                // cover data conversion from 2.x to 3.x
+                if ((ALanguageLevel >= 0) && (ALanguageLevel <= 3))
+                {
+                    return 1;
+                }
+                else if ((ALanguageLevel >= 4) && (ALanguageLevel <= 7))
+                {
+                    return 2;
+                }
+                else if ((ALanguageLevel >= 8) && (ALanguageLevel <= 9))
+                {
+                    return 3;
+                }
+                else if (ALanguageLevel == 99)
+                {
+                    return ALanguageLevel;
+                }
+                else
+                {
+                    AddVerificationResult("Unknown Language Level " + ALanguageLevel);
+                    return 99;  // "Unknown" code
+                }
             }
             else
             {
-                AddVerificationResult("Unknown Language Level " + ALanguageLevel);
-                return 99;  // "Unknown" code
+                // this applies to all imports from OpenPetra versions
+                if (PtLanguageLevelAccess.Exists(ALanguageLevel, ATransaction))
+                {
+                    return ALanguageLevel;
+                }
+                else
+                {
+                    AddVerificationResult("Unknown Language Level " + ALanguageLevel);
+                    return 99;  // "Unknown" code
+                }
             }
         }
 
@@ -395,6 +427,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             FPartnerKey = ReadInt64();
             PPartnerRow PartnerRow = FMainDS.PPartner.NewRowTyped();
             PartnerRow.PartnerKey = FPartnerKey;
+
+            // initialize list of existing options (events) for import of a new partner
+            FExistingPartnerOptions.Clear();
+            FExistingPartnerOldLinks.Clear();
 
             if (!PPartnerAccess.Exists(FPartnerKey, ATransaction))
             {
@@ -440,9 +476,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // Check if this partner was already imported
             FIgnorePartner = FPartnerAlreadyLoaded.Contains(FPartnerKey);
 
-            if (!FIgnorePartner && !FMainDS.PPartner.Rows.Contains(FPartnerKey))
+            if (!FIgnorePartner)
             {
-                PPartnerAccess.AddOrModifyRecord(PartnerRow.PartnerKey, FMainDS.PPartner, PartnerRow, FDoNotOverwrite, ATransaction);
+                if (!FMainDS.PPartner.Rows.Contains(FPartnerKey))
+                {
+                    PPartnerAccess.AddOrModifyRecord(PartnerRow.PartnerKey, FMainDS.PPartner, PartnerRow, FDoNotOverwrite, ATransaction);
+                }
+
                 FPartnerAlreadyLoaded.Add(FPartnerKey);
             }
 
@@ -653,6 +693,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PPartnerLocationRow PartnerLocationRow = FMainDS.PPartnerLocation.NewRowTyped();
 
+            int? Extension;
+
             PartnerLocationRow.PartnerKey = FPartnerKey;
             PartnerLocationRow.SiteKey = LocationRow.SiteKey;
             PartnerLocationRow.LocationKey = LocationRow.LocationKey;
@@ -662,9 +704,32 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerLocationRow.SendMail = ReadBoolean();
             PartnerLocationRow.EmailAddress = ReadString();
             PartnerLocationRow.TelephoneNumber = ReadString();
-            PartnerLocationRow.Extension = ReadInt32();
+
+            // prevent problems in case Phone Extension is set to null
+            Extension = ReadNullableInt32();
+
+            if (Extension.HasValue)
+            {
+                PartnerLocationRow.Extension = Extension.Value;
+            }
+            else
+            {
+                PartnerLocationRow.Extension = 0;
+            }
+
             PartnerLocationRow.FaxNumber = ReadString();
-            PartnerLocationRow.FaxExtension = ReadInt32();
+
+            // prevent problems in case Fax Extension is set to null
+            Extension = ReadNullableInt32();
+
+            if (Extension.HasValue)
+            {
+                PartnerLocationRow.FaxExtension = Extension.Value;
+            }
+            else
+            {
+                PartnerLocationRow.FaxExtension = 0;
+            }
 
             if (!FIgnorePartner)
             {
@@ -720,8 +785,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ReadShortApplicationForm(TFileVersionInfo APetraVersion,
             PmGeneralApplicationRow AGeneralApplicationRow,
-            TDBTransaction ATransaction)
+            TDBTransaction ATransaction,
+            out Boolean ARecordAddedOrModified)
         {
+            ARecordAddedOrModified = false;
             PmShortTermApplicationRow ShortTermApplicationRow = FMainDS.PmShortTermApplication.NewRowTyped();
 
             ShortTermApplicationRow.PartnerKey = FPartnerKey;
@@ -778,7 +845,27 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (!FIgnoreApplication)
                 {
-                    AddUnitOption(Option);
+                    // only process application if no other application for this option (event) exists in data import file
+                    if (!FExistingPartnerOptions.Contains(Option))
+                    {
+                        if (PUnitAccess.Exists(Option, ATransaction))
+                        {
+                            AddUnitOption(Option);
+                            FExistingPartnerOptions.Add(Option);
+                        }
+                        else
+                        {
+                            // if unit does not exist in system then don't add this application
+                            AddVerificationResult("Unknown Event in Application: " + Option + ". Application will not be imported!");
+                            FIgnoreApplication = true;
+                        }
+                    }
+                    else
+                    {
+                        // if there is already an application for this option (event) then don't import this one
+                        AddVerificationResult("More than one Application for Event: " + Option + ". Only first application will be imported!");
+                        FIgnoreApplication = true;
+                    }
                 }
             }
 
@@ -902,20 +989,24 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ShortTermApplicationRow.StFieldCharged = ShortTermApplicationRow.RegistrationOffice;
             }
 
-            if (!FIgnoreApplication)
+            if (!FIgnoreApplication && !(ShortTermApplicationRow.IsStConfirmedOptionNull() || (ShortTermApplicationRow.StConfirmedOption == 0)))
             {
                 PmShortTermApplicationAccess.AddOrModifyRecord(
                     ShortTermApplicationRow.PartnerKey,
                     ShortTermApplicationRow.ApplicationKey,
                     ShortTermApplicationRow.RegistrationOffice,
                     FMainDS.PmShortTermApplication, ShortTermApplicationRow, FDoNotOverwrite, ATransaction);
+
+                ARecordAddedOrModified = true;
             }
         }
 
         private void ReadLongApplicationForm(TFileVersionInfo APetraVersion,
             PmGeneralApplicationRow AGeneralApplicationRow,
-            TDBTransaction ATransaction)
+            TDBTransaction ATransaction,
+            out Boolean ARecordAddedOrModified)
         {
+            ARecordAddedOrModified = false;
             PmYearProgramApplicationRow YearProgramApplicationRow = FMainDS.PmYearProgramApplication.NewRowTyped();
 
             YearProgramApplicationRow.PartnerKey = FPartnerKey;
@@ -961,6 +1052,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     YearProgramApplicationRow.ApplicationKey,
                     YearProgramApplicationRow.RegistrationOffice,
                     FMainDS.PmYearProgramApplication, YearProgramApplicationRow, FDoNotOverwrite, ATransaction);
+
+                ARecordAddedOrModified = true;
             }
         }
 
@@ -982,6 +1075,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ImportApplication(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
+            Boolean RecordAddedOrModified = false;
+
             FIgnoreApplication = FIgnorePartner;
 
             PtApplicationTypeRow ApplicationTypeRow = FMainDS.PtApplicationType.NewRowTyped();
@@ -997,6 +1092,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             GeneralApplicationRow.AppTypeName = ApplicationTypeRow.AppTypeName;
             GeneralApplicationRow.GenAppDate = ReadDate();
             GeneralApplicationRow.OldLink = ReadString();
+
+            if (FExistingPartnerOldLinks.Contains(GeneralApplicationRow.OldLink))
+            {
+                // if there is already an application with this "OldLink" then don't import this one
+                AddVerificationResult(
+                    "OldLink already exists for this Person: " + GeneralApplicationRow.OldLink + ". This application will not be imported!");
+                FIgnoreApplication = true;
+            }
+
             GeneralApplicationRow.GenApplicantType = ReadString();
             GeneralApplicationRow.GenApplicationHoldReason = ReadString();
             GeneralApplicationRow.GenApplicationOnHold = ReadBoolean();
@@ -1043,7 +1147,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (!PUnitAccess.Exists(GeneralApplicationRow.RegistrationOffice, ATransaction))
             {
-                AddVerificationResult(String.Format("Unknown Registration Office {0}.\n{1} substitued in Application form.",
+                AddVerificationResult(String.Format("Unknown Registration Office {0}.\n{1} substituted in Application form.",
                         GeneralApplicationRow.RegistrationOffice, DomainManager.GSiteKey));
                 GeneralApplicationRow.RegistrationOffice = DomainManager.GSiteKey;
 
@@ -1056,15 +1160,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
             {
-                ReadShortApplicationForm(APetraVersion, GeneralApplicationRow, ATransaction);
+                ReadShortApplicationForm(APetraVersion, GeneralApplicationRow, ATransaction, out RecordAddedOrModified);
             }
             else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_LONGFORM)
             {
-                ReadLongApplicationForm(APetraVersion, GeneralApplicationRow, ATransaction);
+                ReadLongApplicationForm(APetraVersion, GeneralApplicationRow, ATransaction, out RecordAddedOrModified);
             }
 
-            if (!FIgnoreApplication)
+            if (!FIgnoreApplication && RecordAddedOrModified)
             {
+                if (!FExistingPartnerOldLinks.Contains(GeneralApplicationRow.OldLink))
+                {
+                    FExistingPartnerOldLinks.Add(GeneralApplicationRow.OldLink);
+                }
+
                 PmGeneralApplicationAccess.AddOrModifyRecord(
                     GeneralApplicationRow.PartnerKey,
                     GeneralApplicationRow.ApplicationKey,
@@ -1072,19 +1181,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     FMainDS.PmGeneralApplication, GeneralApplicationRow, FDoNotOverwrite, ATransaction);
             }
 
-            string KeyWord = ReadString();
-
-            // needs to be kept in to support versions < 3.0.0
-            while (KeyWord == "APPL-FORM")
+            if (APetraVersion.FileMajorPart < 3)
             {
-                ReadApplicationForm(GeneralApplicationRow, ATransaction);
+                string KeyWord = ReadString();
 
-                KeyWord = ReadString();
-            }
+                // needs to be kept in to support versions < 3.0.0
+                while (KeyWord == "APPL-FORM")
+                {
+                    ReadApplicationForm(GeneralApplicationRow, ATransaction);
 
-            if (KeyWord == "END")
-            {
-                CheckForKeyword("FORMS");
+                    KeyWord = ReadString();
+                }
+
+                if (KeyWord == "END")
+                {
+                    CheckForKeyword("FORMS");
+                }
             }
         }
 
@@ -1177,11 +1289,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             PersonLanguageRow.YearsOfExperience = ReadInt32();
-            PersonLanguageRow.LanguageLevel = CheckLanguageLevel(ReadInt32(), ATransaction);
+            PersonLanguageRow.LanguageLevel = CheckLanguageLevel(ReadInt32(), APetraVersion, ATransaction);
             PersonLanguageRow.YearsOfExperienceAsOf = ReadNullableDate();
             PersonLanguageRow.Comment = ReadString();
 
-            if (!FIgnorePartner)
+            if (!FIgnorePartner && (PersonLanguageRow.LanguageCode != ""))
             {
                 PmPersonLanguageAccess.AddOrModifyRecord(PersonLanguageRow.PartnerKey,
                     PersonLanguageRow.LanguageCode,
@@ -1201,8 +1313,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PastExperienceRow.SiteKey = ReadInt64();
             PastExperienceRow.Key = ReadInt64();
             PastExperienceRow.PrevLocation = ReadString();
-            PastExperienceRow.StartDate = ReadDate();
-            PastExperienceRow.EndDate = ReadDate();
+            PastExperienceRow.StartDate = ReadNullableDate();
+            PastExperienceRow.EndDate = ReadNullableDate();
             PastExperienceRow.PrevWorkHere = ReadBoolean();
             PastExperienceRow.PrevWork = ReadBoolean();
             PastExperienceRow.OtherOrganisation = ReadString();
@@ -1234,7 +1346,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PassportDetailsRow.PassportNumber = ReadString();
 
-            if (APetraVersion.FileMinorPart > 2)
+            if (APetraVersion.Compare(new TFileVersionInfo("2.3.3")) >= 0)
             {
                 PassportDetailsRow.MainPassport = ReadBoolean();
             }
@@ -1743,6 +1855,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
+        private void ImportVision(TDBTransaction ATransaction)
+        {
+            // Table pm_person_vision dropped in OpenPetra as no longer needed
+
+            ReadString(); /* Vision Area */
+
+            ReadInt32(); /* Vision Level */
+            ReadString(); /* Vision Comment */
+        }
+
         private void ImportOptionalDetails(PPartnerRow APartnerRow, TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             string KeyWord = ReadString();
@@ -1865,6 +1987,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     ImportRoom(ATransaction);
                 }
+                else if (KeyWord == "VISION")
+                {
+                    ImportVision(ATransaction);
+                }
                 else
                 {
                     throw new Exception("Found unknown option " + KeyWord);
@@ -1947,7 +2073,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             AResultList = FResultList;
 
-            if (AResultList.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AResultList))
             {
                 return new PartnerImportExportTDS();
             }

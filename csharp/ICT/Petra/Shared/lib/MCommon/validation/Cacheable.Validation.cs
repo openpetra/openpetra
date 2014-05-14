@@ -84,7 +84,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
 
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
-                    VerificationResult = TNumericalChecks.IsPositiveInteger(ARow.InternatTelephoneCode,
+                    VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
                         ValidationControlsData.ValidationControlLabel,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
@@ -765,45 +765,6 @@ namespace Ict.Petra.Shared.MCommon.Validation
         }
 
         /// <summary>
-        /// Validates the MPersonnel Driver Status screen data.
-        /// </summary>
-        /// <param name="AContext">Context that describes where the data validation failed.</param>
-        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
-        /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
-        public static void ValidateDriverStatus(object AContext, PtDriverStatusRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
-        {
-            DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult = null;
-
-            // Don't validate deleted DataRows
-            if (ARow.RowState == DataRowState.Deleted)
-            {
-                return;
-            }
-
-            // 'AssignableDate' must not be empty if the flag is set
-            ValidationColumn = ARow.Table.Columns[PtDriverStatusTable.ColumnUnassignableDateId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-            {
-                if (ARow.UnassignableFlag)
-                {
-                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
-                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }
-        }
-
-        /// <summary>
         /// Validates the MPersonnel Positions screen data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
@@ -1017,9 +978,14 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     && (DocumentCategoryRow.IsUnassignableDateNull()
                         || (DocumentCategoryRow.UnassignableDate <= DateTime.Today)))
                 {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.DocCategory })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
+                    // if 'Document Category' is unassignable then check if the value has been changed or if it is a new record
+                    if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTypeTable.GetDocCategoryDBName()))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                    new string[] { ValidationControlsData.ValidationControlLabel, ARow.DocCategory })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection

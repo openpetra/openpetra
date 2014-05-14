@@ -56,6 +56,7 @@ namespace Ict.Common.Controls
             }
         }
 
+#if TODO
         /// the sub caption can be highlighted
         public string SubCaption
         {
@@ -87,6 +88,7 @@ namespace Ict.Common.Controls
                 return false;
             }
         }
+#endif
 
         /// <summary>
         /// Event when box collapses or expands
@@ -119,6 +121,7 @@ namespace Ict.Common.Controls
     /// </summary>
     public class CollapsibleEventArgs : EventArgs
     {
+#if TODO
         /// <summary>
         /// cancel the collapsing
         /// </summary>
@@ -146,5 +149,6 @@ namespace Ict.Common.Controls
                 return false;
             }
         }
+#endif
     }
 }

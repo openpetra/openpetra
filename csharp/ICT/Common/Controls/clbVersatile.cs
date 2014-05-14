@@ -139,7 +139,6 @@ namespace Ict.Common.Controls
             String ASortColumn,
             String ACheckedColumn,
             String AKeyColumn,
-            String ALabelColumn,
             bool AAllowNew,
             bool AAllowEdit,
             bool AAllowDelete)
@@ -147,8 +146,7 @@ namespace Ict.Common.Controls
             List <String>KeyColumns = new List <String>();
             KeyColumns.Add(AKeyColumn);
 
-            DataBindGrid(ATable, ASortColumn, ACheckedColumn, KeyColumns, ALabelColumn,
-                AAllowNew, AAllowEdit, AAllowDelete);
+            DataBindGrid(ATable, ASortColumn, ACheckedColumn, KeyColumns, AAllowNew, AAllowEdit, AAllowDelete);
         }
 
         /// <summary>
@@ -162,7 +160,6 @@ namespace Ict.Common.Controls
             String ASortColumn,
             String ACheckedColumn,
             List <String>AKeyColumns,
-            String ALabelColumn,
             bool AAllowNew,
             bool AAllowEdit,
             bool AAllowDelete)
@@ -178,6 +175,7 @@ namespace Ict.Common.Controls
 
             // DataBind the DataGrid
             DataSource = new DevAge.ComponentModel.BoundDataView(FDataView);
+            this.SelectRowWithoutFocus(1);
 
             // Hook event that allows popping up a question whether to check the CheckBox
             if (!DesignMode)
@@ -237,11 +235,18 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         /// <returns>void</returns>
-        public String GetCheckedStringList()
+        public String GetCheckedStringList(Boolean AddQuotes = false)
         {
             String ReturnValue;
+            Boolean RetEmpty = true;
 
             ReturnValue = "";
+
+            // The values in the string list might be in pairs, comma separated,
+            // eg. motivation group and detail.
+            // If this is the case, the AddQuotes option should be specified.
+
+            String OptionalQuote = AddQuotes ? "\"" : "";
 
             if (FDataView != null)
             {
@@ -251,14 +256,25 @@ namespace Ict.Common.Controls
                     {
                         if (Convert.ToBoolean(Row[FCheckedColumn]) == true)
                         {
-                            // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
-                            // eg. motivation group and detail
                             foreach (String KeyColumn in FKeyColumns)
                             {
-                                ReturnValue = StringHelper.AddCSV(ReturnValue, Row[KeyColumn].ToString());
-                            }
-                        }
-                    }
+                                if (!RetEmpty)
+                                {
+                                    ReturnValue += ",";
+                                }
+
+                                RetEmpty = false;
+
+                                ReturnValue += (OptionalQuote + Row[KeyColumn].ToString() + OptionalQuote);
+                                // This was changed from AddCsv because
+                            }                // I need it to consistently add quotes to all of the values in the list
+
+                        }                    // (Or no quotes would also be fine, but not some with and some without!)
+
+                    }                        // AddCsv Adds quotes if the string has leading zeroes,
+
+                    // so for example it adds quotes to Cost Code "0300" but not 3000.
+                    // Tim Ingham, Nov 2013, Jan 2014
                 }
             }
 

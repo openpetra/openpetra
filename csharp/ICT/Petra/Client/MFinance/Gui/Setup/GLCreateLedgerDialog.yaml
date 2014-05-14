@@ -1,0 +1,35 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Create Ledger
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
+    FormType: dialog
+    Template: window
+    WindowWidth: 600
+    WindowHeight: 500
+    Controls:
+        pnlDialogContent:
+            Controls: [grpGeneral, grpCurrencies, grpAccountingPeriods, grpSubsystems]
+
+        grpGeneral: {Label=General, Stretch=horizontally}
+            Controls: [nudLedgerNumber, txtLedgerName, cmbCountryCode]            
+        grpCurrencies: {Label=Currencies, Stretch=horizontally}
+            Controls: [cmbBaseCurrency, cmbIntlCurrency]            
+        grpAccountingPeriods: {Label=Accounting Periods, Stretch=horizontally}
+            Controls: [dtpCalendarStartDate, nudNumberOfPeriods, nudCurrentPeriod, nudNumberOfFwdPostingPeriods]
+        grpSubsystems: {Label=Subsystems, Stretch=horizontally}
+            Controls: [chkActivateGiftProcessing, txtStartingReceiptNumber, chkActivateAccountsPayable]
+
+        nudLedgerNumber: {OnChange=LedgerNumberChanged}
+        txtLedgerName: {Width=300}
+        cmbCountryCode: {List=CountryList}
+        cmbBaseCurrency: {List=CurrencyCodeList}
+        cmbIntlCurrency: {List=CurrencyCodeList}
+        dtpCalendarStartDate: {Label=First Day of the Financial Year}
+        nudNumberOfPeriods:
+        nudCurrentPeriod:
+        nudNumberOfFwdPostingPeriods:
+        chkActivateGiftProcessing: {Label=Activate Gift Processing Subsystem, OnChange=ActivateGiftProcessing_Changed}
+        txtStartingReceiptNumber: {Width=60, Format=Integer}
+        chkActivateAccountsPayable: {Label=Activate Accounts Payable Subsystem}
+        btnOK: {Label="C&reate Ledger"}

@@ -261,6 +261,129 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         }
 
         /// <summary>
+        /// Procedure to execute a Find query. Although the full
+        /// query results are retrieved from the DB and stored internally in an object,
+        /// data will be returned in 'pages' of data, each page holding a defined number
+        /// of records.
+        ///
+        /// </summary>
+        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
+        /// <returns>void</returns>
+        public void PerformSearchByBankDetails(DataTable ACriteriaData)
+        {
+            String CustomWhereCriteria;
+            Hashtable ColumnNameMapping;
+
+            OdbcParameter[] ParametersArray;
+            String FieldList;
+            String FromClause;
+            String WhereClause;
+            System.Text.StringBuilder sb;
+            TLogging.LogAtLevel(7, "TPartnerFind.PerformSearchByBankDetails called.");
+
+            FAsyncExecProgress = new TAsynchronousExecutionProgress();
+            FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
+
+            /* Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
+             * can update execution status */
+            FPagedDataSetObject.AsyncExecProgress = FAsyncExecProgress;
+
+            // Register Event Handler for the StopAsyncronousExecution event
+            FAsyncExecProgress.StopAsyncronousExecution += new System.EventHandler(this.StopSearch);
+
+            // Build WHERE criteria string based on AFindCriteria
+            CustomWhereCriteria = BuildCustomWhereCriteriaForBankDetails(ACriteriaData, out ParametersArray);
+
+            //
+            // Set up find parameters
+            //
+            ColumnNameMapping = new Hashtable();
+
+            // Create Field List
+            sb = new System.Text.StringBuilder();
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.p_partner_class_c", Environment.NewLine);
+
+            // short
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.p_partner_short_name_c", Environment.NewLine);
+
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.p_partner_key_n", Environment.NewLine);
+
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.p_status_code_c", Environment.NewLine);
+
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.p_acquisition_code_c", Environment.NewLine);
+
+            // search by bank details
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_banking_details_key_i", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_account_name_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_bank_account_number_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_iban_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_expiry_date_d", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_comment_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_bank.p_bic_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_bank.p_partner_key_n", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_bank.p_branch_name_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_bank.p_branch_code_c", Environment.NewLine);
+
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.s_date_created_d", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_partner.s_created_by_c", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "PUB.p_partner.s_modification_id_t", Environment.NewLine);
+
+            // short
+            FieldList = sb.ToString();
+
+            // Create FROM From Clause
+            sb = new System.Text.StringBuilder();
+            System.Text.StringBuilder sbWhereClause = new System.Text.StringBuilder();
+
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_bank", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "PUB.p_partner_banking_details", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_partner", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "ON PUB.p_partner.p_partner_key_n = PUB.p_partner_banking_details.p_partner_key_n", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_person", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "ON PUB.p_person.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "LEFT OUTER JOIN PUB.p_family", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "ON PUB.p_family.p_partner_key_n = PUB.p_partner.p_partner_key_n", Environment.NewLine);
+            sbWhereClause.AppendFormat("{0}{1}",
+                "PUB.p_banking_details.p_banking_details_key_i = PUB.p_partner_banking_details.p_banking_details_key_i",
+                Environment.NewLine);
+            sbWhereClause.AppendFormat("{0}{1}", "AND PUB.p_bank.p_partner_key_n = PUB.p_banking_details.p_bank_key_n", Environment.NewLine);
+
+            FromClause = sb.ToString();
+            WhereClause = CustomWhereCriteria;
+
+            if (WhereClause.StartsWith(" AND") == true)
+            {
+                WhereClause = WhereClause.Substring(4);
+            }
+
+            if (sbWhereClause.ToString().Length > 0)
+            {
+                WhereClause += " AND " + sbWhereClause.ToString();
+            }
+
+            FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(FieldList,
+                FromClause,
+                WhereClause,
+                "PUB.p_partner.p_partner_short_name_c, PUB.p_partner.p_partner_class_c",
+                ColumnNameMapping,
+                ParametersArray);
+
+            //
+            // Start the Find Thread
+            //
+            try
+            {
+                FFindThread = new Thread(new ThreadStart(FPagedDataSetObject.ExecuteQuery));
+                FFindThread.Start();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Returns the specified find results page.
         ///
         /// @comment Pages can be requested in any order!
@@ -289,7 +412,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 TPPartnerAddressAggregate.ApplySecurity(ref ReturnValue);
             }
 
-            return (PartnerFindTDSSearchResultTable)ReturnValue;
+            return ReturnValue;
         }
 
         /// <summary>
@@ -329,7 +452,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             if (CriteriaRow["PersonalName"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_first_name_c'
-                // Search for family or person?
+                // Search for family or person or both?
                 if (CriteriaRow["PartnerClass"].ToString() == "PERSON")
                 {
                     new TDynamicSearchHelper(PPersonTable.TableId,
@@ -341,6 +464,27 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     new TDynamicSearchHelper(PFamilyTable.TableId,
                         PFamilyTable.ColumnFirstNameId, CriteriaRow, "PersonalName", "PersonalNameMatch",
                         ref CustomWhereCriteria, ref InternalParameters);
+                }
+                else if (CriteriaRow["PartnerClass"].ToString() == "*")
+                {
+                    // search for first name in both family and person
+                    String Criteria = " AND (";
+                    String SubCriteria = "";
+
+                    new TDynamicSearchHelper(PPersonTable.TableId,
+                        PPersonTable.ColumnFirstNameId, CriteriaRow, "PersonalName", "PersonalNameMatch",
+                        ref SubCriteria, ref InternalParameters);
+
+                    Criteria += SubCriteria.Remove(0, 4) + " OR ";
+                    SubCriteria = "";
+
+                    new TDynamicSearchHelper(PFamilyTable.TableId,
+                        PFamilyTable.ColumnFirstNameId, CriteriaRow, "PersonalName", "PersonalNameMatch",
+                        ref SubCriteria, ref InternalParameters);
+
+                    Criteria += SubCriteria.Remove(0, 4) + ")";
+
+                    CustomWhereCriteria += Criteria;
                 }
             }
 
@@ -362,13 +506,36 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
             if (CriteriaRow["PartnerClass"].ToString() != "*")
             {
-                // Searched DB Field: 'p_partner_class_c': done manually!
-                CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ?", CustomWhereCriteria,
-                    PPartnerTable.GetTableDBName(),
-                    PPartnerTable.GetPartnerClassDBName());
-                OdbcParameter miParam = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerClassId);
-                miParam.Value = (object)CriteriaRow["PartnerClass"];
-                InternalParameters.Add(miParam);
+                // Split String into String Array is Restricted Partner Classes are being used
+                string[] Classes = CriteriaRow["PartnerClass"].ToString().Split(new Char[] { (',') });
+
+                String Criteria = null;
+
+                foreach (string Class in Classes)
+                {
+                    if (Class != "*")
+                    {
+                        if (Criteria == null)
+                        {
+                            Criteria = " AND (";
+                        }
+                        else
+                        {
+                            Criteria += " OR ";
+                        }
+
+                        // Searched DB Field: 'p_partner_class_c': done manually!
+                        Criteria = String.Format("{0} PUB.{1}.{2} = ?", Criteria,
+                            PPartnerTable.GetTableDBName(),
+                            PPartnerTable.GetPartnerClassDBName());
+                        OdbcParameter miParam = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerClassId);
+                        miParam.Value = (object)Class;
+
+                        InternalParameters.Add(miParam);
+                    }
+                }
+
+                CustomWhereCriteria += Criteria + ")";
             }
 
             if (CriteriaRow["Address1"].ToString().Length > 0)
@@ -430,6 +597,15 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 OdbcParameter miParam = new OdbcParameter("", OdbcType.VarChar, 8);
                 miParam.Value = (object)(CriteriaRow["Country"].ToString().ToUpper());
                 InternalParameters.Add(miParam);
+            }
+
+            // Searched DB Field: 'p_account_name_c' (AccountName): done manually
+            if (CriteriaRow["AccountName"].ToString().Length > 0)
+            {
+                // Searched DB Field: 'p_partner_short_name_c'
+                new TDynamicSearchHelper(PBankingDetailsTable.TableId,
+                    PBankingDetailsTable.ColumnAccountNameId, CriteriaRow, "AccountName", "AccountNameMatch",
+                    ref CustomWhereCriteria, ref InternalParameters);
             }
 
             // Searched DB Fields: 'p_telephone_number_c' and 'p_alternate_telephone_c': done manually
@@ -634,6 +810,195 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         }
 
         /// <summary>
+        /// Used internally to build a SQL WHERE criteria from the AFindCriteria HashTable.
+        ///
+        /// </summary>
+        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
+        /// <param name="AParametersArray">An array holding 1..n instantiated OdbcParameters
+        /// (including parameter Value)</param>
+        /// <returns>SQL WHERE criteria
+        /// </returns>
+        private String BuildCustomWhereCriteriaForBankDetails(DataTable ACriteriaData, out OdbcParameter[] AParametersArray)
+        {
+            String CustomWhereCriteria = "";
+            DataTable CriteriaDataTable;
+            DataRow CriteriaRow;
+            ArrayList InternalParameters;
+
+            CriteriaDataTable = ACriteriaData;
+            CriteriaRow = CriteriaDataTable.Rows[0];
+            InternalParameters = new ArrayList();
+
+            if (CriteriaRow["PartnerName"].ToString().Length > 0)
+            {
+                // Searched DB Field: 'p_partner_short_name_c'
+                new TDynamicSearchHelper(PPartnerTable.TableId,
+                    PPartnerTable.ColumnPartnerShortNameId, CriteriaRow, "PartnerName", "PartnerNameMatch",
+                    ref CustomWhereCriteria, ref InternalParameters);
+            }
+
+            if (CriteriaRow["PartnerClass"].ToString() != "*")
+            {
+                // Split String into String Array is Restricted Partner Classes are being used
+                string[] Classes = CriteriaRow["PartnerClass"].ToString().Split(new Char[] { (',') });
+
+                String Criteria = null;
+
+                foreach (string Class in Classes)
+                {
+                    if (Class != "*")
+                    {
+                        if (Criteria == null)
+                        {
+                            Criteria = " AND (";
+                        }
+                        else
+                        {
+                            Criteria += " OR ";
+                        }
+
+                        // Searched DB Field: 'p_partner_class_c': done manually!
+                        Criteria = String.Format("{0} PUB.{1}.{2} = ?", Criteria,
+                            PPartnerTable.GetTableDBName(),
+                            PPartnerTable.GetPartnerClassDBName());
+                        OdbcParameter miParam = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerClassId);
+                        miParam.Value = (object)Class;
+
+                        InternalParameters.Add(miParam);
+                    }
+                }
+
+                CustomWhereCriteria += Criteria + ")";
+            }
+
+            // Searched DB Field: 'p_bank_account_number_c'
+            if (CriteriaRow["AccountNumber"].ToString().Length > 0)
+            {
+                new TDynamicSearchHelper(PBankingDetailsTable.TableId,
+                    PBankingDetailsTable.ColumnBankAccountNumberId, CriteriaRow, "AccountNumber", "AccountNumberMatch",
+                    ref CustomWhereCriteria,
+                    ref InternalParameters);
+            }
+
+            // Searched DB Field: 'p_account_name_c'
+            if (CriteriaRow["AccountName"].ToString().Length > 0)
+            {
+                new TDynamicSearchHelper(PBankingDetailsTable.TableId,
+                    PBankingDetailsTable.ColumnAccountNameId, CriteriaRow, "AccountName", "AccountNameMatch", ref CustomWhereCriteria,
+                    ref InternalParameters);
+            }
+
+            // Searched DB Field: 'p_account_name_c'
+            if (CriteriaRow["Iban"].ToString().Length > 0)
+            {
+                new TDynamicSearchHelper(PBankingDetailsTable.TableId,
+                    PBankingDetailsTable.ColumnIbanId, CriteriaRow, "Iban", "IbanMatch", ref CustomWhereCriteria,
+                    ref InternalParameters);
+            }
+
+            // Searched DB Field: 'p_account_name_c'
+            if (CriteriaRow["Bic"].ToString().Length > 0)
+            {
+                new TDynamicSearchHelper(PBankTable.TableId,
+                    PBankTable.ColumnBicId, CriteriaRow, "Bic", "BicMatch", ref CustomWhereCriteria,
+                    ref InternalParameters);
+            }
+
+            // Searched DB Field: 'p_account_name_c'
+            if (Convert.ToInt64(CriteriaRow["BankKey"]) > 0)
+            {
+                CustomWhereCriteria = String.Format("{0} AND {1} = ?", CustomWhereCriteria,
+                    PBankTable.GetTableDBName() + "." + PBankTable.GetPartnerKeyDBName());                                                                                         // CustomWhereCriteria + ' AND p_partner_key_n = ?';
+                OdbcParameter miParam = new OdbcParameter("", OdbcType.BigInt, 10);
+                miParam.Value = (object)(CriteriaRow["BankKey"]);
+                InternalParameters.Add(miParam);
+            }
+
+            if (((Boolean)(CriteriaRow["WorkerFamOnly"]) == true)
+                && (CriteriaRow["PartnerClass"].ToString() == "FAMILY"))
+            {
+                // A custom subquery seems to only speedy way of doing this!
+                CustomWhereCriteria = String.Format(
+                    "{0} AND EXISTS (select * FROM PUB.p_partner_type WHERE (PUB.p_partner_type.p_type_code_c LIKE 'WORKER%' OR PUB.p_partner_type.p_type_code_c LIKE 'EX-WORKER%') AND PUB.p_partner.p_partner_key_n = PUB.p_partner_type.p_partner_key_n)",
+                    CustomWhereCriteria);
+            }
+
+            #region Partner Status
+
+            if ((String)(CriteriaRow["PartnerStatus"]) == "ACTIVE")
+            {
+                // Searched DB Field: 'p_status_code_c'
+
+                // This will automatically exclude other peoples' PRIVATE Partners!
+                CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ?", CustomWhereCriteria,  // CustomWhereCriteria + ' AND p_status_code_c = ?';
+                    PPartnerTable.GetTableDBName(),
+                    PPartnerTable.GetStatusCodeDBName());
+
+                OdbcParameter miParam = new OdbcParameter("", OdbcType.VarChar, 16);
+                miParam.Value = "ACTIVE";
+                InternalParameters.Add(miParam);
+            }
+
+            if ((String)(CriteriaRow["PartnerStatus"]) == "PRIVATE")
+            {
+                // Searched DB Fields: 'p_status_code_c', 'p_user_id_c'
+                CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ? AND PUB.{3}.{4} = ?", CustomWhereCriteria,  // CustomWhereCriteria + ' AND p_status_code_c = ?';
+                    PPartnerTable.GetTableDBName(),
+                    PPartnerTable.GetStatusCodeDBName(),
+                    PPartnerTable.GetTableDBName(),
+                    PPartnerTable.GetUserIdDBName());
+
+
+                OdbcParameter miParam = new OdbcParameter("", OdbcType.VarChar, 16);
+                miParam.Value = "PRIVATE";
+                InternalParameters.Add(miParam);
+
+                // user must be current user
+                miParam = new OdbcParameter("", OdbcType.VarChar, 20);
+                miParam.Value = UserInfo.GUserInfo.UserID;
+                InternalParameters.Add(miParam);
+            }
+
+            if ((String)(CriteriaRow["PartnerStatus"]) == "ALL")
+            {
+                // Searched DB Fields: 'p_status_code_c', 'p_user_id_c'
+
+                // This must show all partners PLUS the users *own* PRIVATE partners
+                CustomWhereCriteria = String.Format("{0} AND ((PUB.{1}.{2} = ? AND PUB.{3}.{4} = ? ) OR PUB.{1}.{2} <> ? )",
+                    CustomWhereCriteria,
+                    PPartnerTable.GetTableDBName(),
+                    PPartnerTable.GetStatusCodeDBName(),
+                    PPartnerTable.GetTableDBName(),
+                    PPartnerTable.GetUserIdDBName());
+
+                OdbcParameter miParam = new OdbcParameter("", OdbcType.VarChar, 16);
+                miParam.Value = "PRIVATE";
+                InternalParameters.Add(miParam);
+
+                // user must be current user
+                miParam = new OdbcParameter("", OdbcType.VarChar, 20);
+                miParam.Value = UserInfo.GUserInfo.UserID;
+                InternalParameters.Add(miParam);
+
+                miParam = new OdbcParameter("", OdbcType.VarChar, 16);
+                miParam.Value = "PRIVATE";
+                InternalParameters.Add(miParam);
+            }
+
+            #endregion
+
+//           TLogging.LogAtLevel(7, "CustomWhereCriteria: " + CustomWhereCriteria);
+
+            /* Convert ArrayList to a array of ODBCParameters
+             * seem to need to declare a type first
+             */
+            AParametersArray = ((OdbcParameter[])(InternalParameters.ToArray(typeof(OdbcParameter))));
+            InternalParameters = null;             // ensure this is GC'd
+
+            return CustomWhereCriteria;
+        }
+
+        /// <summary>
         /// Stops the query execution.
         ///
         /// Is intended to be called as an Event from FAsyncExecProgress.Cancel.
@@ -676,19 +1041,16 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         /// <summary>
         /// Adds all Partners that were last found to an Extract.
         /// </summary>
+        /// <param name="AExtractName">Name of the Extract to add the Partners to.</param>
+        /// <param name="AExtractDescription">Description of the Extract to add the Partners to.</param>
         /// <param name="AExtractID">ExtractID of the Extract to add the Partners to.</param>
         /// <param name="AVerificationResult">Contains DB call exceptions, if there are any.</param>
         /// <returns>The number of Partners that were added to the Extract, or -1
         /// if DB call exeptions occured.</returns>
-        public Int32 AddAllFoundPartnersToExtract(int AExtractID,
+        public Int32 AddAllFoundPartnersToExtract(string AExtractName, string AExtractDescription, int AExtractID,
             out TVerificationResultCollection AVerificationResult)
         {
             DataTable FullFindResultDT;
-            DataView SortedFindResultDV;
-            ArrayList DistinctPartners;
-            int PartnerKeyColumnIndex;
-            Int64 CurrentPartnerKey = -1;
-            Int64 LastPartnerKey = -2;
             int AddedPartners = 0;
             bool NewTransaction;
 
@@ -698,35 +1060,34 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             // Request all found Partners from FPagedDataSetObject
             FullFindResultDT = FPagedDataSetObject.GetAllData();
 
-            PartnerKeyColumnIndex = FullFindResultDT.Columns.IndexOf(
-                PPartnerTable.GetPartnerKeyDBName());
+            // Create a new table containing only the required data.
+            // (Site Key and Location Key must be in columns 2 and 3 respectively for some reason.)
+
+            DataTable PartnerKeysTable = new DataTable();
+            PartnerKeysTable.Columns.Add("index", Type.GetType("System.Int32"));
+            PartnerKeysTable.Columns.Add("p_partner_key_n", Type.GetType("System.Int64"));
+            PartnerKeysTable.Columns.Add("p_site_key_n", Type.GetType("System.Int64"));
+            PartnerKeysTable.Columns.Add("p_location_key_i", Type.GetType("System.Int64"));
+
+            int i = 0;
+
+            foreach (DataRow Row in FullFindResultDT.Rows)
+            {
+                DataRow NewRow = PartnerKeysTable.NewRow();
+                NewRow[0] = i;
+                NewRow[1] = Row["p_partner_key_n"];
+                NewRow[2] = Row["p_site_key_n"];
+                NewRow[3] = Row["p_location_key_i"];
+                PartnerKeysTable.Rows.Add(NewRow);
+
+                i++;
+            }
+
+            PartnerKeysTable.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName() + " ASC";
 
             if (FullFindResultDT.Rows.Count > 0)
             {
-                /*
-                 * Build a list of distinct PartnerKeys
-                 */
-                SortedFindResultDV = new DataView(FullFindResultDT,
-                    "", PPartnerTable.GetPartnerKeyDBName() + " ASC",
-                    DataViewRowState.CurrentRows);
-
-                DistinctPartners = new ArrayList();
-                TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: building distinct list of Partners");
-
-                for (int DistinctPartnerCounter = 0; DistinctPartnerCounter < SortedFindResultDV.Count;
-                     DistinctPartnerCounter++)
-                {
-                    CurrentPartnerKey = Convert.ToInt64(SortedFindResultDV[DistinctPartnerCounter].Row[PartnerKeyColumnIndex]);
-
-                    if (CurrentPartnerKey != LastPartnerKey)
-                    {
-                        DistinctPartners.Add(CurrentPartnerKey);
-                    }
-
-                    LastPartnerKey = CurrentPartnerKey;
-                }
-
-                TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
+//              TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
 
                 /*
                  * Add all Partners to the desired Extract
@@ -738,33 +1099,25 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 try
                 {
-                    for (int ExtractAddCounter = 0; ExtractAddCounter < DistinctPartners.Count;
-                         ExtractAddCounter++)
-                    {
-                        if (TExtractsHandling.AddPartnerToExtract((Int64)DistinctPartners[ExtractAddCounter],
-                                AExtractID, out AVerificationResult))
-                        {
-                            AddedPartners++;
-                        }
-                        else
-                        {
-                            // Partner could not get added to the Extract
-//                          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Partner with PartnerKey " +
-//                              ((Int64)DistinctPartners[ExtractAddCounter]).ToString() + " did not get added to Extract with ExtractID " + AExtractID.ToString() + ".");
-                        }
-                    }
+                    TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                        AExtractName,
+                        AExtractDescription,
+                        out AExtractID,
+                        PartnerKeysTable,
+                        1,
+                        true,
+                        true);
 
 //                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");
 
-                    if (!TExtractsHandling.UpdateExtractKeyCount(AExtractID, AddedPartners, out AVerificationResult))
-                    {
-                        AddedPartners = -1;
-                    }
+                    AddedPartners = TExtractsHandling.GetExtractKeyCount(AExtractID);
 
                     return AddedPartners;
                 }
-                catch (Exception)
+                catch (Exception Exc)
                 {
+                    TLogging.Log("An Exception occured while adding all found Partners to an Extract:" + Environment.NewLine + Exc.ToString());
+
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
@@ -795,6 +1148,27 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             else
             {
                 return 0;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a search result contains a given partner
+        /// </summary>
+        /// <param name="APartnerKey">Partner key of partner</param>
+        /// <returns>True if partner is included, false if not.</returns>
+        public bool CheckIfResultsContainPartnerKey(long APartnerKey)
+        {
+            DataTable Table = FPagedDataSetObject.GetAllData();
+
+            DataRow[] FoundRows = Table.Select(PPartnerTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString());
+
+            if (FoundRows.Length > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }

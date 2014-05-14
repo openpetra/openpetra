@@ -108,11 +108,18 @@ namespace Ict.Petra.Client.MPartner
         {
             get
             {
-                DataRowView[] TheDataRowViewArray = FDataGrid.SelectedDataRowsAsDataRowView;
-
-                if (TheDataRowViewArray.Length > 0)
+                if (FDataGrid != null)
                 {
-                    return TheDataRowViewArray[0].Row;
+                    DataRowView[] TheDataRowViewArray = FDataGrid.SelectedDataRowsAsDataRowView;
+
+                    if (TheDataRowViewArray.Length > 0)
+                    {
+                        return TheDataRowViewArray[0].Row;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {
@@ -170,10 +177,6 @@ namespace Ict.Petra.Client.MPartner
  *              }
  *          };
  */
-
-
-            // First get rid of columns of previous searches...
-            FDataGrid.Columns.Clear();
             LocalisedStrings.GetLocStrCounty(out LocalisedCountyLabel, out dummy);
 
             // done this way in case it changes
@@ -182,6 +185,7 @@ namespace Ict.Petra.Client.MPartner
             if (ADetailedResults)
             {
                 FDataGrid.AddTextColumn("Class", ASourceTable.Columns["p_partner_class_c"], PARTNERCLASS_COLUMNWIDTH);
+                FDataGrid.AddTextColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
                 FDataGrid.AddTextColumn("Partner Name", ASourceTable.Columns["p_partner_short_name_c"]);
 
                 if (AVisibleFields.Contains("PreviousName"))
@@ -210,7 +214,6 @@ namespace Ict.Petra.Client.MPartner
                 }
 
                 FDataGrid.AddTextColumn("Country", ASourceTable.Columns["p_country_code_c"]);
-                FDataGrid.AddTextColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
 
                 if (ASourceTable.Columns.Contains("p_family_key_n"))
                 {
@@ -264,6 +267,37 @@ namespace Ict.Petra.Client.MPartner
  *                              col.Conditions.Add(ConditionNonActive);
  *                      }
  */
+        }
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="ASourceTable"></param>
+        /// <param name="ASearchForActivePartners"></param>
+        /// <param name="AVisibleFields"></param>
+        public void CreateBankDetailsColumns(DataTable ASourceTable, Boolean ASearchForActivePartners, ArrayList AVisibleFields)
+        {
+            const int PARTNERCLASS_COLUMNWIDTH = 65;
+
+            String dummy;
+            String LocalisedCountyLabel;
+
+            LocalisedStrings.GetLocStrCounty(out LocalisedCountyLabel, out dummy);
+
+            // done this way in case it changes
+            LocalisedCountyLabel = LocalisedCountyLabel.Replace(":", "").Replace("&", "");
+
+            FDataGrid.AddTextColumn("Class", ASourceTable.Columns["p_partner_class_c"], PARTNERCLASS_COLUMNWIDTH);
+            FDataGrid.AddTextColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
+            FDataGrid.AddTextColumn("Partner Name", ASourceTable.Columns["p_partner_short_name_c"]);
+            FDataGrid.AddTextColumn("Account Number", ASourceTable.Columns["p_bank_account_number_c"]);
+            FDataGrid.AddTextColumn("Account Name", ASourceTable.Columns["p_account_name_c"]);
+            FDataGrid.AddTextColumn("Bank Name", ASourceTable.Columns["p_branch_name_c"]);
+            FDataGrid.AddTextColumn("Bank/Branch Code", ASourceTable.Columns["p_branch_code_c"]);
+            FDataGrid.AddTextColumn("BIC/SWIFT Code", ASourceTable.Columns["p_bic_c"]);
+            FDataGrid.AddTextColumn("IBAN", ASourceTable.Columns["p_iban_c"]);
+            FDataGrid.AddTextColumn("Expiry Date", ASourceTable.Columns["p_expiry_date_d"]);
+            FDataGrid.AddTextColumn("Comment", ASourceTable.Columns["p_comment_c"]);
         }
 
         #region Helper Functions
@@ -501,7 +535,7 @@ namespace Ict.Petra.Client.MPartner
         /// </summary>
         public static void PrintPartner()
         {
-// TODO            Logic.UCmdMPartner.RunPrintPartner(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
+// TODO           Logic.UCmdMPartner.RunPrintPartner(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
         }
 
         /// <summary>
@@ -546,6 +580,7 @@ namespace Ict.Petra.Client.MPartner
             }
             else
             {
+                throw new NotImplementedException();
 // TODO                Logic.UCmdMSysMan.SendEmail(EmailAddress);
             }
         }
