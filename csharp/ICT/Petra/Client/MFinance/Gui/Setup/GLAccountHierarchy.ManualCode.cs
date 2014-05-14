@@ -5,7 +5,7 @@
 //      timop, wolfgangu
 //      Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -340,7 +340,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         ///
         void cmbDetailValidCcCombo_SelectedValueChanged(object sender, EventArgs e)
         {
-            if ((FCurrentNode == null) || FIAmUpdating) // Only look into this is the user has changed it...
+            if ((FCurrentNode == null) || FIAmUpdating) // Only look into this if the user has changed it...
             {
                 return;
             }
