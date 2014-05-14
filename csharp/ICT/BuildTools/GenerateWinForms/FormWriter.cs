@@ -1158,10 +1158,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     FTemplate.InsertSnippet("PROCESSCMDKEYMANUAL", snipCmdKeyManual);
                 }
             }
+
             if ((FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLF")) && (FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")))
             {
                 ProcessTemplate snipCtrlF = FTemplate.GetSnippet("PROCESSCMDKEYCTRLF");
-                
+
                 if (FCodeStorage.FActionList.ContainsKey("actEditFind"))
                 {
                     snipCtrlF.SetCodelet("ACTIONCLICK", FCodeStorage.FActionList["actEditFind"].actionClick);
@@ -1170,7 +1171,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     snipCtrlF.SetCodelet("ACTIONCLICK", "MniFilterFind_Click");
                 }
-                
+
                 FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlF);
             }
 

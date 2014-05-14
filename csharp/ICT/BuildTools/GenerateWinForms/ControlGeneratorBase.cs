@@ -711,19 +711,22 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 string strMniFilterFindClick = "void MniFilterFind_Click(";
 
                 if ((ActionToPerform == "actEditFind") && (ctrl.controlName == "mniEditFind")
-                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind") || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
+                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")
+                        || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
                 {
                     writer.SetControlProperty("mniEditFind", "ShortcutKeys", "Keys.F | Keys.Control", false);
                 }
 
                 if ((ActionToPerform == "actEditFindNext") && (ctrl.controlName == "mniEditFindNext")
-                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind") || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
+                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")
+                        || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
                 {
                     writer.SetControlProperty("mniEditFindNext", "ShortcutKeys", "Keys.F3", false);
                 }
 
                 if ((ActionToPerform == "actEditFindPrevious") && (ctrl.controlName == "mniEditFindPrevious")
-                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind") || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
+                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")
+                        || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
                 {
                     writer.SetControlProperty("mniEditFindPrevious", "ShortcutKeys", "Keys.F3 | Keys.Shift", false);
                 }
@@ -754,7 +757,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 if ((ActionToPerform == "actEditFilter") && (ctrl.controlName == "mniEditFilter")
-                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind") || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
+                    && (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")
+                        || writer.FCodeStorage.ManualFileExistsAndContains(strMniFilterFindClick)))
                 {
                     writer.SetControlProperty("mniEditFilter", "ShortcutKeys", "Keys.R | Keys.Control", false);
                 }

@@ -66,6 +66,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// declare the control
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
+        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
+        {
+            if (!IsMniFilterFindClickAndIgnore(writer, ctrl, false))
+            {
+                base.GenerateDeclaration(writer, ctrl);
+            }
+        }
+
+        /// <summary>
         /// process the children
         /// </summary>
         public override void ProcessChildren(TFormWriter writer, TControlDef container)
