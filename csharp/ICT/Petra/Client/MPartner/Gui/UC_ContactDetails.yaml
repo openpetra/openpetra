@@ -52,12 +52,14 @@ RootNode:
        
         grpContactDetails:
             Controls: [pnlGrid, pnlDetails]
-            Dock: Fill
-        
+            Dock: Fill        
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails, pnlPromoteDemote]
-
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlPromoteDemote]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [chkCurrent, chkSpecialised, chkConfidential]   #, cmbContactType
+            FindControls: [chkCurrent, chkSpecialised, chkConfidential]     #, cmbContactType
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

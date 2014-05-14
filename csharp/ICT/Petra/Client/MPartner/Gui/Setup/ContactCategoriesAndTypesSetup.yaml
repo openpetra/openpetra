@@ -21,7 +21,11 @@ RootNode:
         pnlGrid:
             Height: 300
             Dock: Fill
-            Controls: [pnlButtons, grdDetails, pnlPromoteDemoteCategory]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlPromoteDemoteCategory]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailCategoryCode, txtDetailCategoryDesc, chkDetailDeletable, chkDetailSystemCategory]
+            FindControls: [txtDetailCategoryCode, txtDetailCategoryDesc, chkDetailDeletable, chkDetailSystemCategory]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -52,7 +56,7 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailCategoryCode, txtDetailCategoryDesc]
-                Row1: [chkDetailCategoryDeletable, chkDetailSystemCategory]
+                Row1: [chkDetailDeletable, chkDetailSystemCategory]
                 Row2: [grpExtraDetails]
         grpExtraDetails: {Label=Contact Types}
             Controls: [ucoValues]
@@ -69,5 +73,5 @@ RootNode:
           
         txtDetailCategoryCode: {Label=Contact Category, Width=200, Validation=true}
         txtDetailCategoryDesc: {Label=Description, Width=293, Validation=true}
-        chkDetailCategoryDeletable: {Label=Deletable, ReadOnly=true}
+        chkDetailDeletable: {Label=Deletable, ReadOnly=true}
         chkDetailSystemCategory: {ReadOnly=true}
