@@ -45,6 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private Int32 FLedgerNumber;
         private String FInitialTab = "Suppliers";
+        private bool FRequireApprovalBeforePosting = false;
 
         // Flags to indicate if the data has changed
         private Boolean FIsSupplierDataChanged = true;      // Initially we don't have any!
@@ -181,6 +182,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
+        /// Gets whether approval is reqiored before posting
+        /// </summary>
+        public Boolean RequireApprovalBeforePosting
+        {
+            get
+            {
+                return FRequireApprovalBeforePosting;
+            }
+        }
+
+        /// <summary>
         /// (Re)loads the outstanding invoices.  Does nothing if the invoice data has not changed.
         /// </summary>
         public void LoadOutstandingInvoices()
@@ -201,6 +213,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 tabSearchResult.SelectedTab = tpgOutstandingInvoices;
             }
+
+            TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, FLedgerNumber);
+            FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
 
             TabChange(null, null);
         }

@@ -78,9 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void RunOnceOnParentActivationManual()
         {
             // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
-            TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(FMainForm, FMainForm.LedgerNumber);
-
-            FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
+            FRequireApprovalBeforePosting = FMainForm.RequireApprovalBeforePosting;
             Control rbtForApproval = FFilterPanelControls.FindControlByName("rbtForApproval");
             rbtForApproval.Enabled = FRequireApprovalBeforePosting;
         }
