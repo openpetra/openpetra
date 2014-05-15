@@ -28,7 +28,9 @@ using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MPartner.Mailroom.Validation;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using GNU.Gettext;
 
@@ -46,14 +48,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             set
             {
                 FAttributeCategory = value;
-                
-                //save the position of the actual row
-                int rowIndex = grdDetails.GetFirstHighlightedRowIndex();
-                
-                FMainDS.PPartnerAttributeType.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                                
+                string rowFilter = String.Format("{0} = '{1}'",
                     PPartnerAttributeTypeTable.GetAttributeCategoryDBName(),
                     FAttributeCategory);
-                SelectRowInGrid(rowIndex);
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                ApplyFilter();
+
+                grdDetails.SelectRowWithoutFocus(FPrevRowChangedRow);                
             }
         }
         
@@ -62,6 +64,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 //            lblLinkFormatTip.Text = "Enter the URL that should be launched\r\nfor the Contact Type ( e.g.\r\nhttp://www.facebook.com/{VALUE} ).";
             lblLinkFormatTip.Font = new System.Drawing.Font(lblLinkFormatTip.Font.FontFamily, 7, FontStyle.Regular);
             lblLinkFormatTip.Top -= 5;
+        
+            pnlDetails.MinimumSize = new Size(700, 145);              // To prevent shrinkage!
+    
+            LoadValues();
         }
         
         private void NewRecord(System.Object sender, EventArgs e)
@@ -72,7 +78,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void NewRowManual(ref PPartnerAttributeTypeRow ARow)
         {
-            string newName = Catalog.GetString("NEWVALUE");
+            string newName = Catalog.GetString("NewType");
             Int32 countNewDetail = 0;
 
             if (FMainDS.PPartnerAttributeType.Rows.Find(new object[] { FAttributeCategory, newName }) != null)
@@ -86,13 +92,77 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             ARow.Code = newName;
+            ARow.SpecialLabel = "PLEASE ENTER LABEL"; 
             ARow.AttributeCategory = FAttributeCategory;
+            ARow.AttributeTypeValueKind = "CONTACTDETAIL_GENERAL";
             ARow.Deletable = true;
+            
+            cmbDetailAttributeTypeValueKind.SelectedIndex = 1;
         }
 
+        private void ShowDetailsManual(PPartnerAttributeTypeRow ARow)
+        {
+            if (ARow == null)
+            {
+				cmbDetailAttributeTypeValueKind.SelectedIndex = 0;
+                txtDetailHyperlinkFormat.Enabled = false;
+
+                return;
+            }
+            else
+            {
+    			switch (ARow.AttributeTypeValueKind) {
+    				case "CONTACTDETAIL_GENERAL":
+    					cmbDetailAttributeTypeValueKind.SelectedIndex = 0;
+                        txtDetailHyperlinkFormat.Enabled = false;
+    					break;
+    				case "CONTACTDETAIL_HYPERLINK":
+    					cmbDetailAttributeTypeValueKind.SelectedIndex = 2;
+                        txtDetailHyperlinkFormat.Enabled = false;
+    					break;
+    				case "CONTACTDETAIL_HYPERLINK_WITHVALUE":
+    					cmbDetailAttributeTypeValueKind.SelectedIndex = 3;
+                        txtDetailHyperlinkFormat.Enabled = true;
+    					break;
+    				case "CONTACTDETAIL_EMAILADDRESS":
+    					cmbDetailAttributeTypeValueKind.SelectedIndex = 1;
+                        txtDetailHyperlinkFormat.Enabled = false;
+    					break;
+    				case "CONTACTDETAIL_SKYPEID":
+    					cmbDetailAttributeTypeValueKind.SelectedIndex = 4;
+                        txtDetailHyperlinkFormat.Enabled = false;
+    					break;
+                    default:
+    					cmbDetailAttributeTypeValueKind.SelectedIndex = 0;
+                        txtDetailHyperlinkFormat.Enabled = false;
+    					break;                    
+    			}       
+            }
+        }
+        
         private void GetDetailDataFromControlsManual(PPartnerAttributeTypeRow ARow)
         {
-            // TODO
+            switch (cmbDetailAttributeTypeValueKind.SelectedIndex) 
+            {
+                case 0:
+                    ARow.AttributeTypeValueKind = "CONTACTDETAIL_GENERAL";
+                    break;
+                case 1:
+                    ARow.AttributeTypeValueKind = "CONTACTDETAIL_EMAILADDRESS";
+                    break;
+                case 2:
+                    ARow.AttributeTypeValueKind = "CONTACTDETAIL_HYPERLINK";
+                    break;
+                case 3:
+                    ARow.AttributeTypeValueKind = "CONTACTDETAIL_HYPERLINK_WITHVALUE";
+                    break;
+                case 4:
+                    ARow.AttributeTypeValueKind = "CONTACTDETAIL_SKYPEID";
+                    break;                    
+                default:
+                    ARow.AttributeTypeValueKind = "CONTACTDETAIL_GENERAL";
+                    break;                    
+            }            
         }
 
         /// <summary>
@@ -100,16 +170,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// </summary>
         public void LoadValues()
         {
-            PPartnerAttributeTypeTable AT = new PPartnerAttributeTypeTable();
-            Ict.Common.Data.TTypedDataTable TypedTable;
-            
-            TRemote.MCommon.DataReader.WebConnectors.GetData(PPartnerAttributeTypeTable.GetTableDBName(), 
-                new TSearchCriteria[] { new TSearchCriteria(PPartnerAttributeTypeTable.GetAttributeCategoryDBName(),
-                FAttributeCategory) }, out TypedTable);
-            
-            AT.Merge(TypedTable);
-            PPartnerAttributeTypeTable myAT = FMainDS.PPartnerAttributeType;
-            myAT.Merge(AT);
+            Type DataTableType;
+    
+            // Load Data
+            DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("ContactTypeList", "", null, 
+                out DataTableType);
+            FMainDS.PPartnerAttributeType.Merge(CacheDT);
         }
 
         /// <summary>

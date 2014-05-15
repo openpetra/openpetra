@@ -21,8 +21,8 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlPromoteDemote]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailCode, txtDetailDescription, chkDetailUnassignable, chkDetailDeletable, cmbDetailAttributeTypeValueKind]
-            FindControls: [txtDetailCode, txtDetailDescription, chkDetailUnassignable, chkDetailDeletable, cmbDetailAttributeTypeValueKind]
+            FilterControls: [chkDetailUnassignable, chkDetailDeletable]
+            FindControls: [chkDetailUnassignable, chkDetailDeletable]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -37,9 +37,9 @@ RootNode:
             Dock: Right
             Controls: [btnDemote, btnPromote]            
         btnPromote: {NoLabel=true, Width=15}
-            Padding: 0,60,0,0
+            Padding: 0,40,0,0
         btnDemote: {NoLabel=true, Width=15}
-            Padding: 0,60,0,0
+            Padding: 0,40,0,0
         grdDetails:
             Dock: Fill
             TableName: PPartnerAttributeType
@@ -53,11 +53,11 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             
         pnlDetails:
-            Height: 175
             Dock: Bottom
             Controls: [pnlDetailsLeft, pnlDetailsRight]
             ControlsOrientation: horizontal
         pnlDetailsLeft:
+            Dock: Fill
             Controls:
                 Row0: [txtDetailCode]
                 Row1: [txtDetailSpecialLabel]
@@ -69,6 +69,7 @@ RootNode:
                 Row1: [chkDetailDeletable]
             Margin: 57,0,0,0
         pnlDetailsRight:
+            Dock: Right
             Controls: [grpValueKind]
             Height: 140
         grpValueKind:

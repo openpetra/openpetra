@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowEdit
     WindowWidth: 790
-    WindowHeight: 700
+    WindowHeight: 610
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
@@ -16,16 +16,27 @@ RootNode:
         actDemoteCategory: {ActionClick=ContactCategoryDemote, Image: MoveUpArrow.ico}        
     Controls:
         pnlContent:
+            Controls: [sptValues]
+            Dock: Fill
+        sptValues:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 260
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlGridAndDetails
+            Panel2: pnlValues
+        pnlGridAndDetails:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
         pnlGrid:
-            Height: 300
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlPromoteDemoteCategory]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailCategoryCode, txtDetailCategoryDesc, chkDetailDeletable, chkDetailSystemCategory]
-            FindControls: [txtDetailCategoryCode, txtDetailCategoryDesc, chkDetailDeletable, chkDetailSystemCategory]
+            FilterControls: [txtDetailCategoryCode, chkDetailDeletable]
+            FindControls: [txtDetailCategoryCode, chkDetailDeletable]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -55,23 +66,17 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailCategoryCode, txtDetailCategoryDesc]
-                Row1: [chkDetailDeletable, chkDetailSystemCategory]
-                Row2: [grpExtraDetails]
-        grpExtraDetails: {Label=Contact Types}
+                Row0: [txtDetailCategoryCode, chkDetailDeletable]
+                Row1: [txtDetailCategoryDesc]
+        pnlValues:
+            Dock: Fill
             Controls: [ucoValues]
-            ColSpan: 2
-            Height: 382            
-            Width: 775
-            Padding: 2,5,9,10                
-            
+            BackColor: System.Drawing.SystemColors.Control            
         ucoValues:
             Type: Ict.Petra.Client.MPartner.Gui.Setup.TUC_ContactCategoriesAndTypesDetail
-            Width: 765
-            Stretch: horizontally
-            Padding: 3,5,0,5                
+            Dock: Fill
+            Padding: 3,2,0,3
           
         txtDetailCategoryCode: {Label=Contact Category, Width=200, Validation=true}
-        txtDetailCategoryDesc: {Label=Description, Width=293, Validation=true}
+        txtDetailCategoryDesc: {Label=Description, Width=400, Validation=true}
         chkDetailDeletable: {Label=Deletable, ReadOnly=true}
-        chkDetailSystemCategory: {ReadOnly=true}

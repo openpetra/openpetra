@@ -27,6 +27,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Validation;
@@ -36,6 +37,49 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmContactCategoriesAndTypesSetup
     {
+        private void InitializeManualCode()
+        {
+            LoadDataAndFinishScreenSetup();            
+        }
+        
+        /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
+        /// <returns>void</returns>
+        private void LoadDataAndFinishScreenSetup()
+        {
+          Type DataTableType;
+    
+          // Load Data
+          DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("ContactCategoryList", 
+                PPartnerAttributeCategoryTable.GetSystemCategoryDBName() + " = false", null, out DataTableType);
+          FMainDS.PPartnerAttributeCategory.Merge(CacheDT);
+    
+//          FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+//          grdDetails.CancelEditingWithEscapeKey = false;
+//          grdDetails.Columns.Clear();
+//          grdDetails.AddTextColumn("Acquisition Code", FMainDS.PAcquisition.ColumnAcquisitionCode);
+//          grdDetails.AddTextColumn("Description", FMainDS.PAcquisition.ColumnAcquisitionDescription);
+//          grdDetails.AddCheckBoxColumn("Assignable", FMainDS.PAcquisition.ColumnValidAcquisition);
+//          grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PAcquisition.ColumnDeletable);
+//          grdDetails.AddCheckBoxColumn("Recruiting Mission", FMainDS.PAcquisition.ColumnRecruitingEffort);
+//          grdDetails.Enter += new EventHandler(grdDetails_Enter);
+//          grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeaving);
+//          grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
+//          grdDetails.Selection.EnableMultiSelection = true;
+    
+          DataView myDataView = FMainDS.PPartnerAttributeCategory.DefaultView;
+          myDataView.Sort = PPartnerAttributeCategoryTable.GetDeletableDBName() + " ASC, " + 
+                PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC";
+          myDataView.AllowNew = false;
+          grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+    
+          FPetraUtilsObject.InitActionState();
+//          chkToggleFilterCheckedChanged(null, null);
+//          chkDetailValidAcquisitionCheckedChanged(null, null);
+//          chkDetailRecruitingEffortCheckedChanged(null, null);
+//          chkDetailDeletableCheckedChanged(null, null);
+          UpdateRecordNumberDisplay();
+        }
+        
         private void NewRecord(System.Object sender, EventArgs e)
         {
             this.CreateNewPPartnerAttributeCategory();
@@ -46,7 +90,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void NewRowManual(ref PPartnerAttributeCategoryRow ARow)
         {
-            string newName = Catalog.GetString("NEWCODE");
+            string newName = Catalog.GetString("NewCategory");
             Int32 countNewDetail = 0;
 
             if (FMainDS.PPartnerAttributeCategory.Rows.Find(new object[] { newName }) != null)
