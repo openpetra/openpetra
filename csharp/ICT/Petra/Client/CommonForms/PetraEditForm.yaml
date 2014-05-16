@@ -9,8 +9,16 @@ RootNode:
             Label:&Save
             ActionClick:FileSave
             #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.S]
-            Tooltip: Saves changed data
+            Tooltip: Save changed data
             Image: Save.ico
+        actEditFindNext:
+            Label:Find Ne&xt
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find the next record that matches the current 'Find' criteria
+        actEditFindPrevious:
+            Label:Find Pre&vious
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find the previous record that matches the current 'Find' criteria
         actEditFilter: 
             Label:Filte&r...
             ActionClick:MniFilterFind_Click
@@ -26,21 +34,22 @@ RootNode:
             mniFileSave: {Action=actSave}
             mniSeparator: {Label=-}
             mniFilePrint:
-                Label:&Print...
-                Image: Print.ico
-#               ActionClick:MniFile_Click
-#               ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.P]
+             Label:&Print...
+             Image: Print.ico
+#             ActionClick:FilePrint
             mniFileSeparator: {Label=-}
         mniEdit: 
             Label:&Edit
+            mniEditFilter: {Action=actEditFilter}
+            mniEditFind: {Action=actEditFind}
+            mniEditFindNext: {Action=actEditFindNext}
+            mniEditFindPrevious: {Action=actEditFindPrevious}
+            mniSeparator: {Label=-}
             mniEditUndoCurrentField: 
               Label:Undo &Current Field
 #              ActionClick:MniEdit_Click
             mniEditUndoScreen: 
               Label:&Undo Screen
-#             ActionClick:MniEdit_Click
-            mniEditSeparator: {Label=-}
-            mniEditFilter: {Action=actEditFilter}
-            mniEditFind: {Action=actEditFind}
+#              ActionClick:MniEdit_Click
     Toolbar:
         tbbSave: {Action=actSave, Order=AlwaysFirst}

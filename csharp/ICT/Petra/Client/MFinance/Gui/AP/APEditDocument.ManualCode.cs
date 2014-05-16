@@ -123,9 +123,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
  *              grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
  *          }
  */
-            mniEdit.DropDownItems.Remove(mniEditSeparator);
-            mniEdit.DropDownItems.Remove(mniEditFilter); // These items are provided by windowEditWebConnectorMasterDetail
-            mniEdit.DropDownItems.Remove(mniEditFind);   // but are not needed in this application.
         }
 
         private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)

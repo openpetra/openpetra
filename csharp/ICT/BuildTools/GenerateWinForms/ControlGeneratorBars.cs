@@ -66,6 +66,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// declare the control
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="ctrl"></param>
+        public override void GenerateDeclaration(TFormWriter writer, TControlDef ctrl)
+        {
+            if (!IsMniFilterFindClickAndIgnore(writer, ctrl, false))
+            {
+                base.GenerateDeclaration(writer, ctrl);
+            }
+        }
+
+        /// <summary>
         /// process the children
         /// </summary>
         public override void ProcessChildren(TFormWriter writer, TControlDef container)
@@ -104,6 +117,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (TControlDef child in container.Children)
                 {
+                    if (IsMniFilterFindClickAndIgnore(writer, child, child.controlName == "mniEditFind"))
+                    {
+                        continue;
+                    }
+
                     if (addChildren.Length > 0)
                     {
                         addChildren += "," + Environment.NewLine + "            ";
@@ -128,6 +146,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            if (IsMniFilterFindClickAndIgnore(writer, ctrl, false))
+            {
+                return writer.FTemplate;
+            }
+
             base.SetControlProperties(writer, ctrl);
 
             // deactivate menu items that have no action assigned yet.
@@ -143,6 +166,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // todo: this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 
             return writer.FTemplate;
+        }
+
+        private bool IsMniFilterFindClickAndIgnore(TFormWriter writer, TControlDef ctrl, bool LogMessage)
+        {
+            if (writer.FCodeStorage.ManualFileExistsAndContains("void MniFilterFind_Click("))
+            {
+                // if there is manual code then we will use it
+                return false;
+            }
+
+            // Screens that have no Filter/Find panel do not qualify for the Filter/Find menus
+            if (!writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+            {
+                if ((ctrl.GetAction() != null) && (ctrl.GetAction().actionClick == "MniFilterFind_Click"))
+                {
+                    if (LogMessage)
+                    {
+                        TLogging.Log("Ignoring MniFilterFind_Click menus on this screen");
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 
