@@ -2,8 +2,8 @@
     BaseYaml: FinancialDevelopmentReportingForm.yaml
     FormType: report
     FormTitle: Local Income Split
-    WindowWidth: 650
-    WindowHeight: 600
+    WindowWidth: 640
+    WindowHeight: 550
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\incomelocalsplit.xml,common.xml]
@@ -25,7 +25,7 @@
         uco_Selection:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Dock: Top
-            Height: 240
+            Height: 270
         rgrOrder:
             Dock: Top
             Label: Order By

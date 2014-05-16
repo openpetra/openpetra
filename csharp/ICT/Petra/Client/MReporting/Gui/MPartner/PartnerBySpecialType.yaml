@@ -101,9 +101,9 @@ RootNode:
         Para16a:
             Name: Partner Name
             Parameter: 4.0
-        Para16:
-            Name: Short Name
-            Parameter: 4.0
+        #Para16:
+         #   Name: Short Name
+         #   Parameter: 4.0
         Para17:
             Name: Post Code
             Parameter: 2.0

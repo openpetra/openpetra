@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalc.RemoveParameter("param_to_date");
                 ACalc.AddParameter("param_from_date", FromDate);
                 ACalc.AddParameter("param_to_date", DateTime.Today);
-                
+
                 ACalc.AddParameter("Month0", 1);
                 ACalc.AddParameter("Month1", 2);
                 ACalc.AddParameter("Year0", DateTime.Today.Year);
@@ -193,7 +193,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             dtpFromDate.Enabled = !IsTotal;
             dtpToDate.Enabled = !IsTotal;
         }
-        
+
         private void DonorSelectionChanged(object sender, EventArgs e)
         {
             if (tpgReportSorting.Enabled && rbtPartner.Checked)

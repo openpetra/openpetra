@@ -2,8 +2,8 @@
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Account Detail
-    WindowWidth: 650
-    WindowHeight: 630
+    WindowWidth: 640
+    WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         XMLFILES: [Finance\\\\accountdetail.xml,Finance\\\\accountdetailcommon.xml,Finance\\\\finance.xml,common.xml]
@@ -23,11 +23,12 @@
             Controls: [uco_GeneralSettings, pnlSorting]
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
-            Height:230
+            Dock: Top
+            Height:270
         pnlSorting:
             Controls: [rgrSorting]
-            Height:156
-            Width:616
+            Height:160
+            Dock: Top
 
         rgrSorting:
             ParameterName: param_sortby
@@ -59,7 +60,7 @@
             ParameterName: param_analyis_type_end
         
         tpgCCAccount:
-            Label: Account / CostCentre Settings
+            Label: Account / Cost Centre Settings
             Controls: [uco_AccountCostCentreSettings]
         uco_AccountCostCentreSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings
