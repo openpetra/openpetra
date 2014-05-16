@@ -29,6 +29,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Validation;
 using GNU.Gettext;
@@ -50,34 +51,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     
           // Load Data
           DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("ContactCategoryList", 
-                PPartnerAttributeCategoryTable.GetSystemCategoryDBName() + " = false", null, out DataTableType);
+                "", null, out DataTableType);
           FMainDS.PPartnerAttributeCategory.Merge(CacheDT);
-    
-//          FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
-//          grdDetails.CancelEditingWithEscapeKey = false;
-//          grdDetails.Columns.Clear();
-//          grdDetails.AddTextColumn("Acquisition Code", FMainDS.PAcquisition.ColumnAcquisitionCode);
-//          grdDetails.AddTextColumn("Description", FMainDS.PAcquisition.ColumnAcquisitionDescription);
-//          grdDetails.AddCheckBoxColumn("Assignable", FMainDS.PAcquisition.ColumnValidAcquisition);
-//          grdDetails.AddCheckBoxColumn("Deletable", FMainDS.PAcquisition.ColumnDeletable);
-//          grdDetails.AddCheckBoxColumn("Recruiting Mission", FMainDS.PAcquisition.ColumnRecruitingEffort);
-//          grdDetails.Enter += new EventHandler(grdDetails_Enter);
-//          grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeaving);
-//          grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
-//          grdDetails.Selection.EnableMultiSelection = true;
     
           DataView myDataView = FMainDS.PPartnerAttributeCategory.DefaultView;
           myDataView.Sort = PPartnerAttributeCategoryTable.GetDeletableDBName() + " ASC, " + 
                 PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC";
           myDataView.AllowNew = false;
           grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-    
-          FPetraUtilsObject.InitActionState();
-//          chkToggleFilterCheckedChanged(null, null);
-//          chkDetailValidAcquisitionCheckedChanged(null, null);
-//          chkDetailRecruitingEffortCheckedChanged(null, null);
-//          chkDetailDeletableCheckedChanged(null, null);
-          UpdateRecordNumberDisplay();
         }
         
         private void NewRecord(System.Object sender, EventArgs e)
@@ -116,29 +97,34 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             return TSubmitChangesResult.scrNothingToBeSaved;
         }
 
-        private void DeleteRecord(System.Object sender, EventArgs e)
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(PPartnerAttributeCategoryRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            DataView DependentRecordsDV = new DataView(FMainDS.PPartnerAttributeType);
+
+            DependentRecordsDV.RowStateFilter = DataViewRowState.CurrentRows;
+            DependentRecordsDV.RowFilter = String.Format("{0} = '{1}'",
+                PPartnerAttributeTypeTable.GetAttributeCategoryDBName(),
+                ARowToDelete.CategoryCode);
+
+            if (DependentRecordsDV.Count > 0)
             {
-                return;
+                // Tell the user that we cannot allow deletion if any rows exist in the DataView
+                TMessages.MsgRecordCannotBeDeletedDueToDependantRecordsError(
+                    "Contact Category", "a Contact Category", "Contact Categories", "Contact Type", "a Contact Type", 
+                    "Contact Types", ARowToDelete.CategoryCode, DependentRecordsDV.Count);
+                    
+                return false;
             }
 
-//            DataView view = new DataView(FMainDS.AFreeformAnalysis);
-//            view.RowStateFilter = DataViewRowState.CurrentRows;
-//            view.RowFilter = String.Format("{0} = '{1}'",
-//                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
-//                FPreviouslySelectedDetailRow.AnalysisTypeCode);
-
-//            if (view.Count > 0)
-//            {
-//                MessageBox.Show(Catalog.GetString(
-//                        "Please delete the unused values first!\n\nNote:Used Contact Categories and Contact Categories with used Contact Types cannot be deleted."));
-//                return;
-//            }
-//
-            DeletePPartnerAttributeCategory();
+            return true;
         }
-
+        
         private void GetDetailDataFromControlsManual(PPartnerAttributeCategoryRow ARow)
         {
             ucoValues.GetDataFromControls();

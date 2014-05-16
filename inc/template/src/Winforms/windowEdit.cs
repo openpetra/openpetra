@@ -378,33 +378,6 @@ namespace {#NAMESPACE}
         return RowNumberInData;
     }
 
-    private void MniEditGoto_Click(object sender, EventArgs e)
-    {
-        string senderName = ((ToolStripMenuItem)sender).Name;
-
-        switch (senderName)
-        {
-            case "mniEditTop":
-                SelectRowInGrid(1);
-                break;
-            case "mniEditPrevious":
-                SelectRowInGrid(GetSelectedRowIndex() - 1);
-                break;
-            case "mniEditNext":
-                SelectRowInGrid(GetSelectedRowIndex() + 1);
-                break;
-            case "mniEditBottom":
-                SelectRowInGrid(grdDetails.Rows.Count - 1);
-                break;
-            default:
-                return;
-        }
-
-{#IFDEF SHOWDETAILS}
-        FocusFirstEditableControl();
-{#ENDIF SHOWDETAILS}
-    }
-
 {#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// <summary>
@@ -513,8 +486,8 @@ namespace {#NAMESPACE}
         }
         
         {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
-{#CANDELETESELECTION}
     }
+{#CANDELETESELECTION}    
 #endregion
 
 #region Grid events
@@ -1488,28 +1461,6 @@ namespace {#NAMESPACE}
     }
 
     {#ACTIONHANDLERS}
-
-#endregion
-
-#region Keyboard handler
-
-    /// Our main keyboard handler
-    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-    {
-{#IFDEF FILTERANDFIND}
-        {#PROCESSCMDKEYCTRLF}
-        {#PROCESSCMDKEYCTRLR}
-{#ENDIF FILTERANDFIND}
-        {#PROCESSCMDKEY}    
-        {#PROCESSCMDKEYMANUAL}    
-
-        return base.ProcessCmdKey(ref msg, keyData);
-    }
-
-    private void FocusFirstEditableControl()
-    {
-        {#FOCUSFIRSTEDITABLEDETAILSPANELCONTROL}
-    }
 
 #endregion
 
