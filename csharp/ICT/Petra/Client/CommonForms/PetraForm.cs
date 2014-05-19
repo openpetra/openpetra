@@ -606,7 +606,7 @@ namespace Ict.Petra.Client.CommonForms
                         aboutDialog.ShowDialog();
                     }
                     break;
-                
+
                 case eActionId.eKeyboardShortcuts:
                     System.Type shortcutsDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmKeyboardShortcutsDialog");
 
@@ -617,10 +617,10 @@ namespace Ict.Petra.Client.CommonForms
                     break;
 
                 case eActionId.eHelp:
-                    {
-                        // TODO help action
-                    }
-                    break;
+                {
+                    // TODO help action
+                }
+                break;
             }
         }
 

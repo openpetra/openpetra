@@ -56,19 +56,24 @@ namespace Ict.Petra.Client.CommonDialogs
         /// Our main DataSet that will have one table per screen tab
         /// </summary>
         private DataSet FMainDS = new DataSet();
-        private string[] FColumnNames = new string[2] {Catalog.GetString("Shortcut"), Catalog.GetString("Description") };
+        private string[] FColumnNames = new string[2] {
+            Catalog.GetString("Shortcut"), Catalog.GetString("Description")
+        };
 
         private void InitializeManualCode()
         {
             // Called from the constructor.  We initialise our data set
             string generalTable = KeyboardShortcutTableNames.General.ToString();
+
             AddTableToDataSet(generalTable);
 
             AddShortcutInfoToTable(generalTable, ApplWideResourcestrings.StrKeyShortcutCtrlC, ApplWideResourcestrings.StrKeyShortcutCtrlCHelp);
             AddShortcutInfoToTable(generalTable, ApplWideResourcestrings.StrKeyShortcutCtrlX, ApplWideResourcestrings.StrKeyShortcutCtrlXHelp);
             AddShortcutInfoToTable(generalTable, ApplWideResourcestrings.StrKeyShortcutCtrlV, ApplWideResourcestrings.StrKeyShortcutCtrlVHelp);
             AddShortcutInfoToTable(generalTable, ApplWideResourcestrings.StrKeyShortcutCtrlTab, ApplWideResourcestrings.StrKeyShortcutCtrlTabHelp);
-            AddShortcutInfoToTable(generalTable, ApplWideResourcestrings.StrKeyShortcutShiftCtrlTab, ApplWideResourcestrings.StrKeyShortcutShiftCtrlTabHelp);
+            AddShortcutInfoToTable(generalTable,
+                ApplWideResourcestrings.StrKeyShortcutShiftCtrlTab,
+                ApplWideResourcestrings.StrKeyShortcutShiftCtrlTabHelp);
             AddShortcutInfoToTable(generalTable, ApplWideResourcestrings.StrKeyShortcutCtrlS, ApplWideResourcestrings.StrKeyShortcutCtrlSHelp);
             AddShortcutInfoToTable(generalTable, ApplWideResourcestrings.StrKeyShortcutCtrlP, ApplWideResourcestrings.StrKeyShortcutCtrlPHelp);
             AddShortcutInfoToTable(generalTable, ApplWideResourcestrings.StrKeyShortcutEscape, ApplWideResourcestrings.StrKeyShortcutEscapeHelp);
@@ -76,9 +81,13 @@ namespace Ict.Petra.Client.CommonDialogs
             string navigationTable = KeyboardShortcutTableNames.Navigation.ToString();
             AddTableToDataSet(navigationTable);
 
-            AddShortcutInfoToTable(navigationTable, ApplWideResourcestrings.StrKeyShortcutCtrlHome, ApplWideResourcestrings.StrKeyShortcutCtrlHomeHelp);
+            AddShortcutInfoToTable(navigationTable,
+                ApplWideResourcestrings.StrKeyShortcutCtrlHome,
+                ApplWideResourcestrings.StrKeyShortcutCtrlHomeHelp);
             AddShortcutInfoToTable(navigationTable, ApplWideResourcestrings.StrKeyShortcutCtrlUp, ApplWideResourcestrings.StrKeyShortcutCtrlUpHelp);
-            AddShortcutInfoToTable(navigationTable, ApplWideResourcestrings.StrKeyShortcutCtrlDown, ApplWideResourcestrings.StrKeyShortcutCtrlDownHelp);
+            AddShortcutInfoToTable(navigationTable,
+                ApplWideResourcestrings.StrKeyShortcutCtrlDown,
+                ApplWideResourcestrings.StrKeyShortcutCtrlDownHelp);
             AddShortcutInfoToTable(navigationTable, ApplWideResourcestrings.StrKeyShortcutCtrlEnd, ApplWideResourcestrings.StrKeyShortcutCtrlEndHelp);
             AddShortcutInfoToTable(navigationTable, ApplWideResourcestrings.StrKeyShortcutCtrlL, ApplWideResourcestrings.StrKeyShortcutCtrlLHelp);
 
@@ -160,12 +169,15 @@ namespace Ict.Petra.Client.CommonDialogs
                 case KeyboardShortcutTableNames.General:
                     ADescriptionLabel.Text = ApplWideResourcestrings.StrKeysHelpCategoryGeneral;
                     break;
+
                 case KeyboardShortcutTableNames.List:
                     ADescriptionLabel.Text = ApplWideResourcestrings.StrKeysHelpCategoryList;
                     break;
+
                 case KeyboardShortcutTableNames.Navigation:
                     ADescriptionLabel.Text = ApplWideResourcestrings.StrKeysHelpCategoryNavigation;
                     break;
+
                 case KeyboardShortcutTableNames.FilterFind:
                     ADescriptionLabel.Text = ApplWideResourcestrings.StrKeysHelpCategoryFilterFind;
                     break;
@@ -192,7 +204,7 @@ namespace Ict.Petra.Client.CommonDialogs
         {
             FMainDS.Tables.Add(ATableName);
             FMainDS.Tables[ATableName].Columns.AddRange(
-                new DataColumn[] 
+                new DataColumn[]
                 {
                     new DataColumn(FColumnNames[0], typeof(System.String)),
                     new DataColumn(FColumnNames[1], typeof(System.String))
@@ -209,6 +221,7 @@ namespace Ict.Petra.Client.CommonDialogs
         {
             DataTable table = FMainDS.Tables[ATableName];
             DataRow row = table.NewRow();
+
             row[0] = AShortcut;
             row[1] = ADescription;
             table.Rows.Add(row);
