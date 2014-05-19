@@ -120,19 +120,6 @@ namespace Ict.Petra.Client.MCommon.Gui
         }
 
         /// <summary>
-        /// Performs data validation.
-        /// </summary>
-        /// <param name="ARecordChangeVerification"></param>
-        /// <param name="AProcessAnyDataValidationErrors"></param>
-        /// <param name="AValidateSpecificControl"></param>
-        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
-        {
-            // this is just a dummy implementation to compiling works for use in reporting
-            return true;
-        }
-
-        /// <summary>
         /// Retrieves data that is in the Controls and puts it into the Tables in FMainDS
         /// </summary>
         public void GetDataFromControls()
