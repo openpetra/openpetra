@@ -104,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDiscountPercentage.Visible = false;
             txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
             txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
+            
+            UpdateRecordNumberDisplay();
 
 /*
  * All this moved out to ShowAnalysisAttributesForAccount, because doing it here is too late:
