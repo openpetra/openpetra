@@ -599,19 +599,28 @@ namespace Ict.Petra.Client.CommonForms
                     break;
 
                 case eActionId.eHelpAbout:
-                    System.Type dialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmAboutDialog");
+                    System.Type aboutDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmAboutDialog");
 
-                    using (Form aboutDialog = (Form)Activator.CreateInstance(dialogType, new object[] { this.FWinForm }))
+                    using (Form aboutDialog = (Form)Activator.CreateInstance(aboutDialogType, new object[] { this.FWinForm }))
                     {
                         aboutDialog.ShowDialog();
                     }
                     break;
+                
+                case eActionId.eKeyboardShortcuts:
+                    System.Type shortcutsDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmKeyboardShortcutsDialog");
+
+                    using (Form shortcutsDialog = (Form)Activator.CreateInstance(shortcutsDialogType, new object[] { this.FWinForm }))
+                    {
+                        shortcutsDialog.ShowDialog();
+                    }
+                    break;
 
                 case eActionId.eHelp:
-                {
-                    // TODO help action
-                }
-                break;
+                    {
+                        // TODO help action
+                    }
+                    break;
             }
         }
 
@@ -831,7 +840,10 @@ namespace Ict.Petra.Client.CommonForms
         eHelpAbout,
 
         /// <summary>todoComment</summary>
-        eBugReport
+        eBugReport,
+
+        /// <summary>todoComment</summary>
+        eKeyboardShortcuts
     };
 
     /// <summary>
