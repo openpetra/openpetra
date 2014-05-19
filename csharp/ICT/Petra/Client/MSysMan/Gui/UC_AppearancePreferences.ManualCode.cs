@@ -431,18 +431,5 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             SetButtonColours();
         }
-
-        /// <summary>
-        /// Performs data validation.
-        /// </summary>
-        /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
-        /// to another record, otherwise set it to false.</param>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
-        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
-        {
-            return true;
-        }
     }
 }
