@@ -35,7 +35,19 @@ namespace Ict.Common
     public class Catalog
     {
         static GettextResourceManager catalog = null;
-
+        
+        /// <summary>
+        /// True when the Resource Manager was initialised with the given language
+        /// after <see cref="Init(string,string)" /> has been called, otherwise false.
+        /// </summary>
+        public static bool ResourceManagerInitialisedWithGivenLanguage
+        {
+            get
+            {
+                return catalog != null;
+            }
+        }
+        
         /// <summary>
         /// initialise the resource manager with the default language
         /// </summary>
@@ -163,21 +175,60 @@ namespace Ict.Common
         /// <returns>the translation, or <c>null</c> if none is found</returns>
         public static string GetPluralString(String msgid, String msgidPlural, long n, bool treatZeroAsPlural = false)
         {
-            bool Plural = treatZeroAsPlural ? (n != 1) : (n > 0);
+            bool Plural = treatZeroAsPlural ? ((n != 1) && (n != -1)) : (((n != 1) && (n != -1)) && (n != 0));
 
             if (catalog == null)
             {
-                if (Plural)
-                {
-                    return msgidPlural;
-                }
-                else
-                {
-                    return msgid;
-                }
+				return Plural ? msgidPlural : msgid;
             }
+            else
+            {
+                string result = msgid;
+                
+                if ((n == 0)) 
+                {
+                    // Calling 'catalog.GetPluralString' does not know about our 'treatZeroAsPlural = false' and would return plural in case of n = 0
+                    // so we call 'catalog.GetPluralString' in case 'treatZeroAsPlural = false' ...
+                    if (treatZeroAsPlural) 
+                    {
+                        try
+                        {
+                            result = catalog.GetPluralString(msgid, msgidPlural, n);
+                        }
+                        catch (Exception Exc)
+                        {
+                            TLogging.Log("GetText: Catalog.GetPluralString: problem for getting text for \"" + msgid + "\" and/or \"" + msgidPlural + "\"");
+                            TLogging.Log(Exc.ToString());
+                        }
+        
+                        return result;
+                    }
+                    else
+                    {
+                        // ...and we make n 1 to get the call to 'catalog.GetPluralString' (further below) to return the singular string!
+                        n = 1;                    
+                    }
+                }                  
+                
+                // Calling 'catalog.GetPluralString' does not work with negative numbers... 
+                if (n < 0) 
+                {
+                    // ...so we make them positive
+                    n = n * -1;    
+                }
 
-            return catalog.GetPluralString(msgid, msgidPlural, n);
+                try
+                {                
+                    result = catalog.GetPluralString(msgid, msgidPlural, n);
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("GetText: Catalog.GetPluralString: problem for getting text for \"" + msgid + "\" and/or \"" + msgidPlural + "\"");
+                    TLogging.Log(Exc.ToString());
+                }
+
+                return result;
+            }
         }
     }
 }
