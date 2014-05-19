@@ -11,13 +11,12 @@
     <comment key="SetupSuspenseAccount.yaml" value="style='background:Orange' |Requires manual code to get description column from another location" />
     <comment key="ContactAttributeSetup.yaml" value="Multiple changes to the YAML to incorporate a splitter panel containing two grids" />
     <comment key="GiftRevertAdjust.yaml" value="style='background:LightSkyBlue' |Probably will not have filter." />
+    <comment key="GiftDestination.yaml" value="style='background:LightSkyBlue' |Probably will not have filter." />
+    <comment key="APEditDocument.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen." />
     <comment key="MaintainBudget.yaml" value="style='background:Orange' |Still needs filtering by radio button cloning" />
     <comment key="LocalDataFieldSetup.yaml" value="style='background:Orange' |Still needs filtering by 'Used By' in checked list.  Will require bespoke panel." />
-    <comment key="APEditDocument.yaml" value="style='background:Orange' |Will require bespoke panels." />
     <comment key="UC_GLBatches.yaml" value="Requires testing to ensure manual code file functionality still works as before but with new filter panel" />
     <comment key="UC_AccountAnalysisAttributes.yaml" value="style='background:LightSkyBlue' |Too small to fit filter panel." />
-    <comment key="UC_ExtractMaintain.yaml" value="style='background:Orange' |May require bespoke panels?  Also find partner?" />
-    <comment key="UC_ExtractMasterList.yaml" value="style='background:Orange' |Will require bespoke panels?" />
     
     
     <!-- Partner Edit screens are not going to have Filter/Find -->
