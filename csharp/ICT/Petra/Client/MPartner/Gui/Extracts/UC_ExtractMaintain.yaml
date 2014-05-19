@@ -17,7 +17,13 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [Column:PartnerClass, Column:PartnerShortName]
+            FindControls: [Column:PartnerClass, Column:PartnerShortName]
+            ControlAttributes:
+                txtPartnerShortName: {Label=Partner Name}
         pnlButtons:
             Dock: Bottom
             Controls: [btnAdd, btnDelete, btnEdit]
