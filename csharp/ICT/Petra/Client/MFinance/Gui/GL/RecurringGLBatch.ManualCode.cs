@@ -380,6 +380,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (keyData == (Keys.S | Keys.Control))
+            {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    SaveChanges();
+                }
+
+                return true;
+            }
+
             if ((tabRecurringGLBatch.SelectedTab == tpgBatches) && (ucoRecurringBatches.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
