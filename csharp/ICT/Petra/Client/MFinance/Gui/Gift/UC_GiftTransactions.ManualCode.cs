@@ -2465,10 +2465,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
             LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
 
-            IntlToBaseCurrencyExchRate = ((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(CurrentBatchRow, out IsTransactionInIntlCurrency);
+            IntlToBaseCurrencyExchRate = ((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(CurrentBatchRow,
+                out IsTransactionInIntlCurrency);
 
             if (!EnsureGiftDataPresent(LedgerNumber, CurrentBatchNumber)
-                || IntlToBaseCurrencyExchRate == 0)
+                || (IntlToBaseCurrencyExchRate == 0))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;

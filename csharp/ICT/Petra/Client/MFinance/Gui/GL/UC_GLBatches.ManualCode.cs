@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            ((TFrmGLBatch)this.ParentForm).EnableTransactions(EnableTransTab);
+            ((TFrmGLBatch) this.ParentForm).EnableTransactions(EnableTransTab);
         }
 
         /// <summary>
@@ -408,7 +408,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
-
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
         {

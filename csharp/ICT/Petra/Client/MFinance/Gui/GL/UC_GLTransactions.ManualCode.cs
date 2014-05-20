@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 && (FMainDS.ATransaction.DefaultView.Count > 0))
             {
                 TLogging.Log("Trans already loaded");
-                
+
                 //Same as previously selected
                 if (FIsUnposted && (GetSelectedRowIndex() > 0))
                 {
@@ -810,8 +810,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (CurrentBatchRow == null
-                || CurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            if ((CurrentBatchRow == null)
+                || (CurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return;
             }
@@ -825,12 +825,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 CurrentJournalNumber = 0;
 
                 FPetraUtilsObject.SuppressChangeDetection = true;
-                ((TFrmGLBatch)this.ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                ((TFrmGLBatch)this.ParentForm).GetJournalsControl().ClearCurrentSelection();
+                ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                ((TFrmGLBatch) this.ParentForm).GetJournalsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SuppressChangeDetection = false;
                 //Ensure that when the Journal and Trans tab is opened, the data is reloaded.
                 FBatchNumber = -1;
-                ((TFrmGLBatch)this.ParentForm).GetJournalsControl().FBatchNumber = -1;
+                ((TFrmGLBatch) this.ParentForm).GetJournalsControl().FBatchNumber = -1;
             }
             else
             {
@@ -840,11 +840,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (JournalLevelUpdate)
             {
-                ((TFrmGLBatch)this.ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 //Ensure that when the Trans tab is opened, the data is reloaded.
                 FBatchNumber = -1;
             }
-            else if (TransLevelUpdate && FPreviouslySelectedDetailRow != null)
+            else if (TransLevelUpdate && (FPreviouslySelectedDetailRow != null))
             {
                 TransactionRowActive = true;
 
@@ -859,13 +859,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditAmount.NumberValueDecimal = 0;
                 txtDebitAmountBase.NumberValueDecimal = 0;
                 txtDebitAmount.NumberValueDecimal = 0;
-            } 
+            }
 
             //Get the corporate exchange rate
-            IntlRateToBaseCurrency = ((TFrmGLBatch)this.ParentForm).GetInternationalCurrencyExchangeRate();
+            IntlRateToBaseCurrency = ((TFrmGLBatch) this.ParentForm).GetInternationalCurrencyExchangeRate();
 
             if (!EnsureGLDataPresent(LedgerNumber, CurrentBatchNumber, CurrentJournalNumber, ref JournalsToUpdateDV, TransactionRowActive)
-                || IntlRateToBaseCurrency == 0)
+                || (IntlRateToBaseCurrency == 0))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;
@@ -878,16 +878,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 decimal amtDebitTotal = 0.0M;
                 decimal amtCreditTotalBase = 0.0M;
                 decimal amtDebitTotalBase = 0.0M;
-                
+
                 AJournalRow jr = (AJournalRow)drv.Row;
 
                 IsTransactionInIntlCurrency = (jr.TransactionCurrency == LedgerIntlCurrency);
 
                 if (BatchLevelUpdate)
-	            {
-		            //Journal row is active
+                {
+                    //Journal row is active
                     jr.DateEffective = CurrentBatchRow.DateEffective;
-	            }
+                }
 
                 TransactionsToUpdateDV.RowFilter = String.Format("{0}={1} And {2}={3}",
                     ATransactionTable.GetBatchNumberDBName(),
@@ -970,8 +970,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 if (TransactionRowActive
-                    && jr.BatchNumber == CurrentTransBatchNumber
-                    && jr.JournalNumber == CurrentTransJournalNumber)
+                    && (jr.BatchNumber == CurrentTransBatchNumber)
+                    && (jr.JournalNumber == CurrentTransJournalNumber))
                 {
                     txtCreditTotalAmount.NumberValueDecimal = amtCreditTotal;
                     txtDebitTotalAmount.NumberValueDecimal = amtDebitTotal;
@@ -1001,7 +1001,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AJournalDV"></param>
         /// <param name="AUpdateCurrentTransOnly"></param>
         /// <returns></returns>
-        public Boolean EnsureGLDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, ref DataView AJournalDV, bool AUpdateCurrentTransOnly)
+        public Boolean EnsureGLDataPresent(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            ref DataView AJournalDV,
+            bool AUpdateCurrentTransOnly)
         {
             bool RetVal = false;
 
@@ -1017,12 +1021,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     AJournalTable.GetJournalNumberDBName(),
                     AJournalNumber);
 
-                RetVal = true;                
+                RetVal = true;
             }
             else if (AJournalNumber == 0)
             {
                 TLogging.Log("Stage Load - All Journals");
-                
+
                 AJournalDV.RowFilter = String.Format("{0}={1} And {2}='{3}'",
                     AJournalTable.GetBatchNumberDBName(),
                     ABatchNumber,
@@ -1032,7 +1036,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (AJournalDV.Count == 0)
                 {
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalATransaction(ALedgerNumber, ABatchNumber));
- 
+
                     if (AJournalDV.Count == 0)
                     {
                         return false;
@@ -1095,7 +1099,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return RetVal;
         }
-
 
         // /// <summary>
         // /// update international amount for current batch and journal

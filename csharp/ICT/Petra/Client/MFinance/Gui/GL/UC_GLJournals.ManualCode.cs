@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// The current active Batch number
         /// </summary>
         public Int32 FBatchNumber = -1;
-        
+
         /// <summary>
         /// flags if the Journal(s) have finished loading
         /// </summary>
@@ -241,8 +241,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView JournalDV = new DataView(FMainDS.AJournal);
 
             JournalDV.RowFilter = String.Format("{0}={1}",
-                    AJournalTable.GetBatchNumberDBName(),
-                    ABatch.BatchNumber);
+                AJournalTable.GetBatchNumberDBName(),
+                ABatch.BatchNumber);
 
             foreach (DataRowView v in JournalDV)
             {
@@ -277,8 +277,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Enable the transactions tab accordingly
-            ((TFrmGLBatch)ParentForm).EnableTransactions(!JournalRowIsNull && (ARow.JournalStatus != MFinanceConstants.BATCH_CANCELLED)); 
-            
+            ((TFrmGLBatch)ParentForm).EnableTransactions(!JournalRowIsNull && (ARow.JournalStatus != MFinanceConstants.BATCH_CANCELLED));
+
             UpdateChangeableStatus();
         }
 
@@ -318,7 +318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ANewRow"></param>
         public void NewRowManual(ref GLBatchTDSAJournalRow ANewRow)
         {
-            if (ANewRow == null || FLedgerNumber == -1)
+            if ((ANewRow == null) || (FLedgerNumber == -1))
             {
                 return;
             }
@@ -330,9 +330,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView BatchDV = new DataView(FMainDS.ABatch);
 
             BatchDV.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ',');
-            
+
             ABatchRow BatchRow = (ABatchRow)BatchDV.FindRows(new object[] { FLedgerNumber, FBatchNumber })[0].Row;
-            
+
             ANewRow.LedgerNumber = BatchRow.LedgerNumber;
             ANewRow.BatchNumber = BatchRow.BatchNumber;
             ANewRow.JournalNumber = BatchRow.LastJournal + 1;
@@ -369,8 +369,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UpdateChangeableStatus()
         {
             Boolean IsChangeable = (!FPetraUtilsObject.DetailProtectedMode)
-                                    && (GetBatchRow() != null)
-                                    && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+                                   && (GetBatchRow() != null)
+                                   && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             Boolean JournalUpdatable = (FPreviouslySelectedDetailRow != null
                                         && FPreviouslySelectedDetailRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
@@ -554,7 +554,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0)
                 {
-                    RefreshCurrencyAndExchangeRate();    
+                    RefreshCurrencyAndExchangeRate();
                 }
                 else
                 {
@@ -569,7 +569,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
 
-            txtDetailExchangeRateToBase.BackColor = (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+            txtDetailExchangeRateToBase.BackColor =
+                (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
             FIntlRateToBaseCurrency = ((TFrmGLBatch)ParentForm).GetInternationalCurrencyExchangeRate(FBatchRow.DateEffective);
 

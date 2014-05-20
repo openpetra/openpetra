@@ -180,6 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             out bool AIsTransactionInIntlCurrency)
         {
             decimal IntlToBaseCurrencyExchRate = 1;
+
             AIsTransactionInIntlCurrency = false;
 
             string BatchCurrencyCode = ABatchRow.CurrencyCode;

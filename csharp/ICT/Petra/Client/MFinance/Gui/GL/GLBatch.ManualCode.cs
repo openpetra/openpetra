@@ -255,9 +255,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 case (int)eGLTabs.Batches:
                     SelectTab(eGLTabs.Batches);
                     break;
+
                 case (int)eGLTabs.Journals:
                     SelectTab(eGLTabs.Journals);
                     break;
+
                 default: //(ASelectedTabIndex == (int)eGLTabs.Transactions)
                     SelectTab(eGLTabs.Transactions);
                     break;
@@ -410,6 +412,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return IntlToBaseCurrencyExchRate;
         }
-
     }
 }
