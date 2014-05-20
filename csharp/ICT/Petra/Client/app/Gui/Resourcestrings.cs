@@ -50,19 +50,19 @@ namespace Ict.Petra.Client.App.Gui
         #region Category Descriptions
         /// <summary>todoComment</summary>
         public static readonly string StrKeysHelpCategoryGeneral = Catalog.GetString(
-            "These familiar keyboard shortcuts are used throughout many Windows applications.  OpenPetra uses them to perform the functionality that you would typically expect.");
+            "These familiar keyboard shortcuts are used throughout many Windows applications.  OpenPetra uses them to perform the functionality that you would typically expect.  In addition to the shortcuts listed here, many screens have ALT+key combinations associated with buttons.  Often, for example, ALT+N will create a new record.  Simply press the ALT key to see the available options for the current screen.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeysHelpCategoryList = Catalog.GetString(
-            "These keyboard shortcuts apply when a List of records is the active control.");
+            "These keyboard shortcuts only apply when keyboard input is currently directed to a List of records.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeysHelpCategoryNavigation = Catalog.GetString(
-            "These keyboard shortcuts apply to screens that have a List of records, even when the List is not the active control.  Using one of these shortcuts places the focus on the first editable control, or the List itself if there is no editable control.");
+            "These keyboard shortcuts apply to screens that have a List of records. They can be used wherever keyboard input is currently directed.  They direct the next keyboard input to the first data entry field below the List, or the List itself if there is no data entry field.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeysHelpCategoryFilterFind = Catalog.GetString(
-            "These keyboard shortcuts apply to screens that have a List of records and a Filter/Find panel.");
+            "These keyboard shortcuts apply to screens that have a List of records and a Filter/Find panel.  Like the Navigation shortcuts, these apply wherever keyboard input is currently directed.  Depending on the context you may be able to follow F3 or SHIFT+F3 by pressing ENTER to open a new screen with more details.");
 
         #endregion
 
@@ -73,21 +73,21 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlCHelp = Catalog.GetString(
-            "Copies the highlighted text in a text control to the clipboard.  Cannot be used to copy whole records.");
+            "Copies the highlighted text in a text entry field to the clipboard.  Cannot be used to copy whole records.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlX = Catalog.GetString("Ctrl+X");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlXHelp = Catalog.GetString(
-            "Deletes the highlighted text in a text control and places it on the clipboard so that it can be pasted elsewhere.");
+            "Deletes the highlighted text in a text entry field and places it on the clipboard so that it can be pasted elsewhere.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlV = Catalog.GetString("Ctrl+V");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlVHelp = Catalog.GetString(
-            "Pastes the clipboard text into the selected text control at the cursor position.");
+            "Pastes the clipboard text into the current text entry field at the cursor position.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlTab = Catalog.GetString("Ctrl+Tab");
@@ -107,13 +107,13 @@ namespace Ict.Petra.Client.App.Gui
         public static readonly string StrKeyShortcutCtrlS = Catalog.GetString("Ctrl+S");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrKeyShortcutCtrlSHelp = Catalog.GetString("Saves the pending screen changes to the database.");
+        public static readonly string StrKeyShortcutCtrlSHelp = Catalog.GetString("Saves the pending screen changes.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlP = Catalog.GetString("Ctrl+P");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrKeyShortcutCtrlPHelp = Catalog.GetString("Prints the data displayed in the List (not yet implemented)");
+        public static readonly string StrKeyShortcutCtrlPHelp = Catalog.GetString("Prints the data displayed in the List (where available)");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutEscape = Catalog.GetString("Escape");
@@ -178,7 +178,7 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutEnterHelp = Catalog.GetString(
-            "This may act like a mouse double-click or may start editing an entry on the highlighted row depending on context.");
+            "This may act like a mouse double-click or may start editing an entry on the highlighted row - depending on context.");
 
         #endregion
 
@@ -188,34 +188,34 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlHomeHelp = Catalog.GetString(
-            "Selects the first row in the List of records and places the focus on the first editable control.");
+            "Selects the first row in the List of records and directs keyboard input to the first data entry field.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlUp = Catalog.GetString("Ctrl+Up");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlUpHelp = Catalog.GetString(
-            "Selects the previous row in the List of records and places the focus on the first editable control.");
+            "Selects the previous row in the List of records and directs keyboard input to the first data entry field.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlDown = Catalog.GetString("Ctrl+Down");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlDownHelp = Catalog.GetString(
-            "Selects the next row in the List of records and places the focus on the first editable control.");
+            "Selects the next row in the List of records and directs keyboard input to the first data entry field.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlEnd = Catalog.GetString("Ctrl+End");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlEndHelp = Catalog.GetString(
-            "Selects the last row in the List of records and places the focus on the first editable control.");
+            "Selects the last row in the List of records and directs keyboard input to the first data entry field.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlL = Catalog.GetString("Ctrl+L");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrKeyShortcutCtrlLHelp = Catalog.GetString("Places the focus on the List of records at the current row.");
+        public static readonly string StrKeyShortcutCtrlLHelp = Catalog.GetString("Directs keyboard input to the List of records at the current row.");
 
         #endregion
 
@@ -225,28 +225,28 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlRHelp = Catalog.GetString(
-            "Opens the Filter panel and places the focus on the first Filter Panel control.");
+            "Opens the Filter Panel and directs the keyboard input to the first criteria field.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlF = Catalog.GetString("Ctrl+F");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlFHelp = Catalog.GetString(
-            "Opens the Find panel and places the focus on the first Find Panel control.");
+            "Opens the Find Panel and directs the keyboard input to the first criteria field.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutF3 = Catalog.GetString("F3");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutF3Help = Catalog.GetString(
-            "Opens the Find panel and finds the next item in the List that matches the Find panel criteria");
+            "Opens the Find Panel and finds the next matching item in the List.  Keyboard entry is directed to the List.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutShiftF3 = Catalog.GetString("Shift+F3");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutShiftF3Help = Catalog.GetString(
-            "Opens the Find panel and finds the previous item in the List that matches the Find panel criteria");
+            "Opens the Find Panel and finds the previous matching item in the List.  Keyboard entry is directed to the List.");
 
         #endregion
 

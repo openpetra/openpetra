@@ -116,6 +116,8 @@ namespace Ict.Petra.Client.CommonDialogs
         private void RunOnceOnActivationManual()
         {
             // Called when the screen has loaded
+            tpgFilter.Text = Catalog.GetString("Filter and Find");
+
             OnTabChange(null, null);
         }
 
@@ -134,7 +136,7 @@ namespace Ict.Petra.Client.CommonDialogs
             {
                 InitialiseTab(KeyboardShortcutTableNames.Navigation, ucoShortcutsNavigation.HelpGrid, ucoShortcutsNavigation.DescriptionLabel);
             }
-            else if (tabAllShortcuts.SelectedTab == tpgFilterFind)
+            else if (tabAllShortcuts.SelectedTab == tpgFilter)
             {
                 InitialiseTab(KeyboardShortcutTableNames.FilterFind, ucoShortcutsFilterFind.HelpGrid, ucoShortcutsFilterFind.DescriptionLabel);
             }

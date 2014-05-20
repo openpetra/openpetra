@@ -26,7 +26,7 @@ RootNode:
             Controls: [ucoShortcutsList]
         tpgNavigation:
             Controls: [ucoShortcutsNavigation]
-        tpgFilterFind:
+        tpgFilter:
             Controls: [ucoShortcutsFilterFind]
 
         ucoShortcutsGeneral:
