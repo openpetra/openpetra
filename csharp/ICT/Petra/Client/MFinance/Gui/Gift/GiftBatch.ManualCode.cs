@@ -41,6 +41,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
+        private bool FWindowIsMaximized = false;
+        private GiftBatchTDS FViewModeTDS;
+        private int standardTabIndex = 0;
+
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -53,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FViewMode = value;
             }
         }
-        private GiftBatchTDS FViewModeTDS;
+
         /// ViewModeTDS is for injection of the Datasets in the View Mode
         public GiftBatchTDS ViewModeTDS
         {
@@ -142,8 +146,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private int standardTabIndex = 0;
-
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
@@ -166,7 +168,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.Resize += new EventHandler(TFrmGiftBatch_Resize);
         }
 
-        private bool FWindowIsMaximized = false;
+        /// <summary>
+        /// Returns the corporate exchange rate for a given batch row
+        ///  and specifies whether or not the transaction is in International
+        ///  currency
+        /// </summary>
+        /// <param name="ABatchRow"></param>
+        /// <param name="AIsTransactionInIntlCurrency"></param>
+        /// <returns></returns>
+        public decimal InternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow,
+            out bool AIsTransactionInIntlCurrency)
+        {
+            decimal IntlToBaseCurrencyExchRate = 1;
+            AIsTransactionInIntlCurrency = false;
+
+            string BatchCurrencyCode = ABatchRow.CurrencyCode;
+            decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
+            DateTime BatchEffectiveDate = ABatchRow.GlEffectiveDate;
+            DateTime StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            if (LedgerBaseCurrency == LedgerIntlCurrency)
+            {
+                IntlToBaseCurrencyExchRate = 1;
+            }
+            else if (BatchCurrencyCode == LedgerIntlCurrency)
+            {
+                AIsTransactionInIntlCurrency = true;
+            }
+            else
+            {
+                IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                    LedgerIntlCurrency,
+                    StartOfMonth,
+                    BatchEffectiveDate);
+
+                if (IntlToBaseCurrencyExchRate == 0)
+                {
+                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                        LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        BatchEffectiveDate);
+
+                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+
+            return IntlToBaseCurrencyExchRate;
+        }
+
         void TFrmGiftBatch_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Maximized)

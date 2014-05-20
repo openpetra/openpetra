@@ -39,7 +39,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 standardTabIndex = 0;
-        private eGLTabs FPreviouslySelectedTab = eGLTabs.Batches;
         private bool FWindowIsMaximized = false;
 
         /// <summary>
@@ -60,7 +59,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// this window contains 4 tabs
+        /// this window contains 3 tabs
         public enum eGLTabs
         {
             /// list of batches
@@ -72,6 +71,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /// list of transactions
             Transactions
         };
+
+        /// <summary>
+        /// Stores which tab is current
+        /// </summary>
+        public eGLTabs FPreviouslySelectedTab = eGLTabs.Batches;
+
 
         private void TFrmGLBatch_Load(object sender, EventArgs e)
         {
@@ -164,7 +169,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     this.ucoTransactions.CancelChangesToFixedBatches();
                     this.ucoJournals.CancelChangesToFixedBatches();
-                    ucoBatches.EnableTransactionTabForBatch();
+                    ucoBatches.AutoEnableTransTabForBatch();
                 }
 
                 ucoBatches.SetInitialFocus();
@@ -345,35 +350,65 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Stores the exchange rate to convert base currency into international currency
+        /// Uses the current Batch effective date to return the
+        ///   corporate exchange rate value
         /// </summary>
-        public Decimal BaseToIntlExchangeRate(DateTime AEffectiveDate)
+        /// <returns></returns>
+        public decimal GetInternationalCurrencyExchangeRate()
         {
-            if ((FLedgerNumber == -1) || (FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
+            decimal IntlToBaseCurrencyExchRate = 0;
+
+            ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
+
+            if (BatchRow == null)
             {
-                return 0;
+                return IntlToBaseCurrencyExchRate;
             }
 
-            decimal IntlRateToBaseCurrency = 0;
-            DateTime StartOfMonthDate = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
+            return GetInternationalCurrencyExchangeRate(BatchRow.DateEffective);
+        }
 
-            try
+        /// <summary>
+        /// Returns the corporate exchange rate for a given batch row
+        ///  and specifies whether or not the transaction is in International
+        ///  currency
+        /// </summary>
+        /// <param name="AEffectiveDate"></param>
+        /// <returns></returns>
+        public decimal GetInternationalCurrencyExchangeRate(DateTime AEffectiveDate)
+        {
+            DateTime StartOfMonth = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            decimal IntlToBaseCurrencyExchRate = 0;
+
+            if (FLedgerNumber != -1)
             {
-                // read the exchange rate for international currency calculations
-                IntlRateToBaseCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
-                    FMainDS.ALedger[0].IntlCurrency,
-                    StartOfMonthDate,
-                    AEffectiveDate);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(String.Format("Error trying to retrieve International Exchange Rate for Ledger {0} and date {1}. Message: {2}",
-                        FLedgerNumber,
-                        StartOfMonthDate,
-                        ex.Message));
+                if (LedgerBaseCurrency == LedgerIntlCurrency)
+                {
+                    IntlToBaseCurrencyExchRate = 1;
+                }
+                else
+                {
+                    IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        StartOfMonth,
+                        AEffectiveDate);
+
+                    if (IntlToBaseCurrencyExchRate == 0)
+                    {
+                        string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                            LedgerBaseCurrency,
+                            LedgerIntlCurrency,
+                            AEffectiveDate);
+
+                        MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                }
             }
 
-            return IntlRateToBaseCurrency;
+            return IntlToBaseCurrencyExchRate;
         }
 
     }
