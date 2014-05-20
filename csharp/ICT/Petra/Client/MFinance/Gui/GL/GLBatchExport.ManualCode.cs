@@ -203,11 +203,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (File.Exists(txtFilename.Text))
             {
                 if (MessageBox.Show(Catalog.GetString("The file already exists. Is it OK to overwrite it?"),
-                    Catalog.GetString("Export Batches"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                        Catalog.GetString("Export Batches"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                {
                     return;
+                }
             }
+
             StreamWriter sw1 = null;
             try
             {

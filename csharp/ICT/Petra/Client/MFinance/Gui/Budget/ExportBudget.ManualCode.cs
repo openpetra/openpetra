@@ -192,10 +192,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if (File.Exists(FExportFileName))
             {
                 if (MessageBox.Show(Catalog.GetString("The file already exists. Is it OK to overwrite it?"),
-                    Catalog.GetString("Export Budget"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                        Catalog.GetString("Export Budget"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                {
                     return;
+                }
             }
 
             Hashtable requestParams = new Hashtable();
