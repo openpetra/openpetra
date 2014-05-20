@@ -794,9 +794,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int CurrentBatchNumber;
             int CurrentJournalNumber;
 
-            decimal BatchCreditTotalAmt = 0;
-            decimal BatchDebitTotalAmt = 0;
-
             ABatchRow CurrentBatchRow = GetBatchRow();
             AJournalRow CurrentJournalRow = null;
 
@@ -809,25 +806,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (!(BatchLevelUpdate || JournalLevelUpdate || TransLevelUpdate))
             {
-                MessageBox.Show("UpdateTransactionAmounts() called with wrong first argument");
+                TLogging.Log("UC_GLTransactions-UpdateTransactionAmounts() called with wrong first argument");
                 return;
-            }
-
-            if (BatchLevelUpdate)
-            {
-                TLogging.Log("Stage 1 - Active Tab: Batch");
-            }
-            else if (JournalLevelUpdate)
-            {
-                TLogging.Log("Stage 1 - Active Tab: Journal");
-            }
-            else if (TransLevelUpdate)
-            {
-                TLogging.Log("Stage 1 - Active Tab: Transaction");
-            }
-            else
-            {
-                TLogging.Log("Stage 1 - Active Tab: ERROR!");
             }
 
             if (CurrentBatchRow == null
@@ -835,8 +815,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-
-            TLogging.Log("Stage 2");
 
             LedgerNumber = CurrentBatchRow.LedgerNumber;
             CurrentBatchNumber = CurrentBatchRow.BatchNumber;
@@ -856,24 +834,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                TLogging.Log("Stage 4 Not-Batch");
-
                 CurrentJournalRow = GetJournalRow();
                 CurrentJournalNumber = CurrentJournalRow.JournalNumber;
             }
 
             if (JournalLevelUpdate)
             {
-                TLogging.Log("Stage 5 Journal");
-
                 ((TFrmGLBatch)this.ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 //Ensure that when the Trans tab is opened, the data is reloaded.
                 FBatchNumber = -1;
             }
             else if (TransLevelUpdate && FPreviouslySelectedDetailRow != null)
             {
-                TLogging.Log("Stage 6 Transaction");
-                
                 TransactionRowActive = true;
 
                 CurrentTransBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
@@ -881,66 +853,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 CurrentTransNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
 
+            if (!TransactionRowActive)
+            {
+                txtCreditAmountBase.NumberValueDecimal = 0;
+                txtCreditAmount.NumberValueDecimal = 0;
+                txtDebitAmountBase.NumberValueDecimal = 0;
+                txtDebitAmount.NumberValueDecimal = 0;
+            } 
+
             //Get the corporate exchange rate
             IntlRateToBaseCurrency = ((TFrmGLBatch)this.ParentForm).GetInternationalCurrencyExchangeRate();
 
             if (!EnsureGLDataPresent(LedgerNumber, CurrentBatchNumber, CurrentJournalNumber, ref JournalsToUpdateDV, TransactionRowActive)
                 || IntlRateToBaseCurrency == 0)
             {
-                TLogging.Log("Stage 7 No Data or Corporate");
-
                 //No transactions exist to process or corporate exchange rate not found
                 return;
             }
 
-            TLogging.Log("Stage 8 No. Journals: " + JournalsToUpdateDV.Count.ToString());
-
+            //Iterate through journals
             foreach (DataRowView drv in JournalsToUpdateDV)
             {
-                decimal amtDebitTotal = 0.0M;
-                decimal amtDebitTotalBase = 0.0M;
                 decimal amtCreditTotal = 0.0M;
+                decimal amtDebitTotal = 0.0M;
                 decimal amtCreditTotalBase = 0.0M;
-
+                decimal amtDebitTotalBase = 0.0M;
+                
                 AJournalRow jr = (AJournalRow)drv.Row;
 
                 IsTransactionInIntlCurrency = (jr.TransactionCurrency == LedgerIntlCurrency);
 
-                if (JournalLevelUpdate)
+                if (BatchLevelUpdate)
 	            {
 		            //Journal row is active
-                    CurrentJournalRow.DateEffective = CurrentBatchRow.DateEffective;
+                    jr.DateEffective = CurrentBatchRow.DateEffective;
 	            }
-                jr.DateEffective = CurrentBatchRow.DateEffective;
-
-                if (TransactionRowActive
-                        && jr.BatchNumber == CurrentTransBatchNumber
-                        && jr.JournalNumber == CurrentTransJournalNumber)
-                {
-                    TLogging.Log("Stage 9 Trans current row active");
-
-                    if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
-                    {
-                        txtCreditAmountBase.NumberValueDecimal = 0;
-                        txtCreditAmount.NumberValueDecimal = 0;
-                        FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
-                    }
-                    else
-                    {
-                        txtDebitAmountBase.NumberValueDecimal = 0;
-                        txtDebitAmount.NumberValueDecimal = 0;
-                        FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
-                    }
-                }
-                else if (!TransactionRowActive)
-                {
-                    TLogging.Log("Stage 10 Blank base amounts");
-
-                    txtCreditAmountBase.NumberValueDecimal = 0;
-                    txtCreditAmount.NumberValueDecimal = 0;
-                    txtDebitAmountBase.NumberValueDecimal = 0;
-                    txtDebitAmount.NumberValueDecimal = 0;
-                }
 
                 TransactionsToUpdateDV.RowFilter = String.Format("{0}={1} And {2}={3}",
                     ATransactionTable.GetBatchNumberDBName(),
@@ -948,22 +895,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ATransactionTable.GetJournalNumberDBName(),
                     jr.JournalNumber);
 
-                TLogging.Log("Stage 11 No. Transactions: " + TransactionsToUpdateDV.Count.ToString());
-
+                //Iterate thuogh all trnsactions in Journal
                 foreach (DataRowView trv in TransactionsToUpdateDV)
                 {
                     ATransactionRow tr = (ATransactionRow)trv.Row;
+
+                    bool IsCurrentActiveTransRow = (TransactionRowActive
+                                                    && tr.TransactionNumber == CurrentTransNumber
+                                                    && tr.BatchNumber == CurrentTransBatchNumber
+                                                    && tr.JournalNumber == CurrentTransJournalNumber);
 
                     if (AUpdateTransDates)
                     {
                         tr.TransactionDate = CurrentBatchRow.DateEffective;
                     }
 
+                    if (IsCurrentActiveTransRow)
+                    {
+                        if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
+                        {
+                            txtCreditAmountBase.NumberValueDecimal = 0;
+                            txtCreditAmount.NumberValueDecimal = 0;
+                            FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
+                        }
+                        else
+                        {
+                            txtDebitAmountBase.NumberValueDecimal = 0;
+                            txtDebitAmount.NumberValueDecimal = 0;
+                            FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
+                        }
+                    }
+
                     // recalculate the amount in base currency
                     if (jr.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                     {
-                        TLogging.Log("Stage 12 recalculate the amount in base currency");
-
                         tr.AmountInBaseCurrency = GLRoutines.Divide(tr.TransactionAmount, jr.ExchangeRateToBase);
 
                         if (IsTransactionInIntlCurrency)
@@ -981,10 +946,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         amtDebitTotal += tr.TransactionAmount;
                         amtDebitTotalBase += tr.AmountInBaseCurrency;
 
-                        if (TransactionRowActive
-                            && (tr.BatchNumber == CurrentTransBatchNumber)
-                            && (tr.JournalNumber == CurrentTransJournalNumber)
-                            && (tr.TransactionNumber == CurrentTransNumber))
+                        if (IsCurrentActiveTransRow)
                         {
                             FPreviouslySelectedDetailRow.AmountInBaseCurrency = tr.AmountInBaseCurrency;
                             FPreviouslySelectedDetailRow.AmountInIntlCurrency = tr.AmountInIntlCurrency;
@@ -997,10 +959,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         amtCreditTotal += tr.TransactionAmount;
                         amtCreditTotalBase += tr.AmountInBaseCurrency;
 
-                        if (TransactionRowActive
-                            && (tr.BatchNumber == CurrentTransBatchNumber)
-                            && (tr.JournalNumber == CurrentTransJournalNumber)
-                            && (tr.TransactionNumber == CurrentTransNumber))
+                        if (IsCurrentActiveTransRow)
                         {
                             FPreviouslySelectedDetailRow.AmountInBaseCurrency = tr.AmountInBaseCurrency;
                             FPreviouslySelectedDetailRow.AmountInIntlCurrency = tr.AmountInIntlCurrency;
@@ -1010,41 +969,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
 
-                jr.JournalCreditTotal = amtCreditTotal;
-                jr.JournalDebitTotal = amtDebitTotal;
-
-                if (BatchLevelUpdate)
-                {
-                    BatchCreditTotalAmt += amtCreditTotal;
-                    BatchDebitTotalAmt += amtDebitTotal;
-                }
-
                 if (TransactionRowActive
                     && jr.BatchNumber == CurrentTransBatchNumber
                     && jr.JournalNumber == CurrentTransJournalNumber)
                 {
-                    TLogging.Log("Stage 13 Trans row active");
-
                     txtCreditTotalAmount.NumberValueDecimal = amtCreditTotal;
                     txtDebitTotalAmount.NumberValueDecimal = amtDebitTotal;
                     txtCreditTotalAmountBase.NumberValueDecimal = amtCreditTotalBase;
                     txtDebitTotalAmountBase.NumberValueDecimal = amtDebitTotalBase;
-
-                    txtCreditTotalAmount.NumberValueDecimal = jr.JournalCreditTotal;
-                    txtDebitTotalAmount.NumberValueDecimal = jr.JournalDebitTotal;
                 }
             }
 
-            if (BatchLevelUpdate)
-            {
-                CurrentBatchRow.BatchCreditTotal = BatchCreditTotalAmt;
-                CurrentBatchRow.BatchDebitTotal = BatchDebitTotalAmt;
-            }
-            else
-            {
-                //Update totals of Batch
-                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, CurrentBatchRow);
-            }
+            //Update totals of Batch
+            GLRoutines.UpdateTotalsOfBatch(ref FMainDS, CurrentBatchRow);
 
             // refresh the currency symbols
             if (TransactionRowActive)

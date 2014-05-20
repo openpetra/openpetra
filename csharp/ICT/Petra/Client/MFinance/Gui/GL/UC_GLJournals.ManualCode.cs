@@ -552,7 +552,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.ALedger[0].BaseCurrency,
                     FBatchRow.DateEffective);
 
-                RefreshCurrencyAndExchangeRate();
+                if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0)
+                {
+                    RefreshCurrencyAndExchangeRate();    
+                }
+                else
+                {
+                    txtDetailExchangeRateToBase.NumberValueDecimal = 0M;
+                    ValidateAllData(false, true, (Control)txtDetailExchangeRateToBase);
+                    btnGetSetExchangeRate.Enabled = true;
+                }
             }
         }
 
