@@ -2352,7 +2352,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             //Look in RecipientPerson table
-            personRow = personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey);
+            personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey);
 
             if (personRow != null)
             {

@@ -325,21 +325,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void UpdateCostCentreCodeForAllRecipients()
-        {
-            string FailedUpdates = string.Empty;
-
-            if (!FBatchUnposted)
-            {
-                return;
-            }
-
-            //0 for the last two arguments means for all transactions in the batch
-            //UpdateCostCentreCodeForRecipients(out FailedUpdates, 0, 0);
-
-            //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
-        }
-
         private void FindCostCentreCodeForRecipient(AGiftDetailRow ARow, Int64 APartnerKey, bool AShowError = false)
         {
             if (ARow == null)
@@ -798,7 +783,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RetrieveRecipientCostCentreCode(Int64 APartnerKey)
         {
-            string FailedUpdates = string.Empty;
+            //string FailedUpdates = string.Empty;
 
             if (FInKeyMinistryChanging || (FPreviouslySelectedDetailRow == null))
             {
@@ -2423,7 +2408,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 LedgerNumber;
             Int32 CurrentBatchNumber;
 
-            DateTime StartOfMonth;
             DateTime BatchEffectiveDate;
 
             decimal BatchExchangeRateToBase = 0;
@@ -2461,7 +2445,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             CurrentBatchNumber = CurrentBatchRow.BatchNumber;
 
             BatchEffectiveDate = CurrentBatchRow.GlEffectiveDate;
-            StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
             LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
             LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
 
