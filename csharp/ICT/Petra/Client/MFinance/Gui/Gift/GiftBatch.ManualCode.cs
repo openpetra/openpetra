@@ -41,6 +41,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
+        private bool FWindowIsMaximized = false;
+        private GiftBatchTDS FViewModeTDS;
+        private int standardTabIndex = 0;
+
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -53,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FViewMode = value;
             }
         }
-        private GiftBatchTDS FViewModeTDS;
+
         /// ViewModeTDS is for injection of the Datasets in the View Mode
         public GiftBatchTDS ViewModeTDS
         {
@@ -83,7 +87,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ucoBatches.LoadBatches(FLedgerNumber);
 
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+
+                //Enable below if want code to run before standard Save() is executed
+                //FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
             }
+        }
+
+        // Before the dataset is saved, check for correlation between batch and transactions
+        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            ucoBatches.CheckBeforeSavingBatch();
         }
 
         /// <summary>
@@ -110,6 +123,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgTransactions.Enabled = false;
+
+            //FPetraUtilsObject.OnDataSavingStart
         }
 
         /// <summary>
@@ -117,7 +132,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="sender">Pass this on to the user control.</param>
         /// <param name="e">Not evaluated.</param>
-        public void mniFilterFind_Click(object sender, System.EventArgs e)
+        public void MniFilterFind_Click(object sender, System.EventArgs e)
         {
             switch (tabGiftBatch.SelectedIndex)
             {
@@ -131,14 +146,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private int standardTabIndex = 0;
-
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             tabGiftBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+
+            this.Shown += delegate
+            {
+                // This will ensure the grid gets the focus when the screen is shown for the first time
+                ucoBatches.SetInitialFocus();
+            };
         }
 
         private void RunOnceOnActivationManual()
@@ -149,7 +168,57 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.Resize += new EventHandler(TFrmGiftBatch_Resize);
         }
 
-        private bool FWindowIsMaximized = false;
+        /// <summary>
+        /// Returns the corporate exchange rate for a given batch row
+        ///  and specifies whether or not the transaction is in International
+        ///  currency
+        /// </summary>
+        /// <param name="ABatchRow"></param>
+        /// <param name="AIsTransactionInIntlCurrency"></param>
+        /// <returns></returns>
+        public decimal InternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow,
+            out bool AIsTransactionInIntlCurrency)
+        {
+            decimal IntlToBaseCurrencyExchRate = 1;
+
+            AIsTransactionInIntlCurrency = false;
+
+            string BatchCurrencyCode = ABatchRow.CurrencyCode;
+            decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
+            DateTime BatchEffectiveDate = ABatchRow.GlEffectiveDate;
+            DateTime StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            if (LedgerBaseCurrency == LedgerIntlCurrency)
+            {
+                IntlToBaseCurrencyExchRate = 1;
+            }
+            else if (BatchCurrencyCode == LedgerIntlCurrency)
+            {
+                AIsTransactionInIntlCurrency = true;
+            }
+            else
+            {
+                IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                    LedgerIntlCurrency,
+                    StartOfMonth,
+                    BatchEffectiveDate);
+
+                if (IntlToBaseCurrencyExchRate == 0)
+                {
+                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                        LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        BatchEffectiveDate);
+
+                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+
+            return IntlToBaseCurrencyExchRate;
+        }
+
         void TFrmGiftBatch_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Maximized)
@@ -310,7 +379,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
-                this.ucoBatches.FocusGrid();
+                this.ucoBatches.SetFocusToGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
@@ -356,6 +425,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.SelectBatchNumber(gdr.BatchNumber);
             ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
             standardTabIndex = 1;     // later we switch to the detail tab
+        }
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ((tabGiftBatch.SelectedTab == tpgBatches) && (ucoBatches.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((tabGiftBatch.SelectedTab == tpgTransactions) && (ucoTransactions.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

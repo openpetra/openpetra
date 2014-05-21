@@ -31,7 +31,7 @@ OpenPetra:
 
                         #ChangeAddress:
                         #MergePartners:
-                        FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners, ActionOpenScreen=TPartnerFindScreen, Singleton=true}
+                        FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners, Singleton=true}
                         WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
                         MergePartners: {Label=Merge Partners, Description=Merge two partner records together, ActionOpenScreen=TFrmMergePartnersDialog}
                         DeletePartner: {Label=Delete Partner, Description=Delete a selected Partner, ActionClick=TPartnerMain.DeletePartnerRecord}

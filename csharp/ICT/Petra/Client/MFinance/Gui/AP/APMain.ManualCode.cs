@@ -45,6 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private Int32 FLedgerNumber;
         private String FInitialTab = "Suppliers";
+        private bool FRequireApprovalBeforePosting = false;
 
         // Flags to indicate if the data has changed
         private Boolean FIsSupplierDataChanged = true;      // Initially we don't have any!
@@ -181,6 +182,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
+        /// Gets whether approval is reqiored before posting
+        /// </summary>
+        public Boolean RequireApprovalBeforePosting
+        {
+            get
+            {
+                return FRequireApprovalBeforePosting;
+            }
+        }
+
+        /// <summary>
         /// (Re)loads the outstanding invoices.  Does nothing if the invoice data has not changed.
         /// </summary>
         public void LoadOutstandingInvoices()
@@ -202,19 +214,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tabSearchResult.SelectedTab = tpgOutstandingInvoices;
             }
 
-            TabChange(null, null);
-        }
+            TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, FLedgerNumber);
+            FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
 
-        private void mniFilterFind_Click(object sender, EventArgs e)
-        {
-            if (tabSearchResult.SelectedTab == tpgSuppliers)
-            {
-                ucoSuppliers.MniFilterFind_Click(sender, e);
-            }
-            else
-            {
-                ucoOutstandingInvoices.MniFilterFind_Click(sender, e);
-            }
+            TabChange(null, null);
         }
 
         private void SupplierTransactions(object sender, EventArgs e)
@@ -335,34 +338,41 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        /// Special Handlers for menus and command keys for our user controls
+
+        private void MniFilterFind_Click(object sender, EventArgs e)
+        {
+            if (tabSearchResult.SelectedTab == tpgSuppliers)
+            {
+                ucoSuppliers.MniFilterFind_Click(sender, e);
+            }
+            else if (tabSearchResult.SelectedTab == tpgOutstandingInvoices)
+            {
+                ucoOutstandingInvoices.MniFilterFind_Click(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
         {
-            if (keyData == (Keys.F | Keys.Control))
+            if ((tabSearchResult.SelectedTab == tpgSuppliers) && (ucoSuppliers.ProcessParentCmdKey(ref msg, keyData)))
             {
-                mniFilterFind_Click(mniEditFind, null);
+                return true;
+            }
+            else if ((tabSearchResult.SelectedTab == tpgOutstandingInvoices) && (ucoOutstandingInvoices.ProcessParentCmdKey(ref msg, keyData)))
+            {
                 return true;
             }
 
-            if (keyData == (Keys.R | Keys.Control))
-            {
-                mniFilterFind_Click(mniEditFilter, null);
-                return true;
-            }
-
-            if (keyData == (Keys.F3))
-            {
-                mniFilterFind_Click(mniEditFind, new KeyPressEventArgs('+'));
-                return true;
-            }
-
-            if (keyData == (Keys.F3 | Keys.Shift))
-            {
-                mniFilterFind_Click(mniEditFind, new KeyPressEventArgs('-'));
-                return true;
-            }
-
-            return false;
+            return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        #endregion
 
         #region Forms Messaging Interface Implementation
 

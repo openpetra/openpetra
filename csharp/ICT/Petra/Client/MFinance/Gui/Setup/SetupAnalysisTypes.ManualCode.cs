@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Validation;
@@ -101,19 +102,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool PreDeleteManual(AAnalysisTypeRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            DataView view = new DataView(FMainDS.AFreeformAnalysis);
+            DataView DependentRecordsDV = new DataView(FMainDS.AFreeformAnalysis);
 
-            view.RowStateFilter = DataViewRowState.CurrentRows;
-            view.RowFilter = String.Format("{0} = '{1}'",
+            DependentRecordsDV.RowStateFilter = DataViewRowState.CurrentRows;
+            DependentRecordsDV.RowFilter = String.Format("{0} = '{1}'",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                 ARowToDelete.AnalysisTypeCode);
 
-            if (view.Count > 0)
+            if (DependentRecordsDV.Count > 0)
             {
-                // We do not want to delete if any rows exist in the DataView
-                MessageBox.Show(String.Format(
-                        Catalog.GetString("Please delete the unused values first!{0}{0}Note:Used types and types with used values cannot be deleted."),
-                        Environment.NewLine));
+                // Tell the user that we cannot allow deletion if any rows exist in the DataView
+                TMessages.MsgRecordCannotBeDeletedDueToDependantRecordsError(
+                    "Analysis Type", "an Analysis Type", "Analysis Types", "Analysis Value", "an Analysis Value",
+                    "Analysis Values", ARowToDelete.AnalysisTypeCode, DependentRecordsDV.Count);
+
                 return false;
             }
 

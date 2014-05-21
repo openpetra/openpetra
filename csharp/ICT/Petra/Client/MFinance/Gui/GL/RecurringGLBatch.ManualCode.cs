@@ -353,5 +353,49 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 Console.WriteLine("Normal - autosizing both");
             }
         }
+
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        /// Special Handlers for menus and command keys for our user controls
+
+        private void MniFilterFind_Click(object sender, EventArgs e)
+        {
+            if (tabRecurringGLBatch.SelectedTab == tpgBatches)
+            {
+                ucoRecurringBatches.MniFilterFind_Click(sender, e);
+            }
+            else if (tabRecurringGLBatch.SelectedTab == tpgJournals)
+            {
+                ucoRecurringJournals.MniFilterFind_Click(sender, e);
+            }
+            else if (tabRecurringGLBatch.SelectedTab == tpgTransactions)
+            {
+                ucoRecurringTransactions.MniFilterFind_Click(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ((tabRecurringGLBatch.SelectedTab == tpgBatches) && (ucoRecurringBatches.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((tabRecurringGLBatch.SelectedTab == tpgJournals) && (ucoRecurringJournals.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((tabRecurringGLBatch.SelectedTab == tpgTransactions) && (ucoRecurringTransactions.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
     }
 }
