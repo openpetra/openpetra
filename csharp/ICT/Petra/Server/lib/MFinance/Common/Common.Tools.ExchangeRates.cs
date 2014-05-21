@@ -647,8 +647,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             tempTable.Rows.Add(tempRow);
 
-            
-
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
@@ -656,9 +654,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return true;
         }
-
-
-
 
         /// <summary>
         /// Get the latest Corporate exchange rate
