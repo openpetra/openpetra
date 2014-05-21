@@ -447,9 +447,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             SetPrimaryKeyReadOnly(false);
         }
 
-        //
-        // Some of this code needs moving into the treeview and listview controls.
-
         private void AddNewAccount(Object sender, EventArgs e)
         {
             if (FCurrentAccount == null)
@@ -477,15 +474,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             AAccountRow parentAccount = FCurrentAccount.AccountRow;
 
-            AAccountRow newAccount = FMainDS.AAccount.NewRowTyped();
-            newAccount.AccountCode = newName;
-            newAccount.LedgerNumber = FLedgerNumber;
-            newAccount.AccountActiveFlag = true;
-            newAccount.DebitCreditIndicator = parentAccount.DebitCreditIndicator;
-            newAccount.AccountType = parentAccount.AccountType;
-            newAccount.ValidCcCombo = parentAccount.ValidCcCombo;
-            newAccount.PostingStatus = true;
-            FMainDS.AAccount.Rows.Add(newAccount);
+            AAccountRow newAccountRow = FMainDS.AAccount.NewRowTyped();
+            newAccountRow.AccountCode = newName;
+            newAccountRow.LedgerNumber = FLedgerNumber;
+            newAccountRow.AccountActiveFlag = true;
+            newAccountRow.DebitCreditIndicator = parentAccount.DebitCreditIndicator;
+            newAccountRow.AccountType = parentAccount.AccountType;
+            newAccountRow.ValidCcCombo = parentAccount.ValidCcCombo;
+            newAccountRow.PostingStatus = true;
+            FMainDS.AAccount.Rows.Add(newAccountRow);
 
             AAccountHierarchyDetailRow hierarchyDetailRow = FMainDS.AAccountHierarchyDetail.NewRowTyped();
             hierarchyDetailRow.LedgerNumber = FLedgerNumber;
@@ -499,7 +496,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             hierarchyDetailRow.ReportOrder = ucoAccountsTree.GetLastChildReportingOrder() + 1;
             FMainDS.AAccountHierarchyDetail.Rows.Add(hierarchyDetailRow);
 
-            ucoAccountsTree.AddNewAccount(newAccount, hierarchyDetailRow);
+            ucoAccountsTree.AddNewAccount(newAccountRow, hierarchyDetailRow);
 
             txtDetailAccountCode.Focus();
             FPetraUtilsObject.SetChangedFlag();
@@ -719,7 +716,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             tbbAddNewAccount.Enabled = (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false);
             tbbDeleteAccount.Enabled = (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false);
-            FPetraUtilsObject.SuppressChangeDetection = false;
 
             if (hasChanges)
             {

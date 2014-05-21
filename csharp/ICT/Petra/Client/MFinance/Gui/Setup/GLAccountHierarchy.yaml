@@ -42,7 +42,6 @@ RootNode:
         ucoAccountsList:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountsList
             Dock: Fill
-#       trvAccounts: {Dock=Fill}
         pnlDetails: {Dock=Fill}
             Controls: [pnlDetailTop, pnlFlags, pnlSummary, pnlForeignCurrency, ucoAccountAnalysisAttributes, txtStatus]
         pnlDetailTop:

@@ -43,47 +43,110 @@ using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
+    /// <summary>
+    /// These objects are linked to nodes in the tree, and hold the actual data.
+    /// </summary>
+    public class CostCentreNodeDetails
+    {
+        /// <summary>
+        /// This will be true for Summary cost codes, initially Unknown for "leaves".
+        /// On newly created cost codes, this will be true.
+        /// On a "need to know" basis, it will be set false for cost codes that already have transactions posted to them.
+        /// </summary>
+        ///
+        public Boolean? CanHaveChildren;
+
+        /// <summary>
+        /// This will be initially false for Summary cost codes that have children, unknown for "leaves".
+        /// On newly created cost codes, this will be true.
+        /// On a "need to know" basis, it will be set false for cost codes that already have transactions posted to them.
+        /// </summary>
+        public Boolean? CanDelete;
+
+        /// <summary>If the Node is new, I can delete it without worrying</summary>
+        public Boolean IsNew;
+
+        /// <summary>If actions on the Node are restricted, this message is returned from the server.</summary>
+        public String Msg;
+
+        /// <summary>..and here's the actual data! </summary>
+        public ACostCentreRow CostCentreRow;
+
+        /// <summary>Reference to the tree node that also references this item</summary>
+        public TreeNode linkedTreeNode;
+
+        /// <summary>All the nodes share this Ledger Number</summary>
+        public static Int32 FLedgerNumber;
+
+        /// <summary>
+        /// The information for this node is initially unknown (to save load-up time).
+        /// This method fills in the details.
+        /// </summary>
+        public void GetAttrributes()
+        {
+            if (IsNew)
+            {
+                CanHaveChildren = true;
+                CanDelete = (linkedTreeNode.Nodes.Count == 0);
+                return;
+            }
+
+            if (!CanHaveChildren.HasValue || !CanDelete.HasValue)
+            {
+                bool RemoteCanBeParent = false;
+                bool RemoteCanDelete = false;
+
+                if (TRemote.MFinance.Setup.WebConnectors.GetCostCentreAttributes(FLedgerNumber, CostCentreRow.CostCentreCode,
+                        out RemoteCanBeParent, out RemoteCanDelete, out Msg))
+                {
+                    CanHaveChildren = RemoteCanBeParent;
+                    CanDelete = RemoteCanDelete;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Create an CostCentreNodeDetails object for this CostCentre
+        /// </summary>
+        public static CostCentreNodeDetails AddNewCostCentre(TreeNode NewTreeNode, ACostCentreRow CostCentreRow)
+        {
+            CostCentreNodeDetails NodeDetails = new CostCentreNodeDetails();
+
+            NodeDetails.CanHaveChildren = true;
+
+            if (CostCentreRow.PostingCostCentreFlag) // A "Posting CostCentre" that's not been used may yet be promoted to a "Summary CostCentre".
+            {
+                NodeDetails.CanHaveChildren = null;
+            }
+            else      // A "Summary CostCentre" can have children.
+            {
+                NodeDetails.CanHaveChildren = true;
+            }
+
+            NodeDetails.IsNew = true;
+            NodeDetails.CostCentreRow = CostCentreRow;
+            NewTreeNode.Tag = NodeDetails;
+            NodeDetails.linkedTreeNode = NewTreeNode;
+            return NodeDetails;
+        }
+    };
+
     public partial class TFrmGLCostCentreHierarchy
     {
         private const string INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE = "#UNASSIGNEDDETAILCOSTCENTRECODE#";
 
-        private TreeNode FDragNode = null;
-        private TreeNode FDragTarget = null;
-        private TreeNode FSelectedNode = null;
         private String FStatus = "";
 
         private Int32 FLedgerNumber;
-        private bool FIAmDeleting = false;
-        private bool FIAmValidting = false;
-        private bool FIAmUpdating;
+
+        /// <summary>This is set to prevent infinite cascades</summary>
+        public bool FIAmUpdating;
 
         private String strOldDetailCostCentreCode; // this string is used to detect that the user has renamed an existing Cost Centre.
 
         private string FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
         string FnameForNewCostCentre;
-
-
-        private class CostCentreNodeDetails
-        {
-            /// <summary>
-            /// This will be true for Summary cost codes, initially Unknown for "leaves".
-            /// On newly created cost codes, this will be true.
-            /// On a "need to know" basis, it will be set false for cost codes that already have transactions posted to them.
-            /// </summary>
-            ///
-            public Boolean? CanHaveChildren;
-
-            /// <summary>
-            /// This will be initially false for Summary cost codes that have children, unknown for "leaves".
-            /// On newly created cost codes, this will be true.
-            /// On a "need to know" basis, it will be set false for cost codes that already have transactions posted to them.
-            /// </summary>
-            public Boolean? CanDelete;
-            public Boolean IsNew;
-            public String Msg;
-            /// <summary>..and here's the actual data! </summary>
-            public ACostCentreRow CostCentreRow;
-        };
+        private CostCentreNodeDetails FCurrentCostCentre;
 
         /// <summary>
         /// Setup the CostCentre hierarchy of this ledger
@@ -93,89 +156,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
+                CostCentreNodeDetails.FLedgerNumber = FLedgerNumber;
                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
-                PopulateTreeView();
+                ucoCostCentreTree.RunOnceOnActivationManual(this);
+                ucoCostCentreTree.PopulateTreeView(FMainDS);
+
+                ucoCostCentreList.RunOnceOnActivationManual(this);
+                ucoCostCentreList.PopulateListView(FMainDS, FLedgerNumber);
             }
         }
 
         /// <summary>
-        /// Make this Cost Centre a child of the selected one in the hierarchy (from drag-drop).
+        /// Called from the user controls when the user selects a row,
+        /// this common method keeps both user controls in sync.
         /// </summary>
-        /// <param name="AChild"></param>
-        /// <param name="ANewParent"></param>
-        private void DoReassignment(TreeNode AChild, TreeNode ANewParent)
+        public void SetSelectedCostCentre(CostCentreNodeDetails AnewSelection)
         {
-            if (((CostCentreNodeDetails)AChild.Tag).CostCentreRow.SystemCostCentreFlag)
-            {
-                MessageBox.Show(Catalog.GetString("This is a System Cost Code and cannot be moved."),
-                    Catalog.GetString("Re-assign Cost Code"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                ShowNodeSelected(null);
-                return;
-            }
+            FCurrentCostCentre = AnewSelection;
+            strOldDetailCostCentreCode = FCurrentCostCentre.CostCentreRow.CostCentreCode;
 
-            if ((AChild != null) && (ANewParent != null))
-            {
-                String PrevParent = AChild.Parent.Text;
-                ACostCentreRow NewParentCostCentre = ((CostCentreNodeDetails)ANewParent.Tag).CostCentreRow;
+            ucoCostCentreList.SelectedCostCentre = AnewSelection;
+            ucoCostCentreTree.SelectedCostCentre = AnewSelection;
+        }
 
-                TreeNode NewNode = (TreeNode)AChild.Clone();
-                ACostCentreRow MovingCostCentre = ((CostCentreNodeDetails)NewNode.Tag).CostCentreRow;
+        /// <summary>
+        /// The ListView only gives me the CostCentreCode
+        /// That's OK - I can ask the TreeView to find the actual record.
+        /// It calls back to SetSelectedCostCentre, above.
+        /// </summary>
+        public void SetSelectedCostCentreCode(String AnewCostCentreCode)
+        {
+            ucoCostCentreTree.SelectNodeByName(AnewCostCentreCode);
+        }
 
-                TreeNode PreviousParentNode = AChild.Parent;
+        /// <summary>Clear the Status Box</summary>
+        public void ClearStatus()
+        {
+            FStatus = "";
+            txtStatus.Text = FStatus;
+            txtStatus.Refresh();
+        }
 
-                MovingCostCentre.CostCentreToReportTo = NewParentCostCentre.CostCentreCode;
-                NewParentCostCentre.PostingCostCentreFlag = false; // Perhaps was false already.
-                InsertAlphabetically(ANewParent, NewNode);
-                NewNode.Expand();
-                ANewParent.Expand();
-                ANewParent.BackColor = Color.White;
-                FStatus += String.Format(Catalog.GetString("{0} was moved from {1} to {2}.\r\n"),
-                    AChild.Text, PrevParent, ANewParent.Text);
-                txtStatus.Text = FStatus;
-
-                //Remove Original Node
-                AChild.Remove();
-
-                // If the previous parent now has no children, it can be used for posting:
-                if (PreviousParentNode.Nodes.Count == 0)
-                {
-                    ((CostCentreNodeDetails)PreviousParentNode.Tag).CostCentreRow.PostingCostCentreFlag = true;
-                }
-
-                //
-                // OM - specific code ahead!
-                // (Reference to "ILT")
-                if (NewParentCostCentre.CostCentreCode == "ILT")
-                {
-                    if (MovingCostCentre.CostCentreType == "Local")
-                    {
-                        MessageBox.Show(
-                            Catalog.GetString(
-                                "You have moved a Local Cost Centre into ILT,\n" +
-                                "which is probably not what you want.\n" +
-                                "You should change the type to Foreign."),
-                            Catalog.GetString("Cost Centre Type"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                    }
-                }
-                else
-                {
-                    if (MovingCostCentre.CostCentreType != NewParentCostCentre.CostCentreType)
-                    {
-                        MessageBox.Show(
-                            String.Format(Catalog.GetString(
-                                    "This {0} Cost Centre is now a child of a {1} Cost Centre,\n" +
-                                    "which is probably not what you want.\n" +
-                                    "You should change the type to {1}."), MovingCostCentre.CostCentreType, NewParentCostCentre.CostCentreType),
-                            Catalog.GetString("Cost Centre Type"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                    }
-                }
-
-                FPetraUtilsObject.SetChangedFlag();
-            }
+        /// <summary>Add this in the Status Box</summary>
+        /// <param name="NewStr"></param>
+        public void ShowStatus(String NewStr)
+        {
+            FStatus = FStatus + "\r\n" + NewStr;
+            txtStatus.Text = FStatus;
+            txtStatus.Refresh();
         }
 
         private void RunOnceOnActivationManual()
@@ -193,21 +221,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             txtDetailCostCentreCode.TextChanged += new EventHandler(txtDetailCostCentreCode_TextChanged);
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
-
-            // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
-            // It is easier to do this than to configure all the different test execution methods to use STA
-            try
-            {
-                trvCostCentres.AllowDrop = true;
-                trvCostCentres.ItemDrag += new ItemDragEventHandler(treeView_ItemDrag);
-                trvCostCentres.DragOver += new DragEventHandler(treeView_DragOver);
-                trvCostCentres.DragDrop += new DragEventHandler(treeView_DragDrop);
-            }
-            catch (InvalidOperationException)
-            {
-                // ex.Message is: DragDrop registration did not succeed.
-                // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
-            }
         }
 
         private void OnHierarchySaved(System.Object sender, TDataSavedEventArgs e)
@@ -222,9 +235,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            CostCentreNodeDetails nodeDetails = (CostCentreNodeDetails)FCurrentNode.Tag;
-
-            if (nodeDetails.CostCentreRow.SystemCostCentreFlag)
+            if (FCurrentCostCentre.CostCentreRow.SystemCostCentreFlag)
             {
                 FIAmUpdating = true;
                 txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
@@ -241,11 +252,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            bool ICanEditCostCentreCode = (nodeDetails.IsNew || !FPetraUtilsObject.HasChanges);
+            bool ICanEditCostCentreCode = (FCurrentCostCentre.IsNew || !FPetraUtilsObject.HasChanges);
 
             btnRename.Visible = (strOldDetailCostCentreCode != txtDetailCostCentreCode.Text) && ICanEditCostCentreCode;
 
-            if (!nodeDetails.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change a cost centre code, but I can't allow it.
+            if (!FCurrentCostCentre.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change a cost centre code, but I can't allow it.
             {
                 FIAmUpdating = true;
                 txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
@@ -257,157 +268,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
-        //
-        // Drag and drop methods
-        // (Mostly copied from Microsoft example code) :
-        //
-
-        private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
-        {
-            FDragNode = (TreeNode)e.Item;
-
-            if (ValidateAllData(true, true))
-            {
-                trvCostCentres.DoDragDrop(FDragNode, DragDropEffects.All);
-            }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="ADestinationNode"></param>
-        /// <param name="ADragNode"></param>
-        /// <returns>true if  the destination Node is a child of the node I'm dragging</returns>
-        private bool IsDescendantOf(TreeNode ADestinationNode, TreeNode ADragNode)
-        {
-            if (ADestinationNode.Parent == null)
-            {
-                return false;
-            }
-
-            if (ADestinationNode.Parent == ADragNode)
-            {
-                return true;
-            }
-
-            return IsDescendantOf(ADestinationNode.Parent, ADragNode);
-        }
-
-        private void ShowNodeSelected(TreeNode ASelThis)
-        {
-            if (FSelectedNode != null)
-            {
-                FSelectedNode.BackColor = Color.White;
-            }
-
-            if (ASelThis != null)
-            {
-                ASelThis.BackColor = Color.Turquoise;
-            }
-
-            FSelectedNode = ASelThis;
-        }
-
-        private void treeView_DragOver(object sender, DragEventArgs e)
-        {
-            Point pt = trvCostCentres.PointToClient(new Point(e.X, e.Y));
-
-            FDragTarget = trvCostCentres.GetNodeAt(pt);
-
-            if (FDragTarget == null)
-            {
-                return;
-            }
-
-            ScrollIntoView(FDragTarget);
-
-            // Is the referenced node a valid drop target?
-            bool CantDropHere = (FDragTarget == FDragNode) || IsDescendantOf(FDragTarget, FDragNode);
-
-            if (!CantDropHere)
-            {
-                CostCentreNodeDetails NodeDetails = GetCostCentreAttributes(FDragTarget);
-                //
-                // I will need to check whether it's OK re-order the world like this...
-                //
-
-                if (!NodeDetails.CanHaveChildren.Value)
-                {
-                    CantDropHere = true;
-                }
-            }
-
-            if (CantDropHere)
-            {
-                e.Effect = DragDropEffects.Scroll;
-                FDragTarget = null;
-            }
-            else
-            {
-                e.Effect = DragDropEffects.Move | DragDropEffects.Scroll;
-                ShowNodeSelected(FDragTarget);
-            }
-        }
-
-        private void ScrollIntoView(TreeNode ATarget)
-        {
-            TreeNode HigherNode = ATarget.PrevVisibleNode;
-
-            if (HigherNode != null)
-            {
-                if (!HigherNode.IsVisible)
-                {
-                    HigherNode.EnsureVisible();
-                }
-            }
-
-            TreeNode LowerNode = ATarget.NextVisibleNode;
-
-            if (LowerNode != null)
-            {
-                if (!LowerNode.IsVisible)
-                {
-                    LowerNode.EnsureVisible();
-                }
-            }
-        }
-
-        private void treeView_DragDrop(object sender, DragEventArgs e)
-        {
-            DoReassignment(FDragNode, FDragTarget);
-            FDragNode = null;
-        }
-
-        private void InsertAlphabetically(TreeNode Parent, TreeNode Child)
-        {
-            int Idx;
-
-            for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
-            {
-                if (Parent.Nodes[Idx].Text.CompareTo(Child.Text) > 0)
-                {
-                    break;
-                }
-            }
-
-            if (Idx == Parent.Nodes.Count)
-            {
-                Parent.Nodes.Add(Child);
-            }
-            else
-            {
-                Parent.Nodes.Insert(Idx, Child);
-            }
-        }
-
-        // End of (mostly copied) drag-drop functions
-
         void FPetraUtilsObject_ControlChanged(Control Sender)
         {
-            if (FCurrentNode != null)
-            {
-                FCurrentNode.Text = NodeLabel(txtDetailCostCentreCode.Text, txtDetailCostCentreName.Text);
-            }
+            ucoCostCentreTree.SetNodeLabel(txtDetailCostCentreCode.Text, txtDetailCostCentreName.Text);
         }
 
         private void ShowDetailsManual(ACostCentreRow ARow)
@@ -427,203 +290,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
-        /// <summary>
-        /// load account hierarchy from the dataset into the tree view
-        /// </summary>
-        private void PopulateTreeView()
-        {
-            trvCostCentres.BeginUpdate();
-            trvCostCentres.Nodes.Clear();
-
-            // find the root cost centre
-            FMainDS.ACostCentre.DefaultView.RowFilter =
-                ACostCentreTable.GetCostCentreToReportToDBName() + " IS NULL";
-
-            DataView view = new DataView(FMainDS.ACostCentre);
-            view.Sort = ACostCentreTable.GetCostCentreCodeDBName();
-
-            InsertNodeIntoTreeView(null,
-                view,
-                (ACostCentreRow)FMainDS.ACostCentre.DefaultView[0].Row);
-
-            FMainDS.ACostCentre.DefaultView.RowFilter = "";
-
-            trvCostCentres.EndUpdate();
-
-            this.trvCostCentres.BeforeSelect += new TreeViewCancelEventHandler(TreeViewBeforeSelect);
-            this.trvCostCentres.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(TreeViewAfterSelect);
-        }
-
-        void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
-        {
-            if (!FIAmDeleting && !FIAmValidting)
-            {
-                FIAmValidting = true;
-
-                if (!ValidateAllData(true, true))
-                {
-                    e.Cancel = true;
-                }
-
-                FIAmValidting = false;
-            }
-        }
-
-        private void SelectNodeByName(String ACcCode)
-        {
-            FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("a_cost_centre_code_c='{0}'", ACcCode);
-
-            if (FMainDS.ACostCentre.DefaultView.Count > 0)
-            {
-                ACostCentreRow Row = (ACostCentreRow)FMainDS.ACostCentre.DefaultView[0].Row;
-                String SearchFor = NodeLabel(Row);
-                TreeNode[] FoundNodes = trvCostCentres.Nodes.Find(SearchFor, true);
-
-                if (FoundNodes.Length > 0)
-                {
-                    FoundNodes[0].EnsureVisible();
-                    trvCostCentres.SelectedNode = FoundNodes[0];
-                    trvCostCentres.Focus();
-                }
-            }
-        }
-
-        private static String NodeLabel(String ACostCentreCode, String ACostCentreName)
-        {
-            string lbl = ACostCentreCode;
-
-            if (ACostCentreName != "")
-            {
-                lbl += " (" + ACostCentreName + ")";
-            }
-
-            return lbl;
-        }
-
-        private static String NodeLabel(ACostCentreRow ADetailRow)
-        {
-            if (ADetailRow.RowState.Equals(DataRowState.Deleted))
-            {
-                return "(Deleted)";
-            }
-
-            return NodeLabel(ADetailRow.CostCentreCode, ADetailRow.CostCentreName);
-        }
-
-        private void InsertNodeIntoTreeView(TreeNode AParent, DataView view, ACostCentreRow ADetailRow)
-        {
-            TreeNode newNode = new TreeNode(NodeLabel(ADetailRow));
-
-            newNode.Name = NodeLabel(ADetailRow);
-            CostCentreNodeDetails NewNodeDetails = new CostCentreNodeDetails();
-            NewNodeDetails.CostCentreRow = ADetailRow;
-            NewNodeDetails.IsNew = false;
-            newNode.Tag = NewNodeDetails;
-
-            if (AParent == null)
-            {
-                trvCostCentres.Nodes.Add(newNode);
-            }
-            else
-            {
-                InsertAlphabetically(AParent, newNode);
-            }
-
-            view.RowFilter =
-                ACostCentreTable.GetCostCentreToReportToDBName() + " = '" + ADetailRow.CostCentreCode + "'";
-
-            foreach (DataRowView rowView in view)
-            {
-                InsertNodeIntoTreeView(newNode, view, (ACostCentreRow)rowView.Row);
-            }
-        }
-
-        TreeNode FCurrentNode = null;
-
-        private CostCentreNodeDetails GetCostCentreAttributes(TreeNode ANode)
-        {
-            CostCentreNodeDetails nodeDetails = (CostCentreNodeDetails)ANode.Tag;
-
-            if (nodeDetails.IsNew)
-            {
-                nodeDetails.CanHaveChildren = true;
-                nodeDetails.CanDelete = (ANode.Nodes.Count == 0);
-                return nodeDetails;
-            }
-
-            if (!nodeDetails.CanHaveChildren.HasValue || !nodeDetails.CanDelete.HasValue)
-            {
-                bool RemoteCanBeParent = false;
-                bool RemoteCanDelete = false;
-                String RemoteMsg = "";
-
-                if (TRemote.MFinance.Setup.WebConnectors.GetCostCentreAttributes(FLedgerNumber, nodeDetails.CostCentreRow.CostCentreCode,
-                        out RemoteCanBeParent, out RemoteCanDelete, out RemoteMsg))
-                {
-                    nodeDetails.CanHaveChildren = RemoteCanBeParent;
-                    nodeDetails.CanDelete = RemoteCanDelete;
-                    nodeDetails.Msg = RemoteMsg;
-                }
-            }
-
-            return nodeDetails;
-        }
-
-        private void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
-        {
-            // store current detail values
-            if ((FCurrentNode != null) && (FCurrentNode != e.Node))
-            {
-                ACostCentreRow currentCostCentre = ((CostCentreNodeDetails)FCurrentNode.Tag).CostCentreRow;
-
-                if (currentCostCentre.RowState != DataRowState.Deleted) // If this row was removed, I can't look at it..
-                {
-                    GetDetailsFromControls(currentCostCentre);
-                    FCurrentNode.Text = NodeLabel(currentCostCentre);
-                    FCurrentNode.Name = NodeLabel(currentCostCentre);
-                }
-            }
-
-            FCurrentNode = e.Node;
-
-            // update detail panel
-            FIAmUpdating = true;
-            FPetraUtilsObject.SuppressChangeDetection = true;
-            ACostCentreRow TempRow = ((CostCentreNodeDetails)e.Node.Tag).CostCentreRow;
-            ShowDetails(TempRow);
-            FIAmUpdating = false;
-            FPetraUtilsObject.SuppressChangeDetection = false;
-            strOldDetailCostCentreCode = TempRow.CostCentreCode;
-            Boolean CanAdd = true;
-
-            //
-            // OM - specific code ahead!
-            // Don't allow any cost centres to be added to ILT or its children.
-            if (TempRow.CostCentreCode == "ILT")
-            {
-                CanAdd = false;
-            }
-            else
-            {
-                TreeNode Parent = e.Node.Parent;
-
-                if (Parent != null)
-                {
-                    ACostCentreRow ParentRow = ((CostCentreNodeDetails)Parent.Tag).CostCentreRow;
-
-                    if (ParentRow.CostCentreCode == "ILT")
-                    {
-                        CanAdd = false;
-                    }
-                }
-            }
-
-            FPetraUtilsObject.EnableAction("actAddNewCostCentre", CanAdd);
-        }
-
         private void AddNewCostCentre(Object sender, EventArgs e)
         {
-            if (FCurrentNode == null)
+
+            if (FCurrentCostCentre == null)
             {
                 MessageBox.Show(Catalog.GetString("You can only add a new cost centre after selecting a parent cost centre"));
                 return;
@@ -631,10 +301,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (ValidateAllData(true, true))
             {
-                CostCentreNodeDetails ParentNodeDetails = GetCostCentreAttributes(FCurrentNode);
-                ACostCentreRow ParentRow = ParentNodeDetails.CostCentreRow;
+                FCurrentCostCentre.GetAttrributes();
+                ACostCentreRow ParentRow = FCurrentCostCentre.CostCentreRow;
 
-                if (!ParentNodeDetails.CanHaveChildren.Value)
+                if (!FCurrentCostCentre.CanHaveChildren.Value)
                 {
                     MessageBox.Show(
                         String.Format(Catalog.GetString("Cost Centre {0} is in use and cannot become a summary Cost Centre."),
@@ -655,41 +325,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     newCostCentreName += countNewCostCentre.ToString();
                 }
 
-                ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
-                newCostCentre.CostCentreCode = newCostCentreName;
-                newCostCentre.LedgerNumber = FLedgerNumber;
-                newCostCentre.CostCentreActiveFlag = true;
+                ParentRow.PostingCostCentreFlag = false;
+                FCurrentCostCentre.CanDelete = false;
+
+                ACostCentreRow newCostCentreRow = FMainDS.ACostCentre.NewRowTyped();
+                newCostCentreRow.CostCentreCode = newCostCentreName;
+                newCostCentreRow.LedgerNumber = FLedgerNumber;
+                newCostCentreRow.CostCentreActiveFlag = true;
 
                 //
                 // OM - specific code ahead!
                 if (ParentRow.CostCentreCode == "ILT")
                 {
-                    newCostCentre.CostCentreType = "Foreign";
+                    newCostCentreRow.CostCentreType = "Foreign";
                 }
                 else
                 {
-                    newCostCentre.CostCentreType = ParentRow.CostCentreType;
+                    newCostCentreRow.CostCentreType = ParentRow.CostCentreType;
                 }
 
-                newCostCentre.PostingCostCentreFlag = true;
-                newCostCentre.CostCentreToReportTo = ParentRow.CostCentreCode;
-                FMainDS.ACostCentre.Rows.Add(newCostCentre);
-
-                ParentRow.PostingCostCentreFlag = false;
-                ParentNodeDetails.CanDelete = false;
+                newCostCentreRow.PostingCostCentreFlag = true;
+                newCostCentreRow.CostCentreToReportTo = ParentRow.CostCentreCode;
+                FMainDS.ACostCentre.Rows.Add(newCostCentreRow);
 
                 FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
-                trvCostCentres.BeginUpdate();
-                TreeNode newNode = FCurrentNode.Nodes.Add(newCostCentreName);
-
-                CostCentreNodeDetails NewNodeDetails = new CostCentreNodeDetails();
-                NewNodeDetails.CostCentreRow = newCostCentre;
-                NewNodeDetails.IsNew = true;
-                newNode.Tag = NewNodeDetails;
-                trvCostCentres.EndUpdate();
-
-                trvCostCentres.Focus(); // Changing the selection doesn't cause a re-draw if the control is not in focus.
-                trvCostCentres.SelectedNode = newNode;
+                ucoCostCentreTree.AddNewCostCentre(newCostCentreRow);
                 txtDetailCostCentreCode.Focus();
                 txtDetailCostCentreCode.SelectAll();
                 FPetraUtilsObject.SetChangedFlag();
@@ -734,23 +394,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // refresh the screen
                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
-                PopulateTreeView();
+                ucoCostCentreTree.PopulateTreeView(FMainDS);
                 MessageBox.Show("Import of new Cost Centre Hierarchy has been successful",
                     Catalog.GetString("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
-        private bool CheckForInvalidCostCentre(TreeNodeCollection NodeCol)
+        private bool CheckForInvalidCostCentre()
         {
-            foreach (TreeNode ChildNode in NodeCol)
+            foreach (ACostCentreRow CheckRow in FMainDS.ACostCentre.Rows)
             {
-                if (CheckForInvalidCostCentre(ChildNode.Nodes))
-                {
-                    return true;
-                }
-
-                ACostCentreRow CheckRow = ((CostCentreNodeDetails)ChildNode.Tag).CostCentreRow;
-
                 if (CheckRow.CostCentreCode == "")
                 {
                     MessageBox.Show(
@@ -759,7 +412,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         Catalog.GetString("GL Cost Centre Hierarchy"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
-                    trvCostCentres.SelectedNode = ChildNode;
+                    ucoCostCentreTree.SelectNodeByName(CheckRow.CostCentreCode);
                     return true;
                 }
 
@@ -771,11 +424,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         Catalog.GetString("GL Cost Centre Hierarchy"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
-                    trvCostCentres.SelectedNode = ChildNode;
+                    ucoCostCentreTree.SelectNodeByName(CheckRow.CostCentreCode);
                     return true;
                 }
             }
-
             return false;
         }
 
@@ -788,7 +440,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             // I'll look through and check whether any of the cost centres still have "NEWCOSTCENTRE"..
             //
-            if (CheckForInvalidCostCentre(trvCostCentres.Nodes))
+            if (CheckForInvalidCostCentre())
             {
                 AVerificationResult = null;
                 FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
@@ -804,33 +456,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private void DeleteCostCentre(Object sender, EventArgs e)
         {
-            if (FCurrentNode == null)
+            if (FCurrentCostCentre == null)
             {
                 return;
             }
 
-            CostCentreNodeDetails NodeDetails = GetCostCentreAttributes(FCurrentNode);
-
-            if (NodeDetails.CanDelete.Value)
+            FCurrentCostCentre.GetAttrributes();
+            if (FCurrentCostCentre.CanDelete.Value)
             {
-                ACostCentreRow SelectedRow = NodeDetails.CostCentreRow;
-                TreeNode DeletedNode = FCurrentNode;
-                TreeNode ParentNode = FCurrentNode.Parent;
-                trvCostCentres.SelectedNode = ParentNode;
-                FIAmDeleting = true;
-                trvCostCentres.Nodes.Remove(DeletedNode);
+                ACostCentreRow SelectedRow = FCurrentCostCentre.CostCentreRow;
+                TreeNode DeletedNode = FCurrentCostCentre.linkedTreeNode;
+                TreeNode ParentNode = DeletedNode.Parent;
                 SelectedRow.Delete();
-                FIAmDeleting = false;
+                ucoCostCentreTree.DeleteSelectedCostCentre();
 
+                // FCurrentCostCentre is now the parent of the CostCentre that was just deleted.
                 // If just I added a sub-tree and I decide I don't want it, I might be about to remove the parent too.
-                GetCostCentreAttributes(ParentNode); // This will set CanDelete in the parent if it is new and has no further children.
+                if (FCurrentCostCentre != null)
+                {
+                    FCurrentCostCentre.GetAttrributes();
+                }
 
                 FPetraUtilsObject.SetChangedFlag();
             }
             else
             {
                 MessageBox.Show(
-                    Catalog.GetString("This Cost Centre Code is in use and cannot be deleted.") + "\n" + NodeDetails.Msg,
+                    Catalog.GetString("This Cost Centre Code is in use and cannot be deleted.") + "\n" + FCurrentCostCentre.Msg,
                     Catalog.GetString("Delete Cost Centre"));
             }
         }
@@ -877,30 +529,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     this.Refresh();
 
                     FRecentlyUpdatedDetailCostCentreCode = strNewDetailCostCentreCode;
-                    CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)trvCostCentres.SelectedNode.Tag;
-
                     try
                     {
-                        NodeDetails.CostCentreRow.BeginEdit();
-                        NodeDetails.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
-                        NodeDetails.CostCentreRow.EndEdit();  // A constraint exception might occur here
-
-                        trvCostCentres.BeginUpdate();
-                        trvCostCentres.SelectedNode.Text = NodeLabel(NodeDetails.CostCentreRow);
-                        trvCostCentres.SelectedNode.Name = NodeLabel(NodeDetails.CostCentreRow);
-                        trvCostCentres.EndUpdate();
+                        FCurrentCostCentre.CostCentreRow.BeginEdit();
+                        FCurrentCostCentre.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
+                        FCurrentCostCentre.CostCentreRow.EndEdit();  // A constraint exception might occur here
+                        ucoCostCentreTree.SetNodeLabel(FCurrentCostCentre.CostCentreRow);
 
                         changeAccepted = true;
                     }
                     catch (System.Data.ConstraintException)
                     {
                         txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
-                        NodeDetails.CostCentreRow.CancelEdit();
+                        FCurrentCostCentre.CostCentreRow.CancelEdit();
 
                         FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
 
-                        FStatus += Catalog.GetString("Cost Centre Code change REJECTED!") + Environment.NewLine;
-                        txtStatus.Text = FStatus;
+                        ShowStatus(Catalog.GetString("Cost Centre Code change REJECTED!"));
 
                         MessageBox.Show(String.Format(
                                 Catalog.GetString(
@@ -914,25 +559,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     if (changeAccepted)
                     {
-                        if (NodeDetails.IsNew)
+                        if (FCurrentCostCentre.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:
                             // there are no references to this new row yet, apart from children nodes, so I can just change them here and carry on!
 
                             // fixup children nodes
-                            foreach (TreeNode childnode in trvCostCentres.SelectedNode.Nodes)
-                            {
-                                ((CostCentreNodeDetails)childnode.Tag).CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
-                            }
-
+                            ucoCostCentreTree.FixupChildrenAfterCostCentreNameChange();
                             strOldDetailCostCentreCode = strNewDetailCostCentreCode;
                             FPetraUtilsObject.HasChanges = true;
                         }
                         else
                         {
-                            FStatus += Catalog.GetString("Updating Cost Centre Code change - please wait.\r\n");
-                            txtStatus.Text = FStatus;
-                            txtStatus.Refresh();
+                            ShowStatus(Catalog.GetString("Updating Cost Centre Code change - please wait.\r\n"));
                             TVerificationResultCollection VerificationResults;
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted against it.
@@ -958,16 +597,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 txtDetailCostCentreCode.Text = "";
                                 FIAmUpdating = false;
                                 FPetraUtilsObject.SuppressChangeDetection = false;
-                                FCurrentNode = null;
-                                PopulateTreeView();
-                                SelectNodeByName(FRecentlyUpdatedDetailCostCentreCode);
-
-                                FStatus = "";
-                                txtStatus.Text = FStatus;
+                                FCurrentCostCentre = null;
+                                ucoCostCentreTree.PopulateTreeView(FMainDS);
+                                ucoCostCentreTree.SelectNodeByName(FRecentlyUpdatedDetailCostCentreCode);
+                                ClearStatus();
                                 changeAccepted = true;
-
-                                FStatus += String.Format("Cost Centre Code changed to '{0}'.\r\n", strNewDetailCostCentreCode);
-                                txtStatus.Text = FStatus;
+                                ShowStatus(String.Format("Cost Centre Code changed to '{0}'.\r\n", strNewDetailCostCentreCode));
                             }
                             else
                             {
@@ -986,18 +621,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDataFromControlsManual()
         {
-            if (FCurrentNode != null)
+            if (FCurrentCostCentre != null)
             {
                 ACostCentreRow SelectedRow = GetSelectedDetailRowManual();
                 GetDetailsFromControls(SelectedRow);
             }
         }
 
+        /// <summary>
+        /// When the user selects a new CostCentre, unload the controls and check whether that's OK.
+        /// </summary>
+        /// <returns>false if the user must stay on the current row and fix the problem</returns>
+        public Boolean CheckControlsValidateOk()
+        {
+            GetDetailsFromControls(FCurrentCostCentre.CostCentreRow);
+            return ValidateAllData(true, true);
+        }
+
+        /// <summary>
+        /// Essentially a public wrapper for ShowDetails.
+        /// </summary>
+        public void PopulateControlsAfterRowSelection()
+        {
+            bool hasChanges = FPetraUtilsObject.HasChanges;
+
+            FIAmUpdating = true;
+            ShowDetails(FCurrentCostCentre.CostCentreRow);
+            FIAmUpdating = false;
+
+            FCurrentCostCentre.GetAttrributes();
+            tbbAddNewCostCentre.Enabled = (FCurrentCostCentre.CanHaveChildren.Value);
+            tbbDeleteCostCentre.Enabled = (FCurrentCostCentre.CanDelete.Value);
+
+            if (hasChanges)
+            {
+                FPetraUtilsObject.SetChangedFlag();
+            }
+        }
+
+
         private ACostCentreRow GetSelectedDetailRowManual()
         {
-            if (FCurrentNode != null)
+            if (FCurrentCostCentre != null)
             {
-                return ((CostCentreNodeDetails)FCurrentNode.Tag).CostCentreRow;
+                return FCurrentCostCentre.CostCentreRow;
             }
             else
             {
@@ -1051,27 +718,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return;
                 }  // If not changed, or the rename didn't happen, I can carry on...
 
-                if (Row.CostCentreActiveFlag != chkDetailCostCentreActiveFlag.Checked)
+                if (
+                    (Row.CostCentreActiveFlag != chkDetailCostCentreActiveFlag.Checked)
+                    || (Row.CostCentreType != cmbDetailCostCentreType.GetSelectedString())
+                    || (Row.CostCentreCode != txtDetailCostCentreCode.Text)
+                    || (Row.CostCentreName != txtDetailCostCentreName.Text)
+                    )
                 {
                     FPetraUtilsObject.SetChangedFlag();
                 }
 
                 GetDataFromControlsManual();
-
-                if (FCurrentNode != null)
-                {
-                    String NewNodeName = NodeLabel(Row);
-
-                    if ((FCurrentNode.Text != NewNodeName)
-                        || (FCurrentNode.Name != Row.CostCentreCode)
-                        || (cmbDetailCostCentreType.GetSelectedString() != Row.CostCentreType))
-                    {
-                        FPetraUtilsObject.SetChangedFlag();
-                    }
-
-                    FCurrentNode.Text = NewNodeName;
-                    FCurrentNode.Name = NewNodeName;
-                }
+                ucoCostCentreTree.SetNodeLabel(Row);
             }
         } // UpdateOnControlChanged
 
@@ -1082,5 +740,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             PartnerLinkScreen.LedgerNumber = FLedgerNumber;
             PartnerLinkScreen.Show();
         }  // LinkPartnerCostCentre
+
+        /// <summary>
+        /// The Tree control can't set the selectedNode unless it's in focus
+        /// (I guess this is a bug)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnTabChange(object sender, EventArgs e)
+        {
+            if (ucoCostCentreTree.Visible)
+            {
+                ucoCostCentreTree.Focus();
+                ucoCostCentreTree.RefreshSelectedCostCentre();
+            }
+            else
+            {
+                ucoCostCentreList.Focus();
+            }
+        }
+
     } // TFrmGLCostCentreHierarchy
 } // namespace
