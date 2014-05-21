@@ -296,7 +296,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// loads a list of journals for the given ledger and batch
+        /// loads a list of journals and transactions for the given ledger and batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>

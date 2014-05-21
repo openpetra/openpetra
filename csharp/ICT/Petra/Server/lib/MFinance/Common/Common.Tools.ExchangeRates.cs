@@ -532,7 +532,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 //ExchangeRate = 1.0M;
                 //Instead return 0 to make it easy to catch error
                 ExchangeRate = 0M;
-                TLogging.Log("cannot find corporate exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
+                TLogging.Log("Cannot find corporate exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
             }
 
             return ExchangeRate;
@@ -614,6 +614,42 @@ namespace Ict.Petra.Server.MFinance.Common
             if (AExchangeRate == decimal.MinValue)
             {
                 return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Create corporate exchange rate for the given currencies and date;
+        /// </summary>
+        /// <param name="ACurrencyFrom"></param>
+        /// <param name="ACurrencyTo"></param>
+        /// <param name="AStartDate"></param>
+        /// <param name="AEndDate"></param>
+        /// <param name="AExchangeRate"></param>
+        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
+        public static bool CreateCorporateExchangeRate(string ACurrencyFrom,
+            string ACurrencyTo,
+            DateTime AStartDate,
+            decimal AExchangeRate)
+        {
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
+            ACorporateExchangeRateRow tempRow = tempTable.NewRowTyped(false);
+
+            tempRow.FromCurrencyCode = ACurrencyFrom;
+            tempRow.ToCurrencyCode = ACurrencyTo;
+            tempRow.DateEffectiveFrom = AStartDate;
+            tempRow.RateOfExchange = AExchangeRate;
+
+            tempTable.Rows.Add(tempRow);
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
 
             return true;

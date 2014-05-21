@@ -68,7 +68,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: ATransaction
-            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AnalysisAttributes]
+            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AmountInIntlCurrency, AnalysisAttributes]
             CustomColumns:
                 TransactionNumber: {Label=Transaction, Type=Integer}
                 TransactionDate: {Label=Transaction Date, Type=DateTime}
