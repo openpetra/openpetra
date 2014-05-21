@@ -53,7 +53,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FTransactionNumber = -1;
         private bool FActiveOnly = true;
         private string FTransactionCurrency = string.Empty;
-        private string FJournalCurrencyCode = string.Empty;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
         private GLSetupTDS FCacheDS = null;

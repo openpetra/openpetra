@@ -620,42 +620,6 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// Create corporate exchange rate for the given currencies and date;
-        /// </summary>
-        /// <param name="ACurrencyFrom"></param>
-        /// <param name="ACurrencyTo"></param>
-        /// <param name="AStartDate"></param>
-        /// <param name="AEndDate"></param>
-        /// <param name="AExchangeRate"></param>
-        /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
-        public static bool CreateCorporateExchangeRate(string ACurrencyFrom,
-            string ACurrencyTo,
-            DateTime AStartDate,
-            decimal AExchangeRate)
-        {
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
-            ACorporateExchangeRateRow tempRow = tempTable.NewRowTyped(false);
-
-            tempRow.FromCurrencyCode = ACurrencyFrom;
-            tempRow.ToCurrencyCode = ACurrencyTo;
-            tempRow.DateEffectiveFrom = AStartDate;
-            tempRow.RateOfExchange = AExchangeRate;
-
-            tempTable.Rows.Add(tempRow);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Get the latest Corporate exchange rate
         /// </summary>
         /// <param name="ALedgerNumber"></param>

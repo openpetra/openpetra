@@ -48,7 +48,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private string FBatchStatus = string.Empty;
         private string FTransactionCurrency = string.Empty;
-        private decimal FIntlRateToBaseCurrency = 0;
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
         /// <summary>
@@ -102,7 +101,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Make sure the current effective date for the Batch is correct
             DateTime BatchDateEffective = FBatchRow.DateEffective;
-            FIntlRateToBaseCurrency = ((TFrmGLBatch)ParentForm).GetInternationalCurrencyExchangeRate(BatchDateEffective);
 
             if (ABatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
@@ -571,8 +569,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
-
-            FIntlRateToBaseCurrency = ((TFrmGLBatch)ParentForm).GetInternationalCurrencyExchangeRate(FBatchRow.DateEffective);
 
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionAmounts("JOURNAL");
 
