@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 {
                     FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
                 }
-                else
+                else if (FPetraUtilsObject.GetCallerForm() != null)
                 {
                     MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
                 }

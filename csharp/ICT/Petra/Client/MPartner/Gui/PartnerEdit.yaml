@@ -29,6 +29,8 @@ RootNode:
         actFilePrintSection: {Label=P&rint Section..., ActionClick=FileDeletePartner, Image: PrintSection.ico}
         actFileExportPartner: {Label=E&xport Partner, ActionClick=FileExportPartner, Image: ExportPetra.ico}
         
+        actEditFind: {Label=&Find Partner..., ActionClick=EditFindPartner}
+        
         actMaintainAddresses: {Label=&Addresses, ActionClick=MaintainAddresses, Image: Address.ico}
         actMaintainPartnerDetails: {Label=&Partner Details, ActionClick=MaintainPartnerDetails, Image: Details.ico}
         actMaintainFoundationDetails: {Label=Foundation Details, ActionClick=MaintainFoundationDetails, Image: Foundations.ico}
@@ -97,7 +99,15 @@ RootNode:
             mniSeparator:
             
         mniEdit:
+            mniEditFind:
             mniEditFindNewAddress: {Label=Find New Address...}
+            mniSeparator:
+            mniEditUndoCurrentField: 
+              Label:Undo &Current Field
+#              ActionClick:MniEdit_Click
+            mniEditUndoScreen: 
+              Label:&Undo Screen
+#              ActionClick:MniEdit_Click
 
         mniMaintain: {Label=Ma&intain}            
             mniMaintainAddresses:

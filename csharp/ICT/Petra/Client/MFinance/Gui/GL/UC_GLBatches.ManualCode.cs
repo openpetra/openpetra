@@ -415,11 +415,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             RetVal = TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
 
-            //TLogging.Log("GetAccountingYearPeriodByDate(): " + RetVal.ToString());
-            //TLogging.Log("                               : " + ADate.ToShortDateString());
-            //TLogging.Log("                               : " + AYear.ToString());
-            //TLogging.Log("                               : " + APeriod.ToString());
-
             return RetVal;
         }
 
@@ -472,10 +467,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             }
                         }
                     }
-
-                    TLogging.Log("FCurrentEffectiveDate:" + FCurrentEffectiveDate.ToShortDateString());
-                    TLogging.Log("FPreviouslySelectedDetailRow.BatchPeriod:" + FPreviouslySelectedDetailRow.BatchPeriod.ToString());
-                    TLogging.Log("UpdateTransactionDates:" + UpdateTransactionDates.ToString());
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionAmounts("BATCH", UpdateTransactionDates);
                     FPetraUtilsObject.HasChanges = true;

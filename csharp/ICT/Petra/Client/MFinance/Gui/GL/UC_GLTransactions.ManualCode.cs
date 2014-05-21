@@ -107,8 +107,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 && (FTransactionCurrency == ACurrencyCode) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
                 && (FMainDS.ATransaction.DefaultView.Count > 0))
             {
-                TLogging.Log("Trans already loaded");
-
                 //Same as previously selected
                 if (FIsUnposted && (GetSelectedRowIndex() > 0))
                 {
@@ -127,8 +125,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                TLogging.Log("Fresh Trans load");
-
                 // A new ledger/batch
                 IsNewBatch = true;
                 bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != ACurrencyCode);
@@ -1013,8 +1009,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (AUpdateCurrentTransOnly)
             {
-                TLogging.Log("Stage Load - Current trans active");
-
                 AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
                     AJournalTable.GetBatchNumberDBName(),
                     ABatchNumber,
@@ -1025,8 +1019,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (AJournalNumber == 0)
             {
-                TLogging.Log("Stage Load - All Journals");
-
                 AJournalDV.RowFilter = String.Format("{0}={1} And {2}='{3}'",
                     AJournalTable.GetBatchNumberDBName(),
                     ABatchNumber,
@@ -1043,8 +1035,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
 
-                TLogging.Log("Stage Load - All Journals count: " + AJournalDV.Count.ToString());
-
                 TransDV.RowFilter = String.Format("{0}={1}",
                     ATransactionTable.GetBatchNumberDBName(),
                     ABatchNumber);
@@ -1054,15 +1044,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionForBatch(ALedgerNumber, ABatchNumber));
                 }
 
-                TLogging.Log("Stage Load - All transactions count: " + TransDV.Count.ToString());
-
                 //As long as transactions exist, return true
                 RetVal = true;
             }
             else
             {
-                TLogging.Log("Stage Load - A Journal");
-
                 AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
                     AJournalTable.GetBatchNumberDBName(),
                     ABatchNumber,
@@ -1079,8 +1065,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
 
-                TLogging.Log("Stage Load - A Journal count: " + AJournalDV.Count.ToString());
-
                 TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
                     ATransactionTable.GetBatchNumberDBName(),
                     ABatchNumber,
@@ -1091,8 +1075,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
                 }
-
-                TLogging.Log("Stage Load - All transactions: " + TransDV.Count.ToString());
 
                 RetVal = true;
             }

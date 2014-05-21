@@ -77,7 +77,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public eGLTabs FPreviouslySelectedTab = eGLTabs.Batches;
 
-
         private void TFrmGLBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
@@ -329,29 +328,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Handles the click event for filter/find.
-        /// </summary>
-        /// <param name="sender">Pass this on to the user control.</param>
-        /// <param name="e">Not evaluated.</param>
-        public void mniFilterFind_Click(object sender, System.EventArgs e)
-        {
-            switch (tabGLBatch.SelectedIndex)
-            {
-                case (int)eGLTabs.Batches:
-                    ucoBatches.MniFilterFind_Click(sender, e);
-                    break;
-
-                case (int)eGLTabs.Journals:
-                    ucoJournals.MniFilterFind_Click(sender, e);
-                    break;
-
-                case (int)eGLTabs.Transactions:
-                    ucoTransactions.MniFilterFind_Click(sender, e);
-                    break;
-            }
-        }
-
-        /// <summary>
         /// Uses the current Batch effective date to return the
         ///   corporate exchange rate value
         /// </summary>
@@ -412,5 +388,49 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return IntlToBaseCurrencyExchRate;
         }
+
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        /// Special Handlers for menus and command keys for our user controls
+
+        private void MniFilterFind_Click(object sender, EventArgs e)
+        {
+            if (tabGLBatch.SelectedTab == tpgBatches)
+            {
+                ucoBatches.MniFilterFind_Click(sender, e);
+            }
+            else if (tabGLBatch.SelectedTab == tpgJournals)
+            {
+                ucoJournals.MniFilterFind_Click(sender, e);
+            }
+            else if (tabGLBatch.SelectedTab == tpgTransactions)
+            {
+                ucoTransactions.MniFilterFind_Click(sender, e);
+            }
+        }
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ((tabGLBatch.SelectedTab == tpgBatches) && (ucoBatches.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((tabGLBatch.SelectedTab == tpgJournals) && (ucoJournals.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((tabGLBatch.SelectedTab == tpgTransactions) && (ucoTransactions.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
     }
 }
