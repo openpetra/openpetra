@@ -372,6 +372,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             NodeTag.IsNew = false;
 
+            SetNodeLabel(AccountRow, Child);
+
             if (AParent == null)
             {
                 trvAccounts.Nodes.Add(Child);
@@ -382,7 +384,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 InsertInOrder(AParent, Child);
             }
 
-            SetNodeLabel(AccountRow);
 
             // Now add the children of this node:
             view.RowFilter =
@@ -405,13 +406,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Update the name of the currently selected node
         /// </summary>
-        public void SetNodeLabel(String name, String Descr)
+        public void SetNodeLabel(String name, String Descr, TreeNode ThisNode = null)
         {
-            if (FSelectedAccount == null)
-            {
-                return;
-            }
-
             string Label = name;
 
             if (Descr != "")
@@ -419,24 +415,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Label += " (" + Descr + ")";
             }
 
-            trvAccounts.BeginUpdate();
+            if (ThisNode == null)
+            {
+                if (FSelectedAccount == null)
+                {
+                    return;
+                }
+                ThisNode = FSelectedAccount.linkedTreeNode;
+            }
 
-            FSelectedAccount.linkedTreeNode.Text = Label;
-            FSelectedAccount.linkedTreeNode.Name = name;
+            trvAccounts.BeginUpdate();
+            ThisNode.Text = Label;
+            ThisNode.Name = name;
             trvAccounts.EndUpdate();
         }
 
         /// <summary>
         /// Update the name of the currently selected node
         /// </summary>
-        public void SetNodeLabel(AAccountRow ARow)
+        public void SetNodeLabel(AAccountRow ARow, TreeNode ThisNode = null)
         {
             if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (ARow.RowState == DataRowState.Detached))
             {
                 return;
             }
 
-            SetNodeLabel(ARow.AccountCode, ARow.AccountCodeShortDesc);
+            SetNodeLabel(ARow.AccountCode, ARow.AccountCodeShortDesc, ThisNode);
         }
 
         private void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs treeViewCancelEventArgs)

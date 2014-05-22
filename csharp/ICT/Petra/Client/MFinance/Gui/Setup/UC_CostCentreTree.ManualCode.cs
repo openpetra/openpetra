@@ -314,6 +314,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             CostCentreNodeDetails NewNodeDetails = CostCentreNodeDetails.AddNewCostCentre(newNode,ADetailRow);
             NewNodeDetails.IsNew = false;
 
+            SetNodeLabel(ADetailRow, newNode);
+
             if (AParent == null)
             {
                 trvCostCentres.Nodes.Add(newNode);
@@ -324,7 +326,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 InsertInOrder(AParent, newNode);
             }
 
-            SetNodeLabel(ADetailRow);
 
             view.RowFilter =
                 ACostCentreTable.GetCostCentreToReportToDBName() + " = '" + ADetailRow.CostCentreCode + "'";
@@ -339,13 +340,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Update the name of the currently selected node
         /// </summary>
-        public void SetNodeLabel(String name, String Descr)
+        public void SetNodeLabel(String name, String Descr, TreeNode ThisNode = null)
         {
-            if (FSelectedCostCentre == null)
-            {
-                return;
-            }
-
             string Label = name;
 
             if (Descr != "")
@@ -353,24 +349,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Label += " (" + Descr + ")";
             }
 
-            trvCostCentres.BeginUpdate();
+            if (ThisNode == null)
+            {
+                if (trvCostCentres == null)
+                {
+                    return;
+                }
+                ThisNode = FSelectedCostCentre.linkedTreeNode;
+            }
 
-            FSelectedCostCentre.linkedTreeNode.Text = Label;
-            FSelectedCostCentre.linkedTreeNode.Name = name;
+            trvCostCentres.BeginUpdate();
+            ThisNode.Text = Label;
+            ThisNode.Name = name;
             trvCostCentres.EndUpdate();
         }
 
         /// <summary>
         /// Update the name of the currently selected node
         /// </summary>
-        public void SetNodeLabel(ACostCentreRow ARow)
+        public void SetNodeLabel(ACostCentreRow ARow, TreeNode ThisNode = null)
         {
             if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (ARow.RowState == DataRowState.Detached))
             {
                 return;
             }
 
-            SetNodeLabel(ARow.CostCentreCode, ARow.CostCentreName);
+            SetNodeLabel(ARow.CostCentreCode, ARow.CostCentreName, ThisNode);
         }
 
         private void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs treeViewCancelEventArgs)
