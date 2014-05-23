@@ -275,7 +275,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void EnableBudgetEntry(bool AAllowEntry)
         {
             pnlDetails.Enabled = AAllowEntry;
-            rgrSelectBudgetType.Enabled = AAllowEntry;
+            rgrBudgetTypeCode.Enabled = AAllowEntry;
             cmbDetailCostCentreCode.Enabled = AAllowEntry;
             cmbDetailAccountCode.Enabled = AAllowEntry;
 
@@ -1184,13 +1184,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             ClearBudgetTypeTextboxesExcept("None");
             UpdateCurrencyCode();
 
-            if ((ARow == null) || ((grdDetails.Rows.Count < 2) && rgrSelectBudgetType.Enabled))
+            if ((ARow == null) || ((grdDetails.Rows.Count < 2) && rgrBudgetTypeCode.Enabled))
             {
                 FBudgetSequence = -1;
                 EnableBudgetEntry(false);
                 return;
             }
-            else if (rgrSelectBudgetType.Enabled == false)
+            else if (rgrBudgetTypeCode.Enabled == false)
             {
                 EnableBudgetEntry(true);
             }
@@ -1469,6 +1469,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             return retVal;
+        }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+            // We need to deal with the spaces in the combo box text
+            AFilterString = AFilterString.Replace("Ad hoc", MFinanceConstants.BUDGET_ADHOC);
+            AFilterString = AFilterString.Replace("Inflate base", MFinanceConstants.BUDGET_INFLATE_BASE);
+            AFilterString = AFilterString.Replace("Inflate n", MFinanceConstants.BUDGET_INFLATE_N);
         }
     }
 }

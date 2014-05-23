@@ -26,10 +26,12 @@ RootNode:
             Controls: [pnlFilterAndFind, grdDetails, pnlButtons]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [rgrType]
+            FilterControls: [rgrType, dtpDetailApplicable-1, dtpDetailApplicable-2]
             #FindControls: [txtDetailOptionDays]
             ControlAttributes:
-                rgrType: {ClearButton=false, NoLabel=true}
+                rgrType: {CloneToComboBox=true, Label=Registration Type}
+                dtpDetailApplicable-1: {Comparison=gte, Label=From Applicable Date}
+                dtpDetailApplicable-2: {Comparison=lte, Label=To Applicable Date}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
