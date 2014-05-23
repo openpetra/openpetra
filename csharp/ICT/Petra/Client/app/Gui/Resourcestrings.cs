@@ -94,14 +94,14 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlTabHelp = Catalog.GetString(
-            "On screens that have multiple tabbed 'pages' this key combination activates the next tab.");
+            "On screens that have multiple tabbed 'pages' this key combination switches to the next tab.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutShiftCtrlTab = Catalog.GetString("Shift+Ctrl+Tab");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutShiftCtrlTabHelp = Catalog.GetString(
-            "On screens that have multiple tabbed 'pages' this key combination activates the previous tab.");
+            "On screens that have multiple tabbed 'pages' this key combination switches to the previous tab.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlS = Catalog.GetString("Ctrl+S");
