@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 InitialiseControls();
             }
 
-            UpdateCurrencySymbols(GetCurrentBatchRow().CurrencyCode);
+            UpdateCurrencySymbols(FBatchRow.CurrencyCode);
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
@@ -335,16 +335,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string CurrentCostCentreCode = ARow.CostCentreCode;
             string NewCostCentreCode = string.Empty;
 
+            Int64 RecipientField = Convert.ToInt64(txtField.Text);
+
             DateTime giftDate = ((AGiftRow)GetGiftRow(ARow.GiftTransactionNumber)).DateEntered;
+
+            TLogging.Log(String.Format("GiftDate: {0}", giftDate.ToShortDateString()));
 
             string MotivationGroup = ARow.MotivationGroupCode;
             string MotivationDetail = ARow.MotivationDetailCode;
 
             Int64 RecipientLedgerNumber = ARow.RecipientLedgerNumber;
+
             Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
+
+            TLogging.Log(String.Format("PartnerKey: {0} and RecipientLedgerNumber: {1} and LedgerPartnerKey: {2}",
+                                        APartnerKey,
+                                        RecipientLedgerNumber,
+                                        LedgerPartnerKey));
 
             bool KeyMinIsActive = false;
             bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartnerKey, out KeyMinIsActive);
+
+            TLogging.Log(String.Format("  KeyMinExists: {0} and is active: {1}",
+                                        KeyMinExists,
+                                        KeyMinIsActive));
 
             string ValidLedgerNumberCostCentreCode;
 
@@ -358,9 +372,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //        out ValidLedgerNumberCostCentreCode)
             //    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, RecipientLedgerNumber,
             //        out ValidLedgerNumberCostCentreCode))
-            if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(APartnerKey, giftDate,
+            if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
                     out ValidLedgerNumberCostCentreCode)
-                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(RecipientLedgerNumber, giftDate,
+                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber, RecipientField,
                     out ValidLedgerNumberCostCentreCode))
             {
                 NewCostCentreCode = ValidLedgerNumberCostCentreCode;
@@ -394,7 +408,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (motivationDetail != null)
                 {
-                    NewCostCentreCode = motivationDetail.CostCentreCode.ToString();
+                    NewCostCentreCode = motivationDetail.CostCentreCode;
                 }
                 else
                 {
@@ -418,6 +432,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
+            TLogging.Log(String.Format("NewCostCentreCode: {0}", NewCostCentreCode));
+
             if (CurrentCostCentreCode != NewCostCentreCode)
             {
                 ARow.CostCentreCode = NewCostCentreCode;
@@ -436,6 +452,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FInRecipientKeyChanging = true;
+            txtRecipientKeyMinistry.Text= string.Empty;
 
             try
             {
@@ -453,6 +470,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
                 }
+
+                TLogging.Log(string.Format("GetRecipientFundNumber for {0} is {1}",
+                                            APartnerKey,
+                                            FPreviouslySelectedDetailRow.RecipientLedgerNumber));
 
                 if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
@@ -875,9 +896,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //    PartnerKey,
                 //    out ValidLedgerNumberCostCentreCode);
 
-                if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(PartnerKey, giftRow.DateEntered,
+                Int64 RecipientField = Convert.ToInt64(txtField.Text);
+
+                if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, PartnerKey, RecipientField,
                         out ValidLedgerNumberCostCentreCode)
-                    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(RecipientFundNumber, giftRow.DateEntered,
+                    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, RecipientFundNumber, RecipientField,
                         out ValidLedgerNumberCostCentreCode))
                 {
                     NewCostCentreCode = ValidLedgerNumberCostCentreCode;
@@ -2202,7 +2225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
+                FValidationControlsDict, FPreviouslySelectedDetailRow.RecipientField);
 
             //It is necessary to validate the unbound control for date entered. This requires us to pass the control.
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
