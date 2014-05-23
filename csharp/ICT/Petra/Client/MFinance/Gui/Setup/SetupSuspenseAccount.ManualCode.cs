@@ -146,6 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void CreateFilterFindPanelsManual()
         {
             Label lblDescription = new Label();
+
             lblDescription.Name = "lblDescription";
             lblDescription.Text = "Description";
 
@@ -153,8 +154,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDescription.Name = "txtDescription";
 
             TIndividualFilterFindPanel iffp = new TIndividualFilterFindPanel(
-                TCloneFilterFindControl.ShallowClone<Label>(lblDescription, TFilterPanelControls.FILTER_NAME_SUFFIX),
-                TCloneFilterFindControl.ShallowClone<TextBox>(txtDescription, TFilterPanelControls.FILTER_NAME_SUFFIX),
+                TCloneFilterFindControl.ShallowClone <Label>(lblDescription, TFilterPanelControls.FILTER_NAME_SUFFIX),
+                TCloneFilterFindControl.ShallowClone <TextBox>(txtDescription, TFilterPanelControls.FILTER_NAME_SUFFIX),
                 "Parent_a_account_code_short_desc_c",
                 "varchar",
                 String.Empty);

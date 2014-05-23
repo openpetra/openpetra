@@ -1041,12 +1041,13 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             TIndividualFilterFindPanel iffp;
 
             CheckBox chkAny = new CheckBox();
+
             chkAny.Name = "chk" + AnItemName;
             chkAny.Text = AnItemName;
 
             iffp = new TIndividualFilterFindPanel(
                 null,
-                TCloneFilterFindControl.ShallowClone<CheckBox>(chkAny, TFilterPanelControls.FILTER_NAME_SUFFIX),
+                TCloneFilterFindControl.ShallowClone <CheckBox>(chkAny, TFilterPanelControls.FILTER_NAME_SUFFIX),
                 null,
                 "bit",
                 "HasManualFilter");

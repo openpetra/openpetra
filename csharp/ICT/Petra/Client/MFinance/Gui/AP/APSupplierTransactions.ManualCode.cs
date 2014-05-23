@@ -1194,25 +1194,25 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdDetails.Focus();
                 return true;
             }
-            
+
             if (keyData == (Keys.Home | Keys.Control))
             {
                 SelectRowInGrid(1);
                 return true;
             }
-            
+
             if (keyData == ((Keys.Up | Keys.Control)))
             {
                 SelectRowInGrid(FPrevRowChangedRow - 1);
                 return true;
             }
-            
+
             if (keyData == (Keys.Down | Keys.Control))
             {
                 SelectRowInGrid(FPrevRowChangedRow + 1);
                 return true;
             }
-            
+
             if (keyData == ((Keys.End | Keys.Control)))
             {
                 SelectRowInGrid(grdDetails.Rows.Count - 1);

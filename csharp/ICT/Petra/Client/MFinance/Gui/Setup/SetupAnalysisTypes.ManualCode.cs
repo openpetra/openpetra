@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // Tell the user that we cannot allow deletion if any rows exist in the DataView
                 TMessages.MsgRecordCannotBeDeletedDueToDependantRecordsError(
-                    "Analysis Type", "an Analysis Type", "Analysis Types", "Analysis Value", "an Analysis Value", 
+                    "Analysis Type", "an Analysis Type", "Analysis Types", "Analysis Value", "an Analysis Value",
                     "Analysis Values", ARowToDelete.AnalysisTypeCode, DependentRecordsDV.Count);
 
                 return false;

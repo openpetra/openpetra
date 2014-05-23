@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDiscountPercentage.Visible = false;
             txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
             txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
-            
+
             UpdateRecordNumberDisplay();
 
 /*
