@@ -111,17 +111,17 @@ namespace Ict.Petra.Client.CommonDialogs
             AddShortcutInfoToTable(filterFindTable, ApplWideResourcestrings.StrKeyShortcutCtrlF, ApplWideResourcestrings.StrKeyShortcutCtrlFHelp);
             AddShortcutInfoToTable(filterFindTable, ApplWideResourcestrings.StrKeyShortcutF3, ApplWideResourcestrings.StrKeyShortcutF3Help);
             AddShortcutInfoToTable(filterFindTable, ApplWideResourcestrings.StrKeyShortcutShiftF3, ApplWideResourcestrings.StrKeyShortcutShiftF3Help);
+
+            this.btnCancel.Text = "&Close";
         }
 
         private void RunOnceOnActivationManual()
         {
             // Called when the screen has loaded
             tpgFilter.Text = Catalog.GetString("Filter and Find");
-
-            OnTabChange(null, null);
         }
 
-        private void OnTabChange(object sender, EventArgs e)
+        private void TabSelectionChanged(object sender, EventArgs e)
         {
             // Called when a tab is changed
             if (tabAllShortcuts.SelectedTab == tpgGeneral)
@@ -144,8 +144,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            // Called when the Ok button is clicked
-            this.Close();
+            // We do not show this button because the grid interferes with use of the ENTER key
         }
 
         /// <summary>

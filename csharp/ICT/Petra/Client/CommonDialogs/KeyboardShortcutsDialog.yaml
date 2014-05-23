@@ -4,11 +4,10 @@ RootNode:
     FormType: dialog
     Template: window
     FormTitle: Help with Keyboard Shortcuts
-    WindowWidth: 800
+    WindowWidth: 810
     WindowHeight: 400
 
     Actions:
-        actTabChange: {ActionClick: OnTabChange}
 
     Controls:
         pnlDialogContent:
@@ -19,7 +18,6 @@ RootNode:
         tabAllShortcuts:
             Controls: [tpgGeneral, tpgList, tpgNavigation, tpgFilterFind]
             Dock: Fill
-            Action:actTabChange
         tpgGeneral:
             Controls: [ucoShortcutsGeneral]
         tpgList:
@@ -42,5 +40,5 @@ RootNode:
             Dock: Fill
             Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
             
-        btnCancel: 
+        btnOK: 
             Visible: false
