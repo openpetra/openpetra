@@ -532,7 +532,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 //ExchangeRate = 1.0M;
                 //Instead return 0 to make it easy to catch error
                 ExchangeRate = 0M;
-                TLogging.Log("cannot find corporate exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
+                TLogging.Log("Cannot find corporate exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
             }
 
             return ExchangeRate;

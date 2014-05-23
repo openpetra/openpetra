@@ -1002,6 +1002,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             bool bEnable = (FIsCurrentRowStateAdded && !blnIsInModalMode);
             cmbDetailFromCurrencyCode.Enabled = bEnable;
             cmbDetailToCurrencyCode.Enabled = bEnable && !chkHideOthers.Checked;
+            //Filter only applies to currency To/From fields, which are always disabled in Modal view
+            // and so filter is not needed. Otherwise the user is able to use the filter to select different currencies
+            //  other what is displayed in the To/From comboboxes
+            chkToggleFilter.Enabled = !blnIsInModalMode;
 
             // Set the Enabled states of txtRateOfExchange and the Invert and Delete buttons
             if (cmbDetailFromCurrencyCode.GetSelectedString() ==
