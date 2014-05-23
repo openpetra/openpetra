@@ -439,6 +439,7 @@ namespace Ict.Petra.Client.CommonForms
         public bool ClearControl(Control AControlToClear)
         {
             bool ReturnValue = false;
+            bool prevSuppressChangeDetection = FSuppressChangeDetection;
 
             DisableDataChangedEvent();
 
@@ -518,7 +519,13 @@ namespace Ict.Petra.Client.CommonForms
                     ex.Message);
             }
 
-            EnableDataChangedEvent();
+            if (prevSuppressChangeDetection == false)
+            {
+                // when we started we were tracking changes, so we need to reset that
+                // Note we only enable this if it was enabled at the start!!!
+                EnableDataChangedEvent();
+            }
+
             return ReturnValue;
         }
 
