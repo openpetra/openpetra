@@ -435,6 +435,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 ShowDetails(null);
             }
+
+            UpdateRecordNumberDisplay();
         }
 
         private void RunOnceOnActivationManual()
@@ -830,7 +832,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     cmbDetailToCurrencyCode.GetSelectedString());
             }
 
-            FMainDS.ADailyExchangeRate.DefaultView.RowFilter = rowFilter;
+            FFilterPanelControls.SetBaseFilter(rowFilter, !chkHideOthers.Checked);
+            ApplyFilter();
             SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
         }
 
