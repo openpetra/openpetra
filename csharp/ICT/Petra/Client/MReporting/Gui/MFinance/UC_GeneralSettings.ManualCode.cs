@@ -121,6 +121,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void ReadControls(TRptCalculator ACalculator, TReportActionEnum AReportAction)
         {
             int Year = 0;
+            DateTime EndDate = DateTime.Now;
 
             // TODO
             int DiffPeriod = 0;             //(System.Int32)CbB_YearEndsOn.SelectedItem;
@@ -158,8 +159,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_end_period_i", (System.Object)(Quarter * 3));
                 ACalculator.AddParameter("param_start_date",
                     TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3 - 2));
-                ACalculator.AddParameter("param_end_date",
-                    TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3));
+                EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3);
+                ACalculator.AddParameter("param_end_date", EndDate);
 
                 //VerificationResult = TFinancialPeriodChecks.ValidQuarter(DiffPeriod, Year, Quarter, "Quarter");
                 if (AReportAction == TReportActionEnum.raGenerate)
@@ -179,8 +180,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
                 ACalculator.AddParameter("param_end_period_i", EndPeriod);
-                ACalculator.AddParameter("param_end_date",
-                    TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod));
+                EndDate =  TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
+                ACalculator.AddParameter("param_end_date", EndDate);
+
                 CheckPeriod(Year, EndPeriod);
                 dtpEndDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
 
@@ -221,7 +223,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     else
                     {
                         ACalculator.AddParameter("param_start_date", dtpStartDate.Date.Value);
-                        ACalculator.AddParameter("param_end_date", dtpEndDate.Date.Value);
+                        EndDate = dtpEndDate.Date.Value;
+                        ACalculator.AddParameter("param_end_date", EndDate);
                         ACalculator.AddParameter("param_real_year", dtpEndDate.Date.Value.Year);
                     }
                 }
@@ -232,7 +235,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_real_year", cmbBreakdownYear.GetSelectedString(1));
                 ACalculator.AddParameter("param_year_i", Year);
                 ACalculator.AddParameter("param_start_date", TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1));
-                ACalculator.AddParameter("param_end_date", TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12));
+                EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12);
+                ACalculator.AddParameter("param_end_date", EndDate);
+            }
+
+            //
+            // I may need to check whether the selected currency has an exchange rate I can use!
+
+            if (CurrencyName == FLedgerRow.IntlCurrency)
+            {
+                Decimal IntlRate = TExchangeRateCache.GetDailyExchangeRate(FLedgerRow.BaseCurrency, FLedgerRow.IntlCurrency, EndDate);
+                if (IntlRate == 0) // No exchange rate has been specified
+                {
+                    FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                            Catalog.GetString("International Exchange Rate"),
+                            Catalog.GetString("No Exchange Rate is available for the requested period."),
+                            TResultSeverity.Resv_Critical));
+                }
             }
 
             if (Year < 0)
