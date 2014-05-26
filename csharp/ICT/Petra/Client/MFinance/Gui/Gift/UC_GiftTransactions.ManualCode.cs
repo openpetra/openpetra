@@ -1849,70 +1849,75 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            this.Cursor = Cursors.WaitCursor;
-
-            FShowingDetails = true;
-
-            //Record current values for motivation
-            FMotivationGroup = ARow.MotivationGroupCode;
-            FMotivationDetail = ARow.MotivationDetailCode;
-
-            if (ARow.IsRecipientKeyMinistryNull())
+            try
             {
-                txtRecipientKeyMinistry.Text = string.Empty;
-            }
-            else
-            {
-                txtRecipientKeyMinistry.Text = ARow.RecipientKeyMinistry;
-            }
+                this.Cursor = Cursors.WaitCursor;
 
-            //Show gift table values
-            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
-            ShowDetailsForGift(giftRow);
+                FShowingDetails = true;
 
-            if (ARow.IsCostCentreCodeNull())
-            {
-                txtDetailCostCentreCode.Text = string.Empty;
-            }
-            else
-            {
-                txtDetailCostCentreCode.Text = ARow.CostCentreCode;
-            }
+                //Record current values for motivation
+                FMotivationGroup = ARow.MotivationGroupCode;
+                FMotivationDetail = ARow.MotivationDetailCode;
 
-            if (ARow.IsAccountCodeNull())
-            {
-                txtDetailAccountCode.Text = string.Empty;
-            }
-            else
-            {
-                txtDetailAccountCode.Text = ARow.AccountCode;
-            }
+                if (ARow.IsRecipientKeyMinistryNull())
+                {
+                    txtRecipientKeyMinistry.Text = string.Empty;
+                }
+                else
+                {
+                    txtRecipientKeyMinistry.Text = ARow.RecipientKeyMinistry;
+                }
 
-            if (ARow.IsRecipientKeyNull())
-            {
-                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-                UpdateRecipientKeyText(0);
-            }
-            else
-            {
-                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
-                UpdateRecipientKeyText(ARow.RecipientKey);
-            }
+                //Show gift table values
+                AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+                ShowDetailsForGift(giftRow);
 
-            if (ARow.IsRecipientFieldNull())
-            {
-                txtField.Text = string.Empty;
+                if (ARow.IsCostCentreCodeNull())
+                {
+                    txtDetailCostCentreCode.Text = string.Empty;
+                }
+                else
+                {
+                    txtDetailCostCentreCode.Text = ARow.CostCentreCode;
+                }
+
+                if (ARow.IsAccountCodeNull())
+                {
+                    txtDetailAccountCode.Text = string.Empty;
+                }
+                else
+                {
+                    txtDetailAccountCode.Text = ARow.AccountCode;
+                }
+
+                if (ARow.IsRecipientKeyNull())
+                {
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
+                    UpdateRecipientKeyText(0);
+                }
+                else
+                {
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
+                    UpdateRecipientKeyText(ARow.RecipientKey);
+                }
+
+                if (ARow.IsRecipientFieldNull())
+                {
+                    txtField.Text = string.Empty;
+                }
+                else
+                {
+                    txtField.Text = ARow.RecipientField.ToString();
+                }
+
+                UpdateControlsProtection(ARow);
+
+                FShowingDetails = false;
             }
-            else
+            finally
             {
-                txtField.Text = ARow.RecipientField.ToString();
+                this.Cursor = Cursors.Default;
             }
-
-            UpdateControlsProtection(ARow);
-
-            FShowingDetails = false;
-
-            this.Cursor = Cursors.Default;
         }
 
         private void ShowDetailsForGift(AGiftRow ACurrentGiftRow)
