@@ -1448,12 +1448,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Check if an entry exists in ValidLedgerNumber for the specified ledger number and partner key
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
-        /// <param name="AGiftDate"></param>
+        /// <param name="AFieldDateTime"></param>
         /// <param name="ACostCentreCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool CheckCostCentreDestinationForRecipient(Int64 APartnerKey, DateTime AGiftDate, out string ACostCentreCode)
+        public static bool CheckCostCentreDestinationForRecipient(Int32 ALedgerNumber,
+            Int64 APartnerKey,
+            Int64 AFieldDateTime,
+            out string ACostCentreCode)
         {
             bool CostCentreExists = false;
 
@@ -1463,29 +1467,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
-            string PartnerGiftDestinationTable = "PartnerGiftDestination";
+            //string PartnerGiftDestinationTable = "PartnerGiftDestination";
+            string CostCentreCodeTable = "CostCentreCodes";
 
-            string GetPartnerGiftDestinationSQL = String.Format(
-                "SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
-                "WHERE pgd.p_partner_key_n = {0} And ((pgd.p_date_effective_d <= '{1}' And pgd.p_date_expires_d IS NULL) Or ('{1}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
-                APartnerKey,
-                AGiftDate.ToString("yyyy-MM-dd"));
+            //string GetPartnerGiftDestinationSQL = String.Format(
+            //    "SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
+            //    "WHERE pgd.p_partner_key_n = {0} And ((pgd.p_date_effective_d <= '{1}' And pgd.p_date_expires_d IS NULL) Or ('{1}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
+            //    APartnerKey,
+            //    AGiftDate.ToString("yyyy-MM-dd"));
 
-            TLogging.Log("GetPartnerGiftDestinationSQL: " + GetPartnerGiftDestinationSQL);
+            //TLogging.Log("GetPartnerGiftDestinationSQL: " + GetPartnerGiftDestinationSQL);
+
+            string GetCostCentreCodeSQL = String.Format(
+                "SELECT a_cost_centre_code_c FROM a_valid_ledger_number WHERE a_ledger_number_i = {0} AND p_partner_key_n = {1};",
+                ALedgerNumber,
+                APartnerKey
+                );
+
+            TLogging.Log("GetCostCentreCodeSQL: " + GetCostCentreCodeSQL);
 
             DataSet tempDataSet = new DataSet();
 
             try
             {
-                DBAccess.GDBAccessObj.Select(tempDataSet, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
+                DBAccess.GDBAccessObj.Select(tempDataSet, GetCostCentreCodeSQL, CostCentreCodeTable,
                     Transaction,
                     0, 0);
 
-                if (tempDataSet.Tables[PartnerGiftDestinationTable] != null)
+                if (tempDataSet.Tables[CostCentreCodeTable] != null)
                 {
-                    if (tempDataSet.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
+                    TLogging.Log("CostCentreCodeTable Row Count: " + tempDataSet.Tables[CostCentreCodeTable].Rows.Count.ToString());
+
+                    if (tempDataSet.Tables[CostCentreCodeTable].Rows.Count > 0)
                     {
-                        DataRow row = tempDataSet.Tables[PartnerGiftDestinationTable].Rows[0];
+                        DataRow row = tempDataSet.Tables[CostCentreCodeTable].Rows[0];
                         ACostCentreCode = row[0].ToString();
                         CostCentreExists = true;
                     }
@@ -1500,6 +1515,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
+
+            TLogging.Log(String.Format("Cost Centre Code for Partner: {0} is {1}",
+                    APartnerKey,
+                    ACostCentreCode));
 
             return CostCentreExists;
         }
@@ -2338,6 +2357,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //Look in RecipientFamily table
             PFamilyRow familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(APartnerKey);
             PPersonRow personRow;
+
+            //p_partner
 
             if (familyRow != null)
             {
