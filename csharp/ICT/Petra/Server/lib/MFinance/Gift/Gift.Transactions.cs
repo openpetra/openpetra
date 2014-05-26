@@ -1454,7 +1454,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ACostCentreCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool CheckCostCentreDestinationForRecipient(Int32 ALedgerNumber, Int64 APartnerKey, Int64 AFieldDateTime, out string ACostCentreCode)
+        public static bool CheckCostCentreDestinationForRecipient(Int32 ALedgerNumber,
+            Int64 APartnerKey,
+            Int64 AFieldDateTime,
+            out string ACostCentreCode)
         {
             bool CostCentreExists = false;
 
@@ -1494,6 +1497,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (tempDataSet.Tables[CostCentreCodeTable] != null)
                 {
                     TLogging.Log("CostCentreCodeTable Row Count: " + tempDataSet.Tables[CostCentreCodeTable].Rows.Count.ToString());
+
                     if (tempDataSet.Tables[CostCentreCodeTable].Rows.Count > 0)
                     {
                         DataRow row = tempDataSet.Tables[CostCentreCodeTable].Rows[0];
@@ -1513,8 +1517,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             TLogging.Log(String.Format("Cost Centre Code for Partner: {0} is {1}",
-                                        APartnerKey,
-                                        ACostCentreCode));
+                    APartnerKey,
+                    ACostCentreCode));
 
             return CostCentreExists;
         }

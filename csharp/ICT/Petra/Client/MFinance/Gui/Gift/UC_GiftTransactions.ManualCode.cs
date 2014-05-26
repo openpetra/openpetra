@@ -339,8 +339,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             DateTime giftDate = ((AGiftRow)GetGiftRow(ARow.GiftTransactionNumber)).DateEntered;
 
-            TLogging.Log(String.Format("GiftDate: {0}", giftDate.ToShortDateString()));
-
             string MotivationGroup = ARow.MotivationGroupCode;
             string MotivationDetail = ARow.MotivationDetailCode;
 
@@ -348,33 +346,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
 
-            TLogging.Log(String.Format("PartnerKey: {0} and RecipientLedgerNumber: {1} and LedgerPartnerKey: {2}",
-                                        APartnerKey,
-                                        RecipientLedgerNumber,
-                                        LedgerPartnerKey));
-
             bool KeyMinIsActive = false;
             bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartnerKey, out KeyMinIsActive);
 
-            TLogging.Log(String.Format("  KeyMinExists: {0} and is active: {1}",
-                                        KeyMinExists,
-                                        KeyMinIsActive));
-
             string ValidLedgerNumberCostCentreCode;
-
-            //bool ValidLedgerNumberExists = TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber,
-            //    PartnerKey,
-            //    out ValidLedgerNumberCostCentreCode);
 
             string errMsg = string.Empty;
 
-            //if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, PartnerKey,
-            //        out ValidLedgerNumberCostCentreCode)
-            //    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreLinkForRecipient(FLedgerNumber, RecipientLedgerNumber,
-            //        out ValidLedgerNumberCostCentreCode))
             if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
                     out ValidLedgerNumberCostCentreCode)
-                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber, RecipientField,
+                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
+                    RecipientField,
                     out ValidLedgerNumberCostCentreCode))
             {
                 NewCostCentreCode = ValidLedgerNumberCostCentreCode;
@@ -432,8 +414,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            TLogging.Log(String.Format("NewCostCentreCode: {0}", NewCostCentreCode));
-
             if (CurrentCostCentreCode != NewCostCentreCode)
             {
                 ARow.CostCentreCode = NewCostCentreCode;
@@ -452,7 +432,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FInRecipientKeyChanging = true;
-            txtRecipientKeyMinistry.Text= string.Empty;
+            txtRecipientKeyMinistry.Text = string.Empty;
 
             try
             {
@@ -472,8 +452,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 TLogging.Log(string.Format("GetRecipientFundNumber for {0} is {1}",
-                                            APartnerKey,
-                                            FPreviouslySelectedDetailRow.RecipientLedgerNumber));
+                        APartnerKey,
+                        FPreviouslySelectedDetailRow.RecipientLedgerNumber));
 
                 if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
@@ -900,7 +880,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, PartnerKey, RecipientField,
                         out ValidLedgerNumberCostCentreCode)
-                    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, RecipientFundNumber, RecipientField,
+                    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, RecipientFundNumber,
+                        RecipientField,
                         out ValidLedgerNumberCostCentreCode))
                 {
                     NewCostCentreCode = ValidLedgerNumberCostCentreCode;
@@ -1028,7 +1009,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
 
-            if (txn.NumberValueDecimal == null)
+            if ((GetCurrentBatchRow() == null) || (txn.NumberValueDecimal == null))
             {
                 return;
             }
