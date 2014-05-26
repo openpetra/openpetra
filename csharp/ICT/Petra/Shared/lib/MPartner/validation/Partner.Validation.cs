@@ -899,6 +899,54 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
+        /// Checks whether a Partner with Field 0 has a non-gift Motivation Group code.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey.</param>
+        /// <param name="APartnerField">The field associated with the partner key</param>
+        /// <param name="AMotivationGroup">The current motivation group</param>
+        /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
+        /// <param name="AResultContext">ResultContext (Default: null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null). (Default: null).</param>
+        /// <returns>Null if the Partner Field is non-zero or Motivation Group code is not Gift.
+        ///   If the Partner Field is zero and Motivation Group is Gift, a TVerificationResult
+        ///   with details about the error is returned.
+        /// </returns>
+        public static TVerificationResult IsValidRecipientFieldForMotivationGroup(Int64 APartnerKey, Int64 APartnerField,
+            string AMotivationGroup, string AErrorMessageText = "", object AResultContext = null,
+            System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+            
+            if (APartnerField == 0 && AMotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+            {
+                if (AErrorMessageText == String.Empty)
+                {
+                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_RECIPIENT_FIELD_MOTIVATION_GROUP, new string[] { APartnerKey.ToString() }));
+                }
+                else
+                {
+                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_RECIPIENT_FIELD_MOTIVATION_GROUP));
+                    ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
+                }
+            }
+            else
+            {
+                return null;
+            }
+            
+            if ((ReturnValue != null)
+                && (AResultColumn != null))
+            {
+                ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Checks that a Partner with a certain PartnerKey exists and is a Partner of PartnerClass UNIT.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey.</param>

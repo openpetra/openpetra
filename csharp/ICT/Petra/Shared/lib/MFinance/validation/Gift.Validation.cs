@@ -232,7 +232,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // Motivation Group type Gift must have non-zero Recipient field
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationGroupCodeId];
-            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+            ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
@@ -241,13 +241,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 if ((ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientField == 0))
                 {
-                    VerificationResult = TNumericalChecks.IsPositiveInteger(
-                        ARecipientField,
-                        " Motivation Group " + MFinanceConstants.MOTIVATION_GROUP_GIFT +
-                        " requires a non-zero Recipient field. Change to a NON-GIFT group code - " + ValidationContext,
-                        AContext,
-                        ValidationColumn,
-                        ValidationControlsData.ValidationControl);
+                    VerificationResult = TSharedPartnerValidation_Partner.IsValidRecipientFieldForMotivationGroup(ARow.RecipientKey, ARecipientField, MFinanceConstants.MOTIVATION_GROUP_GIFT,
+                                              "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()) + Environment.NewLine,
+                                              "", ValidationColumn, null);
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
