@@ -2095,6 +2095,23 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         }
                     }
 
+                    // now remove temporary records from PPartnerLocation that were used for propagation of addresses to family members
+                    // (otherwise those address records for family members would show up on client where they are not needed)
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        if (AInspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                        {
+                            DataView OtherPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, PPartnerLocationTable.GetPartnerKeyDBName() + " <> " + FPartnerKey.ToString(), "", DataViewRowState.CurrentRows);
+                            int NumberOfOtherPartnerLocationRows = OtherPartnerLocationsDV.Count;
+
+                            for (int Counter = NumberOfOtherPartnerLocationRows - 1; Counter >= 0; Counter--)
+                            {
+                                OtherPartnerLocationsDV[Counter].Row.Delete();
+                            }
+                        }
+
+                    }
+
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
                     {
                         TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Before check for new Partner for Recent Partner handling...");
