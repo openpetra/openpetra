@@ -27,7 +27,6 @@ RootNode:
             Enabled: false
         tpgFinance: 
             Label: Finance
-   #         Controls: [ucoFinance]
             Enabled: false
         ucoGeneral:
             Type: Ict.Petra.Client.MSysMan.Gui.TUC_GeneralPreferences
@@ -38,6 +37,3 @@ RootNode:
         ucoPartner:
             Type: Ict.Petra.Client.MSysMan.Gui.TUC_PartnerPreferences
             Dock: Fill
-   #     ucoFinance:
-   #         Type: Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences
-   #         Dock: Fill

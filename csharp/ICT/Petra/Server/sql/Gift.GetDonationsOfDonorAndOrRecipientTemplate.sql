@@ -7,6 +7,7 @@ SELECT a_gift.a_date_entered_d AS DateEntered,
  a_gift_detail.a_confidential_gift_flag_l AS ConfidentialGiftFlag, 
  a_gift_batch.a_batch_number_i AS BatchNumber, 
  a_gift.a_gift_transaction_number_i AS GiftTransactionNumber, 
+ a_gift_detail.a_detail_number_i AS DetailNumber,
  p_partner.p_partner_short_name_c AS RecipientDescription, 
  a_gift.a_reference_c AS Reference, 
  a_gift_detail.a_gift_comment_one_c AS GiftCommentOne, 
@@ -33,6 +34,4 @@ WHERE a_gift.a_ledger_number_i = a_gift_batch.a_ledger_number_i
   AND (? OR a_gift.p_donor_key_n = ?)
   AND (? OR a_gift_detail.p_recipient_key_n = ?)
   AND (? OR a_gift.a_date_entered_d BETWEEN CAST(? || ' 00:00:00' AS TIMESTAMP) AND CAST(? || ' 23:59:59' AS TIMESTAMP))
-  AND (? OR a_gift_detail.a_motivation_group_code_c LIKE (? || '%'))
-  AND (? OR a_gift_detail.a_motivation_detail_code_c LIKE (? || '%'))
 ORDER BY a_gift.a_date_entered_d DESC

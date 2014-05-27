@@ -65,8 +65,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //clbIncludePublication.SelectionMode = SourceGrid.GridSelectionMode.Row;
             clbIncludePublication.Columns.Clear();
             clbIncludePublication.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Code"), NewTable.Columns[ValueMember], 150);
-            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Description"), NewTable.Columns[DisplayMember], 300);
+            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Code"), NewTable.Columns[ValueMember], 200);
+            clbIncludePublication.AddTextColumn(Catalog.GetString("Publication Description"), NewTable.Columns[DisplayMember], 468);
             clbIncludePublication.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
 
             dtpDateOfSendingCopy.Date = DateTime.Now;

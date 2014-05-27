@@ -2,7 +2,7 @@
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Surplus Deficit of Cost Centre
-    WindowWidth: 650
+    WindowWidth: 640
     WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
@@ -24,10 +24,10 @@
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Dock: Top
-            Height:230
+            Height:270
 
         tpgCCAccount:
-            Label: Account / CostCentre Settings
+            Label: Account / Cost Centre Settings
             Controls: [uco_AccountCostCentreSettings]
         uco_AccountCostCentreSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings

@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
     public partial class TFrmMotivationGroupSetup
     {
         private Int32 FLedgerNumber;
+        private string FDescription;
 
         /// <summary>
         /// maintain motivation details for this ledger
@@ -65,6 +66,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
             }
+        }
+
+        private void InitializeManualCode()
+        {
+            // Get the current description
+            FDescription = txtDetailMotivationGroupDescription.Text;
         }
 
         private void NewRowManual(ref AMotivationGroupRow ARow)
@@ -104,6 +111,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             }
 
             return result;
+        }
+
+        // fired when tying in txtDetailMotivationDetailDesc
+        private void DescriptionTyped(object sender, EventArgs e)
+        {
+            // syncs the two description text boxes if they should be synced
+            if ((FDescription == txtDetailMotivationGroupDescLocal.Text) || string.IsNullOrEmpty(txtDetailMotivationGroupDescLocal.Text))
+            {
+                txtDetailMotivationGroupDescLocal.Text = txtDetailMotivationGroupDescription.Text;
+            }
+
+            FDescription = txtDetailMotivationGroupDescription.Text;
         }
     }
 }
