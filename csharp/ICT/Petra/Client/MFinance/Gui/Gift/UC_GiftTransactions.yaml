@@ -70,7 +70,7 @@ RootNode:
         grdDetails:
             TableName: AGiftDetail
             Dock: Fill
-            Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftTransactionAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, ReceiptPrinted, MethodOfGivingCode, MethodOfPaymentCode, MailingCode, GiftAmount]
+            Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftTransactionAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, ReceiptPrinted, MethodOfGivingCode, MethodOfPaymentCode, MailingCode, GiftAmount, GiftAmountIntl]
             CustomColumns:
                 GiftTransactionNumber: {Label=Gift No., Type=Int32}
                 DetailNumber: {Label=Split No., Type=Int32}
@@ -84,6 +84,7 @@ RootNode:
                 RecipientDescription: {Label=Recipient, Type=String}
                 RecipientField: {Label=Field, Type=Int64}
                 GiftAmount: {Label=Amount (Base), Type=Currency}
+                GiftAmountIntl: {Label=Amount (Intl), Type=Currency}
                 MethodOfGivingCode: {Label=Method of Giving, Type=String}
                 MethodOfPaymentCode: {Label=Method of Payment, Type=String}
                 ReceiptNumber: {Label=Receipt, Type=Int32}
@@ -129,7 +130,7 @@ RootNode:
         txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient, OnChange=RecipientKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
-        cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged}
+        cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailMotivationDetailDescription: {Label=Empty, ReadOnly=true, Visible=false}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}

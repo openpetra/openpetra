@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private IAPUIConnectorsFind FSupplierFindObject = null;
         private IAPUIConnectorsFind FInvoiceFindObject = null;
 
-        private ALedgerRow FLedgerInfo;
+        private String FLedgerBaseCurrency = null;
 
         private Int32 FLedgerNumber;
         private String FInitialTab = "Suppliers";
@@ -79,6 +79,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             set
             {
                 FLedgerNumber = value;
+                this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+
                 FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
                 // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
                 TEnsureKeepAlive.Register(FSupplierFindObject);
@@ -86,11 +88,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FInvoiceFindObject = TRemote.MFinance.AP.UIConnectors.Find();
                 // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
                 TEnsureKeepAlive.Register(FInvoiceFindObject);
-
-                ALedgerTable Tbl = FSupplierFindObject.GetLedgerInfo(FLedgerNumber);
-                FLedgerInfo = Tbl[0];
-
-                this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             }
             get
             {
@@ -145,7 +142,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             get
             {
-                return FLedgerInfo.BaseCurrency;
+                if (FLedgerBaseCurrency == null)
+                {
+                    this.Cursor = Cursors.WaitCursor;
+                    ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+                    FLedgerBaseCurrency = Tbl[0].BaseCurrency;
+                    this.Cursor = Cursors.Default;
+                }
+
+                return FLedgerBaseCurrency;
             }
         }
 

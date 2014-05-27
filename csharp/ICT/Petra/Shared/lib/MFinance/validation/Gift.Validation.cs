@@ -173,9 +173,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="ARecipientField">Optional The recipient field for the gift </param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateGiftDetailManual(object AContext, AGiftDetailRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        public static bool ValidateGiftDetailManual(object AContext,
+            AGiftDetailRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict,
+            Int64 ARecipientField = -1)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -223,6 +227,33 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
+                }
+            }
+
+            // Motivation Group type Gift must have non-zero Recipient field
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationGroupCodeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if ((ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientField == 0))
+                {
+                    VerificationResult = TNumericalChecks.IsPositiveInteger(
+                        ARecipientField,
+                        " Motivation Group " + MFinanceConstants.MOTIVATION_GROUP_GIFT +
+                        " requires a non-zero Recipient field. Change to a NON-GIFT group code - " + ValidationContext,
+                        AContext,
+                        ValidationColumn,
+                        ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
                 }
             }
 

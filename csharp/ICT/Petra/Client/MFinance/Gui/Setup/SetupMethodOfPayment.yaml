@@ -21,10 +21,8 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailMethodOfPaymentCode, txtDetailMethodOfPaymentDesc, chkDetailSpecialMethodOfPmt, chkDetailActive]
-            FindControls: [txtDetailMethodOfPaymentCode, txtDetailMethodOfPaymentDesc, chkDetailSpecialMethodOfPmt]
-            ControlAttributes:
-                chkDetailSpecialMethodOfPmt: {Text=Special Payment Method}
+            FilterControls: [txtDetailMethodOfPaymentCode, txtDetailMethodOfPaymentDesc, chkDetailActive]
+            FindControls: [txtDetailMethodOfPaymentCode, txtDetailMethodOfPaymentDesc]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -37,12 +35,11 @@ RootNode:
             Width: 80
         grdDetails:
             Dock: Fill
-            Columns: [DetailMethodOfPaymentCode, DetailMethodOfPaymentDesc, DetailSpecialMethodOfPmt, DetailActive]
+            Columns: [DetailMethodOfPaymentCode, DetailMethodOfPaymentDesc, DetailActive]
 #            ColWidths: [2=Fixed:50]
             CustomColumns:
                 DetailMethodOfPaymentCode:  {Label=Method of Payment}
                 DetailMethodOfPaymentDesc:  {Label=Description}
-                DetailSpecialMethodOfPmt: {Label=Special, Type=Boolean}
                 DetailActive: {Label=Active, Type=Boolean}
             SortOrder: DetailMethodOfPaymentCode ASC
             ActionFocusRow: FocusedRowChanged
@@ -50,9 +47,7 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailMethodOfPaymentCode, txtDetailMethodOfPaymentDesc]
-                Row1: [chkDetailSpecialMethodOfPmt]
                 Row2: [chkDetailActive]
         txtDetailMethodOfPaymentCode: {Label=Method of Payment, CharacterCasing=Upper}
         txtDetailMethodOfPaymentDesc: {Label=Description, Width=310}
-        chkDetailSpecialMethodOfPmt:  {Label=Special Method of Payment}
         chkDetailActive:
