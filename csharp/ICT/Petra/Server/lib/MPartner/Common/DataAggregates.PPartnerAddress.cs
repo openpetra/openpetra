@@ -1230,7 +1230,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     ACreateLocation = true;
 
                     // Parse the UserAnswer. It's format is 'CHANGESOME:PartnerKey1;PartnerKey2;PartnerKeyN'
-                    string[] ChangeSomeArray = AddressAddedOrChangedRow.UserAnswer.Split(":;".ToCharArray());
+                    string[] ChangeSomeArray = AddressAddedOrChangedRow.UserAnswer.Split(":,".ToCharArray());
 
                     // Build the ACreateLocationOtherPartnerKeys array from it to
                     // signal to calling procedure that the created location should be
