@@ -899,7 +899,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.DateEffective = DateTime.Today;
 
             // initialize country code, email address, URL and mobile number from last (currently) selected address
-            if (FPreviouslySelectedDetailRow != null)
+            if (   FPreviouslySelectedDetailRow != null
+                && FPreviouslySelectedDetailRow.RowState != DataRowState.Detached)
             {
                 ARow.LocationCountryCode = FPreviouslySelectedDetailRow.LocationCountryCode;
 
@@ -1141,8 +1142,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerLocation0Row.LocationCountryCode = Location0Row.CountryCode;
 
                 FMainDS.PPartnerLocation.Rows.Add(PartnerLocation0Row);
-
-                PartnerLocation0Row.AcceptChanges();
             }
             else
             {
