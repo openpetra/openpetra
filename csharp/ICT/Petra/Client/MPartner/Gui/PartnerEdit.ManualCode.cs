@@ -2124,7 +2124,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (CanClose())
                 {
                     /* Delete Partner; if OK, broadcast a message to any listening forms to inform them and then close the screen */
-                    if (TPartnerMain.DeletePartner(FPartnerKey))
+                    if (TPartnerMain.DeletePartner(FPartnerKey, this))
                     {
                         BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcPartnerDeleted,
                             FCallerContext);
@@ -2478,6 +2478,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static bool UserHasPersonnelAccess()
         {
             return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
+        }
+
+        private static bool UserHasFinanceAccess()
+        {
+            return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1);
         }
 
         #endregion
@@ -3115,8 +3120,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Finance Module Data
-            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
-                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
+            if (((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                 || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
+                && UserHasFinanceAccess())
             {
                 //tbbViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
                 //mniViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet

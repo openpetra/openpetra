@@ -23,9 +23,22 @@
             Label: General Settings
             Controls: [lblLedger, grpReportType, grpDateSelection, rgrDonorSelection, grpCurrencySelection]
             
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [rgrSorting]
         tpgColumnSettings:
             Label: Column Settings
             Controls: [uco_Columns]
+
+        rgrSorting: {ParameterName=param_order_by_name}
+            Label: Sorting
+            Controls: [rbtPartnerKey, rbtPartnerName]
+        rbtPartnerKey: 
+            Label: Partner Key
+            Checked: true
+        rbtPartnerName:
+            Label: Partner Name
+
         uco_Columns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
@@ -46,7 +59,7 @@
             Controls: [txtMinAmount, txtMaxAmount, cmbCurrency]
         cmbReportType:
             ParameterName: param_report_type
-            OptionalValues: [Complete, Total]
+            OptionalValues: [Complete, Totals]
             OnChange: ReportTypeChanged
         dtpFromDate:
             Label: From
@@ -57,14 +70,17 @@
         rbtAllDonors:
             Label: All Donors
             ParameterValue: All Donors
+            OnChange: DonorSelectionChanged
         rbtExtract:
             Label: From Extract
             ParameterValue: Extract
             Controls: [txtExtract]
+            OnChange: DonorSelectionChanged
         rbtPartner:
             Label: One Donor
             ParameterValue: One Donor
             Controls: [txtDonor]
+            OnChange: DonorSelectionChanged
         txtExtract:
             NoLabel: true
             Type: Extract

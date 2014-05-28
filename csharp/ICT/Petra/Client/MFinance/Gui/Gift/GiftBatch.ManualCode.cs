@@ -399,17 +399,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (SelectedRow != null)
                     {
-                        this.Cursor = Cursors.WaitCursor;
-
-                        if (LoadTransactions(SelectedRow.LedgerNumber,
-                                SelectedRow.BatchNumber,
-                                SelectedRow.BatchStatus))
+                        try
                         {
-                            // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
-                            ucoTransactions.AutoSizeGrid();
-                        }
+                            this.Cursor = Cursors.WaitCursor;
 
-                        this.Cursor = Cursors.Default;
+                            if (LoadTransactions(SelectedRow.LedgerNumber,
+                                    SelectedRow.BatchNumber,
+                                    SelectedRow.BatchStatus))
+                            {
+                                // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
+                                ucoTransactions.AutoSizeGrid();
+                            }
+                        }
+                        finally
+                        {
+                            this.Cursor = Cursors.Default;
+                        }
                     }
 
                     ucoTransactions.FocusGrid();

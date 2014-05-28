@@ -2,7 +2,7 @@
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Balance Sheet Multi Ledger
-    WindowWidth: 680
+    WindowWidth: 640
     WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
@@ -26,7 +26,7 @@
             Controls: [uco_GeneralSettings]
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
-            Height:230
+            Height:270
 
         tpgColumnSettings:
             Label: Column Settings

@@ -366,6 +366,37 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             clbCostCentres.SetCheckedStringList(SelectedCostCentres);
         }
 
+        // Enable/disable btnSelectAllReportingCostCentres depending on value of cmbSummaryCostCentres.
+        // Fired when rbtCostCentreFromList is selected or when a value is chosen from cmbSummaryCostCentres.
+        private void SummaryCostCentresChanged(System.Object sender, System.EventArgs e)
+        {
+            if (string.IsNullOrEmpty(cmbSummaryCostCentres.cmbCombobox.Text))
+            {
+                btnSelectAllReportingCostCentres.Enabled = false;
+            }
+            else
+            {
+                btnSelectAllReportingCostCentres.Enabled = true;
+            }
+        }
+
+        // fired when rbtCostCentreFromList is selected
+        private void CostCentreChanged(System.Object sender, System.EventArgs e)
+        {
+            if (rbtCostCentreFromList.Checked)
+            {
+                btnUnselectAllCostCentres.Enabled = true;
+                cmbSummaryCostCentres.Enabled = true;
+                SummaryCostCentresChanged(this, null);
+            }
+            else
+            {
+                btnUnselectAllCostCentres.Enabled = false;
+                cmbSummaryCostCentres.Enabled = false;
+                btnSelectAllReportingCostCentres.Enabled = false;
+            }
+        }
+
         #endregion
 
         private void SetLists()

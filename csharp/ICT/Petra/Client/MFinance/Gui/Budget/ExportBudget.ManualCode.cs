@@ -177,6 +177,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             FExportFileName = txtFilename.Text;
             String fileContents = string.Empty;
+            Int32 budgetCount = 0;
 
             if (!Directory.Exists(Path.GetDirectoryName(FExportFileName)))
             {
@@ -212,12 +213,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             string[] delims = new string[1];
             delims[0] = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
 
-            Int32 budgetCount = TRemote.MFinance.Budget.WebConnectors.ExportBudgets(FLedgerNumber,
-                FExportFileName,
-                delims,
-                ref fileContents,
-                ref FBudgetDS,
-                out AMessages);
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                budgetCount = TRemote.MFinance.Budget.WebConnectors.ExportBudgets(FLedgerNumber,
+                    FExportFileName,
+                    delims,
+                    ref fileContents,
+                    ref FBudgetDS,
+                    out AMessages);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
 
             if ((AMessages != null) && (AMessages.Count > 0))
             {

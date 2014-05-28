@@ -41,7 +41,7 @@
             ParameterValue:Cost Centre
         
         tpgCCAccount:
-            Label: Account / CostCentre Settings
+            Label: Account / Cost Centre Settings
             Controls: [uco_AccountCostCentreSettings]
         uco_AccountCostCentreSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_AccountCostCentreSettings
