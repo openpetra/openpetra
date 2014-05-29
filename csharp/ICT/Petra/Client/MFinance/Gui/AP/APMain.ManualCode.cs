@@ -24,9 +24,11 @@
 //
 using System;
 using System.Windows.Forms;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -145,7 +147,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if (FLedgerBaseCurrency == null)
                 {
                     this.Cursor = Cursors.WaitCursor;
-                    ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+                    ALedgerTable Tbl = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                        FLedgerNumber);
                     FLedgerBaseCurrency = Tbl[0].BaseCurrency;
                     this.Cursor = Cursors.Default;
                 }
