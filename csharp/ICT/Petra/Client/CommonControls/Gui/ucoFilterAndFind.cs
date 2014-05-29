@@ -29,9 +29,10 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Data;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Controls.Formatting;
 
-namespace Ict.Common.Controls
+namespace Ict.Petra.Client.CommonControls
 {
     /// <summary>
     /// UserControl that handles one or two Filter Panels and optionally
