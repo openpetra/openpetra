@@ -304,9 +304,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// enable the transaction tab page
-        public void EnableTransactions()
+        public void EnableTransactions(bool AEnable = true)
         {
-            this.tpgTransactions.Enabled = true;
+            this.tpgTransactions.Enabled = AEnable;
         }
 
         /// <summary>

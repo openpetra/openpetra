@@ -68,6 +68,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         TCmbAutoComplete FcmbYear = null;
         TCmbAutoComplete FcmbPeriod = null;
+        RadioButton FrbtEditing = null;
+        RadioButton FrbtPosting = null;
+        RadioButton FrbtAll = null;
+
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
@@ -93,6 +97,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
+        private void InitialiseControls()
+        {
+            FrbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            FrbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
+            FrbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
+            FcmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
+            FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
+        }
+        
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
@@ -142,17 +155,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.Merge(ViewModeTDS);
             FPetraUtilsObject.SuppressChangeDetection = true;
 
-            //Specify year and period controls
-            FcmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
-            FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
+            InitialiseControls();
 
-            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
-            RadioButton rbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
-            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
-
-            rbtPosting.Checked = false;
-            rbtEditing.Checked = false;
-            rbtAll.Checked = false;
+            FrbtPosting.Checked = false;
+            FrbtEditing.Checked = false;
+            FrbtAll.Checked = false;
             FcmbYear.Enabled = false;
             FcmbPeriod.Enabled = false;
 
@@ -219,18 +226,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FLedgerNumber = ALedgerNumber;
             FDateEffective = FDefaultDate;
 
+            InitialiseControls();
+
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
-
-            //Specify year and period controls
-            FcmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
-            FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
-
-            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
 
             if (ViewMode)
             {
                 FMainDS.Merge(ViewModeTDS);
-                rbtAll.Checked = true;
+                FrbtAll.Checked = true;
                 FcmbYear.Enabled = false;
                 FcmbPeriod.Enabled = false;
             }
@@ -250,13 +253,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FPetraUtilsObject.EnableDataChangedEvent();
                 }
-
-                // only refresh once, seems we are doing too many loads from the db otherwise
-                //if (this.CanFocus)
-                //{
-                // No need to call this before the screen is shown
-                RefreshFilter(null, null);
-                //}
             }
 
             // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
@@ -291,15 +287,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
 
-            if (grdDetails.Rows.Count > 1)
-            {
-                ((TFrmGiftBatch) this.ParentForm).EnableTransactions();
-            }
-            else
-            {
-                ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
-            }
-
+            ((TFrmGiftBatch)this.ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
             ShowData();
 
             UpdateRecordNumberDisplay();
@@ -460,6 +448,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         void RefreshPeriods(Object sender, EventArgs e)
         {
+            int NewYearSelected;
+            bool IncludeCurrentAndForwardingItem = true;
+            
             if (FSuppressRefreshPeriods)
             {
                 // We suppress this method while we are loading batches because it gets fired multiple times
@@ -467,11 +458,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             Console.WriteLine("RefreshPeriods");
-            //TCmbAutoComplete cmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
-            //TCmbAutoComplete cmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
 
             FSuppressRefreshFilter = true;
-            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref FcmbPeriod, FLedgerNumber, FcmbYear.GetSelectedInt32(), -1, true);
+
+            NewYearSelected = FcmbYear.GetSelectedInt32();
+
+            if (FSelectedYear == NewYearSelected)
+            {
+                FSuppressRefreshFilter = false;
+                return;
+            }
+
+            FSelectedYear = NewYearSelected;
 
             if (sender is TCmbAutoComplete)
             {
@@ -480,10 +478,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FSuppressRefreshFilter = false;
 
-            if (sender != null)
+            //Determine whether or not to include the "Current and forwarding periods" item in the period combo
+            if (FMainDS.ALedger.Rows.Count == 1)
             {
-                RefreshFilter(sender, e);
+                IncludeCurrentAndForwardingItem = (FSelectedYear == FMainDS.ALedger[0].CurrentFinancialYear);
             }
+
+            //Update the periods for the newly selected year 
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref FcmbPeriod, FLedgerNumber, FSelectedYear, 0, IncludeCurrentAndForwardingItem);
         }
 
         void RefreshFilter(Object sender, EventArgs e)
@@ -493,12 +495,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // During LoadBatch we suppress multiple calls here
                 return;
             }
-
-            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
-            RadioButton rbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
-            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
-            //TCmbAutoComplete cmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
-            //TCmbAutoComplete cmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
 
             bool senderIsRadioButton = (sender is RadioButton);
             int batchNumber = 0;
@@ -559,7 +555,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ClearCurrentSelection();
 
-            FSelectedYear = FcmbYear.GetSelectedInt32();
             FSelectedPeriod = FcmbPeriod.GetSelectedInt32();
             FPeriodText = FcmbPeriod.Text;
 
@@ -592,7 +587,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Console.WriteLine(" ** " + FPeriodFilter);
 
-            if (rbtEditing.Checked)
+            if (FrbtEditing.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
 
@@ -602,7 +597,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
             }
-            else if (rbtPosting.Checked)
+            else if (FrbtPosting.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_POSTING;
 
@@ -700,9 +695,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            //TCmbAutoComplete cmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
-            //TCmbAutoComplete cmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
-
             try
             {
                 Int32 periodNumber = 0;
@@ -753,21 +745,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
         {
-            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
-            RadioButton rbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
-            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
-
             if (AToggleOn)
             {
-                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                rbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                FrbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                FrbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                FrbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
             }
             else
             {
-                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                FrbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                FrbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                FrbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
             }
         }
 
@@ -909,15 +897,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
-            //TCmbAutoComplete cmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
-            //TCmbAutoComplete cmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
-
             //If viewing posted batches only, show list of editing batches
             //  instead before adding a new batch
-            if (!rbtEditing.Checked)
+            if (!FrbtEditing.Checked)
             {
-                rbtEditing.Checked = true;
+                FrbtEditing.Checked = true;
             }
             else if (FPetraUtilsObject.HasChanges && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
             {
