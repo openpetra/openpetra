@@ -32,6 +32,8 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Controls.Formatting;
 
+using Owf.Controls;
+
 namespace Ict.Petra.Client.CommonControls
 {
     /// <summary>
