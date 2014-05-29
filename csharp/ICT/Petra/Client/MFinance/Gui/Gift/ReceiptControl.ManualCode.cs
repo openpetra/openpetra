@@ -125,10 +125,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 GfxPrinter);
             GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
 
-            PrintPreviewDialog PrintDlg = new PrintPreviewDialog();
+            CoolPrintPreviewDialog PrintDlg = new CoolPrintPreviewDialog();
             PrintDlg.Document = GfxPrinter.Document;
             PrintDlg.ClientSize = new System.Drawing.Size(500, 720);
-            PrintDlg.ShowDialog();
+            try
+            {
+                PrintDlg.ShowDialog();
+            }
+            catch (Exception)  // if the user presses Cancel, an exception may be raised!
+            {
+            }
         }
 
         private void OnBtnPrint(Object sender, EventArgs e)
