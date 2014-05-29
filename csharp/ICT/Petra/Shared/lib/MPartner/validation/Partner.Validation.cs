@@ -917,8 +917,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
             System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
-            
-            if (APartnerField == 0 && AMotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+
+            if ((APartnerField == 0) && (AMotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT))
             {
                 if (AErrorMessageText == String.Empty)
                 {
@@ -936,7 +936,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             {
                 return null;
             }
-            
+
             if ((ReturnValue != null)
                 && (AResultColumn != null))
             {

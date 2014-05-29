@@ -241,9 +241,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 if ((ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientField == 0))
                 {
-                    VerificationResult = TSharedPartnerValidation_Partner.IsValidRecipientFieldForMotivationGroup(ARow.RecipientKey, ARecipientField, MFinanceConstants.MOTIVATION_GROUP_GIFT,
-                                              "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()) + Environment.NewLine,
-                                              "", ValidationColumn, null);
+                    VerificationResult = TSharedPartnerValidation_Partner.IsValidRecipientFieldForMotivationGroup(ARow.RecipientKey,
+                        ARecipientField,
+                        MFinanceConstants.MOTIVATION_GROUP_GIFT,
+                        "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()) + Environment.NewLine,
+                        "",
+                        ValidationColumn,
+                        null);
 
                     // Handle addition/removal to/from TVerificationResultCollection
                     if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))

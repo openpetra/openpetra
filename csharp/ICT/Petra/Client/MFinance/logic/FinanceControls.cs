@@ -990,13 +990,18 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             DataRow period;
 
+            period = periods.NewRow();
+            period[ValueMember] = -2;
+            period[DisplayMember] = Catalog.GetString("(All periods)");
+            periods.Rows.Add(period);
+
             if (Ledger.CurrentFinancialYear == AYear)
             {
                 if (AShowCurrentAndForwarding)
                 {
                     period = periods.NewRow();
                     period[ValueMember] = 0;
-                    period[DisplayMember] = Catalog.GetString("Current and forwarding periods");
+                    period[DisplayMember] = Catalog.GetString("(Current and forwarding periods)");
                     periods.Rows.Add(period);
                 }
 
@@ -1004,7 +1009,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = periodCounter;
-                    period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    period[DisplayMember] = "(" + periodCounter.ToString("00") + ") " +
+                                            ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
                     periods.Rows.Add(period);
                 }
             }
@@ -1014,7 +1020,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = periodCounter;
-                    period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    period[DisplayMember] = "(" + periodCounter.ToString("00") + ") " +
+                                            ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
                     periods.Rows.Add(period);
                 }
             }

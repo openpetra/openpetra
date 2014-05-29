@@ -405,7 +405,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchStatus"></param>
         /// <param name="AYear">if -1, the year will be ignored</param>
         /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
-        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
+        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used.
+        /// Period = -2 means all periods in current year</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, string ABatchStatus, Int32 AYear, Int32 APeriod)
@@ -435,6 +436,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     templateRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
                     templateOperators.Add(">=");
+                }
+                else if (APeriod == -2)
+                {
+                    //All periods
+                    templateRow.BatchPeriod = APeriod;
+                    templateOperators.Add("<>");
                 }
                 else if (APeriod != -1)
                 {

@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FcmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
             FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
         }
-        
+
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
@@ -195,11 +195,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FcmbPeriod.SelectedIndex = 0;
+            if (FcmbPeriod.Items.Count > 0)
+            {
+                FcmbPeriod.SelectedIndex = 0;
+            }
 
             if (grdDetails.CanFocus)
             {
-                
                 if (grdDetails.Rows.Count < 2)
                 {
                     btnNew.Focus();
@@ -287,7 +289,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
 
-            ((TFrmGiftBatch)this.ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
+            ((TFrmGiftBatch) this.ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
             ShowData();
 
             UpdateRecordNumberDisplay();
@@ -450,7 +452,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             int NewYearSelected;
             bool IncludeCurrentAndForwardingItem = true;
-            
+
             if (FSuppressRefreshPeriods)
             {
                 // We suppress this method while we are loading batches because it gets fired multiple times
@@ -484,7 +486,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 IncludeCurrentAndForwardingItem = (FSelectedYear == FMainDS.ALedger[0].CurrentFinancialYear);
             }
 
-            //Update the periods for the newly selected year 
+            //Update the periods for the newly selected year
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref FcmbPeriod, FLedgerNumber, FSelectedYear, 0, IncludeCurrentAndForwardingItem);
         }
 
@@ -558,9 +560,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FSelectedPeriod = FcmbPeriod.GetSelectedInt32();
             FPeriodText = FcmbPeriod.Text;
 
+            ALedgerRow LedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+            int CurrentLedgerYear = LedgerRow.CurrentFinancialYear;
+            int CurrentLedgerPeriod = LedgerRow.CurrentPeriod;
+
             if (FSelectedYear == -1)
             {
-                FPeriodFilter = "1 = 1";
+                FPeriodFilter = String.Format(
+                    "{0} = {1}",
+                    AGiftBatchTable.GetBatchYearDBName(), CurrentLedgerYear);
             }
             else
             {
@@ -568,16 +578,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     "{0} = {1}",
                     AGiftBatchTable.GetBatchYearDBName(), FSelectedYear);
 
-                if (FSelectedPeriod == 0)
+                if (FSelectedPeriod == -2)  //All periods for year
                 {
-                    ALedgerRow Ledger =
-                        ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-
+                    TLogging.Log("All periods selected");
+                    //Nothing to add to filter
+                }
+                else if (FSelectedPeriod == 0)  //Current and forwarding
+                {
                     FPeriodFilter += String.Format(
                         " AND {0} >= {1}",
-                        AGiftBatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
+                        AGiftBatchTable.GetBatchPeriodDBName(), CurrentLedgerPeriod);
                 }
-                else if (FSelectedPeriod > 0)
+                else if (FSelectedPeriod > 0)  //Specific period
                 {
                     FPeriodFilter += String.Format(
                         " AND {0} = {1}",
@@ -628,10 +640,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
         {
+            string RowFilter = string.Empty;
+
             if (!ASelectOnly)
             {
-                string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-                FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == -1)
+                RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+
+                TLogging.Log("RowFilter: " + RowFilter);
+
+                FFilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
                     && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
                 ApplyFilter();
             }
@@ -649,7 +666,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (ANoFocusChange)
                 {
-                    grdDetails.SelectRowWithoutFocus(newRowToSelectAfterFilter);
+                    SelectRowInGrid(newRowToSelectAfterFilter);
+                    //grdDetails.SelectRowWithoutFocus(newRowToSelectAfterFilter);
                 }
                 else
                 {
