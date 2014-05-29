@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.clbIncludePublication.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
         }
 
-        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (clbIncludePublication.GetCheckedStringList().Length == 0)
             {

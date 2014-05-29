@@ -29,10 +29,12 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Extracts;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MPersonnel.queries
 {
@@ -236,7 +238,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 SqlStmt = SqlStmt.Replace("##join_for_person_or_family##",
                     " AND pub_p_partner.p_partner_key_n = pub_p_person.p_partner_key_n");
             }
-
+            
             // add address filter information to sql statement and parameter list
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
@@ -244,6 +246,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
+
+            // filter data by postcode (if applicable)
+            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
@@ -296,7 +301,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 " WHERE pub_p_person.p_family_key_n = pub_p_family.p_partner_key_n " +
                 " AND pub_m_extract.m_extract_id_i = " + AExtractId.ToString() +
                 " AND pub_m_extract.p_partner_key_n = pub_p_person.p_partner_key_n)");
-
+            
             // add address filter information to sql statement and parameter list
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
@@ -305,6 +310,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
             partnerkeys.Clear();
             partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
+
+            // filter data by postcode (if applicable)
+            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
@@ -419,7 +427,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 SqlStmt = SqlStmt.Replace("##join_for_person_or_family##",
                     " AND pub_p_partner.p_partner_key_n = pub_pm_staff_data.p_partner_key_n");
             }
-
+            
             // add address filter information to sql statement and parameter list
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
@@ -427,6 +435,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
+
+            // filter data by postcode (if applicable)
+            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???

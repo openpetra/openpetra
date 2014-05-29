@@ -111,11 +111,14 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             EnableDisableDateFields();
 
-            // add a blank row to the combobox
-            DataRow BlankRow = cmbRegion.Table.NewRow();
-            BlankRow[PPostcodeRegionTable.GetRegionDBName()] = "";
-            cmbRegion.Table.Rows.InsertAt(BlankRow, 0);
-            cmbRegion.cmbCombobox.SelectedIndex = 0;
+            if (cmbRegion.cmbCombobox.FindStringInComboBox("") == -1)
+            {
+                // add a blank row to the combobox
+                DataRow BlankRow = cmbRegion.Table.NewRow();
+                BlankRow[PPostcodeRegionTable.GetRegionDBName()] = "";
+                cmbRegion.Table.Rows.InsertAt(BlankRow, 0);
+                cmbRegion.cmbCombobox.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
