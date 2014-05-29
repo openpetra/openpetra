@@ -423,6 +423,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out Int32 APeriodNumber)
         {
             bool newTransaction;
+            Int32 CurrentFinancialYear;
 
             //Set the year to return
             AYearNumber = FindFinancialYearByDate(ALedgerNumber, ADate);
@@ -436,12 +437,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
 
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+            CurrentFinancialYear = ((ALedgerRow)LedgerTable.Rows[0]).CurrentFinancialYear;
+
             AAccountingPeriodTable AccPeriodTableTmp = new AAccountingPeriodTable();
             AAccountingPeriodRow TemplateRow = AccPeriodTableTmp.NewRowTyped(false);
 
             TemplateRow.LedgerNumber = ALedgerNumber;
-            TemplateRow.PeriodStartDate = ADate.AddYears(-AYearNumber);
-            TemplateRow.PeriodEndDate = ADate.AddYears(-AYearNumber);
+            TemplateRow.PeriodStartDate = ADate.AddYears(CurrentFinancialYear - AYearNumber);
+            TemplateRow.PeriodEndDate = ADate.AddYears(CurrentFinancialYear - AYearNumber);
 
             StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "<=", ">=" });
 
@@ -487,9 +492,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             ADisplayMember = "YearDate";
             AValueMember = "YearNumber";
+            String YearEnd = "YearEnd";
             DataTable datTable = new DataTable();
             datTable.Columns.Add(AValueMember, typeof(System.Int32));
             datTable.Columns.Add(ADisplayMember, typeof(String));
+            datTable.Columns.Add(YearEnd, typeof(String));
             datTable.PrimaryKey = new DataColumn[] {
                 datTable.Columns[0]
             };
@@ -524,8 +531,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 foreach (DataRow row in BatchYearTable.Rows)
                 {
                     DataRow resultRow = datTable.NewRow();
+                    DateTime SelectableYear = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0])));
                     resultRow[0] = row[0];
-                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString("yyyy");
+                    resultRow[1] = SelectableYear.ToString("yyyy");
+                    resultRow[2] = SelectableYear.ToString("dd-MMM-yyyy");
                     datTable.Rows.Add(resultRow);
                 }
             }

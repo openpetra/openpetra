@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 Count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
                         "SELECT COUNT(*) FROM PUB_" + PSubscriptionTable.GetTableDBName() +
                         " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
-                        " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN (\"CANCELLED\",\"EXPIRED\")",
+                        " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN ('CANCELLED','EXPIRED')",
                         Transaction));
                 ADisplayMessage += String.Format(Catalog.GetString("{0} active Subscriptions"), Count.ToString()) + Linebreak;
 
@@ -716,8 +716,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 if (ResultValue)
                 {
-                    ResultValue = DeleteEntries(PPartnerFieldOfServiceTable.GetTableDBName(),
-                        PPartnerFieldOfServiceTable.GetPartnerKeyDBName(),
+                    ResultValue = DeleteEntries(PPartnerGiftDestinationTable.GetTableDBName(),
+                        PPartnerGiftDestinationTable.GetPartnerKeyDBName(),
                         APartnerKey, Transaction);
                 }
 
@@ -904,7 +904,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
                         "SELECT COUNT(*) FROM PUB_" + PUnitTable.GetTableDBName() +
                         " WHERE " + PUnitTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
-                        " AND " + PUnitTable.GetUnitTypeCodeDBName() + " = \"KEY-MIN\"",
+                        " AND " + PUnitTable.GetUnitTypeCodeDBName() + " = 'KEY-MIN'",
                         ATransaction)) > 0)
             {
                 ADisplayMessage = Catalog.GetString("Unable to delete a Key Ministry.");
@@ -1044,10 +1044,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 return false;
             }
 
-            // cannot delete unit if it is a worker's field of service
-            if (PPartnerFieldOfServiceAccess.CountViaPUnit(APartnerKey, ATransaction) > 0)
+            // cannot delete unit if it is a personnel's gift destination
+            if (PPartnerGiftDestinationAccess.CountViaPUnit(APartnerKey, ATransaction) > 0)
             {
-                ADisplayMessage = Catalog.GetString("Unable to delete a worker's field of service.");
+                ADisplayMessage = Catalog.GetString("Unable to delete a partner's gift destination.");
                 return false;
             }
 

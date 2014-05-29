@@ -351,7 +351,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             GiftDetail.DetailNumber = 1;
             GiftDetail.MotivationGroupCode = "GIFT";
             GiftDetail.MotivationDetailCode = "SUPPORT";
-            GiftDetail.RecipientKey = APartnerKey;
+            GiftDetail.RecipientKey = 0;
             GiftDetail.RecipientLedgerNumber = APartnerKey;
             AGiftDS.AGiftDetail.Rows.Add(GiftDetail);
 
@@ -456,15 +456,11 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             FromPersonalData.PartnerKey = AFromPartnerKey;
             FromPersonalData.HeightCm = 175;
             FromPersonalData.WeightKg = 80;
-            FromPersonalData.InternalDriverLicense = true;
-            FromPersonalData.GenDriverLicense = false;
             AMainDS.PmPersonalData.Rows.Add(FromPersonalData);
 
             PmPersonalDataRow ToPersonalData = AMainDS.PmPersonalData.NewRowTyped();
             ToPersonalData.PartnerKey = AToPartnerKey;
             ToPersonalData.WeightKg = 95;
-            ToPersonalData.InternalDriverLicense = false;
-            ToPersonalData.GenDriverLicense = true;
             AMainDS.PmPersonalData.Rows.Add(ToPersonalData);
 
             return DataLabelTable;

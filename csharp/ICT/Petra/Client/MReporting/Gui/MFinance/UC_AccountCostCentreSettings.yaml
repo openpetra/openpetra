@@ -22,12 +22,17 @@ RootNode:
             ParameterName: param_account_codes
             Controls: [rbtAllAccounts, rbtAccountRange, rbtAccountFromList]
             Label: Select Account Codes
+            Dock: Top
         rbtAllAccounts:
         rbtAccountRange:
             Label: Select Range
             Controls: [cmbFromAccountCode, cmbToAccountCode]
         rbtAccountFromList:
+            Stretch: horizontally
             Label: From List
+            Controls: [pnlAccountFromList]
+        pnlAccountFromList:
+            Stretch: horizontally
             Controls: [clbAccountCodes, btnUnselectAllAccountCodes]
             ControlsOrientation: horizontal
             
@@ -35,6 +40,7 @@ RootNode:
             ParameterName: param_costcentreoptions
             Controls: [rbtAllCostCentres, rbtCostCentreRange, rbtCostCentreFromList]
             Label: Select Cost Centre Codes
+            Dock: Top
         rbtAllCostCentres:
         rbtCostCentreRange:
             Label: Select Range
@@ -42,7 +48,9 @@ RootNode:
         rbtCostCentreFromList:
             Label: From List
             Controls: [pnlCostCentreFromList]
+            OnChange: CostCentreChanged
         pnlCostCentreFromList:
+            Stretch: horizontally
             Controls: 
                 Row0: [clbCostCentres, btnUnselectAllCostCentres]
                 Row1: [cmbSummaryCostCentres]
@@ -51,33 +59,42 @@ RootNode:
         clbAccountCodes: 
             List: UserDefinedList
             NoLabel:true
-            Width: 365
+            Width: 360
         btnUnselectAllAccountCodes: 
             Label: Unselect All
             Action: actUnselectAllAccountCodes
+            Enabled: false
         cmbFromAccountCode:
             List: UserDefinedList
             Label: From
+            Enabled: false
         cmbToAccountCode:
             List: UserDefinedList
             Label: To
+            Enabled: false
         cmbFromCostCentre:
             List: UserDefinedList
             Label: From
+            Enabled: false
         cmbToCostCentre:
             List: UserDefinedList
             Label: To
+            Enabled: false
         cmbSummaryCostCentres:
             ColSpan: 2
             List: UserDefinedList
-            Label: Summary Cost Centres
-        clbCostCentres: 
+            Label: Summary Cost Centre
+            OnChange: SummaryCostCentresChanged
+            Enabled: false
+
+        clbCostCentres:
             List: UserDefinedList
             NoLabel:true
-            Width: 365
+            Width: 360
         btnUnselectAllCostCentres: 
             Label: Unselect All
             Action: actUnselectAllCostCentres
+            Enabled: false
         btnSelectAllReportingCostCentres:
-            Label: Tick all reporting cost centres
-     
+            Label: Add summary's reporting cost centres
+            Enabled: false

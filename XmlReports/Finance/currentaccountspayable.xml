@@ -56,7 +56,6 @@
                      PUB_p_partner
               WHERE  PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number}}
                 AND  PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
-AND (1=1 or PUB_a_ap_document.a_ap_number_i = 16261 OR PUB_a_ap_document.a_ap_number_i = 12836 OR PUB_a_ap_document.a_ap_number_i = 13043 OR PUB_a_ap_document.a_ap_number_i = 13195  OR PUB_a_ap_document.a_ap_number_i = 16743)              
                 AND  (PUB_a_ap_document.a_document_status_c = 'POSTED' 
                   OR PUB_a_ap_document.a_document_status_c = 'PAID'
                   OR PUB_a_ap_document.a_document_status_c = 'PARTPAID')

@@ -1038,6 +1038,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
+            FTemplate.AddToCodelet("PROCESSCMDKEY", "");
+            FTemplate.AddToCodelet("PROCESSCMDKEYCTRLF", "");
+            FTemplate.AddToCodelet("PROCESSCMDKEYCTRLR", "");
+            FTemplate.AddToCodelet("PROCESSCMDKEYMANUAL", "");
+            FTemplate.AddToCodelet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", "");
             FTemplate.AddToCodelet("CLEARDETAILS", "");
             FTemplate.AddToCodelet("CATALOGI18N", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLENUM", "");
@@ -1128,6 +1133,62 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("FindAndFilterHookUpEvents"))
             {
                 FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
+            }
+
+            if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLL"))
+            {
+                if (FCodeStorage.FControlList.ContainsKey("grdDetails") && !FCodeStorage.FControlList["grdDetails"].HasAttribute("IgnoreEditMove]"))
+                {
+                    ProcessTemplate snipCtrlL = FTemplate.GetSnippet("PROCESSCMDKEYCTRLL");
+                    FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlL);
+
+                    if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
+                    {
+                        ProcessTemplate snipSelectRow = FTemplate.GetSnippet("PROCESSCMDKEYSELECTROW");
+                        FTemplate.InsertSnippet("PROCESSCMDKEY", snipSelectRow);
+
+                        ProcessTemplate snipFocusFirstControl = FTemplate.GetSnippet("FOCUSFIRSTDETAILSPANELCONTROL");
+                        FTemplate.InsertSnippet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", snipFocusFirstControl);
+                    }
+                }
+
+                if (FCodeStorage.ManualFileExistsAndContains("ProcessCmdKeyManual(ref"))
+                {
+                    ProcessTemplate snipCmdKeyManual = FTemplate.GetSnippet("PROCESSCMDKEYMANUAL");
+                    FTemplate.InsertSnippet("PROCESSCMDKEYMANUAL", snipCmdKeyManual);
+                }
+            }
+
+            if ((FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLF")) && (FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")))
+            {
+                ProcessTemplate snipCtrlF = FTemplate.GetSnippet("PROCESSCMDKEYCTRLF");
+
+                if (FCodeStorage.FActionList.ContainsKey("actEditFind"))
+                {
+                    snipCtrlF.SetCodelet("ACTIONCLICK", FCodeStorage.FActionList["actEditFind"].actionClick);
+                }
+                else
+                {
+                    snipCtrlF.SetCodelet("ACTIONCLICK", "MniFilterFind_Click");
+                }
+
+                FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlF);
+            }
+
+            if ((FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLR")) && (FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind")))
+            {
+                ProcessTemplate snipCtrlR = FTemplate.GetSnippet("PROCESSCMDKEYCTRLR");
+
+                if (FCodeStorage.FActionList.ContainsKey("actEditFilter"))
+                {
+                    snipCtrlR.SetCodelet("ACTIONCLICK", FCodeStorage.FActionList["actEditFilter"].actionClick);
+                }
+                else
+                {
+                    snipCtrlR.SetCodelet("ACTIONCLICK", "MniFilterFind_Click");
+                }
+
+                FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlR);
             }
 
             if (FCodeStorage.HasAttribute("DatasetType"))

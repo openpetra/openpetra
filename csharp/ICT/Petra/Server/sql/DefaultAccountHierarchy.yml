@@ -37,7 +37,7 @@
                     7314:{validcc=Local, shortdesc=Audio Visual Equipment}
                 7400S:{shortdesc=Land & Buildings}
                     7400:{validcc=Local}
-                7500S:{shortdesc="Accum. Depreciation: Equipment"}
+                7500S:{type=Liability, shortdesc="Accum. Depreciation: Equipment"}
                     7500:{type=Liability, debitcredit=credit, validcc=Local, shortdesc=Accumulated Depreciation Equip}
                 7600S:{shortdesc="Accum. Depr.:  Land & Buildings", longdesc="Accum. Depreciation:  Land & Buildings"}
                     7600:{type=Liability, debitcredit=credit, validcc=Local, shortdesc=Land and Buildings}

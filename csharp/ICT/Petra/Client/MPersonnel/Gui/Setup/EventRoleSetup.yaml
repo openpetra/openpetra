@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain EventRoles
+    FormTitle: Maintain Event Roles
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtCongressCode
     CacheableTable: EventRoleList

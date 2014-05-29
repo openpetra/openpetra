@@ -263,6 +263,23 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Partner Key for {0} must be set.")]
         public const String ERR_PARTNERKEY_INVALID_NOTNULL = "PARTN.00019V";
 
+        /// <summary>Expired date must come after date effective from.</summary>
+        [ErrCodeAttribute("Invalid Dates",
+             ErrorMessageText = "The 'Date Effective From' cannot be after the 'Date Expired.'")]
+        public const String ERR_INVALID_DATES = "PARTN.00028V";
+
+        /// <summary>Cannot have more than one active Gift Destination.</summary>
+        [ErrCodeAttribute("More than one open Gift Destination.",
+             ErrorMessageText =
+                 "You can only have one open Gift Destination record (no Expiry Date) per Family. All other records must have a valid Expiry Date.")]
+        public const String ERR_MORETHANONE_OPEN_GIFTDESTINATION = "PARTN.00029V";
+
+        /// <summary>Gift Destination records cannot overlap.</summary>
+        [ErrCodeAttribute("Invalid Dates.",
+             ErrorMessageText =
+                 "The dates overlap for two of more Gift Destination records. Please ensure that no two records are active on the same day.")]
+        public const String ERR_DATES_OVERLAP = "PARTN.00030V";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>
@@ -318,20 +335,6 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "You must include an Account Number and/or IBAN for this bank account")]
         public const String ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN = "PARTN.000019V";
 
-        #endregion
-
-        /// <summary>Partner Interest: Level needs to be within valid range.</summary>
-        [ErrCodeAttribute("Level must be within valid range.",
-             ErrorMessageText = "Level must be between {0} and {1}.")]
-        public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
-
-        /// <summary>Partner of Partner Class Church: Denomination must be assigned, but no Denominations are set up to choose from.</summary>
-        [ErrCodeAttribute("Denominations must be set up.",
-             ErrorMessageText =
-                 "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")
-        ]
-        public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
-
         /// <summary>IBAN must always have 34 or less characters</summary>
         [ErrCodeAttribute("Invalid IBAN.",
              ErrorMessageText =
@@ -384,6 +387,20 @@ namespace Ict.Petra.Shared
 
         #endregion
 
+        /// <summary>Partner Interest: Level needs to be within valid range.</summary>
+        [ErrCodeAttribute("Level must be within valid range.",
+             ErrorMessageText = "Level must be between {0} and {1}.")]
+        public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
+
+        /// <summary>Partner of Partner Class Church: Denomination must be assigned, but no Denominations are set up to choose from.</summary>
+        [ErrCodeAttribute("Denominations must be set up.",
+             ErrorMessageText =
+                 "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")
+        ]
+        public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
+
+        #endregion
+
         #region Personnel Module-specific error codes
 
         /// <summary>Duplicate application for event.</summary>
@@ -392,6 +409,30 @@ namespace Ict.Petra.Shared
                                 "Please choose a different event.",
              ErrorMessageTitle = "Duplicate application for event")]
         public const String ERR_APPLICATION_DUPLICATE_EVENT = "PES.00001V";
+
+        /// <summary>Passport Name must contain an opening and a closing parenthesis.</summary>
+        [ErrCodeAttribute("Passport Name must contain an opening and a closing parenthesis.",
+             ErrorMessageText = "The Family Name/Last Name of the Passport Name must be enclosed\r\n" +
+                                "in parenthesis ['(' and ')'] but one or both parenthesis are missing!\r\n" +
+                                "  Correct Example: Joseph (Meyer)",
+             ErrorMessageTitle = "Invalid Passport Name")]
+        public const String ERR_INDIV_DATA_PASSPORT_NAME_MISSING_PARAS = "PES.00002V";
+
+        #endregion
+
+        #region SysMan Module-specific error codes
+
+        /// <summary>Password missing.</summary>
+        [ErrCodeAttribute("Missing password.",
+             ErrorMessageText = "You must create a new password for user {0}.",
+             ErrorMessageTitle = "Missing password")]
+        public const String ERR_MISSING_PASSWORD = "SYS.00001V";
+
+        /// <summary>Password missing.</summary>
+        [ErrCodeAttribute("Invalid password.",
+             ErrorMessageText = "Your password must have at least {0} characters, and must contain at least one digit and one letter.",
+             ErrorMessageTitle = "Invalid password")]
+        public const String ERR_INVALID_PASSWORD = "SYS.00002V";
 
         #endregion
     }

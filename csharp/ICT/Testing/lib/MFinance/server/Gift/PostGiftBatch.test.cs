@@ -36,12 +36,14 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MCommon.DataReader.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Common.Data;
 using Ict.Testing.NUnitTools;
+using Tests.MFinance.Client.ExchangeRates;
 
 namespace Tests.MFinance.Server.Gift
 {
@@ -98,7 +100,7 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
 
-            TVerificationResultCollection VerificationResult;
+            TVerificationResultCollection VerificationResult = null;
 
             if (!importer.ImportGiftBatches(parameters, FileContent, out VerificationResult))
             {
@@ -107,7 +109,7 @@ namespace Tests.MFinance.Server.Gift
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
-            Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and return a valid batch number");
+            Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and returned a valid batch number");
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
@@ -206,7 +208,7 @@ namespace Tests.MFinance.Server.Gift
         /// This will test the admin fee processer
         /// </summary>
         [Test]
-        public void TestGetRecipientLedgerNumber()
+        public void TestGetRecipientFundNumber()
         {
             Int64 partnerKey = 73000000;
             Int64 RecipientLedgerNumber = 0;
@@ -217,7 +219,7 @@ namespace Tests.MFinance.Server.Gift
 
             try
             {
-                RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
+                RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(partnerKey);
             }
             catch (Exception)
             {

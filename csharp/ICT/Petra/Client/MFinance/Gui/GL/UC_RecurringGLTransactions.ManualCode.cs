@@ -187,7 +187,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     //Load all analysis attribute values
                     if (FCacheDS == null)
                     {
-                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
+                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, FActiveOnly);
                     }
 
                     SetupExtraGridFunctionality();
@@ -228,12 +228,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void ClearTransactionDefaultView()
-        {
-            FMainDS.ARecurringTransaction.DefaultView.RowFilter = String.Empty;
-            FFilterPanelControls.SetBaseFilter(String.Empty, true);
-        }
-
         private void SetTransactionDefaultView(bool AAscendingOrder = true)
         {
             string sort = AAscendingOrder ? "ASC" : "DESC";
@@ -256,17 +250,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void ClearTransAnalAttributeDefaultView()
-        {
-            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Empty;
-        }
-
         private void SetTransAnalAttributeDefaultView(Int32 ATransactionNumber = 0)
         {
             if (FBatchNumber != -1)
             {
-                ClearTransAnalAttributeDefaultView();
-
                 if (ATransactionNumber > 0)
                 {
                     FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3} And {4}={5}",
@@ -488,7 +475,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-            else if (!TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString()))
+            else if (!TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(),
+                         FActiveOnly))
             {
                 if (grdAnalAttributes.Enabled)
                 {
@@ -542,8 +530,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPSAttributesRow = GetSelectedAttributeRow();
 
             string currentAnalTypeCode = FPSAttributesRow.AnalysisTypeCode;
-
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
 
             FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
@@ -847,10 +833,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return retVal;
             }
 
-            string originalRowFilter = FCacheDS.AAnalysisAttribute.DefaultView.RowFilter;
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = string.Empty;
+            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
 
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
                 AAnalysisAttributeTable.GetLedgerNumberDBName(),
                 FLedgerNumber,
                 AAnalysisAttributeTable.GetAccountCodeDBName(),
@@ -859,9 +844,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 AAnalysisCode,
                 AAnalysisAttributeTable.GetActiveDBName());
 
-            retVal = (FCacheDS.AAnalysisAttribute.DefaultView.Count > 0);
-
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = originalRowFilter;
+            retVal = (dv.Count > 0);
 
             return retVal;
         }
@@ -875,23 +858,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return retVal;
             }
 
-            string originalRowFilter = FCacheDS.AFreeformAnalysis.DefaultView.RowFilter;
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
+            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
 
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                 AAnalysisCode,
                 AFreeformAnalysisTable.GetAnalysisValueDBName(),
                 AAnalysisAttributeValue,
                 AFreeformAnalysisTable.GetActiveDBName());
 
-            retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
+            retVal = (dv.Count > 0);
 
             //Make sure the grid combobox has right font else it will adopt strikeout
             // for all items in the list.
             FAnalAttribTypeVal.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
-
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
 
             return retVal;
         }
@@ -1499,8 +1479,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARecurringTransAnalAttribRow attrRowCurrent = (ARecurringTransAnalAttribRow)rv.Row;
                 attrRowCurrent.Delete();
             }
-
-            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Empty;
 
             foreach (String analysisTypeCode in RequiredAnalattrCodes)
             {

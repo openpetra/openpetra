@@ -37,7 +37,9 @@ using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MCommon.DataReader.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Common.Data;
 using Ict.Petra.Server.App.Core;
 

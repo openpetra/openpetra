@@ -45,6 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
     public partial class TFrmGiftMotivationSetup
     {
         private Int32 FLedgerNumber;
+        private string FDescription;
 
         /// <summary>
         /// maintain motivation details for this ledger
@@ -86,6 +87,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             }
         }
 
+        private void InitializeManualCode()
+        {
+            // Get the current description
+            FDescription = txtDetailMotivationDetailDesc.Text;
+        }
+
         private void NewRowManual(ref AMotivationDetailRow ARow)
         {
             ARow.LedgerNumber = FLedgerNumber;
@@ -119,9 +126,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
+            TSubmitChangesResult Result;
+
             AVerificationResult = null;
 
-            return TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges);
+            Result = TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges);
+
+            if (Result == TSubmitChangesResult.scrOK)
+            {
+                // needed to reorder the two checked listboxes
+                SelectRowInGrid(FPrevRowChangedRow);
+            }
+
+            return Result;
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -160,6 +177,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 }
             }
 
+            // set the ORDER column to true if row is checked
+            clbDetailFeesPayable.CheckedColumn = "ORDER";
+            clbDetailFeesReceivable.CheckedColumn = "ORDER";
+            clbDetailFeesPayable.SetCheckedStringList(FeesPayable);
+            clbDetailFeesReceivable.SetCheckedStringList(FeesReceivable);
+
+            // set the CHECKED column to true if row is checked
+            clbDetailFeesPayable.CheckedColumn = "CHECKED";
+            clbDetailFeesReceivable.CheckedColumn = "CHECKED";
             clbDetailFeesPayable.SetCheckedStringList(FeesPayable);
             clbDetailFeesReceivable.SetCheckedStringList(FeesReceivable);
         }
@@ -221,6 +247,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 lblDetailMotivationDetailCode.Text,
                 txtDetailMotivationDetailCode.Text);
             return true;
+        }
+
+        // fired when tying in txtDetailMotivationDetailDesc
+        private void DescriptionTyped(object sender, EventArgs e)
+        {
+            // syncs the two description text boxes if they should be synced
+            if ((FDescription == txtDetailMotivationDetailDescLocal.Text) || string.IsNullOrEmpty(txtDetailMotivationDetailDescLocal.Text))
+            {
+                txtDetailMotivationDetailDescLocal.Text = txtDetailMotivationDetailDesc.Text;
+            }
+
+            FDescription = txtDetailMotivationDetailDesc.Text;
         }
 
         private void ValidateDataDetailsManual(AMotivationDetailRow ARow)

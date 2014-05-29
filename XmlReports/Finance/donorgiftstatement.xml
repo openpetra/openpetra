@@ -142,7 +142,7 @@
 					</queryDetail-->
 					<queryDetail condition="eq({param_donor}, One Donor)">
 						<value>
-							AND gift.p_donor_key_n = {param_donorkey}
+							AND gift.p_donor_key_n = {{param_donorkey}}
 						</value>
 					</queryDetail>
 					<!--queryDetail>
@@ -150,6 +150,16 @@
 							ORDER BY detail.a_recipient_ledger_number_n
 						</value>
 					</queryDetail-->
+					<queryDetail condition="eq({param_order_by_name}, PartnerName)">
+						<value>
+							ORDER BY DonorName
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_order_by_name}, PartnerKey)">
+						<value>
+							ORDER BY DonorKey
+						</value>
+					</queryDetail>
 				</query>
 			</calculation>
 			
@@ -204,9 +214,14 @@
 							AND gift.p_donor_key_n = {{param_donorkey}}
 						</value>
 					</queryDetail>
-					<queryDetail>
+					<queryDetail condition="eq({param_order_by_name}, PartnerName)">
 						<value>
-							ORDER BY PUB_p_partner.p_partner_short_name_c
+							ORDER BY DonorName
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_order_by_name}, PartnerKey)">
+						<value>
+							ORDER BY DonorKey
 						</value>
 					</queryDetail>
 				</query>
@@ -935,7 +950,7 @@
 						<case condition="eq({param_report_type}, Complete)">
 							<lowerLevelReport level="TotalCurrentYear" calculation="SelectDonors"></lowerLevelReport>
 						</case>
-						<case condition="eq({param_report_type}, Total)">
+						<case condition="eq({param_report_type}, Totals)">
 							<lowerLevelReport level="AllMonthLevel1" calculation="SelectDonorsTotal"></lowerLevelReport>
 						</case>
 					</switch>
@@ -1002,7 +1017,7 @@
 				</footer>
 			</level>
 			
-			<level name="RecipientLevel" identification="DonortKey">
+			<level name="RecipientLevel" identification="DonorKey">
 				<detail>
 					<field whichfield="columns" calculation="GetPartnerAddress"/>
 				</detail>

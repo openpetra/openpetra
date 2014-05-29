@@ -27,7 +27,7 @@
 <!ELEMENT tablefield (trigger)? >
 <!ATTLIST tablefield
    name     CDATA  #REQUIRED
-   type     (bit|number|integer|varchar|date)  #REQUIRED
+   type     (bit|number|integer|varchar|text|date)  #REQUIRED
    typedotnet (Int64|Int32|String|Boolean|DateTime)  #IMPLIED
    namedotnet CDATA #IMPLIED
    sequence CDATA #IMPLIED

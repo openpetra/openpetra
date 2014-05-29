@@ -257,6 +257,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// access to the TUC_PartnerFindCriteria class instance
+        /// </summary>
+        public TUC_PartnerFindCriteria PartnerFindCriteria
+        {
+            get
+            {
+                return ucoPartnerFindCriteria;
+            }
+
+            set
+            {
+                ucoPartnerFindCriteria = value;
+            }
+        }
+
+        /// <summary>
         /// constructor
         /// </summary>
         public TUC_PartnerFind_ByPartnerDetails()
@@ -310,6 +326,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
 
             return true;
+        }
+
+        /// <summary>
+        /// Called when the main screen is activated
+        /// </summary>
+        public void RunOnceOnParentActivation()
+        {
+            // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
         }
 
         /// <summary>
@@ -602,7 +626,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileDeletePartner")
             {
-                TPartnerMain.DeletePartner(FLogic.PartnerKey);
+                if (TPartnerMain.DeletePartner(FLogic.PartnerKey, this.FindForm()))
+                {
+                    BtnSearch_Click(this, new EventArgs());
+                }
             }
             else if (AToolStripItem.Name == "mniFileWorkWithLastPartner")
             {
@@ -720,10 +747,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainWorkerField")
             {
-                TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+                if (FLogic.DetermineCurrentPartnerClass() == TPartnerClass.FAMILY.ToString())
+                {
+                    TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), PartnerKey);
 
-                staffDataForm.PartnerKey = FLogic.PartnerKey;
-                staffDataForm.Show();
+                    GiftDestinationForm.Show();
+                }
+                else if (FLogic.DetermineCurrentPartnerClass() == TPartnerClass.PERSON.ToString())
+                {
+                    // open the Gift Destination screen for the person's family
+                    TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(
+                        FPetraUtilsObject.GetForm(), Convert.ToInt64(FLogic.CurrentDataRow[PPersonTable.GetFamilyKeyDBName()]));
+
+                    GiftDestinationForm.Show();
+                }
             }
             else if (ClickedMenuItemName == "mniMaintainPersonnelData")
             {
@@ -1222,12 +1259,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Register Event Handler for the OnCriteriaContentChanged event
             ucoPartnerFindCriteria.OnCriteriaContentChanged += new EventHandler(this.UcoPartnerFindCriteria_CriteriaContentChanged);
-
-            if (FBankDetailsTab)
-            {
-                // populate comboboxes (from database)
-                ucoPartnerFindCriteria.PopulateBankComboBoxes();
-            }
         }
 
         /// <summary>

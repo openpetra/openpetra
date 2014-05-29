@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
+        private bool FActiveOnly = false;
         private GLSetupTDS FCacheDS = null;
 
         /// <summary>
@@ -95,6 +96,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FJournalNumber = AJournalNumber;
             FTransactionNumber = ATransactionNumber;
             FPreviouslySelectedDetailRow = null;
+
+            FActiveOnly = (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             if (!cmbDetailAnalysisAttributeValue.Enabled)
             {
@@ -267,7 +270,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if ((FCacheDS == null) && (FLedgerNumber >= 0))
             {
-                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
+                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, FActiveOnly);
             }
         }
 

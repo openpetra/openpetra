@@ -587,8 +587,20 @@ namespace {#NAMESPACE}
         }
         else
         {
-            ShowDetails(gridRow);
-            // Console.WriteLine("{0}: RowSelected: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
+            if ((gridRow == FPrevRowChangedRow) && grdDetails.IsMouseDown)
+            {
+                // This deals with the special case where the user edits a detail and then clicks on the same row in the grid
+                // When this happens we do not get a control validated event for the control that we leave
+                // We just want to treat this the same as tabbing round the controls - show any validation tooltips but do not stop the user leaving the row.
+                ValidateAllData(true, false);
+            }
+            else
+            {
+                // This deals with all other cases - including the special case where, on a sorted grid, the row may be the same but contains different details
+                //  because this event fires from SelectRowInGrid, even when the selected row hasn't changed but the data has.
+                ShowDetails(gridRow);
+                //Console.WriteLine("{0}: RowSelected: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
+            }
         }
     }
 
@@ -623,6 +635,11 @@ namespace {#NAMESPACE}
         }
 
         DataRowView[] HighlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
+
+        if (HighlightedRows.Length == 0)
+        {
+            return;
+        }
 
         if (HighlightedRows.Length == 1)
         {
@@ -1389,6 +1406,28 @@ namespace {#NAMESPACE}
 #endregion
 {#ENDIF ACTIONENABLING}
 
+#region Keyboard handler
+
+    /// Our main keyboard handler
+    public bool ProcessParentCmdKey(ref Message msg, Keys keyData)
+    {
+{#IFDEF FILTERANDFIND}
+        {#PROCESSCMDKEYCTRLF}
+        {#PROCESSCMDKEYCTRLR}
+{#ENDIF FILTERANDFIND}
+        {#PROCESSCMDKEY}    
+        {#PROCESSCMDKEYMANUAL}    
+
+        return false;
+    }
+
+    private void FocusFirstEditableControl()
+    {
+        {#FOCUSFIRSTEDITABLEDETAILSPANELCONTROL}
+    }
+
+#endregion
+
 #region Data Validation Control Handlers
     
     private void ControlValidatedHandler(object sender, EventArgs e)
@@ -1437,6 +1476,18 @@ namespace {#NAMESPACE}
                 }
             }
         }
+{#IFDEF FILTERANDFIND}
+        else if (FFailedValidation_CtrlChangeEventArgsInfo != null)
+        {
+            // The validation is all ok...  But we do have an outstanding filter update that we did not show due to previous invalid data
+            //  So we can call that now and update the display.
+            FucoFilterAndFind_ArgumentCtrlValueChanged(FFailedValidation_CtrlChangeEventArgsInfo.Sender,
+                (TUcoFilterAndFind.TContextEventExtControlValueArgs)FFailedValidation_CtrlChangeEventArgsInfo.EventArgs);
+            
+            // Reset our cached change event
+            FFailedValidation_CtrlChangeEventArgsInfo = null;
+        }
+{#ENDIF FILTERANDFIND}    
     }
 {#IFDEF MASTERTABLE}
     private void ValidateData({#MASTERTABLE}Row ARow)

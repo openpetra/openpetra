@@ -110,8 +110,8 @@ namespace Ict.Petra.Client.App.Gui
         private static readonly string StrDBConcurrencySelf = Catalog.GetString(
             "You have tried to {1} the same record in Table\r\n" + "'{2}' after you have {3}{4}." +
             "\r\n" + "\r\n" +
-            "None of your current changes can be saved, since these changes could" + "\r\n" +
-            "potentially conflict with each other." +
+            "None of your current changes can be saved, since these changes" + "\r\n" +
+            "could potentially conflict with each other." +
             "\r\n" + "\r\n");
 
         /// <summary>Part of a Database Concurrency Message.</summary>
@@ -701,6 +701,53 @@ namespace Ict.Petra.Client.App.Gui
 
             return MessageBox.Show(AErrorText + BuildMessageFooter(AMessageNumber,
                     ATypeWhichRaisesError.Name), ATitle, MessageBoxButtons.YesNo, AIcon, DefaultButton);
+        }
+
+        /// <summary>
+        /// Displays a MessageBox that informs the user that (s)he cannot delete a record because (a) dependent
+        /// record(s) exist and that that/those must be deleted first in order for the deletion to go ahead.
+        /// </summary>
+        /// <param name="ARecordNameSingular">Name of the record as known to the user (singular), e.g. ('Contact Category').</param>
+        /// <param name="ARecordNameSingularIncludingArticle">Name of the record as known to the user (singular), e.g. ('Contact Category')
+        /// including its grammatical article.</param>
+        /// <param name="ARecordNamePlural">Name of the record as known to the user (singular), e.g. ('Contact Categories').</param>
+        /// <param name="ADependentRecordNameSingular">Name of the dependent record as known to the user (singular),
+        /// e.g. ('Contact Type').</param>
+        /// <param name="ADependentRecordNameSingularIncludingArticle">Name of the dependent record as known to the user (singular),
+        /// e.g. ('Contact Type') including its grammatical article.</param>
+        /// <param name="ADependentRecordNamePlural">Name of the dependent record as known to the user (plural),
+        /// e.g. ('Contact Types').</param>
+        /// <param name="ARecordValue">Value of the record as known to the user (often this will be the Primary Key).</param>
+        /// <param name="ANumberOfDependentRecords">Number of dependent records that prevent the deletion.</param>
+        public static void MsgRecordCannotBeDeletedDueToDependantRecordsError(string ARecordNameSingular,
+            string ARecordNameSingularIncludingArticle, string ARecordNamePlural,
+            string ADependentRecordNameSingular, string ADependentRecordNameSingularIncludingArticle,
+            string ADependentRecordNamePlural, string ARecordValue, int ANumberOfDependentRecords)
+        {
+            string Title;
+            string Explanation;
+
+            if (ANumberOfDependentRecords == 1)
+            {
+                Title = String.Format(Catalog.GetString("When {0} already exists for {1} you must delete the {2} first.\r\n\r\n"),
+                    ADependentRecordNameSingularIncludingArticle, ARecordNameSingularIncludingArticle, ADependentRecordNameSingular);
+                Explanation = Catalog.GetString(String.Format(
+                        "You will need to delete the one {0} that is associated with {1}\r\n     '{2}'\r\n" +
+                        "(if it can indeed be deleted) before the {1} can be deleted.",
+                        ADependentRecordNameSingular, ARecordNameSingular, ARecordValue));
+            }
+            else
+            {
+                Title = String.Format(Catalog.GetString("When {0} already exist for {1} you must delete the {0} first.\r\n\r\n"),
+                    ADependentRecordNamePlural, ARecordNameSingularIncludingArticle, ARecordNameSingular);
+                Explanation = Catalog.GetString(String.Format(
+                        "You will need to delete all {0} that are associated with {1}\r\n     '{2}'\r\n" +
+                        "(if they can indeed be deleted) before the {1} can be deleted.",
+                        ADependentRecordNamePlural, ARecordNameSingular, ARecordValue));
+            }
+
+            MessageBox.Show(Title + Explanation,
+                Catalog.GetString("Deletion Not Possible"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
 
         #region Helper Methods

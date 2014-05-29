@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
@@ -95,9 +96,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // if partner is of class FAMILY or class UNIT, enable grpRecipientGiftReceipting
             grpRecipientGiftReceipting.Enabled = (FMainDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY
                                                   || FMainDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT);
-
-            // populate the comboboxes for Bank Name and Bank Code
-            PopulateComboBoxes();
         }
 
         private void InitializeManualCode()
@@ -115,6 +113,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(txtBankKey, Catalog.GetString("Select a Bank."));
             FPetraUtilsObject.SetStatusBarText(cmbBankName, Catalog.GetString("Select a Bank Name."));
             FPetraUtilsObject.SetStatusBarText(cmbBankCode, Catalog.GetString("Select a Bank Code."));
+
+            // add event which will populate the bank combo boxes when 'Finance details' tab is shown for the first time
+            pnlDetails.VisibleChanged += new EventHandler(pnlDetails_VisibleChanged);
         }
 
         /// <summary>
@@ -149,8 +150,36 @@ namespace Ict.Petra.Client.MPartner.Gui
             return FMainDS.PBankingDetails.Rows.Count != 0;
         }
 
+        bool FComboBoxesCreated = false;
+
         private void PopulateComboBoxes()
         {
+            // For some reason this method sets the RowState of one PLocation record and one PPartnerLocation record from MainDS to modified,
+            // even if it hasn't been modified. This causes the save button to be enabled even though no data might was changed.
+            // There is no clear reason why! To avoid this I record all records that are Unchanged at the start of the method and ensure they are
+            // still unchanged at the end of the method.
+            List <int>PartnerLocationList = new List <int>();
+            List <int>LocationList = new List <int>();
+
+            for (int i = 0; i < FMainDS.PPartnerLocation.Rows.Count; i++)
+            {
+                if (FMainDS.PPartnerLocation.Rows[i].RowState == DataRowState.Unchanged)
+                {
+                    PartnerLocationList.Add(i);
+                }
+            }
+
+            for (int i = 0; i < FMainDS.PLocation.Rows.Count; i++)
+            {
+                if (FMainDS.PLocation.Rows[i].RowState == DataRowState.Unchanged)
+                {
+                    LocationList.Add(i);
+                }
+            }
+
+            // temporarily remove the event that enables the save button when data is changed
+            FPetraUtilsObject.ActionEnablingEvent -= ((TFrmPartnerEdit)FPetraUtilsObject.GetForm()).ActionEnabledEvent;
+
             // temporily remove events from comboboxes
             cmbBankName.SelectedValueChanged -= new System.EventHandler(this.BankNameChanged);
             cmbBankCode.SelectedValueChanged -= new System.EventHandler(this.BankCodeChanged);
@@ -176,15 +205,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("<INACTIVE> ");
             FBankDataset.PBank.Rows.Add(emptyRow);
 
+            cmbBankName.InitialiseUserControl();
+            cmbBankCode.InitialiseUserControl();
+
             // populate the bank name combo box
             cmbBankName.InitialiseUserControl(FBankDataset.PBank,
                 PBankTable.GetPartnerKeyDBName(),
                 PBankTable.GetBranchNameDBName(),
                 PBankTable.GetBranchCodeDBName(),
                 null);
+
             cmbBankName.AppearanceSetup(new int[] { 230, 160 }, -1);
             cmbBankName.Filter = PBankTable.GetBranchNameDBName() + " <> '' OR " +
                                  PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = ''";
+
             cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
 
             // populate the bank code combo box
@@ -192,12 +226,34 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PBankTable.GetBranchCodeDBName(),
                 PBankTable.GetPartnerKeyDBName(),
                 null);
+
             cmbBankCode.AppearanceSetup(new int[] { 210 }, -1);
             // filter rows that are blank or <INACTIVE>
             cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '<INACTIVE> ') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '<INACTIVE> ')";
             cmbBankCode.SelectedValueChanged += new System.EventHandler(this.BankCodeChanged);
+
+            FComboBoxesCreated = true;
+
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.BankKey != 0)
+                && (((FCurrentBankRow == null) || (FPreviouslySelectedDetailRow.BankKey != FCurrentBankRow.PartnerKey))))
+            {
+                PartnerKeyChanged(FPreviouslySelectedDetailRow.BankKey, "", true);
+            }
+
+            FPetraUtilsObject.ActionEnablingEvent += ((TFrmPartnerEdit)FPetraUtilsObject.GetForm()).ActionEnabledEvent;
+
+            // reject any unwanted changes
+            foreach (int i in PartnerLocationList)
+            {
+                FMainDS.PPartnerLocation.Rows[i].RejectChanges();
+            }
+
+            foreach (int i in LocationList)
+            {
+                FMainDS.PLocation.Rows[i].RejectChanges();
+            }
         }
 
         #endregion
@@ -236,7 +292,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     cmbBankName.SetSelectedString("");
                     cmbBankCode.SetSelectedString("");
                 }
-                else if ((FCurrentBankRow == null) || (ARow.BankKey != FCurrentBankRow.PartnerKey))
+                else if (FComboBoxesCreated && ((FCurrentBankRow == null) || (ARow.BankKey != FCurrentBankRow.PartnerKey)))
                 {
                     PartnerKeyChanged(ARow.BankKey, "", true);
                 }
@@ -347,6 +403,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         // called when FindBank dialog is accepted
         private void PartnerKeyChanged(long APartnerKey, String APartnerShortName, bool AValidSelection)
         {
+            if (!FComboBoxesCreated)
+            {
+                return;
+            }
+
+            if (FBankDataset == null)
+            {
+                // populate the comboboxes for Bank Name and Bank Code if not done already (this should never actually happen!)
+                PopulateComboBoxes();
+            }
+
             FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { APartnerKey });
 
             // change the BankName combo (if it was not the control used to change the bank)
@@ -450,14 +517,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         // when cmbBankCode is changed
         private void BankCodeChanged(System.Object sender, EventArgs e)
         {
-            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
-                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && (FCurrentBankRow.BranchCode != "<INACTIVE> ")))
+            if (string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && (FCurrentBankRow == null))
+            {
+                return;
+            }
+            else if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
+                     || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && (FCurrentBankRow.BranchCode != "<INACTIVE> ")))
             {
                 // if "<INACTIVE>" has been selected change it to blank
                 cmbBankCode.SelectedIndex = -1;
                 txtBankKey.Text = "0";
             }
-            else if (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString())
+            else if ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString()))
             {
                 FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { cmbBankCode.GetSelectedDescription() });
 
@@ -486,6 +557,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            if (FBankDataset == null)
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                // load bank records
+                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(true);
+                txtBankKey.DataSet = FBankDataset;
+
+                // populate the comboboxes for Bank Name and Bank Code
+                Thread NewThread = new Thread(PopulateComboBoxes);
+                NewThread.Start();
+
+                Cursor.Current = Cursors.Default;
+            }
+
             this.CreateNewPBankingDetails();
         }
 
@@ -753,6 +839,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             LastRowChecked = FPreviouslySelectedDetailRow;
         }
 
+        private void pnlDetails_VisibleChanged(System.Object sender, System.EventArgs e)
+        {
+            // if FindByBankDetails tab is selected and there is at least 1 row in the grid
+            if (pnlDetails.Visible && (FBankDataset == null) && (grdDetails.Rows.Count > 1))
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                // load bank records
+                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(true);
+                txtBankKey.DataSet = FBankDataset;
+
+                Cursor.Current = Cursors.Default;
+
+                // populate the comboboxes for Bank Name and Bank Code
+                Thread NewThread = new Thread(PopulateComboBoxes);
+                NewThread.Start();
+            }
+        }
+
         #endregion
 
         #region Deletion
@@ -894,11 +999,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            // obtain the bank's country code (if it exists)
+            string CountryCode = "";
+
+            if (lblCountry.Text.Length > 8)
+            {
+                CountryCode = lblCountry.Text.Substring(9);
+            }
+
             // validate bank account details
             TSharedPartnerValidation_Partner.ValidateBankingDetails(this,
                 ARow,
                 FMainDS.PBankingDetails,
-                lblCountry.Text,
+                CountryCode,
                 ref VerificationResultCollection,
                 FValidationControlsDict);
         }

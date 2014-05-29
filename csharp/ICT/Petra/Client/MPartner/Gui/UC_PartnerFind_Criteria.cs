@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FPartnerClassUpdateIsAutomatic = false;
 
         /// <summary>Dataset containg all PBank records for all banks and their locations</summary>
-        private BankTDS FBankDataset;
+        public BankTDS FBankDataset;
 
         #endregion
 
@@ -348,6 +348,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             TmpString = TmpString.Replace("WORKER-FAM", "FAMILY");
             FDefaultPartnerClass = TmpString;
 
+            if ((ARestrictedPartnerClasses.Length > 1) && (FPartnerClassDataTable.Select("PartnerClass = '*'").Length == 0))
+            {
+                PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                PartnerClassDataRow["PartnerClass"] = "*";
+                FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+            }
+
             foreach (String eachPart in ARestrictedPartnerClasses)
             {
 // MessageBox.Show("eachPart: " + eachPart);
@@ -483,7 +490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbBankName.SelectedValueChanged -= new System.EventHandler(this.BankNameChanged);
             cmbBankCode.SelectedValueChanged -= new System.EventHandler(this.BankCodeChanged);
 
-            // load bank records
+            // Load bank records. (I don't think this will ever be null. Database is populated when tab is loaded.)
             if (FBankDataset == null)
             {
                 // Do not load bank locations as this is much faster.
@@ -512,7 +519,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PBankTable.GetBranchNameDBName(),
                 PBankTable.GetBranchCodeDBName(),
                 null);
-            cmbBankName.AppearanceSetup(new int[] { 175, 160 }, -1);
             cmbBankName.Filter = PBankTable.GetBranchNameDBName() + " <> '' OR " +
                                  PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = ''";
             cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
@@ -522,12 +528,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PBankTable.GetBranchCodeDBName(),
                 PBankTable.GetPartnerKeyDBName(),
                 null);
-            cmbBankCode.AppearanceSetup(new int[] { 175 }, -1);
             // filter rows that are blank or <INACTIVE>
             cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '<INACTIVE> ') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '<INACTIVE> ')";
             cmbBankCode.SelectedValueChanged += new System.EventHandler(this.BankCodeChanged);
+        }
+
+        private void TUC_PartnerFindCriteria_SizeChanged(System.Object sender, EventArgs e)
+        {
+            int ComboWidth = spcCriteria.Panel1.Width - cmbBankName.Location.X - 6;
+
+            cmbBankName.Width = ComboWidth;
+            cmbBankName.AppearanceSetup(new int[] { ComboWidth, 200 }, -1);
+            cmbBankCode.Width = ComboWidth;
+            cmbBankCode.AppearanceSetup(new int[] { ComboWidth }, -1);
         }
 
         /// <summary>
@@ -786,6 +801,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FDontRecordCurrentWorkerFamOnlySelection = false;
+
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbPartnerClass.DroppedDown)
+            {
+                // this is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down
+                PartnerClassDroppedDown = true;
+            }
         }
 
         private void BtnLocationKey_Click(System.Object sender, System.EventArgs e)
@@ -1982,7 +2004,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     critAccountNumber.DataBindings.Clear();
                     critIban.DataBindings.Clear();
                     critBic.DataBindings.Clear();
-                    //critBankCode.DataBindings.Clear();
                 }
             }
 
@@ -3058,6 +3079,82 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
+
+        #region Comboboxes and the Enter key
+
+        // This is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down.
+
+        private bool CountryDroppedDown = false;
+        private bool BankNameDroppedDown = false;
+        private bool BankCodeDroppedDown = false;
+        private bool PartnerClassDroppedDown = false;
+
+        /// <summary>
+        /// Determines if a combo box's value has been changed while the list is dropped down
+        /// and that that combo box still contains the focus.
+        /// </summary>
+        /// <returns></returns>
+        public bool ComboboxDroppedDown()
+        {
+            if (CountryDroppedDown && ucoCountryComboBox.ContainsFocus)
+            {
+                CountryDroppedDown = false;
+                return true;
+            }
+            else if (BankNameDroppedDown && cmbBankName.ContainsFocus)
+            {
+                BankNameDroppedDown = false;
+                return true;
+            }
+            else if (BankCodeDroppedDown && cmbBankCode.ContainsFocus)
+            {
+                BankCodeDroppedDown = false;
+                return true;
+            }
+            else if (PartnerClassDroppedDown && cmbPartnerClass.ContainsFocus)
+            {
+                PartnerClassDroppedDown = false;
+                return true;
+            }
+
+            CountryDroppedDown = false;
+            BankNameDroppedDown = false;
+            BankCodeDroppedDown = false;
+            PartnerClassDroppedDown = false;
+
+            return false;
+        }
+
+        // events triggered when a combo box's value is changed
+
+        private void UcoCountryComboBox_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (ucoCountryComboBox.DroppedDown)
+            {
+                CountryDroppedDown = true;
+            }
+        }
+
+        private void CmbBankName_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbBankName.cmbCombobox.DroppedDown)
+            {
+                BankNameDroppedDown = true;
+            }
+        }
+
+        private void CmbBankCode_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbBankCode.cmbCombobox.DroppedDown)
+            {
+                BankCodeDroppedDown = true;
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>todoComment</summary>

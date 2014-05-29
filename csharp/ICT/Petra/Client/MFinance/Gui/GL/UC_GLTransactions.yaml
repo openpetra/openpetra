@@ -27,7 +27,7 @@ RootNode:
         pnlDetailsSection:
             Dock: Bottom
             Controls: [pnlTransAnalysisAttributes, pnlDetails]
-            Height: 340
+            Height: 360
         pnlFilterAndFind:
             Dock: Left
             ExpandedWidth: 170
@@ -56,7 +56,7 @@ RootNode:
         grdAnalAttributes:
             TableName: ATransAnalAttrib
             Width: 220
-            Height: 100
+            Height: 110
             Columns: [AnalysisTypeCode]
             CustomColumns:
                 AnalysisTypeCode: {Label=Type, Type=String}
@@ -68,7 +68,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: ATransaction
-            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AnalysisAttributes]
+            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AmountInIntlCurrency, AnalysisAttributes]
             CustomColumns:
                 TransactionNumber: {Label=Transaction, Type=Integer}
                 TransactionDate: {Label=Transaction Date, Type=DateTime}
@@ -90,14 +90,14 @@ RootNode:
         txtDetailNarrative:
             Label: Narrative
             Width: 230
-            Height: 50
+            Height: 84
             Multiline: true
             Stretch: horizontally
             ScrollBars: Vertical
             Validation: true
         txtDetailReference: {Label=Reference, Validation=true}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
-        cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, List=UserDefinedList}
+        cmbDetailKeyMinistryKey: {Label=Key Ministry, List=UserDefinedList, Stretch=horizontally}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency, lblBaseCurrency]

@@ -48,6 +48,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Shared.MSysMan.Validation;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 
@@ -226,6 +227,11 @@ namespace Ict.Petra.Client.CommonDialogs
             }
         }
 
+        private void TxtPasswordOnEntering(object sender, EventArgs e)
+        {
+            this.txtPassword.SelectAll();
+        }
+
         void TxtUserNameKeyPress(object sender, KeyPressEventArgs e)
         {
             // If the ENTER key is pressed, the Handled property is set to true,
@@ -303,11 +309,10 @@ namespace Ict.Petra.Client.CommonDialogs
                 // (This LoginMessage is set in Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors.TUserManagerWebConnector)
                 if (UserInfo.GUserInfo.LoginMessage == Catalog.GetString("You need to change your password immediately."))
                 {
-                    bool NewPasswordCreated = false;
-
-                    while (NewPasswordCreated == false)
+                    if (!CreateNewPassword(FSelUserName, FSelPassWord, false))
                     {
-                        NewPasswordCreated = CreateNewPassword(FSelUserName, FSelPassWord, false);
+                        // do nothing if password has not been successfully changed
+                        return;
                     }
                 }
 
@@ -630,48 +635,74 @@ namespace Ict.Petra.Client.CommonDialogs
         /// </summary>
         public static bool CreateNewPassword(string AUserName, string AOldPassword, bool APasswordNeedsChanged)
         {
-            PetraInputBox input = new PetraInputBox(
-                Catalog.GetString("Change your password"),
-                Catalog.GetString("Please enter the new password:"),
-                "", true);
-
-            if (input.ShowDialog() == DialogResult.OK)
+            // repeat if an invalid password is entered
+            while (true)
             {
-                string password = input.GetAnswer();
-
-                input = new PetraInputBox(
+                PetraInputBox input = new PetraInputBox(
                     Catalog.GetString("Change your password"),
-                    Catalog.GetString("Please enter the new password once more:"),
+                    Catalog.GetString("Please enter the new password:"),
                     "", true);
 
                 if (input.ShowDialog() == DialogResult.OK)
                 {
-                    if (password == input.GetAnswer())
-                    {
-                        TVerificationResultCollection VerificationResult;
+                    string password = input.GetAnswer();
 
-                        if (password == AOldPassword)
+                    TVerificationResultCollection VerificationResultCollection;
+                    TVerificationResult VerificationResult;
+
+                    if (password == AOldPassword)
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString(
+                                    "Password not changed as the old password was entered. Please enter a new password."), AUserName));
+                    }
+                    else if (TSharedSysManValidation.CheckPasswordQuality(password, out VerificationResult))
+                    {
+                        // if first password is valid then ask user to enter it again
+                        input = new PetraInputBox(
+                            Catalog.GetString("Change your password"),
+                            Catalog.GetString("Please enter the new password once more:"),
+                            "", true);
+
+                        if (input.ShowDialog() == DialogResult.OK)
                         {
-                            MessageBox.Show(String.Format(Catalog.GetString(
-                                        "Password not changed as current password entered. Please enter a new password."), AUserName));
-                        }
-                        else if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(AUserName, password, AOldPassword, APasswordNeedsChanged,
-                                     out VerificationResult))
-                        {
-                            MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), AUserName));
-                            return true;
+                            // if both passwords are the same then save
+                            if (password == input.GetAnswer())
+                            {
+                                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(AUserName, password, AOldPassword,
+                                        APasswordNeedsChanged,
+                                        out VerificationResultCollection))
+                                {
+                                    MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), AUserName));
+                                    return true;
+                                }
+                                else
+                                {
+                                    MessageBox.Show(String.Format(Catalog.GetString(
+                                                "There was a problem setting the password for user {0}."), AUserName) +
+                                        Environment.NewLine + VerificationResultCollection.BuildVerificationResultString());
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Passwords do not match! Please try again...");
+                            }
                         }
                         else
                         {
-                            MessageBox.Show(String.Format(Catalog.GetString(
-                                        "There was a problem setting the password for user {0}."), AUserName) +
-                                Environment.NewLine + VerificationResult.BuildVerificationResultString());
+                            break;
                         }
                     }
                     else
                     {
-                        MessageBox.Show("The new password did not match! Please try again...");
+                        MessageBox.Show(String.Format(Catalog.GetString(
+                                    "There was a problem setting the password for user {0}."), AUserName) +
+                            Environment.NewLine + VerificationResult.ResultText);
                     }
+                }
+                else
+                {
+                    break;
                 }
             }
 

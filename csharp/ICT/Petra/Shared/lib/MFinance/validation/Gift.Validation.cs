@@ -31,6 +31,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Shared.MFinance.Validation
 {
@@ -172,9 +173,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="ARecipientField">Optional The recipient field for the gift </param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateGiftDetailManual(object AContext, AGiftDetailRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        public static bool ValidateGiftDetailManual(object AContext,
+            AGiftDetailRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict,
+            Int64 ARecipientField = -1)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -186,6 +191,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (ARow.RowState == DataRowState.Deleted)
             {
                 return true;
+            }
+
+            // Check if valid donor
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientKeyId];
+            ValidationContext = String.Format("Batch no. {0}, gift no. {1}, detail no. {2}",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
+                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
+
+            if (VerificationResult != null)
+            {
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
 
             // 'Gift amount must be non-zero
@@ -205,6 +227,56 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
+                }
+            }
+
+            // Motivation Group type Gift must have non-zero Recipient field
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationGroupCodeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if ((ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT) && (ARecipientField == 0))
+                {
+                    VerificationResult = TNumericalChecks.IsPositiveInteger(
+                        ARecipientField,
+                        " Motivation Group " + MFinanceConstants.MOTIVATION_GROUP_GIFT +
+                        " requires a non-zero Recipient field. Change to a NON-GIFT group code - " + ValidationContext,
+                        AContext,
+                        ValidationColumn,
+                        ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
+            // Motivation Detail must not be null
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationDetailCodeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.IsMotivationDetailCodeNull() || (ARow.MotivationDetailCode == String.Empty))
+                {
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.MotivationDetailCode,
+                        "Motivation Detail code " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
                 }
             }
 
@@ -306,19 +378,35 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
+            // Check if valid donor
+            ValidationColumn = ARow.Table.Columns[AGiftTable.ColumnDonorKeyId];
+            ValidationContext = String.Format("Batch no. {0}, gift no. {1}",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber);
+
+            VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                ARow.DonorKey, new TPartnerClass[] { }, true,
+                "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
+
+            if (VerificationResult != null)
+            {
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
             // 'Entered From Date' must be valid
             ValidationColumn = ARow.Table.Columns[AGiftTable.ColumnDateEnteredId];
             ValidationContext = String.Format("Gift No.: {0}", ARow.GiftTransactionNumber);
 
             DateTime StartDateCurrentPeriod;
-            DateTime EndDateLastForwardingPeriod;
-            TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+            DateTime EndDateCurrentPeriod;
+            TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, AYear, 0, APeriod,
                 out StartDateCurrentPeriod,
-                out EndDateLastForwardingPeriod);
+                out EndDateCurrentPeriod);
 
             VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.DateEntered,
                 StartDateCurrentPeriod,
-                EndDateLastForwardingPeriod,
+                EndDateCurrentPeriod,
                 "Gift Date for " + ValidationContext.ToString(),
                 TDateBetweenDatesCheckType.dbdctUnspecific,
                 TDateBetweenDatesCheckType.dbdctUnspecific,

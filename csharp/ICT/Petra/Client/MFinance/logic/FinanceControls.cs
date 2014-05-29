@@ -183,8 +183,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 232);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
@@ -329,8 +329,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
+            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 232);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
@@ -800,6 +800,34 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
+        /// This function fills the available financial end-of-years of a given ledger into a TCmbAutoPopulated combobox
+        /// </summary>
+        public static void InitialiseAvailableEndOfYearsList(ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr,
+            bool AIncludeNextYear = false)
+        {
+            string DisplayMember;
+            string ValueMember;
+            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
+                0,
+                AIncludeNextYear,
+                out DisplayMember,
+                out ValueMember);
+
+            Table.DefaultView.Sort = ValueMember + " DESC";
+
+            AControl.InitialiseUserControl(Table,
+                ValueMember,
+                "YearEnd",
+                null,
+                null);
+
+            AControl.SelectedIndex = 0;
+
+            AControl.AppearanceSetup(new int[] { 120 }, -1);
+        }
+
+        /// <summary>
         /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl,
@@ -1141,11 +1169,15 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
+            // this unseen column is used to order the table
+            //(sorting using the 'CHECKED' column causes problems as sorting takes place as soon as a record is checked)
+            NewTable.Columns.Add(new DataColumn("ORDER", typeof(bool)));
+
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 206);
+            AControl.DataBindGrid(NewTable, "ORDER DESC, " + ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>
@@ -1167,11 +1199,15 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
+            // this unseen column is used to order the table
+            //(sorting using the 'CHECKED' column causes problems as sorting takes place as soon as a record is checked)
+            NewTable.Columns.Add(new DataColumn("ORDER", typeof(bool)));
+
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 206);
+            AControl.DataBindGrid(NewTable, "ORDER DESC, " + ValueMember, CheckedMember, ValueMember, false, true, false);
         }
     }
 }

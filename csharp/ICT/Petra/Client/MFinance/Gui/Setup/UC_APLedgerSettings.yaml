@@ -1,0 +1,25 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup   
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation]
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
+    MasterTable: ALedger
+    FormType: edit
+    Template: usercontrol
+    WindowWidth: 565
+    WindowHeight: 565
+    Actions:
+    Controls:
+        pnlContent:
+            Controls: [grpUserDefaults, grpLedgerDefaults]
+            Dock: Fill
+        grpUserDefaults: {Width=550, Stretch=horizontally}
+            Controls: [chkAlwaysPrintCheques, chkAlwaysPrintRemittanceAdvice, chkAlwaysPrintLabel]
+        grpLedgerDefaults: {Width=550, Stretch=horizontally}
+            Controls: [chkRequireApproval]
+
+        chkAlwaysPrintCheques: {CheckBoxAttachedLabel=right, Enabled=false}
+        chkAlwaysPrintRemittanceAdvice: {CheckBoxAttachedLabel=right, Enabled=false}
+        chkAlwaysPrintLabel: {CheckBoxAttachedLabel=right, Enabled=false}
+        chkRequireApproval: {Label=Require approval before posting, CheckBoxAttachedLabel=right}

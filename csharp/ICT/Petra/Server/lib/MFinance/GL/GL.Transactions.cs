@@ -296,7 +296,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// loads a list of journals for the given ledger and batch
+        /// loads a list of journals and transactions for the given ledger and batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
@@ -551,17 +551,38 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// loads some necessary analysis attributes tables for the given ledger number
         /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="AActiveOnly"></param>
         /// <returns>GLSetupTDS</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber)
+        public static GLSetupTDS LoadAAnalysisAttributes(Int32 ALedgerNumber, Boolean AActiveOnly = false)
         {
             GLSetupTDS CacheDS = new GLSetupTDS();
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
 
             AAnalysisTypeAccess.LoadAll(CacheDS, Transaction);
-            AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
-            AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+
+            if (!AActiveOnly)
+            {
+                AFreeformAnalysisAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+                AAnalysisAttributeAccess.LoadViaALedger(CacheDS, ALedgerNumber, Transaction);
+            }
+            else
+            {
+                AFreeformAnalysisTable FFTable = new AFreeformAnalysisTable();
+                AFreeformAnalysisRow TemplateFFRow = FFTable.NewRowTyped(false);
+                TemplateFFRow.LedgerNumber = ALedgerNumber;
+                TemplateFFRow.Active = true;
+
+                AFreeformAnalysisAccess.LoadUsingTemplate(CacheDS, TemplateFFRow, Transaction);
+
+                AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                TemplateAARow.LedgerNumber = ALedgerNumber;
+                TemplateAARow.Active = true;
+
+                AAnalysisAttributeAccess.LoadUsingTemplate(CacheDS, TemplateAARow, Transaction);
+            }
 
             if (NewTransaction)
             {

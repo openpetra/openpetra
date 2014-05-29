@@ -37,7 +37,7 @@
 						FROM PUB_a_gift_batch, PUB_a_gift, PUB_a_gift_detail
 						WHERE PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 						AND PUB_a_gift_batch.a_gl_effective_date_d &gt;= {#param_start_date_payments#}
-						AND PUB_a_gift_batch.a_batch_status_c &lt;&gt; "Cancelled"
+						AND PUB_a_gift_batch.a_batch_status_c &lt;&gt; 'Cancelled'
 						AND PUB_a_gift.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i
 						AND PUB_a_gift.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i
 						AND PUB_a_gift.p_donor_key_n = PUB_pm_short_term_application.p_partner_key_n

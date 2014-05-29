@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,7 +41,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmAccountDetail
     {
         private Int32 FLedgerNumber;
-        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -58,7 +57,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 pnlSorting.Padding = new System.Windows.Forms.Padding(8); // This tweak bring controls inline.
                 FPetraUtilsObject.LoadDefaultSettings();
-                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
+
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
+                else if (FPetraUtilsObject.GetCallerForm() != null)
+                {
+                    MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
+                }
             }
         }
 
@@ -78,6 +85,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String AccountCodeFilter = ""; // Account Filter, as range or list:
             String TranctAccountCodeFilter = "";
+            DataTable Balances = new DataTable();
 
             if (pm.Get("param_rgrAccounts").ToString() == "AccountList")
             {
@@ -114,10 +122,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                          "' AND a_transaction.a_cost_centre_code_c<='" + pm.Get("param_cost_centre_code_end") + "'";
             }
 
-            String TranctDateFilter = ""; // Optional Date Filter, as periods or dates
-
-            TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
-                               "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
+            String TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
+                                      "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
 
             String ReferenceFilter = "";
             String AnalysisTypeFilter = "";
@@ -203,14 +209,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "/" + OrderBy);
             }
 
-            GLReportingTDS ReportDs = TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv);
+            GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
+            {
+                return false;
+            }
 
             //
-            // If I'm reporting period,
+            // If I'm reporting by period or quarter,
             // I want to include opening and closing balances for each Cost Centre / Account, in the selected currency:
-            if (pm.Get("param_period").ToBool() == true)
+            if (pm.Get("param_period_checked").ToBool() || pm.Get("param_quarter_checked").ToBool())
             {
-                DataTable Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
+                Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
                     LedgerFilter,
                     AccountCodeFilter,
                     CostCentreFilter,
@@ -218,8 +229,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     pm.Get("param_end_period_i").ToInt32(),
                     pm.Get("param_currency").ToString().StartsWith("Int")
                     );
-                ReportDs.Merge(Balances);
-                FFastReportsPlugin.RegisterData(Balances, "balances");
+
+                if (Balances == null)
+                {
+                    return false;
+                }
             }
 
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
@@ -227,6 +241,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ALedgerRow Row = ReportDs.ALedger[0];
                 ACalc.AddStringParameter("param_ledger_name", Row.LedgerName);
                 ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            }
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
+            {
+                return false;
             }
 
             //
@@ -247,14 +266,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     " AND a_batch_number_i <= " +
                     LastBatch);
                 Csv = StringHelper.AddCSV(Csv, "AAnalysisType/*/a_analysis_type/1=1");
-                ReportDs.Merge(TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv));
+                ReportDs.Merge(TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv));
             }
 
-            FFastReportsPlugin.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");
-            FFastReportsPlugin.RegisterData(ReportDs.AAnalysisType, "a_analysis_type");
-            FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
-            FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
-            FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
+            {
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAnalysisType, "a_analysis_type");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(Balances, "balances");
             return true;
         }
     }

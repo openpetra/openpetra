@@ -8,6 +8,7 @@ RootNode:
     Template: usercontrolUnbound
     Controls:
         grpAddress: {NoLabel=true}
+            Dock: Fill
             Controls:
                 Row0: [chkCurrentAddressesOnly]
                 Row1: [txtCity]
@@ -17,7 +18,7 @@ RootNode:
                 Row5: [cmbCountry]
                 Row6: [dtpAddressStartFrom, dtpAddressStartTo]
                 Row7: [dtpAddressEndFrom, dtpAddressEndTo]
-		
+
         chkCurrentAddressesOnly: {Label=Current Addresses only, ActionClick=OnCurrentAddressBoxChecked, ParameterName=param_only_addresses_valid_on}
         txtCity: {Label=Town/City, ParameterName=param_city}
         txtPostCodeFrom: {Label=Post Code From, ParameterName=param_postcode_from, Width=100}
@@ -29,4 +30,3 @@ RootNode:
         dtpAddressStartTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_address_start_to}
         dtpAddressEndFrom: {Label=Valid To Date between, ClearIfSettingEmpty=true, ParameterName=param_address_end_from}
         dtpAddressEndTo: {Label=and, ClearIfSettingEmpty=true, ParameterName=param_address_end_to}
-        

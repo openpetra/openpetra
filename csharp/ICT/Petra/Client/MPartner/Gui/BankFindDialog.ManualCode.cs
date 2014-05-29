@@ -217,6 +217,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Country", FCriteriaData.Columns[PLocationTable.GetCountryCodeDBName()], 60);
 
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(grdDetails_DoubleClickCell);
+            grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(grdDetails_EnterKey);
+            grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
         }
 
         #endregion
@@ -299,6 +301,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         private void grdDetails_DoubleClickCell(object Sender, SourceGrid.CellContextEventArgs e)
+        {
+            Accept(e, null);
+        }
+
+        private void grdDetails_EnterKey(object Sender, EventArgs e)
         {
             Accept(e, null);
         }
@@ -454,7 +461,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Will be called by TFormsList to inform any Form that is registered in TFormsList
         /// about any 'Forms Messages' that are broadcasted.
         /// </summary>
-        /// <remarks>The Partner Find 'listens' to such 'Forms Message' broadcasts by
+        /// <remarks>This screen 'listens' to such 'Forms Message' broadcasts by
         /// implementing this virtual Method. This Method will be called each time a
         /// 'Forms Message' broadcast occurs.
         /// </remarks>

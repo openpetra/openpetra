@@ -65,7 +65,7 @@
               FROM
                 PUB_p_data_label_use, PUB_p_data_label, PUB_p_data_label_value_partner
               WHERE
-                  PUB_p_data_label_value_partner.p_partner_key_n = {StaffPartnerKey}
+                  PUB_p_data_label_value_partner.p_partner_key_n = {{StaffPartnerKey}}
                 AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i
                 AND PUB_p_data_label_use.p_use_c &lt;&gt; "Personnel"
                 AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i
@@ -93,7 +93,7 @@
               FROM
                 PUB_p_data_label_use, PUB_p_data_label, PUB_p_data_label_value_partner
               WHERE
-                  PUB_p_data_label_value_partner.p_partner_key_n = {StaffPartnerKey}
+                  PUB_p_data_label_value_partner.p_partner_key_n = {{StaffPartnerKey}}
                 AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i
                 AND PUB_p_data_label_use.p_use_c = "Personnel"
                 AND PUB_p_data_label_use.p_data_label_key_i = PUB_p_data_label.p_key_i
@@ -115,7 +115,7 @@
               FROM
                 PUB_pm_job_assignment, PUB_pt_assignment_type, PUB_p_partner
               WHERE
-                PUB_pm_job_assignment.p_partner_key_n = {StaffPartnerKey}
+                PUB_pm_job_assignment.p_partner_key_n = {{StaffPartnerKey}}
                 AND PUB_pt_assignment_type.pt_assignment_type_code_c = PUB_pm_job_assignment.pt_assignment_type_code_c
                 AND PUB_p_partner.p_partner_key_n = PUB_pm_job_assignment.pm_unit_key_n
             </value>
@@ -138,7 +138,7 @@
               FROM
                 PUB_pm_staff_data
               WHERE
-                PUB_pm_staff_data.p_partner_key_n = {StaffPartnerKey}
+                PUB_pm_staff_data.p_partner_key_n = {{StaffPartnerKey}}
             </value>
           </queryDetail>
         </query>
@@ -167,7 +167,7 @@
               FROM
                 PUB_p_partner
               WHERE
-                PUB_p_partner.p_partner_key_n = {pm_home_office_n}
+                PUB_p_partner.p_partner_key_n = {{pm_home_office_n}}
             </value>
           </queryDetail>
         </query>
@@ -181,7 +181,7 @@
               FROM
                 PUB_p_partner
               WHERE
-                PUB_p_partner.p_partner_key_n = {pm_receiving_field_n}
+                PUB_p_partner.p_partner_key_n = {{pm_receiving_field_n}}
             </value>
           </queryDetail>
         </query>
@@ -202,7 +202,7 @@
               FROM 
                 PUB_pm_past_experience
               WHERE
-                PUB_pm_past_experience.p_partner_key_n = {StaffPartnerKey}
+                PUB_pm_past_experience.p_partner_key_n = {{StaffPartnerKey}}
             </value>
           </queryDetail>
         </query>
@@ -223,7 +223,7 @@
               FROM 
                 PUB_pm_person_qualification, PUB_pt_qualification_level
               WHERE
-                  PUB_pm_person_qualification.p_partner_key_n = {StaffPartnerKey}
+                  PUB_pm_person_qualification.p_partner_key_n = {{StaffPartnerKey}}
                 AND PUB_pt_qualification_level.pt_qualification_level_i = PUB_pm_person_qualification.pt_qualification_level_i
             </value>
           </queryDetail>
@@ -538,7 +538,7 @@
         <detail>
           <field whichfield="column 0" pos="1cm">
             <value text="Comments: "  />
-            <value variable="pm_staff_data_comments_c" condition="gt({pm_staff_data_comments_c},0)"/>
+            <value variable="pm_staff_data_comments_c" condition="gt(length({pm_staff_data_comments_c}),0)"/>
             <value text=" --" condition="lt({pm_staff_data_comments_c},1)" />
           </field>
         </detail>
@@ -620,10 +620,10 @@
           <lowerLevelReport level="Personal Documents Lowest Level1"/>
           <lowerLevelReport level="Personal Documents Lowest Level2"/>
           <lowerLevelReport level="Personal Documents Lowest Level3"/>
-          <lowerLevelReport level="Personal Documents Contact Level1" condition="not(eq({pm_contact_partner_key_n}, 0))" calculation="GetContactPartnerName"/>
-          <lowerLevelReport level="Personal Documents Contact Level2" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
-          <lowerLevelReport level="Personal Documents Contact Level3" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
-          <lowerLevelReport level="Personal Documents Contact Level4" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
+          <lowerLevelReport level="Personal Documents Contact Level1" condition="not(isNull({pm_contact_partner_key_n}))" calculation="GetContactPartnerName"/>
+          <lowerLevelReport level="Personal Documents Contact Level2" condition="not(isNull({pm_contact_partner_key_n}))"/>
+          <lowerLevelReport level="Personal Documents Contact Level3" condition="not(isNull({pm_contact_partner_key_n}))"/>
+          <lowerLevelReport level="Personal Documents Contact Level4" condition="not(isNull({pm_contact_partner_key_n}))"/>
         </detail>
         <footer space="below"/>
       </level>
@@ -654,7 +654,7 @@
       <level name="Personal Documents Lowest Level3" identification="StaffPartnerKey">
         <detail>
           <field whichfield="column 0" pos="1cm">
-            <value text="Comment: " condition="gt({pm_doc_comment_c},0)"/>
+            <value text="Comment: " condition="gt(length({pm_doc_comment_c}),0)"/>
             <value variable="pm_doc_comment_c"/>
             <value text="    Associated Document ID: " condition="gt({pm_assoc_doc_id_c},0)"/>
             <value variable="pm_assoc_doc_id_c"/>
@@ -712,11 +712,11 @@
       </level>
       <level name="Special Need lower Level" identification="StaffPartnerKey" condition="HasChildRows">
         <detail>
-          <lowerLevelReport level="Special Need Lowest Level1" condition="gt({pm_medical_comment_c}, 0)"/>
-          <lowerLevelReport level="Special Need Lowest Level2" condition="and(or(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l}), not(and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})))"/>
-          <lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
-          <lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
-          <lowerLevelReport level="Special Need Lowest Level3" condition="gt({pm_other_special_need_c}, 0)"/>
+          <lowerLevelReport level="Special Need Lowest Level1" condition="gt(length({pm_medical_comment_c}), 0)"/>
+          <lowerLevelReport level="Special Need Lowest Level2" condition="and(or(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l}), not(and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})))"/>
+          <lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})"/>
+          <lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})"/>
+          <lowerLevelReport level="Special Need Lowest Level3" condition="gt(length({pm_other_special_need_c}), 0)"/>
         </detail>
         <footer space="below"/>
       </level>

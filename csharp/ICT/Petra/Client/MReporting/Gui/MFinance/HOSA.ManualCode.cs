@@ -44,7 +44,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmHOSA
     {
         private Int32 FLedgerNumber;
-        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -62,7 +61,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
 
                 FPetraUtilsObject.LoadDefaultSettings();
-                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
+
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
+                else if (FPetraUtilsObject.GetCallerForm() != null)
+                {
+                    MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
+                }
             }
         }
 
@@ -201,7 +208,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 +
                 "/" + OrderBy);
 
-            GLReportingTDS ReportDs = TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv);
+            GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
             ArrayList reportParam = ACalc.GetParameters().Elems;
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
@@ -213,18 +220,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            DataTable Gifts = TRemote.MFinance.Reporting.WebConnectors.HosaGiftsTable(paramsDictionary);
-            FFastReportsPlugin.RegisterData(Gifts, "Gifts");
-            FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
-            FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
-            FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("HOSA", paramsDictionary);
+
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Gifts");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
             //
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
 
-            Boolean HasData = (ReportDs.ATransaction.Rows.Count > 0) || (Gifts.Rows.Count > 0);
+            Boolean HasData = (ReportDs.ATransaction.Rows.Count > 0) || (ReportTable.Rows.Count > 0);
 
             if (!HasData)
             {

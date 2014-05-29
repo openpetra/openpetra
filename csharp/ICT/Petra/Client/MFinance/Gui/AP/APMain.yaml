@@ -2,28 +2,31 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
     FormTitle: Accounts Payable
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
+    #UtilObjectClass: TFrmPetraEditUtils
     FormType: browse
     Template: windowFind
-    WindowWidth: 754
-    WindowHeight: 623
+    WindowWidth: 900
+    WindowHeight: 650
     Events:
         Closed: {class=System.EventHandler, method=Form_Closed}
     Actions:
         cndSelectedSupplier: {InitialValue=false}
+        actEditFilter: {Label=Filte&r..., ActionClick=mniFilterFind_Click, Image=FilterActive.ico, Tooltip=Filter the displayed records by one or more criteria}
+        actEditFind: {Label=&Find..., ActionClick=mniFilterFind_Click, Image=Find.ico, Tooltip=Find a record that matches one or more criteria}
+        actDefaults: {ActionClick=mniDefaults_Click, Image=Options2.ico, Tooltip=View or modify the default settings for Accounts Payable}
         actShowInvoice:
             ActionClick: ShowInvoice
-        actSearch:
-            Label: &Search
-            ActionClick: DoSearch
         actNewSupplier:
             Label: &New Supplier
             ActionClick: NewSupplier
             Tooltip: Create a new supplier
+            Image: NewPartner.ico
             ShortCut: Ctrl+N
         actEditSupplier:
-            Label: &Edit Supplier
-            ActionClick: EditSupplier
+            Label: Edit S&upplier
+            ActionClick: EditDetails
             Tooltip: Change the details and settings of an existing supplier
+            Image: Edit_Record.ico
             ShortCut: Ctrl+E
             Enabled: cndSelectedSupplier
         actSupplierTransactions:
@@ -35,124 +38,109 @@ RootNode:
         actCreateInvoice:
             Label: Create &Invoice
             ShortCut: Ctrl+I
+            Tooltip: Create a new invoice relating to the selected supplier
+            Image: New_Record.ico
             ActionClick: CreateInvoice
             Enabled: cndSelectedSupplier
         actCreateCreditNote:
-            Label: Create C&redit Note
+            Label: Create &Credit Note
             ShortCut: Ctrl+R
+            Tooltip: Create a new credit note relating to the selected supplier
+            Image: New_Credit.ico
             ActionClick: CreateCreditNote
             Enabled: cndSelectedSupplier
-        actFindInvoice:
-            Label: &Find Invoice...
-            ShortCut: Ctrl+F
+        #actFindInvoice:
+        #    Label: &Find Invoice...
+        #    ShortCut: Ctrl+F
+        actApproveTagged:
+            Label: &Approve Tagged
+            Enabled: cndCanApprove
+            ActionClick: ApproveAllTagged
+            Tooltip: Approve all the tagged invoices
         actPostTagged:
+            Label: &Post Tagged
             Enabled: cndCanPost
             ActionClick: PostAllTagged
+            Tooltip: Post all the tagged invoices
+        actOpenSelected:
+            Label: &Open Selected
+            Enabled: cndCanOpen
+            Image: Edit_Record.ico
+            ActionClick: OpenSelectedInvoice
+            Tooltip: View the details of the selected invoice or payment
         actOpenTagged:
+            Label: Open Ta&gged
             Enabled: cndCanOpen
             ActionClick: OpenAllTagged
+            Tooltip: View the details of all the tagged invoices or payments
         actPayTagged:
+            Label: Pa&y Tagged
             Enabled: cndCanPay
             ActionClick: PayAllTagged
+            Tooltip: Pay or part-pay all the tagged invoices
         actReverseTagged:
+            Label: Re&verse Tagged
             Enabled: cndCanReverse
             ActionClick: ReverseAllTagged
+            Tooltip: Reverse the tagged invoices that have been posted
         actDeleteTagged:
+            Label: De&lete Tagged
             Enabled: cndCanDelete
+            Image: Delete_Record.ico
             ActionClick: DeleteAllTagged
-        actTagAllPostable:
-            ActionClick: TagAllPostable
-        actTagAllPayable:
-            ActionClick: TagAllPayable
-        actUntagAll:
-            ActionClick: UntagAll
+            Tooltip: Delete the tagged invoices that have been opened or approved
+        actEditFindNext:
+            Label:Find Ne&xt
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find the next record that matches the current 'Find' criteria
+        actEditFindPrevious:
+            Label:Find Pre&vious
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find the previous record that matches the current 'Find' criteria
+        #actTagAllPostable:
+        #    ActionClick: TagAllPostable
+        #actTagAllPayable:
+        #    ActionClick: TagAllPayable
+        #actUntagAll:
+        #    ActionClick: UntagAll
         actTabChange:
             ActionClick: TabChange
 
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlSearchButtons, tabSearchResult]
-        cmbSupplierCode: {Label=S&earch Supplier, AutoComplete=SupplierSearchHistory, Tooltip=Search by supplier name or partner key}
+            #Controls: [pnlSearchButtons, tabSearchResult]
+            Controls: [tabSearchResult]
             
-        nudNumberTimeUnits: {NoLabel=true}
-            Width:50
-        cmbTimeUnit:
-            NoLabel: true
-            OptionalValues: [=Days, Weeks, Months]
-            Width:70
-        pnlSearchButtons:
-            Controls: [btnSearch, pnlSearchFilters]
-            ControlsOrientation: horizontal
-            Dock: Top
-            Margin: 0
-        btnSearch: {Action=actSearch, AcceptButton=true}
-        pnlSearchFilters:
-            Controls: [pnlSupplierSearchFilter, pnlInvSearchFilter]
-            Width:600
-            Height: 40
-        pnlSupplierSearchFilter:
-            Dock: Top
-            Controls: [cmbSupplierCode]
-            Margin: 0
-        pnlInvSearchFilter:
-            Dock: Top
-            Margin: 0
-            Controls: [chkDueToday, chkDueFuture]
-            ControlsOrientation: horizontal
-        chkDueToday: {Label=Due &Today}
-            CheckBoxAttachedLabel: right
-        chkDueFuture:
-            Label: Due &Within
-            CheckBoxAttachedLabel: right
-            Controls: [nudNumberTimeUnits, cmbTimeUnit]
-            ControlsOrientation: horizontal
         tabSearchResult:
             Controls: [tpgSuppliers, tpgOutstandingInvoices]
             Dock: Fill
             Action:actTabChange
         tpgSuppliers:
-            Controls: [pnlSupplierOptions, grdSupplierResult]
+            Controls: [ucoSuppliers]
         tpgOutstandingInvoices:
-            Controls: [pnlInvoiceOptions, grdInvoiceResult]
-        pnlSupplierOptions:
-            ControlsOrientation: horizontal
-            Controls: [chkHideInactiveSuppliers, cmbSupplierCurrency]
-            Dock: Top
-            Height: 30
-            Margin: 0
-        grdSupplierResult: {Dock=Fill, ActionDoubleClick=actSupplierTransactions, SelectedRowActivates=cndSelectedSupplier}
+            Controls: [ucoOutstandingInvoices]
+        ucoSuppliers:
+            Type: Ict.Petra.Client.MFinance.Gui.AP.TUC_Suppliers
+            Dock: Fill
+        ucoOutstandingInvoices:
+            Type: Ict.Petra.Client.MFinance.Gui.AP.TUC_OutstandingInvoices
+            Dock: Fill
 
-        grdInvoiceResult: {Dock=Fill, ActionDoubleClick=actShowInvoice}
-        chkHideInactiveSuppliers: {Label=Hide &Inactive Suppliers, CheckBoxAttachedLabel=right,  OnChange=SetSupplierFilters}
-        cmbSupplierCurrency: {Label=C&urrency, List=CurrencyCodeList, OnChange=SetSupplierFilters, Width=200}
-        pnlInvoiceOptions:
-            Controls: [btnTagAllPostable, btnTagAllPayable, btnUntagAll, txtSumTagged, btnTagAllApprovable]
-            ControlsOrientation: horizontal
-            Dock: Top
-            Height: 30
-            Margin: 0
-        btnTagAllApprovable: {Label=Tag all Appro&vable, Visible=false}
-        btnTagAllPostable: {Label=Tag a&ll Postable}
-            Action: actTagAllPostable
-        btnTagAllPayable: {Label=Tag all Paya&ble}
-            Action: actTagAllPayable
-        btnUntagAll: {Label=&Untag all}
-            Action: actUntagAll
-        txtSumTagged: {Label=Sum of Tagged, ReadOnly=true}
-
-    Toolbar:
-        tbbNewSupplier: {Action=actNewSupplier}
-        tbbEditSupplier: {Action=actEditSupplier}
-        tbbSeparator: {Label=-}
-        tbbTransactions: {Action=actSupplierTransactions}
-        tbbSeparator: {Label=-}
-        tbbCreateInvoice: {Action=actCreateInvoice}
-        tbbCreateCreditNote: {Action=actCreateCreditNote}
-        tbbOpenTagged: {Action=actOpenTagged}
-        tbbPostTagged: {Action=actPostTagged}
-        tbbPayTagged: {Action=actPayTagged}
-        tbbReverseTagged: {Action=actReverseTagged}
+    #Toolbar:
+    #    tbbNewSupplier: {Action=actNewSupplier}
+    #    tbbEditSupplier: {Action=actEditSupplier}
+    #    tbbSeparator: {Label=-}
+    #    #tbbTransactions: {Action=actSupplierTransactions}
+    #    #tbbSeparator: {Label=-}
+    #    tbbCreateInvoice: {Action=actCreateInvoice}
+    #    tbbCreateCreditNote: {Action=actCreateCreditNote}
+    #    #tbbOpenTagged: {Action=actOpenTagged}
+    #    tbbApproveTagged: {Action=actApproveTagged}
+    #    tbbDeleteTagged: {Action=actDeleteTagged}
+    #    tbbPostTagged: {Action=actPostTagged}
+    #    tbbReverseTagged: {Action=actReverseTagged}
+    #    tbbPayTagged: {Action=actPayTagged}
     Menu:
         mniFile:
             mniReports: {Label=&Reports}
@@ -163,7 +151,16 @@ RootNode:
             mniSeparator: {Label=-}
             mniDefaults: {Label=AP &Defaults}
             mniSeparator: {Label=-}
+        mniEdit:
+            Label:&Edit
+            mniEditFilter: 
+#              Label:Filte&r...
+            mniEditFind:
+#              Label:&Find...
+            mniEditFindNext:
+            mniEditFindPrevious:
         mniSupplier:
+            Label:&Supplier
             mniNewSupplier: {Action=actNewSupplier}
             mniEditSupplier: {Action=actEditSupplier}
             mniSeparator: {Label=-}
@@ -171,9 +168,13 @@ RootNode:
             mniCreateInvoice: {Action=actCreateInvoice}
             mniCreateCreditNote: {Action=actCreateCreditNote}
         mniInvoice:
-            mniFind: {Action=actFindInvoice}
+            Label:&Invoice
+            mniOpenSelected: {Action=actOpenSelected}
             mniOpenTagged: {Action=actOpenTagged}
-            mniPostTagged: {Action=actPostTagged}
-            mniPayTagged: {Action=actPayTagged}
-            mniReverseTagged: {Action=actReverseTagged}
+            mniApproveTagged: {Action=actApproveTagged}
+            mniSeparator: {Label=-}
             mniDeleteTagged: {Action=actDeleteTagged}
+            mniPostTagged: {Action=actPostTagged}
+            mniSeparator: {Label=-}
+            mniReverseTagged: {Action=actReverseTagged}
+            mniPayTagged: {Action=actPayTagged}

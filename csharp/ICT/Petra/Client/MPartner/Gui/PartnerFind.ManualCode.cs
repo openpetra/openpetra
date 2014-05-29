@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MPartnerResourcestrings.StrCancelButtonHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
 
             mniFile.DropDownOpening += new System.EventHandler(MniFile_DropDownOpening);
             mniEdit.DropDownOpening += new System.EventHandler(MniEdit_DropDownOpening);
@@ -153,6 +153,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // FindByPartnerDetails tab is shown first
             FCurrentlySelectedTab = ucoFindByPartnerDetails;
+
+            // add event which will populate the bank combo boxes when 'Find by bank details' tab is shown for the first time
+            this.ucoFindByBankDetails.VisibleChanged += new EventHandler(TPartnerFindScreen_VisibleChanged);
         }
 
         void ucoFindByPartnerDetails_SearchOperationStateChange(TSearchOperationStateChangeEventArgs e)
@@ -177,8 +180,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.KeyCode == Keys.Enter)
             {
-                FCurrentlySelectedTab.BtnSearch_Click(sender, e);
-                e.Handled = true;
+                // make sure that the 'Enter' key has not been pressed to select a value from a combo boxes dropped down list
+                if (!ucoFindByPartnerDetails.PartnerFindCriteria.ComboboxDroppedDown()
+                    && !ucoFindByBankDetails.PartnerFindCriteria.ComboboxDroppedDown())
+                {
+                    FCurrentlySelectedTab.BtnSearch_Click(sender, e);
+                    e.Handled = true;
+                }
             }
             else
             {
@@ -743,6 +751,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void TPartnerFindScreen_VisibleChanged(System.Object sender, System.EventArgs e)
+        {
+            // if FindByBankDetails tab is selected
+            if (tpgFindBankDetails.Visible)
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                // Populate the combo boxes (if not done already)
+                if (ucoFindByBankDetails.PartnerFindCriteria.FBankDataset == null)
+                {
+                    // Do not load bank locations as this is much faster.
+                    // Downside is that 'Find Bank' dialog must then load bank data from scratch from the database. But this is ok.
+                    ucoFindByBankDetails.PartnerFindCriteria.FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(false);
+
+                    Thread NewThread = new Thread(ucoFindByBankDetails.PartnerFindCriteria.PopulateBankComboBoxes);
+                    NewThread.Start();
+                }
+
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
         // called when the selected tab is changed
         private void TabChanged(System.Object sender, System.EventArgs e)
         {
@@ -1134,9 +1164,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             this.Cursor = Cursors.WaitCursor;
-
-            // Restore Window Position and Size
-            // TODO TUserDefaults.NamedDefaults.GetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
 #if TODO
             // Set up Splitter distances
             ucoPartnerFindCriteria.RestoreSplitterSetting();
@@ -1345,7 +1372,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 MessageProcessed = true;
             }
-            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+            else if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                     || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
             {
                 bool FoundRow = false;
 
@@ -1456,6 +1484,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             out TLocationPK ALocationPK,
             Form AParentForm)
         {
+            AParentForm.Cursor = Cursors.WaitCursor;
+
             TPartnerFindScreen PartnerFindForm;
             DialogResult dlgResult;
 
@@ -1466,6 +1496,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PartnerFindForm = new TPartnerFindScreen(AParentForm);
             PartnerFindForm.SetParameters(ARestrictToPartnerClasses, false);
+
+            AParentForm.Cursor = Cursors.Default;
 
             dlgResult = PartnerFindForm.ShowDialog();
 
@@ -1503,6 +1535,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             out int ABankingDetailsKey,
             Form AParentForm)
         {
+            AParentForm.Cursor = Cursors.WaitCursor;
+
             TPartnerFindScreen PartnerFindForm;
             DialogResult dlgResult;
 
@@ -1513,6 +1547,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PartnerFindForm = new TPartnerFindScreen(AParentForm);
             PartnerFindForm.SetParameters(ARestrictToPartnerClasses, true);
+
+            AParentForm.Cursor = Cursors.Default;
 
             dlgResult = PartnerFindForm.ShowDialog();
 

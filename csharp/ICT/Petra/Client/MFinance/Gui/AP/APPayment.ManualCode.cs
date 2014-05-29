@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013
+// Copyright 2004-2014
 // This file is part of OpenPetra.org.
 //
 // OpenPetra.org is free software: you can redistribute it and/or modify
@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Conversion;
 using Ict.Common.Verification;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
@@ -39,6 +40,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
@@ -87,12 +89,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             TFinanceControls.InitialiseAccountList(ref cmbBankAccount, FMainDS.AApDocument[0].LedgerNumber, true, false, true, true, "");
 
-//          grdDetails.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber, 50);
-            grdDetails.AddTextColumn("Invoice No", FMainDS.AApDocumentPayment.ColumnDocumentCode, 80);
-            grdDetails.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
-//          grdDetails.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount, 80);
-            grdDetails.AddCurrencyColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
-//          grdDetails.AddTextColumn("Currency", FMainDS.AApPayment.ColumnCurrencyCode, 50);
+//          grdDocuments.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber, 50);
+            grdDocuments.AddTextColumn("Invoice No", FMainDS.AApDocumentPayment.ColumnDocumentCode, 180);
+            grdDocuments.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
+//          grdDocuments.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount, 80);
+            grdDocuments.AddCurrencyColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
+//          grdDocuments.AddTextColumn("Currency", FMainDS.AApPayment.ColumnCurrencyCode, 50);
+            grdDocuments.Columns[2].Width = 120;
+            grdDocuments.Columns.StretchToFit();
 
             grdPayments.AddTextColumn("Supplier", FMainDS.AApPayment.ColumnListLabel);
 
@@ -120,7 +124,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 cmbBankAccount.Enabled = false;
                 cmbPaymentType.Enabled = false;
 
-                grdDetails.Enabled = false;
+                grdDocuments.Enabled = false;
                 grdPayments.Enabled = false;
 
                 tbbMakePayment.Enabled = false;
@@ -231,13 +235,27 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return true;
         }
 
+        /// <summary>
+        /// If asked to remove a payment,
+        /// I need to modify the ApPayment to reflect the removed ApDocumentPayment row.
+        /// If there's nothing left to pay, I should remove the ApPayment row.
+        /// </summary>
         private void RemoveSelectedDocument(Object sender, EventArgs e)
         {
             if (FSelectedDocumentRow != null)
             {
+                FSelectedPaymentRow.Amount -= FSelectedDocumentRow.Amount;
+
                 FMainDS.AApDocumentPayment.Rows.Remove(FSelectedDocumentRow);
                 FSelectedDocumentRow = null;
                 FocusedRowChangedDetails(null, null);
+
+                if (FSelectedPaymentRow.Amount <= 0)
+                {
+                    FMainDS.AApPayment.Rows.Remove(FSelectedPaymentRow);
+                    FSelectedPaymentRow = null;
+                    FocusedRowChanged(null, null);
+                }
             }
         }
 
@@ -326,16 +344,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FMainDS.AApDocumentPayment.DefaultView.RowFilter = AccountsPayableTDSAApDocumentPaymentTable.GetPaymentNumberDBName() +
                                                                    " = " + FSelectedPaymentRow.PaymentNumber.ToString();
 
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApDocumentPayment.DefaultView);
-                grdDetails.Refresh();
-                grdDetails.Selection.SelectRow(1, true);
+                grdDocuments.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApDocumentPayment.DefaultView);
+                grdDocuments.Refresh();
+                grdDocuments.Selection.SelectRow(1, true);
                 FocusedRowChangedDetails(null, null);
             }
         }
 
         private void FocusedRowChangedDetails(System.Object sender, SourceGrid.RowEventArgs e)
         {
-            DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+            DataRowView[] SelectedGridRow = grdDocuments.SelectedDataRowsAsDataRowView;
 
             if (FSelectedDocumentRow != null)  // unload amount to pay into currently selected record
             {
@@ -345,10 +363,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedGridRow.Length == 0)
             {
                 FSelectedDocumentRow = null;
+                CalculateTotalPayment();
             }
             else
             {
-                FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
                 FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
                 rbtPayFullOutstandingAmount.Checked = FSelectedDocumentRow.PayFullInvoice;
                 rbtPayPartialAmount.Checked = !rbtPayFullOutstandingAmount.Checked;
@@ -443,11 +461,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DateTime PaymentDate = dateEffectiveDialog.SelectedDate;
             TVerificationResultCollection Verifications;
 
+            this.Cursor = Cursors.WaitCursor;
+
             if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
                     ref FMainDS,
                     PaymentDate,
                     out Verifications))
             {
+                this.Cursor = Cursors.Default;
                 string ErrorMessages = String.Empty;
 
                 foreach (TVerificationResult verif in Verifications)
@@ -461,19 +482,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
             else
             {
+                this.Cursor = Cursors.Default;
                 PrintPaymentReport(sender, e);
                 PrintRemittanceAdvice();
 
                 // TODO: show posting register of GL Batch?
 
                 // After the payments screen, The status of this document may have changed.
-
-                Form Opener = FPetraUtilsObject.GetCallerForm();
-
-                if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
-                {
-                    ((TFrmAPSupplierTransactions)Opener).Reload();
-                }
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
+                broadcastMessage.SetMessageDataAPTransaction(String.Empty);
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
 
                 Close();
             }
@@ -553,12 +571,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Find out if this payment was already reversed,
             // because if it was, perhaps the user doesn't really want to
             // reverse it again?
+            this.Cursor = Cursors.WaitCursor;
+
             if (TRemote.MFinance.AP.WebConnectors.WasThisPaymentReversed(ALedgerNumber, APaymentNumber))
             {
+                this.Cursor = Cursors.Default;
                 MessageBox.Show(Catalog.GetString("Cannot reverse Payment - there is already a matching reverse transaction."),
                     Catalog.GetString("Reverse Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            this.Cursor = Cursors.Default;
 
             //
             // Ask the user to confirm reversal of this payment
@@ -599,19 +622,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
             TVerificationResultCollection Verifications;
 
+            this.Cursor = Cursors.WaitCursor;
+
             if (TRemote.MFinance.AP.WebConnectors.ReversePayment(ALedgerNumber, APaymentNumber, PostingDate, out Verifications))
             {
+                this.Cursor = Cursors.Default;
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP payment has been reversed."), Catalog.GetString("Reverse Payment"));
-                Form Opener = FPetraUtilsObject.GetCallerForm();
-
-                if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
-                {
-                    ((TFrmAPSupplierTransactions)Opener).Reload();
-                }
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
+                broadcastMessage.SetMessageDataAPTransaction(String.Empty);
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
             else
             {
+                this.Cursor = Cursors.Default;
                 string ErrorMessages = String.Empty;
 
                 foreach (TVerificationResult verif in Verifications)

@@ -33,13 +33,13 @@ using System.Collections.Generic;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
     public partial class TFrmIncomeExpenseStmt
     {
         private Int32 FLedgerNumber;
-        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -54,7 +54,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
-                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
+
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
+                else if (FPetraUtilsObject.GetCallerForm() != null)
+                {
+                    MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
+                }
             }
         }
 
@@ -80,7 +88,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (DepthOption == "summary")
             {
-                ParamNestingDepth = 1;
+                ParamNestingDepth = 2;
             }
 
             if (DepthOption == "standard")
@@ -95,8 +103,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // The table contains Actual and Budget figures, both this period and YTD, also last year and budget last year.
             // It does not contain any variance (actual / budget) figures - these are calculated in the report.
 
-            DataTable ReportTable = TRemote.MFinance.Reporting.WebConnectors.IncomeExpenseTable(paramsDictionary);
-            FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("IncomeExpense", paramsDictionary);
+
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
 
             //
             // I need to get the name of the current ledger..
@@ -122,7 +137,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void RunOnceOnActivationManual()
         {
-            if (FFastReportsPlugin.LoadedOK)
+            if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
             {
                 this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // These tabs represent settings that are not supported
                 this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.

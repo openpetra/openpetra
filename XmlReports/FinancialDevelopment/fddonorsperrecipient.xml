@@ -84,7 +84,7 @@
 					AND motivation.a_receipt_l = TRUE
 <!--					AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#} -->
 					AND batch.a_ledger_number_i = {{param_ledger_number_i}}
-					AND batch.a_batch_status_c = "Posted"
+					AND batch.a_batch_status_c = 'Posted'
 					AND detail.p_recipient_key_n = {{param_recipient_key_n}}
 					</value></queryDetail>
 				</query>
@@ -133,7 +133,7 @@
 					AND motivation.a_receipt_l = TRUE
 <!--					AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#} -->
 					AND batch.a_ledger_number_i = {{param_ledger_number_i}}
-					AND batch.a_batch_status_c = "Posted"
+					AND batch.a_batch_status_c = 'Posted'
 					AND detail.p_recipient_key_n = {{param_recipient_key_n}}
 					AND gift.p_donor_key_n = {{DonorKey}}
 					AND NOT (detail.a_modified_detail_l = 1 OR detail.a_gift_amount_n &lt; 0) <!-- skip reversed gifts -->
@@ -174,7 +174,7 @@
 					AND motivation.a_receipt_l = TRUE
 <!--					AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#} -->
 					AND batch.a_ledger_number_i = {{param_ledger_number_i}}
-					AND batch.a_batch_status_c = "Posted"
+					AND batch.a_batch_status_c = 'Posted'
 					AND NOT (detail.p_recipient_key_n = {{param_recipient_key_n}})
 					AND NOT (detail.a_modified_detail_l = 1 OR detail.a_gift_amount_n &lt; 0) <!-- skip reversed gifts -->
 					AND gift.p_donor_key_n = {{DonorKey}}

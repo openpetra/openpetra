@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Load all analysis attribute values
             if (FCacheDS == null)
             {
-                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
+                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, false);
             }
 
             ShowData();
@@ -619,9 +619,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Reset row filter
-            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Empty;
-            FMainDS.ARecurringTransaction.DefaultView.RowFilter = string.Empty;
-            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
+            //FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Empty;
+            //FMainDS.ARecurringTransaction.DefaultView.RowFilter = string.Empty;
+            //FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
             bool inactiveCodefound = false;
 
@@ -802,10 +802,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return retVal;
             }
 
-            string originalRowFilter = FCacheDS.AAnalysisAttribute.DefaultView.RowFilter;
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = string.Empty;
+            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
 
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
                 AAnalysisAttributeTable.GetLedgerNumberDBName(),
                 FLedgerNumber,
                 AAnalysisAttributeTable.GetAccountCodeDBName(),
@@ -814,9 +813,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 AAnalysisCode,
                 AAnalysisAttributeTable.GetActiveDBName());
 
-            retVal = (FCacheDS.AAnalysisAttribute.DefaultView.Count > 0);
-
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = originalRowFilter;
+            retVal = (dv.Count > 0);
 
             return retVal;
         }
@@ -830,19 +827,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return retVal;
             }
 
-            string originalRowFilter = FCacheDS.AFreeformAnalysis.DefaultView.RowFilter;
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
+            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
 
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                 AAnalysisCode,
                 AFreeformAnalysisTable.GetAnalysisValueDBName(),
                 AAnalysisAttributeValue,
                 AFreeformAnalysisTable.GetActiveDBName());
 
-            retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
-
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
+            retVal = (dv.Count > 0);
 
             return retVal;
         }

@@ -48,19 +48,40 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// manual methods for the generated window
     public partial class TFrmMergePartnersDialog
     {
-        private long FromPartnerKey = 0;
-        private long ToPartnerKey = 0;
-        private TPartnerClass FromPartnerClass;
-        private TPartnerClass ToPartnerClass;
+        private long FFromPartnerKey = 0;
+        private long FToPartnerKey = 0;
+        private TPartnerClass FFromPartnerClass;
+        private TPartnerClass FToPartnerClass;
+        private static long[] FSiteKeys;
+        private static int[] FLocationKeys;
+        private static int FMainBankingDetailsKey;
 
-        /// Selected Addresses' SiteKeys (set from webconnector)
-        public static long[] FSiteKeys;
+        /// Selected Addresses' SiteKeys
+        public static long[] SiteKeys
+        {
+            set
+            {
+                FSiteKeys = value;
+            }
+        }
 
-        /// Selected Addresses' LocationKeys (set from webconnector)
-        public static int[] FLocationKeys;
+        /// Selected Addresses' LocationKeys
+        public static int[] LocationKeys
+        {
+            set
+            {
+                FLocationKeys = value;
+            }
+        }
 
-        /// Selected Main Bank Account's BankingDetailsKey (set from webconnector)
-        public static int FMainBankingDetailsKey;
+        /// Selected Main Bank Account's BankingDetailsKey
+        public static int MainBankingDetailsKey
+        {
+            set
+            {
+                FMainBankingDetailsKey = value;
+            }
+        }
 
         private void InitializeManualCode()
         {
@@ -73,14 +94,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             btnOK.Enabled = false;
         }
 
+        // partner to merge from is changed in txtMergeFrom
         private void MergeFromChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)
         {
             if (AValidSelection)
             {
-                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(APartnerKey, out APartnerShortName, out FromPartnerClass);
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(APartnerKey, out APartnerShortName, out FFromPartnerClass);
 
-                string AllowedPartnerClasses = FromPartnerClass.ToString();
-                AllowedDifferentPartnerClasses(ref AllowedPartnerClasses, FromPartnerClass);
+                string AllowedPartnerClasses = FFromPartnerClass.ToString();
+                AllowedDifferentPartnerClasses(ref AllowedPartnerClasses, FFromPartnerClass);
 
                 // restrict the choice of partner class for txtMergeTo
                 txtMergeTo.PartnerClass = AllowedPartnerClasses;
@@ -96,14 +118,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        // partner to merge to is changed in txtMergeTo
         private void MergeToChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)
         {
             if (AValidSelection)
             {
-                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(APartnerKey, out APartnerShortName, out ToPartnerClass);
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(APartnerKey, out APartnerShortName, out FToPartnerClass);
 
-                string AllowedPartnerClasses = ToPartnerClass.ToString();
-                AllowedDifferentPartnerClasses(ref AllowedPartnerClasses, ToPartnerClass);
+                string AllowedPartnerClasses = FToPartnerClass.ToString();
+                AllowedDifferentPartnerClasses(ref AllowedPartnerClasses, FToPartnerClass);
 
                 // restrict the choice of partner class for txtMergeTo
                 txtMergeFrom.PartnerClass = AllowedPartnerClasses;
@@ -177,10 +200,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtMergeTo.PartnerClass = "";
         }
 
+        // starts the merge process
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            FromPartnerKey = Convert.ToInt64(txtMergeFrom.Text);
-            ToPartnerKey = Convert.ToInt64(txtMergeTo.Text);
+            FFromPartnerKey = Convert.ToInt64(txtMergeFrom.Text);
+            FToPartnerKey = Convert.ToInt64(txtMergeTo.Text);
 
             if (CheckPartnersCanBeMerged()
                 && (MessageBox.Show(Catalog.GetString("WARNING: A Partner Merge operation cannot be undone and the From-Partner will be no longer " +
@@ -189,7 +213,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 bool[] Categories = new bool[20];
 
-                for (int i = 0; i < 20; i++)
+                for (int i = 1; i < 20; i++)
                 {
                     Categories[i] = true;
                 }
@@ -213,9 +237,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     return;
                 }
 
+                //
+                if ((((FFromPartnerClass == TPartnerClass.FAMILY) && (FToPartnerClass == TPartnerClass.FAMILY))
+                     || (FFromPartnerClass == TPartnerClass.PERSON))
+                    && (GiftDestinationToMerge(out Categories[0]) == false))
+                {
+                    MessageBox.Show(Catalog.GetString("Merge cancelled."));
+                    return;
+                }
+
                 Thread t =
-                    new Thread(() => MergeTwoPartners(FromPartnerKey, ToPartnerKey, FromPartnerClass, ToPartnerClass, Categories,
-                            ref DifferentFamilies));
+                    new Thread(() => MergeTwoPartners(Categories, ref DifferentFamilies));
 
                 using (TProgressDialog dialog = new TProgressDialog(t))
                 {
@@ -240,8 +272,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
-                MessageBox.Show(String.Format(Catalog.GetString("Merge of Partner {0} into {1} complete."), FromPartnerKey, ToPartnerKey) +
-                    "\n\n" + Catalog.GetString("If necessary edit the merged Partner to correct any information that may not have been " +
+                MessageBox.Show(String.Format(Catalog.GetString("Merge of Partner {0} into {1} complete."), FFromPartnerKey, FToPartnerKey) +
+                    "\n\n" + Catalog.GetString("If necessary, edit the merged Partner to correct any information that may not have been " +
                         "merged and correct information that may have been overwritten.") + "\n\n" +
                     Catalog.GetString("Tip: You can use the 'Work with Last Partner' command in the Partner module and the " +
                         "'Work with Last Person' command in the Personnel module to view and edit the merged Partner."),
@@ -264,7 +296,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 try
                 {
                     string DataType = "ADDRESS";
-                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FromPartnerKey, ToPartnerKey, DataType, MainWindow);
+                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FFromPartnerKey, FToPartnerKey, DataType, MainWindow);
                 }
                 catch (Exception exp)
                 {
@@ -281,7 +313,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Form MainWindow = FPetraUtilsObject.GetCallerForm();
 
             // run a check to determine if a new 'Main' account needs selected. If not then just return.
-            if (TRemote.MPartner.Partner.WebConnectors.NeedMainBankAccount(FromPartnerKey, ToPartnerKey) == false)
+            if (TRemote.MPartner.Partner.WebConnectors.NeedMainBankAccount(FFromPartnerKey, FToPartnerKey) == false)
             {
                 return true;
             }
@@ -293,7 +325,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 try
                 {
                     string DataType = "BANKACCOUNT";
-                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FromPartnerKey, ToPartnerKey, DataType, MainWindow);
+                    return TCommonScreensForwarding.OpenGetMergeDataDialog.Invoke(FFromPartnerKey, FToPartnerKey, DataType, MainWindow);
                 }
                 catch (Exception exp)
                 {
@@ -304,13 +336,69 @@ namespace Ict.Petra.Client.MPartner.Gui
             return false;
         }
 
-        private static bool WebConnectorResult = true;
-
-        private static void MergeTwoPartners(long AFromPartnerKey, long AToPartnerKey,
-            TPartnerClass AFromPartnerClass, TPartnerClass AToPartnerClass, bool[] ACategories, ref bool ADifferentFamilies)
+        private bool GiftDestinationToMerge(out bool AMergeGiftDestination)
         {
-            WebConnectorResult = TRemote.MPartner.Partner.WebConnectors.MergeTwoPartners(AFromPartnerKey, AToPartnerKey, AFromPartnerClass,
-                AToPartnerClass, FSiteKeys, FLocationKeys, FMainBankingDetailsKey, ACategories, ref ADifferentFamilies);
+            bool FromGiftDestinationNeedsEnded;
+            bool ToGiftDestinationNeedsEnded;
+            string Message = "";
+
+            AMergeGiftDestination = false;
+
+            // if no active Gift Destination then return true
+            if (TRemote.MPartner.Partner.WebConnectors.ActiveGiftDestination(FFromPartnerKey, FToPartnerKey, FFromPartnerClass,
+                    out FromGiftDestinationNeedsEnded, out ToGiftDestinationNeedsEnded) == false)
+            {
+                return true;
+            }
+
+            // ask permission to move Gift Destination
+            if (FFromPartnerClass == TPartnerClass.PERSON)
+            {
+                Message = Catalog.GetString("A currently active Gift Destination exists for the 'From' Partner. " +
+                    "Would you like to take this record over to the 'To' Partner?");
+            }
+            else if (FFromPartnerClass == TPartnerClass.FAMILY)
+            {
+                Message = Catalog.GetString("A currently active Gift Destination exists for the Family of the 'From' Partner. " +
+                    "Would you like to take this record over to the Family of the 'To' Partner?");
+            }
+
+            // ask permission to modify expiry dates to allow move to happen
+            if (FromGiftDestinationNeedsEnded)
+            {
+                Message += "\n\n" + Catalog.GetString(
+                    "The Expiry Date of this record will need to be brought forward so it can fit in with a future Gift Destination for the 'To' Partner.");
+            }
+
+            if (ToGiftDestinationNeedsEnded)
+            {
+                Message += "\n\n" + Catalog.GetString(
+                    "The 'To' Partner also has a currently active Gift Destination. This will need to be ended to allow this record to be moved over.");
+            }
+
+            DialogResult Result = MessageBox.Show(Message, Catalog.GetString(
+                    "Gift Destination"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Information);
+
+            if (Result == DialogResult.Yes)
+            {
+                // permission to merge Gift Destination
+                AMergeGiftDestination = true;
+            }
+            else if (Result == DialogResult.Cancel)
+            {
+                // cancel the entire merge
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool WebConnectorResult = true;
+
+        private void MergeTwoPartners(bool[] ACategories, ref bool ADifferentFamilies)
+        {
+            WebConnectorResult = TRemote.MPartner.Partner.WebConnectors.MergeTwoPartners(FFromPartnerKey, FToPartnerKey, FFromPartnerClass,
+                FToPartnerClass, FSiteKeys, FLocationKeys, FMainBankingDetailsKey, ACategories, ref ADifferentFamilies);
         }
 
         // check if the two partners can be merged and display any error/warning messages
@@ -319,8 +407,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResult;
             bool CanMerge;
 
-            CanMerge = TRemote.MPartner.Partner.WebConnectors.CheckPartnersCanBeMerged(FromPartnerKey, ToPartnerKey, FromPartnerClass, ToPartnerClass,
-                cmbReasonForMerging.Text, out VerificationResult);
+            CanMerge = TRemote.MPartner.Partner.WebConnectors.CheckPartnersCanBeMerged(FFromPartnerKey,
+                FToPartnerKey,
+                FFromPartnerClass,
+                FToPartnerClass,
+                cmbReasonForMerging.Text,
+                out VerificationResult);
 
             // No critical errors. Display any warning messages.
             if (CanMerge)

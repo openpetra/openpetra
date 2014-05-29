@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,13 +31,13 @@ using System.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
     public partial class TFrmBalanceSheetStandard
     {
         private Int32 FLedgerNumber;
-        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -51,8 +51,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
-                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
+
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
+                else if (FPetraUtilsObject.GetCallerForm() != null)
+                {
+                    MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
+                }
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            {
+                this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // These tabs represent settings that are not supported
+                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.
+            }
+
+            uco_GeneralSettings.ShowOnlyEndPeriod();
+            uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
         }
 
         //
@@ -72,7 +92,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            Int32 ParamNestingDepth = 99;
+            Int32 ParamNestingDepth = 3;
             String DepthOption = paramsDictionary["param_depth"].ToString();
 
             if (DepthOption == "summary")
@@ -80,19 +100,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ParamNestingDepth = 1;
             }
 
-            if (DepthOption == "standard")
-            {
-                ParamNestingDepth = 3;
-            }
-
             paramsDictionary.Add("param_nesting_depth", new TVariant(ParamNestingDepth));
+            String RootCostCentre = "[" + FLedgerNumber + "]";
+            paramsDictionary.Add("param_cost_centre_code", new TVariant(RootCostCentre));
 
             //
             // The table contains extra rows for "headers" and "footers", facilitating the hierarchical printout.
-            // It does not contain any variance (this year / last year) figures - these are calculated in the report.
 
-            DataTable ReportTable = TRemote.MFinance.Reporting.WebConnectors.BalanceSheetTable(paramsDictionary);
-            FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("BalanceSheet", paramsDictionary);
+
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "BalanceSheet");
 
             //
             // I need to get the name of the current ledger..
