@@ -2,7 +2,7 @@
     BaseYaml: FinancialDevelopmentReportingForm.yaml
     FormType: report
     FormTitle: Total Gifts Per Donor
-    WindowWidth: 650
+    WindowWidth: 640
     WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
@@ -37,7 +37,7 @@
         uco_Selection:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Dock: Top
-            Height: 240
+            Height: 270
         grpLimitResults:
             Label: Limit the results to one country
             Controls: [chkOnlyFromCountry]

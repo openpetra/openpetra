@@ -6,7 +6,7 @@ RootNode:
     ClassName: TPartnerFindScreen
     Namespace: Ict.Petra.Client.MPartner.Gui
     WindowWidth: 740
-    WindowHeight: 570
+    WindowHeight: 670
     Events:
         Load: {class=System.EventHandler, method=TPartnerFindScreen_Load}
         Closed: {class=System.EventHandler, method=TPartnerFindScreen_Closed}

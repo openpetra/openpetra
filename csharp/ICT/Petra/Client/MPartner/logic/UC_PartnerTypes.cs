@@ -470,8 +470,9 @@ namespace Ict.Petra.Client.MPartner
         /// </summary>
         public void FillTempPartnerTypesTable()
         {
-            DataTable PartnerTypeTable;
-            DataView PartnerTypeTableDV;
+            DataTable SelectedPartnerTypeTable;
+            DataView SelectedPartnerTypeTableDV;
+            DataView UnselectedPartnerTypeTableDV;
             DataRow TheNewRow;
             Int16 RowCounter;
             String TypeDescription;
@@ -482,14 +483,20 @@ namespace Ict.Petra.Client.MPartner
             FPartnerTypesGridTable.Rows.Clear();
             FPartnerTypesGridTable.AcceptChanges();
 
-            PartnerTypeTable = FMainDS.PPartnerType;
-            PartnerTypeTableDV = PartnerTypeTable.DefaultView;
-            PartnerTypeTableDV.Sort = PTypeTable.GetTypeCodeDBName();
+            // Sort data
+            SelectedPartnerTypeTable = FMainDS.PPartnerType;
+            SelectedPartnerTypeTableDV = SelectedPartnerTypeTable.DefaultView;
+            SelectedPartnerTypeTableDV.Sort = PTypeTable.GetTypeCodeDBName();
 
-            for (RowCounter = 0; RowCounter <= PartnerTypeTableDV.Count - 1; RowCounter += 1)
+            UnselectedPartnerTypeTableDV = FDataCache_PartnerTypeListTable.DefaultView;
+            UnselectedPartnerTypeTableDV.Sort = PTypeTable.GetTypeCodeDBName();
+
+            // first add Special Types which are already selected for partner
+            for (RowCounter = 0; RowCounter <= SelectedPartnerTypeTableDV.Count - 1; RowCounter += 1)
             {
                 #region Determine Type Description
-                TypeDescriptionInCachePosition = FDataCache_PartnerTypeListDV.Find(PartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()]);
+                TypeDescriptionInCachePosition =
+                    FDataCache_PartnerTypeListDV.Find(SelectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()]);
 
                 if (TypeDescriptionInCachePosition != -1)
                 {
@@ -510,33 +517,30 @@ namespace Ict.Petra.Client.MPartner
 
                 TheNewRow = FPartnerTypesGridTable.NewRow();
                 TheNewRow["Checked"] = (System.Object)true;
-                TheNewRow["TypeCode"] = PartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()];
+                TheNewRow["TypeCode"] = SelectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()];
                 TheNewRow["TypeDescription"] = TypeDescription;
                 FPartnerTypesGridTable.Rows.Add(TheNewRow);
             }
 
-            foreach (DataRow PartnerTypesRow in FDataCache_PartnerTypeListTable.Rows)
+            // second add the rest of the Special Types in db
+            for (RowCounter = 0; RowCounter <= UnselectedPartnerTypeTableDV.Count - 1; RowCounter += 1)
             {
-                if (PartnerTypeTable.Rows.Find(new Object[] { FMainDS.PPartner[0].PartnerKey,
-                                                              PartnerTypesRow[PTypeTable.GetTypeCodeDBName()].ToString() }) == null)
+                #region Determine Type Description
+                TypeDescription = UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeDescriptionDBName()].ToString();
+
+                // If this Type is inactive, show it.
+                if (!Convert.ToBoolean(UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetValidTypeDBName()]))
                 {
-                    #region Determine Type Description
-                    TypeDescription = PartnerTypesRow[PTypeTable.GetTypeDescriptionDBName()].ToString();
-
-                    // If this Type is inactive, show it.
-                    if (!Convert.ToBoolean(PartnerTypesRow[PTypeTable.GetValidTypeDBName()]))
-                    {
-                        TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
-                    }
-
-                    #endregion
-
-                    TheNewRow = FPartnerTypesGridTable.NewRow();
-                    TheNewRow["Checked"] = (System.Object)false;
-                    TheNewRow["TypeCode"] = PartnerTypesRow[PTypeTable.GetTypeCodeDBName()].ToString();
-                    TheNewRow["TypeDescription"] = TypeDescription;
-                    FPartnerTypesGridTable.Rows.Add(TheNewRow);
+                    TypeDescription = TypeDescription + MCommonResourcestrings.StrGenericInactiveCode;
                 }
+
+                #endregion
+
+                TheNewRow = FPartnerTypesGridTable.NewRow();
+                TheNewRow["Checked"] = (System.Object)false;
+                TheNewRow["TypeCode"] = UnselectedPartnerTypeTableDV[RowCounter][PTypeTable.GetTypeCodeDBName()];
+                TheNewRow["TypeDescription"] = TypeDescription;
+                FPartnerTypesGridTable.Rows.Add(TheNewRow);
             }
         }
 

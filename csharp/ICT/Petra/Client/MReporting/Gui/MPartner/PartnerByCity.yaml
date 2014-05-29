@@ -36,9 +36,9 @@
         Para2a:
             Name: Partner Name
             Parameter: 3.0
-        Para2:
-            Name: Short Name
-            Parameter: 3.0
+        #Para2:
+         #   Name: Short Name
+         #   Parameter: 3.0
         Para3:
             Name: Partner Key
             Parameter: 2.0

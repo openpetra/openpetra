@@ -47,6 +47,7 @@ using System.Collections.Specialized;
 using System.Data.Odbc;
 using System.Data;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 
 namespace Ict.Petra.Server.MReporting.MPartner
@@ -118,7 +119,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             {
                 value =
                     new TVariant(AddressMeetsPostCodeCriteriaOrEmpty(ops[1].ToBool(), ops[2].ToString(), ops[3].ToString(), ops[4].ToString(),
-                            ops[5].ToString(), ops[6].ToString()));
+                            ops[5].ToString()));
                 return true;
             }
 
@@ -604,17 +605,11 @@ namespace Ict.Petra.Server.MReporting.MPartner
             String ARadioSelection,
             String APostalRegion,
             String APostCodeFrom,
-            String APostCodeTo,
-            String ACounty)
+            String APostCodeTo)
         {
             bool ReturnValue = false;
             Boolean NewTransaction;
             String postalCode;
-
-            if (ARadioSelection != "DonorsCounty")
-            {
-                ACounty = "";
-            }
 
             if (ARadioSelection != "DonorsPostalRegion")
             {
@@ -627,12 +622,18 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 APostCodeTo = "";
             }
 
+            if ((APostalRegion == "") && (APostCodeFrom == "") && (APostCodeTo == ""))
+            {
+                return true;
+            }
+
             if (!ABestAddressWasFound)
             {
                 // only return true if the postcode parameters and county parameters are empty
-                return (APostalRegion.Length == 0) && (APostCodeFrom.Length == 0) && (APostCodeTo.Length == 0) && (ACounty.Length == 0);
+                return (APostalRegion.Length == 0) && (APostCodeFrom.Length == 0) && (APostCodeTo.Length == 0);
             }
 
+            // TODO
             if (APostalRegion.Length > 0)
             {
                 postalCode = situation.GetParameters().Get("PostalCode").ToString();
@@ -660,21 +661,284 @@ namespace Ict.Petra.Server.MReporting.MPartner
             {
                 postalCode = situation.GetParameters().Get("PostalCode").ToString();
 
-                if ((String.CompareOrdinal(APostCodeFrom.ToLower(),
-                         postalCode.ToLower()) <= 0) && (String.CompareOrdinal(APostCodeTo.ToLower(), postalCode.ToLower()) >= 0))
-                {
-                    ReturnValue = true;
-                }
-            }
-            else if (ACounty.Length > 0)
-            {
-                if (ACounty.ToLower() == situation.GetParameters().Get("County").ToString().ToLower())
+                if ((postalCode != "") && (ComparePostcodes(APostCodeFrom.ToLower(),
+                                               postalCode.ToLower()) <= 0) && (ComparePostcodes(APostCodeTo.ToLower(), postalCode.ToLower()) >= 0))
                 {
                     ReturnValue = true;
                 }
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Compares two postcodes (universally) and determines which is greater.
+        /// </summary>
+        /// <param name="APostcodeA"></param>
+        /// <param name="APostcodeB"></param>
+        /// <returns>-1 if APostcodeB is greater, 0 if equal, 1 if APostcodeA is greater</returns>
+        private int ComparePostcodes(string APostcodeA, string APostcodeB)
+        {
+            int ReturnValue = 0;
+
+            //
+            // if postcode only contains numbers
+            //
+            int PostcodeLettersA = Regex.Matches(APostcodeA, @"[a-zA-Z]").Count;
+            int PostcodeLettersB = Regex.Matches(APostcodeB, @"[a-zA-Z]").Count;
+
+            if ((PostcodeLettersA == 0) && (PostcodeLettersB == 0))
+            {
+                Int64 PostcodeNumberA = Convert.ToInt64(APostcodeA.Replace(" ", "").Replace("-", ""));
+                Int64 PostcodeNumberB = Convert.ToInt64(APostcodeB.Replace(" ", "").Replace("-", ""));
+
+                return PostcodeNumberA.CompareTo(PostcodeNumberB);
+            }
+
+            //
+            // if postcode contains letters as well
+            //
+
+            // if postcode contains a space or a hyphen then use recursion to compare both halves
+            int SpaceIndexA = APostcodeA.IndexOf(' ');
+            int SpaceIndexB = APostcodeB.IndexOf(' ');
+            int HyphenIndexA = APostcodeA.IndexOf('-');
+            int HyphenIndexB = APostcodeB.IndexOf('-');
+
+            if ((SpaceIndexA != -1) || (SpaceIndexB != -1))
+            {
+                if (SpaceIndexA == -1)
+                {
+                    SpaceIndexA = APostcodeA.Length;
+                }
+
+                if (SpaceIndexB == -1)
+                {
+                    SpaceIndexB = APostcodeB.Length;
+                }
+
+                int CompareSubstring = ComparePostcodes(APostcodeA.Substring(0, SpaceIndexA), APostcodeB.Substring(0, SpaceIndexB));
+
+                if (CompareSubstring == 0)
+                {
+                    if (SpaceIndexA + 1 >= APostcodeA.Length)
+                    {
+                        return -1;
+                    }
+                    else if (SpaceIndexB + 1 >= APostcodeB.Length)
+                    {
+                        return 1;
+                    }
+
+                    return ComparePostcodes(APostcodeA.Substring(SpaceIndexA + 1), APostcodeB.Substring(SpaceIndexB + 1));
+                }
+                else
+                {
+                    return CompareSubstring;
+                }
+            }
+
+            if ((HyphenIndexA != -1) || (HyphenIndexB != -1))
+            {
+                if (HyphenIndexA == -1)
+                {
+                    HyphenIndexA = APostcodeA.Length;
+                }
+
+                if (HyphenIndexB == -1)
+                {
+                    HyphenIndexB = APostcodeB.Length;
+                }
+
+                int CompareSubstring = ComparePostcodes(APostcodeA.Substring(0, HyphenIndexA), APostcodeB.Substring(0, HyphenIndexB));
+
+                if (CompareSubstring == 0)
+                {
+                    if (HyphenIndexA + 1 >= APostcodeA.Length)
+                    {
+                        return -1;
+                    }
+                    else if (HyphenIndexB + 1 >= APostcodeB.Length)
+                    {
+                        return 1;
+                    }
+
+                    return ComparePostcodes(APostcodeA.Substring(HyphenIndexA + 1), APostcodeB.Substring(HyphenIndexB + 1));
+                }
+                else
+                {
+                    return CompareSubstring;
+                }
+            }
+
+            // change postcodes to uppercase
+            APostcodeA = APostcodeA.ToUpper();
+            APostcodeB = APostcodeB.ToUpper();
+
+            while (true)
+            {
+                if ((APostcodeA.Length == 0) && (APostcodeB.Length == 0))
+                {
+                    return 0;
+                }
+                else if (APostcodeA.Length == 0)
+                {
+                    return -1;
+                }
+                else if (APostcodeB.Length == 0)
+                {
+                    return 1;
+                }
+
+                int NumberIndexA = APostcodeA.IndexOfAny("0123456789".ToCharArray());
+                int NumberIndexB = APostcodeB.IndexOfAny("0123456789".ToCharArray());
+                int NumberLengthA = 0;
+                int NumberLengthB = 0;
+                int LetterIndexA = APostcodeA.IndexOfAny("ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray());
+                int LetterIndexB = APostcodeB.IndexOfAny("ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray());
+                int LetterLengthA = 0;
+                int LetterLengthB = 0;
+
+                // if one postcode starts with a number but the other starts with a letter
+                if ((NumberIndexA == 0) && (NumberIndexB != 0))
+                {
+                    return -1;
+                }
+                else if ((NumberIndexA != 0) && (NumberIndexB == 0))
+                {
+                    return 1;
+                }
+
+                // if both postcodes begin with a number
+                if ((NumberIndexA == 0) && (NumberIndexB == 0))
+                {
+                    // find character indexs and lengths
+                    if (LetterIndexA == -1)
+                    {
+                        NumberLengthA = APostcodeA.Length;
+                    }
+                    else
+                    {
+                        NumberLengthA = LetterIndexA;
+                    }
+
+                    if (LetterIndexB == -1)
+                    {
+                        NumberLengthB = APostcodeA.Length;
+                    }
+                    else
+                    {
+                        NumberLengthB = LetterIndexB;
+                    }
+
+                    // compare the beginning number
+                    ReturnValue =
+                        Convert.ToInt64(APostcodeA.Substring(0, NumberLengthA)).CompareTo(Convert.ToInt64(APostcodeB.Substring(0, NumberLengthB)));
+
+                    if (ReturnValue != 0)
+                    {
+                        return ReturnValue;
+                    }
+
+                    // if numbers are equal...
+                    for (int i = LetterIndexA; i < APostcodeA.Length; i++)
+                    {
+                        if (char.IsNumber(APostcodeA[i]))
+                        {
+                            break;
+                        }
+
+                        LetterLengthA++;
+                    }
+
+                    for (int i = LetterIndexB; i < APostcodeB.Length; i++)
+                    {
+                        if (char.IsNumber(APostcodeB[i]))
+                        {
+                            break;
+                        }
+
+                        LetterLengthB++;
+                    }
+
+                    // compare letters
+                    ReturnValue = APostcodeA.Substring(LetterIndexA, LetterLengthA).CompareTo(APostcodeB.Substring(LetterIndexB, LetterLengthB));
+
+                    if (ReturnValue != 0)
+                    {
+                        return ReturnValue;
+                    }
+
+                    // if letters are equal...
+                    APostcodeA = APostcodeA.Substring(NumberLengthA + LetterLengthA);
+                    APostcodeB = APostcodeB.Substring(NumberLengthB + LetterLengthB);
+                }
+                // if bothe postcodes start with a letter
+                else if ((LetterIndexA == 0) && (LetterIndexB == 0))
+                {
+                    // find character indexs and lengths
+                    if (NumberIndexA == -1)
+                    {
+                        LetterLengthA = APostcodeA.Length;
+                    }
+                    else
+                    {
+                        LetterLengthA = NumberIndexA;
+                    }
+
+                    if (NumberIndexB == -1)
+                    {
+                        LetterLengthB = APostcodeB.Length;
+                    }
+                    else
+                    {
+                        LetterLengthB = NumberIndexB;
+                    }
+
+                    // compare the beginning letters
+                    ReturnValue = APostcodeA.Substring(0, LetterLengthA).CompareTo(APostcodeB.Substring(0, LetterLengthB));
+
+                    if (ReturnValue != 0)
+                    {
+                        return ReturnValue;
+                    }
+
+                    // if letters are equal...
+                    for (int i = NumberIndexA; i < APostcodeA.Length; i++)
+                    {
+                        if (!char.IsNumber(APostcodeA[i]))
+                        {
+                            break;
+                        }
+
+                        NumberLengthA++;
+                    }
+
+                    for (int i = NumberIndexB; i < APostcodeB.Length; i++)
+                    {
+                        if (!char.IsNumber(APostcodeB[i]))
+                        {
+                            break;
+                        }
+
+                        NumberLengthB++;
+                    }
+
+                    // compare number
+                    ReturnValue =
+                        Convert.ToInt64(APostcodeA.Substring(NumberIndexA,
+                                NumberLengthA)).CompareTo(Convert.ToInt64(APostcodeB.Substring(NumberIndexB, NumberLengthB)));
+
+                    if (ReturnValue != 0)
+                    {
+                        return ReturnValue;
+                    }
+
+                    // if numbers are equal...
+                    APostcodeA = APostcodeA.Substring(NumberLengthA + LetterLengthA);
+                    APostcodeB = APostcodeB.Substring(NumberLengthB + LetterLengthB);
+                }
+            }
         }
 
         private String GetPartnerShortName(Int64 APartnerKey)
@@ -710,7 +974,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             foreach (PPartnerGiftDestinationRow Row in ResultTable.Rows)
             {
-                if (Row.Active)
+                if (Row.DateEffective != Row.DateExpires)
                 {
                     FieldName = GetPartnerShortName(Row.FieldKey);
                     break;

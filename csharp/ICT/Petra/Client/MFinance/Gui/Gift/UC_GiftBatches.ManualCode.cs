@@ -1230,49 +1230,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean batchIsEmpty = true;
             int currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
 
-            this.Cursor = Cursors.WaitCursor;
-
-            ((TFrmGiftBatch)ParentForm).LoadTransactions(FLedgerNumber,
-                currentBatchNo,
-                FPreviouslySelectedDetailRow.BatchStatus);
-
-            if (FMainDS.AGift != null)
-            {
-                for (int i = 0; i < FMainDS.AGift.Count; i++)
-                {
-                    AGiftRow giftRow = (AGiftRow)FMainDS.AGift[i];
-                }
-
-                DataView giftView = new DataView(FMainDS.AGift);
-                giftView.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    AGiftTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    AGiftTable.GetBatchNumberDBName(),
-                    currentBatchNo);
-                batchIsEmpty = (giftView.Count == 0);
-            }
-
-            if (batchIsEmpty)  // there are no gifts in this batch!
-            {
-                this.Cursor = Cursors.Default;
-                MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return;
-            }
-
             TVerificationResultCollection Verifications;
 
-            // save first, then post
-            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                ((TFrmGiftBatch)ParentForm).LoadTransactions(FLedgerNumber,
+                    currentBatchNo,
+                    FPreviouslySelectedDetailRow.BatchStatus);
+
+                if (FMainDS.AGift != null)
+                {
+                    for (int i = 0; i < FMainDS.AGift.Count; i++)
+                    {
+                        AGiftRow giftRow = (AGiftRow)FMainDS.AGift[i];
+                    }
+
+                    DataView giftView = new DataView(FMainDS.AGift);
+                    giftView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                        AGiftTable.GetLedgerNumberDBName(),
+                        FLedgerNumber,
+                        AGiftTable.GetBatchNumberDBName(),
+                        currentBatchNo);
+                    batchIsEmpty = (giftView.Count == 0);
+                }
+
+                if (batchIsEmpty)  // there are no gifts in this batch!
+                {
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+
+                // save first, then post
+                if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+                {
+                    this.Cursor = Cursors.Default;
+                    // saving failed, therefore do not try to post
+                    MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
+                        Catalog.GetString("Please first save the batch, and then post it!"));
+                    return;
+                }
+            }
+            finally
             {
                 this.Cursor = Cursors.Default;
-                // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                    Catalog.GetString("Please first save the batch, and then post it!"));
-                return;
             }
-
-            this.Cursor = Cursors.Default;
 
             //Read current rows position ready to reposition after removal of posted row from grid
             int newCurrentRowPos = GetSelectedRowIndex();
@@ -1397,6 +1402,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean changeable = (FPreviouslySelectedDetailRow != null) && (!ViewMode)
                                  && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
+            this.btnNew.Enabled = !ViewMode;
             this.btnCancel.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
             pnlDetails.Enabled = changeable;

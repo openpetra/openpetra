@@ -59,7 +59,7 @@
   <Parameter id="param_mailingAddressesOnly" value="eBoolean:true" />
   <Parameter id="param_familiesOnly" value="eBoolean:false" />
   <Parameter id="param_excludeNoSolicitations" value="eBoolean:true" />
-  <Parameter id="param_address_date_valid_on" value="eDateTime:&quot;{ThisYear}-01-01T00:00:00&quot;" />
+  <Parameter id="param_address_date_valid_on" value="eDateTime:&quot;2014-01-01T00:00:00&quot;" />
   <Parameter id="param_explicit_specialtypes" value="eString:LEDGER" />
   <Parameter id="ColumnFormat" column="0" value="eString:partnerkey" />
   <Parameter id="ColumnFormat" column="1" value="eString:text" />
@@ -70,7 +70,6 @@
   <Parameter id="ColumnFormat" column="6" value="eString:text" />
   <Parameter id="ColumnFormat" column="7" value="eString:text" />
   <Parameter id="ColumnFormat" column="8" value="eString:text" />
-  <Parameter id="ColumnFormat" column="9" value="eString:text" />
   <Parameter id="ColumnFormat" column="10" value="eString:text" />
   <Parameter id="ColumnFormat" column="11" value="eString:formatteddate" />
   <Parameter id="ControlSource" column="100" value="eString:Partner By Special Types" />
@@ -83,7 +82,7 @@
   <Parameter id="ColumnAlign" column="1" value="eString:left" />
   <Parameter id="ColumnCaption" column="1" value="eString:text:Class" />
   <Parameter id="ColumnAlign" column="2" value="eString:left" />
-  <Parameter id="ColumnCaption" column="2" value="eString:text:Partner Name" />
+  <Parameter id="ColumnCaption" column="2" value="eString:text:Partner name" />
   <Parameter id="ColumnAlign" column="3" value="eString:left" />
   <Parameter id="ColumnCaption" column="3" value="eString:text:Street Name" />
   <Parameter id="ColumnAlign" column="4" value="eString:left" />

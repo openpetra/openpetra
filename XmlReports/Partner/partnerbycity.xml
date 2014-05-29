@@ -71,9 +71,9 @@
 				</query>
 			</calculation>
 
-			<calculation id="Short Name"
+			<calculation id="Partner Name"
 					returnsFormat="text" returns="text">
-				<caption><value text="Short name"/></caption>
+				<caption><value text="Partner name"/></caption>
 				<query>
 					<queryDetail>
 						<value variable="ShortName"/>
@@ -81,14 +81,14 @@
 				</query>
 			</calculation>
 
-            <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+            <!-- <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
                 <caption><value text="Partner Name"></value></caption>
                 <query>
                     <queryDetail>
                         <value variable="NameWithTitle"></value>
                     </queryDetail>
                 </query>
-            </calculation>
+            </calculation> -->
 
 			<calculation id="Partner Class"
 					returnsFormat="text" returns="text">
