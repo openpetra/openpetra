@@ -1740,6 +1740,7 @@ namespace Ict.Petra.Client.CommonControls
             ComboBox ControlAsComboBox;
             CheckBox ControlAsCheckBox;
             GroupBox ControlAsGroupBox;
+            TtxtPetraDate ControlAsPetraDateBox;
             Button ClearArgumentCtrlButton;
             int ControlLeftOfButtonMaxWidth;
             int TopAdjustment = 0;
@@ -1766,8 +1767,15 @@ namespace Ict.Petra.Client.CommonControls
             {
                 // Hook up 'value change' Events according to type of Control
                 ControlAsTextBox = ArgumentPanelCtrl as TextBox;
+                ControlAsPetraDateBox = ArgumentPanelCtrl as TtxtPetraDate;
 
-                if (ControlAsTextBox != null)
+                if (ControlAsPetraDateBox != null)
+                {
+                    ControlAsPetraDateBox.DateChanged += delegate(object sender, TPetraDateChangedEventArgs e) {
+                        OnArgumentCtrlValueChanged(sender, e);
+                    };
+                }
+                else if (ControlAsTextBox != null)
                 {
                     ControlAsTextBox.TextChanged += delegate(object sender, EventArgs e) {
                         OnArgumentCtrlValueChanged(sender, e);
@@ -1977,6 +1985,7 @@ namespace Ict.Petra.Client.CommonControls
             int SeparatorIndex = TagAsString.IndexOf(';');
             int ControlToClearTagParameterAsInt;
             TextBox ControlToClearAsTextBox;
+            TtxtPetraDate ControlToClearAsPetraDateBox;
             CheckBox ControlToClearAsCheckBox;
             ComboBox ControlToClearAsCombo;
             TCmbAutoComplete ControlToClearAsAutoComplete;
@@ -1999,9 +2008,19 @@ namespace Ict.Petra.Client.CommonControls
                 // Different 'clear' logic for different kinds of Controls (TextBoxes, ComboBoxes, CheckBoxes)
 
                 //
-                // Clearing of a TextBox
+                // Clearing of a TextBox or DateBox
                 //
                 ControlToClearAsTextBox = ControlToClearInstance as TextBox;
+                ControlToClearAsPetraDateBox = ControlToClearInstance as TtxtPetraDate;
+
+                if (ControlToClearAsPetraDateBox != null)
+                {
+                    ControlToClearAsPetraDateBox.Date = null;
+
+                    OnClearArgumentCtrlButtonClicked(sender, ControlToClearAsPetraDateBox);
+
+                    return;
+                }
 
                 if (ControlToClearAsTextBox != null)
                 {
