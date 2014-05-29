@@ -558,7 +558,9 @@ namespace Ict.Petra.Server.MCommon.queries
         {
             int ReturnValue = 0;
 
-            /* if postcode only contains numbers */
+            //
+            // if postcode only contains numbers
+            //
 
             int PostcodeLettersA = Regex.Matches(APostcodeA, @"[a-zA-Z]").Count;
             int PostcodeLettersB = Regex.Matches(APostcodeB, @"[a-zA-Z]").Count;
@@ -571,7 +573,9 @@ namespace Ict.Petra.Server.MCommon.queries
                 return PostcodeNumberA.CompareTo(PostcodeNumberB);
             }
 
-            /* if postcode contains letters as well */
+            //
+            // if postcode contains letters as well
+            //
 
             // if postcode contains a space or a hyphen then use recursion to compare both halves
             int SpaceIndexA = APostcodeA.IndexOf(' ');
