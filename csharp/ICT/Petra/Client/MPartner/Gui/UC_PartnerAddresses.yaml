@@ -1,0 +1,88 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PPartnerLocation
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew,btnDelete]
+            ControlsOrientation: horizontal
+        btnNew: {Width=80}
+            Action: actNew
+        btnDelete: {Width=80}
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            Columns: []
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [grpAddress]
+                Row1: [grpContact]
+
+        grpAddress: {Label=Address, Width=770, Stretch=horizontally}
+            Controls:
+                Row0: [txtLocationLocality]
+                Row1: [txtLocationStreetName]
+                Row2: [txtLocationAddress3]
+                Row3: [txtLocationCity, txtLocationCounty]
+                Row4: [txtLocationPostalCode]
+                Row5: [cmbLocationCountryCode]
+
+        grpContact: {Label=Contact, Width=770, Stretch=horizontally}
+            Controls:
+                Row0: [pnlContactLeft, pnlContactMiddle, pnlContactRight]
+
+        pnlContactLeft:
+            Controls:
+                Row0: [txtPPartnerLocationTelephoneNumber]
+                Row1: [txtPPartnerLocationFaxNumber]
+                Row2: [txtPPartnerLocationMobileNumber]
+                Row3: [txtPPartnerLocationAlternateTelephone]
+
+        pnlContactMiddle:
+            Controls:
+                Row0: [txtPPartnerLocationEmailAddress]
+                Row1: [txtPPartnerLocationUrl]
+
+        pnlContactRight:
+            Controls:
+                Row0: [cmbPPartnerLocationLocationType]
+                Row1: [chkPPartnerLocationSendMail]
+                Row2: [dtpPPartnerLocationDateEffective]
+                Row3: [dtpPPartnerLocationDateGoodUntil]
+
+        txtLocationLocality: {Label=Addr1, ColSpan=2, Stretch=horizontally}
+        txtLocationStreetName: {Label=Street-2, ColSpan=2, Stretch=horizontally}
+        txtLocationAddress3: {Label=Addr3, ColSpan=2, Stretch=horizontally}
+        txtLocationCity: {Label=City, Width=250}
+        txtLocationCounty: {Label=County/State, Stretch=horizontally}
+        txtLocationPostalCode: {Label=Post Code, Width=100}
+        cmbLocationCountryCode: {Label=Country, List=CountryList, OnChange=CountryCodeChanged}
+
+        txtPPartnerLocationTelephoneNumber: {Label=Phone, Width=130}
+        txtPPartnerLocationFaxNumber: {Label=Fax, Width=130}
+        txtPPartnerLocationMobileNumber: {Label=Mobile, Width=130}
+        txtPPartnerLocationAlternateTelephone: {Label=Alternate, Width=130}
+        txtPPartnerLocationEmailAddress: {Label=Email, Width=180}
+        txtPPartnerLocationUrl: {Label=URL, Width=180}
+
+        cmbPPartnerLocationLocationType: {Label=Location Type, List=LocationTypeList,Width=150}
+        chkPPartnerLocationSendMail: {Label=Mailing Address}
+        dtpPPartnerLocationDateEffective: {Label=Valid from}
+        dtpPPartnerLocationDateGoodUntil: {Label=Valid to}

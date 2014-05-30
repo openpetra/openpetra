@@ -48,5 +48,5 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical            
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, ColSpan=2}
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, ColSpan=2}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, ColSpan=2, Width=450}
         txtOccupationCode: {Label=Occupation, Type=Occupation, ColSpan=2}

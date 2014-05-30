@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private TDelegateGetPartnerShortName FDelegateGetPartnerShortName;
         private TDelegateIsNewPartner FDelegateIsNewPartner;
-        private TDelegateGetLocationRowOfCurrentlySelectedAddress FDelegateGetLocationRowOfCurrentlySelectedAddress;
+        private TDelegateGetPartnerLocationRowOfCurrentlySelectedAddress FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress;
 
         private Boolean FFamilyMembersExist;
 
@@ -379,10 +379,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// delegate function to determine the currently selected location key of the partner
         /// </summary>
         /// <param name="ADelegateFunction"></param>
-        public void InitialiseDelegateGetLocationRowOfCurrentlySelectedAddress(TDelegateGetLocationRowOfCurrentlySelectedAddress ADelegateFunction)
+        public void InitialiseDelegateGetPartnerLocationRowOfCurrentlySelectedAddress(TDelegateGetPartnerLocationRowOfCurrentlySelectedAddress ADelegateFunction)
         {
             /* set the delegate function from the calling System.Object */
-            FDelegateGetLocationRowOfCurrentlySelectedAddress = ADelegateFunction;
+            FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress = ADelegateFunction;
         }
 
         /// <summary>
@@ -872,10 +872,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     return;
                 }
 
-                if (FDelegateGetLocationRowOfCurrentlySelectedAddress != null)
+                if (FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress != null)
                 {
-                    FamilysCurrentLocationKey = FDelegateGetLocationRowOfCurrentlySelectedAddress().LocationKey;
-                    FamilysCurrentSiteKey = FDelegateGetLocationRowOfCurrentlySelectedAddress().SiteKey;
+                    FamilysCurrentLocationKey = FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress().LocationKey;
+                    FamilysCurrentSiteKey = FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress().SiteKey;
                 }
                 else
                 {

@@ -317,7 +317,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <param name="ATabPage">Tab Page the Client wants to display initially.
         /// </param>
         /// <returns>void</returns>
-        [RequireModulePermission("CONFERENCE")]
         public PartnerEditTDS GetData(Boolean ADelayedDataLoading, TPartnerEditTabPageEnum ATabPage)
         {
             LoadData(ADelayedDataLoading, ATabPage);
@@ -1552,6 +1551,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// todoComment
         /// </summary>
         /// <returns></returns>
+        public PartnerEditTDSPPartnerLocationTable GetDataPartnerLocations(ref PLocationTable ALocations)
+        {
+            Int32 LocationsCount;
+
+            return GetPartnerLocationsInternal(out LocationsCount, false, ref ALocations);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
         public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues()
         {
             Boolean LabelsAvailable;
@@ -2106,6 +2116,44 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     SubmissionResult = TSubmitChangesResult.scrError;
                                     VerificationResult.AddCollection(SingleVerificationResultCollection);
                                 }
+                            }
+
+                            // now remove temporary records from PPartnerLocation that were used for propagation of addresses to family members
+                            // (otherwise those address records for family members would show up on client where they are not needed)
+                            if (SubmissionResult == TSubmitChangesResult.scrOK)
+                            {
+                                if (InspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                                {
+                                    Int64 ThisPartnerKey = FPartnerKey;
+
+                                    if (ThisPartnerKey == 0)
+                                    {
+                                        // if FPartnerKey is not set then check if there is just one partner record in the dataset and take that key
+                                        if (   InspectDS.Tables.Contains(PPartnerTable.GetTableName())
+                                            && InspectDS.PPartner.Count == 1)
+                                        {
+                                            ThisPartnerKey = ((PPartnerRow)InspectDS.PPartner.Rows[0]).PartnerKey;
+
+                                            if (ThisPartnerKey == 0)
+                                            {
+                                                // only bring up this message if there is just one partner record in the dataset
+                                                Console.WriteLine("FPartnerKey in TPartnerEditUIConnector should not be 0!");
+                                            }
+                                        }
+                                    }
+
+                                    if (ThisPartnerKey != 0)
+                                    {
+                                        DataView OtherPartnerLocationsDV = new DataView(InspectDS.PPartnerLocation, PPartnerLocationTable.GetPartnerKeyDBName() + " <> " + ThisPartnerKey.ToString(), "", DataViewRowState.CurrentRows);
+                                        int NumberOfOtherPartnerLocationRows = OtherPartnerLocationsDV.Count;
+
+                                        for (int Counter = NumberOfOtherPartnerLocationRows - 1; Counter >= 0; Counter--)
+                                        {
+                                            OtherPartnerLocationsDV[Counter].Row.Delete();
+                                        }
+                                    }
+                                }
+
                             }
 
                             if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -2851,6 +2899,81 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
             return RelationshipDT;
+        }
+
+        private PartnerEditTDSPPartnerLocationTable GetPartnerLocationsInternal(out Int32 ACount, Boolean ACountOnly, ref PLocationTable ALocations)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PartnerEditTDSPPartnerLocationTable LocationDT;
+            PLocationTable LocationTable;
+            PLocationRow LocationRow;
+            
+            LocationDT = new PartnerEditTDSPPartnerLocationTable();
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                if (ACountOnly)
+                {
+                    ACount = PPartnerLocationAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
+                }
+                else
+                {
+                    // Logging.LogAtLevel(7,  "TPartnerEditUIConnector.GetPartnerLocationsInternal: loading Locations for Partner " + FPartnerKey.ToString() + "...");
+                    try
+                    {
+                        ALocations = PLocationAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
+
+                        LocationDT.Merge(PPartnerLocationAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
+
+                        foreach (PartnerEditTDSPPartnerLocationRow row in LocationDT.Rows)
+                        {
+                            LocationTable = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, ReadTransaction);
+                            if (LocationTable.Count > 0)
+                            {
+                                LocationRow = (PLocationRow)LocationTable.Rows[0];
+
+                                row.LocationLocality = LocationRow.Locality;
+                                row.LocationStreetName = LocationRow.StreetName;
+                                row.LocationAddress3 = LocationRow.Address3;
+                                row.LocationCity = LocationRow.City;
+                                row.LocationCounty = LocationRow.County;
+                                row.LocationPostalCode = LocationRow.PostalCode;
+                                row.LocationCountryCode = LocationRow.CountryCode;
+                                
+                                row.LocationCreatedBy = LocationRow.CreatedBy;
+                                if (!LocationRow.IsDateCreatedNull())
+                                {
+                                    row.LocationDateCreated = (DateTime)LocationRow.DateCreated;
+                                }
+                                row.LocationModifiedBy = LocationRow.ModifiedBy;
+                                if (!LocationRow.IsDateModifiedNull())
+                                {
+                                    row.LocationDateModified = (DateTime)LocationRow.DateModified;
+                                }
+                            }
+                        }
+
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    ACount = LocationDT.Rows.Count;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerLocationsInternal: committed own transaction.");
+                }
+            }
+            return LocationDT;
         }
 
         private PDataLabelValuePartnerTable GetDataLocalPartnerDataValuesInternal(out Boolean ALabelsAvailable, Boolean ACountOnly)
