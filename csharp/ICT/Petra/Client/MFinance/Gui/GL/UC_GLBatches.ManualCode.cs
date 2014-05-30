@@ -365,9 +365,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FcmbYearFilter.SelectedIndex = 0;
             }
-            else if (FcmbPeriodFilter.SelectedIndex != 0)
+            else if (FcmbPeriodFilter.SelectedIndex != 1)
             {
-                FcmbPeriodFilter.SelectedIndex = 0;
+                FcmbPeriodFilter.SelectedIndex = 1;
             }
 
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
@@ -392,11 +392,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             dtpDetailDateEffective.Date = FDefaultDate;
 
             FSelectedBatchNumber = newBatchRow.BatchNumber;
-
-            string enterMsg = Catalog.GetString("Please enter a batch description");
-            newBatchRow.BatchDescription = enterMsg;
-            txtDetailBatchDescription.Text = enterMsg;
-            txtDetailBatchDescription.SelectAll();
 
             //Needed as GL batches can not be deleted
             ((TFrmGLBatch)ParentForm).SaveChanges();
@@ -475,7 +470,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 dtpDetailDateEffective.Date = dateValue;
                                 dtpDetailDateEffective.Focus();
                             }
-                            else if (FcmbPeriodFilter.SelectedIndex != 0)
+                            else if (FcmbPeriodFilter.SelectedIndex != 1)
                             {
                                 FcmbPeriodFilter.SelectedIndex = 1;
                                 dtpDetailDateEffective.Date = dateValue;

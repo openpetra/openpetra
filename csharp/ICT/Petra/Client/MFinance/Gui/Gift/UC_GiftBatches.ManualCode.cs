@@ -53,7 +53,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private DateTime FDateEffective;
-        private string FBatchDescription = Catalog.GetString("Please enter batch description");
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
         private string FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
@@ -193,11 +192,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FInitialFocusActionComplete)
             {
                 return;
-            }
-
-            if (FcmbPeriod.Items.Count > 0)
-            {
-                FcmbPeriod.SelectedIndex = 0;
             }
 
             if (grdDetails.CanFocus)
@@ -743,7 +737,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                     dtpDetailGlEffectiveDate.Focus();
                                 }
                             }
-                            else if (FcmbPeriod.SelectedIndex != 0)
+                            else if (FcmbPeriod.SelectedIndex != 1)
                             {
                                 FcmbPeriod.SelectedIndex = 1;
 
@@ -941,9 +935,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FcmbYear.SelectedIndex = 0;
             }
-            else if (FcmbPeriod.SelectedIndex != 0)
+
+            if (FcmbPeriod.SelectedIndex != 1)
             {
-                FcmbPeriod.SelectedIndex = 0;
+                FcmbPeriod.SelectedIndex = 1;
             }
 
             pnlDetails.Enabled = true;
