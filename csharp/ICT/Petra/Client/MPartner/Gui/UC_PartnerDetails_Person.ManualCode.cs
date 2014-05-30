@@ -40,7 +40,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // The TextBoxes are padded in YAML, but we need to move the Labels, too...
             lblDecorations.Left = lblDecorations.Left + 45;
             lblAcademicTitle.Left = lblAcademicTitle.Left + 45;
-            
+
             txtOccupationCode.TextBoxWidth = 200;
             txtOccupationCode.CharacterCasing = CharacterCasing.Upper;
         }
@@ -70,7 +70,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedPartnerValidation_Partner.ValidatePartnerPersonManual(this, ARow, @TDataCache.GetCacheableDataTableFromCache, ref VerificationResultCollection,
+            TSharedPartnerValidation_Partner.ValidatePartnerPersonManual(this,
+                ARow,
+                @TDataCache.GetCacheableDataTableFromCache,
+                ref VerificationResultCollection,
                 FValidationControlsDict);
         }
     }

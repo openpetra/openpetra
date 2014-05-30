@@ -1657,7 +1657,7 @@ namespace Ict.Petra.Client.CommonControls
 
                             // call Progress from here
                             // TLogging.log('txtAutoPopulated_ButtonClick');
-                            
+
                             // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
                             if (TCommonScreensForwarding.OpenOccupationCodeFindScreen != null)
                             {
@@ -1666,10 +1666,10 @@ namespace Ict.Petra.Client.CommonControls
                                 try
                                 {
                                     mResultStringTxt = mTextBoxStringOld;
-                                    
+
                                     TCommonScreensForwarding.OpenOccupationCodeFindScreen.Invoke(ref mResultStringTxt,
                                         this.ParentForm);
-                                    
+
                                     mResultStringLbl = "";
 
                                     if (!string.IsNullOrEmpty(mResultStringTxt))

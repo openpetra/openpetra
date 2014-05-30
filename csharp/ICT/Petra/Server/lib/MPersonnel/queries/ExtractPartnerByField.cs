@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 SqlStmt = SqlStmt.Replace("##join_for_person_or_family##",
                     " AND pub_p_partner.p_partner_key_n = pub_p_person.p_partner_key_n");
             }
-            
+
             // add address filter information to sql statement and parameter list
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
@@ -301,7 +301,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 " WHERE pub_p_person.p_family_key_n = pub_p_family.p_partner_key_n " +
                 " AND pub_m_extract.m_extract_id_i = " + AExtractId.ToString() +
                 " AND pub_m_extract.p_partner_key_n = pub_p_person.p_partner_key_n)");
-            
+
             // add address filter information to sql statement and parameter list
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 
@@ -427,7 +427,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 SqlStmt = SqlStmt.Replace("##join_for_person_or_family##",
                     " AND pub_p_partner.p_partner_key_n = pub_pm_staff_data.p_partner_key_n");
             }
-            
+
             // add address filter information to sql statement and parameter list
             AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
 

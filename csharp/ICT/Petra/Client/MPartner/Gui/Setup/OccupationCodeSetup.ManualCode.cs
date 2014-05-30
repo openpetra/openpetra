@@ -99,14 +99,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 // automatically select the current conference
                 grdDetails.SelectRowInGrid(RowPos, true);
             }
-            
+
             pnlAcceptCancelButtons.Visible = true;
 
             if (grdDetails.Rows.Count < 2)
             {
                 btnAccept.Enabled = false;
             }
-            
+
             // only one record can be selected
             grdDetails.Selection.EnableMultiSelection = false;
         }
@@ -129,6 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             DialogResult dlgResult;
 
             TFrmOccupationCodeSetup SelectOccupation = new TFrmOccupationCodeSetup(AParentForm);
+
             SelectOccupation.SetParameters(AOccupationCode);
 
             dlgResult = SelectOccupation.ShowDialog();

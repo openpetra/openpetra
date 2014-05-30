@@ -610,9 +610,9 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 // only return true if the postcode parameters and county parameters are empty
                 return (APostalRegion.Length == 0) && (APostCodeFrom.Length == 0) && (APostCodeTo.Length == 0);
             }
-            
+
             return ExtractQueryBase.AddressMeetsPostCodeCriteriaOrEmpty(situation.GetParameters().Get("PostalCode").ToString(),
-                                                       APostalRegion, APostCodeFrom, APostCodeTo);
+                APostalRegion, APostCodeFrom, APostCodeTo);
         }
 
         private String GetPartnerShortName(Int64 APartnerKey)

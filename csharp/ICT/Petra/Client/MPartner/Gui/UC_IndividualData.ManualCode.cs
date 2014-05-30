@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Initialise the numbers in the strings of the LinkLabels
             CalculateLinkLabelCounters(this);
-            
+
             // highlight Overview LinkLabel as this is always initially selected
             llbOverview.BackColor = PanelHelperBackGround;
         }

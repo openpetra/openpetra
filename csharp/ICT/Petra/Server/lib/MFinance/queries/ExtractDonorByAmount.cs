@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.queries
             partnerkeys.Columns.Add("p_site_key_n", typeof(Int64));
             partnerkeys.Columns.Add("p_location_key_i", typeof(Int32));
             ProcessGiftDetailRecords(giftdetails, AddressFilterAdded, AParameters, ref partnerkeys);
-            
+
             // filter data by postcode (if applicable)
             ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
 

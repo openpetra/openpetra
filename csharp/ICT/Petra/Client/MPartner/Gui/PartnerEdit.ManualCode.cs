@@ -1509,7 +1509,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if ((SubmitDS.PPartnerGiftDestination != null) && (SubmitDS.PPartnerGiftDestination.Rows.Count > 0))
                 {
-                    BroadcastMessageGiftDestination = new TFormsMessage(TFormsMessageClassEnum.mcGiftDestinationChanged,
+                    BroadcastMessageGiftDestination = new TFormsMessage(TFormsMessageClassEnum.mcPersonnelCommitmentChanged,
                         FCallerContext);
 
                     if (FPartnerClass == TPartnerClass.FAMILY.ToString())
@@ -2704,50 +2704,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPartnerKey = FMainDS.PPartner[0].PartnerKey;
                     }
 
-                    // get Field of Partner (if PERSON or FAMILY)
-                    System.Int64 FieldKey = 0;
-                    String FieldName = "";
-                    TPartnerClass FieldClass;
-                    bool HasCurrentCommitment = false;
-
-                    if ((FMainDS.PPartnerGiftDestination != null) && (FMainDS.PPartnerGiftDestination.Rows.Count > 0))
-                    {
-                        foreach (PPartnerGiftDestinationRow Row in FMainDS.PPartnerGiftDestination.Rows)
-                        {
-                            // check if record is active for today
-                            if ((Row.DateEffective <= DateTime.Today)
-                                && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
-                                && (Row.DateEffective != Row.DateExpires))
-                            {
-                                HasCurrentCommitment = true;
-                                FieldKey = Row.FieldKey;
-                                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FieldKey, out FieldName, out FieldClass);
-                            }
-                        }
-
-                        // Check whether the Partner has "EX-WORKER*" Partner Type by looking this up in the MiscellaneusData Table
-                        if ((FMainDS.MiscellaneousData[0].HasEXWORKERPartnerType == true)
-                            && !HasCurrentCommitment)
-                        {
-                            ucoUpperPart.SetGiftDestinationText(MPartnerConstants.PARTNERTYPE_EX_WORKER);
-                        }
-                        else if (HasCurrentCommitment && (FieldName != ""))
-                        {
-                            ucoUpperPart.SetGiftDestinationText(FieldName);
-                        }
-                        else if (HasCurrentCommitment && (FieldKey > 0))
-                        {
-                            ucoUpperPart.SetGiftDestinationText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
-                        }
-                        else
-                        {
-                            ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
-                        }
-                    }
-                    else
-                    {
-                        ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
-                    }
+                    SetGiftDestination();
                 }
                 catch (EPartnerNotExistantException)
                 {
@@ -2840,6 +2797,54 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     throw;
                 }
+            }
+        }
+
+        private void SetGiftDestination()
+        {
+            // get Field of Partner (if PERSON or FAMILY)
+            System.Int64 FieldKey = 0;
+            String FieldName = "";
+            TPartnerClass FieldClass;
+            bool HasCurrentCommitment = false;
+
+            if ((FMainDS.PPartnerGiftDestination != null) && (FMainDS.PPartnerGiftDestination.Rows.Count > 0))
+            {
+                foreach (PPartnerGiftDestinationRow Row in FMainDS.PPartnerGiftDestination.Rows)
+                {
+                    // check if record is active for today
+                    if ((Row.DateEffective <= DateTime.Today)
+                        && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
+                        && (Row.DateEffective != Row.DateExpires))
+                    {
+                        HasCurrentCommitment = true;
+                        FieldKey = Row.FieldKey;
+                        TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FieldKey, out FieldName, out FieldClass);
+                    }
+                }
+
+                // Check whether the Partner has "EX-WORKER*" Partner Type by looking this up in the MiscellaneusData Table
+                if ((FMainDS.MiscellaneousData[0].HasEXWORKERPartnerType == true)
+                    && !HasCurrentCommitment)
+                {
+                    ucoUpperPart.SetGiftDestinationText(MPartnerConstants.PARTNERTYPE_EX_WORKER);
+                }
+                else if (HasCurrentCommitment && (FieldName != ""))
+                {
+                    ucoUpperPart.SetGiftDestinationText(FieldName);
+                }
+                else if (HasCurrentCommitment && (FieldKey > 0))
+                {
+                    ucoUpperPart.SetGiftDestinationText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
+                }
+                else
+                {
+                    ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
+                }
+            }
+            else
+            {
+                ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
             }
         }
 
@@ -3564,6 +3569,25 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoLowerPart.RefreshFamilyMembersList(AFormsMessage);
 
                 MessageProcessed = true;
+            }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)
+            {
+                if ((FPartnerKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
+                    || (FMainDS.PPerson[0].FamilyKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey))
+                {
+                    FMainDS.PPartnerGiftDestination.Merge(
+                        ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).GiftDestinationTable);
+                    bool Changes = FPetraUtilsObject.HasChanges;
+
+                    // update the gift destination
+                    SetGiftDestination();
+
+                    // revert to previous save status (SetGiftDestination unnecessarily enables save)
+                    EnableSave(Changes);
+                    FPetraUtilsObject.HasChanges = Changes;
+
+                    MessageProcessed = true;
+                }
             }
 
             return MessageProcessed;

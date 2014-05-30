@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MCommon.queries
                 {
                     // call to derived class to retrieve parameters specific for extract
                     RetrieveParameters(AParameters, ref ASqlStmt, ref SqlParameterList);
-            
+
                     // add address filter information to sql statement and parameter list
                     AddressFilterAdded = AddAddressFilter(AParameters, ref ASqlStmt, ref SqlParameterList);
 
@@ -157,7 +157,7 @@ namespace Ict.Petra.Server.MCommon.queries
                 throw;
             }
         }
-        
+
         /// <summary>
         /// Filter data by postcode (if applicable)
         /// </summary>
@@ -165,7 +165,10 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <param name="AAddressFilterAdded"></param>
         /// <param name="AParameters"></param>
         /// <param name="ATransaction"></param>
-        public static void PostcodeFilter(ref DataTable APartnerkeys, ref bool AAddressFilterAdded, TParameterList AParameters, TDBTransaction ATransaction)
+        public static void PostcodeFilter(ref DataTable APartnerkeys,
+            ref bool AAddressFilterAdded,
+            TParameterList AParameters,
+            TDBTransaction ATransaction)
         {
             // if filter exists
             if ((AParameters.Exists("param_region") && !string.IsNullOrEmpty(AParameters.Get("param_region").ToString()))
@@ -174,18 +177,18 @@ namespace Ict.Petra.Server.MCommon.queries
             {
                 DataTable partnerkeysCopy = APartnerkeys.Copy();
                 int i = 0;
-                    
+
                 foreach (DataRow Row in partnerkeysCopy.Rows)
                 {
                     // get postcode for current partner's location
-                    PLocationRow LocationRow = (PLocationRow) PLocationAccess.LoadByPrimaryKey(
-                            Convert.ToInt64(Row["p_site_key_n"]), Convert.ToInt32(Row["p_location_key_i"]),
+                    PLocationRow LocationRow = (PLocationRow)PLocationAccess.LoadByPrimaryKey(
+                        Convert.ToInt64(Row["p_site_key_n"]), Convert.ToInt32(Row["p_location_key_i"]),
                         ATransaction)[0];
-                        
+
                     if (!AddressMeetsPostCodeCriteriaOrEmpty(LocationRow.PostalCode,
-                                                          AParameters.Get("param_region").ToString(),
-                                                          AParameters.Get("param_postcode_from").ToString(),
-                                                          AParameters.Get("param_postcode_to").ToString()))
+                            AParameters.Get("param_region").ToString(),
+                            AParameters.Get("param_postcode_from").ToString(),
+                            AParameters.Get("param_postcode_to").ToString()))
                     {
                         // remove record if it is excluded by the filter
                         APartnerkeys.Rows.RemoveAt(i);
@@ -195,7 +198,7 @@ namespace Ict.Petra.Server.MCommon.queries
                         i++;
                     }
                 }
-            
+
                 AAddressFilterAdded = true;
             }
         }
@@ -277,7 +280,7 @@ namespace Ict.Petra.Server.MCommon.queries
                     LocationTableNeeded = true;
                 }
             }
-            
+
             // postcode filter will be applied after the data is obtained
             if (AParameters.Exists("param_region") || AParameters.Exists("param_postcode_from") || AParameters.Exists("param_postcode_to"))
             {
@@ -446,7 +449,7 @@ namespace Ict.Petra.Server.MCommon.queries
 
             return AddressFilterAdded;
         }
-        
+
         /// <summary>
         /// this will return true if the best address is in the given postal region, postcode range and county it will not reset the data returned by best address
         /// </summary>
@@ -466,7 +469,7 @@ namespace Ict.Petra.Server.MCommon.queries
             // Filter by region
             if (APostalRegion.Length > 0)
             {
-                if (APostcode != "" && PostcodeInRegion(APostcode, APostalRegion))
+                if ((APostcode != "") && PostcodeInRegion(APostcode, APostalRegion))
                 {
                     ReturnValue = true;
                 }
@@ -475,12 +478,12 @@ namespace Ict.Petra.Server.MCommon.queries
                     return false;
                 }
             }
-            
+
             // filter by specified postcode range
             if ((APostCodeFrom.Length > 0) && (APostCodeTo.Length > 0))
             {
                 if ((APostcode != "") && (ComparePostcodes(APostCodeFrom.ToLower(),
-                                               APostcode.ToLower()) <= 0) && (ComparePostcodes(APostCodeTo.ToLower(), APostcode.ToLower()) >= 0))
+                                              APostcode.ToLower()) <= 0) && (ComparePostcodes(APostCodeTo.ToLower(), APostcode.ToLower()) >= 0))
                 {
                     ReturnValue = true;
                 }
@@ -492,7 +495,7 @@ namespace Ict.Petra.Server.MCommon.queries
             else if (APostCodeFrom.Length > 0)
             {
                 if ((APostcode != "") && (ComparePostcodes(APostCodeFrom.ToLower(),
-                                               APostcode.ToLower()) <= 0))
+                                              APostcode.ToLower()) <= 0))
                 {
                     ReturnValue = true;
                 }
@@ -515,10 +518,10 @@ namespace Ict.Petra.Server.MCommon.queries
 
             return ReturnValue;
         }
-        
+
         private static string FPostalRegion = "";
         private static PPostcodeRangeTable FPostcodeRangeTable = null;
-        
+
         // check if a postcode is contained within a region
         private static bool PostcodeInRegion(string APostcode, string APostalRegion)
         {
@@ -526,25 +529,25 @@ namespace Ict.Petra.Server.MCommon.queries
             if (FPostalRegion != APostalRegion)
             {
                 TDBTransaction ReadTransaction = null;
-            
+
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
                     MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
-                delegate
-                {
-                    FPostcodeRangeTable = PPostcodeRangeAccess.LoadViaPPostcodeRegion(APostalRegion, ReadTransaction);
-                    FPostalRegion = APostalRegion;
-                });
+                    delegate
+                    {
+                        FPostcodeRangeTable = PPostcodeRangeAccess.LoadViaPPostcodeRegion(APostalRegion, ReadTransaction);
+                        FPostalRegion = APostalRegion;
+                    });
             }
-            
+
             foreach (PPostcodeRangeRow Row in FPostcodeRangeTable.Rows)
             {
-                if (ComparePostcodes(Row.From.ToLower(), APostcode.ToLower()) <= 0
-                    && ComparePostcodes(Row.To.ToLower(), APostcode.ToLower()) >= 0)
+                if ((ComparePostcodes(Row.From.ToLower(), APostcode.ToLower()) <= 0)
+                    && (ComparePostcodes(Row.To.ToLower(), APostcode.ToLower()) >= 0))
                 {
                     return true;
                 }
             }
-            
+
             return false;
         }
 
