@@ -151,11 +151,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         public void LoadOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
+            InitialiseControls();
+
             FLedgerNumber = ALedgerNumber;
             FMainDS.Merge(ViewModeTDS);
             FPetraUtilsObject.SuppressChangeDetection = true;
-
-            InitialiseControls();
 
             FrbtPosting.Checked = false;
             FrbtEditing.Checked = false;
@@ -202,6 +202,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (grdDetails.CanFocus)
             {
+                FcmbPeriod.SelectedIndex = 0;
+
                 if (grdDetails.Rows.Count < 2)
                 {
                     btnNew.Focus();
@@ -225,10 +227,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Console.WriteLine("Start LoadBatches");
 
+            InitialiseControls();
+
             FLedgerNumber = ALedgerNumber;
             FDateEffective = FDefaultDate;
-
-            InitialiseControls();
 
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
 
@@ -492,20 +494,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         void RefreshFilter(Object sender, EventArgs e)
         {
-            if (FSuppressRefreshFilter)
-            {
-                // During LoadBatch we suppress multiple calls here
-                return;
-            }
-
-            bool senderIsRadioButton = (sender is RadioButton);
             int batchNumber = 0;
+            int newRowToSelectAfterFilter = 1;
 
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
+            if (FSuppressRefreshFilter
+                || (FPetraUtilsObject == null)
+                || FPetraUtilsObject.SuppressChangeDetection
+                || ((sender != null) && sender is RadioButton && (((RadioButton)sender).Checked == false)))
             {
                 return;
             }
-            else if ((sender != null) && senderIsRadioButton)
+
+            if ((sender != null) && (sender is RadioButton))
             {
                 //Avoid repeat events
                 RadioButton rbt = (RadioButton)sender;
@@ -544,10 +544,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 Console.WriteLine("Using period {0} periodText {1}", newPeriod, newPeriodText);
             }
-            else
-            {
-                Console.WriteLine("RefreshFilter");
-            }
 
             //Record the current batch
             if (FPreviouslySelectedDetailRow != null)
@@ -557,6 +553,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ClearCurrentSelection();
 
+            FSelectedYear = FcmbYear.GetSelectedInt32();
             FSelectedPeriod = FcmbPeriod.GetSelectedInt32();
             FPeriodText = FcmbPeriod.Text;
 
@@ -580,7 +577,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (FSelectedPeriod == -2)  //All periods for year
                 {
-                    TLogging.Log("All periods selected");
                     //Nothing to add to filter
                 }
                 else if (FSelectedPeriod == 0)  //Current and forwarding
@@ -608,6 +604,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FStatusFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
+                btnNew.Enabled = true;
             }
             else if (FrbtPosting.Checked)
             {
@@ -628,6 +625,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, FSelectedYear,
                         FSelectedPeriod));
                 FStatusFilter = "1 = 1";
+                btnNew.Enabled = true;
             }
 
             RefreshGridData(batchNumber, (sender is TCmbAutoComplete));
@@ -645,8 +643,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (!ASelectOnly)
             {
                 RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-
-                TLogging.Log("RowFilter: " + RowFilter);
 
                 FFilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
                     && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));

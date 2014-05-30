@@ -437,7 +437,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     templateRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
                     templateOperators.Add(">=");
                 }
-                else if (APeriod == -2)
+                else if ((APeriod == -2) || (APeriod == -1))
                 {
                     //All periods
                     templateRow.BatchPeriod = APeriod;
