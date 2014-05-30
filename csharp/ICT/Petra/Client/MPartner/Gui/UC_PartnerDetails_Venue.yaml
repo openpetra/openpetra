@@ -37,7 +37,7 @@ RootNode:
         
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
         
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, Width=450}
         
         txtContactPartnerKey:
             Label: Contact Partner

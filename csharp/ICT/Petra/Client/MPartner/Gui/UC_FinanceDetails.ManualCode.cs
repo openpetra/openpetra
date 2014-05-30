@@ -517,14 +517,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         // when cmbBankCode is changed
         private void BankCodeChanged(System.Object sender, EventArgs e)
         {
-            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
-                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && (FCurrentBankRow.BranchCode != "<INACTIVE> ")))
+            if (string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && (FCurrentBankRow == null))
+            {
+                return;
+            }
+            else if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
+                     || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && (FCurrentBankRow.BranchCode != "<INACTIVE> ")))
             {
                 // if "<INACTIVE>" has been selected change it to blank
                 cmbBankCode.SelectedIndex = -1;
                 txtBankKey.Text = "0";
             }
-            else if (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString())
+            else if ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString()))
             {
                 FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { cmbBankCode.GetSelectedDescription() });
 

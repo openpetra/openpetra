@@ -456,6 +456,29 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// loads a GiftBatchTDS for a single transaction
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AGiftTransactionNumber"></param>
+        /// <param name="ADetailNumber"></param>
+        /// <returns>DataSet containing the transation's data</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadSingleTransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber, Int32 ADetailNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, Transaction);
+            AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
+            AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of recurring batches for the given ledger
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
@@ -729,9 +752,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             long recipientKey = (Int64)requestParams["Recipient"];
             long donorKey = (Int64)requestParams["Donor"];
 
-            string motivationGroup = (string)requestParams["MotivationGroup"];
-            string motivationDetail = (string)requestParams["MotivationDetail"];
-
             string dateFrom = (string)requestParams["DateFrom"];
             string dateTo = (string)requestParams["DateTo"];
             DateTime startDate;
@@ -800,18 +820,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 param = new OdbcParameter("DateTo", OdbcType.Date);
                 param.Value = endDate;
                 parameters.Add(param);
-                param = new OdbcParameter("MotivationGroupAny", OdbcType.Bit);
-                param.Value = (motivationGroup.Length == 0);
-                parameters.Add(param);
-                param = new OdbcParameter("MotivationGroupCode", OdbcType.VarChar);
-                param.Value = motivationGroup;
-                parameters.Add(param);
-                param = new OdbcParameter("MotivationDetailAny", OdbcType.Bit);
-                param.Value = (motivationDetail.Length == 0);
-                parameters.Add(param);
-                param = new OdbcParameter("MotivationDetailCode", OdbcType.VarChar);
-                param.Value = motivationDetail;
-                parameters.Add(param);
 
                 //Load Ledger Table
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ledgerNumber, Transaction);
@@ -821,10 +829,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 MainDS.Tables[tempTableName].Columns.Add("DonorDescription");
 
-                foreach (DataRow Row in MainDS.Tables[tempTableName].Rows)
+                PPartnerTable Tbl = null;
+
+                // Two scenarios. 1. The donor key is not set which means the Donor Description could be different for every record.
+                if (donorKey == 0)
                 {
-                    PPartnerTable Tbl = PPartnerAccess.LoadByPrimaryKey(Convert.ToInt64(Row["DonorKey"]), Transaction);
-                    Row["DonorDescription"] = Tbl[0].PartnerShortName;
+                    Tbl = PPartnerAccess.LoadAll(Transaction);
+
+                    foreach (DataRow Row in MainDS.Tables[tempTableName].Rows)
+                    {
+                        Row["DonorDescription"] = ((PPartnerRow)Tbl.Rows.Find(new object[] { Convert.ToInt64(Row["DonorKey"]) })).PartnerShortName;
+                    }
+                }
+                // 2. The donor key is set which means the Donor Description will be the same for every record. (Less calculations this way.)
+                else
+                {
+                    Tbl = PPartnerAccess.LoadByPrimaryKey(donorKey, Transaction);
+
+                    foreach (DataRow Row in MainDS.Tables[tempTableName].Rows)
+                    {
+                        Row["DonorDescription"] = Tbl[0].PartnerShortName;
+                    }
                 }
 
                 MainDS.AcceptChanges();

@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MPartnerResourcestrings.StrCancelButtonHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
 
             mniFile.DropDownOpening += new System.EventHandler(MniFile_DropDownOpening);
             mniEdit.DropDownOpening += new System.EventHandler(MniEdit_DropDownOpening);
@@ -180,8 +180,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.KeyCode == Keys.Enter)
             {
-                FCurrentlySelectedTab.BtnSearch_Click(sender, e);
-                e.Handled = true;
+                // make sure that the 'Enter' key has not been pressed to select a value from a combo boxes dropped down list
+                if (!ucoFindByPartnerDetails.PartnerFindCriteria.ComboboxDroppedDown()
+                    && !ucoFindByBankDetails.PartnerFindCriteria.ComboboxDroppedDown())
+                {
+                    FCurrentlySelectedTab.BtnSearch_Click(sender, e);
+                    e.Handled = true;
+                }
             }
             else
             {
@@ -1159,9 +1164,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             this.Cursor = Cursors.WaitCursor;
-
-            // Restore Window Position and Size
-            // TODO TUserDefaults.NamedDefaults.GetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
 #if TODO
             // Set up Splitter distances
             ucoPartnerFindCriteria.RestoreSplitterSetting();
@@ -1370,7 +1372,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 MessageProcessed = true;
             }
-            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+            else if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                     || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
             {
                 bool FoundRow = false;
 

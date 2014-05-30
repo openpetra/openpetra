@@ -885,6 +885,9 @@ namespace Ict.Petra.Client.App.PetraClient
 
             FBreadcrumbTrail.ModuleText = ModuleText;
             FBreadcrumbTrail.DetailText = BreadcrumbDetailText;
+
+            // this is needed when there is just one ledger existing as item structure will be different
+            UpdateSubsystemLinkStatus(FCurrentLedger, ATaskList, ATaskListNode);
         }
 
         private void OnLedgerChanged(int ALedgerNr, string ALedgerName)
@@ -911,16 +914,12 @@ namespace Ict.Petra.Client.App.PetraClient
             lstFolders.FireSelectedLinkEventIfFolderSelected("Finance");
         }
 
-        private void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible)
+        private void UpdateSubsystemLinkStatus(int ALedgerNr, TTaskList ATaskList, XmlNode ATaskListNode)
         {
-            if (APnlCollapsible == null)
+            if ((ATaskListNode.ParentNode != null)
+                && (ATaskListNode.ParentNode.Name == "Finance"))
             {
-                return;
-            }
-
-            if (APnlCollapsible.TaskListNode.Name == "Finance")
-            {
-                XmlNode TempNode = APnlCollapsible.TaskListNode.FirstChild;
+                XmlNode TempNode = ATaskListNode.ParentNode.FirstChild;
 
                 while (TempNode != null)
                 {
@@ -928,28 +927,38 @@ namespace Ict.Petra.Client.App.PetraClient
                     {
                         if (TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(ALedgerNr))
                         {
-                            APnlCollapsible.TaskListInstance.EnableTaskItem(TempNode);
+                            ATaskList.EnableTaskItem(TempNode);
                         }
                         else
                         {
-                            APnlCollapsible.TaskListInstance.DisableTaskItem(TempNode);
+                            ATaskList.DisableTaskItem(TempNode);
                         }
                     }
                     else if (TempNode.Name == "AccountsPayable")
                     {
                         if (TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(ALedgerNr))
                         {
-                            APnlCollapsible.TaskListInstance.EnableTaskItem(TempNode);
+                            ATaskList.EnableTaskItem(TempNode);
                         }
                         else
                         {
-                            APnlCollapsible.TaskListInstance.DisableTaskItem(TempNode);
+                            ATaskList.DisableTaskItem(TempNode);
                         }
                     }
 
                     TempNode = TempNode.NextSibling;
                 }
             }
+        }
+
+        private void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible)
+        {
+            if (APnlCollapsible == null)
+            {
+                return;
+            }
+
+            UpdateSubsystemLinkStatus(ALedgerNr, APnlCollapsible.TaskListInstance, APnlCollapsible.TaskListNode.FirstChild);
         }
     }
 }

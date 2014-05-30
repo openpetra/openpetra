@@ -626,7 +626,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileDeletePartner")
             {
-                TPartnerMain.DeletePartner(FLogic.PartnerKey);
+                if (TPartnerMain.DeletePartner(FLogic.PartnerKey, this.FindForm()))
+                {
+                    BtnSearch_Click(this, new EventArgs());
+                }
             }
             else if (AToolStripItem.Name == "mniFileWorkWithLastPartner")
             {

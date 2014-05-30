@@ -17,6 +17,7 @@ RootNode:
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
         SETCONTROLSLOCALVARS: BLANK
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
@@ -28,24 +29,30 @@ RootNode:
             Label: Sorting
             Controls: [ucoReportSorting]
         pnlSettingsGrid:
-            Controls: [lblIncludePublication, clbIncludePublication, dtpDateOfSendingCopy]
+            Controls: [lblIncludePublication, clbIncludePublication, pnlDetails]
             Order: AlwaysFirst
+            Dock: Fill
         pnlSettingsCriteria:
-            Controls: 
+            Controls: [ucoAddress]
 #                Row0: [chkActivePartnersOnly, chkMailingAddressesOnly]
 #                Row1: [chkFamiliesOnly, chkExcludeNoSolicitations]
 #                Row2: [chkFreeSubscriptionsOnly]
 #                Row3: [cmbSubscriptionStatus]
 #                Row4: [dtpStartDateFrom, dtpStartDateTo]
 #                Row5: [dtpExpiryDateFrom, dtpExpiryDateTo]
-                Row0: [ucoAddress]
+            Dock: Bottom
         lblIncludePublication:
             Label: Report on all partners that have one of these subscriptions
+            Dock: Top
+            Height: 20
         clbIncludePublication:
             NoLabel: true 
             ParameterName: param_explicit_publication
-            Width: 550
-            Height: 200
+            Dock: Fill
+        pnlDetails:
+            Controls: [dtpDateOfSendingCopy]
+            Dock: Bottom
+            Height: 30
         dtpDateOfSendingCopy:
             ParameterName: param_date_effective
 #        chkActivePartnersOnly:
@@ -68,6 +75,8 @@ RootNode:
         ucoAddress:
 #            ColSpan: 2
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Height: 230
+            Stretch: horizontally
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
@@ -120,9 +129,9 @@ RootNode:
         Para16a:
             Name: Partner Name
             Parameter: 4.0
-        Para16:
-            Name: Short Name
-            Parameter: 4.0
+        #Para16:
+         #   Name: Short Name
+         #   Parameter: 4.0
         Para17:
             Name: Post Code
             Parameter: 2.0

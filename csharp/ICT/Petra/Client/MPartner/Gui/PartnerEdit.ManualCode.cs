@@ -96,7 +96,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>Tells whether the Partner that the screen is working with is a new Partner</summary>
         private Boolean FNewPartner;
-        private Boolean FNewPartnerWithAutoCreatedAddress = false;
         private Int32 FNewPartnerFamilyLocationKey;
         private Int64 FNewPartnerSiteKey;
         private Int64 FNewPartnerPartnerKey;
@@ -2061,14 +2060,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
             {
                 PartnerEditForm.SetParameters(TScreenMode.smNew,
-                    FPartnerClass, -1, -1, ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.CountryCode);
+                    FPartnerClass, -1, -1, ucoLowerPart.PartnerLocationDataRowOfCurrentlySelectedAddress.LocationCountryCode);
             }
             else
             {
                 PartnerEditForm.SetParameters(TScreenMode.smNew, FPartnerClass,
                     -1, -1, String.Empty, String.Empty, false, FPartnerKey,
-                    ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.LocationKey,
-                    ucoLowerPart.LocationDataRowOfCurrentlySelectedAddress.SiteKey
+                    ucoLowerPart.PartnerLocationDataRowOfCurrentlySelectedAddress.LocationKey,
+                    ucoLowerPart.PartnerLocationDataRowOfCurrentlySelectedAddress.SiteKey
                     );
             }
 
@@ -2124,7 +2123,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (CanClose())
                 {
                     /* Delete Partner; if OK, broadcast a message to any listening forms to inform them and then close the screen */
-                    if (TPartnerMain.DeletePartner(FPartnerKey))
+                    if (TPartnerMain.DeletePartner(FPartnerKey, this))
                     {
                         BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcPartnerDeleted,
                             FCallerContext);
@@ -2419,12 +2418,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             mniViewFinanceData.Checked = false;
 
             ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
-
-            if (FNewPartnerWithAutoCreatedAddress)
-            {
-                // hardcoded for the first Address of a new Partner
-                ucoLowerPart.DisableNewButtonOnAutoCreatedAddress();
-            }
         }
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)
@@ -2478,6 +2471,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static bool UserHasPersonnelAccess()
         {
             return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
+        }
+
+        private static bool UserHasFinanceAccess()
+        {
+            return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1);
         }
 
         #endregion
@@ -2554,6 +2552,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     /*
                      * Obtain DataSet from Server, filled with default data according to parameters
+                     * (initial address automatically created for PERSON if FNewPartnerFamilyLocationKey is populated)
                      */
                     this.Cursor = Cursors.WaitCursor;
                     FMainDS = FPartnerEditUIConnector.GetDataNewPartner(FNewPartnerSiteKey,
@@ -2571,6 +2570,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FNewPartnerCountryCode = FNewPartnerSiteCountryCode;
                     }
+
+                    /*
+                     * Create first Address for the new Partner
+                     */
 
                     /*
                      * Create first Address for the new Partner
@@ -2615,6 +2618,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else
                     {
+                        //if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) != TPartnerClass.PERSON)
                         // Create Address with default values
                         TAddressHandling.CreateNewAddress(FMainDS.PLocation,
                             FMainDS.PPartnerLocation,
@@ -2622,9 +2626,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                             SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass),
                             FNewPartnerCountryCode,
                             -1);
-
-                        FNewPartnerWithAutoCreatedAddress = true;
                     }
+
+                    // make sure that location specific fields in PartnerLocationDT get initialized
+                    PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(FMainDS.PLocation, FMainDS.PPartnerLocation);
 
                     // Make this address a Current Address and also the 'Best' Address
                     NewPartnerLocationRow = (PartnerEditTDSPPartnerLocationRow)FMainDS.PPartnerLocation.Rows[0];
@@ -3115,8 +3120,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Finance Module Data
-            if ((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
-                || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
+            if (((ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone)
+                 || (ALockOnModule == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgFinance))
+                && UserHasFinanceAccess())
             {
                 //tbbViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
                 //mniViewFinanceData.Enabled = AEnable;   // This Tab Group is not functional yet
@@ -3378,7 +3384,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
                 case TPartnerEditTabPageEnum.petpAddresses:
-                    FMainDS.PLocation.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PLocation.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging); //TODOWB
                     FMainDS.PPartnerLocation.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
                     break;
 

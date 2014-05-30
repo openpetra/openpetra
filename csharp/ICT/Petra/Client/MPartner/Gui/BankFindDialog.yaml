@@ -51,7 +51,6 @@ RootNode:
         grdDetails:
             Dock: Fill
             EnableMultiSelection: false
-            ActionClick: FocusedRowChanged
 
         btnClear:
             Action: actClear

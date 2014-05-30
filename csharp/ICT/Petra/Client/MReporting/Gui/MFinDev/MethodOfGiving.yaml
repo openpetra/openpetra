@@ -2,8 +2,8 @@
     BaseYaml: FinancialDevelopmentReportingForm.yaml
     FormType: report
     FormTitle: Method of Giving
-    WindowWidth: 650
-    WindowHeight: 600
+    WindowWidth: 640
+    WindowHeight: 550
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment/methodofgiving.xml, common.xml]
