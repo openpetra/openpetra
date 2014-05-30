@@ -499,7 +499,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         void RefreshFilter(Object sender, EventArgs e)
         {
             int batchNumber = 0;
-            int newRowToSelectAfterFilter = 1;
 
             if (FSuppressRefreshFilter
                 || (FPetraUtilsObject == null)
@@ -706,7 +705,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Update batch period if necessary
         /// </summary>
-        public void UpdateBatchPeriod()
+        public void UpdateBatchPeriod(bool AFocusOnDate = false)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
             {
@@ -736,10 +735,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             if (FcmbYear.SelectedIndex != 0)
                             {
                                 FcmbYear.SelectedIndex = 0;
+                                FcmbPeriod.SelectedIndex = 1;
+
+                                if (AFocusOnDate)
+                                {
+                                    dtpDetailGlEffectiveDate.Date = dateValue;
+                                    dtpDetailGlEffectiveDate.Focus();
+                                }
                             }
                             else if (FcmbPeriod.SelectedIndex != 0)
                             {
-                                FcmbPeriod.SelectedIndex = 0;
+                                FcmbPeriod.SelectedIndex = 1;
+
+                                if (AFocusOnDate)
+                                {
+                                    dtpDetailGlEffectiveDate.Date = dateValue;
+                                    dtpDetailGlEffectiveDate.Focus();
+                                }
                             }
                         }
                     }
@@ -753,7 +765,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
-            UpdateBatchPeriod();
+            UpdateBatchPeriod(true);
         }
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
@@ -868,10 +880,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
 
-            //dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
-
             //Update the batch period if necessary
-            UpdateBatchPeriod(null, null);
+            UpdateBatchPeriod();
 
             UpdateChangeableStatus();
 

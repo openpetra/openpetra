@@ -471,10 +471,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             if (FcmbYearFilter.SelectedIndex != 0)
                             {
                                 FcmbYearFilter.SelectedIndex = 0;
+                                FcmbPeriodFilter.SelectedIndex = 1;
+                                dtpDetailDateEffective.Date = dateValue;
+                                dtpDetailDateEffective.Focus();
                             }
                             else if (FcmbPeriodFilter.SelectedIndex != 0)
                             {
-                                FcmbPeriodFilter.SelectedIndex = 0;
+                                FcmbPeriodFilter.SelectedIndex = 1;
+                                dtpDetailDateEffective.Date = dateValue;
+                                dtpDetailDateEffective.Focus();
                             }
                         }
                     }
