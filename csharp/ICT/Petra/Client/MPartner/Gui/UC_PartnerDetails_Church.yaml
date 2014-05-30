@@ -65,7 +65,7 @@ RootNode:
             Margin: 0,0,0,0
             ColSpan: 2
             
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, ColSpan=3}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, ColSpan=3, Width=450}
             
         txtContactPartnerKey:
             ColSpan: 3
