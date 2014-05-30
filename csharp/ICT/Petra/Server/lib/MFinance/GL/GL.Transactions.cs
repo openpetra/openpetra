@@ -122,6 +122,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         ABatchTable.GetBatchPeriodDBName(),
                         MainDS.ALedger[0].CurrentPeriod);
                 }
+                else if (APeriod == -2 || APeriod == -1)
+                {
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} <> {2}",
+                        ABatchTable.GetTableDBName(),
+                        ABatchTable.GetBatchPeriodDBName(),
+                        APeriod);
+                }
                 else if (APeriod != -1)
                 {
                     FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",

@@ -202,7 +202,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (grdDetails.CanFocus)
             {
-                FcmbPeriod.SelectedIndex = 0;
+                //Set filter to current and forwarding
+                if (FcmbPeriod.Items.Count > 0)
+                {
+                    FcmbPeriod.SelectedIndex = 1;
+                }
 
                 if (grdDetails.Rows.Count < 2)
                 {
