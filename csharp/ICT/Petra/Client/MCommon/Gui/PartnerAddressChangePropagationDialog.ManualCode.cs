@@ -76,7 +76,8 @@ namespace Ict.Petra.Client.MCommon.Gui
             string TelephoneColumn = PPartnerLocationTable.GetTelephoneNumberDBName();
             string LocationTypeColumn = PPartnerLocationTable.GetLocationTypeDBName();
 
-            DataTable NewTable = FPartnerSharingLocationDV.ToTable(true, new string[] { ShortNameColumn, PartnerKeyColumn, PartnerClassColumn, TelephoneColumn, LocationTypeColumn });
+            DataTable NewTable = FPartnerSharingLocationDV.ToTable(true,
+                new string[] { ShortNameColumn, PartnerKeyColumn, PartnerClassColumn, TelephoneColumn, LocationTypeColumn });
             NewTable.Columns.Add(new DataColumn(CheckedColumn, typeof(bool)));
 
             clbAddress.Columns.Clear();
@@ -91,7 +92,6 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             // initialize list of checked items
             clbAddress.SetCheckedStringList("");
-
         }
 
         private void ApplyText(String AOtherFormTitle, String AOtherExplanation, PLocationRow ALocationRow)
@@ -137,10 +137,12 @@ namespace Ict.Petra.Client.MCommon.Gui
             foreach (DataRowView rowView in FPartnerSharingLocationDV)
             {
                 DataRow row = rowView.Row;
+
                 if (SelectString.Length > 0)
                 {
                     SelectString = SelectString + ",";
                 }
+
                 SelectString = SelectString + row[PPartnerLocationTable.GetPartnerKeyDBName()].ToString();
             }
 
@@ -151,7 +153,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             clbAddress.SetCheckedStringList("");
         }
-        
+
         private void BtnOK_Click(System.Object sender, EventArgs e)
         {
             if (clbAddress.CheckedItemsCount == 0)
@@ -182,9 +184,9 @@ namespace Ict.Petra.Client.MCommon.Gui
                     TMessages.MsgSecurityException(new ESecurityDBTableAccessDeniedException("", "create",
                             PLocationTable.GetTableDBName()), this.GetType());
                     MessageBox.Show(Catalog.GetString("Due to the selection that you have made" + " a new Address would need" + "\r\n" +
-                                                      "to be created. However, you do not have permission to do this." + "\r\n" + "\r\n" +
-                                                      "Either select 'Change all' to change all addresses (if this is appropriate)," +
-                                                      "\r\n" + "or choose 'Cancel' to abort the Save operation."),
+                            "to be created. However, you do not have permission to do this." + "\r\n" + "\r\n" +
+                            "Either select 'Change all' to change all addresses (if this is appropriate)," +
+                            "\r\n" + "or choose 'Cancel' to abort the Save operation."),
                         Catalog.GetString("Security Violation - Explanation"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);

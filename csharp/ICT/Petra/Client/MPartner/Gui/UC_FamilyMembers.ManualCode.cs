@@ -379,7 +379,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// delegate function to determine the currently selected location key of the partner
         /// </summary>
         /// <param name="ADelegateFunction"></param>
-        public void InitialiseDelegateGetPartnerLocationRowOfCurrentlySelectedAddress(TDelegateGetPartnerLocationRowOfCurrentlySelectedAddress ADelegateFunction)
+        public void InitialiseDelegateGetPartnerLocationRowOfCurrentlySelectedAddress(
+            TDelegateGetPartnerLocationRowOfCurrentlySelectedAddress ADelegateFunction)
         {
             /* set the delegate function from the calling System.Object */
             FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress = ADelegateFunction;

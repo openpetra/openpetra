@@ -3234,10 +3234,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                                 // Make sure record is not added more than once to APartnerLocationTable (in case it is not yet in database).
                                 if (APartnerLocationTable.Rows.Find(new System.Object[] { ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey,
-                                              SubmittedLocationPK.LocationKey }) == null)
+                                                                                          SubmittedLocationPK.LocationKey }) == null)
                                 {
-    //                              TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
-    //                                  ": adding Location " + SubmittedLocationPK.LocationKey.ToString() + "...");
+                                    //                              TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
+                                    //                                  ": adding Location " + SubmittedLocationPK.LocationKey.ToString() + "...");
 
                                     // Add a copy of the PartnerLocation data to the Person
                                     PPartnerLocationRow AddPartnerLocationRow = APartnerLocationTable.NewRowTyped(false);
@@ -3256,7 +3256,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                     if (PPartnerLocationAccess.Exists(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey, 0,
                                             ASubmitChangesTransaction))
                                     {
-    //                                  TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() + ": had Location 0 assigned, deleting it.");
+                                        //                                  TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() + ": had Location 0 assigned, deleting it.");
                                         PPartnerLocationAccess.DeleteByPrimaryKey(ProcessedPersonRow.PartnerKey,
                                             APartnerLocationRow.SiteKey,
                                             0,

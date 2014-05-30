@@ -2129,8 +2129,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     if (ThisPartnerKey == 0)
                                     {
                                         // if FPartnerKey is not set then check if there is just one partner record in the dataset and take that key
-                                        if (   InspectDS.Tables.Contains(PPartnerTable.GetTableName())
-                                            && InspectDS.PPartner.Count == 1)
+                                        if (InspectDS.Tables.Contains(PPartnerTable.GetTableName())
+                                            && (InspectDS.PPartner.Count == 1))
                                         {
                                             ThisPartnerKey = ((PPartnerRow)InspectDS.PPartner.Rows[0]).PartnerKey;
 
@@ -2144,7 +2144,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                                     if (ThisPartnerKey != 0)
                                     {
-                                        DataView OtherPartnerLocationsDV = new DataView(InspectDS.PPartnerLocation, PPartnerLocationTable.GetPartnerKeyDBName() + " <> " + ThisPartnerKey.ToString(), "", DataViewRowState.CurrentRows);
+                                        DataView OtherPartnerLocationsDV =
+                                            new DataView(InspectDS.PPartnerLocation, PPartnerLocationTable.GetPartnerKeyDBName() + " <> " +
+                                                ThisPartnerKey.ToString(), "", DataViewRowState.CurrentRows);
                                         int NumberOfOtherPartnerLocationRows = OtherPartnerLocationsDV.Count;
 
                                         for (int Counter = NumberOfOtherPartnerLocationRows - 1; Counter >= 0; Counter--)
@@ -2153,7 +2155,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                         }
                                     }
                                 }
-
                             }
 
                             if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -2908,7 +2909,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PartnerEditTDSPPartnerLocationTable LocationDT;
             PLocationTable LocationTable;
             PLocationRow LocationRow;
-            
+
             LocationDT = new PartnerEditTDSPPartnerLocationTable();
             try
             {
@@ -2932,6 +2933,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         foreach (PartnerEditTDSPPartnerLocationRow row in LocationDT.Rows)
                         {
                             LocationTable = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, ReadTransaction);
+
                             if (LocationTable.Count > 0)
                             {
                                 LocationRow = (PLocationRow)LocationTable.Rows[0];
@@ -2943,20 +2945,22 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 row.LocationCounty = LocationRow.County;
                                 row.LocationPostalCode = LocationRow.PostalCode;
                                 row.LocationCountryCode = LocationRow.CountryCode;
-                                
+
                                 row.LocationCreatedBy = LocationRow.CreatedBy;
+
                                 if (!LocationRow.IsDateCreatedNull())
                                 {
                                     row.LocationDateCreated = (DateTime)LocationRow.DateCreated;
                                 }
+
                                 row.LocationModifiedBy = LocationRow.ModifiedBy;
+
                                 if (!LocationRow.IsDateModifiedNull())
                                 {
                                     row.LocationDateModified = (DateTime)LocationRow.DateModified;
                                 }
                             }
                         }
-
                     }
                     catch (Exception)
                     {

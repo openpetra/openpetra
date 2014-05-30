@@ -197,7 +197,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
                 SetupUserControlAddresses();
             }
-        
+
             return FUcoAddresses.PartnerLocationDataRowOfCurrentlySelectedAddress;
         }
 

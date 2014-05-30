@@ -2574,6 +2574,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     /*
                      * Create first Address for the new Partner
                      */
+
                     /*
                      * Create first Address for the new Partner
                      */
@@ -2616,8 +2617,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                     else
-                    //if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) != TPartnerClass.PERSON)
                     {
+                        //if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) != TPartnerClass.PERSON)
                         // Create Address with default values
                         TAddressHandling.CreateNewAddress(FMainDS.PLocation,
                             FMainDS.PPartnerLocation,

@@ -916,8 +916,8 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void UpdateSubsystemLinkStatus(int ALedgerNr, TTaskList ATaskList, XmlNode ATaskListNode)
         {
-            if (ATaskListNode.ParentNode != null
-                && ATaskListNode.ParentNode.Name == "Finance")
+            if ((ATaskListNode.ParentNode != null)
+                && (ATaskListNode.ParentNode.Name == "Finance"))
             {
                 XmlNode TempNode = ATaskListNode.ParentNode.FirstChild;
 
@@ -949,7 +949,6 @@ namespace Ict.Petra.Client.App.PetraClient
                     TempNode = TempNode.NextSibling;
                 }
             }
-
         }
 
         private void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible)

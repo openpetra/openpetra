@@ -72,6 +72,7 @@ namespace Ict.Petra.Shared.MPartner
             foreach (PartnerEditTDSPPartnerLocationRow PartnerLocationRow in APartnerLocationTable.Rows)
             {
                 Row = ALocationTable.Rows.Find(new Object[] { PartnerLocationRow.SiteKey, PartnerLocationRow.LocationKey });
+
                 if (Row != null)
                 {
                     LocationRow = (PLocationRow)Row;
@@ -85,11 +86,14 @@ namespace Ict.Petra.Shared.MPartner
                     PartnerLocationRow.LocationCountryCode = LocationRow.CountryCode;
 
                     PartnerLocationRow.LocationCreatedBy = LocationRow.CreatedBy;
+
                     if (!LocationRow.IsDateCreatedNull())
                     {
                         PartnerLocationRow.LocationDateCreated = (DateTime)LocationRow.DateCreated;
                     }
+
                     PartnerLocationRow.LocationModifiedBy = LocationRow.ModifiedBy;
+
                     if (!LocationRow.IsDateModifiedNull())
                     {
                         PartnerLocationRow.LocationDateModified = (DateTime)LocationRow.DateModified;

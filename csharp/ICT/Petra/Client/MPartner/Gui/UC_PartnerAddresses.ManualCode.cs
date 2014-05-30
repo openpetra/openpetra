@@ -94,6 +94,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             get
             {
                 object[] SelectedRows = grdDetails.SelectedDataRows;
+
                 if (SelectedRows.Length > 0)
                 {
                     return (PartnerEditTDSPPartnerLocationRow)((DataRowView)SelectedRows[0]).Row;
@@ -270,6 +271,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PartnerEditTDSPPartnerLocationRow DeletedPartnerLocation0Row = null;
             PLocationRow DeletedLocation0Row = null;
+
             DataRow[] DeletedLocation0Rows;
 
             // make sure latest screen modifications are saved to FMainDS
@@ -337,6 +339,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         DeletedPartnerLocation0Row = PartnerLocationRow;
 
                         DeletedLocation0Rows = FMainDS.PLocation.Select(PLocationTable.GetLocationKeyDBName() + " = 0", "", DataViewRowState.Deleted);
+
                         if (DeletedLocation0Rows.Length != 0)
                         {
                             DeletedLocation0Row = (PLocationRow)DeletedLocation0Rows[0];
@@ -371,14 +374,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int32 ImageIndex = 0;
 
             DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(ARow + 1);
+
             if (rowView != null)
             {
                 PartnerLocationRow = (PartnerEditTDSPPartnerLocationRow)(rowView.Row);
             }
 
-            if (   PartnerLocationRow != null
-                && PartnerLocationRow.RowState != DataRowState.Deleted
-                && PartnerLocationRow.RowState != DataRowState.Detached)
+            if ((PartnerLocationRow != null)
+                && (PartnerLocationRow.RowState != DataRowState.Deleted)
+                && (PartnerLocationRow.RowState != DataRowState.Detached))
             {
                 ImageIndex = PartnerLocationRow.Icon - 1;
 
@@ -405,15 +409,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.Drawing.Image ReturnValue = null;
             PartnerEditTDSPPartnerLocationRow PartnerLocationRow = null;
 
-            DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(ARow+1);
+            DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(ARow + 1);
+
             if (rowView != null)
             {
                 PartnerLocationRow = (PartnerEditTDSPPartnerLocationRow)(rowView.Row);
             }
 
-            if (   PartnerLocationRow != null
-                && PartnerLocationRow.RowState != DataRowState.Deleted
-                && PartnerLocationRow.RowState != DataRowState.Detached)
+            if ((PartnerLocationRow != null)
+                && (PartnerLocationRow.RowState != DataRowState.Deleted)
+                && (PartnerLocationRow.RowState != DataRowState.Detached))
             {
                 if (PartnerLocationRow.SendMail)
                 {
@@ -450,14 +455,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             String TooltipText = "";
 
             DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(ARow + 1);
+
             if (rowView != null)
             {
                 PartnerLocationRow = (PartnerEditTDSPPartnerLocationRow)(rowView.Row);
             }
 
-            if (PartnerLocationRow != null
-                && PartnerLocationRow.RowState != DataRowState.Deleted
-                && PartnerLocationRow.RowState != DataRowState.Detached)
+            if ((PartnerLocationRow != null)
+                && (PartnerLocationRow.RowState != DataRowState.Deleted)
+                && (PartnerLocationRow.RowState != DataRowState.Detached))
             {
                 IconType = PartnerLocationRow.Icon;
 
@@ -505,14 +511,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             // initialize Image List
             FGridRowIconsImageList = new System.Windows.Forms.ImageList();
             FGridRowIconsImageList.ImageSize = new System.Drawing.Size(16, 16);
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar + "Address.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar + "Address_Best.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar + "Address_Future.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar + "Address_Future_Best.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar + "Address_Past.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar + "Address_Past_Best.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar + "Address_Mailing_Indicator.ico", TIconCache.TIconSize.is16by16));
-            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar + "Completeley_Empty.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address_Best.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address_Future.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address_Future_Best.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address_Past.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address_Past_Best.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Address_Mailing_Indicator.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Completeley_Empty.ico", TIconCache.TIconSize.is16by16));
             FGridRowIconsImageList.TransparentColor = System.Drawing.Color.Transparent;
 
             LoadDataOnDemand();
@@ -541,19 +555,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             FCleanupAddressesLocationKeys = new int[0];
 
             // check if any specific address is to be selected (e.g. when opened from PartnerFind), otherwise select best one
-            if (   FMainDS.MiscellaneousData != null
-                && FMainDS.MiscellaneousData.Count > 0)
+            if ((FMainDS.MiscellaneousData != null)
+                && (FMainDS.MiscellaneousData.Count > 0))
             {
                 PartnerEditTDSMiscellaneousDataTable MiscellaneousDataDT = (PartnerEditTDSMiscellaneousDataTable)FMainDS.MiscellaneousData;
                 PartnerEditTDSMiscellaneousDataRow MiscellaneousDataDR = (PartnerEditTDSMiscellaneousDataRow)MiscellaneousDataDT.Rows[0];
-
 
                 if (MiscellaneousDataDR.SelectedLocationKey != 0)
                 {
                     BestLocationPK.SiteKey = MiscellaneousDataDR.SelectedSiteKey;
                     BestLocationPK.LocationKey = MiscellaneousDataDR.SelectedLocationKey;
                 }
-
             }
 
             if (grdDetails.Rows.Count > 1)
@@ -562,8 +574,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 for (RowNumber = 0; RowNumber < grdDetails.DataSource.Count; RowNumber++)
                 {
-                    if (   (Convert.ToInt64((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[RowNumber][PPartnerLocationTable.GetSiteKeyDBName()]) == BestLocationPK.SiteKey)
-                        && (Convert.ToInt32((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[RowNumber][PPartnerLocationTable.GetLocationKeyDBName()]) == BestLocationPK.LocationKey))
+                    if ((Convert.ToInt64((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[RowNumber][PPartnerLocationTable.
+                                                                                                                            GetSiteKeyDBName()]) ==
+                         BestLocationPK.SiteKey)
+                        && (Convert.ToInt32((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[RowNumber][PPartnerLocationTable.
+                                                                                                                               GetLocationKeyDBName()
+                                ]) == BestLocationPK.LocationKey))
                     {
                         FoundBestLocation = true;
                         break;
@@ -572,8 +588,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (FoundBestLocation)
                 {
-                    grdDetails.SelectRowInGrid(RowNumber+1);
-                    ShowDetails(RowNumber+1); // do this as for some reason details are not automatically show here at the moment
+                    grdDetails.SelectRowInGrid(RowNumber + 1);
+                    ShowDetails(RowNumber + 1); // do this as for some reason details are not automatically show here at the moment
                 }
                 else
                 {
@@ -771,6 +787,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FMainDS.Tables.Add(new PartnerEditTDSPPartnerLocationTable());
                         FMainDS.InitVars();
                     }
+
                     if (FMainDS.PLocation == null)
                     {
                         FMainDS.Tables.Add(new PLocationTable());
@@ -787,11 +804,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             FMainDS.PPartnerLocation.AcceptChanges();
                         }
+
                         if (FMainDS.PLocation.Rows.Count > 0)
                         {
                             FMainDS.PLocation.AcceptChanges();
                         }
-
                     }
                 }
 
@@ -822,8 +839,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ShowDetailsManual(PPartnerLocationRow ARow)
         {
             // Determine current Location Key and enable/disable buttons
-            if (ARow != null
-                && ARow.RowState != DataRowState.Deleted)
+            if ((ARow != null)
+                && (ARow.RowState != DataRowState.Deleted))
             {
                 if (ARow.LocationKey == 0)
                 {
@@ -839,7 +856,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ApplySecurity();
             SetAddressFieldOrder();
-
         }
 
         private void GetDetailDataFromControlsManual(PPartnerLocationRow ARow)
@@ -899,8 +915,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.DateEffective = DateTime.Today;
 
             // initialize country code, email address, URL and mobile number from last (currently) selected address
-            if (   FPreviouslySelectedDetailRow != null
-                && FPreviouslySelectedDetailRow.RowState != DataRowState.Detached)
+            if ((FPreviouslySelectedDetailRow != null)
+                && (FPreviouslySelectedDetailRow.RowState != DataRowState.Detached))
             {
                 ARow.LocationCountryCode = FPreviouslySelectedDetailRow.LocationCountryCode;
 
@@ -1001,11 +1017,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // delete location row if it was the last one
                     LocationRow = FMainDS.PLocation.Rows.Find(new object[] { DeletedRowSiteKey, DeletedRowLocationKey });
+
                     if (LocationRow != null)
-                    { 
-                        LocationRow.Delete(); 
+                    {
+                        LocationRow.Delete();
                     }
-                    
                 }
 
                 // reset temporary variables
@@ -1101,7 +1117,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Location0Row = (PLocationRow)Location0Rows[0];
             }
 
-
             PartnerLocation0Rows = FMainDS.PPartnerLocation.Select(
                 PartnerEditTDSPPartnerLocationTable.GetPartnerKeyDBName() + " = " + FMainDS.PPartner[0].PartnerKey.ToString() + " AND " +
                 PartnerEditTDSPPartnerLocationTable.GetLocationKeyDBName() + " = 0", "");
@@ -1164,15 +1179,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             PartnerLocation0Row = FMainDS.PPartnerLocation.Select(
                 PartnerEditTDSPPartnerLocationTable.GetPartnerKeyDBName() + " = " + FMainDS.PPartner[0].PartnerKey.ToString() + " AND " +
                 PartnerEditTDSPPartnerLocationTable.GetLocationKeyDBName() + " = 0", "");
-            if (   PartnerLocation0Row.Length != 0
-                && PartnerLocation0Row[0].RowState != DataRowState.Deleted)
+
+            if ((PartnerLocation0Row.Length != 0)
+                && (PartnerLocation0Row[0].RowState != DataRowState.Deleted))
             {
                 PartnerLocation0Row[0].Delete();
             }
 
             Location0Row = FMainDS.PLocation.Select(PLocationTable.GetLocationKeyDBName() + " = 0", "");
-            if (   Location0Row.Length != 0
-                && Location0Row[0].RowState != DataRowState.Deleted)
+
+            if ((Location0Row.Length != 0)
+                && (Location0Row[0].RowState != DataRowState.Deleted))
             {
                 Location0Row[0].Delete();
             }
@@ -1213,7 +1230,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (SimilarLocationParametersRow.UsedByNOtherPartners > 0)
                     {
                         AlreadyUsedMessage = "\r\n\r\n" +
-                                             String.Format(Catalog.GetString("NOTE: this is used by {0} "), SimilarLocationParametersRow.UsedByNOtherPartners) +
+                                             String.Format(Catalog.GetString(
+                                "NOTE: this is used by {0} "), SimilarLocationParametersRow.UsedByNOtherPartners) +
                                              Catalog.GetPluralString(" other partner.",
                             " other partners.",
                             SimilarLocationParametersRow.UsedByNOtherPartners);
@@ -1224,15 +1242,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     SimilarLocationDialogResult = MessageBox.Show(
-                        Catalog.GetString("A similar address already exists in the database:") + "\r\n" + "    " 
-                        + SimilarLocationParametersRow.Locality + "\r\n" + "    "
-                        + SimilarLocationParametersRow.StreetName + "\r\n" + "    " 
-                        + SimilarLocationParametersRow.Address3 + "\r\n" + "    " +
-                        SimilarLocationParametersRow.City + ' ' + SimilarLocationParametersRow.PostalCode + "\r\n" + "    " 
-                        + SimilarLocationParametersRow.County + ' ' + SimilarLocationParametersRow.CountryCode + "\r\n" 
-                        + AlreadyUsedMessage + "\r\n" + "\r\n"
-                        + Catalog.GetString("Use the existing address record?") + "\r\n"
-                        + Catalog.GetString("(Choose 'No' to create a new address record.)"),
+                        Catalog.GetString("A similar address already exists in the database:") + "\r\n" + "    " +
+                        SimilarLocationParametersRow.Locality + "\r\n" + "    " +
+                        SimilarLocationParametersRow.StreetName + "\r\n" + "    " +
+                        SimilarLocationParametersRow.Address3 + "\r\n" + "    " +
+                        SimilarLocationParametersRow.City + ' ' + SimilarLocationParametersRow.PostalCode + "\r\n" + "    " +
+                        SimilarLocationParametersRow.County + ' ' + SimilarLocationParametersRow.CountryCode + "\r\n" +
+                        AlreadyUsedMessage + "\r\n" + "\r\n" +
+                        Catalog.GetString("Use the existing address record?") + "\r\n" +
+                        Catalog.GetString("(Choose 'No' to create a new address record.)"),
                         Catalog.GetString("Similar Address Exists"),
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question);
@@ -1316,7 +1334,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     LocationRow) + ' ' + TSaveConvert.StringColumnToString(LocationDT.ColumnPostalCode,
                                     LocationRow) + "\r\n" + "    " + TSaveConvert.StringColumnToString(LocationDT.ColumnCounty,
                                     LocationRow) + ' ' + TSaveConvert.StringColumnToString(LocationDT.ColumnCountryCode,
-                                    LocationRow) + "\r\n" + "\r\n" + Catalog.GetString("Do you want to add this address to all members\r\nof this family?"),
+                                    LocationRow) + "\r\n" + "\r\n" +
+                                Catalog.GetString("Do you want to add this address to all members\r\nof this family?"),
                                 Catalog.GetString("Add Address to Family Members?"),
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Question);
@@ -1381,27 +1400,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                                         AddressAddedOrChangedPromotionRow.UserAnswer = UserAnswer;
 #if TODO
 #endif
-                                if (AddressAddedOrChangedPromotionRow.UserAnswer.StartsWith("CHANGE"))
-                                {
-                                    /*
-                                     * The LocationRow gets deleted from the LocationTable on the
-                                     * Server side, but there a AcceptChanges is done so that the
-                                     * DataRow doesn't actually get deleted from the DB. The Client
-                                     * would then no longer know that it needs to delete it, so we
-                                     * need do remember to do it later!
-                                     */
-                                    AddCleanupAddressesLocationKey((Int32)AddressAddedOrChangedPromotionRow.LocationKey);
-                                }
-                            }
-                            else
-                            {
-                                throw new System.Exception(
-                                    "GetReturnedParameters called, but Form '" + AddressChangedDialog.Name +
-                                    "' is not finished yet with initialisation");
-                            }
 
-                            // get NewPartnerDialog out of memory
-                            AddressChangedDialog.Dispose();
+                                        if (AddressAddedOrChangedPromotionRow.UserAnswer.StartsWith("CHANGE"))
+                                        {
+                                            /*
+                                             * The LocationRow gets deleted from the LocationTable on the
+                                             * Server side, but there a AcceptChanges is done so that the
+                                             * DataRow doesn't actually get deleted from the DB. The Client
+                                             * would then no longer know that it needs to delete it, so we
+                                             * need do remember to do it later!
+                                             */
+                                            AddCleanupAddressesLocationKey((Int32)AddressAddedOrChangedPromotionRow.LocationKey);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new System.Exception(
+                                            "GetReturnedParameters called, but Form '" + AddressChangedDialog.Name +
+                                            "' is not finished yet with initialisation");
+                                    }
+
+                                    // get NewPartnerDialog out of memory
+                                    AddressChangedDialog.Dispose();
 #if TODO
 #endif
                                 }
@@ -1682,7 +1702,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TSharedPartnerValidation_Partner.ValidatePartnerAddressManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
-
         }
 
         #endregion
