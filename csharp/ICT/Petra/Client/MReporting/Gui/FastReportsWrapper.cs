@@ -61,6 +61,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private SReportTemplateRow FSelectedTemplate = null;
 
+        private enum TInitState { Unknown, LoadDll, LoadTemplate, InitSystem, LoadedOK };
+        private TInitState FInitState;
+
         /// <summary>
         /// Use This template for the report
         /// </summary>
@@ -93,7 +96,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="DataGetter"></param>
         public void SetDataGetter(TDataGetter DataGetter)
         {
-            FDataGetter = DataGetter;
+            if (LoadedOK)
+            {
+                FDataGetter = DataGetter;
+            }
+            else
+            {
+                ShowErrorPopup();
+            }
         }
 
         /// <summary>
@@ -105,6 +115,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             try
             {
                 LoadedOK = false;
+                FInitState = TInitState.LoadDll;
                 FDataGetter = null;
                 FPetraUtilsObject = PetraUtilsObject;
                 FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
@@ -114,10 +125,12 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (TemplateTable.Rows.Count == 0)
                 {
+                    FInitState = TInitState.LoadTemplate;
                     TLogging.Log("No FastReports template for " + FPetraUtilsObject.FReportName);
                     return;
                 }
 
+                FInitState = TInitState.InitSystem;
                 FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
                 FFastReportType = FfastReportInstance.GetType();
                 FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
@@ -128,11 +141,46 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FPetraUtilsObject.DelegateCancelReportOverride = CancelReportGeneration;
 
                 FPetraUtilsObject.EnableDisableSettings(false);
+                FInitState = TInitState.LoadedOK;
                 LoadedOK = true;
             }
             catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
             {
                 TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// If the wrapper didn't initialise, the caller can call this.
+        /// </summary>
+        public void ShowErrorPopup()
+        {
+            if (FPetraUtilsObject.GetCallerForm() != null)
+            {
+                String Msg = "";
+                switch (FInitState)
+                {
+                    case TInitState.LoadDll:
+                        {
+                            Msg = "Failed to load FastReport Dll.";
+                            break;
+                        }
+                    case TInitState.LoadTemplate:
+                        {
+                            Msg = String.Format("No reporting template found for {0}.", FPetraUtilsObject.FReportName);
+                            break;
+                        }
+                    case TInitState.InitSystem:
+                        {
+                            Msg = "The DLL failed to initialise.";
+                            break;
+                        }
+                    default:
+                        {
+                            return; // Anything else is not an error...
+                        }
+                }
+                MessageBox.Show("The FastReports plugin did not initialise\r\n" + Msg, "Reporting engine");
             }
         }
 
