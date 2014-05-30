@@ -280,6 +280,11 @@ namespace Ict.Petra.Shared
                  "The dates overlap for two of more Gift Destination records. Please ensure that no two records are active on the same day.")]
         public const String ERR_DATES_OVERLAP = "PARTN.00030V";
 
+        /// <summary>Occupation Code is invalid.</summary>
+        [ErrCodeAttribute("Invalid Occupation Code.",
+             ErrorMessageText = "Invalid Occupation Code entered: The Occupation specified with Occupation Code {0} is not valid.")]
+        public const String ERR_OCCUPATIONCODE_INVALID = "PARTN.00031V";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

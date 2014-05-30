@@ -668,6 +668,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractMasterScreen = @TExtractMasterScreenManager.OpenForm;
             TCommonScreensForwarding.OpenRangeFindScreen = @TPostcodeRangeSetupManager.OpenModalForm;
+            TCommonScreensForwarding.OpenOccupationCodeFindScreen = @TOccupationCodeSetupManager.OpenModalForm;
             TCommonScreensForwarding.OpenGetMergeDataDialog = @TGetMergeDataManager.OpenModalForm;
             TCommonScreensForwarding.OpenPrintPartnerDialog = @TPrintPartnerModal.OpenModalForm;
 

@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
         static TDelegateOpenExtractFindScreen FOpenExtractFindScreen;
         static TDelegateOpenExtractMasterScreen FOpenExtractMasterScreen;
         static TDelegateOpenRangeFindScreen FOpenRangeFindScreen;
+        static TDelegateOpenOccupationCodeFindScreen FOpenOccupationCodeFindScreen;
         static TDelegateOpenGetMergeDataDialog FOpenGetMergeDataDialog;
         static TDelegateOpenPrintPartnerDialog FOpenPrintPartnerDialog;
 
@@ -179,6 +180,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenRangeFindScreen = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which opens the Occupation Code find screen.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenOccupationCodeFindScreen OpenOccupationCodeFindScreen
+        {
+            get
+            {
+                return FOpenOccupationCodeFindScreen;
+            }
+
+            set
+            {
+                FOpenOccupationCodeFindScreen = value;
             }
         }
 

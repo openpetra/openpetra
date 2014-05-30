@@ -60,5 +60,97 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             CreateNewPOccupation();
         }
+
+        private void BtnAccept_Click(System.Object sender, System.EventArgs e)
+        {
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Close();
+        }
+
+        private void BtnCancel_Click(System.Object sender, System.EventArgs e)
+        {
+            this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.Close();
+        }
+
+        /// <summary>
+        /// Used for passing parameters to the screen before it is actually shown.
+        /// </summary>
+        /// <returns>void</returns>
+        public void SetParameters(String AOccupationCode)
+        {
+            // find the location of the currently selected OccupationCode (if one exists)
+            if (!string.IsNullOrEmpty(AOccupationCode))
+            {
+                int RowPos = 1;
+
+                foreach (DataRowView rowView in FMainDS.POccupation.DefaultView)
+                {
+                    POccupationRow Row = (POccupationRow)rowView.Row;
+
+                    if (Row.OccupationCode == AOccupationCode)
+                    {
+                        break;
+                    }
+
+                    RowPos++;
+                }
+
+                // automatically select the current conference
+                grdDetails.SelectRowInGrid(RowPos, true);
+            }
+            
+            pnlAcceptCancelButtons.Visible = true;
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                btnAccept.Enabled = false;
+            }
+            
+            // only one record can be selected
+            grdDetails.Selection.EnableMultiSelection = false;
+        }
+    }
+
+    /// <summary>
+    /// Manages the opening of a new/showing of an existing Instance of the Occupation Code Setup Screen.
+    /// </summary>
+    public static class TOccupationCodeSetupManager
+    {
+        /// <summary>
+        /// Opens a Modal instance of the Occupation Code Setup Screen.
+        /// </summary>
+        /// <param name="AOccupationCode">Pass in the selected Occupation's code.</param>
+        /// <param name="AParentForm"></param>
+        /// <returns>True if an Occupation was found and accepted by the user, otherwise false.</returns>
+        public static bool OpenModalForm(ref String AOccupationCode,
+            Form AParentForm)
+        {
+            DialogResult dlgResult;
+
+            TFrmOccupationCodeSetup SelectOccupation = new TFrmOccupationCodeSetup(AParentForm);
+            SelectOccupation.SetParameters(AOccupationCode);
+
+            dlgResult = SelectOccupation.ShowDialog();
+
+            if (dlgResult == DialogResult.OK)
+            {
+                POccupationRow SelectedRow = SelectOccupation.GetSelectedDetailRow();
+
+                if (SelectedRow == null)
+                {
+                    MessageBox.Show(String.Format("No valid Occupation Code has been selected."), String.Format("Find Occupation Code"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    AOccupationCode = SelectOccupation.GetSelectedDetailRow().OccupationCode;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
     }
 }

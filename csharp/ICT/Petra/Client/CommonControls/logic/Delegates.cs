@@ -83,6 +83,10 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out String[] RangeTo,
         Form AParentForm);
 
+    /// <summary>Delegate for a call to open a Modal Occupation Code Find screen</summary>
+    public delegate bool TDelegateOpenOccupationCodeFindScreen(ref String AOccupationCode,
+        Form AParentForm);
+
     /// <summary>Delegate for a call to open a Modal Range Find screen</summary>
     public delegate bool TDelegateOpenGetMergeDataDialog(long AFromPartnerKey,
         long AToPartnerKey,
