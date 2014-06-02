@@ -179,11 +179,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Returns the PLocation DataRow of the currently selected Address.
+        /// Returns the PartnerEditTDSPPartnerLocationRow DataRow of the currently selected Address.
         /// </summary>
         /// <remarks>Performs all necessary initialisations in case the Partner TabGroup and/or
         /// the Address Tab haven't been initialised before.</remarks>
-        public PLocationRow LocationDataRowOfCurrentlySelectedAddress
+        public PartnerEditTDSPPartnerLocationRow PartnerLocationDataRowOfCurrentlySelectedAddress
         {
             get
             {
@@ -192,7 +192,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     InitChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
 
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 return ucoPartnerTabSet.LocationDataRowOfCurrentlySelectedAddress;
@@ -426,23 +426,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void DisableNewButtonOnAutoCreatedAddress()
-        {
-            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
-            {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
-                {
-                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
-                }
-
-                ucoPartnerTabSet.DisableNewButtonOnAutoCreatedAddress();
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
         public void CleanupAddressesBeforeMerge()
         {
             if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
@@ -450,7 +433,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 ucoPartnerTabSet.CleanupRecordsBeforeMerge();
@@ -467,7 +450,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 ucoPartnerTabSet.RefreshRecordsAfterMerge();
@@ -485,7 +468,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 ucoPartnerTabSet.ProcessServerResponseSimilarLocations(AParameterDT);
@@ -505,7 +488,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 ucoPartnerTabSet.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);

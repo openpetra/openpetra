@@ -173,7 +173,6 @@ useful parameters
 <target name="quickClean" description="cleans all generated files and the delivery directory">    
   <echo message="Target quickClean started at: ${datetime::now()}" /> 
   
-  <!-- Do not remove dir.delivery, because this would change all UUIDs from the project files -->
   <!-- Do not remove dir.bin, because this fails on Windows Jenkins server for NUnit tests -->
   <delete>
     <fileset basedir="${dir.bin}">
@@ -187,6 +186,7 @@ useful parameters
       <exclude name="."/>
     </fileset>
   </delete>
+  <delete file="${uuidFile}"/>
   <delete file="${namespaceFile}"/>
   <delete file="${projectDependenciesFile}"/>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
