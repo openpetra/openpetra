@@ -29,9 +29,12 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Data;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Controls.Formatting;
 
-namespace Ict.Common.Controls
+using Owf.Controls;
+
+namespace Ict.Petra.Client.CommonControls
 {
     /// <summary>
     /// UserControl that handles one or two Filter Panels and optionally
@@ -1739,6 +1742,7 @@ namespace Ict.Common.Controls
             ComboBox ControlAsComboBox;
             CheckBox ControlAsCheckBox;
             GroupBox ControlAsGroupBox;
+            TtxtPetraDate ControlAsPetraDateBox;
             Button ClearArgumentCtrlButton;
             int ControlLeftOfButtonMaxWidth;
             int TopAdjustment = 0;
@@ -1765,8 +1769,15 @@ namespace Ict.Common.Controls
             {
                 // Hook up 'value change' Events according to type of Control
                 ControlAsTextBox = ArgumentPanelCtrl as TextBox;
+                ControlAsPetraDateBox = ArgumentPanelCtrl as TtxtPetraDate;
 
-                if (ControlAsTextBox != null)
+                if (ControlAsPetraDateBox != null)
+                {
+                    ControlAsPetraDateBox.DateChanged += delegate(object sender, TPetraDateChangedEventArgs e) {
+                        OnArgumentCtrlValueChanged(sender, e);
+                    };
+                }
+                else if (ControlAsTextBox != null)
                 {
                     ControlAsTextBox.TextChanged += delegate(object sender, EventArgs e) {
                         OnArgumentCtrlValueChanged(sender, e);
@@ -1976,6 +1987,7 @@ namespace Ict.Common.Controls
             int SeparatorIndex = TagAsString.IndexOf(';');
             int ControlToClearTagParameterAsInt;
             TextBox ControlToClearAsTextBox;
+            TtxtPetraDate ControlToClearAsPetraDateBox;
             CheckBox ControlToClearAsCheckBox;
             ComboBox ControlToClearAsCombo;
             TCmbAutoComplete ControlToClearAsAutoComplete;
@@ -1998,9 +2010,19 @@ namespace Ict.Common.Controls
                 // Different 'clear' logic for different kinds of Controls (TextBoxes, ComboBoxes, CheckBoxes)
 
                 //
-                // Clearing of a TextBox
+                // Clearing of a TextBox or DateBox
                 //
                 ControlToClearAsTextBox = ControlToClearInstance as TextBox;
+                ControlToClearAsPetraDateBox = ControlToClearInstance as TtxtPetraDate;
+
+                if (ControlToClearAsPetraDateBox != null)
+                {
+                    ControlToClearAsPetraDateBox.Date = null;
+
+                    OnClearArgumentCtrlButtonClicked(sender, ControlToClearAsPetraDateBox);
+
+                    return;
+                }
 
                 if (ControlToClearAsTextBox != null)
                 {

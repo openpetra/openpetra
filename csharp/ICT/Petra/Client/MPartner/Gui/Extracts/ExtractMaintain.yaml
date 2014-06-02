@@ -7,6 +7,8 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     FormType: edit
     Template: window
+    WindowWidth: 750
+    WindowHeight: 600
     Actions:
         actCopyPartnerKey: {ShortCut=Ctrl+C, ActionClick=CopyPartnerKeyToClipboard}        
         actSetLastWorkedWith: {ShortCut=Ctrl+S, ActionClick=SetPartnerLastWorkedWith}

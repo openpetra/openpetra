@@ -146,5 +146,39 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         #endregion
+
+        #region Keyboard and Filter/Find Menu
+
+        /// ///////////  These methods just delegate to the user control to handle
+
+        private void MniFilterFind_Click(object sender, EventArgs e)
+        {
+            ucoExtractMaintain.MniFilterFind_Click(sender, e);
+        }
+
+        /// <summary>
+        /// Handler for shortcuts
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.S | Keys.Control))
+            {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    SaveChanges();
+                }
+
+                return true;
+            }
+
+            if (ucoExtractMaintain.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
     }
 }

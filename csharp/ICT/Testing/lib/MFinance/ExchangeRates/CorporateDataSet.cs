@@ -130,7 +130,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             { "USD", "GBP", "1900-06-01", 2.00m },
             { "USD", "GBP", "1900-07-01", 1.8181818182m },
             { "USD", "GBP", "2999-06-01", 2.50m },
-            { "USD", "GBP", "2999-07-01", 2.2222222222m },
+            { "USD", "GBP", "2999-07-01", 2.2222222222m }
         };
 
         private const int FFromCurrencyId = 0;

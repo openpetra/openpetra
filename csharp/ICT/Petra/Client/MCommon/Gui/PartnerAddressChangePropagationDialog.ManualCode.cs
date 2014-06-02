@@ -92,6 +92,11 @@ namespace Ict.Petra.Client.MCommon.Gui
 
             // initialize list of checked items
             clbAddress.SetCheckedStringList("");
+
+            // this is just to avoid compiler warning from FMainDS being initialized but not used
+            if (FMainDS.IsInitialized)
+            {
+            }
         }
 
         private void ApplyText(String AOtherFormTitle, String AOtherExplanation, PLocationRow ALocationRow)

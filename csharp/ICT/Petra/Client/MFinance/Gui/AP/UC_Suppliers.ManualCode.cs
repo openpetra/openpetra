@@ -97,14 +97,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
         }
 
-        /// <summary>
-        /// Standard method
-        /// </summary>
-        public bool ValidateAllData(bool ADummy1, bool ADummy2)
-        {
-            return true;
-        }
-
         /// /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 

@@ -213,6 +213,14 @@ namespace {#NAMESPACE}
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
+
+#region Empty Code to assist Compilation
+    /// auto generated
+	public bool ValidateAllData(bool ADummy1, bool ADummy2)
+	{
+		return true;
+	}
+#endregion
 {#IFDEF FILTERANDFIND}
 
 #region Filter and Find
