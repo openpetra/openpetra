@@ -1312,7 +1312,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             if (columnName.Substring(0, columnName.IndexOf('.')).CompareTo(FCodeStorage.GetAttribute("DetailTable")) != 0)
                             {
-                                throw new Exception("When specifying a DataColumn for a Find/Filter control the table must refer to the DetailTable. The control is: " + controlName);
+                                throw new Exception(
+                                    "When specifying a DataColumn for a Find/Filter control the table must refer to the DetailTable. The control is: "
+                                    +
+                                    controlName);
                             }
 
                             columnName = columnName.Substring(columnName.LastIndexOf('.') + 1);
