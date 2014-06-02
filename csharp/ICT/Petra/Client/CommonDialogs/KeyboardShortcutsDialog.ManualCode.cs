@@ -90,6 +90,7 @@ namespace Ict.Petra.Client.CommonDialogs
                 ApplWideResourcestrings.StrKeyShortcutCtrlDownHelp);
             AddShortcutInfoToTable(navigationTable, ApplWideResourcestrings.StrKeyShortcutCtrlEnd, ApplWideResourcestrings.StrKeyShortcutCtrlEndHelp);
             AddShortcutInfoToTable(navigationTable, ApplWideResourcestrings.StrKeyShortcutCtrlL, ApplWideResourcestrings.StrKeyShortcutCtrlLHelp);
+            AddShortcutInfoToTable(navigationTable, ApplWideResourcestrings.StrKeyShortcutCtrlE, ApplWideResourcestrings.StrKeyShortcutCtrlEHelp);
 
             string listTable = KeyboardShortcutTableNames.List.ToString();
             AddTableToDataSet(listTable);
@@ -195,6 +196,9 @@ namespace Ict.Petra.Client.CommonDialogs
             table.DefaultView.AllowNew = false;
             AGrid.DataSource = new DevAge.ComponentModel.BoundDataView(table.DefaultView);
             AGrid.AutoSizeCells(new SourceGrid.Range(1, 1, AGrid.Rows.Count - 1, 1));
+
+            // We need this line, otherwise the Enter key locks up the screen.  For this grid, on a dialog, we have no special keys.
+            AGrid.SpecialKeys = SourceGrid.GridSpecialKeys.None;
         }
 
         /// <summary>

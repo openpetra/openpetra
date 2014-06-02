@@ -217,6 +217,12 @@ namespace Ict.Petra.Client.App.Gui
         /// <summary>todoComment</summary>
         public static readonly string StrKeyShortcutCtrlLHelp = Catalog.GetString("Directs keyboard input to the List of records at the current row.");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrKeyShortcutCtrlE = Catalog.GetString("Ctrl+E");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrKeyShortcutCtrlEHelp = Catalog.GetString("Directs keyboard input to the first data entry field of the current record.");
+
         #endregion
 
         #region Filter/Find
