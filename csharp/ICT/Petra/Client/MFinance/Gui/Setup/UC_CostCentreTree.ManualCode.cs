@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TreeNode HighlightedDropTarget = null;
         // The CostCentre selected in the parent form
         CostCentreNodeDetails FSelectedCostCentre;
-
+        Boolean FDuringInitialisation = false;
         /// <summary>
         /// I don't want this, but the auto-generated code references it:
         /// </summary>
@@ -69,6 +69,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (FSelectedCostCentre != null)
             {
+                //
+                // The Focus() line below triggers the txtDetailCostCentreCode.Leave handler.
+                // which looks at the txtDetailCostCentreCode.Text value too soon - potentially before it's been set!
+ 
+                trvCostCentres.Focus(); // {NET Bug!} The control doesn't show the selection if it's not visible and in focus.
                 trvCostCentres.SelectedNode = FSelectedCostCentre.linkedTreeNode;
             }
         }
@@ -224,7 +229,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Parent.Nodes.Insert(Idx, Child);
             }
 
-            FParentForm.SetSelectedCostCentre(ChildTag);
+            if (!FDuringInitialisation)
+            {
+                FParentForm.SetSelectedCostCentre(ChildTag);
+            }
         }
 
         /// <summary>
@@ -279,6 +287,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public void PopulateTreeView(GLSetupTDS MainDS)
         {
+            FDuringInitialisation = true;
             trvCostCentres.BeginUpdate();
             trvCostCentres.Nodes.Clear();
 
@@ -301,6 +310,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             this.trvCostCentres.AfterSelect += TreeViewAfterSelect;
             trvCostCentres.EndUpdate();
 
+            FDuringInitialisation = false;
             if (trvCostCentres.Nodes.Count > 0)
             {
                 SelectNodeByName(trvCostCentres.Nodes[0].Name); // Select the first item
@@ -319,7 +329,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (AParent == null)
             {
                 trvCostCentres.Nodes.Add(newNode);
-                FParentForm.SetSelectedCostCentre(NewNodeDetails);
             }
             else
             {

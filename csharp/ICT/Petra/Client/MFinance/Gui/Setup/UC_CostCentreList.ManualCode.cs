@@ -75,9 +75,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         RowIdx = FDataView.Find(FSelectedCostCentre.CostCentreRow.CostCentreCode) + 1;
                     }
-                    FParentForm.FIAmUpdating = true;
+                    FParentForm.FIAmUpdating++;
                     grdCostCentres.SelectRowInGrid(RowIdx);
-                    FParentForm.FIAmUpdating = false;
+                    FParentForm.FIAmUpdating--;
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void Selection_SelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
         {
-            if (!FParentForm.FIAmUpdating)
+            if (FParentForm.FIAmUpdating == 0)
             {
                 Int32 RowIdx = grdCostCentres.Selection.ActivePosition.Row;
                 DataRowView rowView = (DataRowView)grdCostCentres.Rows.IndexToDataSourceRow(RowIdx);

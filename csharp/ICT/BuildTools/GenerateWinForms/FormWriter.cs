@@ -994,6 +994,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        private void CallHandlerIfProvided (String AKey, String APlaceholder, String ACodeToInsert)
+        {
+            /* I'd like this code to work, but it causes extra code to be added,
+             * because codelets may be created that didn't previously exist:
+            Boolean CallManualCode = FCodeStorage.ManualFileExistsAndContains(AKey);
+            String CommentOutOption = CallManualCode ? "" : "// ";
+            if (CallManualCode || FTemplate.FCodelets.ContainsKey(APlaceholder + FTemplate.FCodeletPostfix)) // If there's no ManualCode, and currently no Codelet, I don't want to create one!
+            {
+                FTemplate.AddToCodelet(APlaceholder, CommentOutOption + ACodeToInsert + Environment.NewLine);
+            }
+             */
+
+            if (FCodeStorage.ManualFileExistsAndContains(AKey))
+            {
+                FTemplate.AddToCodelet(APlaceholder, ACodeToInsert + Environment.NewLine);
+            }
+        }
+
         /// based on the code model, create the code;
         /// using the code generators that have been loaded
         public override void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
@@ -1055,84 +1073,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", "");
             FTemplate.AddToCodelet("ELSESTATEMENT", "");
-//            FTemplate.AddToCodelet("VALIDATEDETAILS", "");
+//          FTemplate.AddToCodelet("VALIDATEDETAILS", "");
 
-            if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
-            {
-                FTemplate.AddToCodelet("SHOWDETAILS", "BeforeShowDetailsManual(ARow);" + Environment.NewLine);
-            }
 
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
 
-            if (FCodeStorage.ManualFileExistsAndContains("InitializeManualCode"))
-            {
-                FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("RunOnceOnActivationManual"))
-            {
-                FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("RunOnceOnParentActivationManual"))
-            {
-                FTemplate.AddToCodelet("RUNONCEONPARENTACTIVATIONMANUAL", "RunOnceOnParentActivationManual();" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("ExitManualCode"))
-            {
-                FTemplate.AddToCodelet("EXITMANUALCODE", "ExitManualCode();" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("CanCloseManual"))
-            {
-                FTemplate.AddToCodelet("CANCLOSEMANUAL", " && CanCloseManual()");
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("NewRowManual"))
-            {
-                FTemplate.AddToCodelet("INITNEWROWMANUAL", "NewRowManual(ref NewRow);" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("PreDeleteManual"))
-            {
-                FTemplate.AddToCodelet("PREDELETEMANUAL",
-                    "AllowDeletion = PreDeleteManual(FPreviouslySelectedDetailRow, ref DeletionQuestion);" + Environment.NewLine);
-                FTemplate.AddToCodelet("PREMULTIDELETEMANUAL",
-                    "AllowDeletion = PreDeleteManual(rowToDelete, ref DeletionQuestion);" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("DeleteRowManual"))
-            {
-                FTemplate.AddToCodelet("DELETEROWMANUAL",
-                    "DeletionPerformed = DeleteRowManual(FPreviouslySelectedDetailRow, ref CompletionMessage);" + Environment.NewLine);
-                FTemplate.AddToCodelet("DELETEMULTIROWMANUAL",
-                    "DeletionPerformed = AllowDeletion && DeleteRowManual(rowToDelete, ref CompletionMessage);" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("PostDeleteManual"))
-            {
-                FTemplate.AddToCodelet("POSTDELETEMANUAL",
-                    "PostDeleteManual(FPreviouslySelectedDetailRow, AllowDeletion, DeletionPerformed, CompletionMessage);" + Environment.NewLine);
-                FTemplate.AddToCodelet("POSTMULTIDELETEMANUAL",
-                    "PostDeleteManual(rowToDelete, AllowDeletion, DeletionPerformed, String.Empty);" + Environment.NewLine);
-            }
+            CallHandlerIfProvided("void BeforeShowDetailsManual","SHOWDETAILS", "BeforeShowDetailsManual(ARow);");
+            CallHandlerIfProvided("InitializeManualCode", "INITMANUALCODE", "InitializeManualCode();");
+            CallHandlerIfProvided("RunOnceOnActivationManual", "RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();");
+            CallHandlerIfProvided("RunOnceOnParentActivationManual", "RUNONCEONPARENTACTIVATIONMANUAL", "RunOnceOnParentActivationManual();");
+            CallHandlerIfProvided("ExitManualCode", "EXITMANUALCODE", "ExitManualCode();");
+            CallHandlerIfProvided("CanCloseManual", "CANCLOSEMANUAL", " && CanCloseManual()");
+            CallHandlerIfProvided("NewRowManual", "INITNEWROWMANUAL", "NewRowManual(ref NewRow);");
+            CallHandlerIfProvided("PreDeleteManual", "PREDELETEMANUAL", "AllowDeletion = PreDeleteManual(FPreviouslySelectedDetailRow, ref DeletionQuestion);");
+            CallHandlerIfProvided("PreDeleteManual", "PREMULTIDELETEMANUAL", "AllowDeletion = PreDeleteManual(rowToDelete, ref DeletionQuestion);");
+            CallHandlerIfProvided("DeleteRowManual", "DELETEROWMANUAL", "DeletionPerformed = DeleteRowManual(FPreviouslySelectedDetailRow, ref CompletionMessage);");
+            CallHandlerIfProvided("DeleteRowManual", "DELETEMULTIROWMANUAL", "DeletionPerformed = AllowDeletion && DeleteRowManual(rowToDelete, ref CompletionMessage);");
+            CallHandlerIfProvided("PostDeleteManual", "POSTDELETEMANUAL", "PostDeleteManual(FPreviouslySelectedDetailRow, AllowDeletion, DeletionPerformed, CompletionMessage);");
+            CallHandlerIfProvided("PostDeleteManual", "POSTMULTIDELETEMANUAL", "PostDeleteManual(rowToDelete, AllowDeletion, DeletionPerformed, String.Empty);");
+            CallHandlerIfProvided("StoreManualCode", "STOREMANUALCODE", "SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);");
+            CallHandlerIfProvided("FindAndFilterHookUpEvents", "FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();");
 
             if (FCodeStorage.ManualFileExistsAndContains("SelectTabManual"))
             {
                 FTemplate.AddToCodelet("SELECTTABMANUAL",
                     "//Call code to execute on selection of new tab" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("StoreManualCode"))
-            {
-                FTemplate.AddToCodelet("STOREMANUALCODE",
-                    "SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("FindAndFilterHookUpEvents"))
-            {
-                FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
             }
 
             if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLL"))

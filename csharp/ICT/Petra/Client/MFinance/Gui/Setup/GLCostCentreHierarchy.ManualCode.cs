@@ -140,7 +140,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Int32 FLedgerNumber;
 
         /// <summary>This is set to prevent infinite cascades</summary>
-        public bool FIAmUpdating;
+        public Int32 FIAmUpdating = 0;
 
         private String strOldDetailCostCentreCode; // this string is used to detect that the user has renamed an existing Cost Centre.
 
@@ -215,12 +215,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailCostCentreName.Leave += new EventHandler(UpdateOnControlChanged);
             chkDetailCostCentreActiveFlag.CheckedChanged += new EventHandler(UpdateOnControlChanged);
             cmbDetailCostCentreType.SelectedIndexChanged += new EventHandler(UpdateOnControlChanged);
+            txtDetailCostCentreCode.Validated -= ControlValidatedHandler; // Don't trigger validation on change - I need to do it manually
+
             FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
-            FIAmUpdating = false;
             FnameForNewCostCentre = Catalog.GetString("NEWCOSTCENTRE");
 
             txtDetailCostCentreCode.TextChanged += new EventHandler(txtDetailCostCentreCode_TextChanged);
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
+            this.FormClosing += TFrmGLCostCentreHierarchy_FormClosing;
         }
 
         private void OnHierarchySaved(System.Object sender, TDataSavedEventArgs e)
@@ -230,16 +232,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void txtDetailCostCentreCode_TextChanged(object sender, EventArgs e)
         {
-            if (FIAmUpdating)
+            if (FIAmUpdating > 0)
             {
                 return;
             }
 
             if (FCurrentCostCentre.CostCentreRow.SystemCostCentreFlag)
             {
-                FIAmUpdating = true;
+                FIAmUpdating++;
                 txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
-                FIAmUpdating = false;
+                FIAmUpdating--;
                 MessageBox.Show(Catalog.GetString("System Cost Centre Code cannot be changed."),
                     Catalog.GetString("Rename Cost Centre"),
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
@@ -258,9 +260,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!FCurrentCostCentre.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change a cost centre code, but I can't allow it.
             {
-                FIAmUpdating = true;
+                FIAmUpdating++;
                 txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
-                FIAmUpdating = false;
+                FIAmUpdating--;
                 MessageBox.Show(Catalog.GetString(
                         "Cost Centre Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Cost Centre."),
                     Catalog.GetString("Rename Cost Centre"),
@@ -497,7 +499,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private bool CheckCostCentreValueChanged()
         {
-            if (FIAmUpdating || (strOldDetailCostCentreCode == null))
+            if (FIAmUpdating > 0 || (strOldDetailCostCentreCode == null))
             {
                 return false;
             }
@@ -592,13 +594,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                     out NewTable);
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                                 strOldDetailCostCentreCode = "";
-                                FIAmUpdating = true;
+                                FIAmUpdating++;
                                 FPetraUtilsObject.SuppressChangeDetection = false;
                                 txtDetailCostCentreCode.Text = "";
-                                FIAmUpdating = false;
                                 FPetraUtilsObject.SuppressChangeDetection = false;
                                 FCurrentCostCentre = null;
                                 ucoCostCentreTree.PopulateTreeView(FMainDS);
+                                FIAmUpdating--;
                                 ucoCostCentreTree.SelectNodeByName(FRecentlyUpdatedDetailCostCentreCode);
                                 ClearStatus();
                                 changeAccepted = true;
@@ -645,9 +647,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             bool hasChanges = FPetraUtilsObject.HasChanges;
 
-            FIAmUpdating = true;
+            FIAmUpdating++;
             ShowDetails(FCurrentCostCentre.CostCentreRow);
-            FIAmUpdating = false;
+            FIAmUpdating--;
 
             FCurrentCostCentre.GetAttrributes();
             tbbAddNewCostCentre.Enabled = (FCurrentCostCentre.CanHaveChildren.Value);
@@ -674,7 +676,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void UpdateOnControlChanged(Object sender, EventArgs e)
         {
-            if (!FIAmUpdating)
+            if (FIAmUpdating == 0)
             {
                 ACostCentreRow Row = GetSelectedDetailRowManual();
 
@@ -689,9 +691,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             Catalog.GetString("Cost Centre Type"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Stop);
-                        FIAmUpdating = true;
+                        FIAmUpdating++;
                         cmbDetailCostCentreType.SetSelectedString(Row.CostCentreType);
-                        FIAmUpdating = false;
+                        FIAmUpdating--;
                     }
                     else // It's not a system Cost Centre, but probably I still shouldn't be changing it...
                     {
@@ -706,9 +708,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Stop) == System.Windows.Forms.DialogResult.No)
                         {
-                            FIAmUpdating = true;
+                            FIAmUpdating++;
                             cmbDetailCostCentreType.SetSelectedString(Row.CostCentreType);
-                            FIAmUpdating = false;
+                            FIAmUpdating--;
                         }
                     }
                 }
@@ -759,6 +761,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoCostCentreList.Focus();
             }
         }
+
+        void TFrmGLCostCentreHierarchy_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = CheckCostCentreValueChanged();
+        }
+
 
     } // TFrmGLCostCentreHierarchy
 } // namespace

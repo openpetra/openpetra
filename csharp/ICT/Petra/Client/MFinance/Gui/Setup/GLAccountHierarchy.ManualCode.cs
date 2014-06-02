@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private string FSelectedHierarchy = "STANDARD";
 
         /// <summary>This prevents the updates causing cascading functions</summary>
-        public bool FIAmUpdating;
+        public Int32 FIAmUpdating = 0;
 
         // The routine ChangeAccountCodeValue() needs the old value of
         // txtDetailAccountCode and the new actual value.
@@ -200,14 +200,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.UnhookControl(txtDetailAccountCode, false); // I don't want changes in this edit box to cause SetChangedFlag - I'll set it myself.
             FPetraUtilsObject.UnhookControl(txtStatus, false); // This control is not to be spied on!
             txtDetailAccountCode.TextChanged += new EventHandler(txtDetailAccountCode_TextChanged);
+            txtDetailAccountCode.Validated -= ControlValidatedHandler; // Don't trigger validation on change - I need to do it manually
+
             chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
             chkDetailIsSummary.CheckedChanged += chkDetailIsSummary_CheckedChanged;
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
             FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
             txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
             cmbDetailValidCcCombo.SelectedValueChanged += cmbDetailValidCcCombo_SelectedValueChanged;
-
-            FIAmUpdating = false;
+            this.FormClosing += TFrmGLAccountHierarchy_FormClosing;
+            FIAmUpdating = 0;
             FNameForNewAccounts = Catalog.GetString("NEWACCOUNT");
         }
 
@@ -215,7 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         ///
         void cmbDetailValidCcCombo_SelectedValueChanged(object sender, EventArgs e)
         {
-            if ((FCurrentAccount == null) || FIAmUpdating) // Only look into this if the user has changed it...
+            if ((FCurrentAccount == null) || FIAmUpdating > 0) // Only look into this if the user has changed it...
             {
                 return;
             }
@@ -244,16 +246,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             ValidCCType), Catalog.GetString("Valid Cost Centre Type"), MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
                     != System.Windows.Forms.DialogResult.Yes)
                 {
-                    FIAmUpdating = true;
+                    FIAmUpdating++;
                     cmbDetailValidCcCombo.Text = RequiredValue;
-                    FIAmUpdating = false;
+                    FIAmUpdating--;
                 }
             }
         }
 
         void chkDetailIsSummary_CheckedChanged(object sender, EventArgs e)
         {
-            if ((FCurrentAccount != null) && !FIAmUpdating) // Only look into this is the user has changed it...
+            if ((FCurrentAccount != null) && FIAmUpdating == 0) // Only look into this is the user has changed it...
             {
                 FCurrentAccount.GetAttrributes();
 
@@ -401,16 +403,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void txtDetailAccountCode_TextChanged(object sender, EventArgs e)
         {
-            if (FIAmUpdating)
+            if (FIAmUpdating > 0)
             {
                 return;
             }
 
             if (FCurrentAccount.AccountRow.SystemAccountFlag)
             {
-                FIAmUpdating = true;
+                FIAmUpdating++;
                 txtDetailAccountCode.Text = strOldDetailAccountCode;
-                FIAmUpdating = false;
+                FIAmUpdating--;
                 MessageBox.Show(Catalog.GetString("System Account Code cannot be changed."),
                     Catalog.GetString("Rename Account"),
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
@@ -428,9 +430,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!FCurrentAccount.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change an Account code, but I can't allow it.
             {
-                FIAmUpdating = true;
+                FIAmUpdating++;
                 txtDetailAccountCode.Text = strOldDetailAccountCode;
-                FIAmUpdating = false;
+                FIAmUpdating--;
                 MessageBox.Show(Catalog.GetString(
                         "Account Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Account."),
                     Catalog.GetString("Rename Account"),
@@ -710,17 +712,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             bool hasChanges = FPetraUtilsObject.HasChanges;
 
-            FIAmUpdating = true;
+            FIAmUpdating++;
             ShowDetails((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
-            FIAmUpdating = false;
+            FIAmUpdating--;
 
             tbbAddNewAccount.Enabled = (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false);
             tbbDeleteAccount.Enabled = (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false);
 
-            if (hasChanges)
-            {
-                FPetraUtilsObject.SetChangedFlag();
-            }
+            FPetraUtilsObject.HasChanges = hasChanges;
         }
 
         /// <summary>
@@ -760,6 +759,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         public void ChangeAccountCodeValue(object sender, EventArgs e)
         {
+            CheckAccountCodeValueChanged();
+        }
+
+        private Boolean CheckAccountCodeValueChanged()
+        {
             String strNewDetailAccountCode = txtDetailAccountCode.Text;
             String strAccountShortDescr = txtDetailEngAccountCodeShortDesc.Text;
 
@@ -781,7 +785,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 MessageBoxIcon.Warning) != DialogResult.OK)
                         {
                             txtDetailAccountCode.Text = strOldDetailAccountCode;
-                            return;
+                            return changeAccepted;
                         }
                     }
 
@@ -848,7 +852,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             if (Success)
                             {
-                                FIAmUpdating = true;
+                                FIAmUpdating++;
                                 FMainDS.Clear();
                                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));      // and this also takes a while!
                                 strOldDetailAccountCode = "";
@@ -856,7 +860,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 ucoAccountsTree.PopulateTreeView(FMainDS, FLedgerNumber, FSelectedHierarchy);
                                 ShowDetailsManual(null);
                                 ClearStatus();
-                                FIAmUpdating = false;
+                                FIAmUpdating--;
                                 FPetraUtilsObject.SuppressChangeDetection = false;
                                 ucoAccountsTree.SelectNodeByName(FRecentlyUpdatedDetailAccountCode);
 
@@ -866,6 +870,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             {
                                 MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
                             }
+                            FPetraUtilsObject.HasChanges = false;
                         }
 
                         btnRename.Visible = false;
@@ -876,7 +881,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             } // if not handling the same change as before (prevents this method running several times for a single change!)
 
-            return;
+            return changeAccepted;
         }
-    }
+
+        private void TFrmGLAccountHierarchy_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = CheckAccountCodeValueChanged();
+        }
+
+    } // TFrmGLAccountHierarchy
 }

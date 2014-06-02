@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TreeNode HighlightedDropTarget = null;
         // The account selected in the parent form
         AccountNodeDetails FSelectedAccount;
+        Boolean FDuringInitialisation;
 
         /// <summary>
         /// I don't want this, but the auto-generated code references it:
@@ -69,6 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (FSelectedAccount != null)
             {
+                trvAccounts.Focus(); // {NET Bug!} The control doesn't show the selection if it's not visible and in focus.
                 trvAccounts.SelectedNode = FSelectedAccount.linkedTreeNode;
             }
         }
@@ -241,7 +243,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Parent.Nodes.Insert(Idx, Child);
             }
 
-            FParentForm.SetSelectedAccount(ChildTag);
+            if (!FDuringInitialisation)
+            {
+                FParentForm.SetSelectedAccount(ChildTag);
+            }
         }
 
         /// <summary>
@@ -320,7 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public void PopulateTreeView(GLSetupTDS MainDS, Int32 LedgerNumber, String SelectedHierarchy)
         {
             FParentForm.SetSelectedAccount(null);
-
+            FDuringInitialisation = true;
             trvAccounts.BeginUpdate();
             trvAccounts.Nodes.Clear();
 
@@ -344,6 +349,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // reset filter so that the defaultview can be used for finding accounts (eg. when adding new account)
             MainDS.AAccountHierarchyDetail.DefaultView.RowFilter = "";
             trvAccounts.EndUpdate();
+
+            FDuringInitialisation = false;
 
             if (trvAccounts.Nodes.Count > 0)
             {
@@ -377,7 +384,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (AParent == null)
             {
                 trvAccounts.Nodes.Add(Child);
-                FParentForm.SetSelectedAccount(NodeTag);
             }
             else
             {
