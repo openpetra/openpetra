@@ -221,7 +221,8 @@ namespace Ict.Petra.Client.App.Gui
         public static readonly string StrKeyShortcutCtrlE = Catalog.GetString("Ctrl+E");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrKeyShortcutCtrlEHelp = Catalog.GetString("Directs keyboard input to the first data entry field of the current record.");
+        public static readonly string StrKeyShortcutCtrlEHelp = Catalog.GetString(
+            "Directs keyboard input to the first data entry field of the current record.");
 
         #endregion
 

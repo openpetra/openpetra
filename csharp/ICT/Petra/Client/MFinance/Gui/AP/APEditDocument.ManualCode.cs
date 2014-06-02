@@ -356,6 +356,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void ShowDataManual()
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
+
             FDocumentLedgerNumber = DocumentRow.LedgerNumber;
 
             // This will involve a trip to the server to access GLSetupTDS
@@ -368,7 +369,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
 
-            FLedgerRow = ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];
+            FLedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];
             txtDetailBaseAmount.CurrencyCode = FLedgerRow.BaseCurrency;
 
             //
@@ -440,7 +442,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     FMainDS.AApDocument[0].LastDetailNumber++;
 
                     // set the document status to open or approved depending on the user preference for the ledger
-                    FMainDS.AApDocument[0].DocumentStatus = (FRequireApprovalBeforePosting) ? MFinanceConstants.AP_DOCUMENT_OPEN : MFinanceConstants.AP_DOCUMENT_APPROVED;
+                    FMainDS.AApDocument[0].DocumentStatus =
+                        (FRequireApprovalBeforePosting) ? MFinanceConstants.AP_DOCUMENT_OPEN : MFinanceConstants.AP_DOCUMENT_APPROVED;
                     EnableControls();
                     txtDetailNarrative.Focus();
                 }
