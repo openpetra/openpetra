@@ -383,7 +383,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     DataRow resultRow = tab.NewRow();
                     resultRow[0] = row[0];
-                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString("yyyy");
+                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString(
+                        "dd/MM/yyyy");
                     tab.Rows.Add(resultRow);
                 }
             }

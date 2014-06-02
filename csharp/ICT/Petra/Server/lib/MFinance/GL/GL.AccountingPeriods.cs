@@ -564,6 +564,126 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// Loads all available years with GL data into a table
+        /// To be used by a combobox to select the financial year
+        ///
+        /// </summary>
+        /// <returns>DataTable</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetAvailableGLYearEndings(Int32 ALedgerNumber,
+            System.Int32 ADiffPeriod,
+            bool AIncludeNextYear,
+            out String ADisplayMember, out String AValueMember)
+        {
+            //Create the table to populate the combobox
+            ADisplayMember = "YearEndDate";
+            AValueMember = "YearNumber";
+            string YearEnd = "YearEndDateLong";
+
+            DateTime YearEndDate;
+            int YearNumber;
+
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+            AAccountingPeriodTable AccountingPeriods = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, Transaction);
+
+            if (LedgerTable.Count < 1)
+            {
+                throw new Exception("Ledger " + ALedgerNumber + " not found");
+            }
+
+            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable[0];
+
+            AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",
+                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
+                LedgerRow.NumberOfAccountingPeriods);
+
+            //Get last period row
+            AAccountingPeriodRow periodRow = (AAccountingPeriodRow)AccountingPeriods.DefaultView[0].Row;
+
+
+            //Create the table to populate the combobox
+            DataTable BatchTable = new DataTable();
+            BatchTable.Columns.Add(AValueMember, typeof(System.Int32));
+            BatchTable.Columns.Add(ADisplayMember, typeof(String));
+            BatchTable.Columns.Add(YearEnd, typeof(String));
+            BatchTable.PrimaryKey = new DataColumn[] {
+                BatchTable.Columns[0]
+            };
+
+            //Add the current year to the table
+            YearNumber = LedgerRow.CurrentFinancialYear;
+            YearEndDate = periodRow.PeriodEndDate;
+
+            DataRow ResultRow = BatchTable.NewRow();
+            ResultRow[0] = YearNumber;
+            ResultRow[1] = YearEndDate.ToShortDateString();
+            ResultRow[2] = YearEndDate.ToLongDateString();
+            BatchTable.Rows.Add(ResultRow);
+
+            //Retrieve all previous years
+            string sql =
+                String.Format("SELECT DISTINCT {0} AS batchYear" +
+                    " FROM PUB_{1}" +
+                    " WHERE {2} = {3} And {0} < {4}" +
+                    " ORDER BY 1 DESC",
+                    ABatchTable.GetBatchYearDBName(),
+                    ABatchTable.GetTableDBName(),
+                    ABatchTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    YearNumber);
+
+            DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
+
+            BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
+
+            try
+            {
+                foreach (DataRowView row in BatchYearTable.DefaultView)
+                {
+                    DataRow currentBatchYearRow = row.Row;
+
+                    Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
+
+                    if (YearNumber != currentBatchYear)
+                    {
+                        YearNumber -= 1;
+                        YearEndDate = DecrementYear(YearEndDate);
+
+                        if (YearNumber != currentBatchYear)
+                        {
+                            //Gap in year numbers
+                            throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
+                                    YearNumber,
+                                    ALedgerNumber));
+                        }
+                    }
+
+                    DataRow ResultRow2 = BatchTable.NewRow();
+                    ResultRow2[0] = YearNumber;
+                    ResultRow2[1] = YearEndDate.ToShortDateString();
+                    BatchTable.Rows.Add(ResultRow2);
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.Message);
+                //Do nothing
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return BatchTable;
+        }
+
+        /// <summary>
         ///    Get the available financial years from the existing batches
         /// </summary>
         /// <param name="ALedgerNumber"></param>

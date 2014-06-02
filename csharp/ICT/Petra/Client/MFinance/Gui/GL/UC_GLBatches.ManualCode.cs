@@ -55,8 +55,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FSelectedBatchNumber = -1;
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
-        private DateTime StartDateCurrentPeriod;
-        private DateTime EndDateLastForwardingPeriod;
+        private DateTime FStartDateCurrentPeriod;
+        private DateTime FEndDateLastForwardingPeriod;
         private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
         private Int32 FSelectedYear;
         private Int32 FSelectedPeriod = -1;
@@ -68,16 +68,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private DateTime FCurrentEffectiveDate;
         private bool FBatchesLoaded = false;
 
-        TCmbAutoComplete FcmbYearFilter = null;
-        TCmbAutoComplete FcmbPeriodFilter = null;
+        TCmbAutoComplete FcmbYearEnding = null;
+        TCmbAutoComplete FcmbPeriod = null;
         RadioButton FrbtEditing = null;
         RadioButton FrbtPosting = null;
         RadioButton FrbtAll = null;
 
         private void InitialiseControls()
         {
-            FcmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
-            FcmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
+            FcmbYearEnding = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearEnding");
+            FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
             FrbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
             FrbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
             FrbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // This will populate the periods combos without firing off cascading events
             FSuppressRefreshPeriods = true;
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearFilter, FLedgerNumber); //.InitialiseAvailableGiftYearsList(ref FcmbYearFilter, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true); //.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
             FSuppressRefreshPeriods = false;
 
             // Now we can set the period part of the filter
@@ -122,13 +122,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Set the valid date range label
             TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
-                out StartDateCurrentPeriod,
-                out EndDateLastForwardingPeriod,
+                out FStartDateCurrentPeriod,
+                out FEndDateLastForwardingPeriod,
                 out FDefaultDate);
 
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                StringHelper.DateToLocalizedString(StartDateCurrentPeriod, false, false),
-                StringHelper.DateToLocalizedString(EndDateLastForwardingPeriod, false, false));
+                StringHelper.DateToLocalizedString(FStartDateCurrentPeriod, false, false),
+                StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod, false, false));
 
             //Set sort order
             FMainDS.ABatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
@@ -361,13 +361,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Set year and period to correct value
-            if (FcmbYearFilter.SelectedIndex != 0)
+            if (FcmbYearEnding.SelectedIndex != 0)
             {
-                FcmbYearFilter.SelectedIndex = 0;
+                FcmbYearEnding.SelectedIndex = 0;
             }
-            else if (FcmbPeriodFilter.SelectedIndex != 1)
+            else if (FcmbPeriod.SelectedIndex != 1)
             {
-                FcmbPeriodFilter.SelectedIndex = 1;
+                FcmbPeriod.SelectedIndex = 1;
             }
 
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
@@ -436,15 +436,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             bool UpdateTransactionDates = false;
 
+            Int32 periodNumber = 0;
+            Int32 yearNumber = 0;
+            string aDate = string.Empty;
+            DateTime dateValue;
+
             try
             {
-                Int32 periodNumber = 0;
-                Int32 yearNumber = 0;
-                DateTime dateValue;
-                string aDate = dtpDetailDateEffective.Date.ToString();
+                aDate = dtpDetailDateEffective.Date.ToString();
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
+                    if ((dateValue < FStartDateCurrentPeriod) || (dateValue > FEndDateLastForwardingPeriod))
+                    {
+                        return;
+                    }
+
                     //GetDetailsFromControls will do this automatically if the user tabs
                     //  passed the last control, but not if they clik on another control
                     if (FCurrentEffectiveDate != dateValue)
@@ -463,16 +470,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             //Update the Transaction effective dates
                             UpdateTransactionDates = true;
 
-                            if (FcmbYearFilter.SelectedIndex != 0)
+                            if (FcmbYearEnding.SelectedIndex != 0)
                             {
-                                FcmbYearFilter.SelectedIndex = 0;
-                                FcmbPeriodFilter.SelectedIndex = 1;
+                                FcmbYearEnding.SelectedIndex = 0;
+                                FcmbPeriod.SelectedIndex = 1;
                                 dtpDetailDateEffective.Date = dateValue;
                                 dtpDetailDateEffective.Focus();
                             }
-                            else if (FcmbPeriodFilter.SelectedIndex != 1)
+                            else if (FcmbPeriod.SelectedIndex != 1)
                             {
-                                FcmbPeriodFilter.SelectedIndex = 1;
+                                FcmbPeriod.SelectedIndex = 1;
                                 dtpDetailDateEffective.Date = dateValue;
                                 dtpDetailDateEffective.Focus();
                             }
@@ -991,7 +998,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FSuppressRefreshFilter = true;
 
-            NewYearSelected = FcmbYearFilter.GetSelectedInt32();
+            NewYearSelected = FcmbYearEnding.GetSelectedInt32();
 
             if (FSelectedYear == NewYearSelected)
             {
@@ -1003,7 +1010,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (sender is TCmbAutoComplete)
             {
-                FPetraUtilsObject.ClearControl(FcmbPeriodFilter);
+                FPetraUtilsObject.ClearControl(FcmbPeriod);
             }
 
             FSuppressRefreshFilter = false;
@@ -1019,7 +1026,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 RefreshFilter(sender, e);
             }
 
-            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref FcmbPeriodFilter,
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref FcmbPeriod,
                 FLedgerNumber,
                 FSelectedYear,
                 0,
@@ -1056,9 +1063,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     return;
                 }
 
-                int newYear = FcmbYearFilter.GetSelectedInt32();
-                int newPeriod = FcmbPeriodFilter.GetSelectedInt32();
-                string newPeriodText = FcmbPeriodFilter.Text;
+                int newYear = FcmbYearEnding.GetSelectedInt32();
+                int newPeriod = FcmbPeriod.GetSelectedInt32();
+                string newPeriodText = FcmbPeriod.Text;
 
                 if (FSelectedYear == newYear)
                 {
@@ -1086,9 +1093,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ClearCurrentSelection();
 
-            FSelectedYear = FcmbYearFilter.GetSelectedInt32();
-            FSelectedPeriod = FcmbPeriodFilter.GetSelectedInt32();
-            FPeriodText = FcmbPeriodFilter.Text;
+            FSelectedYear = FcmbYearEnding.GetSelectedInt32();
+            FSelectedPeriod = FcmbPeriod.GetSelectedInt32();
+            FPeriodText = FcmbPeriod.Text;
 
             ALedgerRow LedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
@@ -1550,9 +1557,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.CanFocus)
             {
                 //Set filter to current and forwarding
-                if (FcmbPeriodFilter.Items.Count > 0)
+                if (FcmbPeriod.Items.Count > 0)
                 {
-                    FcmbPeriodFilter.SelectedIndex = 1;
+                    FcmbPeriod.SelectedIndex = 1;
                 }
 
                 if (grdDetails.Rows.Count < 2)

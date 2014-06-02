@@ -41,14 +41,14 @@ RootNode:
                 rgrDetailGiftType: {Label=Gift Type, CloneToComboBox=true}
             Panels:
                 pnlBatchFilter:
-                    Controls: [rgrShowBatches, cmbYear, cmbPeriod]
+                    Controls: [rgrShowBatches, cmbYearEnding, cmbPeriod]
                     
                     rgrShowBatches: 
                         Label: Show batches for
                         ClearButton: false
                         OptionalValues: [Posting, =Editing, All]
                         
-                    cmbYear: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
+                    cmbYearEnding: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
                     cmbPeriod: {OnChange=RefreshFilter, Width=250}
                     rbtPosting: {OnChange=RefreshFilter}
                     rbtEditing: {OnChange=RefreshFilter}

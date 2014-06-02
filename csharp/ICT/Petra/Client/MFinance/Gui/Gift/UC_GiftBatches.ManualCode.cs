@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Boolean FPostingInProgress = false;
         private bool FInitialFocusActionComplete = false;
 
-        TCmbAutoComplete FcmbYear = null;
+        TCmbAutoComplete FcmbYearEnding = null;
         TCmbAutoComplete FcmbPeriod = null;
         RadioButton FrbtEditing = null;
         RadioButton FrbtPosting = null;
@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FrbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
             FrbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
             FrbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
-            FcmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
+            FcmbYearEnding = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearEnding");
             FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
         }
 
@@ -159,7 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FrbtPosting.Checked = false;
             FrbtEditing.Checked = false;
             FrbtAll.Checked = false;
-            FcmbYear.Enabled = false;
+            FcmbYearEnding.Enabled = false;
             FcmbPeriod.Enabled = false;
 
             FMainDS.AGiftBatch.DefaultView.RowFilter =
@@ -236,7 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.Merge(ViewModeTDS);
                 FrbtAll.Checked = true;
-                FcmbYear.Enabled = false;
+                FcmbYearEnding.Enabled = false;
                 FcmbPeriod.Enabled = false;
             }
             else
@@ -245,7 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FPetraUtilsObject.DisableDataChangedEvent();
                     FSuppressRefreshPeriods = true;
-                    TFinanceControls.InitialiseAvailableGiftYearsList(ref FcmbYear, FLedgerNumber);
+                    TFinanceControls.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
                     FSuppressRefreshPeriods = false;
                     FSuppressRefreshFilter = true;
                     RefreshPeriods(null, null);
@@ -463,7 +463,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FSuppressRefreshFilter = true;
 
-            NewYearSelected = FcmbYear.GetSelectedInt32();
+            NewYearSelected = FcmbYearEnding.GetSelectedInt32();
 
             if (FSelectedYear == NewYearSelected)
             {
@@ -520,7 +520,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
 
-                int newYear = FcmbYear.GetSelectedInt32();
+                int newYear = FcmbYearEnding.GetSelectedInt32();
                 int newPeriod = FcmbPeriod.GetSelectedInt32();
                 string newPeriodText = FcmbPeriod.Text;
 
@@ -550,7 +550,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ClearCurrentSelection();
 
-            FSelectedYear = FcmbYear.GetSelectedInt32();
+            FSelectedYear = FcmbYearEnding.GetSelectedInt32();
             FSelectedPeriod = FcmbPeriod.GetSelectedInt32();
             FPeriodText = FcmbPeriod.Text;
 
@@ -696,6 +696,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return rowPos + 1;
         }
 
+        private void UpdateBatchPeriod(object sender, EventArgs e)
+        {
+            UpdateBatchPeriod(true);
+        }
+
         /// <summary>
         /// Update batch period if necessary
         /// </summary>
@@ -706,14 +711,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            Int32 periodNumber = 0;
+            Int32 yearNumber = 0;
+            DateTime dateValue;
+
             try
             {
-                Int32 periodNumber = 0;
-                Int32 yearNumber = 0;
-
                 if (dtpDetailGlEffectiveDate.ValidDate(false))
                 {
-                    DateTime dateValue = dtpDetailGlEffectiveDate.Date.Value;
+                    dateValue = dtpDetailGlEffectiveDate.Date.Value;
+
+                    //If invalid date return;
+                    if ((dateValue < FStartDateCurrentPeriod) || (dateValue > FEndDateLastForwardingPeriod))
+                    {
+                        return;
+                    }
 
                     FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
 
@@ -726,9 +738,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             //Period has changed, so update transactions DateEntered
                             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateDateEntered(FPreviouslySelectedDetailRow);
 
-                            if (FcmbYear.SelectedIndex != 0)
+                            if (FcmbYearEnding.SelectedIndex != 0)
                             {
-                                FcmbYear.SelectedIndex = 0;
+                                FcmbYearEnding.SelectedIndex = 0;
                                 FcmbPeriod.SelectedIndex = 1;
 
                                 if (AFocusOnDate)
@@ -755,11 +767,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 //Leave BatchPeriod as it is
             }
-        }
-
-        private void UpdateBatchPeriod(object sender, EventArgs e)
-        {
-            UpdateBatchPeriod(true);
         }
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
@@ -931,9 +938,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Set year and period to correct value
-            if (FcmbYear.SelectedIndex != 0)
+            if (FcmbYearEnding.SelectedIndex != 0)
             {
-                FcmbYear.SelectedIndex = 0;
+                FcmbYearEnding.SelectedIndex = 0;
             }
 
             if (FcmbPeriod.SelectedIndex != 1)
