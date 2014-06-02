@@ -815,6 +815,12 @@ namespace Ict.Common.Controls
         /// </returns>
         public int FindStringSortedByLength(string SearchString)
         {
+            if ((SearchString == String.Empty) && this.IgnoreNewValues)
+            {
+                // It is in use for Filter/Find and the string is empty
+                return -1;
+            }
+
             if (DataSource == null)
             {
                 // TODO: proper implementation of FindStringSortedByLength for simple string lists
