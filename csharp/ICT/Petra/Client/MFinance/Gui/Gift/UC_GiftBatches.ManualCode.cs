@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private DateTime FDefaultDate;
         private Boolean FPostingInProgress = false;
         private bool FInitialFocusActionComplete = false;
+        private string FBatchDescription = string.Empty;
 
         TCmbAutoComplete FcmbYearEnding = null;
         TCmbAutoComplete FcmbPeriod = null;
