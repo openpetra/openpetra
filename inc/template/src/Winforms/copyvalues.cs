@@ -174,6 +174,13 @@ if (keyData == (Keys.L | Keys.Control))
     return true;
 }
 
+{##PROCESSCMDKEYCTRLE}
+if (keyData == (Keys.E | Keys.Control))
+{
+    FocusFirstEditableControl();
+    return true;
+}
+
 {##PROCESSCMDKEYSELECTROW}
 if (keyData == (Keys.Home | Keys.Control))
 {

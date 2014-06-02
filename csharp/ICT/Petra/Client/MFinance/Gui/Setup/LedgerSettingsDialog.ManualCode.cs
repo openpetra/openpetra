@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Boolean FCurrencyChangeAllowed;
         private Boolean FCalendarChangeAllowed;
         private Int32 FCurrentForwardPostingPeriods;
+        private string FLedgerBaseCurrency;
         private string FInitialTab = "General";
         private TabPage FActiveTab = null;
 
@@ -94,6 +95,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FCalendarStartDate = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the ledger base currency
+        /// </summary>
+        public String LedgerBaseCurrency
+        {
+            get
+            {
+                return FLedgerBaseCurrency;
             }
         }
 
@@ -156,6 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         out FCurrencyChangeAllowed, out FCalendarChangeAllowed));
                 ALedgerRow ledgerRow = (ALedgerRow)FMainDS.ALedger.Rows[0];
                 FCurrentForwardPostingPeriods = ledgerRow.NumberFwdPostingPeriods;
+                FLedgerBaseCurrency = ledgerRow.BaseCurrency;
 
                 // Tell the pages that the data is available.  They will set the initial values of the controls accordingly.
                 ucoGeneralLedgerSettings.InitializeScreenData(this, FLedgerNumber);

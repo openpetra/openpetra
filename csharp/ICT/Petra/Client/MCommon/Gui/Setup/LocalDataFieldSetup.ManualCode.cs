@@ -36,6 +36,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -324,6 +325,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
 
+            FFilterPanelControls.SetBaseFilter("Context=" + ((int)CurrentContext).ToString(), true);
+
             grdDetails.SelectRowWithoutFocus(1);
         }
 
@@ -447,29 +450,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            // We use non-standard code here because of our three contexts
-            // We cannot call CreateNewPDataLabel() because it won't have the correct RowFilter
-            // So we use a modified version of the auto-generated code
-            if (ValidateAllData(true, true))
-            {
-                PDataLabelRow NewRow = FMainDS.PDataLabel.NewRowTyped();
-
-                NewRowManual(ref NewRow);
-                FMainDS.PDataLabel.Rows.Add(NewRow);
-
-                FPetraUtilsObject.SetChangedFlag();
-
-                DataView contextView = new DataView(FMainDS.PDataLabel,
-                    "Context=" + ((int)CurrentContext).ToString(), "p_group_c, p_text_c", DataViewRowState.CurrentRows);
-                contextView.AllowNew = false;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
-                grdDetails.Refresh();
-                SelectDetailRowByDataTableIndex(FMainDS.PDataLabel.Rows.Count - 1);
-
-                //CreateNewPDataLabel();
-                txtDetailText.SelectAll();
-                txtDetailText.Focus();
-            }
+            CreateNewPDataLabel();
         }
 
         // We have to have our own handler for the delete button because we need to check references
@@ -1038,6 +1019,75 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // Now call the central validation routine for the other verification tasks
             TSharedValidation_CacheableDataTables.ValidateLocalDataFieldSetup(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void CreateFilterFindPanelsManual()
+        {
+            if (CurrentContext == Context.Partner)
+            {
+                // For Partner we create a bunch of checkboxes
+                AddCheckBoxFilter("Person");
+                AddCheckBoxFilter("Family");
+                AddCheckBoxFilter("Church");
+                AddCheckBoxFilter("Organisation");
+                AddCheckBoxFilter("Bank");
+                AddCheckBoxFilter("Unit");
+                AddCheckBoxFilter("Venue");
+            }
+        }
+
+        private void AddCheckBoxFilter(string AnItemName)
+        {
+            TIndividualFilterFindPanel iffp;
+
+            CheckBox chkAny = new CheckBox();
+
+            chkAny.Name = "chk" + AnItemName;
+            chkAny.Text = AnItemName;
+
+            iffp = new TIndividualFilterFindPanel(
+                null,
+                TCloneFilterFindControl.ShallowClone <CheckBox>(chkAny, TFilterPanelControls.FILTER_NAME_SUFFIX),
+                null,
+                "bit",
+                "HasManualFilter");
+            FFilterPanelControls.FStandardFilterPanels.Add(iffp);
+        }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+            if (CurrentContext == Context.Partner)
+            {
+                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkPerson"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkFamily"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkChurch"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkOrganisation"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkBank"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkUnit"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkVenue"), ref AFilterString);
+            }
+        }
+
+        private void ApplyFilterFromCheckBox(CheckBox ACheckBox, ref string AFilterString)
+        {
+            if (ACheckBox.CheckState == CheckState.Indeterminate)
+            {
+                return;
+            }
+
+            if (AFilterString.Length > 0)
+            {
+                AFilterString += " AND ";
+            }
+
+            if (ACheckBox.Checked)
+            {
+                AFilterString += String.Format("({0} LIKE '%{1}%')", DBUsedBy, ACheckBox.Text);
+            }
+            else
+            {
+                AFilterString += String.Format("NOT ({0} LIKE '%{1}%')", DBUsedBy, ACheckBox.Text);
+            }
         }
     }
 }

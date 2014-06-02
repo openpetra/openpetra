@@ -87,14 +87,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// implement dummy functions so that we can use this control on a yaml form
-        /// </summary>
-        public void ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
-        {
-            // not implemented
-        }
-
-        /// <summary>
         /// Show ledger info data from given data set
         /// </summary>
         /// <param name="ADataSet">The data set for which details will be shown</param>

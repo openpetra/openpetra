@@ -17,7 +17,16 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtExtractName, txtCreatedBy, txtModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc, Column:Frozen]
+            FindControls: [txtExtractName, txtCreatedBy, txtModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc]
+            ControlAttributes:
+                txtCreatedBy: {Label=Created By}
+                txtModifiedBy: {Label=Modified By}
+                dtpDateCreated: {Label=From Created Date, Comparison=gte}
+                dtpDateModified: {Label=From Modified Date, Comparison=gte}
         pnlButtons:
             Dock: Bottom
             Controls: [btnMaintain, btnDelete, btnRefreshGrid]

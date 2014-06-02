@@ -100,6 +100,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             LoadData();
 
+            // get the grid columns to fill the available space
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch | SourceGrid.AutoSizeMode.EnableAutoSize;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+
             // allow multiselection of list items so several records can be deleted at once
             grdDetails.Selection.EnableMultiSelection = true;
 
@@ -108,6 +113,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 grdDetails.SelectRowInGrid(1);
                 ShowDetails(1);
+
+                UpdateRecordNumberDisplay();
             }
             else
             {
@@ -360,6 +367,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // set this property to false as otherwise save button will get enabled whenever values
             // in the partner info control change
             ucoPartnerInfo.CanBeHookedUpForValueChangedEvent = false;
+
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.EditPartner);
+            grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(this.EditPartner);
         }
 
         /// <summary>

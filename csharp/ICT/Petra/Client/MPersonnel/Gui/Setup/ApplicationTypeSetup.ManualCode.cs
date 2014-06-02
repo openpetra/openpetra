@@ -105,6 +105,11 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         private void ShowDetailsManual(PtApplicationTypeRow ARow)
         {
+            if (ARow == null)
+            {
+                return;
+            }
+
             if (ARow.AppFormType == "SHORT FORM")
             {
                 rbtEvent.Checked = true;
@@ -140,6 +145,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidateApplicationType(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+            // The filter string will be something like pt_app_form_type_c LIKE '%Field%'
+            // We need to alter that - Event is SHORT FORM and Field is LONG FORM
+            AFilterString = AFilterString.Replace("'%Event%'", "'%SHORT%'");
+            AFilterString = AFilterString.Replace("'%Field%'", "'%LONG%'");
         }
     }
 }
