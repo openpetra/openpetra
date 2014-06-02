@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         ALedgerRow FLedgerRow = null;
         SourceGrid.Cells.Editors.ComboBox cmbAnalAttribValues;
         AApAnalAttribRow FPSAttributesRow;
+        Boolean FRequireApprovalBeforePosting;
 
         /// <summary>
         /// Before saving the document, I'll remove any ApAnalAttrib rows that have no values set
@@ -355,33 +356,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void ShowDataManual()
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
-
             FDocumentLedgerNumber = DocumentRow.LedgerNumber;
+
+            // This will involve a trip to the server to access GLSetupTDS
+            TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, FDocumentLedgerNumber);
+            FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
+
+            txtTotalAmount.CurrencyCode = DocumentRow.CurrencyCode;
+            txtDetailAmount.CurrencyCode = DocumentRow.CurrencyCode;
+            dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
+
+            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
+
+            FLedgerRow = ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];
+            txtDetailBaseAmount.CurrencyCode = FLedgerRow.BaseCurrency;
 
             //
             // If this document's currency is that of my own ledger,
             // I need to disable the rate of exchange field.
-            ALedgerRow ledger =
-                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
-                     TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];
-
-            String MyCurrencyCode = ledger.BaseCurrency;
-
-            if (DocumentRow.CurrencyCode == MyCurrencyCode)
+            if (DocumentRow.CurrencyCode == FLedgerRow.BaseCurrency)
             {
                 txtExchangeRateToBase.Enabled = false;
                 btnLookupExchangeRate.Enabled = false;
             }
-
-            txtTotalAmount.CurrencyCode = DocumentRow.CurrencyCode;
-            txtDetailAmount.CurrencyCode = DocumentRow.CurrencyCode;
-
-            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
-
-            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FDocumentLedgerNumber);
-            FLedgerRow = Tbl[0];
-            txtDetailBaseAmount.CurrencyCode = FLedgerRow.BaseCurrency;
-            dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
 
             if ((FMainDS.AApDocumentDetail == null) || (FMainDS.AApDocumentDetail.Rows.Count == 0)) // When the document is new, I need to create the first detail line.
             {
@@ -411,42 +408,42 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void NewDetail(Object sender, EventArgs e)
         {
-            // get the entered amounts, so that we can calculate the missing amount for the new detail
-//            GetDetailsFromControls(FPreviouslySelectedDetailRow);
-            ValidateAllData(true, true);
-
-            decimal DetailAmount = FMainDS.AApDocument[0].TotalAmount;
-
-            if (FMainDS.AApDocumentDetail != null)
+            // do validation which will get the entered amounts, so that we can calculate the missing amount for the new detail
+            if (ValidateAllData(true, true))
             {
-                foreach (AApDocumentDetailRow detailRow in FMainDS.AApDocumentDetail.Rows)
+                decimal DetailAmount = FMainDS.AApDocument[0].TotalAmount;
+
+                if (FMainDS.AApDocumentDetail != null)
                 {
-                    if (detailRow.RowState != DataRowState.Deleted)
+                    foreach (AApDocumentDetailRow detailRow in FMainDS.AApDocumentDetail.Rows)
                     {
-                        DetailAmount -= detailRow.Amount;
+                        if (detailRow.RowState != DataRowState.Deleted)
+                        {
+                            DetailAmount -= detailRow.Amount;
+                        }
                     }
                 }
-            }
 
-            if (DetailAmount < 0)
-            {
-                DetailAmount = 0;
-            }
+                if (DetailAmount < 0)
+                {
+                    DetailAmount = 0;
+                }
 
-            if (CreateAApDocumentDetail(
-                    FMainDS.AApDocument[0].LedgerNumber,
-                    FMainDS.AApDocument[0].ApDocumentId,
-                    FMainDS.AApSupplier[0].DefaultExpAccount,
-                    FMainDS.AApSupplier[0].DefaultCostCentre,
-                    DetailAmount,
-                    FMainDS.AApDocument[0].LastDetailNumber))
-            {
-                FMainDS.AApDocument[0].LastDetailNumber++;
+                if (CreateAApDocumentDetail(
+                        FMainDS.AApDocument[0].LedgerNumber,
+                        FMainDS.AApDocument[0].ApDocumentId,
+                        FMainDS.AApSupplier[0].DefaultExpAccount,
+                        FMainDS.AApSupplier[0].DefaultCostCentre,
+                        DetailAmount,
+                        FMainDS.AApDocument[0].LastDetailNumber))
+                {
+                    FMainDS.AApDocument[0].LastDetailNumber++;
 
-                // for the moment, set all to approved, since we don't yet support approval of documents
-                FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
-                EnableControls();
-                txtDetailNarrative.Focus();
+                    // set the document status to open or approved depending on the user preference for the ledger
+                    FMainDS.AApDocument[0].DocumentStatus = (FRequireApprovalBeforePosting) ? MFinanceConstants.AP_DOCUMENT_OPEN : MFinanceConstants.AP_DOCUMENT_APPROVED;
+                    EnableControls();
+                    txtDetailNarrative.Focus();
+                }
             }
         }
 
