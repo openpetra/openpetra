@@ -361,11 +361,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Set year and period to correct value
-            if (FcmbYearEnding.SelectedIndex != 0)
+            if ((FcmbYearEnding.Items.Count > 0) && (FcmbYearEnding.SelectedIndex != 0))
             {
                 FcmbYearEnding.SelectedIndex = 0;
             }
-            else if (FcmbPeriod.SelectedIndex != 1)
+
+            if ((FcmbPeriod.Items.Count > 1) && (FcmbPeriod.SelectedIndex != 1))
             {
                 FcmbPeriod.SelectedIndex = 1;
             }
