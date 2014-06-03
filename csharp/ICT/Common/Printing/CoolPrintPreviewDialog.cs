@@ -58,6 +58,7 @@ namespace Ict.Common.Printing
         public CoolPrintPreviewDialog() : this(null)
         {
         }
+
         /// <summary>
         /// Initializes a new instance of a <see cref="CoolPrintPreviewDialog"/>.
         /// </summary>
@@ -65,11 +66,13 @@ namespace Ict.Common.Printing
         public CoolPrintPreviewDialog(Control parentForm)
         {
             InitializeComponent();
+
             if (parentForm != null)
             {
                 Size = parentForm.Size;
             }
         }
+
         #endregion
 
         //--------------------------------------------------------------------
@@ -80,7 +83,10 @@ namespace Ict.Common.Printing
         /// </summary>
         public PrintDocument Document
         {
-            get { return _doc; }
+            get
+            {
+                return _doc;
+            }
             set
             {
                 // unhook event handlers
@@ -100,7 +106,6 @@ namespace Ict.Common.Printing
                     _doc.EndPrint += _doc_EndPrint;
                 }
 
-
                 // don't assign document to preview until this form becomes visible
                 if (Visible)
                 {
@@ -115,7 +120,7 @@ namespace Ict.Common.Printing
         #region ** overloads
 
         /// <summary>
-        /// Overridden to assign document to preview control only after the 
+        /// Overridden to assign document to preview control only after the
         /// initial activation.
         /// </summary>
         /// <param name="e"><see cref="EventArgs"/> that contains the event data.</param>
@@ -124,6 +129,7 @@ namespace Ict.Common.Printing
             base.OnShown(e);
             _preview.Document = Document;
         }
+
         /// <summary>
         /// Overridden to cancel any ongoing previews when closing form.
         /// </summary>
@@ -131,6 +137,7 @@ namespace Ict.Common.Printing
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
             base.OnFormClosing(e);
+
             if (_preview.IsRendering && !e.Cancel)
             {
                 _preview.Cancel();
@@ -165,11 +172,13 @@ namespace Ict.Common.Printing
                 }
             }
         }
+
         void _btnPageSetup_Click(object sender, EventArgs e)
         {
             using (var dlg = new PageSetupDialog())
             {
                 dlg.Document = Document;
+
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
                     // to show new page layout
@@ -186,9 +195,10 @@ namespace Ict.Common.Printing
         void _btnZoom_ButtonClick(object sender, EventArgs e)
         {
             _preview.ZoomMode = _preview.ZoomMode == ZoomMode.ActualSize
-                ? ZoomMode.FullPage
-                : ZoomMode.ActualSize;
+                                ? ZoomMode.FullPage
+                                : ZoomMode.ActualSize;
         }
+
         void _btnZoom_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
             if (e.ClickedItem == _itemActualSize)
@@ -207,6 +217,7 @@ namespace Ict.Common.Printing
             {
                 _preview.ZoomMode = ZoomMode.TwoPages;
             }
+
             if (e.ClickedItem == _item10)
             {
                 _preview.Zoom = .1;
@@ -240,6 +251,7 @@ namespace Ict.Common.Printing
                 _preview.Zoom = .75;
             }
         }
+
         #endregion
 
         //--------------------------------------------------------------------
@@ -249,52 +261,64 @@ namespace Ict.Common.Printing
         {
             _preview.StartPage = 0;
         }
+
         void _btnPrev_Click(object sender, EventArgs e)
         {
             _preview.StartPage--;
         }
+
         void _btnNext_Click(object sender, EventArgs e)
         {
             _preview.StartPage++;
         }
+
         void _btnLast_Click(object sender, EventArgs e)
         {
             _preview.StartPage = _preview.PageCount - 1;
         }
+
         void _txtStartPage_Enter(object sender, EventArgs e)
         {
             _txtStartPage.SelectAll();
         }
+
         void _txtStartPage_Validating(object sender, CancelEventArgs e)
         {
             CommitPageNumber();
         }
+
         void _txtStartPage_KeyPress(object sender, KeyPressEventArgs e)
         {
             var c = e.KeyChar;
+
             if (c == (char)13)
             {
                 CommitPageNumber();
                 e.Handled = true;
             }
-            else if (c > ' ' && !char.IsDigit(c))
+            else if ((c > ' ') && !char.IsDigit(c))
             {
                 e.Handled = true;
             }
         }
+
         void CommitPageNumber()
         {
             int page;
+
             if (int.TryParse(_txtStartPage.Text, out page))
             {
                 _preview.StartPage = page - 1;
             }
         }
+
         void _preview_StartPageChanged(object sender, EventArgs e)
         {
             var page = _preview.StartPage + 1;
+
             _txtStartPage.Text = page.ToString();
         }
+
         private void _preview_PageCountChanged(object sender, EventArgs e)
         {
             this.Update();
@@ -318,11 +342,13 @@ namespace Ict.Common.Printing
                 Close();
             }
         }
+
         void _doc_BeginPrint(object sender, PrintEventArgs e)
         {
             _btnCancel.Text = "&Cancel";
             _btnPrint.Enabled = _btnPageSetup.Enabled = false;
         }
+
         void _doc_EndPrint(object sender, PrintEventArgs e)
         {
             _btnCancel.Text = "&Close";

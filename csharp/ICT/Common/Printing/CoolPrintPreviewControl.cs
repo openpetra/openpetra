@@ -65,7 +65,7 @@ namespace Ict.Common.Printing
     /// </summary>
     /// <remarks>
     /// This control is similar to the standard <see cref="PrintPreviewControl"/> but
-    /// it displays pages as they are rendered. By contrast, the standard control 
+    /// it displays pages as they are rendered. By contrast, the standard control
     /// waits until the entire document is rendered before it displays anything.
     /// </remarks>
     class CoolPrintPreviewControl : UserControl
@@ -111,7 +111,10 @@ namespace Ict.Common.Printing
         /// </summary>
         public PrintDocument Document
         {
-            get { return _doc; }
+            get
+            {
+                return _doc;
+            }
             set
             {
                 if (value != _doc)
@@ -158,6 +161,7 @@ namespace Ict.Common.Printing
             UpdatePreview();
             UpdateScrollBars();
         }
+
         /// <summary>
         /// Stops rendering the <see cref="Document"/>.
         /// </summary>
@@ -165,13 +169,17 @@ namespace Ict.Common.Printing
         {
             _cancel = true;
         }
+
         /// <summary>
         /// Gets a value that indicates whether the <see cref="Document"/> is being rendered.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool IsRendering
         {
-            get { return _rendering; }
+            get
+            {
+                return _rendering;
+            }
         }
         /// <summary>
         /// Gets or sets how the zoom should be adjusted when the control is resized.
@@ -179,7 +187,10 @@ namespace Ict.Common.Printing
         [DefaultValue(ZoomMode.FullPage)]
         public ZoomMode ZoomMode
         {
-            get { return _zoomMode; }
+            get
+            {
+                return _zoomMode;
+            }
             set
             {
                 if (value != _zoomMode)
@@ -195,15 +206,18 @@ namespace Ict.Common.Printing
         /// is set to <b>Custom</b>.
         /// </summary>
         [
-        Browsable(false),
-        DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)
+            Browsable(false),
+            DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)
         ]
         public double Zoom
         {
-            get { return _zoom; }
+            get
+            {
+                return _zoom;
+            }
             set
             {
-                if (value != _zoom || ZoomMode != ZoomMode.Custom)
+                if ((value != _zoom) || (ZoomMode != ZoomMode.Custom))
                 {
                     ZoomMode = ZoomMode.Custom;
                     _zoom = value;
@@ -220,17 +234,27 @@ namespace Ict.Common.Printing
         /// <see cref="ZoomMode"/> property.
         /// </remarks>
         [
-        Browsable(false),
-        DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)
+            Browsable(false),
+            DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)
         ]
         public int StartPage
         {
-            get { return _startPage; }
+            get
+            {
+                return _startPage;
+            }
             set
             {
                 // validate new setting
-                if (value > PageCount - 1) value = PageCount - 1;
-                if (value < 0) value = 0;
+                if (value > PageCount - 1)
+                {
+                    value = PageCount - 1;
+                }
+
+                if (value < 0)
+                {
+                    value = 0;
+                }
 
                 // apply new setting
                 if (value != _startPage)
@@ -248,12 +272,15 @@ namespace Ict.Common.Printing
         /// This number increases as the document is rendered into the control.
         /// </remarks>
         [
-        Browsable(false),
-        DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)
+            Browsable(false),
+            DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)
         ]
         public int PageCount
         {
-            get { return _img.Count; }
+            get
+            {
+                return _img.Count;
+            }
         }
         /// <summary>
         /// Gets or sets the control's background color.
@@ -261,7 +288,10 @@ namespace Ict.Common.Printing
         [DefaultValue(typeof(Color), "AppWorkspace")]
         public override Color BackColor
         {
-            get { return base.BackColor; }
+            get
+            {
+                return base.BackColor;
+            }
             set
             {
                 base.BackColor = value;
@@ -274,7 +304,10 @@ namespace Ict.Common.Printing
         [Browsable(false)]
         public PageImageList PageImages
         {
-            get { return _img; }
+            get
+            {
+                return _img;
+            }
         }
         /// <summary>
         /// Prints the current document honoring the selected page range.
@@ -285,21 +318,27 @@ namespace Ict.Common.Printing
             var ps = _doc.PrinterSettings;
             int first = ps.MinimumPage - 1;
             int last = ps.MaximumPage - 1;
+
             switch (ps.PrintRange)
             {
                 case PrintRange.AllPages:
                     Document.Print();
                     return;
+
                 case PrintRange.CurrentPage:
                     first = last = StartPage;
                     break;
+
                 case PrintRange.Selection:
                     first = last = StartPage;
+
                     if (ZoomMode == ZoomMode.TwoPages)
                     {
                         last = Math.Min(first + 1, PageCount - 1);
                     }
+
                     break;
+
                 case PrintRange.SomePages:
                     first = ps.FromPage - 1;
                     last = ps.ToPage - 1;
@@ -331,6 +370,7 @@ namespace Ict.Common.Printing
                 StartPageChanged(this, e);
             }
         }
+
         /// <summary>
         /// Occurs when the value of the <see cref="PageCount"/> property changes.
         /// </summary>
@@ -346,6 +386,7 @@ namespace Ict.Common.Printing
                 PageCountChanged(this, e);
             }
         }
+
         /// <summary>
         /// Occurs when the value of the <see cref="ZoomMode"/> property changes.
         /// </summary>
@@ -373,13 +414,16 @@ namespace Ict.Common.Printing
             // we're painting it all, so don't call base class
             //base.OnPaintBackground(e);
         }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             Image img = GetImage(StartPage);
+
             if (img != null)
             {
                 Rectangle rc = GetImageRectangle(img);
-                if (rc.Width > 2 && rc.Height > 2)
+
+                if ((rc.Width > 2) && (rc.Height > 2))
                 {
                     // adjust for scrollbars
                     rc.Offset(AutoScrollPosition);
@@ -397,6 +441,7 @@ namespace Ict.Common.Printing
 
                         // render second page
                         img = GetImage(StartPage + 1);
+
                         if (img != null)
                         {
                             // update bounds in case orientation changed
@@ -414,6 +459,7 @@ namespace Ict.Common.Printing
             // paint background
             e.Graphics.FillRectangle(_backBrush, ClientRectangle);
         }
+
         protected override void OnSizeChanged(EventArgs e)
         {
             UpdateScrollBars();
@@ -424,26 +470,34 @@ namespace Ict.Common.Printing
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
-            if (e.Button == MouseButtons.Left && AutoScrollMinSize != Size.Empty)
+
+            if ((e.Button == MouseButtons.Left) && (AutoScrollMinSize != Size.Empty))
             {
                 Cursor = Cursors.NoMove2D;
                 _ptLast = new Point(e.X, e.Y);
             }
         }
+
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
-            if (e.Button == MouseButtons.Left && Cursor == Cursors.NoMove2D)
+
+            if ((e.Button == MouseButtons.Left) && (Cursor == Cursors.NoMove2D))
+            {
                 Cursor = Cursors.Default;
+            }
         }
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+
             if (Cursor == Cursors.NoMove2D)
             {
                 int dx = e.X - _ptLast.X;
                 int dy = e.Y - _ptLast.Y;
-                if (dx != 0 || dy != 0)
+
+                if ((dx != 0) || (dy != 0))
                 {
                     Point pt = AutoScrollPosition;
                     AutoScrollPosition = new Point(-(pt.X + dx), -(pt.Y + dy));
@@ -467,13 +521,18 @@ namespace Ict.Common.Printing
                 case Keys.End:
                     return true;
             }
+
             return base.IsInputKey(keyData);
         }
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
+
             if (e.Handled)
+            {
                 return;
+            }
 
             switch (e.KeyCode)
             {
@@ -484,7 +543,7 @@ namespace Ict.Common.Printing
                 case Keys.Down:
 
                     // browse
-                    if (ZoomMode == ZoomMode.FullPage || ZoomMode == ZoomMode.TwoPages)
+                    if ((ZoomMode == ZoomMode.FullPage) || (ZoomMode == ZoomMode.TwoPages))
                     {
                         switch (e.KeyCode)
                         {
@@ -492,23 +551,30 @@ namespace Ict.Common.Printing
                             case Keys.Up:
                                 StartPage--;
                                 break;
+
                             case Keys.Right:
                             case Keys.Down:
                                 StartPage++;
                                 break;
                         }
+
                         break;
                     }
 
                     // scroll
                     Point pt = AutoScrollPosition;
+
                     switch (e.KeyCode)
                     {
                         case Keys.Left: pt.X += 20; break;
+
                         case Keys.Right: pt.X -= 20; break;
+
                         case Keys.Up: pt.Y += 20; break;
+
                         case Keys.Down: pt.Y -= 20; break;
                     }
+
                     AutoScrollPosition = new Point(-pt.X, -pt.Y);
                     break;
 
@@ -516,15 +582,17 @@ namespace Ict.Common.Printing
                 case Keys.PageUp:
                     StartPage--;
                     break;
+
                 case Keys.PageDown:
                     StartPage++;
                     break;
 
-                // home/end 
+                // home/end
                 case Keys.Home:
                     AutoScrollPosition = Point.Empty;
                     StartPage = 0;
                     break;
+
                 case Keys.End:
                     AutoScrollPosition = Point.Empty;
                     StartPage = PageCount - 1;
@@ -546,42 +614,54 @@ namespace Ict.Common.Printing
         void _doc_PrintPage(object sender, PrintPageEventArgs e)
         {
             SyncPageImages(false);
+
             if (_cancel)
             {
                 e.Cancel = true;
             }
         }
+
         void _doc_EndPrint(object sender, PrintEventArgs e)
         {
             SyncPageImages(true);
         }
+
         void SyncPageImages(bool lastPageReady)
         {
             var pv = (PreviewPrintController)_doc.PrintController;
+
             if (pv != null)
             {
                 var pageInfo = pv.GetPreviewPageInfo();
                 int count = lastPageReady ? pageInfo.Length : pageInfo.Length - 1;
+
                 for (int i = _img.Count; i < count; i++)
                 {
                     var img = pageInfo[i].Image;
                     _img.Add(img);
-                    
+
                     OnPageCountChanged(EventArgs.Empty);
 
-                    if (StartPage < 0) StartPage = 0;
-                    if (i == StartPage || i == StartPage + 1)
+                    if (StartPage < 0)
+                    {
+                        StartPage = 0;
+                    }
+
+                    if ((i == StartPage) || (i == StartPage + 1))
                     {
                         Refresh();
                     }
+
                     Application.DoEvents();
                 }
             }
         }
+
         Image GetImage(int page)
         {
             return page > -1 && page < PageCount ? _img[page] : null;
         }
+
         Rectangle GetImageRectangle(Image img)
         {
             // start with regular image rectangle
@@ -590,19 +670,23 @@ namespace Ict.Common.Printing
 
             // calculate zoom
             Rectangle rcCli = this.ClientRectangle;
+
             switch (_zoomMode)
             {
                 case ZoomMode.ActualSize:
                     _zoom = 1;
                     break;
+
                 case ZoomMode.TwoPages:
                     rc.Width *= 2; // << two pages side-by-side
                     goto case ZoomMode.FullPage;
+
                 case ZoomMode.FullPage:
                     double zoomX = (rc.Width > 0) ? rcCli.Width / (double)rc.Width : 0;
                     double zoomY = (rc.Height > 0) ? rcCli.Height / (double)rc.Height : 0;
                     _zoom = Math.Min(zoomX, zoomY);
                     break;
+
                 case ZoomMode.PageWidth:
                     _zoom = (rc.Width > 0) ? rcCli.Width / (double)rc.Width : 0;
                     break;
@@ -614,12 +698,22 @@ namespace Ict.Common.Printing
 
             // center image
             int dx = (rcCli.Width - rc.Width) / 2;
-            if (dx > 0) rc.X += dx;
+
+            if (dx > 0)
+            {
+                rc.X += dx;
+            }
+
             int dy = (rcCli.Height - rc.Height) / 2;
-            if (dy > 0) rc.Y += dy;
+
+            if (dy > 0)
+            {
+                rc.Y += dy;
+            }
 
             // add some extra space
             rc.Inflate(-MARGIN, -MARGIN);
+
             if (_zoomMode == ZoomMode.TwoPages)
             {
                 rc.Inflate(-MARGIN / 2, 0);
@@ -628,6 +722,7 @@ namespace Ict.Common.Printing
             // done
             return rc;
         }
+
         Size GetImageSizeInPixels(Image img)
         {
             // get image size
@@ -654,6 +749,7 @@ namespace Ict.Common.Printing
             // done
             return Size.Truncate(szf);
         }
+
         void RenderPage(Graphics g, Image img, Rectangle rc)
         {
             // draw the page
@@ -671,11 +767,13 @@ namespace Ict.Common.Printing
             rc.Offset(1, 1);
             g.ExcludeClip(rc);
         }
+
         void UpdateScrollBars()
         {
             // get image rectangle to adjust scroll size
             Rectangle rc = Rectangle.Empty;
             Image img = this.GetImage(StartPage);
+
             if (img != null)
             {
                 rc = GetImageRectangle(img);
@@ -683,11 +781,13 @@ namespace Ict.Common.Printing
 
             // calculate new scroll size
             Size scrollSize = new Size(0, 0);
+
             switch (_zoomMode)
             {
                 case ZoomMode.PageWidth:
                     scrollSize = new Size(0, rc.Height + 2 * MARGIN);
                     break;
+
                 case ZoomMode.ActualSize:
                 case ZoomMode.Custom:
                     scrollSize = new Size(rc.Width + 2 * MARGIN, rc.Height + 2 * MARGIN);
@@ -703,15 +803,24 @@ namespace Ict.Common.Printing
             // ready to update
             UpdatePreview();
         }
+
         void UpdatePreview()
         {
             // validate current page
-            if (_startPage < 0) _startPage = 0;
-            if (_startPage > PageCount - 1) _startPage = PageCount - 1;
+            if (_startPage < 0)
+            {
+                _startPage = 0;
+            }
+
+            if (_startPage > PageCount - 1)
+            {
+                _startPage = PageCount - 1;
+            }
 
             // repaint
             Invalidate();
         }
+
         #endregion
 
         //-------------------------------------------------------------
@@ -740,6 +849,7 @@ namespace Ict.Common.Printing
                 // start from the first page
                 _index = _first;
             }
+
             protected override void OnPrintPage(PrintPageEventArgs e)
             {
                 // render the current page and increment the index

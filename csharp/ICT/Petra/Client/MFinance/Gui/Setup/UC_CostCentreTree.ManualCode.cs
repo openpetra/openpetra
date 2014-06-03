@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 //
                 // The Focus() line below triggers the txtDetailCostCentreCode.Leave handler.
                 // which looks at the txtDetailCostCentreCode.Text value too soon - potentially before it's been set!
- 
+
                 trvCostCentres.Focus(); // {NET Bug!} The control doesn't show the selection if it's not visible and in focus.
                 trvCostCentres.SelectedNode = FSelectedCostCentre.linkedTreeNode;
             }
@@ -311,6 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             trvCostCentres.EndUpdate();
 
             FDuringInitialisation = false;
+
             if (trvCostCentres.Nodes.Count > 0)
             {
                 SelectNodeByName(trvCostCentres.Nodes[0].Name); // Select the first item
@@ -321,7 +322,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TreeNode newNode = new TreeNode("");
 
-            CostCentreNodeDetails NewNodeDetails = CostCentreNodeDetails.AddNewCostCentre(newNode,ADetailRow);
+            CostCentreNodeDetails NewNodeDetails = CostCentreNodeDetails.AddNewCostCentre(newNode, ADetailRow);
+
             NewNodeDetails.IsNew = false;
 
             SetNodeLabel(ADetailRow, newNode);
@@ -335,7 +337,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 InsertInOrder(AParent, newNode);
             }
 
-
             view.RowFilter =
                 ACostCentreTable.GetCostCentreToReportToDBName() + " = '" + ADetailRow.CostCentreCode + "'";
 
@@ -344,7 +345,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 InsertNodeIntoTreeView(newNode, view, (ACostCentreRow)rowView.Row);
             }
         }
-
 
         /// <summary>
         /// Update the name of the currently selected node
@@ -364,6 +364,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     return;
                 }
+
                 ThisNode = FSelectedCostCentre.linkedTreeNode;
             }
 

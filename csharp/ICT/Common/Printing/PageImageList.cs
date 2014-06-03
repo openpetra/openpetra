@@ -30,7 +30,6 @@ using System.Text;
 namespace Ict.Common.Printing
 {
 #if false
-
     // This version of the PageImageList stores images as byte arrays. It is a little
     // more complex and slower than a simple list, but doesn't consume GDI resources.
     // This is important when the list contains lots of images (Windows only supports
@@ -38,16 +37,20 @@ namespace Ict.Common.Printing
     class PageImageList
     {
         // ** fields
-        List<byte[]> _list = new List<byte[]>();
+        List <byte[]>_list = new List <byte[]>();
 
         // ** object model
         public void Clear()
         {
             _list.Clear();
         }
+
         public int Count
         {
-            get { return _list.Count; }
+            get
+            {
+                return _list.Count;
+            }
         }
         public void Add(Image img)
         {
@@ -56,10 +59,17 @@ namespace Ict.Common.Printing
             // stored image data, now dispose of original
             img.Dispose();
         }
+
         public Image this[int index]
         {
-            get { return GetImage(_list[index]); }
-            set { _list[index] = GetBytes(value); }
+            get
+            {
+                return GetImage(_list[index]);
+            }
+            set
+            {
+                _list[index] = GetBytes(value);
+            }
         }
 
         // implementation
@@ -70,14 +80,17 @@ namespace Ict.Common.Printing
             var enhMetafileHandle = mf.GetHenhmetafile().ToInt32();
             var bufferSize = GetEnhMetaFileBits(enhMetafileHandle, 0, null);
             var buffer = new byte[bufferSize];
+
             GetEnhMetaFileBits(enhMetafileHandle, bufferSize, buffer);
 
             // return bits
             return buffer;
         }
+
         Image GetImage(byte[] data)
         {
             MemoryStream ms = new MemoryStream(data);
+
             return Image.FromStream(ms);
         }
 
@@ -86,12 +99,11 @@ namespace Ict.Common.Printing
     }
 
 #else
-
     // This version of the PageImageList is a simple List<Image>. It is simple,
     // but caches one image (GDI object) per preview page.
-    class PageImageList : List<Image>
+    class PageImageList : List <Image>
     {
     }
-
 #endif
+
 }

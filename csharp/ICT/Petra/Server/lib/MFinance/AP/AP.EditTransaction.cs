@@ -1068,7 +1068,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             bool PostingWorkedOk = true;
             ABatchRow batch;
             TVerificationResultCollection ResultsCollection = new TVerificationResultCollection();
-            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access 
+
+            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access
                                                         // "out" parameters, so this intermediate variable is used.
             TDBTransaction HighLevelTransaction = null;
             Boolean WillCommit = true;
@@ -1076,7 +1077,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref HighLevelTransaction, ref WillCommit,
                 delegate
                 {
-
                     AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, out ResultsCollection);
 
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(ResultsCollection))
@@ -1137,10 +1137,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         TLogging.Log("An Exception occured during the Posting of an AP Document:" + Environment.NewLine + Exc.ToString());
 
-                        ResultsCollection.Add(new TVerificationResult("Post AP Document", 
-                            "NOTE THAT A GL ENTRY MAY HAVE BEEN CREATED." + Environment.NewLine
-                            + Exc.Message,
-                            TResultSeverity.Resv_Critical));
+                        ResultsCollection.Add(new TVerificationResult("Post AP Document",
+                                "NOTE THAT A GL ENTRY MAY HAVE BEEN CREATED." + Environment.NewLine +
+                                Exc.Message,
+                                TResultSeverity.Resv_Critical));
                         PostingWorkedOk = false;
                         return;
                     }

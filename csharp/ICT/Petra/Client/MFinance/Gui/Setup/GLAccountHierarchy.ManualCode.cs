@@ -219,7 +219,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         ///
         void cmbDetailValidCcCombo_SelectedValueChanged(object sender, EventArgs e)
         {
-            if ((FCurrentAccount == null) || FIAmUpdating > 0) // Only look into this if the user has changed it...
+            if ((FCurrentAccount == null) || (FIAmUpdating > 0)) // Only look into this if the user has changed it...
             {
                 return;
             }
@@ -257,7 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void chkDetailIsSummary_CheckedChanged(object sender, EventArgs e)
         {
-            if ((FCurrentAccount != null) && FIAmUpdating == 0) // Only look into this is the user has changed it...
+            if ((FCurrentAccount != null) && (FIAmUpdating == 0)) // Only look into this is the user has changed it...
             {
                 FCurrentAccount.GetAttrributes();
 
@@ -874,6 +874,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             {
                                 MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
                             }
+
                             changeAccepted = false; // Actually the change was accepted, but processed here, so there's nothing left to do.
                             FPetraUtilsObject.HasChanges = false;
                         }
@@ -893,6 +894,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             e.Cancel = CheckAccountCodeValueChanged();
         }
-
     } // TFrmGLAccountHierarchy
 }

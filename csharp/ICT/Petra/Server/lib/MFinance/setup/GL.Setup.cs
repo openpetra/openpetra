@@ -3476,7 +3476,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         ///          (If children are added to this Cost Centre, it will be promoted to a summary Cost Centre.)
         ///
         ///          But I can't add to 'ILT', or the children of 'ILT'.
-        /// 
+        ///
         ///          I can delete this Cost Centre if it has no transactions posted as above,
         ///          AND it has no children.
         ///          But I can't delete System Cost Centres.
@@ -3495,6 +3495,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             bool DbSuccess = true;
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
@@ -3506,6 +3507,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         msg = Catalog.GetString("Not Found!");
                         return;
                     }
+
                     ACostCentreRow CostCentreRow = TempTbl[0];
 
                     //

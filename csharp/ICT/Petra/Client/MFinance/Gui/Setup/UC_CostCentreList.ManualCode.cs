@@ -68,13 +68,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FSelectedCostCentre = value;
+
                 if (FDataView != null)
                 {
                     Int32 RowIdx = -1;
+
                     if (FSelectedCostCentre != null)
                     {
                         RowIdx = FDataView.Find(FSelectedCostCentre.CostCentreRow.CostCentreCode) + 1;
                     }
+
                     FParentForm.FIAmUpdating++;
                     grdCostCentres.SelectRowInGrid(RowIdx);
                     FParentForm.FIAmUpdating--;
@@ -90,7 +93,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             FParentForm = ParentForm;
             grdCostCentres.Selection.SelectionChanged += Selection_SelectionChanged;
-
         }
 
         void Selection_SelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)

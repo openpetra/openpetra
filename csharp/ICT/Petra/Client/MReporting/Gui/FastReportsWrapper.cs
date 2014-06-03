@@ -61,7 +61,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private SReportTemplateRow FSelectedTemplate = null;
 
-        private enum TInitState { Unknown, LoadDll, LoadTemplate, InitSystem, LoadedOK };
+        private enum TInitState {
+            Unknown, LoadDll, LoadTemplate, InitSystem, LoadedOK
+        };
         private TInitState FInitState;
 
         /// <summary>
@@ -158,28 +160,33 @@ namespace Ict.Petra.Client.MReporting.Gui
             if (FPetraUtilsObject.GetCallerForm() != null)
             {
                 String Msg = "";
+
                 switch (FInitState)
                 {
                     case TInitState.LoadDll:
-                        {
-                            Msg = "Failed to load FastReport Dll.";
-                            break;
-                        }
+                    {
+                        Msg = "Failed to load FastReport Dll.";
+                        break;
+                    }
+
                     case TInitState.LoadTemplate:
-                        {
-                            Msg = String.Format("No reporting template found for {0}.", FPetraUtilsObject.FReportName);
-                            break;
-                        }
+                    {
+                        Msg = String.Format("No reporting template found for {0}.", FPetraUtilsObject.FReportName);
+                        break;
+                    }
+
                     case TInitState.InitSystem:
-                        {
-                            Msg = "The DLL failed to initialise.";
-                            break;
-                        }
+                    {
+                        Msg = "The DLL failed to initialise.";
+                        break;
+                    }
+
                     default:
-                        {
-                            return; // Anything else is not an error...
-                        }
+                    {
+                        return;     // Anything else is not an error...
+                    }
                 }
+
                 MessageBox.Show("The FastReports plugin did not initialise\r\n" + Msg, "Reporting engine");
             }
         }

@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
                 ACalculator.AddParameter("param_end_period_i", EndPeriod);
-                EndDate =  TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
+                EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
                 ACalculator.AddParameter("param_end_date", EndDate);
 
                 CheckPeriod(Year, EndPeriod);
@@ -245,6 +245,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             if (CurrencyName == FLedgerRow.IntlCurrency)
             {
                 Decimal IntlRate = TExchangeRateCache.GetDailyExchangeRate(FLedgerRow.BaseCurrency, FLedgerRow.IntlCurrency, EndDate);
+
                 if (IntlRate == 0) // No exchange rate has been specified
                 {
                     FPetraUtilsObject.AddVerificationResult(new TVerificationResult(

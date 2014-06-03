@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TUC_AccountsList
     {
-      private TFrmGLAccountHierarchy FParentForm = null;
+        private TFrmGLAccountHierarchy FParentForm = null;
 
         // The account selected in the parent form
         AccountNodeDetails FSelectedAccount;
@@ -68,13 +68,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FSelectedAccount = value;
+
                 if (FDataView != null)
                 {
                     Int32 RowIdx = -1;
+
                     if (FSelectedAccount != null)
                     {
                         RowIdx = FDataView.Find(FSelectedAccount.AccountRow.AccountCode) + 1;
                     }
+
                     FParentForm.FIAmUpdating++;
                     grdAccounts.SelectRowInGrid(RowIdx);
                     FParentForm.FIAmUpdating--;
@@ -90,7 +93,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             FParentForm = ParentForm;
             grdAccounts.Selection.SelectionChanged += Selection_SelectionChanged;
-
         }
 
         void Selection_SelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)

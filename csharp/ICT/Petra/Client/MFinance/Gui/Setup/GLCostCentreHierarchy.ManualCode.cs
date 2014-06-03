@@ -294,7 +294,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void AddNewCostCentre(Object sender, EventArgs e)
         {
-
             if (FCurrentCostCentre == null)
             {
                 MessageBox.Show(Catalog.GetString("You can only add a new cost centre after selecting a parent cost centre"));
@@ -430,6 +429,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -464,6 +464,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             FCurrentCostCentre.GetAttrributes();
+
             if (FCurrentCostCentre.CanDelete.Value)
             {
                 ACostCentreRow SelectedRow = FCurrentCostCentre.CostCentreRow;
@@ -499,7 +500,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private bool CheckCostCentreValueChanged()
         {
-            if (FIAmUpdating > 0 || (strOldDetailCostCentreCode == null))
+            if ((FIAmUpdating > 0) || (strOldDetailCostCentreCode == null))
             {
                 return false;
             }
@@ -658,7 +659,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.HasChanges = hasChanges;
         }
 
-
         private ACostCentreRow GetSelectedDetailRowManual()
         {
             if (FCurrentCostCentre != null)
@@ -763,7 +763,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             e.Cancel = CheckCostCentreValueChanged();
         }
-
-
     } // TFrmGLCostCentreHierarchy
 } // namespace

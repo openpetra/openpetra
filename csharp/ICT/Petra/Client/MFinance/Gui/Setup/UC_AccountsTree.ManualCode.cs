@@ -390,7 +390,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 InsertInOrder(AParent, Child);
             }
 
-
             // Now add the children of this node:
             view.RowFilter =
                 AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + ADetailRow.AccountHierarchyCode + "' AND " +
@@ -427,6 +426,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     return;
                 }
+
                 ThisNode = FSelectedAccount.linkedTreeNode;
             }
 
