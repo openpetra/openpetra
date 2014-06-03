@@ -23,6 +23,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -102,6 +103,19 @@ namespace Ict.Petra.Client.CommonForms
     }
 
     /// <summary>
+    /// Interface for a 'data-only Class' that holds UnitHierarchy (such as
+    /// <see cref="TFormsMessage.FormsMessageUnitHierarchy"></see>).
+    /// </summary>
+    public interface IFormsMessageUnitHierarchyInterface : IFormsMessageClassInterface
+    {
+        /// <summary></summary>
+        List<Tuple<string, Int64, Int64>> UnitHierarchyChanges
+        {
+        	get;
+        }
+    }
+
+    /// <summary>
     /// Specifies the MessageClass of a <see cref="TFormsMessage"></see>.
     /// </summary>
     /// <description>
@@ -130,7 +144,10 @@ namespace Ict.Petra.Client.CommonForms
         mcGiftDestinationChanged,
 
         /// <summary>An AP transaction has been saved.</summary>
-        mcAPTransactionChanged
+        mcAPTransactionChanged,
+
+        /// <summary>Unit Hierarchy has been changed and saved.</summary>
+        mcUnitHierarchyChanged
     }
 
     /// <summary>
@@ -303,6 +320,27 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
+        /// Allows setting of Partner Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcUnitHierarchyChanged"></see>,
+        /// </summary>
+        /// <param name="AUnitHierarchyChanges">All Unit Hierarchies that have been changed.</param>
+        public void SetMessageDataUnitHierarchy(List<Tuple<string, Int64, Int64>> AUnitHierarchyChanges)
+        {
+            switch (FMessageClass)
+            {
+                case TFormsMessageClassEnum.mcUnitHierarchyChanged:
+
+                    FMessageObject = new FormsMessageUnitHierarchy(AUnitHierarchyChanges);
+                    break;
+
+                default:
+                    throw new ApplicationException(
+                    "Method 'SetMessageDataUnitHierarchy' must not be called for MessageClass '" +
+                    Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
         /// Holds Supplier Data for 'Form Messages' of MessageClass
         /// <see cref="TFormsMessageClassEnum.mcAPTransactionChanged"></see>.
         /// </summary>
@@ -437,6 +475,34 @@ namespace Ict.Petra.Client.CommonForms
                 get
                 {
                     return FGiftDestinationTable;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Holds Partner Data for 'Form Messages' of MessageClasses
+        /// <see cref="TFormsMessageClassEnum.mcUnitHierarchyChanged"></see>,
+        /// </summary>
+        public struct FormsMessageUnitHierarchy : IFormsMessageUnitHierarchyInterface
+        {
+        	List<Tuple<string, Int64, Int64>> FUnitHierarchyChanges;
+
+            /// <summary>
+            /// Constructor that initializes internal fields which can be
+            /// read out by using the Properties of this Class.
+            /// </summary>
+            /// <param name="AUnitHierarchyChanges">All Unit Hierarchies that have been changed.</param>
+            public FormsMessageUnitHierarchy(List<Tuple<string, Int64, Int64>> AUnitHierarchyChanges)
+            {
+            	FUnitHierarchyChanges = AUnitHierarchyChanges;
+            }
+
+            /// <summary>All Unit Hierarchies that have been changed.</summary>
+            public List<Tuple<string, Int64, Int64>> UnitHierarchyChanges
+            {
+                get
+                {
+                    return FUnitHierarchyChanges;
                 }
             }
         }
