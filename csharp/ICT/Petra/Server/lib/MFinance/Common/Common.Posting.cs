@@ -1421,7 +1421,7 @@ namespace Ict.Petra.Server.MFinance.Common
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
 
-            TVerificationResultCollection VerificationResult = null;
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
             // get the data from the database into the MainDS
             if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
@@ -1468,7 +1468,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            if (VerificationResult != null)
+            if (VerificationResult.Count > 0)
             {
                 AVerifications.AddCollection(VerificationResult);
             }
