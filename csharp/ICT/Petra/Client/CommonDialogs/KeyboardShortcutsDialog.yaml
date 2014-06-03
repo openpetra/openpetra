@@ -1,0 +1,44 @@
+RootNode:
+    BaseYaml: ../CommonForms/PetraFormDialog.yaml
+    Namespace: Ict.Petra.Client.CommonDialogs
+    FormType: dialog
+    Template: window
+    FormTitle: Help with Keyboard Shortcuts
+    WindowWidth: 810
+    WindowHeight: 400
+
+    Actions:
+
+    Controls:
+        pnlDialogContent:
+            Padding: 4,0,8,0
+            Dock: Fill
+            Controls: [tabAllShortcuts]
+
+        tabAllShortcuts:
+            Controls: [tpgGeneral, tpgList, tpgNavigation, tpgFilterFind]
+            Dock: Fill
+        tpgGeneral:
+            Controls: [ucoShortcutsGeneral]
+        tpgList:
+            Controls: [ucoShortcutsList]
+        tpgNavigation:
+            Controls: [ucoShortcutsNavigation]
+        tpgFilter:
+            Controls: [ucoShortcutsFilterFind]
+
+        ucoShortcutsGeneral:
+            Dock: Fill
+            Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
+        ucoShortcutsList:
+            Dock: Fill
+            Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
+        ucoShortcutsNavigation:
+            Dock: Fill
+            Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
+        ucoShortcutsFilterFind:
+            Dock: Fill
+            Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
+            
+        btnOK: 
+            Visible: false

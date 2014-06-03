@@ -20,8 +20,10 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailAppTypeName, txtDetailAppTypeDescr, chkDetailDeletableFlag]
+            FilterControls: [txtDetailAppTypeName, txtDetailAppTypeDescr, rgrDetailAppFormType, chkDetailDeletableFlag]
             FindControls: [txtDetailAppTypeName, txtDetailAppTypeDescr]
+            ControlAttributes:
+                rgrDetailAppFormType: {CloneToComboBox=true, Label=Application For}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

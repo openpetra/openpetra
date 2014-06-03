@@ -363,7 +363,13 @@ namespace Ict.Petra.Client.CommonControls
             if (ATag.Contains(CommonTagString.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON))
             {
                 FHasClearButton = false;
-                FPanelControl.Tag += ";" + CommonTagString.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
+                FPanelControl.Tag += CommonTagString.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
+            }
+
+            // Manual Filter??
+            if (ATag.Contains(CommonTagString.FILTER_HAS_MANUAL_FILTER))
+            {
+                FPanelControl.Tag += ";" + CommonTagString.FILTER_HAS_MANUAL_FILTER;
             }
 
             if (FHasClearButton)
@@ -690,7 +696,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     if (iffp.HasClearButton)
                     {
-                        if (iffp.FilterComparison == null)
+                        if ((iffp.FilterComparison == null) && !iffp.PanelControl.Tag.ToString().Contains(CommonTagString.FILTER_HAS_MANUAL_FILTER))
                         {
                             continue;
                         }

@@ -820,6 +820,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             // allow multiselection of list items so several records can be deleted at once
             grdDetails.Selection.EnableMultiSelection = true;
+
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.MaintainExtract);
+            grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(this.MaintainExtract);
         }
 
         /// <summary>

@@ -682,7 +682,7 @@ namespace Ict.Petra.Client.App.PetraClient
             Ict.Common.Controls.TSgrdDataGrid.SetColourInformation = @SetDataGridColoursFromUserDefaults;
 
             // Set up Delegate for the set-up of various Colours of all Filter and Find instances from UserDefaults
-            Ict.Common.Controls.TUcoFilterAndFind.SetColourInformation = @SetFilterFindColoursFromUserDefaults;
+            Ict.Petra.Client.CommonControls.TUcoFilterAndFind.SetColourInformation = @SetFilterFindColoursFromUserDefaults;
 
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;

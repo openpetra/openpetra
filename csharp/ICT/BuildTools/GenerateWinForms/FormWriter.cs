@@ -1144,6 +1144,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
                     {
+                        ProcessTemplate snipCtrlE = FTemplate.GetSnippet("PROCESSCMDKEYCTRLE");
+                        FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlE);
+
                         ProcessTemplate snipSelectRow = FTemplate.GetSnippet("PROCESSCMDKEYSELECTROW");
                         FTemplate.InsertSnippet("PROCESSCMDKEY", snipSelectRow);
 
