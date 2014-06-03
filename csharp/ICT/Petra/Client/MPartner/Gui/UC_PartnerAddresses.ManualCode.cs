@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //TODOWB        private Boolean FRecordBeingAddedIsFoundRecord;
 //TODOWB        private TLocationPK FRecordKeyBeforeFinding;
 //TODOWB        private PLocationRow FLocationRowAfterCopying;
+        private int FSelectedRowIndexBeforeSaving = -1;
 
         /// <summary>Copy of the PartnerLocation record that is being deleted</summary>
         private DataRow FJustDeletedPartnerLocationsRow;
@@ -276,6 +277,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // make sure latest screen modifications are saved to FMainDS
             GetDataFromControls();
+
+            FSelectedRowIndexBeforeSaving = grdDetails.GetFirstHighlightedRowIndex();
 
             foreach (PartnerEditTDSPPartnerLocationRow PartnerLocationRow in FMainDS.PPartnerLocation.Rows)
             {
@@ -737,6 +740,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void RefreshRecordsAfterMerge()
         {
+            // Make sure selected row in grid is reinitialized after save in case
+            // it got replaced during merge process.
+            if (FSelectedRowIndexBeforeSaving >= 0)
+            {
+                grdDetails.SelectRowInGrid(FSelectedRowIndexBeforeSaving);
+            }
+
             Calculations.DeterminePartnerLocationsDateStatus((DataSet)FMainDS);
             Calculations.DetermineBestAddress((DataSet)FMainDS);
         }
