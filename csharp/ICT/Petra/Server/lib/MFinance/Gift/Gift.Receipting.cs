@@ -458,6 +458,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
                 }
             }
+            else
+            {
+            	FormValues["AdresseeFamilyName"].Add(ADonorShortName);
+            }
 
             FormValues["DateToday"].Add(DateTime.Now.ToString("dd MMMM yyyy"));
 

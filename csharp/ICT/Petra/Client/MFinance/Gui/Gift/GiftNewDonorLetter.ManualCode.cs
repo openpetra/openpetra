@@ -50,6 +50,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             dtpStartDate.Date = DateTime.Now.AddMonths(-1);
             dtpEndDate.Date = DateTime.Now;
+            
+            cmbPublicationCode.ColumnWidthCol3 = 0;
         }
 
         private void FilterChanged(System.Object sender, EventArgs e)
@@ -65,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FMainDS = TRemote.MFinance.Gift.WebConnectors.GetNewDonorSubscriptions(
-                txtPublicationCode.Text,
+                cmbPublicationCode.Text,
                 dtpStartDate.Date.Value, dtpEndDate.Date.Value,
                 txtExtract.Text,
                 true);
