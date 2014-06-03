@@ -287,6 +287,46 @@ namespace Ict.Common.Controls
         private Boolean FSorting;
 
         /// <summary>
+        /// The maximum number of rows to check when auto-sizing columns
+        /// </summary>
+        private int FMaxAutoSizeRows = 200;
+
+        /// <summary>
+        /// Flag indicating whether the Fixed Rows should be included in the column auto-size calculation or not
+        /// </summary>
+        private Boolean FIncludeFixedRowsInAutoSizeColumns = true;
+
+        /// <summary>
+        /// Gets/sets the flag indicating whether the Fixed Rows should be included in the column auto-size calculation or not
+        /// </summary>
+        public Boolean IncludeFixedRowsInAutoSizeColumns
+        {
+            get
+            {
+                return FIncludeFixedRowsInAutoSizeColumns;
+            }
+            set
+            {
+                FIncludeFixedRowsInAutoSizeColumns = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets/sets the maximum number of rows to check when auto-sizing columns
+        /// </summary>
+        public int MaxAutoSizeRows
+        {
+            get
+            {
+                return FMaxAutoSizeRows;
+            }
+            set
+            {
+                FMaxAutoSizeRows = value;
+            }
+        }
+
+        /// <summary>
         /// Returns true when the mouse is down inside the grid.
         /// </summary>
         public Boolean IsMouseDown

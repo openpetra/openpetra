@@ -604,6 +604,16 @@ namespace Ict.Common.Controls
 //            TLogging.Log("ResetPaging finished.");
         }
 
+        /// <summary>
+        /// Resizes the grid columns, taking account of the MaxAutoSizeRows property and the IncludeFixedRowsInAutoSizeColumns property.
+        /// Then, by default, automatically stretches the columns to fit.
+        /// </summary>
+        public void AutoResizeGrid()
+        {
+            this.Columns.AutoSize(false, IncludeFixedRowsInAutoSizeColumns ? 0 : FixedRows, Math.Min(MaxAutoSizeRows, this.Rows.Count - 1));
+            base.OnResize(new EventArgs());
+        }
+
         #endregion
 
         #region Helper functions
@@ -743,14 +753,11 @@ namespace Ict.Common.Controls
         {
             FIdleSet = false;
 
-            Application.Idle -= new EventHandler(this.OnIdle);
+            Application.Idle -= this.OnIdle;
 
-//            TLogging.Log("OnIdle: Calling base.OnResize.");
-            this.Cursor = Cursors.WaitCursor;
-            base.OnResize(e);
-            this.Cursor = Cursors.Default;
-
-//            TLogging.Log("OnIdle: Called base.OnResize.");
+            //TLogging.Log("OnIdle: Calling AutoResizeGrid.");
+            this.AutoResizeGrid();
+            //TLogging.Log("OnIdle: Called AutoResizeGrid.");
         }
 
         /// <summary>
@@ -761,7 +768,7 @@ namespace Ict.Common.Controls
         /// <param name="e">Not evaluated.</param>
         private void OnDisposed(object sender, EventArgs e)
         {
-            Application.Idle -= new EventHandler(this.OnIdle);
+            Application.Idle -= this.OnIdle;
         }
 
         /// <summary>
