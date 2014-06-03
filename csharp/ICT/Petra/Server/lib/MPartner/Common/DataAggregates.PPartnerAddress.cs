@@ -1757,9 +1757,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             out Int32 AExistingLocationKey)
         {
             Boolean ReturnValue;
-            PLocationTable LocationTable;
             PLocationTable MatchingLocationsDT;
-            PLocationRow LocationTemplateRow;
             Boolean FoundSimilarLocation;
             PartnerAddressAggregateTDSSimilarLocationParametersRow SimilarLocationRow;
             PartnerAddressAggregateTDSSimilarLocationParametersRow SimilarLocationParameterRow;
@@ -1785,20 +1783,125 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             if (ExistingLocationParametersDV.Count == 0)
             {
                 FoundSimilarLocation = false;
-                LocationTable = ((PLocationTable)ALocationRow.Table);
                 #region Look in the DB for *similar* Locations
-                LocationTemplateRow = LocationTable.NewRowTyped(false);
-                LocationTemplateRow.Locality = TSaveConvert.StringColumnToString(LocationTable.ColumnLocality, ALocationRow);
-                LocationTemplateRow.StreetName = TSaveConvert.StringColumnToString(LocationTable.ColumnStreetName, ALocationRow);
-                LocationTemplateRow.City = TSaveConvert.StringColumnToString(LocationTable.ColumnCity, ALocationRow);
-                LocationTemplateRow.PostalCode = TSaveConvert.StringColumnToString(LocationTable.ColumnPostalCode, ALocationRow);
-                LocationTemplateRow.CountryCode = TSaveConvert.StringColumnToString(LocationTable.ColumnCountryCode, ALocationRow);
+
+                // first check how many odbc parameters need to be created
+                int CountParameters = 0;
+                int CurrentParameter = 0;
+
+                if (!ALocationRow.IsLocalityNull() && (ALocationRow.Locality != ""))
+                {
+                    CountParameters++;
+                }
+
+                if (!ALocationRow.IsStreetNameNull() && (ALocationRow.StreetName != ""))
+                {
+                    CountParameters++;
+                }
+
+                if (!ALocationRow.IsCityNull() && (ALocationRow.City != ""))
+                {
+                    CountParameters++;
+                }
+
+                if (!ALocationRow.IsPostalCodeNull() && (ALocationRow.PostalCode != ""))
+                {
+                    CountParameters++;
+                }
+
+                if (!ALocationRow.IsCountryCodeNull() && (ALocationRow.CountryCode != ""))
+                {
+                    CountParameters++;
+                }
+
+                // initialize parameters and prepare SQL statement
+                OdbcParameter[] parameters = new OdbcParameter[CountParameters];
+                string sqlLoadSimilarAddresses = "SELECT * FROM PUB_" + PLocationTable.GetTableDBName() + " WHERE";
+
+                // add Locality to query
+                sqlLoadSimilarAddresses += " " + PLocationTable.GetLocalityDBName();
+
+                if (ALocationRow.IsLocalityNull() || (ALocationRow.Locality == ""))
+                {
+                    sqlLoadSimilarAddresses += " is null";
+                }
+                else
+                {
+                    sqlLoadSimilarAddresses += " = ?";
+                    parameters[CurrentParameter] = new OdbcParameter("Locality", OdbcType.VarChar);
+                    parameters[CurrentParameter].Value = ALocationRow.Locality;
+                    CurrentParameter++;
+                }
+
+                // add Street Name to query
+                sqlLoadSimilarAddresses += " AND " + PLocationTable.GetStreetNameDBName();
+
+                if (ALocationRow.IsStreetNameNull() || (ALocationRow.StreetName == ""))
+                {
+                    sqlLoadSimilarAddresses += " is null";
+                }
+                else
+                {
+                    sqlLoadSimilarAddresses += " = ?";
+                    parameters[CurrentParameter] = new OdbcParameter("StreetName", OdbcType.VarChar);
+                    parameters[CurrentParameter].Value = ALocationRow.StreetName;
+                    CurrentParameter++;
+                }
+
+                // add City to query
+                sqlLoadSimilarAddresses += " AND " + PLocationTable.GetCityDBName();
+
+                if (ALocationRow.IsCityNull() || (ALocationRow.City == ""))
+                {
+                    sqlLoadSimilarAddresses += " is null";
+                }
+                else
+                {
+                    sqlLoadSimilarAddresses += " = ?";
+                    parameters[CurrentParameter] = new OdbcParameter("City", OdbcType.VarChar);
+                    parameters[CurrentParameter].Value = ALocationRow.City;
+                    CurrentParameter++;
+                }
+
+                // add Post Code to query
+                sqlLoadSimilarAddresses += " AND " + PLocationTable.GetPostalCodeDBName();
+
+                if (ALocationRow.IsPostalCodeNull() || (ALocationRow.PostalCode == ""))
+                {
+                    sqlLoadSimilarAddresses += " is null";
+                }
+                else
+                {
+                    sqlLoadSimilarAddresses += " = ?";
+                    parameters[CurrentParameter] = new OdbcParameter("PostalCode", OdbcType.VarChar);
+                    parameters[CurrentParameter].Value = ALocationRow.PostalCode;
+                    CurrentParameter++;
+                }
+
+                // add Country Code to query
+                sqlLoadSimilarAddresses += " AND " + PLocationTable.GetCountryCodeDBName();
+
+                if (ALocationRow.IsCountryCodeNull() || (ALocationRow.CountryCode == ""))
+                {
+                    sqlLoadSimilarAddresses += " is null";
+                }
+                else
+                {
+                    sqlLoadSimilarAddresses += " = ?";
+                    parameters[CurrentParameter] = new OdbcParameter("CountryCode", OdbcType.VarChar);
+                    parameters[CurrentParameter].Value = ALocationRow.CountryCode;
+                    CurrentParameter++;
+                }
+
+                MatchingLocationsDT = new PLocationTable();
+
+                // run query to find similar locations
+                DBAccess.GDBAccessObj.SelectDT(MatchingLocationsDT, sqlLoadSimilarAddresses, AReadTransaction, parameters, 0, 0);
 
                 /*
                  * Note: County and Address3 are not searched for - we are looking for a
                  * Location that is *similar*!
                  */
-                MatchingLocationsDT = PLocationAccess.LoadUsingTemplate(LocationTemplateRow, AReadTransaction);
                 MatchingLocationRow = null;  // to avoid compiler warning
 
                 if (MatchingLocationsDT.Rows.Count != 0)
