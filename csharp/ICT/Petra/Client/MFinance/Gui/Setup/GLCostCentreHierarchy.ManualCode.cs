@@ -221,8 +221,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FnameForNewCostCentre = Catalog.GetString("NEWCOSTCENTRE");
 
             txtDetailCostCentreCode.TextChanged += new EventHandler(txtDetailCostCentreCode_TextChanged);
-            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
-            this.FormClosing += TFrmGLCostCentreHierarchy_FormClosing;
+            FPetraUtilsObject.DataSaved += OnHierarchySaved;
+            FormClosing += TFrmGLCostCentreHierarchy_FormClosing;
         }
 
         private void OnHierarchySaved(System.Object sender, TDataSavedEventArgs e)
@@ -655,10 +655,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             tbbAddNewCostCentre.Enabled = (FCurrentCostCentre.CanHaveChildren.Value);
             tbbDeleteCostCentre.Enabled = (FCurrentCostCentre.CanDelete.Value);
 
-            if (hasChanges)
-            {
-                FPetraUtilsObject.SetChangedFlag();
-            }
+            FPetraUtilsObject.HasChanges = hasChanges;
         }
 
 

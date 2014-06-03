@@ -204,11 +204,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
             chkDetailIsSummary.CheckedChanged += chkDetailIsSummary_CheckedChanged;
-            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
+
             FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
-            txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
+            txtDetailEngAccountCodeLongDesc.Leave += new EventHandler(AutoFillDescriptions);
             cmbDetailValidCcCombo.SelectedValueChanged += cmbDetailValidCcCombo_SelectedValueChanged;
-            this.FormClosing += TFrmGLAccountHierarchy_FormClosing;
+
+            FPetraUtilsObject.DataSaved += OnHierarchySaved;
+            FormClosing += TFrmGLAccountHierarchy_FormClosing;
             FIAmUpdating = 0;
             FNameForNewAccounts = Catalog.GetString("NEWACCOUNT");
         }
@@ -713,7 +715,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             bool hasChanges = FPetraUtilsObject.HasChanges;
 
             FIAmUpdating++;
+            FPetraUtilsObject.SuppressChangeDetection = true;
             ShowDetails((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
+            FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
             tbbAddNewAccount.Enabled = (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false);
@@ -785,7 +789,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 MessageBoxIcon.Warning) != DialogResult.OK)
                         {
                             txtDetailAccountCode.Text = strOldDetailAccountCode;
-                            return changeAccepted;
+                            return false;
                         }
                     }
 
@@ -870,6 +874,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             {
                                 MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
                             }
+                            changeAccepted = false; // Actually the change was accepted, but processed here, so there's nothing left to do.
                             FPetraUtilsObject.HasChanges = false;
                         }
 

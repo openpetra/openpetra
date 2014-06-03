@@ -481,7 +481,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             FParentForm.SetSelectedAccount((AccountNodeDetails)treeViewEventArgs.Node.Tag); // This will change my FSelectedAccount
-            FPetraUtilsObject.SuppressChangeDetection = true;
 
             FSelectedAccount.GetAttrributes();
             FParentForm.PopulateControlsAfterRowSelection();
