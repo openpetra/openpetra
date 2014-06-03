@@ -1071,8 +1071,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access 
                                                         // "out" parameters, so this intermediate variable is used.
             TDBTransaction HighLevelTransaction = null;
+            Boolean WillCommit = true;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(ref HighLevelTransaction, true,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref HighLevelTransaction, ref WillCommit,
                 delegate
                 {
 
