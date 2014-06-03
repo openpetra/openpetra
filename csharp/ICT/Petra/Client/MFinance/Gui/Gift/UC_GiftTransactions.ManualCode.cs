@@ -797,7 +797,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
 
-            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, true);
+            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, false);
 
             txtDetailCostCentreCode.Text = FPreviouslySelectedDetailRow.CostCentreCode;
         }

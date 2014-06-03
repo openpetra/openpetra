@@ -28,8 +28,9 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 
-using Ict.Common.Controls;
 using Ict.Common.IO;
+using Ict.Common.Controls;
+using Ict.Petra.Client.CommonControls;
 
 namespace ControlTestBench
 {

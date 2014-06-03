@@ -402,7 +402,8 @@ namespace Ict.Common.Verification
                 }
             }
 
-            if (AResultColumn != null)
+            if ((AResultColumn != null)
+                && (ReturnValue != null))
             {
                 ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
             }

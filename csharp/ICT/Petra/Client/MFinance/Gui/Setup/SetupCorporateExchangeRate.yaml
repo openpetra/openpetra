@@ -21,8 +21,11 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
+            FilterControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode, dtpDetailDateEffectiveFrom-1, dtpDetailDateEffectiveFrom-2]
             FindControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
+            ControlAttributes:
+                dtpDetailDateEffectiveFrom-1: {Comparison=gte, Label=From Effective Date}
+                dtpDetailDateEffectiveFrom-2: {Comparison=lte, Label=To Effective Date}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

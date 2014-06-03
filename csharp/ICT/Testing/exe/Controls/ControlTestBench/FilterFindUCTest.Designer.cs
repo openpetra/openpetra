@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using Ict.Common.Controls;
+using Ict.Petra.Client.CommonControls;
 
 namespace ControlTestBench
 {
@@ -61,7 +62,7 @@ partial class FilterFindTest
         this.btnHideShowAFBtnStd = new System.Windows.Forms.Button();
         this.btnHideShowKFTOBtnStd = new System.Windows.Forms.Button();
         this.btnHideShowFIAOLblStd = new System.Windows.Forms.Button();
-        this.FUcoFilterAndFind = new Ict.Common.Controls.TUcoFilterAndFind();
+        this.FUcoFilterAndFind = new Ict.Petra.Client.CommonControls.TUcoFilterAndFind();
         this.groupBox2 = new System.Windows.Forms.GroupBox();
         this.groupBox5 = new System.Windows.Forms.GroupBox();
         this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -224,9 +225,9 @@ partial class FilterFindTest
         this.FUcoFilterAndFind.Dock = System.Windows.Forms.DockStyle.Left;
         this.FUcoFilterAndFind.Location = new System.Drawing.Point(0, 0);
         this.FUcoFilterAndFind.Name = "FUcoFilterAndFind";
-        this.FUcoFilterAndFind.ShowApplyFilterButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.None;
-        this.FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.None;
-        this.FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.None;
+        this.FUcoFilterAndFind.ShowApplyFilterButton = Ict.Petra.Client.CommonControls.TUcoFilterAndFind.FilterContext.None;
+        this.FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = Ict.Petra.Client.CommonControls.TUcoFilterAndFind.FilterContext.None;
+        this.FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = Ict.Petra.Client.CommonControls.TUcoFilterAndFind.FilterContext.None;
         this.FUcoFilterAndFind.Size = new System.Drawing.Size(150, 500);
         this.FUcoFilterAndFind.TabIndex = 8;
         //
@@ -1225,7 +1226,7 @@ partial class FilterFindTest
     private System.Windows.Forms.GroupBox grpStandardFilterPanel;
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.GroupBox groupBox2;
-    private Ict.Common.Controls.TUcoFilterAndFind FUcoFilterAndFind;
+    private Ict.Petra.Client.CommonControls.TUcoFilterAndFind FUcoFilterAndFind;
 
     private System.Windows.Forms.GroupBox groupBox1;
     private System.Windows.Forms.Button btnHideShowFIAOLblStd;

@@ -20,11 +20,11 @@
   <Parameter id="param_families_only" value="eBoolean:false" />
   <Parameter id="param_exclude_no_solicitations" value="eBoolean:false" />
   <Parameter id="param_date_set" value="eString:" />
-  <Parameter id="orderby0" value="eString:Short Name" />
+  <Parameter id="orderby0" value="eString:Partner Name" />
   <Parameter id="orderby1" value="eString:Address Type" />
   <Parameter id="orderby2" value="eString:Address valid from" />
-  <Parameter id="param_sortby_readable" value="eString:Short Name, Address Type, Address valid from" />
-  <Parameter id="param_calculation" column="9" value="eString:Short Name" />
+  <Parameter id="param_sortby_readable" value="eString:Partner Name, Address Type, Address valid from" />
+  <Parameter id="param_calculation" column="9" value="eString:Partner Name" />
   <Parameter id="param_calculation" column="10" value="eString:Address Type" />
   <Parameter id="param_calculation" column="11" value="eString:Address valid from" />
   <Parameter id="param_sortby_columns" value="eString:9,10,11" />
@@ -70,11 +70,12 @@
   <Parameter id="ColumnFormat" column="6" value="eString:text" />
   <Parameter id="ColumnFormat" column="7" value="eString:text" />
   <Parameter id="ColumnFormat" column="8" value="eString:text" />
+  <Parameter id="ColumnFormat" column="9" value="eString:text" />
   <Parameter id="ColumnFormat" column="10" value="eString:text" />
   <Parameter id="ColumnFormat" column="11" value="eString:formatteddate" />
   <Parameter id="ControlSource" column="100" value="eString:Partner By Special Types" />
   <Parameter id="ControlSource" column="101" value="eString:Germany" />
-  <Parameter id="ControlSource" column="106" value="eString:&quot;Sorted by: Short Name, Address Type, Address valid from&quot;" />
+  <Parameter id="ControlSource" column="106" value="eString:&quot;Sorted by: Partner Name, Address Type, Address valid from&quot;" />
   <Parameter id="ControlSource" column="104" value="eString:&quot;Only special types: LEDGER&quot;" />
   <Parameter id="ControlSource" column="105" value="eEmpty:" />
   <Parameter id="ColumnAlign" column="0" value="eString:left" />

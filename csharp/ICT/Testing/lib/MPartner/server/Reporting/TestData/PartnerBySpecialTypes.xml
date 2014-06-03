@@ -20,11 +20,11 @@
   <Parameter id="param_families_only" value="eBoolean:false" />
   <Parameter id="param_exclude_no_solicitations" value="eBoolean:false" />
   <Parameter id="param_date_set" value="eString:" />
-  <Parameter id="orderby0" value="eString:Short Name" />
+  <Parameter id="orderby0" value="eString:Partner Name" />
   <Parameter id="orderby1" value="eString:Address Type" />
   <Parameter id="orderby2" value="eString:Address valid from" />
-  <Parameter id="param_sortby_readable" value="eString:Short Name, Address Type, Address valid from" />
-  <Parameter id="param_calculation" column="9" value="eString:Short Name" />
+  <Parameter id="param_sortby_readable" value="eString:Partner Name, Address Type, Address valid from" />
+  <Parameter id="param_calculation" column="9" value="eString:Partner Name" />
   <Parameter id="param_calculation" column="10" value="eString:Address Type" />
   <Parameter id="param_calculation" column="11" value="eString:Address valid from" />
   <Parameter id="param_sortby_columns" value="eString:9,10,11" />

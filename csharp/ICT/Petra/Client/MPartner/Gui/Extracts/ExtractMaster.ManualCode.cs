@@ -54,6 +54,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         #region Public Methods
 
+        #region Public Static Methods
+
         /// <summary>
         /// Verify and if necessary update partner data in an extract
         /// </summary>
@@ -280,16 +282,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             AForm.Cursor = Cursors.Default;
         }
 
-        /// <summary>
-        /// Loads Partner Types Data from Petra Server into FMainDS.
-        /// </summary>
-        /// <returns>true if successful, otherwise false.</returns>
-        public Boolean LoadData()
-        {
-            Boolean ReturnValue = true;
+        #endregion
 
-            return ReturnValue;
-        }
+        #region Public Non-Static Methods
+
+        ///// <summary>
+        ///// Loads Partner Types Data from Petra Server into FMainDS.
+        ///// </summary>
+        ///// <returns>true if successful, otherwise false.</returns>
+        //public Boolean LoadData()
+        //{
+        //    Boolean ReturnValue = true;
+
+        //    return ReturnValue;
+        //}
 
         /// <summary>
         /// save the changes on the screen (code is copied from auto-generated code)
@@ -310,6 +316,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         #endregion
 
+        #endregion
+
         #region Private Methods
 
         /// <summary>
@@ -320,41 +328,28 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ucoExtractMasterList.DelegateRefreshExtractList = @RefreshExtractList;
         }
 
-        private void RunOnceOnActivationManual()
+        /// <summary>
+        /// Open a new screen to show details and maintain the currently selected extract
+        /// </summary>
+        public void RefreshExtractList()
         {
-            // unhook filter controls so save button does not get enabled when they are used
-            FPetraUtilsObject.UnhookControl(pnlFilter, true);
+            // Do not allow refresh of the extract list if the user has made changes to any of the records
+            // as otherwise their changes will be overwritten by reloading of the data.
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "Before refreshing the list you need to save changes made in this screen! " + "\r\n" + "\r\n" +
+                        "If you don't want to save changes then please exit and reopen this screen."),
+                    Catalog.GetString("Refresh List"),
+                    MessageBoxButtons.OK);
+            }
+            else
+            {
+                ucoExtractMasterList.RefreshExtractList("", true, "", "");
+            }
         }
 
-        /// <summary>
-        /// Export partners in selected extract
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ExportPartnersInExtract(System.Object sender, EventArgs e)
-        {
-            ucoExtractMasterList.ExportPartnersInExtract(sender, e);
-        }
-
-        /// <summary>
-        /// Open screen to maintain contents of an extract
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MaintainExtract(System.Object sender, EventArgs e)
-        {
-            ucoExtractMasterList.MaintainExtract(sender, e);
-        }
-
-        /// <summary>
-        /// Verify and if necessary update partner data in an extract
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
-        {
-            ucoExtractMasterList.VerifyAndUpdateExtract(sender, e);
-        }
+        #region Purge, Combine, Intersect and Subtract
 
         /// <summary>
         /// Purge Extracts (open a screen for user to set parameters)
@@ -547,65 +542,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ExtractSubtractDialog.Dispose();
         }
 
-        /// <summary>
-        /// Open a new screen to show details and maintain the currently selected extract
-        /// </summary>
-        public void RefreshExtractList()
-        {
-            // Do not allow refresh of the extract list if the user has made changes to any of the records
-            // as otherwise their changes will be overwritten by reloading of the data.
-            if (FPetraUtilsObject.HasChanges)
-            {
-                MessageBox.Show(Catalog.GetString(
-                        "Before refreshing the list you need to save changes made in this screen! " + "\r\n" + "\r\n" +
-                        "If you don't want to save changes then please exit and reopen this screen."),
-                    Catalog.GetString("Refresh List"),
-                    MessageBoxButtons.OK);
-            }
-            else
-            {
-                // now refresh extract list in user control
-                String UserCreated = "";
-                String UserModified = "";
-                Boolean AllUsers = false;
+        #endregion
 
-                if (rbtAll.Checked)
-                {
-                    AllUsers = true;
-                }
-                else if (rbtCreatedBy.Checked)
-                {
-                    UserCreated = cmbUserCreatedBy.GetSelectedString();
-                }
-                else if (rbtModifiedBy.Checked)
-                {
-                    UserModified = cmbUserModifiedBy.GetSelectedString();
-                }
-
-                ucoExtractMasterList.RefreshExtractList(txtExtractNameFilter.Text, AllUsers, UserCreated, UserModified);
-            }
-        }
-
-        /// <summary>
-        /// Filter extracts according to given criteria
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FilterExtracts(System.Object sender, EventArgs e)
-        {
-            RefreshExtractList();
-        }
-
-        /// <summary>
-        /// Filter extracts according to given criteria
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClearFilterExtracts(System.Object sender, EventArgs e)
-        {
-            this.txtExtractNameFilter.Text = "";
-            RefreshExtractList();
-        }
+        #region Create Various Extracts
 
         /// <summary>
         /// Create General Extract
@@ -799,6 +738,40 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             frm.Show();
         }
 
+        #endregion
+
+        #region Simple tasks performed by user control
+
+        /// <summary>
+        /// Export partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExportPartnersInExtract(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.ExportPartnersInExtract(sender, e);
+        }
+
+        /// <summary>
+        /// Open screen to maintain contents of an extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MaintainExtract(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.MaintainExtract(sender, e);
+        }
+
+        /// <summary>
+        /// Verify and if necessary update partner data in an extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.VerifyAndUpdateExtract(sender, e);
+        }
+
         /// <summary>
         /// Add subscription for Partners in selected Extract
         /// </summary>
@@ -877,6 +850,42 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
         {
             ucoExtractMasterList.UpdateEmailGiftStatement(sender, e);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Keyboard and Filter/Find Menu
+
+        /// ///////////  These methods just delegate to the user control to handle
+
+        private void MniFilterFind_Click(object sender, EventArgs e)
+        {
+            ucoExtractMasterList.MniFilterFind_Click(sender, e);
+        }
+
+        /// <summary>
+        /// Handler for shortcuts
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.S | Keys.Control))
+            {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    SaveChanges();
+                }
+
+                return true;
+            }
+
+            if (ucoExtractMasterList.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion

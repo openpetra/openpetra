@@ -23,8 +23,10 @@ RootNode:
                 Row0: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode]
+            FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, rgrBudgetTypeCode]
             FindControls: [cmbDetailCostCentreCode, cmbDetailAccountCode]
+            ControlAttributes:
+                rgrBudgetTypeCode: {CloneToComboBox=true, Label=Budget Type}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnImport]
@@ -33,9 +35,9 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [pnlDetails]
-                Row1: [rgrSelectBudgetType]
+                Row1: [rgrBudgetTypeCode]
                 Row2: [grpBudgetDetails]
-        rgrSelectBudgetType:
+        rgrBudgetTypeCode:
             OptionalValues: [Split, Ad hoc, Same, Inflate base, Inflate n]
             ControlsOrientation: horizontal
             Align: left

@@ -44,15 +44,15 @@ RootNode:
                 dtpDetailDateEffective: {Label=Effective date, FindComparison=eq}
             Panels:
                 pnlBatchFilter:
-                    Controls: [rgrShowBatches, cmbYearFilter, cmbPeriodFilter]
+                    Controls: [rgrShowBatches, cmbYearEnding, cmbPeriod]
                     
                     rgrShowBatches: 
                         Label: Show batches for
                         ClearButton: false
                         OptionalValues: [Posting, =Editing, All]
                         
-                    cmbYearFilter: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
-                    cmbPeriodFilter: {OnChange=RefreshFilter, Width=250}
+                    cmbYearEnding: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
+                    cmbPeriod: {OnChange=RefreshFilter, Width=250}
                     rbtPosting: {OnChange=RefreshFilter}
                     rbtEditing: {OnChange=RefreshFilter}
                     rbtAll: {OnChange=RefreshFilter}

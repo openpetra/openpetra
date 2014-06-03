@@ -1,0 +1,53 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Change Location for selected Partners
+    UtilObjectClass: TFrmPetraUtils
+    InterfaceName: IFrmPetraEdit
+    Namespace: Ict.Petra.Client.MCommon.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MPartner.Partner.Data]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerAddressAggregateTDS
+    #MasterTable: PPartnerLocation
+    FormType: dialog
+    Template: windowEdit
+    WindowWidth: 720
+    WindowHeight: 500
+    Actions:
+        actSelectAll: {Label=&Select All, ActionClick=SelectAllRecords}
+        actDeselectAll: {Label=&Deselect All, ActionClick=DeselectAllRecords}
+    Controls:
+        pnlDialogContent:
+            Padding: 4,0,8,0
+            Dock: Fill
+            Controls: 
+                Row0: [lblChangedAddress]
+                Row1: [txtChangedAddress]
+                Row2: [lblExplainPartnerList1]
+                Row3: [lblExplainPartnerList2]
+                Row4: [btnSelectAll, btnDeselectAll]
+                Row5: [clbAddress]
+            
+        lblChangedAddress: {Label=You have changed the following address}    
+            ColSpan: 2
+        txtChangedAddress:
+            Stretch: horizontally
+            Height: 100
+            Multiline: true
+            ScrollBars: Vertical
+            NoLabel: true
+            ReadOnly: true
+            ColSpan: 2
+            
+        lblExplainPartnerList1: {Label=The following Partners also use this Partner's address.}
+            ColSpan: 2
+        lblExplainPartnerList2: {Label=Select from the list any which need to change}
+            ColSpan: 2
+        btnSelectAll:
+            Action: actSelectAll
+        btnDeselectAll:
+            Action: actDeselectAll
+
+        clbAddress:
+            NoLabel: true 
+            Stretch: horizontally
+            Height: 200
+            ColSpan: 2

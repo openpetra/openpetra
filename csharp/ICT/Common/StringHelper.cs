@@ -2229,9 +2229,14 @@ namespace Ict.Common
         public const string INSTANCE_EQUALS = "Instance=";
 
         /// <summary>
-        /// Tag for Filter/Find to modify the default comparison (e.g. gte, lt, eq etc).  Used paticularly for numeric and date comparisons
+        /// Tag for Filter/Find to modify the default comparison (e.g. gte, lt, eq etc).  Used particularly for numeric and date comparisons
         /// </summary>
         public const string COMPARISON_EQUALS = "Comparison=";
+
+        /// <summary>
+        /// Tag for Filter/Find to specify that there is a manual handler for the Filter.
+        /// </summary>
+        public const string FILTER_HAS_MANUAL_FILTER = "HasManualFilter";
 
         /// <summary>
         /// Tag for 'Find' to use a different comparison from the Filter one (e.g. gte, lt, eq, StartsWith etc).  Used paticularly for numeric and date comparisons

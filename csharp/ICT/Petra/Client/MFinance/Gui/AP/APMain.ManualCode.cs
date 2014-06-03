@@ -24,9 +24,11 @@
 //
 using System;
 using System.Windows.Forms;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -79,15 +81,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             set
             {
                 FLedgerNumber = value;
+
+                // Set the window caption using a call to the data cache
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-                FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
-                // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-                TEnsureKeepAlive.Register(FSupplierFindObject);
-
-                FInvoiceFindObject = TRemote.MFinance.AP.UIConnectors.Find();
-                // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
-                TEnsureKeepAlive.Register(FInvoiceFindObject);
+                // This will involve a trip to the server to access GLSetupTDS
+                TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, FLedgerNumber);
+                FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
+                FLedgerBaseCurrency = settings.LedgerBaseCurrency;
             }
             get
             {
@@ -142,14 +143,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             get
             {
-                if (FLedgerBaseCurrency == null)
-                {
-                    this.Cursor = Cursors.WaitCursor;
-                    ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
-                    FLedgerBaseCurrency = Tbl[0].BaseCurrency;
-                    this.Cursor = Cursors.Default;
-                }
-
                 return FLedgerBaseCurrency;
             }
         }
@@ -219,9 +212,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tabSearchResult.SelectedTab = tpgOutstandingInvoices;
             }
 
-            TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, FLedgerNumber);
-            FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
-
+            // This call will result in the creation of the server Find objects and asynchronous loading of the data for the selected tab.
+            // In order for nant test to succeed we must ensure that we do not make any other server calls now - except to get data
             TabChange(null, null);
         }
 
@@ -312,6 +304,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 mniInvoice.Visible = true;
                 mniSupplier.Visible = false;
 
+                if (FInvoiceFindObject == null)
+                {
+                    FInvoiceFindObject = TRemote.MFinance.AP.UIConnectors.Find();
+                    // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
+                    TEnsureKeepAlive.Register(FInvoiceFindObject);
+                }
+
                 ucoOutstandingInvoices.LoadInvoices();
             }
             else
@@ -319,6 +318,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // Suppliers tab has been selected...
                 mniSupplier.Visible = true;
                 mniInvoice.Visible = false;
+
+                if (FSupplierFindObject == null)
+                {
+                    FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
+                    // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
+                    TEnsureKeepAlive.Register(FSupplierFindObject);
+                }
 
                 ucoSuppliers.LoadSuppliers();
             }

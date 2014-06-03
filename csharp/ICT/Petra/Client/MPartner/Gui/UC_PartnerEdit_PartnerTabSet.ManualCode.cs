@@ -45,7 +45,7 @@ using Ict.Petra.Client.MCommon.Gui;
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>Delegate declaration</summary>
-    public delegate PLocationRow TDelegateGetLocationRowOfCurrentlySelectedAddress();
+    public delegate PartnerEditTDSPPartnerLocationRow TDelegateGetPartnerLocationRowOfCurrentlySelectedAddress();
 
     /// <summary>
     /// todoComment
@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>Performs all necessary initialisations in case the Address Tab
         /// hasn't been initialised before.</remarks>
-        public PLocationRow LocationDataRowOfCurrentlySelectedAddress
+        public PartnerEditTDSPPartnerLocationRow LocationDataRowOfCurrentlySelectedAddress
         {
             get
             {
@@ -179,7 +179,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     SetupUserControlAddresses();
                 }
 
-                return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+                return FUcoAddresses.PartnerLocationDataRowOfCurrentlySelectedAddress;
             }
         }
 
@@ -190,7 +190,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         ///
         /// </summary>
         /// <returns></returns>
-        public PLocationRow Get_LocationRowOfCurrentlySelectedAddress()
+        public PartnerEditTDSPPartnerLocationRow Get_LocationRowOfCurrentlySelectedAddress()
         {
             if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
             {
@@ -198,7 +198,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SetupUserControlAddresses();
             }
 
-            return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+            return FUcoAddresses.PartnerLocationDataRowOfCurrentlySelectedAddress;
         }
 
         /// <summary>
@@ -458,8 +458,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
             {
-                TUCPartnerAddresses UCPartnerAddresses =
-                    (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+                TUC_PartnerAddresses UCPartnerAddresses =
+                    (TUC_PartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
 
                 if (!UCPartnerAddresses.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
@@ -671,38 +671,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void SetUpPartnerAddress()
+        public void SetUpPartnerAddressTab()
         {
-            FUcoAddresses = (TUCPartnerAddresses)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);
-
-            if (TClientSettings.DelayedDataLoading)
-            {
-                // Signalise the user that data is beeing loaded
-                this.Cursor = Cursors.AppStarting;
-            }
-
-            FUcoAddresses.MainDS = FMainDS;
-            FUcoAddresses.PetraUtilsObject = FPetraUtilsObject;
-            FUcoAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
-            FUcoAddresses.HookupDataChange += new THookupDataChangeEventHandler(this.Uco_HookupDataChange);
-            FUcoAddresses.InitialiseUserControl();
-
-            // MessageBox.Show('TabSetupPartnerAddresses finished');
-            this.Cursor = Cursors.Default;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void DisableNewButtonOnAutoCreatedAddress()
-        {
-            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
-            {
-                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                SetupUserControlAddresses();
-            }
-
-            FUcoAddresses.DisableNewButtonOnAutoCreatedAddress();
+            SetupUserControlAddresses();
         }
 
         /// <summary>
@@ -847,9 +818,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoAddresses.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
                     FUcoAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    FUcoAddresses.HookupDataChange += new THookupDataChangeEventHandler(Uco_HookupDataChange);
+                    FUcoAddresses.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupDataChange);
 
-                    FUcoAddresses.InitialiseUserControl();
+                    FUcoAddresses.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -917,7 +888,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoFamilyMembers.PartnerEditUIConnector = FPartnerEditUIConnector;
                     FUcoFamilyMembers.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
                     FUcoFamilyMembers.InitialiseDelegateIsNewPartner(FDelegateIsNewPartner);
-                    FUcoFamilyMembers.InitialiseDelegateGetLocationRowOfCurrentlySelectedAddress(
+                    FUcoFamilyMembers.InitialiseDelegateGetPartnerLocationRowOfCurrentlySelectedAddress(
                         Get_LocationRowOfCurrentlySelectedAddress);
 
                     FUcoFamilyMembers.SpecialInitUserControl();
@@ -999,7 +970,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int32 CountAll;
             Int32 CountActive;
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerAddresses))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerAddresses))
             {
                 if (FMainDS.Tables.Contains(PLocationTable.GetTableName()))
                 {

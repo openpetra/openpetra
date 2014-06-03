@@ -304,9 +304,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// enable the transaction tab page
-        public void EnableTransactions()
+        public void EnableTransactions(bool AEnable = true)
         {
-            this.tpgTransactions.Enabled = true;
+            this.tpgTransactions.Enabled = AEnable;
         }
 
         /// <summary>
@@ -437,6 +437,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (keyData == (Keys.S | Keys.Control))
+            {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    SaveChanges();
+                }
+
+                return true;
+            }
+
             if ((tabGiftBatch.SelectedTab == tpgBatches) && (ucoBatches.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
