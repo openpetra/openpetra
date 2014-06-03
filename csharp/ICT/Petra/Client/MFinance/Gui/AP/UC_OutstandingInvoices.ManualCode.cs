@@ -317,9 +317,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // Size it
-            AutoSizeGrid();
-            this.Width = this.Width - 1;
-            this.Width = this.Width + 1;
+            grdInvoices.AutoResizeGrid();
 
             UpdateRecordNumberDisplay();
             UpdateInvoiceBalance();
@@ -360,16 +358,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdInvoices.Columns.Clear();
-            grdInvoices.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 17, false);
-            grdInvoices.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
-            grdInvoices.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
-            grdInvoices.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);
-            grdInvoices.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
-            grdInvoices.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
-            grdInvoices.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
+            grdInvoices.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], -1, false);
+            grdInvoices.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"]);
+            grdInvoices.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"]);
+            grdInvoices.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"]);
+            grdInvoices.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"]);
+            grdInvoices.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"]);
+            grdInvoices.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"]);
             grdInvoices.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
-            grdInvoices.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"], 100);
+            grdInvoices.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"]);
             grdInvoices.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
+            //grdInvoices.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 17, false);
+            //grdInvoices.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
+            //grdInvoices.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
+            //grdInvoices.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);
+            //grdInvoices.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
+            //grdInvoices.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
+            //grdInvoices.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
+            //grdInvoices.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
+            //grdInvoices.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"], 100);
+            //grdInvoices.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
         }
 
         private void SetInvoiceFilters(object sender, EventArgs e)
@@ -1113,11 +1121,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private void FilterToggledManual(bool AFilterIsOff)
-        {
-            AutoSizeGrid();
-        }
-
         private bool IsMatchingRowManual(DataRow ARow)
         {
             string invoiceNumber = ((TextBox)FFindPanelControls.FindControlByName("txtInvoiceNumber")).Text.ToLower();
@@ -1182,33 +1185,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             return true;
-        }
-
-        private void AutoSizeGrid()
-        {
-            if (grdDetails.Columns.Count == 0)
-            {
-                // Not created yet
-                return;
-            }
-
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 20;
-            grdDetails.Columns[1].Width = 75;
-            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[3].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[6].Width = 75;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdInvoices.SuspendLayout();
-            grdDetails.AutoSizeCells();
-            grdInvoices.ResumeLayout();
         }
 
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)

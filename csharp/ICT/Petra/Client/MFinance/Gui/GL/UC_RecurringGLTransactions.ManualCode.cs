@@ -1563,34 +1563,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
             {
-                AutoSizeGrid();
+                grdDetails.AutoResizeGrid();
             }
 
             btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 70;
-            grdDetails.Columns[1].Width = 70;
-            grdDetails.Columns[2].Width = 70;
-            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
         }
     }
 }

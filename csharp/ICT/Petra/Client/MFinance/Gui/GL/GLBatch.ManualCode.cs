@@ -39,7 +39,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 standardTabIndex = 0;
-        private bool FWindowIsMaximized = false;
 
         /// <summary>
         /// use this ledger
@@ -198,7 +197,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (this.tpgTransactions.Enabled)
                 {
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
-                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
                     this.tabGLBatch.SelectedTab = this.tpgTransactions;
 
                     bool fromBatchTab = false;
@@ -215,17 +213,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             ucoBatches.GetSelectedDetailRow().BatchStatus);
                     }
 
-                    if (this.ucoTransactions.LoadTransactions(
+                    this.ucoTransactions.LoadTransactions(
                             FLedgerNumber,
                             ucoJournals.GetSelectedDetailRow().BatchNumber,
                             ucoJournals.GetSelectedDetailRow().JournalNumber,
                             ucoJournals.GetSelectedDetailRow().TransactionCurrency,
                             ucoBatches.GetSelectedDetailRow().BatchStatus,
                             ucoJournals.GetSelectedDetailRow().JournalStatus,
-                            fromBatchTab))
-                    {
-                        ucoTransactions.AutoSizeGrid();
-                    }
+                            fromBatchTab);
 
                     FPreviouslySelectedTab = eGLTabs.Transactions;
                 }
@@ -291,40 +286,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnActivationManual()
         {
-            this.Resize += new EventHandler(TFrmGLBatch_Resize);
-        }
-
-        void TFrmGLBatch_Resize(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // set the flag that we are maximized
-                FWindowIsMaximized = true;
-
-                if (tabGLBatch.SelectedTab == this.tpgBatches)
-                {
-                    ucoTransactions.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing transactions");
-                }
-                else if (tabGLBatch.SelectedTab == this.tpgTransactions)
-                {
-                    ucoBatches.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing batches");
-                }
-                else
-                {
-                    ucoBatches.AutoSizeGrid();
-                    ucoTransactions.AutoSizeGrid();
-                }
-            }
-            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
-            {
-                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                ucoBatches.AutoSizeGrid();
-                ucoTransactions.AutoSizeGrid();
-                FWindowIsMaximized = false;
-                Console.WriteLine("Normal - autosizing both");
-            }
         }
 
         /// <summary>
