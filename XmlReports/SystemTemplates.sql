@@ -182,7 +182,7 @@ namespace FastReport
           <TextObject Name="Text65" Left="75.6" Width="633.15" Height="18.9" Text="[Gifts.a_account.a_account_code_long_desc_c], [a_costCentre.a_cost_centre_name_c]" WordWrap="false" Font="Arial, 10pt, style=Bold, Italic"/>
           <DataBand Name="Data1" Top="95.05" Width="718.2" Height="18.9" DataSource="Gifts" Filter="[Gifts.costcentre]==[a_costCentre.a_cost_centre_code_c]">
             <TextObject Name="Text66" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" Text="[Gifts.Reference]"/>
-            <TextObject Name="GiftCredits" Left="321.3" Width="94.5" Height="18.9" Text="[IIf([Gifts.giftbaseamount] &gt; 0,[Gifts.giftbaseamount], 0)]" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
+            <TextObject Name="GiftCredits" Left="321.3" Width="94.5" Height="18.9" Text="[IIf([param_currency]==&quot;Base&quot;,IIf([Gifts.GiftBaseAmount] &gt; 0,[Gifts.GiftBaseAmount], 0),IIf([Gifts.GiftIntlAmount] &gt; 0,[Gifts.GiftIntlAmount], 0))]" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
                 <GeneralFormat/>
@@ -192,7 +192,7 @@ namespace FastReport
               </Highlight>
             </TextObject>
             <TextObject Name="Text68" Left="415.8" Width="302.4" Height="18.9" CanGrow="true" Text="[Gifts.narrative]"/>
-            <TextObject Name="GiftDebits" Left="226.8" Width="94.5" Height="18.9" Text="[IIf ([Gifts.giftbaseamount] &lt; 0, 0 - [Gifts.giftbaseamount], 0)]" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
+            <TextObject Name="GiftDebits" Left="226.8" Width="94.5" Height="18.9" Text="[IIf([param_currency]==&quot;Base&quot;,IIf([Gifts.GiftBaseAmount] &lt; 0,[Gifts.GiftBaseAmount], 0),IIf([Gifts.GiftIntlAmount] &lt; 0,[Gifts.GiftIntlAmount], 0))]" HorzAlign="Right" WordWrap="false" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
                 <GeneralFormat/>
@@ -234,7 +234,7 @@ namespace FastReport
             <TextObject Name="TransDate" Width="113.4" Height="18.9" Text="[OmDate([a_transaction.a_transaction_date_d])]"/>
             <TextObject Name="Text75" Left="415.8" Width="302.4" Height="18.9" CanGrow="true" Text="[a_transaction.a_narrative_c]"/>
             <TextObject Name="Text76" Left="113.4" Width="113.4" Height="18.9" CanGrow="true" Text="[a_transaction.a_reference_c]"/>
-            <TextObject Name="TransDebits" Left="226.8" Width="94.5" Height="18.9" Text="[IIf([a_transaction.a_debit_credit_indicator_l]==true,[a_transaction.a_amount_in_base_currency_n],0)]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
+            <TextObject Name="TransDebits" Left="226.8" Width="94.5" Height="18.9" Text="[IIf([a_transaction.a_debit_credit_indicator_l]==true,IIf([param_currency]==&quot;Base&quot;,[a_transaction.a_amount_in_base_currency_n],[a_transaction.a_amount_in_intl_currency_n]),0)]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
                 <GeneralFormat/>
@@ -243,7 +243,7 @@ namespace FastReport
                 <Condition Expression="Value == 0" TextFill.Color="White"/>
               </Highlight>
             </TextObject>
-            <TextObject Name="TransCredits" Left="321.3" Width="94.5" Height="18.9" Text="[IIf([a_transaction.a_debit_credit_indicator_l]==false,[a_transaction.a_amount_in_base_currency_n],0)]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
+            <TextObject Name="TransCredits" Left="321.3" Width="94.5" Height="18.9" Text="[IIf([a_transaction.a_debit_credit_indicator_l]==false,IIf([param_currency]==&quot;Base&quot;,[a_transaction.a_amount_in_base_currency_n],[a_transaction.a_amount_in_intl_currency_n]),0)]" HorzAlign="Right" Font="Arial, 10pt, style=Bold" Trimming="EllipsisCharacter">
               <Formats>
                 <NumberFormat UseLocale="false" NegativePattern="1"/>
                 <GeneralFormat/>
@@ -254,13 +254,21 @@ namespace FastReport
             </TextObject>
           </DataBand>
           <GroupFooterBand Name="TransFooter" Top="193.43" Width="718.2" Height="28.35">
-            <TextObject Name="Text79" Left="226.8" Width="94.5" Height="18.9" Text="[TransDebitsTotal]" Format="Currency" Format.UseLocale="true" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
-              <Highlight>
+            <TextObject Name="Text79" Left="226.8" Width="94.5" Height="18.9" Text="[TransDebitsTotal]" Format="Currency" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
+			  <Formats>
+                <NumberFormat UseLocale="false" NegativePattern="1"/>
+                <GeneralFormat/>
+              </Formats>
+			  <Highlight>
                 <Condition Expression="Value == 0" TextFill.Color="White"/>
               </Highlight>
             </TextObject>
-            <TextObject Name="Text80" Left="321.3" Width="94.5" Height="18.9" Text="[TransCreditsTotal]" Format="Currency" Format.UseLocale="true" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
-              <Highlight>
+            <TextObject Name="Text80" Left="321.3" Width="94.5" Height="18.9" Text="[TransCreditsTotal]" Format="Currency" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue" Trimming="EllipsisCharacter">
+              <Formats>
+                <NumberFormat UseLocale="false" NegativePattern="1"/>
+                <GeneralFormat/>
+              </Formats>
+			  <Highlight>
                 <Condition Expression="Value == 0" TextFill.Color="White"/>
               </Highlight>
             </TextObject>
