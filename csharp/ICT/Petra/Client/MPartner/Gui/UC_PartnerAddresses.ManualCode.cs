@@ -360,8 +360,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FMainDS.PLocation.Rows.Remove(DeletedLocation0Row);
             }
-
-
         }
 
         #region Callback procedures used for Icon column
@@ -742,7 +740,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void RefreshRecordsAfterMerge()
         {
-            // Make sure selected row in grid is reinitialized after save in case 
+            // Make sure selected row in grid is reinitialized after save in case
             // it got replaced during merge process.
             if (FSelectedRowIndexBeforeSaving >= 0)
             {

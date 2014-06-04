@@ -493,7 +493,7 @@ namespace Ict.Common.IO
         /// <summary>
         /// this helps to distinguish codelets when nesting codelets
         /// </summary>
-        protected String FCodeletPostfix = "";
+        public String FCodeletPostfix = "";
 
         /// <summary>
         /// set the postfix for codelets. this helps to distinguish codelets when nesting codelets

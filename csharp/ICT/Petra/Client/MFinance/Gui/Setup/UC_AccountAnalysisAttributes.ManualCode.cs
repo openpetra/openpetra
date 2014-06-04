@@ -139,8 +139,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FAccountCode);
                 FMainDS.AAnalysisAttribute.DefaultView.Sort = AAnalysisAttributeTable.GetAnalysisTypeCodeDBName();
 
-                pnlDetails.Enabled = false;
-                btnDelete.Enabled = (grdDetails.Rows.Count > 1);
                 SelectByIndex(1);
                 UpdateRecordNumberDisplay();
             }
@@ -161,7 +159,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             RemoveUnassignedRecords();
             CreateNewAAnalysisAttribute();
-            pnlDetails.Enabled = true;
             btnDelete.Enabled = true;
 
             SelectRowInGrid(grdDetails.Rows.Count);
@@ -180,7 +177,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ARow.AccountCode,
                     ARow.AnalysisTypeCode,
                     out ServerMessage);
-                pnlDetails.Enabled = CanBeChanged;
+                btnDelete.Enabled = CanBeChanged;
+                cmbDetailAnalTypeCode.Enabled = CanBeChanged;
 
                 if (!CanBeChanged)
                 {

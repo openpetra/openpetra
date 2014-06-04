@@ -1065,92 +1065,87 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             Boolean Reversal,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction;
-            bool NewTransaction = false;
-            bool PostingWorkedOk;
+            bool PostingWorkedOk = true;
             ABatchRow batch;
+            TVerificationResultCollection ResultsCollection = new TVerificationResultCollection();
 
-            AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, out AVerificationResult);
+            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access
+                                                        // "out" parameters, so this intermediate variable is used.
+            TDBTransaction HighLevelTransaction = null;
+            Boolean WillCommit = true;
 
-            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
-            {
-                return false;
-            }
-
-            GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS);
-            PostingWorkedOk = true;
-
-            batch = GLDataset.ABatch[0];
-
-            // save the batch
-            if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                    out AVerificationResult) != TSubmitChangesResult.scrOK)
-            {
-                PostingWorkedOk = false;
-            }
-
-            // post the batch
-            if (PostingWorkedOk)
-            {
-                PostingWorkedOk = TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out AVerificationResult);
-            }
-
-            if (!PostingWorkedOk)
-            {
-                TVerificationResultCollection MoreResults;
-
-                TGLPosting.DeleteGLBatch(
-                    ALedgerNumber,
-                    GLDataset.ABatch[0].BatchNumber,
-                    out MoreResults);
-                AVerificationResult.AddCollection(MoreResults);
-
-                return false;
-            }
-
-            // GL posting is OK - change status of AP documents and save to database
-            foreach (AApDocumentRow row in MainDS.AApDocument.Rows)
-            {
-                if (Reversal)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref HighLevelTransaction, ref WillCommit,
+                delegate
                 {
-                    row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
-                }
-                else
-                {
-                    row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_POSTED;
-                }
-            }
+                    AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, out ResultsCollection);
 
-            SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(ResultsCollection))
+                    {
+                        return; // This is returning from the AutoTransaction, not from the whole method.
+                    }
 
-            try
-            {
-                AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction);
+                    GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS);
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                // Now I've got GL entries, but "unposted" AP documents!
+                    batch = GLDataset.ABatch[0];
 
-                TLogging.Log("An Exception occured during the Posting of an AP Document:" + Environment.NewLine + Exc.ToString());
+                    // save the batch
+                    if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                            out ResultsCollection) != TSubmitChangesResult.scrOK)
+                    {
+                        PostingWorkedOk = false;
+                    }
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                    // post the batch
+                    if (PostingWorkedOk)
+                    {
+                        PostingWorkedOk = TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out ResultsCollection);
+                    }
 
-                AVerificationResult.Add(new TVerificationResult("Post AP Document", Exc.Message,
-                        TResultSeverity.Resv_Critical));
+                    if (!PostingWorkedOk)
+                    {
+                        TVerificationResultCollection MoreResults;
 
-                throw;
-            }
+                        TGLPosting.DeleteGLBatch(
+                            ALedgerNumber,
+                            GLDataset.ABatch[0].BatchNumber,
+                            out MoreResults);
+                        ResultsCollection.AddCollection(MoreResults);
 
-            return true;
+                        return;
+                    }
+
+                    // GL posting is OK - change status of AP documents and save to database
+                    foreach (AApDocumentRow row in MainDS.AApDocument.Rows)
+                    {
+                        if (Reversal)
+                        {
+                            row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+                        }
+                        else
+                        {
+                            row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_POSTED;
+                        }
+                    }
+
+                    try
+                    {
+                        AApDocumentAccess.SubmitChanges(MainDS.AApDocument, HighLevelTransaction);
+                    }
+                    catch (Exception Exc)
+                    {
+                        // Now I've got GL entries, but "unposted" AP documents!
+
+                        TLogging.Log("An Exception occured during the Posting of an AP Document:" + Environment.NewLine + Exc.ToString());
+
+                        ResultsCollection.Add(new TVerificationResult("Post AP Document",
+                                "NOTE THAT A GL ENTRY MAY HAVE BEEN CREATED." + Environment.NewLine +
+                                Exc.Message,
+                                TResultSeverity.Resv_Critical));
+                        PostingWorkedOk = false;
+                        return;
+                    }
+                });
+            return PostingWorkedOk;
         }
 
         /// <summary>

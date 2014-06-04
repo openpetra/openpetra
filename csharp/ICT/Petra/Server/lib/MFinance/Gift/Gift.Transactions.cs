@@ -59,9 +59,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
     public partial class TGiftTransactionWebConnector
     {
         /// <summary>
-        /// Create a new batch with a consecutive batch number in the ledger,
-        /// and immediately store the batch and the new number in the database
+        ///
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADateEffective"></param>
+        /// <param name="ABatchDescription"></param>
+        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective, string ABatchDescription)
         {
@@ -74,7 +77,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadWriteTransaction);
 
                 TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref ReadWriteTransaction, ref LedgerTable, ALedgerNumber, ADateEffective);
-                MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
+
+                if (ABatchDescription.Length > 0)
+                {
+                    MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
+                }
 
                 AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, ReadWriteTransaction);
 
@@ -376,7 +383,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     DataRow resultRow = tab.NewRow();
                     resultRow[0] = row[0];
-                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString("yyyy");
+                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString(
+                        "dd/MM/yyyy");
                     tab.Rows.Add(resultRow);
                 }
             }
@@ -405,7 +413,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchStatus"></param>
         /// <param name="AYear">if -1, the year will be ignored</param>
         /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
-        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
+        /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used.
+        /// Period = -2 means all periods in current year</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, string ABatchStatus, Int32 AYear, Int32 APeriod)
@@ -435,6 +444,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     templateRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
                     templateOperators.Add(">=");
+                }
+                else if ((APeriod == -2) || (APeriod == -1))
+                {
+                    //All periods
+                    templateRow.BatchPeriod = APeriod;
+                    templateOperators.Add("<>");
                 }
                 else if (APeriod != -1)
                 {

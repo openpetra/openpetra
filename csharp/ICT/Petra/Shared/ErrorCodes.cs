@@ -218,6 +218,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Invalid Partner entered: PartnerKey 0 is not a valid value.")]
         public const String ERR_PARTNERKEY_INVALID_NOZERO = "PARTN.00002V";
 
+        /// <summary>Recipient Field/Motivation Group combination is invalid (must be non-gift for field=0).</summary>
+        [ErrCodeAttribute("Invalid Motivation Group for Recipient's Field.",
+             ErrorMessageText = "The Recipient's Field is 0 and so cannot have a Gift Motivation Group Code.")]
+        public const String ERR_RECIPIENT_FIELD_MOTIVATION_GROUP = "PARTN.00999V";
+
         /// <summary>Partner Status MERGED must not be assigned.</summary>
         [ErrCodeAttribute("Partner Status MERGED must not be assigned",
              ErrorMessageText = "The Partner Status cannot be set to 'MERGED' by the user - this Partner Status\r\n" +
