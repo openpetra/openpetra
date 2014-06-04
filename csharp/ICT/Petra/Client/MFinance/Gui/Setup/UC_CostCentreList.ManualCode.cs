@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // The CostCentre selected in the parent form
         CostCentreNodeDetails FSelectedCostCentre;
-        Int32 FLedgerNumber;
+//      Int32 FLedgerNumber;
         DataView FDataView = null;
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public void PopulateListView(GLSetupTDS MainDS, Int32 LedgerNumber)
         {
-            FLedgerNumber = LedgerNumber;
+//          FLedgerNumber = LedgerNumber;
 
             FDataView = new DataView(MainDS.ACostCentre);
             FDataView.Sort = "a_cost_centre_code_c";

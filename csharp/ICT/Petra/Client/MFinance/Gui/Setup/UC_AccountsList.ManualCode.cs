@@ -51,8 +51,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // The account selected in the parent form
         AccountNodeDetails FSelectedAccount;
-        Int32 FLedgerNumber;
-        String FSelectedHierarchy;
+//        Int32 FLedgerNumber;
+//        String FSelectedHierarchy;
         DataView FDataView = null;
 
         /// <summary>
@@ -111,8 +111,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public void PopulateListView(GLSetupTDS MainDS, Int32 LedgerNumber, String SelectedHierarchy)
         {
-            FLedgerNumber = LedgerNumber;
-            FSelectedHierarchy = SelectedHierarchy;
+//            FLedgerNumber = LedgerNumber;
+//            FSelectedHierarchy = SelectedHierarchy;
 
             FDataView = new DataView(MainDS.AAccount);
             FDataView.Sort = "a_account_code_c";

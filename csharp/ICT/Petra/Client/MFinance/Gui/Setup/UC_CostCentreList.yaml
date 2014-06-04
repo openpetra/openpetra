@@ -3,7 +3,7 @@ RootNode:
     UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     FormType: edit
-    Template: usercontrolunbound
+    Template: usercontrolUnbound
     Actions:
     Controls:
         pnlContent:
