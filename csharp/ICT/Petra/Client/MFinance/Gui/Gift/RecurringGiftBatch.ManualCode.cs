@@ -155,16 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if new transactions were actually loaded, False if transactions have already been loaded for the ledger/batch</returns>
         public bool LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            try
-            {
-                //this.tpgTransactions.Enabled = true;
-                FPetraUtilsObject.DisableDataChangedEvent();
-                return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
+            return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
         }
 
         /// <summary>
@@ -277,15 +268,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (SelectedRow != null)
                     {
-                        this.Cursor = Cursors.WaitCursor;
-
-                        if (LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber))
+                        try
                         {
-                            // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
-                            ucoTransactions.AutoSizeGrid();
-                        }
+                            this.Cursor = Cursors.WaitCursor;
 
-                        this.Cursor = Cursors.Default;
+                            if (LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber))
+                            {
+                                // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
+                                ucoTransactions.AutoSizeGrid();
+                            }
+                        }
+                        finally
+                        {
+                            this.Cursor = Cursors.Default;
+                        }
                     }
 
                     this.ucoTransactions.FocusGrid();

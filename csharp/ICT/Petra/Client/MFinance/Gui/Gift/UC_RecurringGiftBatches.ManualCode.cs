@@ -685,6 +685,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARow.HashTotal = correctHashValue;
         }
 
+        /// <summary>
+        /// Update the Batch total from the transactions values
+        /// </summary>
+        /// <param name="ABatchTotal"></param>
+        /// <param name="ABatchNumber"></param>
+        public void UpdateBatchTotal(decimal ABatchTotal, Int32 ABatchNumber)
+        {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+            else if (FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber)
+            {
+                FPreviouslySelectedDetailRow.BatchTotal = ABatchTotal;
+                FPetraUtilsObject.HasChanges = true;
+            }
+        }
+
         private void RunOnceOnParentActivationManual()
         {
             grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);

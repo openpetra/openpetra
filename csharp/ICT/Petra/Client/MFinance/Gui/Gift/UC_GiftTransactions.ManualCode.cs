@@ -24,13 +24,16 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MCommon;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -42,6 +45,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftTransactions
     {
+        private string FBatchMethodOfPayment = string.Empty;
+        private Int64 FLastDonor = -1;
+        private bool FActiveOnly = true;
+        private bool FGiftSelectedForDeletion = false;
+        private bool FSuppressListChanged = false;
+        private bool FInRecipientKeyChanging = false;
+        private bool FInKeyMinistryChanging = false;
+        private bool FInEditMode = false;
+        private bool FShowingDetails = false;
+
+        private AGiftRow FGift = null;
+        private string FMotivationGroup = string.Empty;
+        private string FMotivationDetail = string.Empty;
+        string FFilterAllDetailsOfGift = string.Empty;
+        private DataView FGiftDetailView = null;
+
+        private string FBatchStatus = string.Empty;
+        private bool FBatchUnposted = false;
+        private string FBatchCurrencyCode = string.Empty;
+        private decimal FBatchExchangeRateToBase = 1.0m;
+        private bool FGLEffectivePeriodChanged = false;
+
         /// <summary>
         /// The current Ledger number
         /// </summary>
@@ -61,27 +86,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Specifies that initial transactions have loaded into the dataset
         /// </summary>
         public bool FTransactionsLoaded = false;
-
-        private string FBatchStatus = string.Empty;
-        private string FBatchCurrencyCode = string.Empty;
-        private bool FBatchUnposted = false;
-        private string FBatchMethodOfPayment = string.Empty;
-        private decimal FBatchExchangeRateToBase = 1.0m;
-        private Int64 FLastDonor = -1;
-        private bool FActiveOnly = true;
-        private bool FGLEffectivePeriodChanged = false;
-        private bool FGiftSelectedForDeletion = false;
-
-        AGiftRow FGift = null;
-        private string FMotivationGroup = string.Empty;
-        private string FMotivationDetail = string.Empty;
-
-        DataView FGiftDetailView = null;
-        string FFilterAllDetailsOfGift = string.Empty;
-        private bool FSuppressListChanged = false;
-
-        private bool FShowingDetails = false;
-        private bool FInEditMode = false;
 
         private Boolean ViewMode
         {
@@ -228,7 +232,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
                     }
 
-                    GetDetailsFromControls(GetSelectedDetailRow());
+                    //Same as previously selected
+                    if (GetSelectedRowIndex() > 0)
+                    {
+                        GetDetailsFromControls(GetSelectedDetailRow());
+                    }
                 }
 
                 UpdateControlsProtection();
@@ -293,6 +301,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ApplyFilter();
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
+            
             SelectRowInGrid(1);
 
             UpdateTotals();
@@ -304,6 +313,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FTransactionsLoaded = true;
 
             return true;
+        }
+
+        /// <summary>
+        /// Ensure the data is loaded for the specified batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns>If transactions exist</returns>
+        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            DataView TransDV = new DataView(FMainDS.AGiftDetail);
+
+            TransDV.RowFilter = String.Format("{0}={1}",
+                AGiftDetailTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            if (TransDV.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
+
+                UpdateAllRecipientDescriptions(ABatchNumber);
+
+                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+            }
+
+            return TransDV.Count > 0;
         }
 
         private void UpdateAllRecipientDescriptions(Int32 ABatchNumber)
@@ -336,8 +371,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string NewCostCentreCode = string.Empty;
 
             Int64 RecipientField = Convert.ToInt64(txtField.Text);
-
-            DateTime giftDate = ((AGiftRow)GetGiftRow(ARow.GiftTransactionNumber)).DateEntered;
 
             string MotivationGroup = ARow.MotivationGroupCode;
             string MotivationDetail = ARow.MotivationDetailCode;
@@ -419,8 +452,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ARow.CostCentreCode = NewCostCentreCode;
             }
         }
-
-        bool FInRecipientKeyChanging = false;
 
         private void RecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
@@ -625,7 +656,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        bool FInKeyMinistryChanging = false;
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
             if (FInKeyMinistryChanging || FInRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || txtRecipientKeyMinistry.Visible)
@@ -2049,7 +2079,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateControlsProtection(FPreviouslySelectedDetailRow);
         }
 
-        private void UpdateControlsProtection(AGiftDetailRow ARow, AGiftRow AGift = null)
+        private void UpdateControlsProtection(AGiftDetailRow ARow)
         {
             bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1) && !ViewMode;
             bool pnlDetailsEnabledState = false;
@@ -2230,7 +2260,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void FocusGrid()
         {
-            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            if ((grdDetails != null) && grdDetails.CanFocus)
             {
                 grdDetails.Focus();
             }
@@ -2252,6 +2282,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
             }
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+        }
+
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[0].Width = 60;
+            grdDetails.Columns[1].Width = 60;
+            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+            grdDetails.Columns[3].Width = 50;
+            grdDetails.Columns[4].Width = 25;
+            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
+
+            Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
@@ -2545,32 +2618,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// Ensure the data is loaded for the specified batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns>If transactions exist</returns>
-        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            DataView TransDV = new DataView(FMainDS.AGiftDetail);
-
-            TransDV.RowFilter = String.Format("{0}={1}",
-                AGiftDetailTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            if (TransDV.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
-
-                UpdateAllRecipientDescriptions(ABatchNumber);
-
-                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-            }
-
-            return TransDV.Count > 0;
-        }
-
         private void GiftDateChanged(object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
@@ -2613,47 +2660,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void RunOnceOnParentActivationManual()
-        {
-            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-        }
-
-        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
-        {
-            if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
-            {
-                AutoSizeGrid();
-            }
-
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 60;
-            grdDetails.Columns[1].Width = 60;
-            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[3].Width = 50;
-            grdDetails.Columns[4].Width = 25;
-            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
-
-            Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
-        }
     }
 }
