@@ -258,13 +258,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             SelectRowInGrid(1);
 
-            UpdateTotals();
             UpdateControlsProtection();
 
             FSuppressListChanged = false;
             grdDetails.ResumeLayout();
 
             FTransactionsLoaded = true;
+            UpdateTotals();
 
             return true;
         }
@@ -1067,7 +1067,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //this is here because at the moment the generator does not generate this
                 txtBatchTotal.NumberValueDecimal = sumBatch;
                 //Now we look at the batch and update the batch data
-                ((TFrmRecurringGiftBatch)this.ParentForm).GetBatchControl().UpdateBatchTotal(sumBatch, FBatchRow.BatchNumber);
+                if (FBatchRow != null && FTransactionsLoaded)
+                {
+                    ((TFrmRecurringGiftBatch)this.ParentForm).GetBatchControl().UpdateBatchTotal(sumBatch, FBatchRow.BatchNumber);
+                }
             }
 
             if (disableSaveButton && FPetraUtilsObject.HasChanges)
