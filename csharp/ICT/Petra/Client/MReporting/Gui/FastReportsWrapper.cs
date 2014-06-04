@@ -165,19 +165,19 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     case TInitState.LoadDll:
                     {
-                        Msg = "Failed to load FastReport Dll.";
+                        Msg = "failed to load FastReport Dll.";
                         break;
                     }
 
                     case TInitState.LoadTemplate:
                     {
-                        Msg = String.Format("No reporting template found for {0}.", FPetraUtilsObject.FReportName);
+                        Msg = String.Format("no reporting template found for {0}.", FPetraUtilsObject.FReportName);
                         break;
                     }
 
                     case TInitState.InitSystem:
                     {
-                        Msg = "The DLL failed to initialise.";
+                        Msg = "the DLL failed to initialise.";
                         break;
                     }
 
@@ -187,7 +187,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
 
-                MessageBox.Show("The FastReports plugin did not initialise\r\n" + Msg, "Reporting engine");
+                MessageBox.Show("The FastReports plugin did not initialise:\r\n" + Msg, "Reporting engine");
             }
         }
 
