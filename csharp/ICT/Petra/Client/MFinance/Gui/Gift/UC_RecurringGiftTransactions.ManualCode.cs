@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
-            FBatchRow = GetBatchRow();
+            FBatchRow = GetCurrentBatchRow();
 
             //Apply new filter
             FPreviouslySelectedDetailRow = null;
@@ -256,6 +256,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Refresh the dataset for this form
+        /// </summary>
+        public void RefreshAll()
+        {
+            if ((FMainDS != null) && (FMainDS.ARecurringGiftDetail != null))
+            {
+                FMainDS.ARecurringGiftDetail.Rows.Clear();
+            }
+
+            FBatchRow = GetCurrentBatchRow();
+
+            if (FBatchRow != null)
+            {
+                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber);
             }
         }
 
@@ -587,7 +605,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// get the details of the current batch
         /// </summary>
         /// <returns></returns>
-        private ARecurringGiftBatchRow GetBatchRow()
+        private ARecurringGiftBatchRow GetCurrentBatchRow()
         {
             return (ARecurringGiftBatchRow)FMainDS.ARecurringGiftBatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
         }
@@ -626,7 +644,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
             FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
             FGiftDetailView.Sort = ARecurringGiftDetailTable.GetDetailNumberDBName() + " ASC";
-            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftAmount, GetBatchRow().CurrencyCode);
+            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftAmount, GetCurrentBatchRow().CurrencyCode);
 
             if (FGiftDetailView.Count == 1)
             {
@@ -1296,7 +1314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FBatchRow = GetBatchRow();
+            FBatchRow = GetCurrentBatchRow();
 
             if (FBatchRow == null)
             {
@@ -1363,7 +1381,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FBatchRow == null)
             {
-                FBatchRow = GetBatchRow();
+                FBatchRow = GetCurrentBatchRow();
             }
 
             if (ARow == null)
@@ -1448,7 +1466,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateDataDetailsManual(ARecurringGiftDetailRow ARow)
         {
-            if ((ARow == null) || (GetBatchRow() == null))
+            if ((ARow == null) || (GetCurrentBatchRow() == null))
             {
                 return;
             }

@@ -44,11 +44,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TUC_RecurringGiftBatches
     {
         private Int32 FLedgerNumber;
-//        private Int32 FSelectedBatchNumber;
+
+        private bool FInitialFocusActionComplete = false;
+        private string FBatchDescription = string.Empty;
+        private bool FActiveOnly = false;
+
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
-        private bool FActiveOnly = false;
+        /// <summary>
+        /// Flags whether all the gift batch rows for this form have finished loading
+        /// </summary>
+        public bool FBatchLoaded = false;
+
+        /// <summary>
+        /// Currently selected batchnumber
+        /// </summary>
+        public Int32 FSelectedBatchNumber = -1;
 
         /// <summary>
         /// Stores the current batch's method of payment
@@ -56,9 +68,104 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public string FSelectedBatchMethodOfPayment = String.Empty;
 
         /// <summary>
-        /// Flags whether all the gift batch rows for this form have finished loading
+        /// return the method of Payment for the transaction tab
         /// </summary>
-        public bool FBatchLoaded = false;
+
+        public String MethodOfPaymentCode
+        {
+            get
+            {
+                return cmbDetailMethodOfPaymentCode.GetSelectedString();
+            }
+        }
+
+        private void InitialiseControls()
+        {
+            //Add code here to setup any controls
+        }
+
+        /// <summary>
+        /// Refresh the data in the grid and the details after the database content was changed on the server
+        /// </summary>
+        public void RefreshAll()
+        {
+            if ((FMainDS != null) && (FMainDS.ARecurringGiftBatch != null))
+            {
+                FMainDS.ARecurringGiftBatch.Rows.Clear();
+            }
+
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                LoadBatches(FLedgerNumber);
+
+                if (((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl() != null)
+                {
+                    ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().RefreshAll();
+                }
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
+            }
+        }
+
+        /// reset the control
+        public void ClearCurrentSelection()
+        {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                GetDataFromControls();
+            }
+
+            this.FPreviouslySelectedDetailRow = null;
+            ShowData();
+        }
+
+        /// <summary>
+        /// enable or disable the buttons
+        /// </summary>
+        public void UpdateChangeableStatus()
+        {
+            Boolean changeable = (FPreviouslySelectedDetailRow != null);
+
+            this.btnDelete.Enabled = changeable;
+            this.btnSubmit.Enabled = changeable;
+            pnlDetails.Enabled = changeable;
+        }
+
+        /// <summary>
+        /// Checks various things on the form before saving
+        /// </summary>
+        public void CheckBeforeSavingBatch()
+        {
+            //Add code here to run before the batch is saved
+        }
+
+        /// <summary>
+        /// Sets the initial focus to the grid or the New button depending on the row count
+        /// </summary>
+        public void SetInitialFocus()
+        {
+            if (FInitialFocusActionComplete)
+            {
+                return;
+            }
+
+            if (grdDetails.CanFocus)
+            {
+                if (grdDetails.Rows.Count < 2)
+                {
+                    btnNew.Focus();
+                }
+                else
+                {
+                    grdDetails.Focus();
+                }
+
+                FInitialFocusActionComplete = true;
+            }
+        }
 
         /// <summary>
         /// load the batches into the grid
@@ -67,6 +174,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
+
+            InitialiseControls();
 
             ((TFrmRecurringGiftBatch)ParentForm).ClearCurrentSelections();
 
@@ -133,6 +242,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
                 }
             }
+        }
+
+        private void RefreshBankAccountAndCostCentreFilters(bool AActiveOnly, ARecurringGiftBatchRow ARow = null)
+        {
+            if (FActiveOnly != AActiveOnly)
+            {
+                FActiveOnly = AActiveOnly;
+                cmbDetailBankAccountCode.Filter = TFinanceControls.PrepareAccountFilter(true, false, AActiveOnly, true, "");
+                cmbDetailBankCostCentre.Filter = TFinanceControls.PrepareCostCentreFilter(true, false, AActiveOnly, true);
+
+                if (ARow != null)
+                {
+                    cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+                    cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+                }
+            }
+        }
+
+        private void RefreshBankAccountAndCostCentreData()
+        {
+            //Populate CostCentreList variable
+            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            FCostCentreTable = (ACostCentreTable)costCentreList;
+
+            //Populate AccountList variable
+            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            FAccountTable = (AAccountTable)accountList;
         }
 
         private void SetupExtraGridFunctionality()
@@ -251,7 +401,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// get the row of the current batch
         /// </summary>
         /// <returns>ARecurringGiftBatchRow</returns>
-        public ARecurringGiftBatchRow GetCurrentRecurringBatchRow()
+        public ARecurringGiftBatchRow GetCurrentBatchRow()
         {
             if (FBatchLoaded && (FPreviouslySelectedDetailRow != null))
             {
@@ -265,25 +415,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Refresh the data in the grid and the details after the database content was changed on the server
+        /// return any specified gift batch row
         /// </summary>
-        public void RefreshAll()
+        /// <returns>AGiftBatchRow</returns>
+        public ARecurringGiftBatchRow GetAnyBatchRow(Int32 ABatchNumber)
         {
-            try
+            if (FBatchLoaded)
             {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                LoadBatches(FLedgerNumber);
+                return (ARecurringGiftBatchRow)FMainDS.ARecurringGiftBatch.Rows.Find(new object[] { FLedgerNumber, ABatchNumber });
             }
-            finally
+            else
             {
-                FPetraUtilsObject.EnableDataChangedEvent();
+                return null;
             }
-        }
-
-        /// reset the control
-        public void ClearCurrentSelection()
-        {
-            this.FPreviouslySelectedDetailRow = null;
         }
 
         /// <summary>
@@ -299,7 +443,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ShowDataManual()
         {
-            txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
         }
 
         private void ShowDetailsManual(ARecurringGiftBatchRow ARow)
@@ -309,19 +452,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARow == null)
             {
+                FSelectedBatchNumber = -1;
                 return;
             }
 
             FLedgerNumber = ARow.LedgerNumber;
+            FSelectedBatchNumber = ARow.BatchNumber;
+
+            RefreshBankAccountAndCostCentreFilters(FActiveOnly, ARow);
 
             FPetraUtilsObject.DetailProtectedMode = false;
 
             UpdateChangeableStatus();
+
+            Boolean ComboSetsOk = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+            ComboSetsOk &= cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+
+            if (!ComboSetsOk)
+            {
+                MessageBox.Show("Can't set combo box with row details.");
+            }
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            ((TFrmRecurringGiftBatch)ParentForm).SelectTab(TFrmRecurringGiftBatch.eGiftTabs.Transactions);
+            if ((grdDetails.Rows.Count > 1) && ValidateAllData(false, true))
+            {
+                ((TFrmRecurringGiftBatch)ParentForm).SelectTab(TFrmRecurringGiftBatch.eGiftTabs.Transactions);
+            }
         }
 
         /// <summary>
@@ -331,13 +489,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
-            {
-                return;
-            }
-
             this.CreateNewARecurringGiftBatch();
             txtDetailBatchDescription.Focus();
+
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -443,6 +598,157 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
 
+        private void MethodOfPaymentChanged(object sender, EventArgs e)
+        {
+            FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
+
+            if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
+            {
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment(false);
+            }
+        }
+
+        private void CurrencyChanged(object sender, EventArgs e)
+        {
+            String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
+
+            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
+            ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+        }
+
+        private void HashTotalChanged(object sender, EventArgs e)
+        {
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+
+            Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
+            Form p = ParentForm;
+
+            if (p != null)
+            {
+                TUC_RecurringGiftTransactions t = ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl();
+
+                if (t != null)
+                {
+                    t.UpdateHashTotal(HashTotal);
+                }
+            }
+        }
+
+        /// Select a special batch number from outside
+        public void SelectBatchNumber(Int32 ABatchNumber)
+        {
+            for (int i = 0; (i < FMainDS.ARecurringGiftBatch.Rows.Count); i++)
+            {
+                if (FMainDS.ARecurringGiftBatch[i].BatchNumber == ABatchNumber)
+                {
+                    SelectDetailRowByDataTableIndex(i);
+                    break;
+                }
+            }
+        }
+
+        private void ValidateDataDetailsManual(ARecurringGiftBatchRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            if (ARow == null)
+            {
+                return;
+            }
+
+            //Hash total special case in view of the textbox handling
+            ParseHashTotal(ARow);
+
+            TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
+
+        private void ParseHashTotal(ARecurringGiftBatchRow ARow)
+        {
+            decimal correctHashValue;
+
+            if ((txtDetailHashTotal.NumberValueDecimal == null) || !txtDetailHashTotal.NumberValueDecimal.HasValue)
+            {
+                correctHashValue = 0m;
+            }
+            else
+            {
+                correctHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
+            }
+
+            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            ARow.HashTotal = correctHashValue;
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            AutoSizeGrid();
+        }
+
+        /// <summary>
+        /// Focus on grid
+        /// </summary>
+        public void SetFocusToGrid()
+        {
+            if ((grdDetails != null) && grdDetails.CanFocus)
+            {
+                grdDetails.Focus();
+            }
+        }
+
+        /// <summary>
+        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
+        {
+            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
+            {
+                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
+                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
+            }
+        }
+
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 90;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            //grdDetails.Columns[1].Width = 120;
+            grdDetails.Columns[1].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
+        }
+
         private void Submit(System.Object sender, System.EventArgs e)
         {
             if (FPreviouslySelectedDetailRow == null)
@@ -500,166 +806,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 submitForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
             }
-        }
-
-        /// <summary>
-        /// enable or disable the buttons
-        /// </summary>
-        public void UpdateChangeableStatus()
-        {
-            Boolean changeable = (FPreviouslySelectedDetailRow != null);
-
-            this.btnDelete.Enabled = changeable;
-            this.btnSubmit.Enabled = changeable;
-            pnlDetails.Enabled = changeable;
-        }
-
-        /// <summary>
-        /// return the method of Payment for the transaction tab
-        /// </summary>
-
-        public String MethodOfPaymentCode {
-            get
-            {
-                return cmbDetailMethodOfPaymentCode.GetSelectedString();
-            }
-        }
-        private void MethodOfPaymentChanged(object sender, EventArgs e)
-        {
-            FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
-
-            if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
-            {
-                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment(false);
-            }
-        }
-
-        private void CurrencyChanged(object sender, EventArgs e)
-        {
-            String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
-
-            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
-            ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
-        }
-
-        private void HashTotalChanged(object sender, EventArgs e)
-        {
-            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
-
-            if (txn.NumberValueDecimal == null)
-            {
-                return;
-            }
-
-            Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
-            Form p = ParentForm;
-
-            if (p != null)
-            {
-                TUC_RecurringGiftTransactions t = ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl();
-
-                if (t != null)
-                {
-                    t.UpdateHashTotal(HashTotal);
-                }
-            }
-        }
-
-        private void ValidateDataDetailsManual(ARecurringGiftBatchRow ARow)
-        {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            if (ARow == null)
-            {
-                return;
-            }
-
-            //Hash total special case in view of the textbox handling
-            ParseHashTotal(ARow);
-
-            TSharedFinanceValidation_Gift.ValidateRecurringGiftBatchManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
-        }
-
-        private void ParseHashTotal(ARecurringGiftBatchRow ARow)
-        {
-            decimal correctHashValue;
-
-            if ((txtDetailHashTotal.NumberValueDecimal == null) || !txtDetailHashTotal.NumberValueDecimal.HasValue)
-            {
-                correctHashValue = 0m;
-            }
-            else
-            {
-                correctHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
-            }
-
-            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            ARow.HashTotal = correctHashValue;
-        }
-
-        private void RunOnceOnParentActivationManual()
-        {
-            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
-            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
-            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-
-            AutoSizeGrid();
-        }
-
-        /// <summary>
-        /// Focus on grid
-        /// </summary>
-        public void FocusGrid()
-        {
-            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
-            {
-                grdDetails.Focus();
-            }
-        }
-
-        /// <summary>
-        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
-        /// </summary>
-        /// <param name="Sender"></param>
-        /// <param name="e"></param>
-        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
-        {
-            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
-            {
-                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
-                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
-            }
-        }
-
-        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
-        {
-            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
-            {
-                AutoSizeGrid();
-            }
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 90;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            //grdDetails.Columns[1].Width = 120;
-            grdDetails.Columns[1].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
         }
     }
 }

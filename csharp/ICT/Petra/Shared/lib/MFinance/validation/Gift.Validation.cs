@@ -437,10 +437,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
         public static bool ValidateRecurringGiftBatchManual(object AContext, ARecurringGiftBatchRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
-//            DataColumn ValidationColumn;
-//            TValidationControlsData ValidationControlsData;
-//            TVerificationResult VerificationResult;
-//            object ValidationContext;
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+            object ValidationContext;
             int VerifResultCollAddedCount = 0;
 
             // Don't validate deleted DataRows
@@ -449,7 +449,65 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            //No checks as yet
+            // Description cannot be empty
+            ValidationColumn = ARow.Table.Columns[ARecurringGiftBatchTable.ColumnBatchDescriptionId];
+            ValidationContext = String.Format("Description in Recurring Batch no.: {0}", ARow.BatchNumber); //ARow.BankAccountCode;
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = (TScreenVerificationResult)TStringChecks.StringMustNotBeEmpty(ARow.BatchDescription,
+                    ValidationContext.ToString(),
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if ((VerificationResult != null)
+                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // A Bank Account Code must be selected
+            ValidationColumn = ARow.Table.Columns[ARecurringGiftBatchTable.ColumnBankAccountCodeId];
+            ValidationContext = String.Format("Bank Account in Recurring Batch no.: {0}", ARow.BatchNumber); //ARow.BankAccountCode;
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = (TScreenVerificationResult)TStringChecks.StringMustNotBeEmpty(ARow.BankAccountCode,
+                    ValidationContext.ToString(),
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if ((VerificationResult != null)
+                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // A Bank Cost Centre Code must be selected
+            ValidationColumn = ARow.Table.Columns[ARecurringGiftBatchTable.ColumnBankCostCentreId];
+            ValidationContext = String.Format("Cost Centre in Recurring Batch no.: {0}", ARow.BatchNumber); //ARow.BankCostCentre;
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = (TScreenVerificationResult)TStringChecks.StringMustNotBeEmpty(ARow.BankCostCentre,
+                    ValidationContext.ToString(),
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if ((VerificationResult != null)
+                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
 
             return VerifResultCollAddedCount == 0;
         }
