@@ -1202,7 +1202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool DeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
-            string originatingDetailRef = string.Empty;
+            //string originatingDetailRef = string.Empty;
 
             ACompletionMessage = string.Empty;
 

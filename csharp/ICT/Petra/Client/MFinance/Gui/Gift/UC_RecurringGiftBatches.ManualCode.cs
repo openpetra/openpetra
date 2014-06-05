@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
 
         private bool FInitialFocusActionComplete = false;
-        private string FBatchDescription = string.Empty;
+        //private string FBatchDescription = string.Empty;
         private bool FActiveOnly = false;
 
         private ACostCentreTable FCostCentreTable = null;
