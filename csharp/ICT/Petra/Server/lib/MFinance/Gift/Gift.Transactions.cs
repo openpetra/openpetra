@@ -725,7 +725,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadRecurringTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
+            string FailedUpdates = string.Empty;
+
             GiftBatchTDS MainDS = LoadRecurringGiftBatchData(ALedgerNumber, ABatchNumber);
+
+            if (!UpdateCostCentreCodeForRecipients(ref MainDS, out FailedUpdates, ABatchNumber))
+            {
+                TLogging.Log(String.Format("Updating Cost Centre Codes For Recipients in Ledger {0} and Batch {1} failed:{2}  {3}",
+                        ALedgerNumber,
+                        ABatchNumber,
+                        Environment.NewLine,
+                        FailedUpdates));
+            }
 
             // drop all tables apart from ARecurringGift and ARecurringGiftDetail
             foreach (DataTable table in MainDS.Tables)
@@ -734,6 +745,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     table.Clear();
                 }
+            }
+
+            //Add a temp table
+            if (FailedUpdates.Length > 0)
+            {
+                DataTable table = new DataTable();
+                table.TableName = "AUpdateErrors";
+                table.Columns.Add("UpdateError", typeof(string));
+                table.Rows.Add(FailedUpdates);
+
+                MainDS.Tables.Add(table);
             }
 
             return MainDS;
@@ -1710,11 +1732,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.RecipientField = GetRecipientFundNumber(MainDS, giftDetail.RecipientKey);
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
+
+                    PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
+
+                    if ((RecipientUnitRow != null) && (RecipientUnitRow.UnitTypeCode == MFinanceConstants.UNIT_TYPE_CODE_KEY_MIN))
+                    {
+                        giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
+                    }
+                    else
+                    {
+                        giftDetail.SetRecipientKeyMinistryNull();
+                    }
                 }
                 else
                 {
                     giftDetail.SetRecipientFieldNull();
                     giftDetail.RecipientDescription = "INVALID";
+                    giftDetail.SetRecipientKeyMinistryNull();
                 }
 
                 //And account code

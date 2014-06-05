@@ -105,9 +105,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void SetupComboTextBoxOverlayControls()
         {
             txtDetailRecipientKeyMinistry.TabStop = false;
-            //TODO: Remove later---------------------
-            txtDetailRecipientKeyMinistry.BackColor = System.Drawing.Color.Aqua;
-            //---------------------------------------
             txtDetailRecipientKeyMinistry.BorderStyle = BorderStyle.None;
             txtDetailRecipientKeyMinistry.Top = cmbKeyMinistries.Top + 3;
             txtDetailRecipientKeyMinistry.Left += 3;
