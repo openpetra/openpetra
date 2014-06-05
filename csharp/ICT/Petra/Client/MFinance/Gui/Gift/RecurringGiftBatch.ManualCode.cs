@@ -315,5 +315,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        /// <summary>
+        /// Check for any errors
+        /// </summary>
+        /// <param name="AShowMessage"></param>
+        public void ProcessRecipientCostCentreCodeUpdateErrors(bool AShowMessage = true)
+        {
+            //Process update errors
+            if (FMainDS.Tables.Contains("AUpdateErrors"))
+            {
+                //TODO remove this code when the worker field issue is sorted out
+                AShowMessage = false;
+
+                //--------------------------------------------------------------
+                if (AShowMessage)
+                {
+                    string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
+
+                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
+                            Environment.NewLine,
+                            loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                FMainDS.Tables.Remove("AUpdateErrors");
+            }
+        }
     }
 }

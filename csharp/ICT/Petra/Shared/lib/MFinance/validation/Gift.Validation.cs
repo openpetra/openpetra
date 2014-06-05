@@ -517,9 +517,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// </summary>
         /// <param name="AContext"></param>
         /// <param name="ARow"></param>
-        /// <param name="AYear"></param>
-        /// <param name="APeriod"></param>
-        /// <param name="AControl">Need to pass the validation control because it is not a bound control</param>
         /// <param name="AVerificationResultCollection"></param>
         /// <param name="AValidationControlsDict"></param>
         /// <returns></returns>
@@ -574,8 +571,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// display data that is about to be validated.</param>
         /// <param name="ARecipientField">Optional</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateRecurringGiftDetailManual(object AContext, ARecurringGiftDetailRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict, Int64 ARecipientField = -1)
+        public static bool ValidateRecurringGiftDetailManual(object AContext,
+            ARecurringGiftDetailRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict,
+            Int64 ARecipientField = -1)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;

@@ -95,8 +95,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
 
             //Set initial width of this textbox
-            cmbMinistry.ComboBoxWidth = 250;
-            cmbMinistry.AttachedLabel.Visible = false;
+            cmbKeyMinistries.ComboBoxWidth = 250;
+            cmbKeyMinistries.AttachedLabel.Visible = false;
 
             //Setup hidden text boxes used to speed up reading transactions
             SetupComboTextBoxOverlayControls();
@@ -104,16 +104,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetupComboTextBoxOverlayControls()
         {
-            txtRecipientKeyMinistry.TabStop = false;
-            txtRecipientKeyMinistry.BorderStyle = BorderStyle.None;
-            txtRecipientKeyMinistry.Top = cmbMinistry.Top + 3;
-            txtRecipientKeyMinistry.Left += 3;
-            txtRecipientKeyMinistry.Width = cmbMinistry.ComboBoxWidth - 21;
+            txtDetailRecipientKeyMinistry.TabStop = false;
+            //TODO: Remove later---------------------
+            txtDetailRecipientKeyMinistry.BackColor = System.Drawing.Color.Aqua;
+            //---------------------------------------
+            txtDetailRecipientKeyMinistry.BorderStyle = BorderStyle.None;
+            txtDetailRecipientKeyMinistry.Top = cmbKeyMinistries.Top + 3;
+            txtDetailRecipientKeyMinistry.Left += 3;
+            txtDetailRecipientKeyMinistry.Width = cmbKeyMinistries.ComboBoxWidth - 21;
 
-            txtRecipientKeyMinistry.Click += new EventHandler(SetFocusToKeyMinistryCombo);
-            txtRecipientKeyMinistry.Enter += new EventHandler(SetFocusToKeyMinistryCombo);
-            txtRecipientKeyMinistry.KeyDown += new KeyEventHandler(OverlayTextBox_KeyDown);
-            txtRecipientKeyMinistry.KeyPress += new KeyPressEventHandler(OverlayTextBox_KeyPress);
+            txtDetailRecipientKeyMinistry.Click += new EventHandler(SetFocusToKeyMinistryCombo);
+            txtDetailRecipientKeyMinistry.Enter += new EventHandler(SetFocusToKeyMinistryCombo);
+            txtDetailRecipientKeyMinistry.KeyDown += new KeyEventHandler(OverlayTextBox_KeyDown);
+            txtDetailRecipientKeyMinistry.KeyPress += new KeyPressEventHandler(OverlayTextBox_KeyPress);
 
             pnlDetails.Enter += new EventHandler(BeginEditMode);
             pnlDetails.Leave += new EventHandler(EndEditMode);
@@ -123,7 +126,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetFocusToKeyMinistryCombo(object sender, EventArgs e)
         {
-            cmbMinistry.Focus();
+            cmbKeyMinistries.Focus();
         }
 
         private void OverlayTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -146,7 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FInEditMode = false;
 
-            if (!txtRecipientKeyMinistry.Visible)
+            if (!txtDetailRecipientKeyMinistry.Visible)
             {
                 SetTextBoxOverlayOnKeyMinistryCombo();
             }
@@ -156,20 +159,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ResetMotivationDetailCodeFilter();
 
-            txtRecipientKeyMinistry.Visible = true;
-            txtRecipientKeyMinistry.BringToFront();
+            txtDetailRecipientKeyMinistry.Visible = true;
+            txtDetailRecipientKeyMinistry.BringToFront();
+            txtDetailRecipientKeyMinistry.Parent.Refresh();
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                txtDetailRecipientKeyMinistry.Text = FPreviouslySelectedDetailRow.RecipientKeyMinistry;
+            }
         }
 
         private void SetKeyMinistryTextBoxInvisible(object sender, EventArgs e)
         {
-            if (txtRecipientKeyMinistry.Visible)
+            if (txtDetailRecipientKeyMinistry.Visible)
             {
                 ApplyMotivationDetailCodeFilter();
 
                 PopulateKeyMinistry();
 
                 //hide the overlay box during editing
-                txtRecipientKeyMinistry.Visible = false;
+                txtDetailRecipientKeyMinistry.Visible = false;
             }
         }
 
@@ -200,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Check if the same batch is selected, so no need to apply filter
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FPreviouslySelectedDetailRow != null))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
             {
                 //Same as previously selected
                 if (GetSelectedRowIndex() > 0)
@@ -249,6 +258,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
             {
                 EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
+                string errors = string.Empty;
+                UpdateCostCentreCodeForRecipients(out errors);
             }
 
             // Now we set the full filter
@@ -289,8 +300,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateAllRecipientDescriptions(ABatchNumber);
 
-                //TODO: apply below
-                //((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+                ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
 
             return TransDV.Count > 0;
@@ -315,14 +325,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private string FindCostCentreCodeForRecipient(ARecurringGiftDetailRow ARow, Int64 APartnerKey, bool AShowError = false)
+        private void FindCostCentreCodeForRecipient(GiftBatchTDSARecurringGiftDetailRow ARow, Int64 APartnerKey, bool AShowError = false)
         {
             if (ARow == null)
             {
-                return string.Empty;
+                return;
             }
 
+            string CurrentCostCentreCode = ARow.CostCentreCode;
             string NewCostCentreCode = string.Empty;
+
             Int64 RecipientField = Convert.ToInt64(txtField.Text);
 
             string MotivationGroup = ARow.MotivationGroupCode;
@@ -400,7 +412,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            return NewCostCentreCode;
+            if (CurrentCostCentreCode != NewCostCentreCode)
+            {
+                ARow.CostCentreCode = NewCostCentreCode;
+            }
         }
 
         private void RecipientKeyChanged(Int64 APartnerKey,
@@ -413,7 +428,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FInRecipientKeyChanging = true;
-            txtRecipientKeyMinistry.Text = string.Empty;
+            txtDetailRecipientKeyMinistry.Text = string.Empty;
 
             try
             {
@@ -608,24 +623,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
-            if (FInKeyMinistryChanging || FInRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection)
+            string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+            string RecipientKey = cmbKeyMinistries.GetSelectedInt64().ToString();
+
+            if ((FPreviouslySelectedDetailRow == null) || FInKeyMinistryChanging || FInRecipientKeyChanging
+                || FPetraUtilsObject.SuppressChangeDetection || txtDetailRecipientKeyMinistry.Visible)
             {
                 return;
             }
 
-            FInKeyMinistryChanging = true;
-
             try
             {
-                if (cmbMinistry.Count == 0)
+                FInKeyMinistryChanging = true;
+
+                if (cmbKeyMinistries.Count == 0)
                 {
-                    cmbMinistry.SelectedIndex = -1;
-                    txtRecipientKeyMinistry.Text = string.Empty;
+                    cmbKeyMinistries.SelectedIndex = -1;
+                    txtDetailRecipientKeyMinistry.Text = string.Empty;
                 }
                 else
                 {
-                    txtRecipientKeyMinistry.Text = cmbMinistry.GetSelectedDescription();
-                    txtDetailRecipientKey.Text = cmbMinistry.GetSelectedInt64().ToString();
+                    txtDetailRecipientKeyMinistry.Text = KeyMinistry;
+                    FPreviouslySelectedDetailRow.RecipientKeyMinistry = KeyMinistry;
+                    txtDetailRecipientKey.Text = RecipientKey;
                 }
             }
             finally
@@ -634,14 +654,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// Called on TextChanged event for combo
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MotivationGroupChanged(object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.SuppressChangeDetection || !FInEditMode || txtRecipientKeyMinistry.Visible)
+            if (FPetraUtilsObject.SuppressChangeDetection || !FInEditMode || txtDetailRecipientKeyMinistry.Visible)
             {
                 return;
             }
@@ -764,7 +779,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            txtCostCentreCode.Text = CostCentreCode;
+            txtDetailCostCentreCode.Text = CostCentreCode;
         }
 
         private void RetrieveRecipientCostCentreCode(Int64 APartnerKey)
@@ -782,7 +797,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
 
-            txtCostCentreCode.Text = FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, false);
+            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, false);
+
+            txtDetailCostCentreCode.Text = FPreviouslySelectedDetailRow.CostCentreCode;
         }
 
         private bool UpdateCostCentreCodeForRecipients(out string AFailedUpdates,
@@ -839,11 +856,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             foreach (DataRowView dvRows in giftRowsView)
             {
-                ARecurringGiftDetailRow giftDetailRow = (ARecurringGiftDetailRow)dvRows.Row;
+                //ARecurringGiftDetailRow giftDetailRow = (ARecurringGiftDetailRow)dvRows.Row;
+                GiftBatchTDSARecurringGiftDetailRow giftDetailRow = (GiftBatchTDSARecurringGiftDetailRow)dvRows.Row;
 
                 ARecurringGiftRow giftRow = GetGiftRow(giftDetailRow.GiftTransactionNumber);
 
-                CurrentCostCentreCode = String.Empty; //giftDetailRow.CostCentreCode;
+                CurrentCostCentreCode = giftDetailRow.CostCentreCode;
                 NewCostCentreCode = CurrentCostCentreCode;
 
                 MotivationGroup = giftDetailRow.MotivationGroupCode;
@@ -904,8 +922,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (CurrentCostCentreCode != NewCostCentreCode)
                 {
-                    txtCostCentreCode.Text = NewCostCentreCode;
-                    //giftDetailRow.CostCentreCode = NewCostCentreCode;
+                    giftDetailRow.CostCentreCode = NewCostCentreCode;
                 }
 
                 if (ErrMsg.Length > 0)
@@ -925,7 +942,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
-            if (!FInEditMode || txtRecipientKeyMinistry.Visible)
+            if (!FInEditMode || txtDetailRecipientKeyMinistry.Visible)
             {
                 return;
             }
@@ -961,7 +978,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void PopulateKeyMinistry(long APartnerKey = 0)
         {
-            cmbMinistry.Clear();
+            cmbKeyMinistries.Clear();
 
             if (APartnerKey == 0)
             {
@@ -974,9 +991,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             GetRecipientData(APartnerKey);
-
-            //long FieldNumber = Convert.ToInt64(txtField.Text);
-            //txtCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
         }
 
         private void GetRecipientData(long APartnerKey)
@@ -986,7 +1000,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
             }
 
-            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey, true);
+            TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtField, APartnerKey, true);
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -1026,7 +1040,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //If all details have been deleted
                 if ((FLedgerNumber != -1) && (FBatchRow != null) && (grdDetails.Rows.Count == 1))
                 {
-                    ((TFrmRecurringGiftBatch)this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
+                    ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
                 }
             }
             else
@@ -1066,10 +1080,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtGiftTotal.ReadOnly = true;
                 //this is here because at the moment the generator does not generate this
                 txtBatchTotal.NumberValueDecimal = sumBatch;
+
                 //Now we look at the batch and update the batch data
-                if (FBatchRow != null && FTransactionsLoaded)
+                if ((FBatchRow != null) && FTransactionsLoaded)
                 {
-                    ((TFrmRecurringGiftBatch)this.ParentForm).GetBatchControl().UpdateBatchTotal(sumBatch, FBatchRow.BatchNumber);
+                    ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(sumBatch, FBatchRow.BatchNumber);
                 }
             }
 
@@ -1199,7 +1214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return deletionSuccessful;
             }
 
-            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmRecurringGiftBatch)this.ParentForm).SaveChanges())
+            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
                 return deletionSuccessful;
@@ -1323,7 +1338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 //Try to save changes
-                if (((TFrmRecurringGiftBatch)this.ParentForm).SaveChanges())
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                 {
                     //Clear current batch's gift data and reload from server
                     ClearCurrentBatchGiftData(FBatchNumber);
@@ -1535,8 +1550,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMailingCode.SelectedIndex = -1;
                 cmbDetailMethodOfGivingCode.SelectedIndex = -1;
                 cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-                cmbMinistry.SelectedIndex = -1;
-                txtCostCentreCode.Text = string.Empty;
+                cmbKeyMinistries.SelectedIndex = -1;
+                txtDetailCostCentreCode.Text = string.Empty;
             }
             finally
             {
@@ -1682,7 +1697,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((Convert.ToInt64(txtDetailRecipientKey.Text) == 0) && (cmbDetailMotivationGroupCode.SelectedIndex == -1))
             {
-                txtCostCentreCode.Text = string.Empty;
+                txtDetailCostCentreCode.Text = string.Empty;
             }
 
             FPetraUtilsObject.SetStatusBarText(cmbDetailMethodOfGivingCode, Catalog.GetString("Enter method of giving"));
@@ -1693,7 +1708,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(GiftBatchTDSARecurringGiftDetailRow ARow)
         {
-            if (!txtRecipientKeyMinistry.Visible)
+            if (!txtDetailRecipientKeyMinistry.Visible)
             {
                 SetTextBoxOverlayOnKeyMinistryCombo();
             }
@@ -1713,27 +1728,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMotivationGroup = ARow.MotivationGroupCode;
                 FMotivationDetail = ARow.MotivationDetailCode;
 
-                if (ARow.IsRecipientKeyMinistryNull())
-                {
-                    txtRecipientKeyMinistry.Text = string.Empty;
-                }
-                else
-                {
-                    txtRecipientKeyMinistry.Text = ARow.RecipientKeyMinistry;
-                }
-
                 //Show gift table values
                 ARecurringGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
                 ShowDetailsForGift(giftRow);
 
-                //if (ARow.IsCostCentreCodeNull())
-                //{
-                //    txtDetailCostCentreCode.Text = string.Empty;
-                //}
-                //else
-                //{
-                //    txtDetailCostCentreCode.Text = ARow.CostCentreCode;
-                //}
+                if (ARow.IsCostCentreCodeNull())
+                {
+                    txtDetailCostCentreCode.Text = string.Empty;
+                }
+                else
+                {
+                    txtDetailCostCentreCode.Text = ARow.CostCentreCode;
+                }
 
                 if (ARow.IsAccountCodeNull())
                 {
@@ -1765,11 +1771,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 UpdateControlsProtection(ARow);
-
-                FShowingDetails = false;
             }
             finally
             {
+                FShowingDetails = false;
                 this.Cursor = Cursors.Default;
             }
         }
@@ -1956,6 +1961,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GetDetailDataFromControlsManual(GiftBatchTDSARecurringGiftDetailRow ARow)
         {
+            if (txtDetailCostCentreCode.Text.Length == 0)
+            {
+                ARow.SetCostCentreCodeNull();
+            }
+            else
+            {
+                ARow.CostCentreCode = txtDetailCostCentreCode.Text;
+            }
+
             if (txtDetailAccountCode.Text.Length == 0)
             {
                 ARow.SetAccountCodeNull();
@@ -1981,15 +1995,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ARow.RecipientField = Convert.ToInt64(txtField.Text);
-            }
-
-            if (txtRecipientKeyMinistry.Text.Length == 0)
-            {
-                ARow.SetRecipientKeyMinistryNull();
-            }
-            else
-            {
-                ARow.RecipientKeyMinistry = txtRecipientKeyMinistry.Text;
             }
 
             //Handle gift table fields for first detail only
