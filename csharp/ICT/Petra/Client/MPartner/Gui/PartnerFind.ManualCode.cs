@@ -1372,8 +1372,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 MessageProcessed = true;
             }
-            else if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
-                     || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
+            else if (FCurrentlySelectedTab.PartnerFindCriteria.HasSearchCriteria() && 
+                     ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                     	|| (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted)))
             {
                 bool FoundRow = false;
 

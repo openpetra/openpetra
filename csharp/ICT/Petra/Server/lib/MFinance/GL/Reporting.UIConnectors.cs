@@ -1605,8 +1605,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 {
                     DateTime dateStart = AParameters["param_start_date"].ToDate();
                     DateTime dateEnd = AParameters["param_end_date"].ToDate();
-                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= " + dateStart.ToString("yyyy-MM-dd") +
-                                 " AND GiftBatch.a_gl_effective_date_d <= " + dateEnd.ToString("yyyy-MM-dd") + " ";
+                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= '" + dateStart.ToString("yyyy-MM-dd") + "'" +
+                                 " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString("yyyy-MM-dd") + "' ";
                 }
 
                 String Query = "SELECT ";

@@ -1203,7 +1203,7 @@ namespace FastReport
       <LineObject Name="Line1" Left="718.2" Top="75.6" Width="-718.2"/>
       <TextObject Name="Text50" Left="453.6" Top="56.7" Width="103.95" Height="18.9" Text="Ordered By :" HorzAlign="Right"/>
       <TextObject Name="Text51" Left="557.55" Top="56.7" Width="160.65" Height="18.9" Text="[param_sortby]"/>
-      <TextObject Name="Text56" Left="75.6" Top="56.7" Width="198.45" Height="18.9" Text="[OmDate([param_start_date])+&quot; - &quot;+OmDate([param_end_date])]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text56" Left="75.6" Top="56.7" Width="198.45" Height="18.9" Text="[IIf([param_period],OmDate([param_start_date])+&quot; - &quot;+OmDate([param_end_date]),&quot;&quot;)]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
     </ReportTitleBand>
     <PageHeaderBand Name="PageHeader1" Top="88.38" Width="718.2"/>
     <GroupHeaderBand Name="GroupHeader1" Top="91.72" Width="718.2" Condition="Switch(&quot;Account&quot;==[param_sortby],[a_transaction.a_account_code_c], &quot;Cost Centre&quot;==[param_sortby], [a_transaction.a_cost_centre_code_c])" SortOrder="None">

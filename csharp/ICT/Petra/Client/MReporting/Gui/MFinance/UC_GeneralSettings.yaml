@@ -54,7 +54,7 @@ RootNode:
             Controls: [txtQuarter, cmbQuarterYear]
             NoParameter: true
         txtQuarter:
-            Label: from
+            Label: temp
             Width: 30
             NoParameter: true
         cmbQuarterYear: 
