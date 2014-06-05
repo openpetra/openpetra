@@ -58,14 +58,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 pnlSorting.Padding = new System.Windows.Forms.Padding(8); // This tweak bring controls inline.
                 FPetraUtilsObject.LoadDefaultSettings();
 
-                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
-                {
-                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
-                }
-                else if (FPetraUtilsObject.GetCallerForm() != null)
-                {
-                    MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
-                }
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 

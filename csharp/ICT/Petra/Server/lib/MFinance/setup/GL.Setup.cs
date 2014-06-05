@@ -3469,21 +3469,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return IsInUse;
         }
 
-        /// <summary>I can add child accounts to this account if it's a summary account,
+        /// <summary>I can add child accounts to this account if it's a summary Cost Centre,
         ///          or if there have never been transactions posted to it,
         ///          or if it's linked to a partner.
         ///
-        ///          (If children are added to this account, it will be promoted to a summary account.)
+        ///          (If children are added to this Cost Centre, it will be promoted to a summary Cost Centre.)
         ///
-        ///          I can delete this account if it has no transactions posted as above,
+        ///          But I can't add to 'ILT', or the children of 'ILT'.
+        ///
+        ///          I can delete this Cost Centre if it has no transactions posted as above,
         ///          AND it has no children.
+        ///          But I can't delete System Cost Centres.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ACostCentreCode"></param>
-        /// <param name="ACanBeParent"></param>
-        /// <param name="ACanDelete"></param>
-        /// <param name="AMsg"></param>
-        /// <returns></returns>
+        /// <returns>true if the attributes were found. (If not found, that's a serious fault!)</returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber,
             String ACostCentreCode,
@@ -3491,81 +3489,100 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out bool ACanDelete,
             out String AMsg)
         {
-            ACanBeParent = false;
-            ACanDelete = false;
-            AMsg = "";
+            Boolean canBeParent = false;
+            Boolean canDelete = false;
+            String msg = "";
+
             bool DbSuccess = true;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
+            TDBTransaction Transaction = null;
 
-            if (TempTbl.Rows.Count < 1)  // This shouldn't happen..
-            {
-                DbSuccess = false;
-                AMsg = Catalog.GetString("Not Found!");
-            }
-            else
-            {
-                bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
-                ACostCentreRow CostCentreRow = TempTbl[0];
-                ACanBeParent = !CostCentreRow.PostingCostCentreFlag; // If it's a summary Cost Centre, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
-
-                if (IsParent)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
                 {
-                    ACanDelete = false;
-                    AMsg = Catalog.GetString("Cost Centre has children.");
-                }
-                else
-                {
-                    ACanDelete = true;
-                }
+                    ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
 
-                if (!ACanBeParent || ACanDelete)
-                {
-                    bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
-
-                    if (IsInUse)
+                    if (TempTbl.Rows.Count < 1)  // This shouldn't happen..
                     {
-                        ACanBeParent = false;
-                        ACanDelete = false;      // Once it has transactions posted, I can't delete it, ever.
-                        AMsg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                        DbSuccess = false;
+                        msg = Catalog.GetString("Not Found!");
+                        return;
+                    }
+
+                    ACostCentreRow CostCentreRow = TempTbl[0];
+
+                    //
+                    // OM - specific code ahead!
+                    // Don't allow any cost centres to be added to ILT or its children.
+                    if ((CostCentreRow.CostCentreCode == "ILT") || (CostCentreRow.CostCentreToReportTo == "ILT"))
+                    {
+                        canBeParent = false;
+                        canDelete = false;
+                        msg = Catalog.GetString("Cost Centres in ILT cannot have children.");
+                        return;
+                    }
+
+                    bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
+                    canBeParent = !CostCentreRow.PostingCostCentreFlag; // If it's a summary Cost Centre, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+
+                    if (IsParent)
+                    {
+                        canDelete = false;
+                        msg = Catalog.GetString("Cost Centre has children.");
                     }
                     else
                     {
-                        ACanBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
+                        canDelete = true;
                     }
-                }
 
-                if (ACanBeParent || ACanDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
-                {                                   // If it has, the link must be deleted first.
-                    AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
-
-                    if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                    if (!canBeParent || canDelete)
                     {
-                        ACanBeParent = false;
-                        ACanDelete = false;
-                        AMsg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
+                        bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
+
+                        if (IsInUse)
+                        {
+                            canBeParent = false;
+                            canDelete = false;      // Once it has transactions posted, I can't delete it, ever.
+                            msg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                        }
+                        else
+                        {
+                            canBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
+                        }
                     }
-                }
 
-                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
-                {                // and do the low-level database check to see if a deletion would succeed:
-                    TVerificationResultCollection ReferenceResults;
-                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
-                        ACostCentreCode,
-                        50,
-                        Transaction,
-                        false,
-                        out ReferenceResults);
+                    if (canBeParent || canDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
+                    {                                   // If it has, the link must be deleted first.
+                        AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
 
-                    if (RefCount > 0)
-                    {
-                        ACanDelete = false;
-                        AMsg = ReferenceResults.BuildVerificationResultString();
+                        if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                        {
+                            canBeParent = false;
+                            canDelete = false;
+                            msg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
+                        }
                     }
-                }
-            }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    if (canDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
+                    {                // and do the low-level database check to see if a deletion would succeed:
+                        TVerificationResultCollection ReferenceResults;
+                        Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
+                            ACostCentreCode,
+                            50,
+                            Transaction,
+                            false,
+                            out ReferenceResults);
+
+                        if (RefCount > 0)
+                        {
+                            canDelete = false;
+                            msg = ReferenceResults.BuildVerificationResultString();
+                        }
+                    }
+                }); // End of BeginAutoReadTransaction with anonymous function
+
+            ACanBeParent = canBeParent;
+            ACanDelete = canDelete;
+            AMsg = msg;
             return DbSuccess;
         }
 
