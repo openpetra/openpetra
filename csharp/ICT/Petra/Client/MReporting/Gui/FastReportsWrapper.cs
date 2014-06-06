@@ -61,7 +61,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private SReportTemplateRow FSelectedTemplate = null;
 
-        private enum TInitState {
+        private enum TInitState
+        {
             Unknown, LoadDll, LoadTemplate, InitSystem, LoadedOK
         };
         private TInitState FInitState;

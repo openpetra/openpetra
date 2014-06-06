@@ -105,5 +105,4 @@ namespace Ict.Common.Printing
     {
     }
 #endif
-
 }
