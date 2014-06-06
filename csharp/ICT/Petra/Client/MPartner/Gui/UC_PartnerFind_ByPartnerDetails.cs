@@ -1343,6 +1343,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Reset internal status variables
                 FLastSearchWasDetailedSearch = chkDetailedResults.Checked;
+
                 if (chkDetailedResults.Checked)
                 {
                     FResultListIncludesDetailedResultColumns = 2;
@@ -1351,6 +1352,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FResultListIncludesDetailedResultColumns = 1;
                 }
+
                 FCriteriaContentChanged = false;
                 FLastPartnerKeyInfoPanelOpened = -1;
                 FLastLocationPKInfoPanelOpened = new TLocationPK(-1, -1);
