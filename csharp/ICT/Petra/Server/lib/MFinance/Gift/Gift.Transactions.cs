@@ -167,6 +167,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ABatchNumber = (Int32)requestParams["ABatchNumber"];
             DateTime AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
             Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];
+            Decimal AExchangeRateIntlToBase = (Decimal)requestParams["AExchangeRateIntlToBase"];
+
+            bool TransactionInIntlCurrency = false;
 
             GiftBatchTDS RMainDS = LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
 
@@ -177,7 +180,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                 ARecurringGiftBatchAccess.LoadByPrimaryKey(RMainDS, ALedgerNumber, ABatchNumber, Transaction);
 
-                // Assuming all relevant data is loaded in FMainDS
+                // Assuming all relevant data is loaded in RMainDS
                 foreach (ARecurringGiftBatchRow recBatch  in RMainDS.ARecurringGiftBatch.Rows)
                 {
                     if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
@@ -195,8 +198,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         batch.ExchangeRateToBase = AExchangeRateToBase;
                         batch.MethodOfPaymentCode = recBatch.MethodOfPaymentCode;
                         batch.GiftType = recBatch.GiftType;
-                        //batch.HashTotal = recBatch.HashTotal; // Does this  make sense? Active Gifts are not
+                        batch.HashTotal = recBatch.HashTotal;
                         batch.CurrencyCode = recBatch.CurrencyCode;
+
+                        TransactionInIntlCurrency = (batch.CurrencyCode == LedgerTable[0].IntlCurrency);
 
                         foreach (ARecurringGiftRow recGift in RMainDS.ARecurringGift.Rows)
                         {
@@ -227,9 +232,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 AGiftRow gift = GMainDS.AGift.NewRowTyped();
                                 gift.LedgerNumber = batch.LedgerNumber;
                                 gift.BatchNumber = batch.BatchNumber;
-                                gift.GiftTransactionNumber = batch.LastGiftNumber + 1;
+                                gift.GiftTransactionNumber = ++batch.LastGiftNumber;
                                 gift.DonorKey = recGift.DonorKey;
                                 gift.MethodOfGivingCode = recGift.MethodOfGivingCode;
+                                gift.DateEntered = AEffectiveDate;
 
                                 if (gift.MethodOfGivingCode.Length == 0)
                                 {
@@ -248,12 +254,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
 
                                 GMainDS.AGift.Rows.Add(gift);
-                                batch.LastGiftNumber++;
                                 //TODO (not here, but in the client or while posting) Check for Ex-OM Partner
                                 //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
 
                                 foreach (ARecurringGiftDetailRow recGiftDetail in RMainDS.ARecurringGiftDetail.Rows)
                                 {
+                                    decimal amtIntl = 0M;
+                                    decimal amtBase = 0M;
+                                    decimal amtTrans = 0M;
+
                                     if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
                                         && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
                                         && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= DateTime.Today))
@@ -264,14 +273,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.LedgerNumber = gift.LedgerNumber;
                                         detail.BatchNumber = gift.BatchNumber;
                                         detail.GiftTransactionNumber = gift.GiftTransactionNumber;
-                                        detail.DetailNumber = gift.LastDetailNumber + 1;
-                                        gift.LastDetailNumber++;
+                                        detail.DetailNumber = ++gift.LastDetailNumber;
 
-                                        detail.GiftTransactionAmount = recGiftDetail.GiftAmount;
-                                        batchTotal += recGiftDetail.GiftAmount;
+                                        amtTrans = recGiftDetail.GiftAmount;
+                                        detail.GiftTransactionAmount = amtTrans;
+                                        batchTotal += amtTrans;
+                                        amtBase = GLRoutines.Divide((decimal)amtTrans, AExchangeRateToBase);
+                                        detail.GiftAmount = amtBase;
+
+                                        if (!TransactionInIntlCurrency)
+                                        {
+                                            detail.GiftAmountIntl = GLRoutines.Divide((decimal)amtBase, AExchangeRateIntlToBase);
+                                        }
+                                        else
+                                        {
+                                            detail.GiftAmountIntl = amtTrans;
+                                        }
+
                                         detail.RecipientKey = recGiftDetail.RecipientKey;
-                                        //maybe that this is unused
                                         detail.RecipientLedgerNumber = recGiftDetail.RecipientLedgerNumber;
+
                                         detail.ChargeFlag = recGiftDetail.ChargeFlag;
                                         detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
                                         detail.TaxDeductible = recGiftDetail.TaxDeductible;
@@ -282,18 +303,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                             detail.SetMailingCodeNull();
                                         }
 
-                                        // TODO convert with exchange rate to get the amount in base currency
-                                        // detail.GiftAmount=
-
                                         detail.MotivationGroupCode = recGiftDetail.MotivationGroupCode;
                                         detail.MotivationDetailCode = recGiftDetail.MotivationDetailCode;
+
                                         detail.GiftCommentOne = recGiftDetail.GiftCommentOne;
                                         detail.CommentOneType = recGiftDetail.CommentOneType;
                                         detail.GiftCommentTwo = recGiftDetail.GiftCommentTwo;
                                         detail.CommentTwoType = recGiftDetail.CommentTwoType;
                                         detail.GiftCommentThree = recGiftDetail.GiftCommentThree;
                                         detail.CommentThreeType = recGiftDetail.CommentThreeType;
-
 
                                         GMainDS.AGiftDetail.Rows.Add(detail);
                                     }

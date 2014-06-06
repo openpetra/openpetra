@@ -1202,6 +1202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool DeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
+
             //string originatingDetailRef = string.Empty;
 
             ACompletionMessage = string.Empty;
@@ -1855,7 +1856,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FBatchRow = ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
             }
 
-            FBatchMethodOfPayment = ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().FSelectedBatchMethodOfPayment;
+            FBatchMethodOfPayment = ((TFrmRecurringGiftBatch) this.ParentForm).GetBatchControl().MethodOfPaymentCode;
 
             ledgerNumber = FBatchRow.LedgerNumber;
             batchNumber = FBatchRow.BatchNumber;
@@ -1864,8 +1865,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(ledgerNumber, batchNumber));
 
-                //TODO
-                //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
+                ((TFrmRecurringGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
@@ -1935,8 +1935,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = pnlDetailsEnabledState;
 
             btnDelete.Enabled = pnlDetailsEnabledState;
-            btnNewDetail.Enabled = !PnlDetailsProtected;
-            btnNewGift.Enabled = !PnlDetailsProtected;
         }
 
         private Boolean BatchHasMethodOfPayment()
