@@ -3590,23 +3590,25 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageProcessed = true;
                 }
             }
-            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcUnitHierarchyChanged 
-                     && FPartnerClass == TPartnerClass.UNIT.ToString())
+            else if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcUnitHierarchyChanged)
+                     && (FPartnerClass == TPartnerClass.UNIT.ToString()))
             {
-            	List<Tuple<string, Int64, Int64>> UnitHierarchyChanges = ((TFormsMessage.FormsMessageUnitHierarchy)AFormsMessage.MessageObject).UnitHierarchyChanges;
-            	
-            	// loop backwards as the most recent (and accurate) change will be at the end
-            	for (int i = UnitHierarchyChanges.Count-1; i >= 0; i--)
-            	{
-            		if (UnitHierarchyChanges[i].Item2 == FPartnerKey)
-            		{
-            			// refresh position in Uni Hierarchy
-            			ucoLowerPart.RefreshUnitHierarchy(UnitHierarchyChanges[i]);
-            			break;
-            		}
-            	}
-                    
-            	MessageProcessed = true;
+                List <Tuple <string, Int64,
+                             Int64>>UnitHierarchyChanges =
+                    ((TFormsMessage.FormsMessageUnitHierarchy)AFormsMessage.MessageObject).UnitHierarchyChanges;
+
+                // loop backwards as the most recent (and accurate) change will be at the end
+                for (int i = UnitHierarchyChanges.Count - 1; i >= 0; i--)
+                {
+                    if (UnitHierarchyChanges[i].Item2 == FPartnerKey)
+                    {
+                        // refresh position in Uni Hierarchy
+                        ucoLowerPart.RefreshUnitHierarchy(UnitHierarchyChanges[i]);
+                        break;
+                    }
+                }
+
+                MessageProcessed = true;
             }
 
             return MessageProcessed;

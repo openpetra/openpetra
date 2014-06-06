@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             dtpStartDate.Date = DateTime.Now.AddMonths(-1);
             dtpEndDate.Date = DateTime.Now;
-            
+
             cmbPublicationCode.ColumnWidthCol3 = 0;
         }
 

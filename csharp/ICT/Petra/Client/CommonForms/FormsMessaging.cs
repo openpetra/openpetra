@@ -109,9 +109,9 @@ namespace Ict.Petra.Client.CommonForms
     public interface IFormsMessageUnitHierarchyInterface : IFormsMessageClassInterface
     {
         /// <summary></summary>
-        List<Tuple<string, Int64, Int64>> UnitHierarchyChanges
+        List <Tuple <string, Int64, Int64>>UnitHierarchyChanges
         {
-        	get;
+            get;
         }
     }
 
@@ -324,7 +324,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <see cref="TFormsMessageClassEnum.mcUnitHierarchyChanged"></see>,
         /// </summary>
         /// <param name="AUnitHierarchyChanges">All Unit Hierarchies that have been changed.</param>
-        public void SetMessageDataUnitHierarchy(List<Tuple<string, Int64, Int64>> AUnitHierarchyChanges)
+        public void SetMessageDataUnitHierarchy(List <Tuple <string, Int64, Int64>>AUnitHierarchyChanges)
         {
             switch (FMessageClass)
             {
@@ -485,20 +485,20 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         public struct FormsMessageUnitHierarchy : IFormsMessageUnitHierarchyInterface
         {
-        	List<Tuple<string, Int64, Int64>> FUnitHierarchyChanges;
+            List <Tuple <string, Int64, Int64>>FUnitHierarchyChanges;
 
             /// <summary>
             /// Constructor that initializes internal fields which can be
             /// read out by using the Properties of this Class.
             /// </summary>
             /// <param name="AUnitHierarchyChanges">All Unit Hierarchies that have been changed.</param>
-            public FormsMessageUnitHierarchy(List<Tuple<string, Int64, Int64>> AUnitHierarchyChanges)
+            public FormsMessageUnitHierarchy(List <Tuple <string, Int64, Int64>>AUnitHierarchyChanges)
             {
-            	FUnitHierarchyChanges = AUnitHierarchyChanges;
+                FUnitHierarchyChanges = AUnitHierarchyChanges;
             }
 
             /// <summary>All Unit Hierarchies that have been changed.</summary>
-            public List<Tuple<string, Int64, Int64>> UnitHierarchyChanges
+            public List <Tuple <string, Int64, Int64>>UnitHierarchyChanges
             {
                 get
                 {

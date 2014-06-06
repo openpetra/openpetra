@@ -514,7 +514,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Refreshes position in Uni Hierarchy
         /// </summary>
-        public void RefreshUnitHierarchy(Tuple<string, Int64, Int64> AUnitHierarchyChange)
+        public void RefreshUnitHierarchy(Tuple <string, Int64, Int64>AUnitHierarchyChange)
         {
             ucoPartnerTabSet.RefreshUnitHierarchy(AUnitHierarchyChange);
         }

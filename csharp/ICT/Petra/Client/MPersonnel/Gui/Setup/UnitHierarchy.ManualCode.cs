@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private String FStatus = "";
         private TreeNode FChildNodeReference;
         private TreeNode FParentNodeReference;
-        private List<Tuple<string, Int64, Int64>> FChangedParents = new List<Tuple<string, long, long>>();
+        private List <Tuple <string, Int64, Int64>>FChangedParents = new List <Tuple <string, long, long>>();
 
         private UnitHierarchyNode FindNodeWithThisParent(Int64 ParentKey, ArrayList UnitNodes)
         {
@@ -258,14 +258,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 NewNode.Expand();
                 NewParent.Expand();
                 NewParent.BackColor = Color.White;
-                FChangedParents.Add(new Tuple<string, long, long>(
-                	((UnitHierarchyNode)NewParent.Tag).Description,
-                	((UnitHierarchyNode)NewNode.Tag).MyUnitKey,
-                	((UnitHierarchyNode)NewNode.Tag).ParentUnitKey));
+                FChangedParents.Add(new Tuple <string, long, long>(
+                        ((UnitHierarchyNode)NewParent.Tag).Description,
+                        ((UnitHierarchyNode)NewNode.Tag).MyUnitKey,
+                        ((UnitHierarchyNode)NewNode.Tag).ParentUnitKey));
                 FStatus += String.Format(Catalog.GetString("{0} was moved from {1} to {2}.\r\n"),
                     Child.Text, PrevParent, NewParent.Text);
                 txtStatus.Text = FStatus;
-                
+
                 //Select the New Node in the tree view
                 SelectNode(NewNode);
                 trvUnits.SelectedNode = NewNode;
@@ -461,22 +461,22 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         /// <param name="e"></param>
         public void FileSave(object sender, EventArgs e)
         {
-        	this.Cursor = Cursors.WaitCursor;
-        	
-        	if (SaveChanges())
-        	{
-            	// Broadcast message to update partner's Partner Edit screen if open
-            	TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcUnitHierarchyChanged);
-            	BroadcastMessage.SetMessageDataUnitHierarchy(FChangedParents);
-            	TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
-            	
-            	FChangedParents = new List<Tuple<string, long, long>>();
-            	
-            	FPetraUtilsObject.HasChanges = false;
-            	FPetraUtilsObject.DisableSaveButton();
-        	}
-        	
-        	this.Cursor = Cursors.Default;
+            this.Cursor = Cursors.WaitCursor;
+
+            if (SaveChanges())
+            {
+                // Broadcast message to update partner's Partner Edit screen if open
+                TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcUnitHierarchyChanged);
+                BroadcastMessage.SetMessageDataUnitHierarchy(FChangedParents);
+                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
+                FChangedParents = new List <Tuple <string, long, long>>();
+
+                FPetraUtilsObject.HasChanges = false;
+                FPetraUtilsObject.DisableSaveButton();
+            }
+
+            this.Cursor = Cursors.Default;
         }
     }
 }

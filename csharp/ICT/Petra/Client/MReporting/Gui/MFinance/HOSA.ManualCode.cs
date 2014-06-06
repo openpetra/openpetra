@@ -185,8 +185,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
             else
             {
-            	String PeriodTitle = " " + pm.Get("param_start_date").DateToString("yyyy-MM-dd") + " - " + 
-            		pm.Get("param_end_date").DateToString("yyyy-MM-dd");
+                String PeriodTitle = " " + pm.Get("param_start_date").DateToString("yyyy-MM-dd") + " - " +
+                                     pm.Get("param_end_date").DateToString("yyyy-MM-dd");
 
                 pm.Add("param_date_title", PeriodTitle);
             }

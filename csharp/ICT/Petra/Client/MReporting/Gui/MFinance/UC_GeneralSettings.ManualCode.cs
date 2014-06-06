@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbQuarterYear.Enabled = false;
             cmbBreakdownYear.Enabled = false;
             EnableBreakdownByPeriod(false);
-            
+
             // don't want this label to display any text but we want to keep the label for layout reasons
             lblQuarter.Text = "";
         }
@@ -324,7 +324,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
             }
-            
+
             txtQuarter.Text = (Math.Ceiling(Convert.ToDecimal(txtEndPeriod.Text) / 3)).ToString();
 
             if (AParameters.Exists("param_start_date"))

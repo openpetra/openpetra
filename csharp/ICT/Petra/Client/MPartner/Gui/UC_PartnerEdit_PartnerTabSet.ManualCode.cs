@@ -738,19 +738,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoFamilyMembers.BroadcastRefresh = false;
             }
         }
-        
+
         /// <summary>
         /// Refreshes position in Uni Hierarchy
         /// </summary>
-        public void RefreshUnitHierarchy(Tuple<string, Int64, Int64> AUnitHierarchyChange)
+        public void RefreshUnitHierarchy(Tuple <string, Int64, Int64>AUnitHierarchyChange)
         {
             // if partner details tab has not yet been initialised
             if (FUcoPartnerDetailsUnit == null)
             {
-            	SetupVariableUserControlForTabPagePartnerDetails();
+                SetupVariableUserControlForTabPagePartnerDetails();
             }
-            	
-        	FUcoPartnerDetailsUnit.RefreshUnitHierarchy(AUnitHierarchyChange);
+
+            FUcoPartnerDetailsUnit.RefreshUnitHierarchy(AUnitHierarchyChange);
         }
 
         /// <summary>

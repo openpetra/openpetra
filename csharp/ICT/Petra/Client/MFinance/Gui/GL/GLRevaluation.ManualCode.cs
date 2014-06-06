@@ -224,8 +224,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunRevaluation(object btn, EventArgs e)
         {
-        	this.Cursor = Cursors.WaitCursor;
-        	
+            this.Cursor = Cursors.WaitCursor;
+
             int intUsedEntries = 0;
 
             for (int i = 0; i < FcurrencyExchangeList.Count; ++i)
@@ -254,8 +254,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool blnRevalutationState =
                 TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber, 1, // TODO: Period shouldn't be 1!
                     currencies, rates, out verificationResult);
-            
-        	this.Cursor = Cursors.Default;
+
+            this.Cursor = Cursors.Default;
 
             if (blnRevalutationState)
             {

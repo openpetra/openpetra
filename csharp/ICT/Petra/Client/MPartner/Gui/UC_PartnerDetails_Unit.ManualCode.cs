@@ -99,22 +99,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             HierarchyForm.Show();
             HierarchyForm.ShowThisUnit(FMainDS.PPartner[0].PartnerKey);
         }
-        
+
         /// <summary>
         /// Refreshes position in Uni Hierarchy
         /// </summary>
         /// <param name="AUnitHierarchyChange">All Unit Hierarchies that have been changed.</param>
-        public void RefreshUnitHierarchy(Tuple<string, Int64, Int64> AUnitHierarchyChange)
+        public void RefreshUnitHierarchy(Tuple <string, Int64, Int64>AUnitHierarchyChange)
         {
             if (AUnitHierarchyChange.Item2 == FMainDS.PPartner[0].PartnerKey)
             {
                 FPetraUtilsObject.UnhookControl(txtParentKey, false); // I don't want this change to cause SetChangedFlag.
                 txtParentKey.Text = AUnitHierarchyChange.Item3.ToString("D10");
-                
-            	FPetraUtilsObject.UnhookControl(lblParentName, false); // I don't want this change to cause SetChangedFlag.
-            	lblParentName.Text = AUnitHierarchyChange.Item1;
-            	
-            	btnOrganise.Enabled = true;
+
+                FPetraUtilsObject.UnhookControl(lblParentName, false); // I don't want this change to cause SetChangedFlag.
+                lblParentName.Text = AUnitHierarchyChange.Item1;
+
+                btnOrganise.Enabled = true;
             }
         }
     }
