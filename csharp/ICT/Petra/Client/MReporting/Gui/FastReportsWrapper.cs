@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Data;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -158,7 +159,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void ShowErrorPopup()
         {
-            if (FPetraUtilsObject.GetCallerForm() != null)
+            if (FPetraUtilsObject.GetCallerForm() != null
+               && TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified")
             {
                 String Msg = "";
 
@@ -188,7 +190,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
 
-                MessageBox.Show("The FastReports plugin did not initialise:\r\n" + Msg, "Reporting engine");
+                MessageBox.Show("The FastReports plugin did not initialise:\r\n"
+                    + Msg
+                    + "\r\n(To suppress this message, set USEXMLREPORTS in SystemDefaults.)"
+                    , "Reporting engine");
             }
         }
 
