@@ -64,7 +64,7 @@ RootNode:
             Controls: [btnNewGift, btnNewDetail, btnDelete, btnDeleteAll]
             ControlsOrientation: horizontal
         btnNewGift: {Action=actNewGift, Width=120, Tooltip=Click to add a new gift}
-        btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true, Tooltip=Clieck to add a new gift detail}
+        btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true, Tooltip=Click to add a new gift detail}
         btnDelete: {Action=actDelete, Width=120}
         btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true, Tooltip=Click to delete all gifts from the current batch}
         grdDetails:
@@ -91,7 +91,6 @@ RootNode:
                 ReceiptPrinted: {Label=Receipt Printed,Type=Boolean} 
             ActionFocusRow: FocusedRowChanged
             EnableMultiSelection: false
-            #SortOrder: GiftTransactionNumber DESC, DetailNumber ASC
             RowFilter: AGiftDetail.BatchNumber
             SortableHeaders: false
         pnlDetails:
@@ -110,18 +109,16 @@ RootNode:
             Controls:
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
                 Row1: [txtField, chkDetailChargeFlag]
-                Row2: [cmbMinistry, chkDetailTaxDeductible]
+                Row2: [cmbKeyMinistries, chkDetailTaxDeductible]
                 Row3: [txtDetailGiftTransactionAmount, cmbDetailMailingCode]
                 Row4: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
                 Row5: [txtDetailCostCentreCode, txtDetailAccountCode]
                 Row6: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
                 Row7: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row8: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
-                Row9: [txtRecipientKeyMinistry, txtDetailMotivationDetailDescription]
-                #Row10: [txtDetailMotivationDetailCode]
-        #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
+                Row9: [txtDetailRecipientKeyMinistry]
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
-        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
+        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged, Validation=true}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
@@ -132,13 +129,12 @@ RootNode:
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
-        txtDetailMotivationDetailDescription: {Label=Empty, ReadOnly=true, Visible=false}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtField: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
-        cmbMinistry: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Tooltip=Select a key ministry}
-        txtRecipientKeyMinistry: {Label=Key Ministry, Unbound=true}
+        cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
+        txtDetailRecipientKeyMinistry: {Label=Key Ministry}
         txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?}

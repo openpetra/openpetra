@@ -64,7 +64,15 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             decimal rate = TRemote.MFinance.GL.WebConnectors.GetDailyExchangeRate(ACurrencyFrom, ACurrencyTo, ADateEffective);
 
-            FCachedExchangeRates.Add(key, rate);
+            //
+            // Don't cache a zero rate:
+            //   If a zero rate is returned, the user will fix the problem and try again,
+            //   so I also need to get a fresh value from the server.
+
+            if (rate != 0)
+            {
+                FCachedExchangeRates.Add(key, rate);
+            }
 
             return rate;
         }
