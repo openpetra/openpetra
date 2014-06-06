@@ -82,6 +82,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>Tells whether the last search operation was done with 'Detailed Results' enabled</summary>
         private Boolean FLastSearchWasDetailedSearch;
 
+        /// <summary>Tells whether the grid contains columns for detailed search (0=no result columns, 1=small set of result columns, 2=detailed set of result columns)</summary>
+        private int FResultListIncludesDetailedResultColumns = 0;
+
         /// <summary>Tells whether any change occured in the Search Criteria since the last search operation</summary>
         private Boolean FCriteriaContentChanged;
 
@@ -430,18 +433,26 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (chkDetailedResults.Checked == false)
                     {
                         // Reduce the columns that are shown in the Grid
-                        FLogic.CreateColumns(FPagedDataTable, false, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
-                        SetupDataGridVisualAppearance(false);
-                        grdResult.Selection.SelectRow(FCurrentGridRow, true);
+                        if (FResultListIncludesDetailedResultColumns <= 0)
+                        {
+                            FLogic.CreateColumns(FPagedDataTable, false, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+                            FResultListIncludesDetailedResultColumns = 1;
+                            SetupDataGridVisualAppearance(false);
+                            grdResult.Selection.SelectRow(FCurrentGridRow, true);
+                        }
                     }
                     else
                     {
                         if (FLastSearchWasDetailedSearch)
                         {
                             // Show all columns in the Grid
-                            FLogic.CreateColumns(FPagedDataTable, true, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
-                            SetupDataGridVisualAppearance(false);
-                            grdResult.Selection.SelectRow(FCurrentGridRow, true);
+                            if (FResultListIncludesDetailedResultColumns < 2)
+                            {
+                                FLogic.CreateColumns(FPagedDataTable, true, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+                                FResultListIncludesDetailedResultColumns = 2;
+                                SetupDataGridVisualAppearance(false);
+                                grdResult.Selection.SelectRow(FCurrentGridRow, true);
+                            }
                         }
                         else
                         {
@@ -1332,6 +1343,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Reset internal status variables
                 FLastSearchWasDetailedSearch = chkDetailedResults.Checked;
+                if (chkDetailedResults.Checked)
+                {
+                    FResultListIncludesDetailedResultColumns = 2;
+                }
+                else
+                {
+                    FResultListIncludesDetailedResultColumns = 1;
+                }
                 FCriteriaContentChanged = false;
                 FLastPartnerKeyInfoPanelOpened = -1;
                 FLastLocationPKInfoPanelOpened = new TLocationPK(-1, -1);
@@ -2177,6 +2196,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FLogic.CreateColumns(FPagedDataTable, chkDetailedResults.Checked,
                             FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+
+                        if (chkDetailedResults.Checked)
+                        {
+                            FResultListIncludesDetailedResultColumns = 2;
+                        }
+                        else
+                        {
+                            FResultListIncludesDetailedResultColumns = 1;
+                        }
                     }
                     else if (FBankDetailsTab)
                     {
