@@ -2029,7 +2029,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FBatchRow = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
             }
 
-            FBatchMethodOfPayment = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().FSelectedBatchMethodOfPayment;
+            FBatchMethodOfPayment = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().MethodOfPaymentCode;
 
             ledgerNumber = FBatchRow.LedgerNumber;
             batchNumber = FBatchRow.BatchNumber;
