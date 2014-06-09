@@ -30,16 +30,20 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
+
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
+
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -53,20 +57,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FSelectedBatchNumber = -1;
+        private DateTime FDefaultDate;
+        private bool FBatchesLoaded = false;
+        private bool FInitialFocusActionComplete = false;
+
+        //Filter and date related
+        private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
         private string FStatusFilter = "1 = 1";
         private string FPeriodFilter = "1 = 1";
         private DateTime FStartDateCurrentPeriod;
         private DateTime FEndDateLastForwardingPeriod;
-        private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
         private Int32 FSelectedYear;
         private Int32 FSelectedPeriod = -1;
         private string FPeriodText = String.Empty;
-        private DateTime FDefaultDate;
 
         private bool FSuppressRefreshFilter = false;
         private bool FSuppressRefreshPeriods = false;
         private DateTime FCurrentEffectiveDate;
-        private bool FBatchesLoaded = false;
 
         TCmbAutoComplete FcmbYearEnding = null;
         TCmbAutoComplete FcmbPeriod = null;
@@ -104,8 +111,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // Now we can set the period part of the filter
             RefreshPeriods(null, null);
 
-            // this will load the batches from the server
-            //RefreshFilter(null, null);
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
@@ -183,9 +188,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch) this.ParentForm).EnableTransactions(EnableTransTab);
         }
 
-        /// <summary>
-        /// show ledger number
-        /// </summary>
+        private void LoadJournalsForCurrentBatch()
+        {
+            //Current Batch number
+            Int32 BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+            if (FMainDS.AJournal != null)
+            {
+                FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    BatchNumber);
+
+                if (FMainDS.AJournal.DefaultView.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, BatchNumber));
+                }
+            }
+        }
+
         private void ShowDataManual()
         {
             if (FLedgerNumber == -1)
@@ -208,12 +228,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetails.Enabled = postable;
             pnlDetailsProtected = !postable;
 
-            if (FPreviouslySelectedDetailRow == null)
+            if (FPreviouslySelectedDetailRow == null && ((TFrmGLBatch) this.ParentForm) != null)
             {
-                if (((TFrmGLBatch) this.ParentForm) != null)
-                {
-                    ((TFrmGLBatch) this.ParentForm).DisableJournals();
-                }
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
             }
         }
 
@@ -293,9 +310,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
                  || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
 
-            //This line stops the date changing when a new row is selected if AllowVerification=False
-            //dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
-
             FSelectedBatchNumber = ARow.BatchNumber;
             FCurrentEffectiveDate = ARow.DateEffective;
 
@@ -335,15 +349,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnCancel.Enabled = AEnable;
         }
 
-        private void ClearDetailControls()
-        {
-            FPetraUtilsObject.DisableDataChangedEvent();
-            txtDetailBatchDescription.Text = string.Empty;
-            txtDetailBatchControlTotal.NumberValueDecimal = 0;
-            dtpDetailDateEffective.Date = FDefaultDate;
-            FPetraUtilsObject.EnableDataChangedEvent();
-        }
-
         /// <summary>
         /// add a new batch
         /// </summary>
@@ -355,7 +360,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FrbtEditing.Checked = true;
             }
-            else if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
                 return;
             }
@@ -401,100 +407,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).EnableJournals();
         }
 
-        private void LoadJournalsForCurrentBatch()
-        {
-            //Current Batch number
-            Int32 BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-
-            if (FMainDS.AJournal != null)
-            {
-                FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    BatchNumber);
-
-                if (FMainDS.AJournal.DefaultView.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, BatchNumber));
-                }
-            }
-        }
-
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
         {
-            bool RetVal;
-
-            RetVal = TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
-
-            return RetVal;
-        }
-
-        private void UpdateBatchPeriod(object sender, EventArgs e)
-        {
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
-            {
-                return;
-            }
-
-            bool UpdateTransactionDates = false;
-
-            Int32 periodNumber = 0;
-            Int32 yearNumber = 0;
-            string aDate = string.Empty;
-            DateTime dateValue;
-
-            try
-            {
-                aDate = dtpDetailDateEffective.Date.ToString();
-
-                if (DateTime.TryParse(aDate, out dateValue))
-                {
-                    if ((dateValue < FStartDateCurrentPeriod) || (dateValue > FEndDateLastForwardingPeriod))
-                    {
-                        return;
-                    }
-
-                    //GetDetailsFromControls will do this automatically if the user tabs
-                    //  passed the last control, but not if they clik on another control
-                    if (FCurrentEffectiveDate != dateValue)
-                    {
-                        FCurrentEffectiveDate = dateValue;
-                        FPreviouslySelectedDetailRow.DateEffective = dateValue;
-                    }
-
-                    //Check if new date is in a different Batch period to the current one
-                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
-                    {
-                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
-                        {
-                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
-
-                            //Update the Transaction effective dates
-                            UpdateTransactionDates = true;
-
-                            if (FcmbYearEnding.SelectedIndex != 0)
-                            {
-                                FcmbYearEnding.SelectedIndex = 0;
-                                FcmbPeriod.SelectedIndex = 1;
-                                dtpDetailDateEffective.Date = dateValue;
-                                dtpDetailDateEffective.Focus();
-                            }
-                            else if (FcmbPeriod.SelectedIndex != 1)
-                            {
-                                FcmbPeriod.SelectedIndex = 1;
-                                dtpDetailDateEffective.Date = dateValue;
-                                dtpDetailDateEffective.Focus();
-                            }
-                        }
-                    }
-
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionAmounts("BATCH", UpdateTransactionDates);
-                    FPetraUtilsObject.HasChanges = true;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
         }
 
         /// <summary>
@@ -628,6 +543,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private void ClearDetailControls()
+        {
+            FPetraUtilsObject.DisableDataChangedEvent();
+            txtDetailBatchDescription.Text = string.Empty;
+            txtDetailBatchControlTotal.NumberValueDecimal = 0;
+            dtpDetailDateEffective.Date = FDefaultDate;
+            FPetraUtilsObject.EnableDataChangedEvent();
+        }
+
         /// <summary>
         /// UpdateTotals
         /// </summary>
@@ -640,6 +564,89 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
                 txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
                 FPetraUtilsObject.EnableDataChangedEvent();
+            }
+        }
+
+        private int CurrentRowIndex()
+        {
+            int rowIndex = -1;
+
+            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
+
+            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+            {
+                rowIndex = selectedRegion.GetRowsIndex()[0];
+            }
+
+            return rowIndex;
+        }
+
+        private void UpdateBatchPeriod(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            bool UpdateTransactionDates = false;
+
+            Int32 periodNumber = 0;
+            Int32 yearNumber = 0;
+            string aDate = string.Empty;
+            DateTime dateValue;
+
+            try
+            {
+                aDate = dtpDetailDateEffective.Date.ToString();
+
+                if (DateTime.TryParse(aDate, out dateValue))
+                {
+                    if ((dateValue < FStartDateCurrentPeriod) || (dateValue > FEndDateLastForwardingPeriod))
+                    {
+                        return;
+                    }
+
+                    //GetDetailsFromControls will do this automatically if the user tabs
+                    //  passed the last control, but not if they clik on another control
+                    if (FCurrentEffectiveDate != dateValue)
+                    {
+                        FCurrentEffectiveDate = dateValue;
+                        FPreviouslySelectedDetailRow.DateEffective = dateValue;
+                    }
+
+                    //Check if new date is in a different Batch period to the current one
+                    if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
+                    {
+                        if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
+                        {
+                            FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
+
+                            //Update the Transaction effective dates
+                            UpdateTransactionDates = true;
+
+                            if (FcmbYearEnding.SelectedIndex != 0)
+                            {
+                                FcmbYearEnding.SelectedIndex = 0;
+                                FcmbPeriod.SelectedIndex = 1;
+                                dtpDetailDateEffective.Date = dateValue;
+                                dtpDetailDateEffective.Focus();
+                            }
+                            else if (FcmbPeriod.SelectedIndex != 1)
+                            {
+                                FcmbPeriod.SelectedIndex = 1;
+                                dtpDetailDateEffective.Date = dateValue;
+                                dtpDetailDateEffective.Focus();
+                            }
+                        }
+                    }
+
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionAmounts("BATCH", UpdateTransactionDates);
+                    FPetraUtilsObject.HasChanges = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -973,20 +980,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
         private void RefreshPeriods(Object sender, EventArgs e)
         {
             int NewYearSelected;
@@ -1072,18 +1065,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     if ((newPeriod == -1) && (newPeriodText != String.Empty))
                     {
-                        Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
                         return;
                     }
 
                     if ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText))
                     {
-                        Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
                         return;
                     }
                 }
-
-                Console.WriteLine("Using period {0} periodText {1}", newPeriod, newPeriodText);
             }
 
             //Record the current batch
@@ -1134,8 +1123,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            Console.WriteLine(" ** " + FPeriodFilter);
-
             if (FrbtEditing.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
@@ -1173,9 +1160,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             RefreshGridData(batchNumber, (sender is TCmbAutoComplete));
 
             UpdateChangeableStatus();
-
             UpdateRecordNumberDisplay();
-            Console.WriteLine("RefreshFilter - finished");
         }
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
@@ -1247,10 +1232,95 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void FocusGrid()
         {
-            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            if (grdDetails != null && grdDetails.CanFocus)
             {
                 grdDetails.Focus();
             }
+        }
+
+        /// <summary>
+        /// Sets the initial focus to the grid or the New button depending on the row count
+        /// </summary>
+        public void SetInitialFocus()
+        {
+            bool GridEmpty;
+
+            if (FInitialFocusActionComplete)
+            {
+                return;
+            }
+
+            //Set filter to current and forwarding
+            if (FcmbPeriod.Items.Count > 0)
+            {
+                FcmbPeriod.SelectedIndex = 1;
+            }
+
+            GridEmpty = (grdDetails.Rows.Count < 2);
+
+            if (GridEmpty)
+            {
+                btnNew.Focus();
+            }
+            else if (grdDetails.CanFocus)
+            {
+                grdDetails.Focus();
+            }
+
+            FInitialFocusActionComplete = true;
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            AutoSizeGrid();
+        }
+
+        /// <summary>
+        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
+        {
+            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
+            {
+                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
+                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
+            }
+        }
+
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[0].Width = 80;
+            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)
@@ -1538,95 +1608,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FrbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
                 FrbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
             }
-        }
-
-        /// <summary>
-        /// A simple flag used to indicate that the form has been shown for the first time
-        /// </summary>
-        private bool FInitialFocusActionComplete = false;
-
-        /// <summary>
-        /// Sets the initial focus to the grid or the New button depending on the row count
-        /// </summary>
-        public void SetInitialFocus()
-        {
-            if (FInitialFocusActionComplete)
-            {
-                return;
-            }
-
-            if (grdDetails.CanFocus)
-            {
-                //Set filter to current and forwarding
-                if (FcmbPeriod.Items.Count > 0)
-                {
-                    FcmbPeriod.SelectedIndex = 1;
-                }
-
-                if (grdDetails.Rows.Count < 2)
-                {
-                    btnNew.Focus();
-                }
-                else
-                {
-                    grdDetails.Focus();
-                }
-
-                FInitialFocusActionComplete = true;
-            }
-        }
-
-        private void RunOnceOnParentActivationManual()
-        {
-            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
-            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
-            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-
-            AutoSizeGrid();
-        }
-
-        /// <summary>
-        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
-        /// </summary>
-        /// <param name="Sender"></param>
-        /// <param name="e"></param>
-        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
-        {
-            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
-            {
-                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
-                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
-            }
-        }
-
-        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
-        {
-            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
-            {
-                AutoSizeGrid();
-            }
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 80;
-            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
         }
 
         private void CreateFilterFindPanelsManual()
