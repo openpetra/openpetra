@@ -3079,6 +3079,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
+        
+        /// <summary>
+        /// Set a default partner class
+        /// </summary>
+        /// <param name="ADefaultClass"></param>
+        public void SetDefaultPartnerClass(TPartnerClass? ADefaultClass)
+        {
+        	cmbPartnerClass.Text = ADefaultClass.ToString();
+        }
 
         #region Comboboxes and the Enter key
 
