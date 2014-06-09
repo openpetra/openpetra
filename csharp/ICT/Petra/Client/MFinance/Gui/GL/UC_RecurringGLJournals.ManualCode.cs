@@ -48,7 +48,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumberToDelete = -1;
-        private string FBatchStatus = string.Empty;
 
         /// <summary>
         /// Returns FMainDS
@@ -64,13 +63,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        /// <param name="ABatchStatus"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
+        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             bool batchChanged = (FBatchNumber != ABatchNumber);
 
             //Check if same Journals as previously selected
-            if ((FLedgerNumber == ALedgerNumber) && !batchChanged && (FBatchStatus == ABatchStatus)
+            if ((FLedgerNumber == ALedgerNumber) && !batchChanged
                 && (FMainDS.ARecurringJournal.DefaultView.Count > 0))
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
@@ -87,7 +85,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // a different journal
                 FLedgerNumber = ALedgerNumber;
                 FBatchNumber = ABatchNumber;
-                FBatchStatus = ABatchStatus;
 
                 FPreviouslySelectedDetailRow = null;
 

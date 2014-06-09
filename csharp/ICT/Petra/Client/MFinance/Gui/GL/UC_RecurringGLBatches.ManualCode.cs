@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
-                EnableTransactionTabForBatch();
+                AutoEnableTransTabForBatch();
             }
             else
             {
@@ -121,7 +121,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Enable the transaction tab
         /// </summary>
-        public void EnableTransactionTabForBatch()
+        public void AutoEnableTransTabForBatch()
         {
             bool enable = false;
 
@@ -236,7 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ARecurringBatchRow ARow)
         {
-            EnableTransactionTabForBatch();
+            AutoEnableTransTabForBatch();
             grdDetails.TabStop = (ARow != null);
 
             if (ARow == null)

@@ -57,8 +57,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FTransactionNumber = -1;
         private bool FActiveOnly = false; //opposite of GL Transactions form
         private string FTransactionCurrency = string.Empty;
-        private string FBatchStatus = string.Empty;
-        private string FJournalStatus = string.Empty;
         private GLSetupTDS FCacheDS;
         private GLBatchTDSARecurringJournalRow FJournalRow = null;
         private ARecurringTransAnalAttribRow FPSAttributesRow = null;
@@ -79,16 +77,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
         /// <param name="AForeignCurrencyName"></param>
-        /// <param name="ABatchStatus"></param>
-        /// <param name="AJournalStatus"></param>
         /// <param name="AFromBatchTab"></param>
         /// <returns>True if new GL transactions were loaded, false if transactions had been loaded already.</returns>
         public bool LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
             string AForeignCurrencyName,
-            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
-            string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED,
             bool AFromBatchTab = false)
         {
             Console.WriteLine("LoadTransactions");
@@ -101,8 +95,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
-                && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
-                && (FMainDS.ARecurringTransaction.DefaultView.Count > 0) && (FPreviouslySelectedDetailRow != null))
+                && (FTransactionCurrency == AForeignCurrencyName) && (FMainDS.ARecurringTransaction.DefaultView.Count > 0)
+                && (FPreviouslySelectedDetailRow != null))
             {
                 FJournalRow = GetJournalRow();
 
@@ -133,8 +127,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FJournalNumber = AJournalNumber;
                 FTransactionNumber = -1;
                 FTransactionCurrency = AForeignCurrencyName;
-                FBatchStatus = ABatchStatus;
-                FJournalStatus = AJournalStatus;
 
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SuspendLayout();
