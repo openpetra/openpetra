@@ -367,9 +367,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Decimal ClosingBalance = 0;
                 Int32 MaxPeriod = -1;
                 Int32 MinPeriod = 99;
+                DataRow NewRow = null;
 
                 // For each CostCentre / Account combination  I want just a single row, with the opening and closing balances,
                 // so I need to pre-process the stuff I've got in this table, and generate another table.
+
 
                 foreach (DataRow row in GlmTbl.Rows)
                 {
@@ -380,18 +382,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     if ((row["a_cost_centre_code_c"].ToString() != CostCentre) || (row["a_account_code_c"].ToString() != AccountCode)) // a new CC/AC combination
                     {
-                        if ((CostCentre != "") && (AccountCode != "")) // Add a new row, but not if there's no data yet.
-                        {
-                            DataRow NewRow = Results.NewRow();
-                            NewRow["a_cost_centre_code_c"] = CostCentre;
-                            NewRow["a_account_code_c"] = AccountCode;
-                            NewRow["OpeningBalance"] = OpeningBalance;
-                            NewRow["ClosingBalance"] = ClosingBalance;
-                            Results.Rows.Add(NewRow);
-                        }
+                        NewRow = Results.NewRow();
 
                         CostCentre = row["a_cost_centre_code_c"].ToString();
+                        NewRow["a_cost_centre_code_c"] = CostCentre;
+
                         AccountCode = row["a_account_code_c"].ToString();
+                        NewRow["a_account_code_c"] = AccountCode;
+                        Results.Rows.Add(NewRow);
+
                         MaxPeriod = -1;
                         MinPeriod = 99;
                     }
@@ -402,12 +401,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         MinPeriod = ThisPeriod;
                         OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
+                        NewRow["OpeningBalance"] = OpeningBalance;
                     }
 
                     if (ThisPeriod > MaxPeriod)
                     {
                         MaxPeriod = ThisPeriod;
                         ClosingBalance = Convert.ToDecimal(row["balance"]);
+                        NewRow["ClosingBalance"] = ClosingBalance;
                     }
                 }
             }
