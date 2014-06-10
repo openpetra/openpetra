@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult("Save Document", "The Document has no Document number.",
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Save Document"), Catalog.GetString("The Document has no Document number."),
                                 TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
                     }
@@ -315,8 +315,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         if (MatchingRow.ApDocumentId != NewDocRow.ApDocumentId) // This Document Code is in use, and not by me!
                         {
-                            AVerificationResult.Add(new TVerificationResult("Save Document",
-                                    String.Format("Document Code {0} already exists.", NewDocRow.DocumentCode),
+                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Save Document"),
+                                    String.Format(Catalog.GetString("Document Code {0} already exists."), NewDocRow.DocumentCode),
                                     TResultSeverity.Resv_Noncritical));
                             return TSubmitChangesResult.scrInfoNeeded;
                         }
@@ -462,43 +462,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
         }
 
-        /* Method is not used. (Compiles OK, but no-one seems to want it!)
-         *
-         * /// <summary>
-         * ///
-         * /// </summary>
-         * /// <param name="ALedgerNumber"></param>
-         * /// <param name="ASupplierKey"></param>
-         * /// <param name="ADocumentStatus"></param>
-         * /// <param name="IsCreditNoteNotInvoice"></param>
-         * /// <param name="AHideAgedTransactions"></param>
-         * /// <returns></returns>
-         * [RequireModulePermission("FINANCE-1")]
-         * public static AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber, Int64 ASupplierKey,
-         *  string ADocumentStatus,
-         *  bool IsCreditNoteNotInvoice,
-         *  bool AHideAgedTransactions)
-         * {
-         *  // create the DataSet that will later be passed to the Client
-         *  AccountsPayableTDS MainDS = new AccountsPayableTDS();
-         *
-         *  AApSupplierAccess.LoadByPrimaryKey(MainDS, ASupplierKey, null);
-         *
-         *  // TODO: filters for document status
-         *  AccountsPayableTDSAApDocumentRow DocumentTemplate = MainDS.AApDocument.NewRowTyped(false);
-         *  DocumentTemplate.LedgerNumber = ALedgerNumber;
-         *  DocumentTemplate.PartnerKey = ASupplierKey;
-         *  AApDocumentAccess.LoadUsingTemplate(MainDS, DocumentTemplate, null);
-         *
-         *  foreach (AccountsPayableTDSAApDocumentRow Row in MainDS.AApDocument.Rows)
-         *  {
-         *      SetOutstandingAmount(Row, ALedgerNumber, MainDS.AApDocumentPayment);
-         *  }
-         *
-         *  return MainDS;
-         * }
-         */
-
         private static bool DocumentBalanceOK(AccountsPayableTDS AMainDS, int AApDocumentId, TDBTransaction ATransaction)
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = (AccountsPayableTDSAApDocumentRow)
@@ -611,7 +574,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
                 else
                 {
-                    if (MustBeApproved && document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)
+                    if (
+                        (MustBeApproved && document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)
+                        || (!MustBeApproved && document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_OPEN)
+                        )
                     {
                         AVerifications.Add(new TVerificationResult(
                                 Catalog.GetString("Error during posting of AP document"),
@@ -960,7 +926,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             if (AApproveTheseDocs.Count == 0)
             {
-                AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Nothing to do - the document list is empty",
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"), Catalog.GetString("Nothing to do - the document list is empty"),
                         TResultSeverity.Resv_Noncritical));
                 return false;
             }
@@ -978,7 +944,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
                 else
                 {
-                    AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Only OPEN documents can be approved",
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"), Catalog.GetString("Only OPEN documents can be approved"),
                             TResultSeverity.Resv_Noncritical));
                     return false;
                 }
@@ -998,7 +964,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
-                AVerificationResult.Add(new TVerificationResult("Approve AP Documents", Exc.Message, TResultSeverity.Resv_Critical));
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"), Exc.Message, TResultSeverity.Resv_Critical));
 
                 throw;
             }
@@ -1152,8 +1118,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         TLogging.Log("An Exception occured during the Posting of an AP Document:" + Environment.NewLine + Exc.ToString());
 
-                        ResultsCollection.Add(new TVerificationResult("Post AP Document",
-                                "NOTE THAT A GL ENTRY MAY HAVE BEEN CREATED." + Environment.NewLine +
+                        ResultsCollection.Add(new TVerificationResult(Catalog.GetString("Post AP Document"),
+                                Catalog.GetString("NOTE THAT A GL ENTRY MAY HAVE BEEN CREATED.") + Environment.NewLine +
                                 Exc.Message,
                                 TResultSeverity.Resv_Critical));
                         PostingWorkedOk = false;
