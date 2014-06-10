@@ -314,11 +314,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 {
                     txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
                 }
+            }
 
-                if (cmbPeriodYear.SelectedIndex == -1)
-                {
-                    cmbPeriodYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
-                }
+            if (cmbPeriodYear.SelectedIndex == -1)
+            {
+                cmbPeriodYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
+            }
+
+            if (cmbQuarterYear.SelectedIndex == -1)
+            {
+                cmbQuarterYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
+            }
+
+            if (cmbBreakdownYear.SelectedIndex == -1)
+            {
+                cmbBreakdownYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
             }
 
             if (AParameters.Exists("param_start_date"))
