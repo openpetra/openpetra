@@ -375,26 +375,39 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private void PrintPaymentReport(object sender, EventArgs e)
+        private Boolean GetPaymentNumbersAfterPosting(out Int32 MinPaymentNumber, out Int32 MaxPaymentNumber)
         {
             //
             // I need to find the min and max payment numbers, which have been returned from PostAPPayments..
             //
-            Int32 MinPaymentNumber = FMainDS.AApPayment[0].PaymentNumber;
-            Int32 MaxPaymentNumber = MinPaymentNumber;
+            MinPaymentNumber = 99999999;
+            MaxPaymentNumber = 0;
+
+            Boolean MaxSet = false;
+            Boolean MinSet = false;
 
             foreach (AccountsPayableTDSAApPaymentRow PaymentRow in FMainDS.AApPayment.Rows)
             {
                 if (PaymentRow.PaymentNumber < MinPaymentNumber)
                 {
                     MinPaymentNumber = PaymentRow.PaymentNumber;
+                    MinSet = true;
                 }
 
                 if (PaymentRow.PaymentNumber > MaxPaymentNumber)
                 {
                     MaxPaymentNumber = PaymentRow.PaymentNumber;
+                    MaxSet = true;
                 }
             }
+            return MinSet && MaxSet;
+        }
+
+        private void PrintPaymentReport(object sender, EventArgs e)
+        {
+            Int32 MinPaymentNumber;
+            Int32 MaxPaymentNumber;
+            GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
 
             Int32 LedgerNumber = FMainDS.AApPayment[0].LedgerNumber;
 
@@ -406,9 +419,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (chkPrintRemittance.Checked)
             {
-                TFrmAP_RemittanceAdvice PreviewFrame = new TFrmAP_RemittanceAdvice(this);
-                PreviewFrame.Show();
-                PreviewFrame.PrintRemittanceAdvice(FMainDS.AApPayment[0].PaymentNumber, FMainDS.AApPayment[0].LedgerNumber);
+                Int32 MinPaymentNumber;
+                Int32 MaxPaymentNumber;
+                GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
+
+                for (Int32 PayNum = MinPaymentNumber; PayNum <= MaxPaymentNumber; PayNum++)
+                {
+                    TFrmAP_RemittanceAdvice PreviewFrame = new TFrmAP_RemittanceAdvice(this);
+                    PreviewFrame.PrintRemittanceAdvice(PayNum, FMainDS.AApPayment[0].LedgerNumber);
+                    PreviewFrame.ShowDialog();
+                }
             }
         }
 
