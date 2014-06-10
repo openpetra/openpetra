@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 ucoRecurringBatches.LoadBatches(FLedgerNumber);
 
-                ucoRecurringTransactions.WorkAroundInitialization();
+                ucoRecurringJournals.WorkAroundInitialization();
                 ucoRecurringTransactions.WorkAroundInitialization();
             }
         }
@@ -236,7 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(true, true))
+            if (!ValidateAllData(false, true))
             {
                 e.Cancel = true;
 

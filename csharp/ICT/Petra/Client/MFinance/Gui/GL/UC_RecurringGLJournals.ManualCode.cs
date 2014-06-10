@@ -25,20 +25,24 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Drawing;
+
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+
+using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.MFinance.Gui.Setup;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.Validation;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.MFinance.Gui.Setup;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
@@ -46,8 +50,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TUC_RecurringGLJournals
     {
         private Int32 FLedgerNumber = -1;
-        private Int32 FBatchNumber = -1;
         private Int32 FJournalNumberToDelete = -1;
+        private ARecurringBatchRow FBatchRow = null;
+
+        /// <summary>
+        /// The current active Batch number
+        /// </summary>
+        public Int32 FBatchNumber = -1;
+
+        /// <summary>
+        /// flags if the Journal(s) have finished loading
+        /// </summary>
+        public bool FJournalsLoaded = false;
 
         /// <summary>
         /// Returns FMainDS
@@ -59,25 +73,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// WorkAroundInitialization
+        /// </summary>
+        public void WorkAroundInitialization()
+        {
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            //nothing to do
+        }
+
+        /// <summary>
         /// load the journals into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            bool batchChanged = (FBatchNumber != ABatchNumber);
+            bool FirstRun = (FLedgerNumber != ALedgerNumber);
+            bool BatchChanged = (FBatchNumber != ABatchNumber);
+            
+            FJournalsLoaded = false;
+            FBatchRow = GetBatchRow();
+
+            if (FBatchRow == null)
+            {
+                return;
+            }
 
             //Check if same Journals as previously selected
-            if ((FLedgerNumber == ALedgerNumber) && !batchChanged
-                && (FMainDS.ARecurringJournal.DefaultView.Count > 0))
+            if (!FirstRun && !BatchChanged)
             {
-                if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                if (GetSelectedRowIndex() > 0)
                 {
-                    if ((GetSelectedRowIndex() > 0)
-                        && (GetSelectedDetailRow().RowState != DataRowState.Deleted))
-                    {
-                        GetDetailsFromControls(GetSelectedDetailRow());
-                    }
+                    GetDetailsFromControls(GetSelectedDetailRow());
                 }
             }
             else
@@ -86,37 +117,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FLedgerNumber = ALedgerNumber;
                 FBatchNumber = ABatchNumber;
 
+                SetJournalDefaultView();
                 FPreviouslySelectedDetailRow = null;
 
-                if (batchChanged)
-                {
-                    //Clear all previous data.
-                    FMainDS.ARecurringTransAnalAttrib.Clear();
-                    FMainDS.ARecurringTransaction.Clear();
-                    FMainDS.ARecurringJournal.Clear();
-                }
-
-                ShowData();
-
-                SetJournalDefaultView();
-
-                // only load from server if there are no journals loaded yet for this batch
-                // otherwise we would overwrite journals that have already been modified
                 if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
                 {
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
                 }
 
+                ShowData();
+
                 // Now set up the complete current filter
                 ApplyFilter();
+
+                FJournalsLoaded = true;
             }
 
-            SelectRowInGrid(1);
+            //This will also call UpdateChangeableStatus
+            SelectRowInGrid((BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow);
 
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
-
-            txtBatchNumber.Text = FBatchNumber.ToString();
         }
 
         private void SetJournalDefaultView()
@@ -132,35 +153,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ARecurringJournal.DefaultView.Sort = String.Format("{0} DESC",
                 ARecurringJournalTable.GetJournalNumberDBName()
                 );
-        }
-
-        /// <summary>
-        /// Update the effective date from outside
-        /// </summary>
-        /// <param name="AEffectiveDate"></param>
-        public void UpdateEffectiveDateForCurrentRow(DateTime AEffectiveDate)
-        {
-            if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
-            {
-                GetSelectedDetailRow().DateEffective = AEffectiveDate;
-                GetDetailsFromControls(GetSelectedDetailRow());
-            }
-        }
-
-        /// <summary>
-        /// Return the active journal number
-        /// </summary>
-        /// <returns></returns>
-        public Int32 ActiveJournalNumber(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            Int32 activeJournal = 0;
-
-            if ((FPreviouslySelectedDetailRow != null) && (FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
-            {
-                activeJournal = FPreviouslySelectedDetailRow.JournalNumber;
-            }
-
-            return activeJournal;
         }
 
         /// <summary>
@@ -206,7 +198,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal sumDebits = 0.0M;
             decimal sumCredits = 0.0M;
 
-            foreach (DataRowView v in FMainDS.ARecurringJournal.DefaultView)
+            DataView JournalDV = new DataView(FMainDS.AJournal);
+
+            JournalDV.RowFilter = String.Format("{0}={1}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                ABatch.BatchNumber);
+
+            foreach (DataRowView v in JournalDV)
             {
                 ARecurringJournalRow r = (ARecurringJournalRow)v.Row;
 
@@ -226,32 +224,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ARecurringJournalRow ARow)
         {
-            grdDetails.TabStop = (ARow != null);
+            bool JournalRowIsNull = (ARow == null);
 
-            if (ARow == null)
+            grdDetails.TabStop = (!JournalRowIsNull);
+
+            if (JournalRowIsNull)
             {
                 btnAdd.Focus();
             }
 
-            if (ARow == null)
-            {
-                ((TFrmRecurringGLBatch)ParentForm).DisableTransactions();
-            }
-            else
-            {
-                ((TFrmRecurringGLBatch)ParentForm).EnableTransactions();
+            //Enable the transactions tab accordingly
+            ((TFrmRecurringGLBatch)ParentForm).EnableTransactions(!JournalRowIsNull);
 
-                //Can't cancel an already cancelled row
-                btnDelete.Enabled = (ARow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
-                ((TFrmRecurringGLBatch)ParentForm).EnableTransactions();
-
-                if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                {
-                    FPetraUtilsObject.DisableSaveButton();
-                }
-
-                UpdateChangeableStatus();
-            }
+            UpdateChangeableStatus();
         }
 
         private ARecurringBatchRow GetBatchRow()
@@ -266,11 +251,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-            {
-                return;
-            }
-
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
             this.CreateNewARecurringJournal();
@@ -278,9 +258,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmRecurringGLBatch) this.ParentForm).EnableTransactions();
-
-                txtDetailJournalDescription.Text = Catalog.GetString("Please enter a journal description");
-                txtDetailJournalDescription.SelectAll();
             }
         }
 
@@ -290,27 +267,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ANewRow"></param>
         public void NewRowManual(ref GLBatchTDSARecurringJournalRow ANewRow)
         {
-            DataView view = new DataView(FMainDS.ARecurringBatch);
+            if ((ANewRow == null) || (FLedgerNumber == -1))
+            {
+                return;
+            }
 
-            view.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ARecurringBatchTable.TableId), ',');
-            ARecurringBatchRow row = (ARecurringBatchRow)view.FindRows(new object[] { FLedgerNumber, FBatchNumber })[0].Row;
-            ANewRow.LedgerNumber = row.LedgerNumber;
-            ANewRow.BatchNumber = row.BatchNumber;
-            ANewRow.JournalNumber = row.LastJournal + 1;
-
-            // manually created journals are all GL
-            ANewRow.SubSystemCode = "GL";
-            ANewRow.TransactionTypeCode = "STD";
-
-            ALedgerRow ledger =
+            ALedgerRow LedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                      TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-            ANewRow.TransactionCurrency = ledger.BaseCurrency;
 
+            DataView BatchDV = new DataView(FMainDS.ARecurringBatch);
+
+            BatchDV.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ARecurringBatchTable.TableId), ',');
+            
+            ARecurringBatchRow BatchRow = (ARecurringBatchRow)BatchDV.FindRows(new object[] { FLedgerNumber, FBatchNumber })[0].Row;
+            
+            ANewRow.LedgerNumber = BatchRow.LedgerNumber;
+            ANewRow.BatchNumber = BatchRow.BatchNumber;
+            ANewRow.JournalNumber = ++BatchRow.LastJournal;
+
+            // manually created journals are all GL
+            ANewRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+            ANewRow.TransactionTypeCode = MFinanceConstants.STANDARD_JOURNAL;
+
+            ANewRow.TransactionCurrency = LedgerRow.BaseCurrency;
             ANewRow.ExchangeRateToBase = 1;
-            ANewRow.DateEffective = row.DateEffective;
-            ANewRow.JournalPeriod = row.BatchPeriod;
-            row.LastJournal++;
+            ANewRow.DateEffective = BatchRow.DateEffective;
+            ANewRow.JournalPeriod = BatchRow.BatchPeriod;
         }
 
         /// initialise some comboboxes
@@ -319,6 +302,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
             this.cmbDetailSubSystemCode.Items.Clear();
             this.cmbDetailSubSystemCode.Items.AddRange(new object[] { ARow.SubSystemCode });
+
+            TFinanceControls.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
@@ -331,17 +316,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateChangeableStatus()
         {
-            Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
-                                 && GetBatchRow() != null
-                                 && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            Boolean IsChangeable = (!FPetraUtilsObject.DetailProtectedMode && GetBatchRow() != null);
 
-            Boolean journalUpdatable =
-                (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
+            Boolean JournalUpdatable = (FPreviouslySelectedDetailRow != null);
 
-            this.btnDelete.Enabled = changeable && journalUpdatable;
-            this.btnAdd.Enabled = changeable;
-            pnlDetails.Enabled = changeable && journalUpdatable;
-            pnlDetailsProtected = !changeable;
+            this.btnDelete.Enabled = IsChangeable && JournalUpdatable;
+            this.btnAdd.Enabled = IsChangeable;
+            pnlDetails.Enabled = IsChangeable && JournalUpdatable;
+            pnlDetailsProtected = !IsChangeable;
+
+            if (!IsChangeable)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
         }
 
         private bool PreDeleteManual(ARecurringJournalRow ARowToDelete, ref string ADeletionQuestion)
@@ -621,11 +608,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetBatchLastJournalNumber()
         {
-            SetJournalDefaultView();
+            DataView JournalDV = new DataView(FMainDS.ARecurringJournal);
 
-            if (FMainDS.ARecurringJournal.DefaultView.Count > 0)
+            JournalDV.RowFilter = String.Format("{0}={1}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                FBatchNumber);
+
+            JournalDV.Sort = String.Format("{0} DESC",
+                ARecurringJournalTable.GetJournalNumberDBName()
+                );
+
+            if (JournalDV.Count > 0)
             {
-                ARecurringJournalRow jrnlRow = (ARecurringJournalRow)FMainDS.ARecurringJournal.DefaultView[0].Row;
+                ARecurringJournalRow jrnlRow = (ARecurringJournalRow)JournalDV[0].Row;
                 GetBatchRow().LastJournal = jrnlRow.JournalNumber;
             }
             else
@@ -637,9 +632,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ClearControls()
         {
             FPetraUtilsObject.DisableDataChangedEvent();
+
             txtDetailJournalDescription.Clear();
             cmbDetailTransactionTypeCode.SelectedIndex = -1;
             cmbDetailTransactionCurrency.SelectedIndex = -1;
+
             FPetraUtilsObject.EnableDataChangedEvent();
         }
 
@@ -657,14 +654,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             TSharedFinanceValidation_GL.ValidateRecurringGLJournalManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
+
+            //TODO: remove this once database definition is set for Batch Description to be NOT NULL
+            // Description is mandatory then make sure it is set
+            if (txtDetailJournalDescription.Text.Length == 0)
+            {
+                DataColumn ValidationColumn;
+                TVerificationResult VerificationResult = null;
+                object ValidationContext;
+
+                ValidationColumn = ARow.Table.Columns[ARecurringJournalTable.ColumnJournalDescriptionId];
+                ValidationContext = String.Format("Recurring Batch no.: {0}, Journal no.: {1}",
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.JournalDescription,
+                    "Description of " + ValidationContext,
+                    this, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+            }
         }
 
-        /// <summary>
-        /// Set focus to the gid controltab
-        /// </summary>
-        public void FocusGrid()
+        private void SetFocusToDetailsGrid()
         {
-            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            if ((grdDetails != null) && grdDetails.CanFocus)
             {
                 grdDetails.Focus();
             }
@@ -683,9 +698,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FucoFilterAndFind.DisplayFindTab();
         }
 
-        private void RunOnceOnParentActivationManual()
-        {
-            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
-        }
     }
 }

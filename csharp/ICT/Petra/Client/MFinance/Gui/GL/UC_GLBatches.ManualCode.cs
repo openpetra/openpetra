@@ -1243,31 +1243,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void SetInitialFocus()
         {
-            bool GridEmpty;
-
             if (FInitialFocusActionComplete)
             {
                 return;
             }
 
-            //Set filter to current and forwarding
-            if (FcmbPeriod.Items.Count > 0)
+            if (grdDetails.CanFocus)
             {
-                FcmbPeriod.SelectedIndex = 1;
-            }
+                //Set filter to current and forwarding
+                if (FcmbPeriod.Items.Count > 0)
+                {
+                    FcmbPeriod.SelectedIndex = 1;
+                }
 
-            GridEmpty = (grdDetails.Rows.Count < 2);
+                if (grdDetails.Rows.Count < 2)
+                {
+                    btnNew.Focus();
+                }
+                else
+                {
+                    grdDetails.Focus();
+                }
 
-            if (GridEmpty)
-            {
-                btnNew.Focus();
+                FInitialFocusActionComplete = true;
             }
-            else if (grdDetails.CanFocus)
-            {
-                grdDetails.Focus();
-            }
-
-            FInitialFocusActionComplete = true;
         }
 
         private void RunOnceOnParentActivationManual()

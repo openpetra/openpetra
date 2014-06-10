@@ -535,25 +535,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void SetInitialFocus()
         {
-            bool GridEmpty;
-
             if (FInitialFocusActionComplete)
             {
                 return;
             }
 
-            GridEmpty = (grdDetails.Rows.Count < 2);
-
-            if (GridEmpty)
+            if (grdDetails.CanFocus)
             {
-                btnNew.Focus();
-            }
-            else if (grdDetails.CanFocus)
-            {
-                grdDetails.Focus();
-            }
+                if (grdDetails.Rows.Count < 2)
+                {
+                    btnNew.Focus();
+                }
+                else if (grdDetails.CanFocus)
+                {
+                    grdDetails.Focus();
+                }
 
-            FInitialFocusActionComplete = true;
+                FInitialFocusActionComplete = true;
+            }
         }
 
         private void RunOnceOnParentActivationManual()

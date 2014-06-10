@@ -177,7 +177,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         {
             int VerifResultCollAddedCount = 0;
 
-            //TODO
+            //TODO - nothing to add
 
             return VerifResultCollAddedCount == 0;
         }
