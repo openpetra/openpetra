@@ -38,6 +38,7 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the current journal
         /// NOTE this no longer calculates AmountInBaseCurrency
+        /// ALSO - since the ExchangeRateToBase field is no longer used here, the code that asserts it to be valid is commented out.
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
@@ -49,6 +50,7 @@ namespace Ict.Petra.Shared.MFinance
                 return;
             }
 
+            /* // Since I'm not using ExchangeRateToBase, I don't need to check that it's valid:
             if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
                 && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
             {
@@ -56,6 +58,7 @@ namespace Ict.Petra.Shared.MFinance
                         ACurrentJournal.BatchNumber,
                         ACurrentJournal.JournalNumber));
             }
+            */
 
             ACurrentJournal.JournalDebitTotal = 0.0M;
             ACurrentJournal.JournalDebitTotalBase = 0.0M;
@@ -91,6 +94,7 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the current journal
         /// NOTE this no longer calculates AmountInBaseCurrency
+        /// ALSO - since the ExchangeRateToBase field is no longer used here, the code that asserts it to be valid is commented out.
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
@@ -102,6 +106,8 @@ namespace Ict.Petra.Shared.MFinance
                 return;
             }
 
+            /* // Since I'm not using ExchangeRateToBase, I don't need to check that it's valid:
+
             if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
                 && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
             {
@@ -109,6 +115,7 @@ namespace Ict.Petra.Shared.MFinance
                         ACurrentJournal.BatchNumber,
                         ACurrentJournal.JournalNumber));
             }
+            */
 
             ACurrentJournal.JournalDebitTotal = 0.0M;
             ACurrentJournal.JournalDebitTotalBase = 0.0M;

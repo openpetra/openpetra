@@ -2300,7 +2300,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the current journal
         ///   Assumes that transactions are already loaded into the Dataset
-        /// NOTE this no longer calculates AmountInBaseCurrency
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
