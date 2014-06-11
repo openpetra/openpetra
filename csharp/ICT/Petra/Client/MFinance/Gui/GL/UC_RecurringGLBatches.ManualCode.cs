@@ -80,37 +80,43 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FLedgerNumber = ALedgerNumber;
 
-            // this will load the batches from the server
-            LoadData();
-
-            if (grdDetails.Rows.Count > 1)
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
-                ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
-                AutoEnableTransTabForBatch();
-            }
-            else
-            {
-                ClearControls();
-                ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
-                ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
+                return;
             }
 
-            //Load all analysis attribute values
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
+
             if (FCacheDS == null)
             {
                 FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, false);
             }
 
+            btnNew.Enabled = true;
+
+            FPreviouslySelectedDetailRow = null;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringBatch.DefaultView);
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                SelectRowInGrid(1);
+                ((TFrmRecurringGLBatch)this.ParentForm).EnableJournals();
+                AutoEnableTransTabForBatch();
+            }
+            else
+            {
+                ClearControls();
+                ((TFrmRecurringGLBatch)this.ParentForm).DisableJournals();
+                ((TFrmRecurringGLBatch)this.ParentForm).DisableTransactions();
+            }
+
+            //Load all analysis attribute values
             ShowData();
 
-            //Set sort order
-            FMainDS.ARecurringBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
-                ARecurringBatchTable.GetLedgerNumberDBName(),
-                ARecurringBatchTable.GetBatchNumberDBName()
-                );
+            UpdateChangeableStatus();
+            UpdateRecordNumberDisplay();
+            SetAccountCostCentreTableVariables();
 
-            //UpdateRecordNumberDisplay();
-            //SetAccountCostCentreTableVariables();
             FBatchesLoaded = true;
         }
 
@@ -835,6 +841,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private void SetAccountCostCentreTableVariables()
+        {
+            //Populate CostCentreList variable
+            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            FCostCentreTable = (ACostCentreTable)costCentreList;
+
+            //Populate AccountList variable
+            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            FAccountTable = (AAccountTable)accountList;
+        }
+
         private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
         {
             bool retVal = true;
@@ -919,41 +950,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return retVal;
-        }
-
-        void LoadData()
-        {
-            int NewRowToSelectAfterFilter = 1;
-
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
-            {
-                return;
-            }
-
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
-            btnNew.Enabled = true;
-
-            FPreviouslySelectedDetailRow = null;
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringBatch.DefaultView);
-
-            UpdateChangeableStatus();
-
-            if (grdDetails.Rows.Count < 2)
-            {
-                ClearControls();
-                ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
-                ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
-            }
-            else
-            {
-                SelectRowInGrid(NewRowToSelectAfterFilter);
-
-                ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
-            }
-
-            UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
         }
 
     }

@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     dtpDetailDateEffective.Date = BatchDateEffective;
 
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionAmounts("BATCH", true);
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", true);
                 }
             }
 
@@ -582,7 +582,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
-            ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionAmounts("JOURNAL");
+            ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("JOURNAL");
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
         }

@@ -135,12 +135,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 StringHelper.DateToLocalizedString(FStartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod, false, false));
 
-            //Set sort order
-            FMainDS.ABatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
-                ABatchTable.GetLedgerNumberDBName(),
-                ABatchTable.GetBatchNumberDBName()
-                );
-
             FBatchesLoaded = true;
         }
 
@@ -640,7 +634,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
                     }
 
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionAmounts("BATCH", UpdateTransactionDates);
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", UpdateTransactionDates);
                     FPetraUtilsObject.HasChanges = true;
                 }
             }

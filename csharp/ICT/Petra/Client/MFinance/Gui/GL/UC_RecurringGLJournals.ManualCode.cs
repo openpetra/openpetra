@@ -198,7 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal sumDebits = 0.0M;
             decimal sumCredits = 0.0M;
 
-            DataView JournalDV = new DataView(FMainDS.AJournal);
+            DataView JournalDV = new DataView(FMainDS.ARecurringJournal);
 
             JournalDV.RowFilter = String.Format("{0}={1}",
                 ARecurringJournalTable.GetBatchNumberDBName(),

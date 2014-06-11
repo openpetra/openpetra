@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
         private Int32 FLedgerNumber = -1;
-        private Int32 standardTabIndex = 0;
+        private Int32 FStandardTabIndex = 0;
         private bool FWindowIsMaximized = false;
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            tabRecurringGLBatch.SelectedIndex = standardTabIndex;
+            tabRecurringGLBatch.SelectedIndex = FStandardTabIndex;
             TabSelectionChanged(null, null);
 
             this.Shown += delegate
@@ -92,8 +92,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void InitializeManualCode()
         {
             tabRecurringGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-            this.tpgJournals.Enabled = false;
-            this.tpgTransactions.Enabled = false;
+            this.tpgRecurringJournals.Enabled = false;
+            this.tpgRecurringTransactions.Enabled = false;
         }
 
         /// <summary>
@@ -103,9 +103,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tabRecurringGLBatch.TabStop = AEnable;
 
-            if (this.tpgJournals.Enabled != AEnable)
+            if (this.tpgRecurringJournals.Enabled != AEnable)
             {
-                this.tpgJournals.Enabled = AEnable;
+                this.tpgRecurringJournals.Enabled = AEnable;
                 this.Refresh();
             }
         }
@@ -117,9 +117,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tabRecurringGLBatch.TabStop = false;
 
-            if (this.tpgJournals.Enabled)
+            if (this.tpgRecurringJournals.Enabled)
             {
-                this.tpgJournals.Enabled = false;
+                this.tpgRecurringJournals.Enabled = false;
                 this.Refresh();
             }
         }
@@ -129,9 +129,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void EnableTransactions(bool AEnable = true)
         {
-            if (this.tpgTransactions.Enabled != AEnable)
+            if (this.tpgRecurringTransactions.Enabled != AEnable)
             {
-                this.tpgTransactions.Enabled = AEnable;
+                this.tpgRecurringTransactions.Enabled = AEnable;
                 this.Refresh();
             }
         }
@@ -141,9 +141,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void DisableTransactions()
         {
-            if (this.tpgTransactions.Enabled)
+            if (this.tpgRecurringTransactions.Enabled)
             {
-                this.tpgTransactions.Enabled = false;
+                this.tpgRecurringTransactions.Enabled = false;
                 this.Refresh();
             }
         }
@@ -160,30 +160,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (ATab == eGLTabs.RecurringBatches)
                 {
-                    this.tabRecurringGLBatch.SelectedTab = this.tpgBatches;
-                    this.tpgJournals.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
-                    this.tabRecurringGLBatch.TabStop = this.tpgJournals.Enabled;
+                    this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringBatches;
+                    this.tpgRecurringJournals.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
+                    this.tabRecurringGLBatch.TabStop = this.tpgRecurringJournals.Enabled;
 
-                    if (this.tpgTransactions.Enabled)
+                    if (this.tpgRecurringTransactions.Enabled)
                     {
                         this.ucoRecurringTransactions.CancelChangesToFixedBatches();
                         this.ucoRecurringJournals.CancelChangesToFixedBatches();
-                        ucoRecurringBatches.AutoEnableTransTabForBatch();
                     }
 
+                    ucoRecurringBatches.AutoEnableTransTabForBatch();
                     ucoRecurringBatches.SetInitialFocus();
                     FPreviousTab = eGLTabs.RecurringBatches;
                 }
                 else if (ucoRecurringBatches.GetSelectedDetailRow() != null && ATab == eGLTabs.RecurringJournals)
                 {
-                    if (this.tpgJournals.Enabled)
+                    if (this.tpgRecurringJournals.Enabled)
                     {
-                        this.tabRecurringGLBatch.SelectedTab = this.tpgJournals;
+                        this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringJournals;
 
                         this.ucoRecurringJournals.LoadJournals(FLedgerNumber,
                             ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
 
-                        this.tpgTransactions.Enabled = (ucoRecurringJournals.GetSelectedDetailRow() != null);
+                        this.tpgRecurringTransactions.Enabled = (ucoRecurringJournals.GetSelectedDetailRow() != null);
 
                         this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
 
@@ -192,11 +192,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 else if (ATab == eGLTabs.RecurringTransactions)
                 {
-                    if (this.tpgTransactions.Enabled)
+                    if (this.tpgRecurringTransactions.Enabled)
                     {
                         // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
                         // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
-                        this.tabRecurringGLBatch.SelectedTab = this.tpgTransactions;
+                        this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringTransactions;
 
                         bool fromBatchTab = false;
 
@@ -288,22 +288,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnActivationManual()
         {
-            this.Resize += new EventHandler(TFrmGLBatch_Resize);
+            this.Resize += new EventHandler(TFrmRecurringGLBatch_Resize);
         }
 
-        void TFrmGLBatch_Resize(object sender, EventArgs e)
+        void TFrmRecurringGLBatch_Resize(object sender, EventArgs e)
         {
             if (this.WindowState == FormWindowState.Maximized)
             {
                 // set the flag that we are maximized
                 FWindowIsMaximized = true;
 
-                if (tabRecurringGLBatch.SelectedTab == this.tpgBatches)
+                if (tabRecurringGLBatch.SelectedTab == this.tpgRecurringBatches)
                 {
                     ucoRecurringTransactions.AutoSizeGrid();
                     Console.WriteLine("Maximised - autosizing transactions");
                 }
-                else if (tabRecurringGLBatch.SelectedTab == this.tpgTransactions)
+                else if (tabRecurringGLBatch.SelectedTab == this.tpgRecurringTransactions)
                 {
                     ucoRecurringBatches.AutoSizeGrid();
                     Console.WriteLine("Maximised - autosizing batches");
@@ -332,15 +332,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void MniFilterFind_Click(object sender, EventArgs e)
         {
-            if (tabRecurringGLBatch.SelectedTab == tpgBatches)
+            if (tabRecurringGLBatch.SelectedTab == tpgRecurringBatches)
             {
                 ucoRecurringBatches.MniFilterFind_Click(sender, e);
             }
-            else if (tabRecurringGLBatch.SelectedTab == tpgJournals)
+            else if (tabRecurringGLBatch.SelectedTab == tpgRecurringJournals)
             {
                 ucoRecurringJournals.MniFilterFind_Click(sender, e);
             }
-            else if (tabRecurringGLBatch.SelectedTab == tpgTransactions)
+            else if (tabRecurringGLBatch.SelectedTab == tpgRecurringTransactions)
             {
                 ucoRecurringTransactions.MniFilterFind_Click(sender, e);
             }
@@ -361,15 +361,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return true;
             }
 
-            if ((tabRecurringGLBatch.SelectedTab == tpgBatches) && (ucoRecurringBatches.ProcessParentCmdKey(ref msg, keyData)))
+            if ((tabRecurringGLBatch.SelectedTab == tpgRecurringBatches) && (ucoRecurringBatches.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }
-            else if ((tabRecurringGLBatch.SelectedTab == tpgJournals) && (ucoRecurringJournals.ProcessParentCmdKey(ref msg, keyData)))
+            else if ((tabRecurringGLBatch.SelectedTab == tpgRecurringJournals) && (ucoRecurringJournals.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }
-            else if ((tabRecurringGLBatch.SelectedTab == tpgTransactions) && (ucoRecurringTransactions.ProcessParentCmdKey(ref msg, keyData)))
+            else if ((tabRecurringGLBatch.SelectedTab == tpgRecurringTransactions) && (ucoRecurringTransactions.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }

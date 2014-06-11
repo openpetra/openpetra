@@ -22,29 +22,30 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.ComponentModel;
+using System.Collections.Specialized;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
+
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Client.MFinance.Logic;
+
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Validation;
-using Ict.Petra.Client.App.Core;
-using SourceGrid;
-using SourceGrid.Cells;
-using SourceGrid.Cells.Editors;
-using SourceGrid.Cells.Controllers;
-using System.ComponentModel;
-using System.Collections.Specialized;
 
+using SourceGrid;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -57,18 +58,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FTransactionNumber = -1;
         private bool FActiveOnly = false; //opposite of GL Transactions form
         private string FTransactionCurrency = string.Empty;
-        private GLSetupTDS FCacheDS;
-        private GLBatchTDSARecurringJournalRow FJournalRow = null;
-        private ARecurringTransAnalAttribRow FPSAttributesRow = null;
-        private SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
-        private bool FIsUnposted = true;
 
-        private ARecurringBatchRow FBatchRow = null;
         private decimal FDebitAmount = 0;
         private decimal FCreditAmount = 0;
 
+        private ARecurringBatchRow FBatchRow = null;
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
+
+        private GLSetupTDS FCacheDS;
+        private GLBatchTDSARecurringJournalRow FJournalRow = null;
+        private ARecurringTransAnalAttribRow FPSAttributesRow = null;
+
+        private SourceGrid.Cells.Editors.ComboBox FcmbAnalAttribValues;
+
+        private void InitialiseControls()
+        {
+            cmbDetailKeyMinistryKey.ComboBoxWidth = txtDetailNarrative.Width;
+        }
 
         /// <summary>
         /// load the transactions into the grid
@@ -76,32 +83,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
-        /// <param name="AForeignCurrencyName"></param>
+        /// <param name="ACurrencyCode"></param>
         /// <param name="AFromBatchTab"></param>
         /// <returns>True if new GL transactions were loaded, false if transactions had been loaded already.</returns>
         public bool LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
-            string AForeignCurrencyName,
+            string ACurrencyCode,
             bool AFromBatchTab = false)
         {
-            Console.WriteLine("LoadTransactions");
-            DateTime dtStart = DateTime.Now;
-
-            bool IsNewBatch = false;
+            bool DifferentBatchSelected = false;
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
-            FIsUnposted = true;
+            FJournalRow = GetJournalRow();
+
+            if (FLedgerNumber == -1)
+            {
+                InitialiseControls();
+            }
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
-                && (FTransactionCurrency == AForeignCurrencyName) && (FMainDS.ARecurringTransaction.DefaultView.Count > 0)
-                && (FPreviouslySelectedDetailRow != null))
+                && (FTransactionCurrency == ACurrencyCode) && (FMainDS.ARecurringTransaction.DefaultView.Count > 0))
             {
-                FJournalRow = GetJournalRow();
-
                 //Same as previously selected
-                if (FIsUnposted && (GetSelectedRowIndex() > 0))
+                if (GetSelectedRowIndex() > 0)
                 {
                     if (AFromBatchTab)
                     {
@@ -114,22 +120,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 FLoadCompleted = true;
-                Console.WriteLine("LoadTransactions quick exit  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
             }
             else
             {
                 // Different Transactions
-                IsNewBatch = true;
-                bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != AForeignCurrencyName);
+                DifferentBatchSelected = true;
+                bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != ACurrencyCode);
 
                 FLedgerNumber = ALedgerNumber;
                 FBatchNumber = ABatchNumber;
                 FJournalNumber = AJournalNumber;
                 FTransactionNumber = -1;
-                FTransactionCurrency = AForeignCurrencyName;
+                FTransactionCurrency = ACurrencyCode;
 
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SuspendLayout();
+                //Empty grids before filling them
                 grdDetails.DataSource = null;
                 grdAnalAttributes.DataSource = null;
 
@@ -140,8 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Load from server if necessary
                 if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber,
-                            AJournalNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
                 }
 
                 // We need to call this because we have not called ShowData(), which would have set it.  This differs from the Gift screen.
@@ -150,17 +155,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Now we set the full filter
                 ApplyFilter();
 
-                FJournalRow = GetJournalRow();
-
                 if (grdAnalAttributes.Columns.Count == 1)
                 {
-                    FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
-                    FAnalAttribTypeVal.EnableEdit = true;
-                    FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
+                    grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
+
+                    FcmbAnalAttribValues = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
+                    FcmbAnalAttribValues.EnableEdit = true;
+                    FcmbAnalAttribValues.EditableMode = EditableMode.Focus;
                     grdAnalAttributes.AddTextColumn("Value",
                         FMainDS.ARecurringTransAnalAttrib.Columns[ARecurringTransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
-                        FAnalAttribTypeVal);
-                    FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
+                        FcmbAnalAttribValues);
+                    FcmbAnalAttribValues.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
 
                     grdAnalAttributes.Columns[0].Width = 100;
                 }
@@ -170,12 +175,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransAnalAttrib.DefaultView);
 
                 //Always show active and inactive values
-                bool ActiveOnly = false;
-
-                if (requireControlSetup || (FActiveOnly != ActiveOnly))
+                if (requireControlSetup)
                 {
-                    FActiveOnly = ActiveOnly;
-
                     //Load all analysis attribute values
                     if (FCacheDS == null)
                     {
@@ -185,39 +186,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SetupExtraGridFunctionality();
 
                     TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-                        true, false, ActiveOnly, false, AForeignCurrencyName, true);
-                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+                        true, false, FActiveOnly, false, ACurrencyCode, true);
+                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
                 }
 
+                UpdateTransactionTotals();
                 grdDetails.ResumeLayout();
-
-                //This will update transaction headers
-                UpdateTransactionTotals(false);
                 FLoadCompleted = true;
-                Console.WriteLine("LoadTransactions completed  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
             }
 
+            ShowData();
             SelectRowInGrid(1);
+            ShowDetails(); //Needed because of how currency is handled
 
             UpdateChangeableStatus();
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
 
-            return IsNewBatch;
-        }
-
-        /// <summary>
-        /// Unload the currently loaded transactions
-        /// </summary>
-        public void UnloadTransactions()
-        {
-            if (FMainDS.ARecurringTransaction.DefaultView.Count > 0)
-            {
-                FPreviouslySelectedDetailRow = null;
-                FMainDS.ARecurringTransAnalAttrib.Clear();
-                FMainDS.ARecurringTransaction.Clear();
-                ClearControls();
-            }
+            return DifferentBatchSelected;
         }
 
         private void SetTransactionDefaultView(bool AAscendingOrder = true)
@@ -232,17 +218,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARecurringTransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
 
-                FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} " + sort,
-                    ARecurringTransactionTable.GetTransactionNumberDBName()
-                    );
-
                 FMainDS.ARecurringTransaction.DefaultView.RowFilter = rowFilter;
                 FFilterPanelControls.SetBaseFilter(rowFilter, true);
                 FCurrentActiveFilter = rowFilter;
+                // We don't apply the filter yet!
+
+                FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} " + sort,
+                    ARecurringTransactionTable.GetTransactionNumberDBName());
+
             }
         }
 
-        private void SetTransAnalAttributeDefaultView(Int32 ATransactionNumber = 0)
+        private void SetTransAnalAttributeDefaultView(Int32 ATransactionNumber = 0, String AAnalysisCodeFilterValues = "")
         {
             if (FBatchNumber != -1)
             {
@@ -272,40 +259,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        /// Update the effective date from outside
-        /// </summary>
-        /// <param name="AEffectiveDate"></param>
-        public void UpdateEffectiveDateForCurrentRow(DateTime AEffectiveDate)
-        {
-            if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
-            {
-                GetSelectedDetailRow().TransactionDate = AEffectiveDate;
-
-                GetDetailsFromControls(GetSelectedDetailRow());
-            }
-        }
-
-        /// <summary>
-        /// Return the active transaction number and sets the Journal number
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <returns></returns>
-        public Int32 ActiveTransactionNumber(Int32 ALedgerNumber, Int32 ABatchNumber, ref Int32 AJournalNumber)
-        {
-            Int32 activeTrans = 0;
-
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                activeTrans = FPreviouslySelectedDetailRow.TransactionNumber;
-                AJournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
-            }
-
-            return activeTrans;
-        }
-
         private ARecurringBatchRow GetBatchRow()
         {
             return ((TFrmRecurringGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
@@ -320,15 +273,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return ((TFrmRecurringGLBatch)ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
 
+        private ARecurringTransAnalAttribRow GetSelectedAttributeRow()
+        {
+            DataRowView[] SelectedGridRow = grdAnalAttributes.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                return (ARecurringTransAnalAttribRow)SelectedGridRow[0].Row;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Cancel any changes made to this form
         /// </summary>
         public void CancelChangesToFixedBatches()
         {
-            if ((GetBatchRow() != null) && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
-            {
-                FMainDS.ARecurringTransaction.RejectChanges();
-            }
+            //Nothing to do here as all recurring batches are effectively classed as unposted
         }
 
         /// <summary>
@@ -374,11 +336,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ANewRow.BatchNumber = ARefJournalRow.BatchNumber;
             ANewRow.JournalNumber = ARefJournalRow.JournalNumber;
             ANewRow.TransactionNumber = ++ARefJournalRow.LastTransactionNumber;
-            ANewRow.TransactionDate = GetBatchRow().DateEffective;
+            ANewRow.TransactionDate = FBatchRow.DateEffective;
+            ANewRow.ExchangeRateToBase = FJournalRow.ExchangeRateToBase;
 
             if (FPreviouslySelectedDetailRow != null)
             {
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
+                ANewRow.Narrative = FPreviouslySelectedDetailRow.Narrative;
+                ANewRow.Reference = FPreviouslySelectedDetailRow.Reference;
             }
         }
 
@@ -389,11 +354,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (FLedgerNumber != -1)
             {
+                string TransactionCurrency = FJournalRow.TransactionCurrency;
+                string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+
                 txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
                 txtBatchNumber.Text = FBatchNumber.ToString();
                 txtJournalNumber.Text = FJournalNumber.ToString();
 
-                string TransactionCurrency = GetJournalRow().TransactionCurrency;
                 lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), TransactionCurrency);
                 txtDebitAmount.CurrencyCode = TransactionCurrency;
                 txtCreditAmount.CurrencyCode = TransactionCurrency;
@@ -409,7 +376,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     bool ActiveOnly = this.Enabled;
 
                     TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-                        true, false, ActiveOnly, false, TransactionCurrency);
+                        true, false, FActiveOnly, false, TransactionCurrency);
 
                     cmbDetailAccountCode.SetSelectedString(SelectedAccount);
 
@@ -430,9 +397,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ARow == null)
             {
+                FTransactionNumber = -1;
                 ClearControls();
                 btnNew.Focus();
-                FTransactionNumber = -1;
                 return;
             }
 
@@ -463,17 +430,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = "1=2";
             FPSAttributesRow = null;
 
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
-            else if (!TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(),
+            if (FPreviouslySelectedDetailRow == null
+                || !pnlTransAnalysisAttributes.Enabled
+                || !TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(),
                          FActiveOnly))
             {
                 if (grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = false;
-                    lblAnalAttributes.Enabled = false;
                 }
 
                 return;
@@ -483,11 +447,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (!grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = true;
-                    lblAnalAttributes.Enabled = true;
                 }
             }
-
-            grdAnalAttributes.DataSource = null;
 
             SetTransAnalAttributeDefaultView(FTransactionNumber);
 
@@ -496,25 +457,103 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdAnalAttributes.Rows.Count > 1)
             {
                 grdAnalAttributes.SelectRowWithoutFocus(1);
-                FPSAttributesRow = GetSelectedAttributeRow();
+                AnalysisAttributesGrid_RowSelected(null, null);
             }
         }
 
-        private ARecurringTransAnalAttribRow GetSelectedAttributeRow()
+        private bool AccountAnalysisAttributeCountIsCorrect()
         {
-            DataRowView[] SelectedGridRow = grdAnalAttributes.SelectedDataRowsAsDataRowView;
+            bool RetVal = true;
 
-            if (SelectedGridRow.Length >= 1)
+            if (FPreviouslySelectedDetailRow == null)
             {
-                return (ARecurringTransAnalAttribRow)SelectedGridRow[0].Row;
+                return RetVal;
             }
 
-            return null;
+            int TransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
+            string AccountCode = FPreviouslySelectedDetailRow.AccountCode;
+            int NumberOfAttributes = 0;
+
+            TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, AccountCode, out NumberOfAttributes, FActiveOnly);
+
+            if (NumberOfAttributes == 0)
+            {
+                return RetVal;
+            }
+
+            DataView analAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+            analAttrib.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                FJournalNumber,
+                ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                TransactionNumber,
+                ARecurringTransAnalAttribTable.GetAccountCodeDBName(),
+                AccountCode);
+
+            RetVal = (analAttrib.Count == NumberOfAttributes);
+
+            return RetVal;
+        }
+
+        private bool AccountAnalysisAttributesValuesExist(out String ValueRequiredForType)
+        {
+            ValueRequiredForType = "";
+
+            if (FPreviouslySelectedDetailRow == null || (FMainDS.ARecurringTransAnalAttrib.DefaultView.Count == 0))
+            {
+                return true;
+            }
+
+            int TransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
+            string AccountCode = FPreviouslySelectedDetailRow.AccountCode;
+
+            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                AccountCode, FActiveOnly);
+
+            string AnalysisCodeFilterValues = ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'");
+
+            DataView analAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+            analAttrib.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                FJournalNumber,
+                ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                TransactionNumber,
+                ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+                AnalysisCodeFilterValues);
+
+            foreach (DataRowView drv in analAttrib)
+            {
+                ARecurringTransAnalAttribRow rw = (ARecurringTransAnalAttribRow)drv.Row;
+
+                string analysisCode = rw.AnalysisTypeCode;
+
+                if (TRemote.MFinance.Setup.WebConnectors.AccountAnalysisAttributeRequiresValues(FLedgerNumber, analysisCode, FActiveOnly))
+                {
+                    if (rw.IsAnalysisAttributeValueNull() || (rw.AnalysisAttributeValue == string.Empty))
+                    {
+                        ValueRequiredForType = rw.AnalysisTypeCode;
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)
         {
             if (grdAnalAttributes.Selection.ActivePosition.IsEmpty() || (grdAnalAttributes.Selection.ActivePosition.Column == 0))
+            {
+                return;
+            }
+
+            if ((GetSelectedAttributeRow() == null) || (FPSAttributesRow == GetSelectedAttributeRow()))
             {
                 return;
             }
@@ -531,8 +570,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (analTypeCodeValuesCount == 0)
             {
-                MessageBox.Show("No analysis attribute type codes present!");
-                return;
+                MessageBox.Show(Catalog.GetString(
+                        "No attribute values are defined!"), currentAnalTypeCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             string[] analTypeValues = new string[analTypeCodeValuesCount];
@@ -549,12 +588,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Refresh the combo values
-            FAnalAttribTypeVal.StandardValuesExclusive = true;
-            FAnalAttribTypeVal.StandardValues = analTypeValues;
-
-            Console.WriteLine("RowSelected: ActivePos is {0}:{1}",
-                grdAnalAttributes.Selection.ActivePosition.Row,
-                grdAnalAttributes.Selection.ActivePosition.Column);
+            FcmbAnalAttribValues.StandardValuesExclusive = true;
+            FcmbAnalAttribValues.StandardValues = analTypeValues;
         }
 
         private void AnalysisAttributeValueChanged(System.Object sender, EventArgs e)
@@ -580,8 +615,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            Decimal oldTransactionAmount = ARow.TransactionAmount;
-            bool oldDebitCreditIndicator = ARow.DebitCreditIndicator;
+            Decimal OldTransactionAmount = ARow.TransactionAmount;
+            bool OldDebitCreditIndicator = ARow.DebitCreditIndicator;
 
             if (txtDebitAmount.Text.Length == 0)
             {
@@ -609,8 +644,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARow.TransactionAmount = Math.Abs(txtCreditAmount.NumberValueDecimal.Value);
             }
 
-            if ((oldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount))
-                || (oldDebitCreditIndicator != ARow.DebitCreditIndicator))
+            if ((OldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount))
+                || (OldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
                 UpdateTransactionTotals();
             }
@@ -618,89 +653,79 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // If combobox to set analysis attribute value has focus when save button is pressed then currently
             // displayed value is not stored in database.
             // --> move focus to different field so that grid accepts value for storing in database
-            if (FAnalAttribTypeVal.Control.Focused)
+            if (FcmbAnalAttribValues.Control.Focused)
             {
                 cmbDetailCostCentreCode.Focus();
             }
         }
 
-        /// <summary>
-        /// update amount in other currencies (optional) and recalculate all totals for current batch and journal
-        /// </summary>
-        public void UpdateTransactionTotals(bool AUpdateAllTotals = true)
+        private void UpdateTransactionTotals()
         {
-            decimal amtDebitTotal = 0.0M;
-            decimal amtDebitTotalBase = 0.0M;
-            decimal amtCreditTotal = 0.0M;
-            decimal amtCreditTotalBase = 0.0M;
-
-            if ((FJournalNumber != -1) && (FBatchRow != null) && (FJournalRow != null))
+            if (FJournalNumber == -1
+                || FBatchRow == null
+                || FJournalRow == null)
             {
-                if (FPreviouslySelectedDetailRow != null)
+                return;
+            }
+
+            bool AmountsHaveChanged = false;
+            
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
                 {
-                    if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
+                    if (txtCreditAmount.NumberValueDecimal != 0)
                     {
                         txtCreditAmount.NumberValueDecimal = 0;
-                        FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
+                        AmountsHaveChanged = true;
                     }
-                    else
+
+                    if (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtDebitAmount.NumberValueDecimal))
                     {
-                        txtDebitAmount.NumberValueDecimal = 0;
-                        FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
+                        FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
+                        AmountsHaveChanged = true;
                     }
                 }
                 else
                 {
-                    txtCreditAmount.NumberValueDecimal = 0;
-                    txtDebitAmount.NumberValueDecimal = 0;
-                }
-
-                foreach (DataRowView v in FMainDS.ARecurringTransaction.DefaultView)
-                {
-                    ARecurringTransactionRow r = (ARecurringTransactionRow)v.Row;
-
-                    // recalculate the amount in base currency
-                    if (FJournalRow.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
+                    if (txtDebitAmount.NumberValueDecimal != 0)
                     {
-                        r.AmountInBaseCurrency = GLRoutines.Divide(r.TransactionAmount, FJournalRow.ExchangeRateToBase);
+                        txtDebitAmount.NumberValueDecimal = 0;
+                        AmountsHaveChanged = true;
                     }
 
-                    if (r.DebitCreditIndicator)
+                    if (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtCreditAmount.NumberValueDecimal))
                     {
-                        amtDebitTotal += r.TransactionAmount;
-                        amtDebitTotalBase += r.AmountInBaseCurrency;
-
-                        if ((FPreviouslySelectedDetailRow != null) && (r.TransactionNumber == FPreviouslySelectedDetailRow.TransactionNumber))
-                        {
-                            FPreviouslySelectedDetailRow.AmountInBaseCurrency = r.AmountInBaseCurrency;
-                        }
-                    }
-                    else
-                    {
-                        amtCreditTotal += r.TransactionAmount;
-                        amtCreditTotalBase += r.AmountInBaseCurrency;
-
-                        if ((FPreviouslySelectedDetailRow != null) && (r.TransactionNumber == FPreviouslySelectedDetailRow.TransactionNumber))
-                        {
-                            FPreviouslySelectedDetailRow.AmountInBaseCurrency = r.AmountInBaseCurrency;
-                        }
+                        FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
+                        AmountsHaveChanged = true;
                     }
                 }
-
-                txtCreditTotalAmount.NumberValueDecimal = amtCreditTotal;
-                txtDebitTotalAmount.NumberValueDecimal = amtDebitTotal;
-
-                if (AUpdateAllTotals)
-                {
-                    GLRoutines.UpdateTotalsOfRecurringBatch(ref FMainDS, FBatchRow);
-                }
-
-                txtCreditTotalAmount.NumberValueDecimal = FJournalRow.JournalCreditTotal;
-                txtDebitTotalAmount.NumberValueDecimal = FJournalRow.JournalDebitTotal;
-
-                // refresh the currency symbols
-                ShowDataManual();
             }
+            else
+            {
+                if (txtDebitAmount.NumberValueDecimal != 0)
+                {
+                    txtDebitAmount.NumberValueDecimal = 0;
+                    AmountsHaveChanged = true;
+                }
+
+                if (txtCreditAmount.NumberValueDecimal != 0)
+                {
+                    txtCreditAmount.NumberValueDecimal = 0;
+                    AmountsHaveChanged = true;
+                }
+            }
+
+            if (AmountsHaveChanged)
+            {
+                GLRoutines.UpdateTotalsOfRecurringBatch(ref FMainDS, FBatchRow);
+            }
+
+            txtCreditTotalAmount.NumberValueDecimal = FJournalRow.JournalCreditTotal;
+            txtDebitTotalAmount.NumberValueDecimal = FJournalRow.JournalDebitTotal;
+
+            // refresh the currency symbols
+            ShowDataManual();
         }
 
         /// <summary>
@@ -863,7 +888,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Make sure the grid combobox has right font else it will adopt strikeout
             // for all items in the list.
-            FAnalAttribTypeVal.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
+            FcmbAnalAttribValues.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
 
             return retVal;
         }
@@ -1531,6 +1556,45 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.Focus();
             }
+        }
+
+        private void DebitAmountChanged(object sender, EventArgs e)
+        {
+            if (sender != null)
+            {
+                if ((txtDebitAmount.NumberValueDecimal != 0) && (txtCreditAmount.NumberValueDecimal != 0))
+                {
+                    txtCreditAmount.NumberValueDecimal = 0;
+                }
+            }
+        }
+
+        private void CreditAmountChanged(object sender, EventArgs e)
+        {
+            if (sender != null)
+            {
+                if ((txtCreditAmount.NumberValueDecimal != 0) && (txtDebitAmount.NumberValueDecimal != 0))
+                {
+                    txtDebitAmount.NumberValueDecimal = 0;
+                }
+            }
+        }
+
+        private string ConvertStringCollectionToCSV(StringCollection AStringCollection, string AWrapString = "")
+        {
+            string csvRetVal = string.Empty;
+
+            int sizeCollection = AStringCollection.Count;
+
+            if (sizeCollection > 0)
+            {
+                string[] allStrings = new string[sizeCollection];
+                AStringCollection.CopyTo(allStrings, 0);
+
+                csvRetVal = AWrapString + String.Join(AWrapString + ", " + AWrapString, allStrings) + AWrapString;
+            }
+
+            return csvRetVal;
         }
 
         /// <summary>

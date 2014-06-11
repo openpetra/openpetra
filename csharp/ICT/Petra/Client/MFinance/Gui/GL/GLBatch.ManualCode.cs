@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private eGLTabs FPreviouslySelectedTab = eGLTabs.Batches;
         private Int32 FLedgerNumber = -1;
-        private Int32 standardTabIndex = 0;
+        private Int32 FStandardTabIndex = 0;
         private bool FWindowIsMaximized = false;
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            tabGLBatch.SelectedIndex = standardTabIndex;
+            tabGLBatch.SelectedIndex = FStandardTabIndex;
             TabSelectionChanged(null, null);
 
             this.Shown += delegate
@@ -169,9 +169,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         this.ucoTransactions.CancelChangesToFixedBatches();
                         this.ucoJournals.CancelChangesToFixedBatches();
-                        ucoBatches.AutoEnableTransTabForBatch();
                     }
 
+                    ucoBatches.AutoEnableTransTabForBatch();
                     ucoBatches.SetInitialFocus();
                     FPreviouslySelectedTab = eGLTabs.Batches;
                 }
