@@ -58,6 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FBatchDescription = string.Empty;
         private Boolean FPostingInProgress = false;
         private bool FActiveOnly = false;
+        private string FSelectedBatchMethodOfPayment = String.Empty;
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
@@ -95,11 +96,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public Int32 FSelectedBatchNumber = -1;
 
-        /// <summary>
-        /// Stores the current batch's method of payment
-        /// </summary>//
-        public string FSelectedBatchMethodOfPayment = String.Empty;
-
         private Boolean ViewMode
         {
             get
@@ -123,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             get
             {
-                return cmbDetailMethodOfPaymentCode.GetSelectedString();
+                return FSelectedBatchMethodOfPayment;
             }
         }
 
