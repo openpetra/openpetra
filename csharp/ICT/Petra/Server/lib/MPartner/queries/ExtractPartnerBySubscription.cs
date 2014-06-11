@@ -77,6 +77,39 @@ namespace Ict.Petra.Server.MPartner.queries
             ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_explicit_publication",
                     OdbcType.VarChar,
                     param_explicit_publication));
+
+            ASQLParameterList.Add(new OdbcParameter("param_free_subscriptions_only", OdbcType.Bit)
+            {
+                Value = AParameters.Get("param_free_subscriptions_only").ToBool()
+            });
+
+            ASQLParameterList.Add(new OdbcParameter("param_include_active_subscriptions_only", OdbcType.Bit)
+            {
+                Value = AParameters.Get("param_include_active_subscriptions_only").ToBool()
+            });
+
+            ASQLParameterList.Add(new OdbcParameter("param_include_active_subscriptions_only", OdbcType.Bit)
+            {
+                Value = AParameters.Get("param_include_active_subscriptions_only").ToBool()
+            });
+
+            ASQLParameterList.Add(new OdbcParameter("param_subscription_status", OdbcType.VarChar)
+            {
+                Value = AParameters.Get("param_subscription_status").ToString()
+            });
+
+            ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
+            {
+                Value = AParameters.Get("param_active").ToBool()
+            });
+            ASQLParameterList.Add(new OdbcParameter("param_families_only", OdbcType.Bit)
+            {
+                Value = AParameters.Get("param_families_only").ToBool()
+            });
+            ASQLParameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
+            {
+                Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+            });
         }
     }
 }

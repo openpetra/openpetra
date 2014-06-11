@@ -70,6 +70,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbIncludePublication.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
 
             dtpDateOfSendingCopy.Date = DateTime.Now;
+
+            ActiveSubscriptionsBoxChanged(null, null);
         }
 
         /// <summary>
@@ -82,6 +84,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
                 tabReportSettings.Controls.Remove(tpgReportSorting);
+                lblDateOfSendingCopy.Hide();
+                dtpDateOfSendingCopy.Hide();
+            }
+            else
+            {
+                chkIncludeActiveSubscriptionsOnly.Hide();
+                lblSubscriptionStatus.Hide();
+                cmbSubscriptionStatus.Hide();
+                chkFreeSubscriptionsOnly.Hide();
+                ucoChkFilter.Hide();
             }
 
             // enable autofind in list for first character (so the user can press character to find list entry)
@@ -100,5 +112,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
         }
+
+        private void ActiveSubscriptionsBoxChanged(object sender, EventArgs e)
+        {
+            if (chkIncludeActiveSubscriptionsOnly.Checked)
+            {
+                lblSubscriptionStatus.Visible = false;
+                cmbSubscriptionStatus.Visible = false;
+            }
+            else
+            {
+                lblSubscriptionStatus.Visible = true;
+                cmbSubscriptionStatus.Visible = true;
+            }
+        }
+
     }
 }
