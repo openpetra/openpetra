@@ -76,6 +76,9 @@ namespace Ict.Petra.Client.CommonControls.Logic
     /// <summary>Delegate for a call to open the Extract Master screen</summary>
     public delegate void TDelegateOpenExtractMasterScreen(Form AParentForm);
 
+    /// <summary>Delegate for a call to open the Extract Master screen</summary>
+    public delegate void TDelegateOpenExtractMasterScreenHidden(Form AParentForm);
+
     /// <summary>Delegate for a call to open a Modal Range Find screen</summary>
     public delegate bool TDelegateOpenRangeFindScreen(String ARegionName,
         out String[] ARangeName,

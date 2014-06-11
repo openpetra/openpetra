@@ -1033,7 +1033,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </param>
         /// <param name="ADefaultClass">Set a default partner class</param>
         /// <returns>void</returns>
-        public void SetParameters(String ARestrictToPartnerClasses, bool ABankDetailsTabOnly, TPartnerClass? ADefaultClass)
+        public void SetParameters(String ARestrictToPartnerClasses, bool ABankDetailsTabOnly, TPartnerClass ? ADefaultClass)
         {
             SetParameters(ARestrictToPartnerClasses, ABankDetailsTabOnly, ADefaultClass, false, -1);
         }
@@ -1052,7 +1052,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AInitiallyFocusLocationKey">True to set the focus on the location key</param>
         /// <param name="APassedLocationKey">location key</param>
         public void SetParameters(String ARestrictToPartnerClasses,
-            bool ABankDetailsTabOnly, 
+            bool ABankDetailsTabOnly,
             TPartnerClass? ADefaultClass,
             Boolean AInitiallyFocusLocationKey,
             Int32 APassedLocationKey)
@@ -1062,10 +1062,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             if ((ARestrictToPartnerClasses == null) || (ARestrictToPartnerClasses.Length == 0))
             {
                 ucoFindByBankDetails.InitBankDetailsTab(FRestrictToPartnerClasses);
-                
+
                 if (ADefaultClass != null)
                 {
-                	ucoFindByBankDetails.SetDefaultPartnerClass(ADefaultClass);
+                    ucoFindByBankDetails.SetDefaultPartnerClass(ADefaultClass);
                 }
 
                 if (!ABankDetailsTabOnly)
@@ -1073,11 +1073,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ucoFindByPartnerDetails.Init(FInitiallyFocusLocationKey,
                         FRestrictToPartnerClasses,
                         APassedLocationKey);
-                
-                	if (ADefaultClass != null)
-                	{
-                		ucoFindByPartnerDetails.SetDefaultPartnerClass(ADefaultClass);
-                	}
+
+                    if (ADefaultClass != null)
+                    {
+                        ucoFindByPartnerDetails.SetDefaultPartnerClass(ADefaultClass);
+                    }
                 }
                 else
                 {
@@ -1493,7 +1493,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if a Partner was found and accepted by the user,
         /// otherwise false.</returns>
         public static bool OpenModalForm(String ARestrictToPartnerClasses,
-        	TPartnerClass? ADefaultClass,
+            TPartnerClass? ADefaultClass,
             out Int64 APartnerKey,
             out String AShortName,
             out TPartnerClass? APartnerClass,
@@ -1551,7 +1551,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             out TLocationPK ALocationPK,
             Form AParentForm)
         {
-        	return OpenModalForm(ARestrictToPartnerClasses, null, out APartnerKey, out AShortName, out APartnerClass, out ALocationPK, AParentForm);
+            return OpenModalForm(ARestrictToPartnerClasses, null, out APartnerKey, out AShortName, out APartnerClass, out ALocationPK, AParentForm);
         }
 
         /// <summary>

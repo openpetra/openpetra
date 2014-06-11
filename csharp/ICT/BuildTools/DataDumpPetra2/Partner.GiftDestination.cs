@@ -192,7 +192,7 @@ namespace Ict.Tools.DataDumpPetra2
                 if (CommitmentFound)
                 {
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY a_budget FROM stdin;");
+                    AWriterTest.WriteLine("BEGIN; " + "COPY p_partner_gift_destination FROM stdin;");
                     AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
                     AWriterTest.WriteLine("\\.");
                     AWriterTest.WriteLine("ROLLBACK;");

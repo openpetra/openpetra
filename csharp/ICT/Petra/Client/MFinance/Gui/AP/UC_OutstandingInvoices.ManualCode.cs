@@ -345,15 +345,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (findObject != null)
             {
                 DataTable NewPage = findObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
-                
+
                 // change CreditNote amounts to negatives
                 foreach (DataRow Row in NewPage.Rows)
                 {
-                	if (Row["CreditNoteFlag"].Equals(true))
-                	{
-                		Row["TotalAmount"] = - (Decimal)Row["TotalAmount"];
-                		Row["OutstandingAmount"] = - (Decimal)Row["OutstandingAmount"];
-                	}
+                    if (Row["CreditNoteFlag"].Equals(true))
+                    {
+                        Row["TotalAmount"] = -(Decimal)Row["TotalAmount"];
+                        Row["OutstandingAmount"] = -(Decimal)Row["OutstandingAmount"];
+                    }
                 }
 
                 if (FInvoiceTable == null)

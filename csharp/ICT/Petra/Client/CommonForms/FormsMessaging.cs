@@ -84,6 +84,19 @@ namespace Ict.Petra.Client.CommonForms
     }
 
     /// <summary>
+    /// Interface for a 'data-only Class' that holds Data (such as
+    /// <see cref="TFormsMessage.FormsMessageName"></see>).
+    /// </summary>
+    public interface IFormsMessageNameInterface : IFormsMessageClassInterface
+    {
+        /// <summary>ShortName of the Partner in the 'Forms Message'.</summary>
+        string Name
+        {
+            get;
+        }
+    }
+
+    /// <summary>
     /// Interface for a 'data-only Class' that holds Gift Destination (such as
     /// <see cref="TFormsMessage.FormsMessageGiftDestination"></see>).
     /// </summary>
@@ -147,7 +160,10 @@ namespace Ict.Petra.Client.CommonForms
         mcAPTransactionChanged,
 
         /// <summary>Unit Hierarchy has been changed and saved.</summary>
-        mcUnitHierarchyChanged
+        mcUnitHierarchyChanged,
+
+        /// <summary>A new extract has been created.</summary>
+        mcExtractCreated
     }
 
     /// <summary>
@@ -270,6 +286,27 @@ namespace Ict.Petra.Client.CommonForms
                 default:
                     throw new ApplicationException(
                     "Method 'SetMessageDataPartner' must not be called for MessageClass '" +
+                    Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
+        /// Allows setting of Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcExtractCreated"></see>,
+        /// </summary>
+        /// <param name="AName">Data Name in the 'Forms Message'.</param>
+        public void SetMessageDataName(string AName)
+        {
+            switch (FMessageClass)
+            {
+                case TFormsMessageClassEnum.mcExtractCreated:
+
+                    FMessageObject = new FormsMessageName(AName);
+                    break;
+
+                default:
+                    throw new ApplicationException(
+                    "Method 'SetMessageDataName' must not be called for MessageClass '" +
                     Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
             }
         }
@@ -434,6 +471,34 @@ namespace Ict.Petra.Client.CommonForms
                 get
                 {
                     return FPartnerStatus;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Holds Data for 'Form Messages' of MessageClasses
+        /// <see cref="TFormsMessageClassEnum.mcExtractCreated"></see>,
+        /// </summary>
+        public struct FormsMessageName : IFormsMessageNameInterface
+        {
+            string FName;
+
+            /// <summary>
+            /// Constructor that initializes internal fields which can be
+            /// read out by using the Properties of this Class.
+            /// </summary>
+            /// <param name="AName">Data Name in the 'Forms Message'.</param>
+            public FormsMessageName(string AName)
+            {
+                FName = AName;
+            }
+
+            /// <summary>ShortName of the Partner in the 'Forms Message'.</summary>
+            public string Name
+            {
+                get
+                {
+                    return FName;
                 }
             }
         }

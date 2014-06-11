@@ -22,21 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MReporting;
 using System.Collections.Specialized;
-using System.Collections;
-using System.Runtime.Remoting.Lifetime;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Common;
 using Ict.Common.Verification;
-using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
-using System.Data;
-using System.IO;
 using System.Threading;
-using System.Runtime.Remoting;
 
 namespace Ict.Petra.Client.MReporting.Logic
 {
@@ -508,6 +503,12 @@ namespace Ict.Petra.Client.MReporting.Logic
                     TLogging.Log("Extract calculation finished. Look for extract '" +
                         Parameters.Get("param_extract_name").ToString() +
                         "' in Extract Master List.", TLoggingType.ToStatusBar);
+
+                    TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExtractCreated);
+
+                    BroadcastMessage.SetMessageDataName(Parameters.Get("param_extract_name").ToString());
+
+                    TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
                 }
                 else
                 {

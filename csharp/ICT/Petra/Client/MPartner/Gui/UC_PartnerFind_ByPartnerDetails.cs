@@ -2354,14 +2354,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             BtnSearch_Click(this, null);
         }
-        
+
         /// <summary>
         /// Set a default partner class
         /// </summary>
         /// <param name="ADefaultClass"></param>
-        public void SetDefaultPartnerClass(TPartnerClass? ADefaultClass)
+        public void SetDefaultPartnerClass(TPartnerClass ? ADefaultClass)
         {
-        	ucoPartnerFindCriteria.SetDefaultPartnerClass(ADefaultClass);
+            ucoPartnerFindCriteria.SetDefaultPartnerClass(ADefaultClass);
         }
     }
 }
