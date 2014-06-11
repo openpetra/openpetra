@@ -156,17 +156,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Cancel any changes made to this form
-        /// </summary>
-        public void CancelChangesToFixedBatches()
-        {
-            if ((GetBatchRow() != null) && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
-            {
-                FMainDS.ARecurringJournal.RejectChanges();
-            }
-        }
-
-        /// <summary>
         /// show ledger and batch number
         /// </summary>
         private void ShowDataManual()

@@ -286,14 +286,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Cancel any changes made to this form
-        /// </summary>
-        public void CancelChangesToFixedBatches()
-        {
-            //Nothing to do here as all recurring batches are effectively classed as unposted
-        }
-
-        /// <summary>
         /// add a new transactions
         /// </summary>
         /// <param name="sender"></param>

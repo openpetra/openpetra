@@ -164,12 +164,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     this.tpgRecurringJournals.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
                     this.tabRecurringGLBatch.TabStop = this.tpgRecurringJournals.Enabled;
 
-                    if (this.tpgRecurringTransactions.Enabled)
-                    {
-                        this.ucoRecurringTransactions.CancelChangesToFixedBatches();
-                        this.ucoRecurringJournals.CancelChangesToFixedBatches();
-                    }
-
                     ucoRecurringBatches.AutoEnableTransTabForBatch();
                     ucoRecurringBatches.SetInitialFocus();
                     FPreviousTab = eGLTabs.RecurringBatches;
