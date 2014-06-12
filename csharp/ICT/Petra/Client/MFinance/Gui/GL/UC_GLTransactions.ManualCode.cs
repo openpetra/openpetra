@@ -82,6 +82,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// WorkAroundInitialization
+        /// </summary>
+        public void WorkAroundInitialization()
+        {
+            txtCreditAmount.Validated += new EventHandler(ControlHasChanged);
+            txtDebitAmount.Validated += new EventHandler(ControlHasChanged);
+            cmbDetailCostCentreCode.Validated += new EventHandler(ControlValidatedHandler);
+            cmbDetailAccountCode.Validated += new EventHandler(ControlValidatedHandler);
+            cmbDetailKeyMinistryKey.Validated += new EventHandler(ControlValidatedHandler);
+            txtDetailNarrative.Validated += new EventHandler(ControlValidatedHandler);
+            txtDetailReference.Validated += new EventHandler(ControlValidatedHandler);
+            dtpDetailTransactionDate.Validated += new EventHandler(ControlValidatedHandler);
+            grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
+        }
+
+        /// <summary>
         /// load the transactions into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -318,17 +334,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Cancel any changes made to this form
-        /// </summary>
-        public void CancelChangesToFixedBatches()
-        {
-            if ((GetBatchRow() != null) && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
-            {
-                FMainDS.ATransaction.RejectChanges();
-            }
-        }
-
-        /// <summary>
         /// add a new transactions
         /// </summary>
         /// <param name="sender"></param>
@@ -398,16 +403,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtBatchNumber.Text = FBatchRow.BatchNumber.ToString();
                 txtJournalNumber.Text = FJournalNumber.ToString();
 
-                lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), BaseCurrency);
                 lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), TransactionCurrency);
-                txtDebitAmountBase.CurrencyCode = BaseCurrency;
-                txtCreditAmountBase.CurrencyCode = BaseCurrency;
                 txtDebitAmount.CurrencyCode = TransactionCurrency;
                 txtCreditAmount.CurrencyCode = TransactionCurrency;
-                txtCreditTotalAmountBase.CurrencyCode = BaseCurrency;
-                txtDebitTotalAmountBase.CurrencyCode = BaseCurrency;
                 txtCreditTotalAmount.CurrencyCode = TransactionCurrency;
                 txtDebitTotalAmount.CurrencyCode = TransactionCurrency;
+
+                lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), BaseCurrency);
+                txtDebitAmountBase.CurrencyCode = BaseCurrency;
+                txtCreditAmountBase.CurrencyCode = BaseCurrency;
+                txtCreditTotalAmountBase.CurrencyCode = BaseCurrency;
+                txtDebitTotalAmountBase.CurrencyCode = BaseCurrency;
 
                 // foreign currency accounts only get transactions in that currency
                 if (FTransactionCurrency != TransactionCurrency)
@@ -422,12 +428,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     cmbDetailAccountCode.SetSelectedString(SelectedAccount);
 
+                    FTransactionCurrency = TransactionCurrency;
+
                     if (!FIsUnposted && FPetraUtilsObject.HasChanges)
                     {
                         FPetraUtilsObject.DisableSaveButton();
                     }
-
-                    FTransactionCurrency = TransactionCurrency;
                 }
 
                 // Needs to be called to process Analysis Attributes
@@ -454,17 +460,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ARow.DebitCreditIndicator)
             {
-                txtDebitAmountBase.NumberValueDecimal = ARow.AmountInBaseCurrency;
-                txtCreditAmountBase.NumberValueDecimal = 0;
                 txtDebitAmount.NumberValueDecimal = ARow.TransactionAmount;
                 txtCreditAmount.NumberValueDecimal = 0;
+                txtDebitAmountBase.NumberValueDecimal = ARow.AmountInBaseCurrency;
+                txtCreditAmountBase.NumberValueDecimal = 0;
             }
             else
             {
-                txtDebitAmountBase.NumberValueDecimal = 0;
-                txtCreditAmountBase.NumberValueDecimal = ARow.AmountInBaseCurrency;
                 txtDebitAmount.NumberValueDecimal = 0;
                 txtCreditAmount.NumberValueDecimal = ARow.TransactionAmount;
+                txtDebitAmountBase.NumberValueDecimal = 0;
+                txtCreditAmountBase.NumberValueDecimal = ARow.AmountInBaseCurrency;
             }
 
             if (FPetraUtilsObject.HasChanges && FIsUnposted)
@@ -502,7 +508,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (!grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = true;
-                    //lblAnalAttributes.Enabled = true;
                 }
             }
 
@@ -949,166 +954,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.HasChanges = true;
         }
 
-        private Boolean EnsureGLDataPresent(Int32 ALedgerNumber,
-            Int32 ABatchNumber,
-            Int32 AJournalNumber,
-            ref DataView AJournalDV,
-            bool AUpdateCurrentTransOnly)
-        {
-            bool RetVal = false;
-
-            DataView TransDV = new DataView(FMainDS.ATransaction);
-
-            if (AUpdateCurrentTransOnly)
-            {
-                AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    AJournalTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    AJournalTable.GetJournalNumberDBName(),
-                    AJournalNumber);
-
-                RetVal = true;
-            }
-            else if (AJournalNumber == 0)
-            {
-                AJournalDV.RowFilter = String.Format("{0}={1} And {2}='{3}'",
-                    AJournalTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    AJournalTable.GetJournalStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED);
-
-                if (AJournalDV.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalATransaction(ALedgerNumber, ABatchNumber));
-
-                    if (AJournalDV.Count == 0)
-                    {
-                        return false;
-                    }
-                }
-
-                TransDV.RowFilter = String.Format("{0}={1}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    ABatchNumber);
-
-                if (TransDV.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionForBatch(ALedgerNumber, ABatchNumber));
-                }
-
-                //As long as transactions exist, return true
-                RetVal = true;
-            }
-            else
-            {
-                AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    AJournalTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    AJournalTable.GetJournalNumberDBName(),
-                    AJournalNumber);
-
-                if (AJournalDV.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber, AJournalNumber));
-
-                    if (AJournalDV.Count == 0)
-                    {
-                        return false;
-                    }
-                }
-
-                TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    ABatchNumber,
-                    ATransactionTable.GetJournalNumberDBName(),
-                    AJournalNumber);
-
-                if (TransDV.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
-                }
-
-                RetVal = true;
-            }
-
-            return RetVal;
-        }
-
-        // /// <summary>
-        // /// update international amount for current batch and journal
-        // /// </summary>
-        // /// <param name="AIntlRateToBaseCurrency"></param>
-        // /// <param name="AUpdateAllTrans"></param>
-        //public void UpdateGLTransactionsInternationalAmount(DateTime ABatchEffectiveDate, bool AUpdateAllTransactions = true)
-        //{
-        //    bool UpdateAllJournals;
-        //    bool UpdateAllTransactions;
-        //    decimal InternationalExchangeRateToBase;
-
-        //    if ((FJournalNumber == -1) || (FBatchRow == null) && (FJournalRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
-        //    {
-        //        return;
-        //    }
-
-        //    InternationalExchangeRateToBase = ((TFrmGLBatch)ParentForm).BaseToIntlExchangeRate(ABatchEffectiveDate);
-        //    UpdateAllJournals = (AJournalNumber == 0);
-
-        //    if (UpdateAllJournals)
-        //    {
-        //        UpdateAllTransactions = true;
-        //    }
-        //    else if (ATransactionNumber == 0)
-        //    {
-        //        UpdateAllTransactions = true;
-        //    }
-        //    else
-        //    {
-        //        UpdateAllTransactions = false;
-        //    }
-
-        //    DataView TransView = new DataView(FMainDS.ATransaction);
-
-        //    if (UpdateAllJournals)
-        //    {
-
-        //    }
-
-        //    foreach (DataRowView v in FMainDS.ATransaction.DefaultView)
-        //    {
-        //        ATransactionRow r = (ATransactionRow)v.Row;
-
-        //        // recalculate the amount in base currency
-        //        if (FJournalRow.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
-        //        {
-        //            r.AmountInIntlCurrency = GLRoutines.Multiply(r.AmountInBaseCurrency, InternationalExchangeRateToBase);
-        //        }
-
-        //        //TODO
-        //        //Check if this is needed, i.e. does FPreviouslySelectedDetailRow lock the record.
-        //        //  In that the international currency amount is not displayed then it should be OK.
-        //        //if ((FPreviouslySelectedDetailRow != null) && (r.TransactionNumber == FPreviouslySelectedDetailRow.TransactionNumber))
-        //        //{
-        //        //    FPreviouslySelectedDetailRow.AmountInIntlCurrency = r.AmountInIntlCurrency;
-        //        //}
-        //    }
-        //}
-
-        /// <summary>
-        /// WorkAroundInitialization
-        /// </summary>
-        public void WorkAroundInitialization()
-        {
-            txtCreditAmount.Validated += new EventHandler(ControlHasChanged);
-            txtDebitAmount.Validated += new EventHandler(ControlHasChanged);
-            cmbDetailCostCentreCode.Validated += new EventHandler(ControlValidatedHandler);
-            cmbDetailAccountCode.Validated += new EventHandler(ControlValidatedHandler);
-            cmbDetailKeyMinistryKey.Validated += new EventHandler(ControlValidatedHandler);
-            txtDetailNarrative.Validated += new EventHandler(ControlValidatedHandler);
-            txtDetailReference.Validated += new EventHandler(ControlValidatedHandler);
-            dtpDetailTransactionDate.Validated += new EventHandler(ControlValidatedHandler);
-            grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
-        }
-
         private void SetupExtraGridFunctionality()
         {
             //Populate CostCentreList variable
@@ -1477,6 +1322,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private bool PreDeleteManual(ATransactionRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            bool allowDeletion = true;
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete transaction no. {0} from Journal {1}?"),
+                    ARowToDelete.TransactionNumber,
+                    ARowToDelete.JournalNumber);
+            }
+
+            return allowDeletion;
+        }
+
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
@@ -1526,20 +1385,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-        }
-
-        private bool PreDeleteManual(ATransactionRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            bool allowDeletion = true;
-
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete transaction no. {0} from Journal {1}?"),
-                    ARowToDelete.TransactionNumber,
-                    ARowToDelete.JournalNumber);
-            }
-
-            return allowDeletion;
         }
 
         /// <summary>
@@ -1755,8 +1600,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailReference.Clear();
             //Clear Numeric Textboxes
             txtDebitAmount.NumberValueDecimal = 0;
-            txtDebitAmountBase.NumberValueDecimal = 0;
             txtCreditAmount.NumberValueDecimal = 0;
+            txtDebitAmountBase.NumberValueDecimal = 0;
             txtCreditAmountBase.NumberValueDecimal = 0;
             //Refresh grids
             RefreshAnalysisAttributesGrid();
@@ -2000,30 +1845,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void TransDateChanged(object sender, EventArgs e)
-        {
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
-            {
-                return;
-            }
-
-            try
-            {
-                DateTime dateValue;
-
-                string aDate = dtpDetailTransactionDate.Date.ToString();
-
-                if (!DateTime.TryParse(aDate, out dateValue))
-                {
-                    dtpDetailTransactionDate.Date = GetBatchRow().DateEffective;
-                }
-            }
-            catch
-            {
-                //Do nothing
-            }
-        }
-
         private string ConvertStringCollectionToCSV(StringCollection AStringCollection, string AWrapString = "")
         {
             string csvRetVal = string.Empty;
@@ -2096,5 +1917,126 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
         }
+
+        private void TransDateChanged(object sender, EventArgs e)
+        {
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            try
+            {
+                DateTime dateValue;
+
+                string aDate = dtpDetailTransactionDate.Date.ToString();
+
+                if (!DateTime.TryParse(aDate, out dateValue))
+                {
+                    dtpDetailTransactionDate.Date = GetBatchRow().DateEffective;
+                }
+            }
+            catch
+            {
+                //Do nothing
+            }
+        }
+
+        /// <summary>
+        /// Cancel any changes made to this form
+        /// </summary>
+        public void CancelChangesToFixedBatches()
+        {
+            if ((GetBatchRow() != null) && (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                FMainDS.ATransaction.RejectChanges();
+            }
+        }
+
+        private Boolean EnsureGLDataPresent(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            ref DataView AJournalDV,
+            bool AUpdateCurrentTransOnly)
+        {
+            bool RetVal = false;
+
+            DataView TransDV = new DataView(FMainDS.ATransaction);
+
+            if (AUpdateCurrentTransOnly)
+            {
+                AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AJournalTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    AJournalTable.GetJournalNumberDBName(),
+                    AJournalNumber);
+
+                RetVal = true;
+            }
+            else if (AJournalNumber == 0)
+            {
+                AJournalDV.RowFilter = String.Format("{0}={1} And {2}='{3}'",
+                    AJournalTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    AJournalTable.GetJournalStatusDBName(),
+                    MFinanceConstants.BATCH_UNPOSTED);
+
+                if (AJournalDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalATransaction(ALedgerNumber, ABatchNumber));
+
+                    if (AJournalDV.Count == 0)
+                    {
+                        return false;
+                    }
+                }
+
+                TransDV.RowFilter = String.Format("{0}={1}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    ABatchNumber);
+
+                if (TransDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionForBatch(ALedgerNumber, ABatchNumber));
+                }
+
+                //As long as transactions exist, return true
+                RetVal = true;
+            }
+            else
+            {
+                AJournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AJournalTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    AJournalTable.GetJournalNumberDBName(),
+                    AJournalNumber);
+
+                if (AJournalDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber, AJournalNumber));
+
+                    if (AJournalDV.Count == 0)
+                    {
+                        return false;
+                    }
+                }
+
+                TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    ATransactionTable.GetJournalNumberDBName(),
+                    AJournalNumber);
+
+                if (TransDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
+                }
+
+                RetVal = true;
+            }
+
+            return RetVal;
+        }
+
     }
 }

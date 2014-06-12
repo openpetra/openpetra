@@ -78,6 +78,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// WorkAroundInitialization
+        /// </summary>
+        public void WorkAroundInitialization()
+        {
+            txtCreditAmount.Validated += new EventHandler(ControlHasChanged);
+            txtDebitAmount.Validated += new EventHandler(ControlHasChanged);
+            cmbDetailCostCentreCode.Validated += new EventHandler(ControlValidatedHandler);
+            cmbDetailAccountCode.Validated += new EventHandler(ControlValidatedHandler);
+            cmbDetailKeyMinistryKey.Validated += new EventHandler(ControlValidatedHandler);
+            txtDetailNarrative.Validated += new EventHandler(ControlValidatedHandler);
+            txtDetailReference.Validated += new EventHandler(ControlValidatedHandler);
+
+            grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
+        }
+
+        /// <summary>
         /// load the transactions into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -296,6 +312,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.CreateNewARecurringTransaction();
 
+            ValidateAllData(true, false);
+            
             pnlTransAnalysisAttributes.Enabled = true;
             btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
 
@@ -720,22 +738,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ShowDataManual();
         }
 
-        /// <summary>
-        /// WorkAroundInitialization
-        /// </summary>
-        public void WorkAroundInitialization()
-        {
-            txtCreditAmount.Validated += new EventHandler(ControlHasChanged);
-            txtDebitAmount.Validated += new EventHandler(ControlHasChanged);
-            cmbDetailCostCentreCode.Validated += new EventHandler(ControlValidatedHandler);
-            cmbDetailAccountCode.Validated += new EventHandler(ControlValidatedHandler);
-            cmbDetailKeyMinistryKey.Validated += new EventHandler(ControlValidatedHandler);
-            txtDetailNarrative.Validated += new EventHandler(ControlValidatedHandler);
-            txtDetailReference.Validated += new EventHandler(ControlValidatedHandler);
-
-            grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
-        }
-
         private void SetupExtraGridFunctionality()
         {
             //Populate CostCentreList variable
@@ -832,7 +834,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool AnalysisCodeIsActive(String AAnalysisCode = "")
         {
             bool retVal = true;
-
             string accountCode = string.Empty;
 
             accountCode = cmbDetailAccountCode.GetSelectedString();
@@ -1017,14 +1018,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
                                  && (GetBatchRow() != null);
             Boolean canDeleteAll = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            bool rowsInGrid = (grdDetails.Rows.Count > 1);
 
             // pnlDetailsProtected must be changed first: when the enabled property of the control is changed, the focus changes, which triggers validation
             pnlDetailsProtected = !changeable;
-            pnlDetails.Enabled = (changeable && grdDetails.Rows.Count > 1);
-            btnDelete.Enabled = (changeable && grdDetails.Rows.Count > 1);
-            btnDeleteAll.Enabled = (changeable && canDeleteAll && grdDetails.Rows.Count > 1);
+            pnlDetails.Enabled = (changeable && rowsInGrid);
+            btnDelete.Enabled = (changeable && rowsInGrid);
+            btnDeleteAll.Enabled = (changeable && canDeleteAll && rowsInGrid);
             pnlTransAnalysisAttributes.Enabled = changeable;
-            lblAnalAttributes.Enabled = (changeable && grdDetails.Rows.Count > 1);
+            //lblAnalAttributes.Enabled = (changeable && rowsInGrid);
         }
 
         private void DeleteAllTrans(System.Object sender, EventArgs e)
@@ -1041,14 +1043,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
+                //Backup the Dataset for reversion purposes
+                GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
+
                 try
                 {
-                    //Load all journals for current Batch
                     //Unbind any transactions currently being editied in the Transaction Tab
                     ((TFrmRecurringGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                     //Delete transactions
                     SetTransAnalAttributeDefaultView();
+                    SetTransactionDefaultView();
 
                     for (int i = FMainDS.ARecurringTransAnalAttrib.DefaultView.Count - 1; i >= 0; i--)
                     {
@@ -1086,6 +1091,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    FMainDS = (GLBatchTDS)FTempDS.Copy();
                 }
 
                 //If some row(s) still exist after deletion
@@ -1097,6 +1103,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private bool PreDeleteManual(ARecurringTransactionRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            bool allowDeletion = true;
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete transaction no. {0} from recurring Journal {1}?"),
+                    ARowToDelete.TransactionNumber,
+                    ARowToDelete.JournalNumber);
+            }
+
+            return allowDeletion;
+        }
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
@@ -1146,20 +1165,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-        }
-
-        private bool PreDeleteManual(ARecurringTransactionRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            bool allowDeletion = true;
-
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete transaction no. {0} from recurring Journal {1}?"),
-                    ARowToDelete.TransactionNumber,
-                    ARowToDelete.JournalNumber);
-            }
-
-            return allowDeletion;
         }
 
         /// <summary>
@@ -1433,6 +1438,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     cmbDetailCostCentreCode.GetSelectedString(),
                     out RecipientKey);
                 TFinanceControls.GetRecipientData(ref cmbDetailKeyMinistryKey, RecipientKey);
+                cmbDetailKeyMinistryKey.ComboBoxWidth = txtDetailNarrative.Width;
             }
             else
             {
@@ -1537,6 +1543,52 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             TSharedFinanceValidation_GL.ValidateRecurringGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,
                 FValidationControlsDict);
+
+            if (!AccountAnalysisAttributeCountIsCorrect())
+            {
+                DataColumn ValidationColumn;
+                TVerificationResult VerificationResult = null;
+                object ValidationContext;
+
+                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnAccountCodeId];
+                ValidationContext = String.Format("Analysis Attributes for Account Code {0} in Transaction {1}.{2}{2}" +
+                    "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}",
+                    ARow.AccountCode,
+                    ARow.TransactionNumber,
+                    Environment.NewLine);
+
+                // This code is only running because of failure, so cause an error to occur.
+                VerificationResult = TStringChecks.StringMustNotBeEmpty("",
+                    ValidationContext.ToString(),
+                    this, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+            }
+
+            String ValueRequiredForType;
+
+            if (!AccountAnalysisAttributesValuesExist(out ValueRequiredForType))
+            {
+                DataColumn ValidationColumn;
+                TVerificationResult VerificationResult = null;
+                object ValidationContext;
+
+                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnAccountCodeId];
+                ValidationContext = String.Format("Analysis code {0} for Account Code {1} in Transaction {2}",
+                    ValueRequiredForType,
+                    ARow.AccountCode,
+                    ARow.TransactionNumber);
+
+                // This code is only running because of failure, so cause an error to occur.
+                VerificationResult = TStringChecks.StringMustNotBeEmpty("",
+                    ValidationContext.ToString(),
+                    this, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+            }
+
         }
 
         /// <summary>
