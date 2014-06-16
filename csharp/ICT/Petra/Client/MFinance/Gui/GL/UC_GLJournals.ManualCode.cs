@@ -307,15 +307,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                      TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
 
-            DataView BatchDV = new DataView(FMainDS.ABatch);
-
-            BatchDV.Sort = StringHelper.StrMerge(TTypedDataTable.GetPrimaryKeyColumnStringList(ABatchTable.TableId), ',');
-
-            ABatchRow BatchRow = (ABatchRow)BatchDV.FindRows(new object[] { FLedgerNumber, FBatchNumber })[0].Row;
-
-            ANewRow.LedgerNumber = BatchRow.LedgerNumber;
-            ANewRow.BatchNumber = BatchRow.BatchNumber;
-            ANewRow.JournalNumber = ++BatchRow.LastJournal;
+            ANewRow.LedgerNumber = FBatchRow.LedgerNumber;
+            ANewRow.BatchNumber = FBatchRow.BatchNumber;
+            ANewRow.JournalNumber = ++FBatchRow.LastJournal;
 
             // manually created journals are all GL
             ANewRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
@@ -323,8 +317,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ANewRow.TransactionCurrency = LedgerRow.BaseCurrency;
             ANewRow.ExchangeRateToBase = 1;
-            ANewRow.DateEffective = BatchRow.DateEffective;
-            ANewRow.JournalPeriod = BatchRow.BatchPeriod;
+            ANewRow.DateEffective = FBatchRow.DateEffective;
+            ANewRow.JournalPeriod = FBatchRow.BatchPeriod;
         }
 
         /// Initialise some comboboxes
