@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FSelectedBatchNumber = -1;
         private DateTime FDefaultDate = DateTime.Today;
-        private bool FBatchesLoaded = false;
+        //private bool FBatchesLoaded = false;
         private bool FInitialFocusActionComplete = false;
 
         private GLSetupTDS FCacheDS;
@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         public void LoadBatches(Int32 ALedgerNumber)
         {
-            FBatchesLoaded = false;
+            //FBatchesLoaded = false;
             InitialiseControls();
 
             FLedgerNumber = ALedgerNumber;
@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateRecordNumberDisplay();
             SetAccountCostCentreTableVariables();
 
-            FBatchesLoaded = true;
+            //FBatchesLoaded = true;
         }
 
         /// reset the control
@@ -360,14 +360,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(ARecurringBatchRow ARowToDelete, ref string ACompletionMessage)
         {
-            int batchNumber = ARowToDelete.BatchNumber;
+            int BatchNumber = ARowToDelete.BatchNumber;
 
             // Delete on client side data through views that is already loaded. Data that is not
             // loaded yet will be deleted with cascading delete on server side so we don't have
             // to worry about this here.
 
             ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
-                batchNumber);
+                BatchNumber);
 
             // Delete the associated recurring transaction analysis attributes
             DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
@@ -375,7 +375,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
                 FLedgerNumber,
                 ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
-                batchNumber);
+                BatchNumber);
 
             foreach (DataRowView row in viewRecurringTransAnalAttrib)
             {
@@ -388,7 +388,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARecurringTransactionTable.GetLedgerNumberDBName(),
                 FLedgerNumber,
                 ARecurringTransactionTable.GetBatchNumberDBName(),
-                batchNumber);
+                BatchNumber);
 
             foreach (DataRowView row in viewRecurringTransaction)
             {
@@ -401,7 +401,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARecurringJournalTable.GetLedgerNumberDBName(),
                 FLedgerNumber,
                 ARecurringJournalTable.GetBatchNumberDBName(),
-                batchNumber);
+                BatchNumber);
 
             foreach (DataRowView row in viewRecurringJournal)
             {
@@ -441,8 +441,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ClearControls();
             }
 
-            UpdateTotals();
-
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
@@ -466,21 +464,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             finally
             {
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
-        }
-
-        /// <summary>
-        /// UpdateTotals
-        /// </summary>
-        public void UpdateTotals()
-        {
-            //Below not needed as yet
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                GLRoutines.UpdateTotalsOfRecurringBatch(ref FMainDS, FPreviouslySelectedDetailRow);
-                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
                 FPetraUtilsObject.EnableDataChangedEvent();
             }
         }

@@ -677,8 +677,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-
-            bool AmountsHaveChanged = false;
             
             if (FPreviouslySelectedDetailRow != null)
             {
@@ -687,13 +685,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (txtCreditAmount.NumberValueDecimal != 0)
                     {
                         txtCreditAmount.NumberValueDecimal = 0;
-                        AmountsHaveChanged = true;
                     }
 
                     if (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtDebitAmount.NumberValueDecimal))
                     {
                         FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
-                        AmountsHaveChanged = true;
                     }
                 }
                 else
@@ -701,13 +697,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (txtDebitAmount.NumberValueDecimal != 0)
                     {
                         txtDebitAmount.NumberValueDecimal = 0;
-                        AmountsHaveChanged = true;
                     }
 
                     if (FPreviouslySelectedDetailRow.TransactionAmount != Convert.ToDecimal(txtCreditAmount.NumberValueDecimal))
                     {
                         FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
-                        AmountsHaveChanged = true;
                     }
                 }
             }
@@ -716,17 +710,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (txtDebitAmount.NumberValueDecimal != 0)
                 {
                     txtDebitAmount.NumberValueDecimal = 0;
-                    AmountsHaveChanged = true;
                 }
 
                 if (txtCreditAmount.NumberValueDecimal != 0)
                 {
                     txtCreditAmount.NumberValueDecimal = 0;
-                    AmountsHaveChanged = true;
                 }
             }
 
-            if (AmountsHaveChanged)
+            if (FPetraUtilsObject.HasChanges)
             {
                 GLRoutines.UpdateTotalsOfRecurringBatch(ref FMainDS, FBatchRow);
             }
@@ -736,6 +728,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // refresh the currency symbols
             ShowDataManual();
+
+            FPetraUtilsObject.HasChanges = true;
         }
 
         private void SetupExtraGridFunctionality()
