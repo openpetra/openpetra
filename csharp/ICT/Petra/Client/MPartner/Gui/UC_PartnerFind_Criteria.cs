@@ -338,6 +338,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataRow PartnerClassDataRow;
 
             TmpString = ARestrictedPartnerClasses[0];
+            FPartnerClassDataTable.Rows.Clear();
 
             if (TmpString.IndexOf("WORKER-FAM") >= 0)
             {

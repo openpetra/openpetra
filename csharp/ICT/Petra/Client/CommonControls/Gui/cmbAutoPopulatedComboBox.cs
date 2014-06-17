@@ -1171,7 +1171,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.ContactList:
                     this.ColumnWidthCol1 = 120;
-                    this.ColumnWidthCol2 = 300;
+                    this.ColumnWidthCol2 = 350;
                     break;
 
                 case TListTableEnum.CountryList:

@@ -181,7 +181,7 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
                         SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
                         SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_om_field_key_n"));
-                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d", DateTime.Today.ToShortDateString());
+                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d", DateTime.Today.AddYears(-1).ToShortDateString());
                         SetValue(AColumnNames, ref ANewRow, "p_date_expires_d", "\\N");
 
                         CommitmentFound = true;
