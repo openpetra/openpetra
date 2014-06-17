@@ -332,6 +332,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
+
+            ((TFrmRecurringGLBatch)this.ParentForm).SaveChanges();
         }
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
@@ -431,6 +433,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
+                ((TFrmRecurringGLBatch)this.ParentForm).SaveChanges();
                 MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
             }
 
