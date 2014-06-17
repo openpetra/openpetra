@@ -109,6 +109,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool AFromBatchTab = false)
         {
             bool DifferentBatchSelected = false;
+
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
             FJournalRow = GetJournalRow();
@@ -162,7 +163,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Load from server if necessary
                 if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber,
+                            AJournalNumber));
                 }
 
                 // We need to call this because we have not called ShowData(), which would have set it.  This differs from the Gift screen.
@@ -241,7 +243,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ARecurringTransactionTable.GetTransactionNumberDBName());
-
             }
         }
 
@@ -313,7 +314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.CreateNewARecurringTransaction();
 
             ValidateAllData(true, false);
-            
+
             pnlTransAnalysisAttributes.Enabled = true;
             btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
 
@@ -440,10 +441,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = "1=2";
             FPSAttributesRow = null;
 
-            if (FPreviouslySelectedDetailRow == null
+            if ((FPreviouslySelectedDetailRow == null)
                 || !pnlTransAnalysisAttributes.Enabled
                 || !TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(),
-                         FActiveOnly))
+                    FActiveOnly))
             {
                 if (grdAnalAttributes.Enabled)
                 {
@@ -512,7 +513,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             ValueRequiredForType = "";
 
-            if (FPreviouslySelectedDetailRow == null || (FMainDS.ARecurringTransAnalAttrib.DefaultView.Count == 0))
+            if ((FPreviouslySelectedDetailRow == null) || (FMainDS.ARecurringTransAnalAttrib.DefaultView.Count == 0))
             {
                 return true;
             }
@@ -671,13 +672,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void UpdateTransactionTotals()
         {
-            if (FJournalNumber == -1
-                || FBatchRow == null
-                || FJournalRow == null)
+            if ((FJournalNumber == -1)
+                || (FBatchRow == null)
+                || (FJournalRow == null))
             {
                 return;
             }
-            
+
             if (FPreviouslySelectedDetailRow != null)
             {
                 if (FPreviouslySelectedDetailRow.DebitCreditIndicator)
@@ -1110,6 +1111,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return allowDeletion;
         }
+
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
@@ -1582,7 +1584,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
             }
-
         }
 
         /// <summary>

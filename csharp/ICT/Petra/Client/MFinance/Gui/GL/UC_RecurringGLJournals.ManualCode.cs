@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             bool FirstRun = (FLedgerNumber != ALedgerNumber);
             bool BatchChanged = (FBatchNumber != ABatchNumber);
-            
+
             FJournalsLoaded = false;
             FBatchRow = GetBatchRow();
 
@@ -680,6 +680,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FucoFilterAndFind.DisplayFindTab();
         }
-
     }
 }

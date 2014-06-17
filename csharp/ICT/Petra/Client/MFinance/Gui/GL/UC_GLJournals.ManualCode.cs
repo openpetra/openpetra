@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool FirstRun = (FLedgerNumber != ALedgerNumber);
             bool BatchChanged = (FBatchNumber != ABatchNumber);
 
-            FJournalsLoaded = false; 
+            FJournalsLoaded = false;
             FBatchRow = GetBatchRow();
 
             if (FBatchRow == null)
@@ -123,7 +123,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Check if same Journals as previously selected
-            if (!FirstRun && !BatchChanged && FBatchStatus == ABatchStatus)
+            if (!FirstRun && !BatchChanged && (FBatchStatus == ABatchStatus))
             {
                 // The journals are the same and we have loaded them already
                 if (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
@@ -626,7 +626,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
-
-
     }
 }

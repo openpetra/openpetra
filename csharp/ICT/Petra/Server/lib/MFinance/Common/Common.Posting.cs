@@ -1715,10 +1715,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 DataView RecurringBatchDV = new DataView(Temp.ARecurringBatch);
                 RecurringBatchDV.RowFilter = string.Empty;
                 RecurringBatchDV.Sort = string.Format("{0} DESC",
-                                                        ARecurringBatchTable.GetBatchNumberDBName());
+                    ARecurringBatchTable.GetBatchNumberDBName());
 
                 MainDS.ALedger[0].LastRecurringBatchNumber = (int)(RecurringBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
-                
+
                 ARecurringBatchRow NewRow = MainDS.ARecurringBatch.NewRowTyped(true);
                 NewRow.LedgerNumber = ALedgerNumber;
                 NewRow.BatchNumber = ++MainDS.ALedger[0].LastRecurringBatchNumber;

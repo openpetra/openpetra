@@ -100,14 +100,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count > 1)
             {
                 SelectRowInGrid(1);
-                ((TFrmRecurringGLBatch)this.ParentForm).EnableJournals();
+                ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
                 AutoEnableTransTabForBatch();
             }
             else
             {
                 ClearControls();
-                ((TFrmRecurringGLBatch)this.ParentForm).DisableJournals();
-                ((TFrmRecurringGLBatch)this.ParentForm).DisableTransactions();
+                ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
             }
 
             //Load all analysis attribute values
@@ -156,7 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 EnableTransTab = (FMainDS.ARecurringJournal.DefaultView.Count > 0);
             }
 
-            ((TFrmRecurringGLBatch)this.ParentForm).EnableTransactions(EnableTransTab);
+            ((TFrmRecurringGLBatch) this.ParentForm).EnableTransactions(EnableTransTab);
         }
 
         private void LoadJournalsForCurrentBatch()
@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetails.Enabled = allowSubmit;
             pnlDetailsProtected = !allowSubmit;
 
-            if (FPreviouslySelectedDetailRow == null && ((TFrmRecurringGLBatch)this.ParentForm) != null)
+            if ((FPreviouslySelectedDetailRow == null) && (((TFrmRecurringGLBatch) this.ParentForm) != null))
             {
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
             }
@@ -207,7 +207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-            
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             ParseHashTotal(ARow);
@@ -261,8 +261,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (ARow == null)
             {
                 pnlDetails.Enabled = false;
-                ((TFrmRecurringGLBatch)this.ParentForm).DisableJournals();
-                ((TFrmRecurringGLBatch)this.ParentForm).DisableTransactions();
+                ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
                 EnableButtonControl(false);
                 ClearControls();
                 return;
@@ -273,7 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FSelectedBatchNumber = ARow.BatchNumber;
 
             UpdateChangeableStatus();
-            ((TFrmRecurringGLBatch)this.ParentForm).EnableJournals();
+            ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
 
-            ((TFrmRecurringGLBatch)this.ParentForm).SaveChanges();
+            ((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
         }
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
@@ -433,7 +433,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                ((TFrmRecurringGLBatch)this.ParentForm).SaveChanges();
+                ((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
                 MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
             }
 
@@ -937,6 +937,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return retVal;
         }
-
     }
 }

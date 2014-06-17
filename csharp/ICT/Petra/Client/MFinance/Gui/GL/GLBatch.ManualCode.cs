@@ -393,7 +393,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return IntlToBaseCurrencyExchRate;
         }
 
-
         #region Menu and command key handlers for our user controls
 
         ///////////////////////////////////////////////////////////////////////////////

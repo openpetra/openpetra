@@ -222,7 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetails.Enabled = postable;
             pnlDetailsProtected = !postable;
 
-            if (FPreviouslySelectedDetailRow == null && ((TFrmGLBatch) this.ParentForm) != null)
+            if ((FPreviouslySelectedDetailRow == null) && (((TFrmGLBatch) this.ParentForm) != null))
             {
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
             }
@@ -354,7 +354,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FrbtEditing.Checked = true;
             }
-            
+
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
                 return;
@@ -1226,7 +1226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void FocusGrid()
         {
-            if (grdDetails != null && grdDetails.CanFocus)
+            if ((grdDetails != null) && grdDetails.CanFocus)
             {
                 grdDetails.Focus();
             }

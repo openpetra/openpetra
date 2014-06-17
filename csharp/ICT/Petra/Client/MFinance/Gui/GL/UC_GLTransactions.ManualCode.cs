@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private GLSetupTDS FCacheDS = null;
         private GLBatchTDSAJournalRow FJournalRow = null;
         private ATransAnalAttribRow FPSAttributesRow = null;
-        
+
         private SourceGrid.Cells.Editors.ComboBox FcmbAnalAttribValues;
 
         private bool FIsUnposted = true;
@@ -117,6 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool AFromBatchTab = false)
         {
             bool DifferentBatchSelected = false;
+
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
             FJournalRow = GetJournalRow();
@@ -268,7 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (ATransactionNumber > 0)
                 {
-                    if (FActiveOnly && AAnalysisCodeFilterValues.Length > 0)
+                    if (FActiveOnly && (AAnalysisCodeFilterValues.Length > 0))
                     {
                         FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
                             ATransAnalAttribTable.GetBatchNumberDBName(),
@@ -2037,6 +2038,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return RetVal;
         }
-
     }
 }

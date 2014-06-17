@@ -168,7 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ucoRecurringBatches.SetInitialFocus();
                     FPreviousTab = eGLTabs.RecurringBatches;
                 }
-                else if (ucoRecurringBatches.GetSelectedDetailRow() != null && ATab == eGLTabs.RecurringJournals)
+                else if ((ucoRecurringBatches.GetSelectedDetailRow() != null) && (ATab == eGLTabs.RecurringJournals))
                 {
                     if (this.tpgRecurringJournals.Enabled)
                     {
@@ -317,7 +317,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 Console.WriteLine("Normal - autosizing both");
             }
         }
-
 
         #region Menu and command key handlers for our user controls
 
