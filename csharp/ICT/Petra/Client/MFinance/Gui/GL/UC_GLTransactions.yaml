@@ -112,9 +112,9 @@ RootNode:
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true, SuppressChangeDetection=true}
         txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=DebitAmountChanged}
         txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=CreditAmountChanged}
-        txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
-        txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
         txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency}
+        txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
+        txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmountBase: {Label=Debit Total, ReadOnly=true, Format=Currency}
         txtCreditTotalAmountBase: {Label=Credit Total, ReadOnly=true, Format=Currency} 
