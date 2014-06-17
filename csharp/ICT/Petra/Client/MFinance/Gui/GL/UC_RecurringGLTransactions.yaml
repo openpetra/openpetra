@@ -24,6 +24,10 @@ RootNode:
             Controls: [pnlDetailButtons, grdDetails]
             Height: 200
             Width: 600
+        pnlDetailsSection:
+            Dock: Bottom
+            Controls: [pnlTransAnalysisAttributes, pnlDetails]
+            Height: 320
         pnlFilterAndFind:
             Dock: Left
             ExpandedWidth: 170
@@ -34,10 +38,6 @@ RootNode:
             ControlAttributes:
                 txtTransactionAmount-1: {Label=From Dr/Cr amount, Comparison=gte}
                 txtTransactionAmount-2: {Label=To Dr/Cr amount, Comparison=lte}
-        pnlDetailsSection:
-            Dock: Bottom
-            Controls: [pnlTransAnalysisAttributes, pnlDetails]
-            Height: 320
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnDeleteAll]
@@ -49,7 +49,7 @@ RootNode:
         pnlTransAnalysisAttributes:
             Dock: Right
             Controls: [lblAnalAttributes, grdAnalAttributes]
-            Width: 250
+            Width: 240
 
         grdAnalAttributes:
             TableName: ARecurringTransAnalAttrib
@@ -84,7 +84,6 @@ RootNode:
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbDetailKeyMinistryKey, pnlDetailAmounts]
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, OnChange=CostCentreCodeDetailChanged}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
-        cmbDetailKeyMinistryKey: {Label=Key Ministry, Width=330, List=UserDefinedList}
         txtDetailNarrative:
             Label: Narrative
             Width: 300
@@ -94,6 +93,7 @@ RootNode:
             ScrollBars: Vertical
             Validation: true
         txtDetailReference: {Label=Reference, Validation=true}
+        cmbDetailKeyMinistryKey: {Label=Key Ministry, List=UserDefinedList, Stretch=horizontally}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency]
@@ -101,11 +101,11 @@ RootNode:
                 Row2: [txtCreditAmount]
                 Row3: [txtDebitTotalAmount]
                 Row4: [txtCreditTotalAmount]
-        lblTransactionCurrency: {Label=TODOTransactionCurrency}
+        lblTransactionCurrency: {Label=TransactionCurrency}
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true, SuppressChangeDetection=true}
-        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
-        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
-        txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
-        txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency}
+        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=DebitAmountChanged}
+        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=CreditAmountChanged}
+        txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency, Unbound=true, SuppressChangeDetection=true}
+        txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency, Unbound=true, SuppressChangeDetection=true}

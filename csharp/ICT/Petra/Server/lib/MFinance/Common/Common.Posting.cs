@@ -1691,6 +1691,7 @@ namespace Ict.Petra.Server.MFinance.Common
             bool NewTransactionStarted = false;
 
             GLBatchTDS MainDS = null;
+            GLBatchTDS Temp = null;
 
             //Error handling
             string ErrorContext = "Create a recurring Batch";
@@ -1702,21 +1703,31 @@ namespace Ict.Petra.Server.MFinance.Common
             try
             {
                 MainDS = new GLBatchTDS();
+                Temp = new GLBatchTDS();
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                                                  (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
 
                 ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
+                ARecurringBatchAccess.LoadViaALedger(Temp, ALedgerNumber, Transaction);
+
+                DataView RecurringBatchDV = new DataView(Temp.ARecurringBatch);
+                RecurringBatchDV.RowFilter = string.Empty;
+                RecurringBatchDV.Sort = string.Format("{0} DESC",
+                    ARecurringBatchTable.GetBatchNumberDBName());
+
+                MainDS.ALedger[0].LastRecurringBatchNumber = (int)(RecurringBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
+
                 ARecurringBatchRow NewRow = MainDS.ARecurringBatch.NewRowTyped(true);
                 NewRow.LedgerNumber = ALedgerNumber;
-                MainDS.ALedger[0].LastRecurringBatchNumber++;
-                NewRow.BatchNumber = MainDS.ALedger[0].LastRecurringBatchNumber;
+                NewRow.BatchNumber = ++MainDS.ALedger[0].LastRecurringBatchNumber;
                 MainDS.ARecurringBatch.Rows.Add(NewRow);
 
                 GLBatchTDSAccess.SubmitChanges(MainDS);
 
                 MainDS.AcceptChanges();
+                Temp.RejectChanges();
             }
             catch (Exception ex)
             {
