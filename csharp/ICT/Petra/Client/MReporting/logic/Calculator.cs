@@ -23,6 +23,7 @@
 //
 using System;
 using System.Windows.Forms;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MReporting;
 using System.Collections.Specialized;
