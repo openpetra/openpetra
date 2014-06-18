@@ -1,7 +1,7 @@
 RootNode:
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
-    FormTitle: Donor Gift to Fields Report
+    FormTitle: Donor Gifts to Fields Report
     WindowWidth: 680
     WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance

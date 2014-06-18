@@ -71,8 +71,11 @@
 						AND ({#param_today#} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
                 </value></queryDetail>
                 <queryDetail condition="gt(length({param_city}), 1)">
+                    <value> AND LOWER(pub_p_location.p_city_c) = LOWER({param_city})</value>
+                </queryDetail>
+                <queryDetail condition="gt(length({param_country}), 1)">
                     <value> AND </value>
-                    <value function="csv" text="pub_p_location.p_city_c" variable="param_city"/>
+                    <value function="csv" text="pub_p_location.p_country_code_c" variable="param_country"/>
                 </queryDetail>
             </query>
         </calculation> <!-- Select Partners -->
@@ -90,15 +93,6 @@
                 </queryDetail>
             </query>
         </calculation>
-      
-        <calculation id="CheckPostcodeIsInRegion" returns="boolean" returnsFormat="boolean">
-            <query>
-                <queryDetail>
-                    <value text="NO-SQL"/>
-                    <value function="CheckPostcodeIsInRegion(pub_p_location.p_postal_code_c, {param_region})"/>
-                </queryDetail>
-            </query>
-        </calculation>
     
         <calculation id="CleanUp" returns="PartnerClassShort, TelephoneNumber, FaxNumber, Field, PostcodeCheck" returnsFormat="text">
             <query>
@@ -111,7 +105,7 @@
                 </queryDetail>-->
 				<queryDetail>
 					<value text="NO-SQL"/>
-					<value function="assign(PostcodeCheck, AddressMeetsPostCodeCriteriaOrEmpty(true,DonorsPostcode,{param_region},{param_postcode_from},{param_postcode_to}))"/>
+					<value function="assign(PostcodeCheck, AddressMeetsPostCodeCriteriaOrEmpty(true,{param_region},{param_postcode_from},{param_postcode_to}))"/>
 				</queryDetail>
 				<queryDetail condition="eq({PostcodeCheck}, false)">
 					<value text="NO-SQL"/>

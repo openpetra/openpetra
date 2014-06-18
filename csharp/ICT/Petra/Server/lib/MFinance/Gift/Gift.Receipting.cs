@@ -366,11 +366,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                   "ORDER BY BatchNumber";
 
                 GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
-
-                foreach (DataRow Row in GiftsTbl.Rows)
-                {
-                    Row["Donor"] = Calculations.FormatShortName(Row["Donor"].ToString(), eShortNameFormat.eReverseShortname);
-                }
             }
             finally
             {
@@ -457,6 +452,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     FormValues["AdresseeFirstName"].Add(Tbl[0].FirstName);
                     FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
                 }
+            }
+            else
+            {
+                FormValues["AdresseeFamilyName"].Add(ADonorShortName);
             }
 
             FormValues["DateToday"].Add(DateTime.Now.ToString("dd MMMM yyyy"));
@@ -736,8 +735,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>Mark selected gifts as receipted in the AGift table.</summary>
         /// <param name="AGiftTbl">Custom DataTable from GetUnreceiptedGifts, above.
         /// For this method, only {bool}Selected, LedgerNumber, BatchNumber and TransactionNumber fields are needed.</param>
+        /// <returns>True if successful</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static void MarkReceiptsPrinted(DataTable AGiftTbl)
+        public static bool MarkReceiptsPrinted(DataTable AGiftTbl)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             AGiftTable Tbl = new AGiftTable();
@@ -764,12 +764,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 AGiftAccess.SubmitChanges(Tbl, Transaction);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
+
+                return true;
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured while marking Receipts as printed:" + Environment.NewLine + Exc.ToString());
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
+
+                return false;
 
                 throw;
             }

@@ -544,12 +544,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLastDonor = APartnerKey;
             }
-            else if (FShowingDetails)
+            else if (FShowingDetails || (APartnerKey == 0))
             {
                 return;
             }
             else
             {
+                Cursor = Cursors.WaitCursor;
+
                 if (APartnerKey != FLastDonor)
                 {
                     PPartnerTable PartnerDT = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
@@ -570,6 +572,99 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             giftDetail.DonorKey = APartnerKey;
                             giftDetail.DonorName = APartnerShortName;
                         }
+                    }
+
+                    AutoPopulateGiftDetail(APartnerKey);
+                }
+
+                Cursor = Cursors.Default;
+            }
+        }
+
+        // auto populate recipient info using the donor's last gift
+        private void AutoPopulateGiftDetail(long APartnerKey)
+        {
+            // get donor's last gift
+            GiftBatchTDSAGiftDetailTable GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(APartnerKey);
+
+            bool SplitGift = false;
+
+            // if the last gift was a split gift (multiple details) then ask the user if they would like this new gift to also be split
+            if ((GiftDetailTable != null) && (GiftDetailTable.Rows.Count > 1))
+            {
+                string Message = string.Format(Catalog.GetString(
+                        "The last gift from this donor was a split gift.{0}{0}Here are the details:{0}"), "\n");
+                int DetailNumber = 1;
+
+                foreach (GiftBatchTDSAGiftDetailRow Row in GiftDetailTable.Rows)
+                {
+                    Message += DetailNumber + ")  ";
+
+                    if (Row.RecipientKey > 0)
+                    {
+                        Message +=
+                            string.Format(Catalog.GetString("Recipient: {0} ({1});  Motivation Group: {2};  Motivation Detail: {3};  Amount: {4}"),
+                                Row.RecipientDescription, Row.RecipientKey, Row.MotivationGroupCode, Row.MotivationDetailCode,
+                                StringHelper.FormatUsingCurrencyCode(Row.GiftTransactionAmount, GetCurrentBatchRow().CurrencyCode) +
+                                " " + FBatchRow.CurrencyCode) +
+                            "\n";
+                    }
+
+                    DetailNumber++;
+                }
+
+                Message += "\n" + Catalog.GetString("Do you want to create the same split gift again?");
+
+                SplitGift = MessageBox.Show(Message, Catalog.GetString("Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                            == DialogResult.Yes;
+            }
+
+            if ((GiftDetailTable != null) && (GiftDetailTable.Rows.Count > 0))
+            {
+                int CurrentTransaction = 0;
+
+                while (true)
+                {
+                    // populate gift detail
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", GiftDetailTable[CurrentTransaction].RecipientKey);
+                    cmbDetailMotivationGroupCode.SetSelectedString(GiftDetailTable[CurrentTransaction].MotivationGroupCode);
+                    cmbDetailMotivationDetailCode.SetSelectedString(GiftDetailTable[CurrentTransaction].MotivationDetailCode);
+                    txtDetailGiftCommentOne.Text = GiftDetailTable[CurrentTransaction].GiftCommentOne;
+                    cmbDetailCommentOneType.SetSelectedString(GiftDetailTable[CurrentTransaction].CommentOneType, -1);
+                    txtDetailGiftCommentTwo.Text = GiftDetailTable[CurrentTransaction].GiftCommentTwo;
+                    cmbDetailCommentTwoType.SetSelectedString(GiftDetailTable[CurrentTransaction].CommentTwoType, -1);
+                    txtDetailGiftCommentThree.Text = GiftDetailTable[CurrentTransaction].GiftCommentThree;
+                    cmbDetailCommentThreeType.SetSelectedString(GiftDetailTable[CurrentTransaction].CommentThreeType, -1);
+                    chkDetailConfidentialGiftFlag.Checked = GiftDetailTable[CurrentTransaction].ConfidentialGiftFlag;
+                    chkDetailChargeFlag.Checked = GiftDetailTable[CurrentTransaction].ChargeFlag;
+                    chkDetailTaxDeductible.Checked = GiftDetailTable[CurrentTransaction].TaxDeductible;
+                    cmbDetailMailingCode.SetSelectedString(GiftDetailTable[CurrentTransaction].MailingCode, -1);
+                    KeyMinistryChanged(this, null);
+
+                    if (SplitGift)
+                    {
+                        // only populate amount if a split gift
+                        txtDetailGiftTransactionAmount.NumberValueDecimal = GiftDetailTable[CurrentTransaction].GiftTransactionAmount;
+                        CurrentTransaction++;
+
+                        // if there are more details that are part of this gift
+                        if (CurrentTransaction < GiftDetailTable.Rows.Count)
+                        {
+                            // clear previous validation errors.
+                            // otherwise we get an error if the user has changed the control immediately after changing the donor key.
+                            FPetraUtilsObject.VerificationResultCollection.Clear();
+
+                            // create a new gift detail
+                            CreateANewGift(false);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
