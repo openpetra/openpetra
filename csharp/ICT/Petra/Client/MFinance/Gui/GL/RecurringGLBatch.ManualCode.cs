@@ -220,13 +220,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     this.ucoRecurringTransactions.LoadTransactions(
-                            FLedgerNumber,
-                            ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
-                            ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
-                            ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
-                            ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
-                            ucoRecurringJournals.GetSelectedDetailRow().JournalStatus,
-                            fromBatchTab);
+                        FLedgerNumber,
+                        ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
+                        ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
+                        ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
+                        ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
+                        ucoRecurringJournals.GetSelectedDetailRow().JournalStatus,
+                        fromBatchTab);
 
                     FPreviousTab = eGLTabs.RecurringTransactions;
                 }

@@ -1380,46 +1380,66 @@ namespace Ict.Petra.Client.MPartner.Gui
                 switch (GetPartnerDetailsVariableUC())
                 {
                     case TDynamicLoadableUserControls.dlucPartnerDetailsFamily:
+
                         if (this.FUcoPartnerDetailsFamily.ProcessParentCmdKey(ref msg, keyData))
                         {
                             return true;
                         }
+
                         break;
+
                     case TDynamicLoadableUserControls.dlucPartnerDetailsPerson:
+
                         if (this.FUcoPartnerDetailsPerson.ProcessParentCmdKey(ref msg, keyData))
                         {
                             return true;
                         }
+
                         break;
+
                     case TDynamicLoadableUserControls.dlucPartnerDetailsBank:
+
                         if (this.FUcoPartnerDetailsBank.ProcessParentCmdKey(ref msg, keyData))
                         {
                             return true;
                         }
+
                         break;
+
                     case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
+
                         if (this.FUcoPartnerDetailsChurch.ProcessParentCmdKey(ref msg, keyData))
                         {
                             return true;
                         }
+
                         break;
+
                     case TDynamicLoadableUserControls.dlucPartnerDetailsUnit:
+
                         if (this.FUcoPartnerDetailsUnit.ProcessParentCmdKey(ref msg, keyData))
                         {
                             return true;
                         }
+
                         break;
+
                     case TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation:
+
                         if (this.FUcoPartnerDetailsOrganisation.ProcessParentCmdKey(ref msg, keyData))
                         {
                             return true;
                         }
+
                         break;
+
                     case TDynamicLoadableUserControls.dlucPartnerDetailsVenue:
+
                         if (this.FUcoPartnerDetailsVenue.ProcessParentCmdKey(ref msg, keyData))
                         {
                             return true;
                         }
+
                         break;
                 }
             }

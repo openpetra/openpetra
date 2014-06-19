@@ -374,8 +374,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             this.Cursor = Cursors.WaitCursor;
 
                             LoadTransactions(SelectedRow.LedgerNumber,
-                                    SelectedRow.BatchNumber,
-                                    SelectedRow.BatchStatus);
+                                SelectedRow.BatchNumber,
+                                SelectedRow.BatchStatus);
                         }
                         finally
                         {

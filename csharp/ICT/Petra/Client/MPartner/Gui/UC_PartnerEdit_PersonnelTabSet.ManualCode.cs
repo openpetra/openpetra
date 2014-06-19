@@ -422,6 +422,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return true;
             }
+
             if ((this.tabPersonnel.SelectedTab == tpgApplications) && FUcoApplications.ProcessParentCmdKey(ref msg, keyData))
             {
                 return true;

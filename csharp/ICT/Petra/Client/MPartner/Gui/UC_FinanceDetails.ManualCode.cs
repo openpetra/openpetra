@@ -1028,7 +1028,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
         {
-
             return false;
         }
 

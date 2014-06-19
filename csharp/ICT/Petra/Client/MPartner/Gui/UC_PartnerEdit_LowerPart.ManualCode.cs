@@ -523,12 +523,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
         {
-            if ((FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner) && this.ucoPartnerTabSet.ProcessParentCmdKey(ref msg, keyData))
+            if ((FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
+                && this.ucoPartnerTabSet.ProcessParentCmdKey(ref msg, keyData))
             {
                 return true;
             }
 
-            if ((FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel) && this.ucoPersonnelTabSet.ProcessParentCmdKey(ref msg, keyData))
+            if ((FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel)
+                && this.ucoPersonnelTabSet.ProcessParentCmdKey(ref msg, keyData))
             {
                 return true;
             }
