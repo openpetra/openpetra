@@ -602,8 +602,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-
-            grdDetails.MaxAutoSizeRows = 100;
         }
 
         /// <summary>

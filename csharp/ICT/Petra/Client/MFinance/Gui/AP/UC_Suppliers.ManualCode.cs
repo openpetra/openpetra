@@ -366,10 +366,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdSuppliers.AddTextColumn("Supplier Name", FSupplierTable.Columns[1]);
             grdSuppliers.AddTextColumn("Currency", FSupplierTable.Columns[2]);
             grdSuppliers.AddTextColumn("Status", FSupplierTable.Columns[3]);
-            //grdSuppliers.AddTextColumn("Supplier Key", FSupplierTable.Columns[0], 90);
-            //grdSuppliers.AddTextColumn("Supplier Name", FSupplierTable.Columns[1], 150);
-            //grdSuppliers.AddTextColumn("Currency", FSupplierTable.Columns[2], 85);
-            //grdSuppliers.AddTextColumn("Status", FSupplierTable.Columns[3], 85);
         }
 
         private void SetSupplierFilters(object sender, EventArgs e)

@@ -474,15 +474,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdResult.Columns.Clear();
-            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], 17, false);
-//          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"], 50);
-            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 70);
-            grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
-            grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
-            grdResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"], 2);
-            grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"], 90);
-//          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
-            grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
+            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], -1, false);
+//          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"]);
+            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"]);
+            grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"]);
+            grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"]);
+            grdResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"]);
+            grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"]);
+//          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"]);
+            grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"]);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
         }
 

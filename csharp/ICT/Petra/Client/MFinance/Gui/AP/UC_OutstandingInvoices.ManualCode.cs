@@ -368,16 +368,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdInvoices.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
             grdInvoices.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"]);
             grdInvoices.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
-            //grdInvoices.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 17, false);
-            //grdInvoices.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
-            //grdInvoices.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
-            //grdInvoices.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);
-            //grdInvoices.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
-            //grdInvoices.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
-            //grdInvoices.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
-            //grdInvoices.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
-            //grdInvoices.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"], 100);
-            //grdInvoices.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
         }
 
         private void SetInvoiceFilters(object sender, EventArgs e)

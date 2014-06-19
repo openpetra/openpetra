@@ -2104,7 +2104,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void RunOnceOnParentActivationManual()
         {
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-            grdDetails.MaxAutoSizeRows = 100;
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
