@@ -287,9 +287,9 @@ namespace Ict.Common.Controls
         private Boolean FSorting;
 
         /// <summary>
-        /// The maximum number of rows to check when auto-sizing columns
+        /// The maximum number of rows to check when auto-sizing columns.  If the value is -1 we calculate the answer based on the number of columns.
         /// </summary>
-        private int FMaxAutoSizeRows = 200;
+        private int FMaxAutoSizeRows = -1;
 
         /// <summary>
         /// Flag indicating whether the Fixed Rows should be included in the column auto-size calculation or not
@@ -318,6 +318,19 @@ namespace Ict.Common.Controls
         {
             get
             {
+                if (FMaxAutoSizeRows == -1)
+                {
+                    // automatic calculation
+                    if ((this.Rows.Count < 10) || (this.Columns.Count == 0))
+                    {
+                        return 10;
+                    }
+                    else
+                    {
+                        return Math.Max(100, 1000 / this.Columns.Count);
+                    }
+                }
+
                 return FMaxAutoSizeRows;
             }
             set
