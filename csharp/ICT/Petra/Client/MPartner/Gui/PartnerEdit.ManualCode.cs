@@ -2376,14 +2376,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainDonorHistory(System.Object sender, System.EventArgs e)
         {
-            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen("mniMaintainDonorHistory",
                 PartnerKey,
                 FPetraUtilsObject.GetForm());
         }
 
         private void MaintainRecipientHistory(System.Object sender, System.EventArgs e)
         {
-            Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen("mniMaintainRecipientHistory",
                 PartnerKey,
                 FPetraUtilsObject.GetForm());
         }

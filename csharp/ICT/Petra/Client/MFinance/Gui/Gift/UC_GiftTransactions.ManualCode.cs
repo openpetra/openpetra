@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
@@ -34,10 +35,8 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MCommon;
 
-using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 
@@ -67,6 +66,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private decimal FBatchExchangeRateToBase = 1.0m;
         private bool FGLEffectivePeriodChanged = false;
 
+        private List <Int64>FNewDonorsList = new List <long>();
+
         /// <summary>
         /// The current Ledger number
         /// </summary>
@@ -92,6 +93,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             get
             {
                 return ((TFrmGiftBatch)ParentForm).ViewMode;
+            }
+        }
+
+        /// <summary>
+        /// List of partner keys of first time donors with a gift to be saved
+        /// </summary>
+        public List <Int64>NewDonorsList
+        {
+            get
+            {
+                return FNewDonorsList;
+            }
+            set
+            {
+                FNewDonorsList = value;
             }
         }
 
@@ -586,6 +602,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // get donor's last gift
             GiftBatchTDSAGiftDetailTable GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(APartnerKey);
+
+            // if this is the donor's first ever gift
+            if ((GiftDetailTable == null) || (GiftDetailTable.Rows.Count == 0))
+            {
+                if (!FNewDonorsList.Contains(APartnerKey))
+                {
+                    FNewDonorsList.Add(APartnerKey);
+                }
+            }
 
             bool SplitGift = false;
 

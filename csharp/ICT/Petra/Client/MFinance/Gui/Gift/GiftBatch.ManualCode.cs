@@ -23,17 +23,21 @@
 //
 using System;
 using System.Data;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Data;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -44,6 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FWindowIsMaximized = false;
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
+        private bool FNewDonorWarning = true;
 
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
@@ -102,17 +107,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         // Before the dataset is saved, check for correlation between batch and transactions
-        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
-        {
-            ucoBatches.CheckBeforeSavingBatch();
-        }
+
+        /*private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+         * {
+         *      ucoBatches.CheckBeforeSavingBatch();
+         * }*/
 
         private void InitializeManualCode()
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgTransactions.Enabled = false;
 
-            //FPetraUtilsObject.OnDataSavingStart
+            // get user default
+            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
+            mniNewDonorWarning.Checked = FNewDonorWarning;
+
+            // only add these events if the user want a new donor warning
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
+            }
         }
 
         /// <summary>
@@ -146,6 +161,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // This will ensure the grid gets the focus when the screen is shown for the first time
                 ucoBatches.SetInitialFocus();
             };
+        }
+
+        // changed gift records
+        GiftBatchTDSAGiftDetailTable GiftDetailTable = null;
+
+        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            // add changed gift records to datatable
+            GetDataFromControls();
+            GiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
+        }
+
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            // if data successfully saved then look for new donors and warn the user
+            if (e.Success && (GiftDetailTable != null))
+            {
+                // this list contains a list of all new donors that were entered onto form
+                List <Int64>NewDonorsList = ucoTransactions.NewDonorsList;
+
+                foreach (GiftBatchTDSAGiftDetailRow Row in GiftDetailTable.Rows)
+                {
+                    // check changed data is either added or modified and that it is by a new donor
+                    if (((Row.RowState == DataRowState.Added) || (Row.RowState == DataRowState.Modified))
+                        && NewDonorsList.Contains(Row.DonorKey))
+                    {
+                        if (MessageBox.Show(string.Format(Catalog.GetString(
+                                        "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
+                                        "(Note: this message can be disabled by selecting from the menu File then New Donor Warning.)"),
+                                    Row.DonorName, Row.DonorKey, "\n\n"),
+                                Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                                MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                        {
+                            // Open the donor's Edit screen so subscriptions can be added
+                            TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+
+                            frm.SetParameters(TScreenMode.smEdit, Row.DonorKey, TPartnerEditTabPageEnum.petpSubscriptions);
+                            frm.ShowDialog();
+                        }
+
+                        // ensures message is not displayed twice for one new donor with two gifts
+                        NewDonorsList.Remove(Row.DonorKey);
+                    }
+                }
+
+                ucoTransactions.NewDonorsList.Clear();
+            }
         }
 
         private void RunOnceOnActivationManual()
@@ -457,6 +519,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.SelectBatchNumber(gdr.BatchNumber);
             ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
             standardTabIndex = 1;     // later we switch to the detail tab
+        }
+
+        private void mniNewDonorWarning_Click(Object sender, EventArgs e)
+        {
+            // toggle menu tick
+            mniNewDonorWarning.Checked = !mniNewDonorWarning.Checked;
+
+            FNewDonorWarning = mniNewDonorWarning.Checked;
+
+            // change user default
+            TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+
+            // add/remove events the fire the new donor warning
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
+            }
+            else
+            {
+                FPetraUtilsObject.DataSavingStarted -= new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSaved -= new TDataSavedHandler(FPetraUtilsObject_DataSaved);
+            }
         }
     }
 }

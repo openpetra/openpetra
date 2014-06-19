@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (!cmbRegion.Table.Rows.Contains(new object[] { "" }))
             {
-				// add a blank row to the combobox
+                // add a blank row to the combobox
                 DataRow BlankRow = cmbRegion.Table.NewRow();
                 BlankRow[PPostcodeRegionTable.GetRegionDBName()] = "";
                 cmbRegion.Table.Rows.InsertAt(BlankRow, 0);

@@ -52,7 +52,7 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MConference.Gui;
-using Ict.Petra.Client.MFinance.Gui;
+using Ict.Petra.Client.MFinance.Gui.Gift;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MPartner.Gui.Extracts;
 using Ict.Petra.Client.MPartner.Gui.Setup;
@@ -667,6 +667,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractMasterScreen = @TExtractMasterScreenManager.OpenForm;
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen = @TDonorRecipientHistoryScreenManager.OpenForm;
             TCommonScreensForwarding.OpenExtractMasterScreenHidden = @TExtractMasterScreenManager.OpenFormHidden;
             TCommonScreensForwarding.OpenRangeFindScreen = @TPostcodeRangeSetupManager.OpenModalForm;
             TCommonScreensForwarding.OpenOccupationCodeFindScreen = @TOccupationCodeSetupManager.OpenModalForm;
