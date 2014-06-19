@@ -1017,5 +1017,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        //// Special Handlers for menus and command keys for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+
+            return false;
+        }
+
+        private void FocusFirstEditableControlManual()
+        {
+            this.cmbReceiptLetterFrequency.Focus();
+        }
+
+        #endregion
     }
 }

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
 
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -68,5 +69,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPartnerValidation_Partner.ValidatePartnerPersonManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.E | Keys.Control))
+            {
+                this.txtPreferredName.Focus();
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

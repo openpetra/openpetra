@@ -3537,6 +3537,31 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.E | Keys.Control | Keys.Shift))
+            {
+                // special case where we focus the Top part
+                if (this.ucoUpperPart.ProcessParentCmdKey(ref msg, keyData))
+                {
+                    return true;
+                }
+            }
+            else if (this.ucoLowerPart.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
+
         #region Forms Messaging Interface Implementation
 
         /// <summary>

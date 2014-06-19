@@ -1363,5 +1363,90 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if ((this.tabPartners.SelectedTab == tpgAddresses) && (this.FUcoAddresses.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if (this.tabPartners.SelectedTab == tpgPartnerDetails)
+            {
+                switch (GetPartnerDetailsVariableUC())
+                {
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsFamily:
+                        if (this.FUcoPartnerDetailsFamily.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+                        break;
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsPerson:
+                        if (this.FUcoPartnerDetailsPerson.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+                        break;
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsBank:
+                        if (this.FUcoPartnerDetailsBank.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+                        break;
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
+                        if (this.FUcoPartnerDetailsChurch.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+                        break;
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsUnit:
+                        if (this.FUcoPartnerDetailsUnit.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+                        break;
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation:
+                        if (this.FUcoPartnerDetailsOrganisation.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+                        break;
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsVenue:
+                        if (this.FUcoPartnerDetailsVenue.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+                        break;
+                }
+            }
+            else if ((this.tabPartners.SelectedTab == tpgPartnerRelationships) && (this.FUcoPartnerRelationships.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((this.tabPartners.SelectedTab == tpgFinanceDetails) && (this.FUcoFinanceDetails.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((this.tabPartners.SelectedTab == tpgInterests) && (this.FUcoInterests.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((this.tabPartners.SelectedTab == tpgFamilyMembers) && (this.FUcoFamilyMembers.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((this.tabPartners.SelectedTab == tpgSubscriptions) && (this.FUcoSubscriptions.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }
