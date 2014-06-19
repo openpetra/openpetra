@@ -381,6 +381,43 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of recurring transactions for the given ledger and recurring batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadARecurringTransactionAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            Boolean NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
+            ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+            TemplateTransactionRow.LedgerNumber = ALedgerNumber;
+            TemplateTransactionRow.BatchNumber = ABatchNumber;
+            ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
+
+            ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
+            ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
+            TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
+            TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
+            ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// load the specified journal with its transactions.
         /// </summary>
         /// <param name="ALedgerNumber"></param>

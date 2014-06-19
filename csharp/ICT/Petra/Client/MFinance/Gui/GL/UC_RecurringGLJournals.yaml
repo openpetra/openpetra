@@ -73,4 +73,4 @@ RootNode:
         #cmbDetailTransactionTypeCode:
         #    Label: Transaction Type
         #    OptionalValues: [STD]
-        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
+        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList, CurrencyChanged}

@@ -153,7 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void BeginEditMode(object sender, EventArgs e)
         {
             FInEditMode = true;
-            SetKeyMinistryTextBoxInvisible(null, null);
+            SetKeyMinistryTextBoxInvisible();
         }
 
         private void EndEditMode(object sender, EventArgs e)
@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void SetKeyMinistryTextBoxInvisible(object sender, EventArgs e)
+        private void SetKeyMinistryTextBoxInvisible()
         {
             if (txtDetailRecipientKeyMinistry.Visible)
             {
@@ -1041,6 +1041,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtField, APartnerKey, true);
+
+            if (Convert.ToInt64(txtField.Text) == 0)
+            {
+                txtField.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey, FPreviouslySelectedDetailRow.DateEntered).ToString();
+            }
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)

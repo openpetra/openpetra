@@ -1653,7 +1653,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
                 {
-                    giftDetail.RecipientField = GetRecipientFundNumber(MainDS, giftDetail.RecipientKey);
+                    giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftRow.DateEntered);
 
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
@@ -1747,7 +1747,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
                 {
-                    giftDetail.RecipientField = GetRecipientFundNumber(MainDS, giftDetail.RecipientKey);
+                    giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
 
@@ -2137,12 +2137,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
                 {
                     // get the field that the key ministry belongs to. or it might be a field itself
-                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumber(MainDS, giftDetail.RecipientKey);
+                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
                 }
                 else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
                 {
                     // TODO make sure the correct costcentres and accounts are used, recipient ledger number
-                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumber(MainDS, giftDetail.RecipientKey);
+                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
                 }
 
                 if (giftDetail.RecipientLedgerNumber != 0)
@@ -2434,10 +2434,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             UmUnitStructureAccess.LoadAll(MainDS, null);
             MainDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
 
-            return GetRecipientFundNumber(MainDS, APartnerKey);
+            return GetRecipientFundNumberSub(MainDS, APartnerKey);
         }
 
-        private static Int64 GetRecipientFundNumber(GiftBatchTDS AMainDS, Int64 APartnerKey)
+        private static Int64 GetRecipientFundNumberSub(GiftBatchTDS AMainDS, Int64 APartnerKey, DateTime? AGiftDate = null)
         {
             if (APartnerKey == 0)
             {
@@ -2456,7 +2456,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if (familyRow.IsFieldKeyNull())
                 {
-                    return 0;
+                    return GetGiftDestinationForRecipient(APartnerKey, AGiftDate);
                 }
                 else
                 {
@@ -2471,7 +2471,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 if (personRow.IsFieldKeyNull())
                 {
-                    return 0;
+                    return GetGiftDestinationForRecipient(APartnerKey, AGiftDate);
                 }
                 else
                 {
@@ -2505,12 +2505,77 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 // recursive call until we find a partner that has partnertype LEDGER
-                return GetRecipientFundNumber(AMainDS, structureRow.ParentUnitKey);
+                return GetRecipientFundNumberSub(AMainDS, structureRow.ParentUnitKey);
             }
             else
             {
                 return APartnerKey;
             }
+        }
+
+        /// <summary>
+        /// Get gift destination for recipient
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AGiftDate"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime? AGiftDate)
+        {
+            Int64 PartnerField = 0;
+            bool NewTransaction;
+
+            if (APartnerKey == 0 || !AGiftDate.HasValue)
+            {
+                return 0;
+            }
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            string PartnerGiftDestinationTable = "PartnerGiftDestination";
+
+            string GetPartnerGiftDestinationSQL = String.Format(
+                "SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
+                "WHERE pgd.p_partner_key_n = {0} And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL) Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
+                APartnerKey,
+                AGiftDate);
+
+            TLogging.Log("GetPartnerGiftDestinationSQL: " + GetPartnerGiftDestinationSQL);
+
+            DataSet tempDataSet = new DataSet();
+
+            try
+            {
+                DBAccess.GDBAccessObj.Select(tempDataSet, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
+                    Transaction,
+                    0, 0);
+
+                if (tempDataSet.Tables[PartnerGiftDestinationTable] != null)
+                {
+                    TLogging.Log("CostCentreCodeTable Row Count: " + tempDataSet.Tables[PartnerGiftDestinationTable].Rows.Count.ToString());
+
+                    if (tempDataSet.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
+                    {
+                        DataRow row = tempDataSet.Tables[PartnerGiftDestinationTable].Rows[0];
+                        PartnerField = (Int64)row[0];
+                    }
+
+                    tempDataSet.Clear();
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            TLogging.Log(String.Format("Gift Destination Field for Partner: {0} is {1}",
+                    APartnerKey,
+                    PartnerField));
+
+            return PartnerField;
         }
 
         /// <summary>
