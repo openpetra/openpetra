@@ -3607,6 +3607,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if ((FPartnerKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
                     || (FMainDS.PPerson[0].FamilyKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey))
                 {
+                    if (FMainDS.PPartnerGiftDestination == null)
+                    {
+                        FMainDS.Tables.Add(new PPartnerGiftDestinationTable());
+                        FMainDS.InitVars();
+                    }
+
                     FMainDS.PPartnerGiftDestination.Merge(
                         ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).GiftDestinationTable);
                     bool Changes = FPetraUtilsObject.HasChanges;

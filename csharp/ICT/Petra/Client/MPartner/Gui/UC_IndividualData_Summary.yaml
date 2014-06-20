@@ -13,6 +13,7 @@ RootNode:
             Dock: Fill
        
         grpPersonInfo:
+            Label: Overview / Person Info
             Controls: [pnlPersonInfoData]
                    
         pnlPersonInfoData:
@@ -50,6 +51,7 @@ RootNode:
             SortOrder: FromDate DESC
             
         grpChurchInfo:
+            Label: Overview / Church Info
             Controls: [pnlChurchInfoData]
                     
         pnlChurchInfoData:
