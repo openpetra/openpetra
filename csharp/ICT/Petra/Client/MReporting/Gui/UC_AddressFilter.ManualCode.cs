@@ -83,10 +83,23 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (!chkCurrentAddressesOnly.Checked)
             {
-                ACalc.AddParameter("param_address_start_from", this.dtpAddressStartFrom.Date);
-                ACalc.AddParameter("param_address_start_to", this.dtpAddressStartTo.Date);
-                ACalc.AddParameter("param_address_end_from", this.dtpAddressEndFrom.Date);
-                ACalc.AddParameter("param_address_end_to", this.dtpAddressEndTo.Date);
+                // make sure that date values are only added as parameters if fields are visible
+                if (dtpAddressStartFrom.Visible)
+                {
+                    ACalc.AddParameter("param_address_start_from", this.dtpAddressStartFrom.Date);
+                }
+                if (dtpAddressStartTo.Visible)
+                {
+                    ACalc.AddParameter("param_address_start_to", this.dtpAddressStartTo.Date);
+                }
+                if (dtpAddressEndFrom.Visible)
+                {
+                    ACalc.AddParameter("param_address_end_from", this.dtpAddressEndFrom.Date);
+                }
+                if (dtpAddressEndTo.Visible)
+                {
+                    ACalc.AddParameter("param_address_end_to", this.dtpAddressEndTo.Date);
+                }
             }
         }
 
@@ -113,7 +126,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (!cmbRegion.Table.Rows.Contains(new object[] { "" }))
             {
-				// add a blank row to the combobox
+                // add a blank row to the combobox
                 DataRow BlankRow = cmbRegion.Table.NewRow();
                 BlankRow[PPostcodeRegionTable.GetRegionDBName()] = "";
                 cmbRegion.Table.Rows.InsertAt(BlankRow, 0);
