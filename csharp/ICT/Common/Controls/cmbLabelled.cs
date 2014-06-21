@@ -78,6 +78,9 @@ namespace Ict.Common.Controls
         private const Int32 UNIT_LABEL_LEFT_OFFSET = 5;
         private const Int32 UNIT_LABEL_TOP_OFFSET = 3;
 
+        /// <summary>Denotes what this Control regards as the identifier string of inactive combobox items.</summary>
+        private static readonly string FInactiveIdentifier = "";
+        
         /// <summary>
         /// the Combobox that is part of this user control
         /// </summary>
@@ -96,6 +99,17 @@ namespace Ict.Common.Controls
         /// </summary>
         protected String FLabelDisplaysColumn;
 
+        /// <summary>
+        /// Denotes what this Control regards as the identifier string of inactive combobox items.
+        /// </summary>
+        public static string InactiveIdentifier
+        {
+            get
+            {                
+                return FInactiveIdentifier;
+            }
+        }
+        
         /// <summary>
         /// This property determines which column should be sorted. This may be esential
         /// for heirs of this class which use more the one column in the combobox. The
@@ -438,11 +452,10 @@ namespace Ict.Common.Controls
             get
             {
                 string labelText = this.lblDescription.Text;
-                string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
 
-                if (labelText.StartsWith(inactiveIdentifier))
+                if (labelText.StartsWith(FInactiveIdentifier))
                 {
-                    labelText = labelText.Substring(inactiveIdentifier.Length);
+                    labelText = labelText.Substring(FInactiveIdentifier.Length);
                 }
 
                 return labelText;
@@ -567,6 +580,18 @@ namespace Ict.Common.Controls
 
         #region Creation and Disposal
 
+        static TCmbLabelled()
+        {
+            if (TCommonControlsHelper.SetInactiveIdentifier != null) 
+            {
+                FInactiveIdentifier = TCommonControlsHelper.SetInactiveIdentifier() + " ";                        
+            }                    
+            else
+            {
+                FInactiveIdentifier = "<INACTIVE> ";
+            }
+        }
+        
         /// <summary>
         /// default constructor
         /// </summary>
@@ -732,8 +757,7 @@ namespace Ict.Common.Controls
 
         private void HighlightLabelForInactiveItems(string AItemDescription)
         {
-            string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
-            bool itemIsActive = !(AItemDescription.StartsWith(inactiveIdentifier));
+            bool itemIsActive = !(AItemDescription.StartsWith(FInactiveIdentifier));
 
             if (itemIsActive && (this.lblDescription.BackColor != System.Drawing.SystemColors.Control))
             {

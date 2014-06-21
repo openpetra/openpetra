@@ -50,6 +50,12 @@ namespace Ict.Common.Controls
     public partial class TCommonControlsHelper
     {
         /// <summary>
+        /// Used for passing what certain Controls regard as the identifier string of inactive items (e.g. inactive Cost Centres). 
+        /// Set up once at the startup of the application!
+        /// </summary>
+        public static Func <string> SetInactiveIdentifier;
+                
+        /// <summary>
         /// The particulary 'yellow colour' that highlights Partners of Partner Class PERSON
         /// </summary>
         public static readonly Color PartnerClassPERSONColour = System.Drawing.Color.FromArgb(255, 255, 94);

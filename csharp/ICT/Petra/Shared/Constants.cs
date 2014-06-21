@@ -22,13 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
 
 namespace Ict.Petra.Shared
 {
     /// <summary>
     /// constants that are used all over the place
     /// </summary>
-    public class SharedConstants
+    public static class SharedConstants
     {
         /// <summary>Registry Keys for Petra</summary>
         public const String PETRA_REGISTRY_MAIN_KEY = "Software\\ICT\\Petra\\";
@@ -206,5 +207,25 @@ namespace Ict.Petra.Shared
 
         /// <summary>Value for Comment fields, etc. for System Generated Rows in Tables</summary>
         public const String ROW_IS_SYSTEM_GENERATED = "System Generated";
+        
+        
+        #region readonly Fields   (Used for 'constants' whose value can be translated so that they are meaningful to the users in their language)
+        
+        /// <summary>
+        /// Value that denotes something inactive, e.g. an inactive code, an inactive lookup table entry, etc. 
+        /// </summary>
+        /// <remarks>WARNING: Do not store this value in DB Tables and do not use it to compare it against any DB contents   
+        /// as this 'constant' is really a readonly String that can be translated!!!</remarks>
+        public static readonly String INACTIVE_VALUE = Catalog.GetString("INACTIVE");
+        
+        /// <summary>
+        /// Same as <see cref="SharedConstants.INACTIVE_VALUE" /> but prefixed with an opening 'pointy' angle bracket
+        /// and suffixed with a closing 'pointy' angle bracket.
+        /// </summary>
+        /// <remarks>WARNING: Do not store this value in DB Tables and do not use it to compare it against any DB contents   
+        /// as this 'constant' is really a readonly String that can be translated!!!</remarks> 
+        public static readonly String INACTIVE_VALUE_WITH_QUALIFIERS = "<" + INACTIVE_VALUE + ">";
+        
+        #endregion
     }
 }
