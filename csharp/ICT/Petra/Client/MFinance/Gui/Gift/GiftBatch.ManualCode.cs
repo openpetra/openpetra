@@ -92,30 +92,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        // Before the dataset is saved, check for correlation between batch and transactions
-        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
-        {
-            ucoBatches.CheckBeforeSavingBatch();
-        }
-
-        /// <summary>
-        /// Set up the screen to show only this batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            FLedgerNumber = ALedgerNumber;
-            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber);
-            Show();
-        }
-
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
         public void RefreshAll()
         {
             ucoBatches.RefreshAll();
+        }
+
+        // Before the dataset is saved, check for correlation between batch and transactions
+        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            ucoBatches.CheckBeforeSavingBatch();
         }
 
         private void InitializeManualCode()
@@ -168,57 +156,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Returns the corporate exchange rate for a given batch row
-        ///  and specifies whether or not the transaction is in International
-        ///  currency
-        /// </summary>
-        /// <param name="ABatchRow"></param>
-        /// <param name="AIsTransactionInIntlCurrency"></param>
-        /// <returns></returns>
-        public decimal InternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow,
-            out bool AIsTransactionInIntlCurrency)
-        {
-            decimal IntlToBaseCurrencyExchRate = 1;
-
-            AIsTransactionInIntlCurrency = false;
-
-            string BatchCurrencyCode = ABatchRow.CurrencyCode;
-            decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
-            DateTime BatchEffectiveDate = ABatchRow.GlEffectiveDate;
-            DateTime StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
-            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
-
-            if (LedgerBaseCurrency == LedgerIntlCurrency)
-            {
-                IntlToBaseCurrencyExchRate = 1;
-            }
-            else if (BatchCurrencyCode == LedgerIntlCurrency)
-            {
-                AIsTransactionInIntlCurrency = true;
-            }
-            else
-            {
-                IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
-                    LedgerIntlCurrency,
-                    StartOfMonth,
-                    BatchEffectiveDate);
-
-                if (IntlToBaseCurrencyExchRate == 0)
-                {
-                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
-                        LedgerBaseCurrency,
-                        LedgerIntlCurrency,
-                        BatchEffectiveDate);
-
-                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-            }
-
-            return IntlToBaseCurrencyExchRate;
-        }
-
-        /// <summary>
         /// activate the transactions tab and load the gift transactions of the batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -230,32 +167,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
             return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus);
-        }
-
-        /// <summary>
-        /// Check for any errors
-        /// </summary>
-        /// <param name="AShowMessage"></param>
-        public void ProcessRecipientCostCentreCodeUpdateErrors(bool AShowMessage = true)
-        {
-            //Process update errors
-            if (FMainDS.Tables.Contains("AUpdateErrors"))
-            {
-                //TODO remove this code when the worker field issue is sorted out
-                AShowMessage = false;
-
-                //--------------------------------------------------------------
-                if (AShowMessage)
-                {
-                    string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
-
-                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
-                            Environment.NewLine,
-                            loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-
-                FMainDS.Tables.Remove("AUpdateErrors");
-            }
         }
 
         /// <summary>
@@ -389,16 +300,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// find a special gift detail
-        /// </summary>
-        public void FindGiftDetail(AGiftDetailRow gdr)
-        {
-            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
-            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
-            standardTabIndex = 1;     // later we switch to the detail tab
-        }
-
-        /// <summary>
         /// Handler for command key processing
         /// </summary>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -423,6 +324,105 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        /// <summary>
+        /// Check for any errors
+        /// </summary>
+        /// <param name="AShowMessage"></param>
+        public void ProcessRecipientCostCentreCodeUpdateErrors(bool AShowMessage = true)
+        {
+            //Process update errors
+            if (FMainDS.Tables.Contains("AUpdateErrors"))
+            {
+                //TODO remove this code when the worker field issue is sorted out
+                AShowMessage = false;
+
+                //--------------------------------------------------------------
+                if (AShowMessage)
+                {
+                    string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
+
+                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
+                            Environment.NewLine,
+                            loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                FMainDS.Tables.Remove("AUpdateErrors");
+            }
+        }
+
+        /// <summary>
+        /// Set up the screen to show only this batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            FLedgerNumber = ALedgerNumber;
+            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber);
+            Show();
+        }
+
+        /// <summary>
+        /// Returns the corporate exchange rate for a given batch row
+        ///  and specifies whether or not the transaction is in International
+        ///  currency
+        /// </summary>
+        /// <param name="ABatchRow"></param>
+        /// <param name="AIsTransactionInIntlCurrency"></param>
+        /// <returns></returns>
+        public decimal InternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow,
+            out bool AIsTransactionInIntlCurrency)
+        {
+            decimal IntlToBaseCurrencyExchRate = 1;
+
+            AIsTransactionInIntlCurrency = false;
+
+            string BatchCurrencyCode = ABatchRow.CurrencyCode;
+            decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
+            DateTime BatchEffectiveDate = ABatchRow.GlEffectiveDate;
+            DateTime StartOfMonth = new DateTime(BatchEffectiveDate.Year, BatchEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            if (LedgerBaseCurrency == LedgerIntlCurrency)
+            {
+                IntlToBaseCurrencyExchRate = 1;
+            }
+            else if (BatchCurrencyCode == LedgerIntlCurrency)
+            {
+                AIsTransactionInIntlCurrency = true;
+            }
+            else
+            {
+                IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                    LedgerIntlCurrency,
+                    StartOfMonth,
+                    BatchEffectiveDate);
+
+                if (IntlToBaseCurrencyExchRate == 0)
+                {
+                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                        LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        BatchEffectiveDate);
+
+                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+
+            return IntlToBaseCurrencyExchRate;
+        }
+
+        /// <summary>
+        /// find a special gift detail
+        /// </summary>
+        public void FindGiftDetail(AGiftDetailRow gdr)
+        {
+            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
+            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
+            standardTabIndex = 1;     // later we switch to the detail tab
         }
     }
 }

@@ -338,6 +338,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataRow PartnerClassDataRow;
 
             TmpString = ARestrictedPartnerClasses[0];
+            FPartnerClassDataTable.Rows.Clear();
 
             if (TmpString.IndexOf("WORKER-FAM") >= 0)
             {
@@ -3078,6 +3079,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Set a default partner class
+        /// </summary>
+        /// <param name="ADefaultClass"></param>
+        public void SetDefaultPartnerClass(TPartnerClass ? ADefaultClass)
+        {
+            cmbPartnerClass.Text = ADefaultClass.ToString();
         }
 
         #region Comboboxes and the Enter key

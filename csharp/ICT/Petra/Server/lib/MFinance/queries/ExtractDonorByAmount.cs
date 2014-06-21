@@ -29,10 +29,12 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Extracts;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.queries
 {
@@ -93,15 +95,14 @@ namespace Ict.Petra.Server.MFinance.queries
             // call to derived class to retrieve parameters specific for extract
             RetrieveParameters(AParameters, ref SqlStmt, ref SqlParameterList);
 
-            // add address filter information to sql statement and parameter list
-            AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
-
-            // Now run the database query. This time it is returning gift detail records.
-            TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-
             try
             {
-                giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "giftdetails", Transaction,
+                // add address filter information to sql statement and parameter list
+                AddressFilterAdded = AddAddressFilter(AParameters, ref SqlStmt, ref SqlParameterList);
+
+                // now run the database query
+                TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
+                giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", Transaction,
                     SqlParameterList.ToArray());
             }
             finally
@@ -125,9 +126,12 @@ namespace Ict.Petra.Server.MFinance.queries
             // the extract.
             partnerkeys.Columns.Add("0", typeof(Int64));
             partnerkeys.Columns.Add("1", typeof(string));
-            partnerkeys.Columns.Add("2", typeof(Int64));
-            partnerkeys.Columns.Add("3", typeof(Int32));
+            partnerkeys.Columns.Add("p_site_key_n", typeof(Int64));
+            partnerkeys.Columns.Add("p_location_key_i", typeof(Int32));
             ProcessGiftDetailRecords(giftdetails, AddressFilterAdded, AParameters, ref partnerkeys);
+
+            // filter data by postcode (if applicable)
+            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
 
             // create an extract with the given name in the parameters
             ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(

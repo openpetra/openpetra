@@ -511,6 +511,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoPartnerTabSet.RefreshFamilyMembersList(AFormsMessage);
         }
 
+        /// <summary>
+        /// Refreshes position in Uni Hierarchy
+        /// </summary>
+        public void RefreshUnitHierarchy(Tuple <string, Int64, Int64>AUnitHierarchyChange)
+        {
+            ucoPartnerTabSet.RefreshUnitHierarchy(AUnitHierarchyChange);
+        }
+
         #endregion
 
         #region Menu and command key handlers for our user controls

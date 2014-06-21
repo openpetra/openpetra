@@ -23,12 +23,15 @@
 //
 using System;
 using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
-using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Remoting.Client;
+
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
@@ -36,7 +39,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TFrmRecurringGLBatch
     {
-        private Int32 FLedgerNumber;
+        /// this window contains 4 tabs
+        public enum eGLTabs
+        {
+            /// list of batches
+            RecurringBatches,
+
+            /// list of journals
+            RecurringJournals,
+
+            /// list of transactions
+            RecurringTransactions,
+        };
+
+        private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
+        private Int32 FLedgerNumber = -1;
+        private Int32 FStandardTabIndex = 0;
+        private bool FWindowIsMaximized = false;
 
         /// <summary>
         /// use this ledger
@@ -51,18 +70,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 ucoRecurringBatches.LoadBatches(FLedgerNumber);
 
+                ucoRecurringJournals.WorkAroundInitialization();
                 ucoRecurringTransactions.WorkAroundInitialization();
             }
         }
-
-        private int standardTabIndex = 0;
 
         private void TFrmRecurringGLBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            tabRecurringGLBatch.SelectedIndex = standardTabIndex;
-            TabSelectionChanged(null, null); //tabRecurringGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            tabRecurringGLBatch.SelectedIndex = FStandardTabIndex;
+            TabSelectionChanged(null, null);
 
             this.Shown += delegate
             {
@@ -74,45 +92,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void InitializeManualCode()
         {
             tabRecurringGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-            this.tpgJournals.Enabled = false;
-            this.tpgTransactions.Enabled = false;
+            this.tpgRecurringJournals.Enabled = false;
+            this.tpgRecurringTransactions.Enabled = false;
         }
 
         /// <summary>
-        /// Load the journals for the current batch in the background
+        /// Enable the journal tab if we have an active batch
         /// </summary>
-        public void LoadJournals()
+        public void EnableJournals(bool AEnable = true)
         {
-            int batchNumber = ucoRecurringBatches.GetSelectedDetailRow().BatchNumber;
+            this.tabRecurringGLBatch.TabStop = AEnable;
 
-            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
-                ARecurringJournalTable.GetBatchNumberDBName(),
-                batchNumber);
-
-            // only load from server if there are no journals loaded yet for this batch
-            // otherwise we would overwrite journals that have already been modified
-            if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
+            if (this.tpgRecurringJournals.Enabled != AEnable)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, batchNumber));
+                this.tpgRecurringJournals.Enabled = AEnable;
+                this.Refresh();
             }
-        }
-
-        /// <summary>
-        /// disable the transactions tab if we have no active journal
-        /// </summary>
-        public void DisableTransactions()
-        {
-            this.tpgTransactions.Enabled = false;
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// disable the transactions tab if we have no active journal
-        /// </summary>
-        public void EnableTransactions(bool AEnable = true)
-        {
-            this.tpgTransactions.Enabled = AEnable;
-            this.Refresh();
         }
 
         /// <summary>
@@ -122,39 +117,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tabRecurringGLBatch.TabStop = false;
 
-            this.tpgJournals.Enabled = false;
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// Enable the journal tab if we have an active batch
-        /// </summary>
-        public void EnableJournals()
-        {
-            this.tabRecurringGLBatch.TabStop = true;
-
-            if (!this.tpgJournals.Enabled)
+            if (this.tpgRecurringJournals.Enabled)
             {
-                this.tpgJournals.Enabled = true;
+                this.tpgRecurringJournals.Enabled = false;
                 this.Refresh();
             }
         }
 
-        /// this window contains 4 tabs
-        public enum eGLTabs
+        /// <summary>
+        /// enable the transactions tab
+        /// </summary>
+        public void EnableTransactions(bool AEnable = true)
         {
-            /// list of batches
-            RecurringBatches,
+            if (this.tpgRecurringTransactions.Enabled != AEnable)
+            {
+                this.tpgRecurringTransactions.Enabled = AEnable;
+                this.Refresh();
+            }
+        }
 
-            /// list of journals
-            RecurringJournals,
-
-            /// list of transactions
-            RecurringTransactions,
-        };
-
-        //Might need this later
-        private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
+        /// <summary>
+        /// disable the transactions tab
+        /// </summary>
+        public void DisableTransactions()
+        {
+            if (this.tpgRecurringTransactions.Enabled)
+            {
+                this.tpgRecurringTransactions.Enabled = false;
+                this.Refresh();
+            }
+        }
 
         /// <summary>
         /// Switch to the given tab
@@ -162,62 +154,55 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
-            this.Cursor = Cursors.WaitCursor;
-
-            if (ATab == eGLTabs.RecurringBatches)
+            try
             {
-                this.tabRecurringGLBatch.SelectedTab = this.tpgBatches;
-                this.tpgJournals.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
+                this.Cursor = Cursors.WaitCursor;
 
-                if (this.tpgTransactions.Enabled)
+                if (ATab == eGLTabs.RecurringBatches)
                 {
-                    this.ucoRecurringTransactions.CancelChangesToFixedBatches();
-                    this.ucoRecurringJournals.CancelChangesToFixedBatches();
-                    ucoRecurringBatches.EnableTransactionTabForBatch();
+                    this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringBatches;
+                    this.tpgRecurringJournals.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
+                    this.tabRecurringGLBatch.TabStop = this.tpgRecurringJournals.Enabled;
+
+                    ucoRecurringBatches.AutoEnableTransTabForBatch();
+                    ucoRecurringBatches.SetInitialFocus();
+                    FPreviousTab = eGLTabs.RecurringBatches;
                 }
-
-                ucoRecurringBatches.SetInitialFocus();
-                FPreviousTab = eGLTabs.RecurringBatches;
-            }
-            else if (ATab == eGLTabs.RecurringJournals)
-            {
-                if (this.tpgJournals.Enabled)
+                else if ((ucoRecurringBatches.GetSelectedDetailRow() != null) && (ATab == eGLTabs.RecurringJournals))
                 {
-                    this.tabRecurringGLBatch.SelectedTab = this.tpgJournals;
-
-                    this.ucoRecurringJournals.LoadJournals(FLedgerNumber,
-                        ucoRecurringBatches.GetSelectedDetailRow().BatchNumber,
-                        ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
-
-                    this.tpgTransactions.Enabled =
-                        (ucoRecurringJournals.GetSelectedDetailRow() != null && ucoRecurringJournals.GetSelectedDetailRow().JournalStatus !=
-                         MFinanceConstants.BATCH_CANCELLED);
-
-                    this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
-
-                    FPreviousTab = eGLTabs.RecurringJournals;
-                }
-            }
-            else if (ATab == eGLTabs.RecurringTransactions)
-            {
-                if (this.tpgTransactions.Enabled)
-                {
-                    // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
-                    this.tabRecurringGLBatch.SelectedTab = this.tpgTransactions;
-
-                    bool fromBatchTab = false;
-
-                    if (FPreviousTab == eGLTabs.RecurringBatches)
+                    if (this.tpgRecurringJournals.Enabled)
                     {
-                        fromBatchTab = true;
-                        //This only happens when the user clicks from Batch to Transactions,
-                        //  which is only allowed when one journal exists
+                        this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringJournals;
 
-                        //Need to make sure that the Journal is loaded
                         this.ucoRecurringJournals.LoadJournals(FLedgerNumber,
-                            ucoRecurringBatches.GetSelectedDetailRow().BatchNumber,
-                            ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
+                            ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
+
+                        this.tpgRecurringTransactions.Enabled = (ucoRecurringJournals.GetSelectedDetailRow() != null);
+
+                        this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
+
+                        FPreviousTab = eGLTabs.RecurringJournals;
                     }
+                }
+                else if (ATab == eGLTabs.RecurringTransactions)
+                {
+                    if (this.tpgRecurringTransactions.Enabled)
+                    {
+                        // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
+                        this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringTransactions;
+
+                        bool fromBatchTab = false;
+
+                        if (FPreviousTab == eGLTabs.RecurringBatches)
+                        {
+                            fromBatchTab = true;
+                            //This only happens when the user clicks from Batch to Transactions,
+                            //  which is only allowed when one journal exists
+
+                            //Need to make sure that the Journal is loaded
+                            this.ucoRecurringJournals.LoadJournals(FLedgerNumber,
+                                ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
+                        }
 
                     this.ucoRecurringTransactions.LoadTransactions(
                         FLedgerNumber,
@@ -228,19 +213,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringJournals.GetSelectedDetailRow().JournalStatus,
                         fromBatchTab);
 
-                    FPreviousTab = eGLTabs.RecurringTransactions;
+                        FPreviousTab = eGLTabs.RecurringTransactions;
+                    }
                 }
             }
-
-            this.Cursor = Cursors.Default;
-            this.Refresh();
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                this.Refresh();
+            }
         }
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(true, true))
+            if (!ValidateAllData(false, true))
             {
                 e.Cancel = true;
 
@@ -250,17 +238,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SelectTabManual(int ASelectedTabIndex)
         {
-            if (ASelectedTabIndex == (int)eGLTabs.RecurringBatches)
+            switch (ASelectedTabIndex)
             {
-                SelectTab(eGLTabs.RecurringBatches);
-            }
-            else if (ASelectedTabIndex == (int)eGLTabs.RecurringJournals)
-            {
-                SelectTab(eGLTabs.RecurringJournals);
-            }
-            else //(ASelectedTabIndex == (int)eGLTabs.RecurringTransactions)
-            {
-                SelectTab(eGLTabs.RecurringTransactions);
+                case (int)eGLTabs.RecurringBatches:
+                    SelectTab(eGLTabs.RecurringBatches);
+                    break;
+
+                case (int)eGLTabs.RecurringJournals:
+                    SelectTab(eGLTabs.RecurringJournals);
+                    break;
+
+                default: //(ASelectedTabIndex == (int)eGLTabs.RecurringTransactions)
+                    SelectTab(eGLTabs.RecurringTransactions);
+                    break;
             }
         }
 
@@ -288,29 +278,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return ucoRecurringTransactions;
         }
 
-        /// <summary>
-        /// Shows the Filter/Find UserControl and switches to the Find Tab.
-        /// </summary>
-        /// <param name="sender">Not evaluated.</param>
-        /// <param name="e">Not evaluated.</param>
-        public void mniFilterFind_Click(object sender, System.EventArgs e)
-        {
-            switch (tabRecurringGLBatch.SelectedIndex)
-            {
-                case (int)eGLTabs.RecurringBatches:
-                    ucoRecurringBatches.MniFilterFind_Click(sender, e);
-                    break;
-
-                case (int)eGLTabs.RecurringJournals:
-                    ucoRecurringJournals.MniFilterFind_Click(sender, e);
-                    break;
-
-                case (int)eGLTabs.RecurringTransactions:
-                    ucoRecurringTransactions.MniFilterFind_Click(sender, e);
-                    break;
-            }
-        }
-
         private void RunOnceOnActivationManual()
         {
         }
@@ -322,15 +289,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void MniFilterFind_Click(object sender, EventArgs e)
         {
-            if (tabRecurringGLBatch.SelectedTab == tpgBatches)
+            if (tabRecurringGLBatch.SelectedTab == tpgRecurringBatches)
             {
                 ucoRecurringBatches.MniFilterFind_Click(sender, e);
             }
-            else if (tabRecurringGLBatch.SelectedTab == tpgJournals)
+            else if (tabRecurringGLBatch.SelectedTab == tpgRecurringJournals)
             {
                 ucoRecurringJournals.MniFilterFind_Click(sender, e);
             }
-            else if (tabRecurringGLBatch.SelectedTab == tpgTransactions)
+            else if (tabRecurringGLBatch.SelectedTab == tpgRecurringTransactions)
             {
                 ucoRecurringTransactions.MniFilterFind_Click(sender, e);
             }
@@ -351,15 +318,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return true;
             }
 
-            if ((tabRecurringGLBatch.SelectedTab == tpgBatches) && (ucoRecurringBatches.ProcessParentCmdKey(ref msg, keyData)))
+            if ((tabRecurringGLBatch.SelectedTab == tpgRecurringBatches) && (ucoRecurringBatches.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }
-            else if ((tabRecurringGLBatch.SelectedTab == tpgJournals) && (ucoRecurringJournals.ProcessParentCmdKey(ref msg, keyData)))
+            else if ((tabRecurringGLBatch.SelectedTab == tpgRecurringJournals) && (ucoRecurringJournals.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }
-            else if ((tabRecurringGLBatch.SelectedTab == tpgTransactions) && (ucoRecurringTransactions.ProcessParentCmdKey(ref msg, keyData)))
+            else if ((tabRecurringGLBatch.SelectedTab == tpgRecurringTransactions) && (ucoRecurringTransactions.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }

@@ -66,17 +66,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
         }
 
-        private void LoadUnreceiptedGifts()
+        private void PopulateGrid()
         {
-            FGiftTbl = TRemote.MFinance.Gift.WebConnectors.GetUnreceiptedGifts(FLedgerNumber);
-            FGiftTbl.Columns.Add("Selected", typeof(bool));
-
-            foreach (DataRow Row in FGiftTbl.Rows)
-            {
-                Row["Selected"] = false;
-            }
-
             BoundDataView GiftsView = new BoundDataView(FGiftTbl.DefaultView);
+
             GiftsView.AllowNew = false;
 
             grdDetails.DataSource = GiftsView;
@@ -101,7 +94,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             grdDetails.CausesValidation = false;
             grdDetails.SelectionMode = SourceGrid.GridSelectionMode.Row;
-            LoadUnreceiptedGifts();
+
+            // load DataTable
+            FGiftTbl = TRemote.MFinance.Gift.WebConnectors.GetUnreceiptedGifts(FLedgerNumber);
+            FGiftTbl.Columns.Add("Selected", typeof(bool));
+
+            foreach (DataRow Row in FGiftTbl.Rows)
+            {
+                Row["Selected"] = false;
+            }
+
+            PopulateGrid();
         }
 
         /// <summary>
@@ -125,10 +128,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 GfxPrinter);
             GfxPrinter.Init(eOrientation.ePortrait, htmlPrinter, eMarginType.ePrintableArea);
 
-            PrintPreviewDialog PrintDlg = new PrintPreviewDialog();
+            CoolPrintPreviewDialog PrintDlg = new CoolPrintPreviewDialog();
             PrintDlg.Document = GfxPrinter.Document;
             PrintDlg.ClientSize = new System.Drawing.Size(500, 720);
-            PrintDlg.ShowDialog();
+            try
+            {
+                PrintDlg.ShowDialog();
+            }
+            catch (Exception)  // if the user presses Cancel, an exception may be raised!
+            {
+            }
         }
 
         private void OnBtnPrint(Object sender, EventArgs e)
@@ -140,17 +149,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 MessageBox.Show(Catalog.GetString("No printer is installed, so printing is not possible"),
                     Catalog.GetString("Receipt Printing"));
+
+                this.Cursor = Cursors.Default;
                 return;
             }
 
+            DataTable SelectedRecords = GetSelectedRecords();
+
+            if (SelectedRecords.Rows.Count == 0)
+            {
+                MessageBox.Show(Catalog.GetString("No records are selected."),
+                    Catalog.GetString("Receipt Printing"));
+
+                this.Cursor = Cursors.Default;
+                return;
+            }
+
+            this.Cursor = Cursors.WaitCursor;
+
             //
             // The HTML string returned here may be several complete HTML documents, with <body>...</body> for each page.
-            string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(FGiftTbl);
+            string HtmlDoc = TRemote.MFinance.Gift.WebConnectors.PrintReceipts(SelectedRecords);
 
             if (HtmlDoc == "")
             {
                 MessageBox.Show(Catalog.GetString("The server returned no pages to print."),
                     Catalog.GetString("Receipt Printing"));
+
+                this.Cursor = Cursors.Default;
                 return;
             }
 
@@ -180,6 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Catalog.GetString("Receipt Printing"),
                         MessageBoxButtons.OKCancel) == DialogResult.Cancel)
                 {
+                    this.Cursor = Cursors.Default;
                     return;
                 }
 
@@ -192,13 +219,61 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 MessageBox.Show(ex.Message, Catalog.GetString("Receipt Printing"));
             }
+
+            this.Cursor = Cursors.Default;
         }
 
         private void OnBtnRemove(Object sender, EventArgs e)
         {
-            TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(FGiftTbl);
+            DataTable SelectedRecords = GetSelectedRecords();
 
-            LoadUnreceiptedGifts();
+            if (SelectedRecords.Rows.Count == 0)
+            {
+                MessageBox.Show(Catalog.GetString("No records are selected."),
+                    Catalog.GetString("Receipt Printing"));
+
+                this.Cursor = Cursors.Default;
+                return;
+            }
+
+            this.Cursor = Cursors.WaitCursor;
+
+            if (TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(SelectedRecords) == true)
+            {
+                // remove removed records from datatable
+                DataTable TempTable = FGiftTbl.Copy();
+                int SelectedIndex = grdDetails.GetFirstHighlightedRowIndex();
+                int i = 0;
+
+                foreach (DataRow Row in FGiftTbl.Rows)
+                {
+                    if (Row["Selected"].Equals(true))
+                    {
+                        TempTable.Rows.RemoveAt(i);
+
+                        if (i < (SelectedIndex - 1))
+                        {
+                            SelectedIndex--;
+                        }
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+
+                FGiftTbl = TempTable.Copy();
+
+                // if we don't do this then checking a previously deleted and highlighted record will cause an error
+                grdDetails.SelectRowInGrid(0);
+
+                // reload the grid
+                PopulateGrid();
+
+                grdDetails.SelectRowInGrid(SelectedIndex);
+            }
+
+            this.Cursor = Cursors.Default;
         }
 
         private void OnBtnRcptNumber(Object sender, EventArgs e)
@@ -253,6 +328,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void OnBtnClose(Object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        /// <summary>
+        /// Returns a DataTable containing all the selected records
+        /// </summary>
+        /// <returns></returns>
+        private DataTable GetSelectedRecords()
+        {
+            DataTable ReturnTable = FGiftTbl.Clone();
+
+            foreach (DataRow Row in FGiftTbl.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    DataRow TempRow = ReturnTable.NewRow();
+                    TempRow.ItemArray = (object[])Row.ItemArray.Clone();
+                    ReturnTable.Rows.Add(TempRow);
+                }
+            }
+
+            return ReturnTable;
         }
     }
 }

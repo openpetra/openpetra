@@ -40,7 +40,9 @@ namespace Ict.Petra.Client.CommonControls.Logic
         static TDelegateOpenEventFindScreen FOpenEventFindScreen;
         static TDelegateOpenExtractFindScreen FOpenExtractFindScreen;
         static TDelegateOpenExtractMasterScreen FOpenExtractMasterScreen;
+        static TDelegateOpenExtractMasterScreenHidden FOpenExtractMasterScreenHidden;
         static TDelegateOpenRangeFindScreen FOpenRangeFindScreen;
+        static TDelegateOpenOccupationCodeFindScreen FOpenOccupationCodeFindScreen;
         static TDelegateOpenGetMergeDataDialog FOpenGetMergeDataDialog;
         static TDelegateOpenPrintPartnerDialog FOpenPrintPartnerDialog;
 
@@ -166,6 +168,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
         }
 
         /// <summary>
+        /// This property is used to provide a function which opens the Extract Master screen but does not show it.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenExtractMasterScreenHidden OpenExtractMasterScreenHidden
+        {
+            get
+            {
+                return FOpenExtractMasterScreenHidden;
+            }
+
+            set
+            {
+                FOpenExtractMasterScreenHidden = value;
+            }
+        }
+
+        /// <summary>
         /// This property is used to provide a function which opens the Range find screen.
         /// </summary>
         /// <description>The Delegate is set up at the start of the application.</description>
@@ -179,6 +198,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenRangeFindScreen = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which opens the Occupation Code find screen.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenOccupationCodeFindScreen OpenOccupationCodeFindScreen
+        {
+            get
+            {
+                return FOpenOccupationCodeFindScreen;
+            }
+
+            set
+            {
+                FOpenOccupationCodeFindScreen = value;
             }
         }
 

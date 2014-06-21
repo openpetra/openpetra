@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 using Ict.Common;
@@ -1508,7 +1509,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if ((SubmitDS.PPartnerGiftDestination != null) && (SubmitDS.PPartnerGiftDestination.Rows.Count > 0))
                 {
-                    BroadcastMessageGiftDestination = new TFormsMessage(TFormsMessageClassEnum.mcGiftDestinationChanged,
+                    BroadcastMessageGiftDestination = new TFormsMessage(TFormsMessageClassEnum.mcPersonnelCommitmentChanged,
                         FCallerContext);
 
                     if (FPartnerClass == TPartnerClass.FAMILY.ToString())
@@ -1668,16 +1669,32 @@ namespace Ict.Petra.Client.MPartner.Gui
                     EndOfCommitment = ModifiedStaffDataRow.EndOfCommitment.Value.ToShortDateString();
                 }
 
+                string UnitName = "";
+                string ActiveGiftDestinationName = "";
+
+                // get the receiving fields short name
+                TPartnerClass PartnerClass;
+                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(ModifiedStaffDataRow.ReceivingField,
+                    out UnitName,
+                    out PartnerClass);
+                UnitName = UnitName + " (" + ModifiedStaffDataRow.ReceivingField + ")";
+
                 // if an existing active Gift Destination can be ended in order to add a Gift Destination for new commitment
                 if ((ActiveGiftDestinationWhichCanBeEnded != null) && !DatesOverlap)
                 {
+                    // get the currently active gift destination field's short name
+                    TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
+                        ActiveGiftDestinationWhichCanBeEnded.FieldKey, out ActiveGiftDestinationName, out PartnerClass);
+                    ActiveGiftDestinationName = ActiveGiftDestinationName + " (" + ActiveGiftDestinationWhichCanBeEnded.FieldKey + ")";
+
                     // offer to end this Gift Destination and use new commitment instead
-                    if (MessageBox.Show(Catalog.GetString(string.Format("An existing Gift Destination record is active during the period {0} to {1}."
+                    if (MessageBox.Show(Catalog.GetString(string.Format(
+                                    "This Person's Family has an existing Gift Destination record to the field {0} that is active during the period {1} to {2}."
                                     +
-                                    "{2}Would you like to end this Gift Destination and make this new Commitment to " +
-                                    "the field '{3}' the active Gift Destination for this period?",
-                                    ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
-                                    "\n\n", ModifiedStaffDataRow.ReceivingField)),
+                                    "{3}Would you like to end this Gift Destination and make this new Commitment to " +
+                                    "the field {4} the active Gift Destination for this period?",
+                                    ActiveGiftDestinationName, ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
+                                    "\n\n", UnitName)),
                             Catalog.GetString("Update Gift Destination"),
                             MessageBoxButtons.YesNo,
                             MessageBoxIcon.Information) == DialogResult.Yes)
@@ -1699,10 +1716,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else if ((GiftDestinationWhichCanBeModified != null) && !DatesOverlap)
                 {
                     // offer to modify this Gift Destination
-                    if (MessageBox.Show(Catalog.GetString(string.Format("An existing Gift Destination record matches a modified commitment.{0}" +
-                                    "Would you like to update the Gift Destination record to the field '{1}'" +
+                    if (MessageBox.Show(Catalog.GetString(string.Format(
+                                    "This Person's Family has an existing Gift Destination record which matches a modified commitment." +
+                                    "{0}Would you like to update the Gift Destination record to the field {1} " +
                                     "for the period {2} to {3}?",
-                                    "\n\n", ModifiedStaffDataRow.ReceivingField,
+                                    "\n\n", UnitName,
                                     ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment)),
                             Catalog.GetString("Update Gift Destination"),
                             MessageBoxButtons.YesNo,
@@ -1715,10 +1733,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else if ((GiftDestinationWhichCanBeDeactivated != null) && !DatesOverlap)
                 {
                     // offer to deactivate this Gift Destination
-                    if (MessageBox.Show(Catalog.GetString(string.Format("An existing Gift Destination record matches a deleted commitment.{0}" +
-                                    "Would you like to deactivate the Gift Destination record to the field '{1}'" +
+                    if (MessageBox.Show(Catalog.GetString(string.Format(
+                                    "This Person's Family has an existing Gift Destination record which matches a deleted commitment.{0}" +
+                                    "Would you like to deactivate the Gift Destination record to the field {1}" +
                                     "for the period {2} to {3}?",
-                                    "\n\n", ModifiedStaffDataRow.ReceivingField,
+                                    "\n\n", UnitName,
                                     ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment)),
                             Catalog.GetString("Update Gift Destination"),
                             MessageBoxButtons.YesNo,
@@ -1731,11 +1750,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else if (!DatesOverlap && (RowState != DataRowState.Deleted))
                 {
                     // offer to create new Gift Destination using new commitment
-                    if (MessageBox.Show(Catalog.GetString(string.Format("This partner does not have an active Gift Destination during the period " +
+                    if (MessageBox.Show(Catalog.GetString(string.Format(
+                                    "This Person's Family does not have an active Gift Destination during the period " +
                                     "{0} to {1}.{2}Would you like to make this new Commitment to the field " +
-                                    "'{3}' the active Gift Destination for this period?",
+                                    "{3} the active Gift Destination for this period?",
                                     ModifiedStaffDataRow.StartOfCommitment.ToShortDateString(), EndOfCommitment, "\n\n",
-                                    ModifiedStaffDataRow.ReceivingField)),
+                                    UnitName)),
                             Catalog.GetString("Update Gift Destination"),
                             MessageBoxButtons.YesNo,
                             MessageBoxIcon.Information) == DialogResult.Yes)
@@ -1764,6 +1784,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     NewRecords++;
                 }
             }
+
+            // update the gift destination
+            SetGiftDestination();
         }
 
         /// <summary>
@@ -2574,10 +2597,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     /*
                      * Create first Address for the new Partner
                      */
-
-                    /*
-                     * Create first Address for the new Partner
-                     */
                     if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) == TPartnerClass.PERSON)
                     {
                         // Create Address by copying over most of the data from the Family's Address
@@ -2635,6 +2654,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                     NewPartnerLocationRow = (PartnerEditTDSPPartnerLocationRow)FMainDS.PPartnerLocation.Rows[0];
                     NewPartnerLocationRow.Icon = 1;
                     NewPartnerLocationRow.BestAddress = true;
+
+                    /*
+                     * Load Gift Destination
+                     */
+                    FMainDS.PPartnerGiftDestination.Merge(FPartnerEditUIConnector.GetCurrentAndFutureGiftDestinationData(FNewPartnerFamilyPartnerKey));
+                    bool Changes = FPetraUtilsObject.HasChanges;
+
+                    // update the gift destination
+                    SetGiftDestination();
+
+                    // revert to previous save status (SetGiftDestination unnecessarily enables save)
+                    EnableSave(Changes);
+                    FPetraUtilsObject.HasChanges = Changes;
                 }
                 catch (Exception Exp)
                 {
@@ -2704,50 +2736,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPartnerKey = FMainDS.PPartner[0].PartnerKey;
                     }
 
-                    // get Field of Partner (if PERSON or FAMILY)
-                    System.Int64 FieldKey = 0;
-                    String FieldName = "";
-                    TPartnerClass FieldClass;
-                    bool HasCurrentCommitment = false;
-
-                    if ((FMainDS.PPartnerGiftDestination != null) && (FMainDS.PPartnerGiftDestination.Rows.Count > 0))
-                    {
-                        foreach (PPartnerGiftDestinationRow Row in FMainDS.PPartnerGiftDestination.Rows)
-                        {
-                            // check if record is active for today
-                            if ((Row.DateEffective <= DateTime.Today)
-                                && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
-                                && (Row.DateEffective != Row.DateExpires))
-                            {
-                                HasCurrentCommitment = true;
-                                FieldKey = Row.FieldKey;
-                                TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FieldKey, out FieldName, out FieldClass);
-                            }
-                        }
-
-                        // Check whether the Partner has "EX-WORKER*" Partner Type by looking this up in the MiscellaneusData Table
-                        if ((FMainDS.MiscellaneousData[0].HasEXWORKERPartnerType == true)
-                            && !HasCurrentCommitment)
-                        {
-                            ucoUpperPart.SetGiftDestinationText(MPartnerConstants.PARTNERTYPE_EX_WORKER);
-                        }
-                        else if (HasCurrentCommitment && (FieldName != ""))
-                        {
-                            ucoUpperPart.SetGiftDestinationText(FieldName);
-                        }
-                        else if (HasCurrentCommitment && (FieldKey > 0))
-                        {
-                            ucoUpperPart.SetGiftDestinationText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
-                        }
-                        else
-                        {
-                            ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
-                        }
-                    }
-                    else
-                    {
-                        ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
-                    }
+                    SetGiftDestination();
                 }
                 catch (EPartnerNotExistantException)
                 {
@@ -2840,6 +2829,54 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     throw;
                 }
+            }
+        }
+
+        private void SetGiftDestination()
+        {
+            // get Field of Partner (if PERSON or FAMILY)
+            System.Int64 FieldKey = 0;
+            String FieldName = "";
+            TPartnerClass FieldClass;
+            bool HasCurrentCommitment = false;
+
+            if ((FMainDS.PPartnerGiftDestination != null) && (FMainDS.PPartnerGiftDestination.Rows.Count > 0))
+            {
+                foreach (PPartnerGiftDestinationRow Row in FMainDS.PPartnerGiftDestination.Rows)
+                {
+                    // check if record is active for today
+                    if ((Row.DateEffective <= DateTime.Today)
+                        && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
+                        && (Row.DateEffective != Row.DateExpires))
+                    {
+                        HasCurrentCommitment = true;
+                        FieldKey = Row.FieldKey;
+                        TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FieldKey, out FieldName, out FieldClass);
+                    }
+                }
+
+                // Check whether the Partner has "EX-WORKER*" Partner Type by looking this up in the MiscellaneusData Table
+                if ((FMainDS.MiscellaneousData[0].HasEXWORKERPartnerType == true)
+                    && !HasCurrentCommitment)
+                {
+                    ucoUpperPart.SetGiftDestinationText(MPartnerConstants.PARTNERTYPE_EX_WORKER);
+                }
+                else if (HasCurrentCommitment && (FieldName != ""))
+                {
+                    ucoUpperPart.SetGiftDestinationText(FieldName);
+                }
+                else if (HasCurrentCommitment && (FieldKey > 0))
+                {
+                    ucoUpperPart.SetGiftDestinationText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
+                }
+                else
+                {
+                    ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
+                }
+            }
+            else
+            {
+                ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
             }
         }
 
@@ -3587,6 +3624,45 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // Refreshes the Family Members list on the Family tab
                 ucoLowerPart.RefreshFamilyMembersList(AFormsMessage);
+
+                MessageProcessed = true;
+            }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)
+            {
+                if ((FPartnerKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
+                    || (FMainDS.PPerson[0].FamilyKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey))
+                {
+                    FMainDS.PPartnerGiftDestination.Merge(
+                        ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).GiftDestinationTable);
+                    bool Changes = FPetraUtilsObject.HasChanges;
+
+                    // update the gift destination
+                    SetGiftDestination();
+
+                    // revert to previous save status (SetGiftDestination unnecessarily enables save)
+                    EnableSave(Changes);
+                    FPetraUtilsObject.HasChanges = Changes;
+
+                    MessageProcessed = true;
+                }
+            }
+            else if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcUnitHierarchyChanged)
+                     && (FPartnerClass == TPartnerClass.UNIT.ToString()))
+            {
+                List <Tuple <string, Int64,
+                             Int64>>UnitHierarchyChanges =
+                    ((TFormsMessage.FormsMessageUnitHierarchy)AFormsMessage.MessageObject).UnitHierarchyChanges;
+
+                // loop backwards as the most recent (and accurate) change will be at the end
+                for (int i = UnitHierarchyChanges.Count - 1; i >= 0; i--)
+                {
+                    if (UnitHierarchyChanges[i].Item2 == FPartnerKey)
+                    {
+                        // refresh position in Uni Hierarchy
+                        ucoLowerPart.RefreshUnitHierarchy(UnitHierarchyChanges[i]);
+                        break;
+                    }
+                }
 
                 MessageProcessed = true;
             }

@@ -22,23 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
-using Ict.Common.Controls;
-using Ict.Common.Data;
-using Ict.Common.Remoting.Client;
-using Ict.Common.Remoting.Shared;
-using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
@@ -331,22 +322,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <summary>
         /// Open a new screen to show details and maintain the currently selected extract
         /// </summary>
-        public void RefreshExtractList()
+        public bool RefreshExtractList()
         {
             // Do not allow refresh of the extract list if the user has made changes to any of the records
             // as otherwise their changes will be overwritten by reloading of the data.
             if (FPetraUtilsObject.HasChanges)
             {
-                MessageBox.Show(Catalog.GetString(
-                        "Before refreshing the list you need to save changes made in this screen! " + "\r\n" + "\r\n" +
-                        "If you don't want to save changes then please exit and reopen this screen."),
-                    Catalog.GetString("Refresh List"),
-                    MessageBoxButtons.OK);
+                if (MessageBox.Show(Catalog.GetString(
+                            "Before refreshing the list you need to save changes made in this screen. " + "\r\n" + "\r\n" +
+                            "Would you like to save changes now?"),
+                        Catalog.GetString("Refresh List"),
+                        MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    SaveChanges();
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
-            {
-                ucoExtractMasterList.RefreshExtractList("", true, "", "");
-            }
+
+            ucoExtractMasterList.RefreshExtractList("", true, "", "");
+
+            return true;
         }
 
         #region Purge, Combine, Intersect and Subtract
@@ -540,6 +538,38 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             ExtractSubtractDialog.Dispose();
+        }
+
+        /// <summary>
+        /// Override of Form.Show(IWin32Window owner) Method. Caters for singleton Forms. Does not actually display the form.
+        /// </summary>
+        /// <param name="owner">Any object that implements <see cref="IWin32Window" /> and represents the top-level window that will own this Form. </param>
+        public void ShowInvisible(IWin32Window owner)
+        {
+            Form OpenScreen = TFormsList.GFormsList[this.GetType().FullName];
+            bool OpenSelf = true;
+
+            if ((OpenScreen != null)
+                && (OpenScreen.Modal != true))
+            {
+                if (TFormsList.GSingletonForms.Contains(this.GetType().Name))
+                {
+//                      MessageBox.Show("Activating singleton screen of Type '" + this.GetType().FullName + "'.");
+
+                    OpenSelf = false;
+                    this.Visible = false;       // needed as this.Close() would otherwise bring this Form to the foreground and OpenScreen.BringToFront() would not help...
+                    this.Close();
+                }
+            }
+
+            if (OpenSelf)
+            {
+                // add Form to TFormsList.GFormsList but do not show it
+                FPetraUtilsObject.TFrmPetra_Load(this, null);
+
+                // removing this event stops the above command be called when the Form is eventually shown
+                this.Load -= new System.EventHandler(this.TFrmPetra_Load);
+            }
         }
 
         #endregion
@@ -889,6 +919,24 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         #endregion
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            return ucoExtractMasterList.ProcessFormsMessage(AFormsMessage);
+        }
     }
 
     /// <summary>
@@ -903,6 +951,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public static void OpenForm(Form AParentForm)
         {
             new TFrmExtractMaster(AParentForm).Show();
+        }
+
+        /// <summary>
+        /// Opens an instance of the Extract Master screen but keep it hidden.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void OpenFormHidden(Form AParentForm)
+        {
+            new TFrmExtractMaster(AParentForm).ShowInvisible(null);
         }
     }
 }

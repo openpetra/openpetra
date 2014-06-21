@@ -15050,7 +15050,7 @@
     <index name="inx_pm_short_term_application_nk"
            descr=""
            area=""
-           unique="yes">
+           unique="no">
       <indexfield name="p_partner_key_n" order="ascending"/>
       <indexfield name="pm_st_app_date_d" order="ascending"/>
       <indexfield name="pm_st_application_type_c" order="ascending"/>
@@ -15221,7 +15221,7 @@
     <index name="inx__year_program_application_nk"
            descr=""
            area=""
-           unique="yes">
+           unique="no">
       <indexfield name="p_partner_key_n" order="ascending"/>
       <indexfield name="pm_yp_app_date_d" order="ascending"/>
       <indexfield name="pm_yp_basic_app_type_c" order="ascending"/>

@@ -17,15 +17,15 @@ RootNode:
             Controls: [tabGiftBatch]
             Dock: Fill
         tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false}        
-        tpgBatches: 
+        tpgRecurringBatches: 
             Label: Batches
-            Controls: [ucoBatches]
-        tpgTransactions: 
+            Controls: [ucoRecurringBatches]
+        tpgRecurringTransactions: 
             Label: Details
-            Controls: [ucoTransactions]
-        ucoBatches:
+            Controls: [ucoRecurringTransactions]
+        ucoRecurringBatches:
             Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_RecurringGiftBatches
             Dock: Fill
-        ucoTransactions:
+        ucoRecurringTransactions:
             Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_RecurringGiftTransactions
             Dock: Fill    

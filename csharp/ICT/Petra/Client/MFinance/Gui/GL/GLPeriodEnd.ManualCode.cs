@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,6 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private bool RunPeriodEnd(bool AInInfoMode)
         {
+            this.Cursor = Cursors.WaitCursor;
             bool blnErrorStatus;
 
             if (blnIsInMonthMode)
@@ -101,6 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FLedgerNumber, AInInfoMode, out FverificationResult);
             }
 
+            this.Cursor = Cursors.Default;
             return blnErrorStatus;
         }
 

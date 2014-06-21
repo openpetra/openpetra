@@ -31,10 +31,4 @@
   <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
   <Parameter id="param_calculation" column="4" value="eString:Level" />
   <Parameter id="ColumnWidth" column="4" value="eDecimal:4609434218613702656" />
-  <Parameter id="param_calculation" column="5" value="eString:Translate" />
-  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
-  <Parameter id="param_calculation" column="6" value="eString:Into" />
-  <Parameter id="ColumnWidth" column="6" value="eDecimal:4609434218613702656" />
-  <Parameter id="param_calculation" column="7" value="eString:Out Of" />
-  <Parameter id="ColumnWidth" column="7" value="eDecimal:4609434218613702656" />
 </Parameters>

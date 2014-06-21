@@ -344,6 +344,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 DataTable NewPage = findObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
 
+                // change CreditNote amounts to negatives
+                foreach (DataRow Row in NewPage.Rows)
+                {
+                    if (Row["CreditNoteFlag"].Equals(true))
+                    {
+                        Row["TotalAmount"] = -(Decimal)Row["TotalAmount"];
+                        Row["OutstandingAmount"] = -(Decimal)Row["OutstandingAmount"];
+                    }
+                }
+
                 if (FInvoiceTable == null)
                 {
                     FInvoiceTable = NewPage;
@@ -523,14 +533,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if ((Row["CurrencyCode"].ToString() == FMainForm.LedgerCurrency) && (Row["OutstandingAmount"].GetType() == typeof(Decimal)))
                     {
-                        if (Row["CreditNoteFlag"].Equals(true))  // Payments also carry this "Credit note" label
-                        {
-                            balance -= (Decimal)Row["OutstandingAmount"];
-                        }
-                        else
-                        {
-                            balance += (Decimal)Row["OutstandingAmount"];
-                        }
+                        balance += (Decimal)Row["OutstandingAmount"];
                     }
                 }
             }
@@ -569,14 +572,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if (Row["CurrencyCode"].Equals(MyCurrency))
                     {
-                        if (Row["CreditNoteFlag"].Equals(true))
-                        {
-                            TotalSelected -= (Decimal)(Row["TotalAmount"]);
-                        }
-                        else
-                        {
-                            TotalSelected += (Decimal)(Row["TotalAmount"]);
-                        }
+                        TotalSelected += (Decimal)(Row["TotalAmount"]);
                     }
                 }
             }

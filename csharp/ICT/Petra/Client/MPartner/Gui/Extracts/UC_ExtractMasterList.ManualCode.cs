@@ -22,25 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
-using System.Xml;
 using Ict.Common;
 using Ict.Common.Controls;
-using Ict.Common.Exceptions;
 using Ict.Common.Data.Exceptions;
 using Ict.Common.IO;
-using Ict.Common.Remoting.Client;
-using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
@@ -51,7 +42,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// Delegate for call to parent window to trigger refreshing of extract list
         /// (needed here as filter criteria exist in parent and are unknown in this object)
         /// </summary>
-        public delegate void TDelegateRefreshExtractList();
+        public delegate bool TDelegateRefreshExtractList();
 
         /// <summary>
         /// Reference to the Delegate in parent window
@@ -938,6 +929,55 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 return false;
             }
+        }
+
+        #endregion
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExtractCreated)
+            {
+                FPetraUtilsObject.GetForm().BringToFront();
+
+                if (FDelegateRefreshExtractList())
+                {
+                    // this is required as extracts are created on a different thread
+                    if (this.InvokeRequired)
+                    {
+                        this.BeginInvoke((MethodInvoker) delegate()
+                            {
+                                // show filter panel
+                                MniFilterFind_Click(GetPetraUtilsObject().GetForm(), null);
+                                // show the screen in case it has been hidden
+                                FPetraUtilsObject.GetForm().Show();
+                                // filter results to show the new extract
+                                ((TextBox)FFilterPanelControls.FindControlByName("txtExtractName")).Text =
+                                    ((TFormsMessage.FormsMessageName)AFormsMessage.MessageObject).Name;
+                            });
+                    }
+                }
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
         }
 
         #endregion

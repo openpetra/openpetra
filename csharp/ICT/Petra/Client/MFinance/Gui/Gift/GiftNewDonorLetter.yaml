@@ -23,7 +23,7 @@
             Dock: Top
             Controls:
                 Row0: [dtpStartDate, dtpEndDate]
-                Row1: [txtPublicationCode]
+                Row1: [cmbPublicationCode]
                 Row2: [txtExtract]
         sptResult:
             Dock: Fill
@@ -33,7 +33,7 @@
             Panel2: preLetters
         dtpStartDate:
         dtpEndDate:
-        txtPublicationCode:
+        cmbPublicationCode: {List=PublicationInfoList}
         txtExtract: {NoLabel=true, Type=Extract}
 #        pnlFilter:
 #            Controls: [rgrFilter]
