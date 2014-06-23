@@ -433,7 +433,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                ((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
+                //causes saving issues
+                //UpdateLedgerTableSettings();
+                ((TFrmRecurringGLBatch)this.ParentForm).SaveChanges();
                 MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
             }
 
@@ -455,6 +457,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             SetInitialFocus();
+        }
+
+        private void UpdateLedgerTableSettings()
+        {
+            int LedgerLastRecurringGLBatchNumber = 0;
+
+            //Update the last recurring GL batch number
+            DataView RecurringGLBatchDV = new DataView(FMainDS.ARecurringBatch);
+            RecurringGLBatchDV.RowFilter = string.Empty;
+            RecurringGLBatchDV.Sort = string.Format("{0} DESC",
+                ARecurringBatchTable.GetBatchNumberDBName());
+
+            //Recurring batch numbers can be reused so reset current highest number
+            if (RecurringGLBatchDV.Count > 0)
+            {
+                LedgerLastRecurringGLBatchNumber = (int)(RecurringGLBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
+            }
+
+            if (FMainDS.ALedger[0].LastRecurringBatchNumber != LedgerLastRecurringGLBatchNumber)
+            {
+                FMainDS.ALedger[0].LastRecurringBatchNumber = LedgerLastRecurringGLBatchNumber;
+            }
         }
 
         private void ClearControls()

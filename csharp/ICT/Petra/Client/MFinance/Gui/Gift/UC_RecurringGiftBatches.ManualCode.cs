@@ -488,6 +488,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewARecurringGiftBatch();
+
+            ((TFrmRecurringGiftBatch)this.ParentForm).SaveChanges();
+
             txtDetailBatchDescription.Focus();
 
             UpdateRecordNumberDisplay();
@@ -571,6 +574,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
+                //causes saving issues
+                //UpdateLedgerTableSettings();
+
                 if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                 {
                     MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
@@ -594,6 +600,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab((grdDetails.Rows.Count > 1));
 
             SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
+        }
+
+        private void UpdateLedgerTableSettings()
+        {
+            int LedgerLastRecurringGiftBatchNumber = 0;
+
+            //Update the last recurring gift batch number
+            DataView RecurringGiftBatchDV = new DataView(FMainDS.ARecurringGiftBatch);
+            RecurringGiftBatchDV.RowFilter = string.Empty;
+            RecurringGiftBatchDV.Sort = string.Format("{0} DESC",
+                ARecurringGiftBatchTable.GetBatchNumberDBName());
+
+            //Recurring batch numbers can be reused so reset current highest number
+            if (RecurringGiftBatchDV.Count > 0)
+            {
+                LedgerLastRecurringGiftBatchNumber = (int)(RecurringGiftBatchDV[0][ARecurringGiftBatchTable.GetBatchNumberDBName()]);
+            }
+
+            if (FMainDS.ALedger[0].LastRecGiftBatchNumber != LedgerLastRecurringGiftBatchNumber)
+            {
+                FMainDS.ALedger[0].LastRecGiftBatchNumber = LedgerLastRecurringGiftBatchNumber;
+            }
         }
 
         private void MethodOfPaymentChanged(object sender, EventArgs e)
