@@ -338,6 +338,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataRow PartnerClassDataRow;
 
             TmpString = ARestrictedPartnerClasses[0];
+            FPartnerClassDataTable.Rows.Clear();
 
             if (TmpString.IndexOf("WORKER-FAM") >= 0)
             {
@@ -510,7 +511,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             emptyRow = FBankDataset.PBank.NewRow();
             emptyRow[PBankTable.ColumnPartnerKeyId] = -1;
             emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
-            emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("<INACTIVE> ");
+            emptyRow[PBankTable.ColumnBranchCodeId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ";
             FBankDataset.PBank.Rows.Add(emptyRow);
 
             // populate the bank name combo box
@@ -529,9 +530,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PBankTable.GetPartnerKeyDBName(),
                 null);
             // filter rows that are blank or <INACTIVE>
-            cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '<INACTIVE> ') " +
+            cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '" +
+                                 SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '') " +
-                                 "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '<INACTIVE> ')";
+                                 "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '" +
+                                 SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ')";
             cmbBankCode.SelectedValueChanged += new System.EventHandler(this.BankCodeChanged);
         }
 
@@ -631,7 +634,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && (FCurrentBankRow != null)
                  && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
-                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != "<INACTIVE> "))))
+                || ((cmbBankCode.GetSelectedString() == SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ")
+                    && ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " "))))
             {
                 // if "<INACTIVE>" has been selected change it to blank
                 FCurrentBankRow = FBankDataset.PBank.NewRowTyped();
@@ -3078,6 +3082,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Set a default partner class
+        /// </summary>
+        /// <param name="ADefaultClass"></param>
+        public void SetDefaultPartnerClass(TPartnerClass ? ADefaultClass)
+        {
+            cmbPartnerClass.Text = ADefaultClass.ToString();
         }
 
         #region Comboboxes and the Enter key

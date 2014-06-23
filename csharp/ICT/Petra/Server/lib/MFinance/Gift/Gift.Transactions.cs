@@ -530,6 +530,59 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// loads a donor's last gift (if it exists) and returns the associated gift details
+        /// </summary>
+        /// <param name="ADonorPartnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDSAGiftDetailTable LoadDonorLastGift(Int64 ADonorPartnerKey)
+        {
+            TDBTransaction Transaction = null;
+            GiftBatchTDSAGiftDetailTable ReturnValue = null;
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    // load all gifts from donor
+                    AGiftTable GiftTable = AGiftAccess.LoadViaPPartner(ADonorPartnerKey, Transaction);
+
+                    if ((GiftTable == null) || (GiftTable.Rows.Count == 0))
+                    {
+                        return;
+                    }
+
+                    // find the most recent gift (probably the last gift in the table)
+                    AGiftRow LatestGiftRow = (AGiftRow)GiftTable.Rows[GiftTable.Rows.Count - 1];
+
+                    for (int i = GiftTable.Rows.Count - 2; i >= 0; i--)
+                    {
+                        if (LatestGiftRow.DateEntered < ((AGiftRow)GiftTable.Rows[i]).DateEntered)
+                        {
+                            LatestGiftRow = (AGiftRow)GiftTable.Rows[i];
+                        }
+                    }
+
+                    // load gift details for the latest gift
+                    AGiftDetailAccess.LoadViaAGift(MainDS, LatestGiftRow.LedgerNumber, LatestGiftRow.BatchNumber, LatestGiftRow.GiftTransactionNumber,
+                        Transaction);
+                    ReturnValue = MainDS.AGiftDetail;
+
+                    if (ReturnValue.Rows.Count > 1)
+                    {
+                        // get the name of each recipient
+                        foreach (GiftBatchTDSAGiftDetailRow Row in ReturnValue.Rows)
+                        {
+                            PPartnerRow RecipientRow = (PPartnerRow)PPartnerAccess.LoadByPrimaryKey(Row.RecipientKey, Transaction).Rows[0];
+                            Row.RecipientDescription = RecipientRow.PartnerShortName;
+                        }
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// loads a list of recurring batches for the given ledger
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
@@ -2545,12 +2598,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftDate"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime? AGiftDate)
+        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime ? AGiftDate)
         {
             Int64 PartnerField = 0;
             bool NewTransaction;
 
-            if (APartnerKey == 0 || !AGiftDate.HasValue)
+            if ((APartnerKey == 0) || !AGiftDate.HasValue)
             {
                 return 0;
             }
@@ -2698,7 +2751,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 switch (unitRow.UnitTypeCode)
                 {
-                    case MPartnerConstants.UNIT_TYPE_KEYMIN:
+                    case MPartnerConstants.UNIT_TYPE_KEYMIN :
                         Int64 fieldNumber = GetRecipientFundNumber(ARecipientPartnerKey);
                         UnitTable = LoadKeyMinistriesOfField(fieldNumber, ATransaction);
                         break;

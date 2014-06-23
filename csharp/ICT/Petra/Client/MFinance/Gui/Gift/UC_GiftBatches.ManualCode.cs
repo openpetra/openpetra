@@ -1614,11 +1614,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
-            if (FMainDS.ALedger == null || FMainDS.ALedger.Count == 0)
+            if ((FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
             {
-		        FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
             }
-            
+
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
 
             if (AFromUserAction && btnGetSetExchangeRate.Enabled)

@@ -14,6 +14,7 @@ RootNode:
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
         SETCONTROLSLOCALVARS: BLANK
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:

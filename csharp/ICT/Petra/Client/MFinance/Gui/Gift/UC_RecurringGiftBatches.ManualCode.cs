@@ -489,7 +489,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             this.CreateNewARecurringGiftBatch();
 
-            ((TFrmRecurringGiftBatch)this.ParentForm).SaveChanges();
+            ((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges();
 
             txtDetailBatchDescription.Focus();
 
@@ -608,6 +608,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Update the last recurring gift batch number
             DataView RecurringGiftBatchDV = new DataView(FMainDS.ARecurringGiftBatch);
+
             RecurringGiftBatchDV.RowFilter = string.Empty;
             RecurringGiftBatchDV.Sort = string.Format("{0} DESC",
                 ARecurringGiftBatchTable.GetBatchNumberDBName());
@@ -835,9 +836,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (!AccountIsActive(FPreviouslySelectedDetailRow.BankAccountCode) || !CostCentreIsActive(FPreviouslySelectedDetailRow.BankCostCentre))
             {
                 if (MessageBox.Show(String.Format(Catalog.GetString(
-                                                    "Recurring batch no. {0} contains an inactive bank account or cost centre code. Do you want to continue submitting?"),
-                                                    FPreviouslySelectedDetailRow.BatchNumber),
-                                    Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                                "Recurring batch no. {0} contains an inactive bank account or cost centre code. Do you want to continue submitting?"),
+                            FPreviouslySelectedDetailRow.BatchNumber),
+                        Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning) == DialogResult.No)
                 {
                     return;
                 }

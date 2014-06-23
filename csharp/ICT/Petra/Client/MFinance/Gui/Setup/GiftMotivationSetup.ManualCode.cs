@@ -32,6 +32,7 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
@@ -136,6 +137,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             {
                 // needed to reorder the two checked listboxes
                 SelectRowInGrid(FPrevRowChangedRow);
+
+                // refresh cachaeble table
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, FLedgerNumber);
             }
 
             return Result;

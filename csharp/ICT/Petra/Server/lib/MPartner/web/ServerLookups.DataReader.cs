@@ -520,7 +520,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // mark inactive bank accounts
                     if (Row.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
                     {
-                        Row.BranchCode = "<" + Catalog.GetString("INACTIVE") + "> " + Row.BranchCode;
+                        Row.BranchCode = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " + Row.BranchCode;
                     }
 
                     if (AIncludeLocations)

@@ -268,6 +268,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ShowDetailsManual(FPreviouslySelectedDetailRow);
             }
+
+            // Broadcast message to update partner's Partner Edit screen if open
+            TFormsMessage BroadcastMessage;
+
+            BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGiftDestinationChanged);
+
+            BroadcastMessage.SetMessageDataGiftDestination(
+                FPartnerKey,
+                FMainDS.PPartnerGiftDestination);
+
+            TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
         }
 
         private void ValidateDataDetailsManual(PPartnerGiftDestinationRow ARow)
@@ -301,8 +312,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             bool MessageProcessed = false;
 
-            if ((((IFormsMessagePartnerInterface)AFormsMessage.MessageObject).PartnerKey == FPartnerKey)
-                && ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)))
+            if (((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPersonnelCommitmentChanged))
+                && (((IFormsMessagePartnerInterface)AFormsMessage.MessageObject).PartnerKey == FPartnerKey))
             {
                 TSearchCriteria[] Search = new TSearchCriteria[1];
                 Search[0] = new TSearchCriteria(PPartnerGiftDestinationTable.GetPartnerKeyDBName(), FPartnerKey);

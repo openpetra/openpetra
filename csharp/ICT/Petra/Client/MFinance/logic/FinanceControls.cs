@@ -321,7 +321,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
                     {
-                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<" + Catalog.GetString("INACTIVE") + "> " +
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " +
                                                                          rw[AAccountTable.ColumnAccountCodeShortDescId];
                     }
                 }
@@ -371,7 +371,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     if ((rw[ACostCentreTable.ColumnCostCentreActiveFlagId] != null)
                         && (rw[ACostCentreTable.ColumnCostCentreActiveFlagId].ToString() == "False"))
                     {
-                        rw[ACostCentreTable.ColumnCostCentreNameId] = "<" + Catalog.GetString("INACTIVE") + "> " +
+                        rw[ACostCentreTable.ColumnCostCentreNameId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " +
                                                                       rw[ACostCentreTable.ColumnCostCentreNameId];
                     }
                 }
@@ -438,7 +438,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
                     {
-                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<" + Catalog.GetString("INACTIVE") + "> " +
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " +
                                                                          rw[AAccountTable.ColumnAccountCodeShortDescId];
                     }
                 }

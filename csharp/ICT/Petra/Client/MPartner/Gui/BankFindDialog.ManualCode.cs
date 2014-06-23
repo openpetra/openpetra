@@ -126,11 +126,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     NewBankRow[PLocationTable.GetLocationKeyDBName()] = 0;
                     NewBankRow[PBankTable.GetBranchNameDBName()] = BankRow.BranchName;
 
-                    if (BankRow.BranchCode.StartsWith("<INACTIVE> "))
+                    if (BankRow.BranchCode.StartsWith(SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " "))
                     {
                         NewBankRow[PBankTable.GetBranchCodeDBName()] = BankRow.BranchCode.Substring(11);
                     }
-                    else if (BankRow.BranchCode.StartsWith("<INACTIVE>"))
+                    else if (BankRow.BranchCode.StartsWith(SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS))
                     {
                         NewBankRow[PBankTable.GetBranchCodeDBName()] = BankRow.BranchCode.Substring(10);
                     }

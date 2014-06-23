@@ -23,7 +23,9 @@
 //
 
 using System;
+using System.Collections.Generic;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 /* Copied from Petra 2.3 */
 
@@ -82,6 +84,51 @@ namespace Ict.Petra.Client.CommonForms
     }
 
     /// <summary>
+    /// Interface for a 'data-only Class' that holds Data (such as
+    /// <see cref="TFormsMessage.FormsMessageName"></see>).
+    /// </summary>
+    public interface IFormsMessageNameInterface : IFormsMessageClassInterface
+    {
+        /// <summary>ShortName of the Partner in the 'Forms Message'.</summary>
+        string Name
+        {
+            get;
+        }
+    }
+
+    /// <summary>
+    /// Interface for a 'data-only Class' that holds Gift Destination (such as
+    /// <see cref="TFormsMessage.FormsMessageGiftDestination"></see>).
+    /// </summary>
+    public interface IFormsMessageGiftDestinationInterface : IFormsMessageClassInterface
+    {
+        /// <summary>PartnerKey of the Partner in the 'Forms Message'.</summary>
+        Int64 PartnerKey
+        {
+            get;
+        }
+
+        /// <summary>Edited Partner Gift Destination Table</summary>
+        PPartnerGiftDestinationTable GiftDestinationTable
+        {
+            get;
+        }
+    }
+
+    /// <summary>
+    /// Interface for a 'data-only Class' that holds UnitHierarchy (such as
+    /// <see cref="TFormsMessage.FormsMessageUnitHierarchy"></see>).
+    /// </summary>
+    public interface IFormsMessageUnitHierarchyInterface : IFormsMessageClassInterface
+    {
+        /// <summary></summary>
+        List <Tuple <string, Int64, Int64>>UnitHierarchyChanges
+        {
+            get;
+        }
+    }
+
+    /// <summary>
     /// Specifies the MessageClass of a <see cref="TFormsMessage"></see>.
     /// </summary>
     /// <description>
@@ -103,11 +150,20 @@ namespace Ict.Petra.Client.CommonForms
         /// just got changed in the DB.</summary>
         mcFamilyMembersChanged,
 
-        /// <summary>Gift Destination records have been edited, added or deleted.</summary>
+        /// <summary>Gift Destination records have been edited, added or deleted through Personnel Commitments.</summary>
+        mcPersonnelCommitmentChanged,
+
+        /// <summary>Gift Destination records have been edited, added or deleted through Gift Destination screen.</summary>
         mcGiftDestinationChanged,
 
         /// <summary>An AP transaction has been saved.</summary>
-        mcAPTransactionChanged
+        mcAPTransactionChanged,
+
+        /// <summary>Unit Hierarchy has been changed and saved.</summary>
+        mcUnitHierarchyChanged,
+
+        /// <summary>A new extract has been created.</summary>
+        mcExtractCreated
     }
 
     /// <summary>
@@ -206,7 +262,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <see cref="TFormsMessageClassEnum.mcExistingPartnerSaved"></see>,
         /// <see cref="TFormsMessageClassEnum.mcFamilyMembersChanged"></see>,
         /// <see cref="TFormsMessageClassEnum.mcPartnerDeleted"></see> and
-        /// <see cref="TFormsMessageClassEnum.mcGiftDestinationChanged"></see>.
+        /// <see cref="TFormsMessageClassEnum.mcPersonnelCommitmentChanged"></see>.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of the Partner in the 'Forms Message'.</param>
         /// <param name="APartnerClass">Partner Class of the Partner in the 'Forms Message'.</param>
@@ -221,7 +277,7 @@ namespace Ict.Petra.Client.CommonForms
                 case TFormsMessageClassEnum.mcExistingPartnerSaved:
                 case TFormsMessageClassEnum.mcFamilyMembersChanged:
                 case TFormsMessageClassEnum.mcPartnerDeleted:
-                case TFormsMessageClassEnum.mcGiftDestinationChanged:
+                case TFormsMessageClassEnum.mcPersonnelCommitmentChanged:
 
                     FMessageObject = new FormsMessagePartner(APartnerKey,
                     APartnerClass, AShortName, APartnerStatus);
@@ -230,6 +286,51 @@ namespace Ict.Petra.Client.CommonForms
                 default:
                     throw new ApplicationException(
                     "Method 'SetMessageDataPartner' must not be called for MessageClass '" +
+                    Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
+        /// Allows setting of Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcExtractCreated"></see>,
+        /// </summary>
+        /// <param name="AName">Data Name in the 'Forms Message'.</param>
+        public void SetMessageDataName(string AName)
+        {
+            switch (FMessageClass)
+            {
+                case TFormsMessageClassEnum.mcExtractCreated:
+
+                    FMessageObject = new FormsMessageName(AName);
+                    break;
+
+                default:
+                    throw new ApplicationException(
+                    "Method 'SetMessageDataName' must not be called for MessageClass '" +
+                    Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
+        /// Allows setting of Partner Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcGiftDestinationChanged"></see>,
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey of the Partner in the 'Forms Message'.</param>
+        /// <param name="AGiftDestinationTable">Edited Partner Gift Destination Table</param>
+        public void SetMessageDataGiftDestination(Int64 APartnerKey,
+            PPartnerGiftDestinationTable AGiftDestinationTable)
+        {
+            switch (FMessageClass)
+            {
+                case TFormsMessageClassEnum.mcGiftDestinationChanged:
+
+                    FMessageObject = new FormsMessageGiftDestination(APartnerKey,
+                    AGiftDestinationTable);
+                    break;
+
+                default:
+                    throw new ApplicationException(
+                    "Method 'SetMessageDataGiftDestination' must not be called for MessageClass '" +
                     Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
             }
         }
@@ -251,6 +352,27 @@ namespace Ict.Petra.Client.CommonForms
                 default:
                     throw new ApplicationException(
                     "Method 'SetMessageDataAPTransaction' must not be called for MessageClass '" +
+                    Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
+        /// Allows setting of Partner Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcUnitHierarchyChanged"></see>,
+        /// </summary>
+        /// <param name="AUnitHierarchyChanges">All Unit Hierarchies that have been changed.</param>
+        public void SetMessageDataUnitHierarchy(List <Tuple <string, Int64, Int64>>AUnitHierarchyChanges)
+        {
+            switch (FMessageClass)
+            {
+                case TFormsMessageClassEnum.mcUnitHierarchyChanged:
+
+                    FMessageObject = new FormsMessageUnitHierarchy(AUnitHierarchyChanges);
+                    break;
+
+                default:
+                    throw new ApplicationException(
+                    "Method 'SetMessageDataUnitHierarchy' must not be called for MessageClass '" +
                     Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
             }
         }
@@ -289,7 +411,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <see cref="TFormsMessageClassEnum.mcExistingPartnerSaved"></see>,
         /// <see cref="TFormsMessageClassEnum.mcFamilyMembersChanged"></see>,
         /// <see cref="TFormsMessageClassEnum.mcPartnerDeleted"></see> and
-        /// <see cref="TFormsMessageClassEnum.mcGiftDestinationChanged"></see>.
+        /// <see cref="TFormsMessageClassEnum.mcPersonnelCommitmentChanged"></see>.
         /// </summary>
         public struct FormsMessagePartner : IFormsMessagePartnerInterface
         {
@@ -349,6 +471,103 @@ namespace Ict.Petra.Client.CommonForms
                 get
                 {
                     return FPartnerStatus;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Holds Data for 'Form Messages' of MessageClasses
+        /// <see cref="TFormsMessageClassEnum.mcExtractCreated"></see>,
+        /// </summary>
+        public struct FormsMessageName : IFormsMessageNameInterface
+        {
+            string FName;
+
+            /// <summary>
+            /// Constructor that initializes internal fields which can be
+            /// read out by using the Properties of this Class.
+            /// </summary>
+            /// <param name="AName">Data Name in the 'Forms Message'.</param>
+            public FormsMessageName(string AName)
+            {
+                FName = AName;
+            }
+
+            /// <summary>ShortName of the Partner in the 'Forms Message'.</summary>
+            public string Name
+            {
+                get
+                {
+                    return FName;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Holds Partner Data for 'Form Messages' of MessageClasses
+        /// <see cref="TFormsMessageClassEnum.mcGiftDestinationChanged"></see>,
+        /// </summary>
+        public struct FormsMessageGiftDestination : IFormsMessageGiftDestinationInterface
+        {
+            Int64 FPartnerKey;
+            PPartnerGiftDestinationTable FGiftDestinationTable;
+
+            /// <summary>
+            /// Constructor that initializes internal fields which can be
+            /// read out by using the Properties of this Class.
+            /// </summary>
+            /// <param name="APartnerKey">PartnerKey of the Partner in the 'Forms Message'.</param>
+            /// <param name="AGiftDestinationTable">Edited Partner Gift Destination Table</param>
+            public FormsMessageGiftDestination(Int64 APartnerKey,
+                PPartnerGiftDestinationTable AGiftDestinationTable)
+            {
+                FPartnerKey = APartnerKey;
+                FGiftDestinationTable = AGiftDestinationTable;
+            }
+
+            /// <summary>PartnerKey of the Partner in the 'Forms Message'.</summary>
+            public Int64 PartnerKey
+            {
+                get
+                {
+                    return FPartnerKey;
+                }
+            }
+
+            /// <summary>Partner Class of the Partner in the 'Forms Message'.</summary>
+            public PPartnerGiftDestinationTable GiftDestinationTable
+            {
+                get
+                {
+                    return FGiftDestinationTable;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Holds Partner Data for 'Form Messages' of MessageClasses
+        /// <see cref="TFormsMessageClassEnum.mcUnitHierarchyChanged"></see>,
+        /// </summary>
+        public struct FormsMessageUnitHierarchy : IFormsMessageUnitHierarchyInterface
+        {
+            List <Tuple <string, Int64, Int64>>FUnitHierarchyChanges;
+
+            /// <summary>
+            /// Constructor that initializes internal fields which can be
+            /// read out by using the Properties of this Class.
+            /// </summary>
+            /// <param name="AUnitHierarchyChanges">All Unit Hierarchies that have been changed.</param>
+            public FormsMessageUnitHierarchy(List <Tuple <string, Int64, Int64>>AUnitHierarchyChanges)
+            {
+                FUnitHierarchyChanges = AUnitHierarchyChanges;
+            }
+
+            /// <summary>All Unit Hierarchies that have been changed.</summary>
+            public List <Tuple <string, Int64, Int64>>UnitHierarchyChanges
+            {
+                get
+                {
+                    return FUnitHierarchyChanges;
                 }
             }
         }

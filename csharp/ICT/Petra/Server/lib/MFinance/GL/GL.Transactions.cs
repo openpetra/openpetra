@@ -399,6 +399,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
             ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+
             TemplateTransactionRow.LedgerNumber = ALedgerNumber;
             TemplateTransactionRow.BatchNumber = ABatchNumber;
             ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);

@@ -236,9 +236,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrencyCodeForJournals = string.Empty;
             }
             else
-	        {
+            {
                 FCurrencyCodeForJournals = ARow.TransactionCurrency;
-	        }
+            }
 
             //Enable the transactions tab accordingly
             ((TFrmRecurringGLBatch)ParentForm).EnableTransactions(!JournalRowIsNull);
@@ -258,7 +258,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null || grdDetails.Rows.Count == 1)
+            if ((FPreviouslySelectedDetailRow == null) || (grdDetails.Rows.Count == 1))
             {
                 ALedgerRow LedgerRow =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
@@ -708,7 +708,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FucoFilterAndFind.DisplayFindTab();
         }
 
-         private void CurrencyCodeChanged(object sender, EventArgs e)
+        private void CurrencyCodeChanged(object sender, EventArgs e)
         {
             if (FPreviouslySelectedDetailRow == null)
             {
@@ -720,8 +720,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView CurrentJournalsDV = new DataView(FMainDS.ARecurringJournal);
 
             CurrentJournalsDV.RowFilter = string.Format("{0}={1}",
-                                                        ARecurringJournalTable.GetBatchNumberDBName(),
-                                                        FBatchNumber);
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                FBatchNumber);
 
             if (CurrentJournalsDV.Count > 1)
             {
@@ -733,6 +733,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
-
     }
 }
