@@ -424,6 +424,31 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// returns ledger table for specified ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadALedgerTable(Int32 ALedgerNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of batches for the given ledger
         /// also get the ledger for the base currency etc
         /// </summary>
