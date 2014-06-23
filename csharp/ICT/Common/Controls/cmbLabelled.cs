@@ -80,7 +80,7 @@ namespace Ict.Common.Controls
 
         /// <summary>Denotes what this Control regards as the identifier string of inactive combobox items.</summary>
         private static readonly string FInactiveIdentifier = "";
-        
+
         /// <summary>
         /// the Combobox that is part of this user control
         /// </summary>
@@ -105,11 +105,11 @@ namespace Ict.Common.Controls
         public static string InactiveIdentifier
         {
             get
-            {                
+            {
                 return FInactiveIdentifier;
             }
         }
-        
+
         /// <summary>
         /// This property determines which column should be sorted. This may be esential
         /// for heirs of this class which use more the one column in the combobox. The
@@ -582,16 +582,16 @@ namespace Ict.Common.Controls
 
         static TCmbLabelled()
         {
-            if (TCommonControlsHelper.SetInactiveIdentifier != null) 
+            if (TCommonControlsHelper.SetInactiveIdentifier != null)
             {
-                FInactiveIdentifier = TCommonControlsHelper.SetInactiveIdentifier() + " ";                        
-            }                    
+                FInactiveIdentifier = TCommonControlsHelper.SetInactiveIdentifier() + " ";
+            }
             else
             {
                 FInactiveIdentifier = "<INACTIVE> ";
             }
         }
-        
+
         /// <summary>
         /// default constructor
         /// </summary>

@@ -711,8 +711,10 @@ namespace Ict.Petra.Client.App.PetraClient
             // I18N: assign proper font which helps to read asian characters
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
             TAppSettingsManager.InitFontI18N();
-            
-            TCommonControlsHelper.SetInactiveIdentifier += delegate { return SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS; };
+
+            TCommonControlsHelper.SetInactiveIdentifier += delegate {
+                return SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS;
+            };
         }
 
         /// <summary>

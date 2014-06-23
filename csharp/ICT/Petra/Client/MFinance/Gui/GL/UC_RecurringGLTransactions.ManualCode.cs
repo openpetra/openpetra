@@ -213,6 +213,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FLoadCompleted = true;
             }
 
+            //Check for incorrect Exchange rate to base (mainly for existing Petra data)
+            foreach (DataRowView drv in FMainDS.ARecurringTransaction.DefaultView)
+            {
+                ARecurringTransactionRow rtr = (ARecurringTransactionRow)drv.Row;
+
+                if (rtr.ExchangeRateToBase == 0)
+                {
+                    rtr.ExchangeRateToBase = 1;
+                    FPetraUtilsObject.HasChanges = true;
+                }
+            }
+
             ShowData();
             SelectRowInGrid(1);
             ShowDetails(); //Needed because of how currency is handled

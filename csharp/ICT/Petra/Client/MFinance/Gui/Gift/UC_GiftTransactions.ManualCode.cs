@@ -153,7 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void BeginEditMode(object sender, EventArgs e)
         {
             FInEditMode = true;
-            SetKeyMinistryTextBoxInvisible(null, null);
+            SetKeyMinistryTextBoxInvisible();
         }
 
         private void EndEditMode(object sender, EventArgs e)
@@ -177,10 +177,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPreviouslySelectedDetailRow != null)
             {
                 txtDetailRecipientKeyMinistry.Text = FPreviouslySelectedDetailRow.RecipientKeyMinistry;
+                TLogging.Log("txtDetailRecipientKeyMinistry.Text: " + txtDetailRecipientKeyMinistry.Text);
             }
         }
 
-        private void SetKeyMinistryTextBoxInvisible(object sender, EventArgs e)
+        private void SetKeyMinistryTextBoxInvisible()
         {
             if (txtDetailRecipientKeyMinistry.Visible)
             {
@@ -768,17 +769,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            TLogging.Log("Keyminstry: " + KeyMinistry);
+
             try
             {
                 FInKeyMinistryChanging = true;
 
                 if (cmbKeyMinistries.Count == 0)
                 {
+                    TLogging.Log("No KeyMinistries");
                     cmbKeyMinistries.SelectedIndex = -1;
                     txtDetailRecipientKeyMinistry.Text = string.Empty;
                 }
                 else
                 {
+                    TLogging.Log("KeyMinistry exists: " + KeyMinistry);
                     txtDetailRecipientKeyMinistry.Text = KeyMinistry;
                     FPreviouslySelectedDetailRow.RecipientKeyMinistry = KeyMinistry;
                     txtDetailRecipientKey.Text = RecipientKey;
@@ -1136,6 +1141,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtField, APartnerKey, true);
+
+            if (Convert.ToInt64(txtField.Text) == 0)
+            {
+                txtField.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey,
+                    FPreviouslySelectedDetailRow.DateEntered).ToString();
+            }
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -1972,15 +1983,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
+            TLogging.Log("ShowDetails-01");
+
+            TLogging.Log("txtDetailRecipientKeyMinistry.Visible: " + txtDetailRecipientKeyMinistry.Visible.ToString());
+
             if (!txtDetailRecipientKeyMinistry.Visible)
             {
+                TLogging.Log("ShowDetails-02");
                 SetTextBoxOverlayOnKeyMinistryCombo();
             }
 
             if (ARow == null)
             {
+                TLogging.Log("ShowDetails-03");
                 return;
             }
+
+            TLogging.Log("ARow.RecipientKeyMinistry: " + ARow.RecipientKeyMinistry);
 
             try
             {

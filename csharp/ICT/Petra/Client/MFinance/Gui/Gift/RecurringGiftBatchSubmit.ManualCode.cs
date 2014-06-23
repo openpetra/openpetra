@@ -60,6 +60,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
+        /// dataset for the whole screen
+        public GiftBatchTDS MainDS
+        {
+            set
+            {
+                FMainDS = value;
+
+                FLedgerNumber = FMainDS.ALedger[0].LedgerNumber;
+                txtCurrencyCodeTo.Text = FMainDS.ALedger[0].BaseCurrency;
+
+                DateTime DefaultDate;
+                TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
+                    out FStartDateCurrentPeriod,
+                    out FEndDateLastForwardingPeriod,
+                    out DefaultDate);
+
+                lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+                    FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
+            }
+        }
+
         /// Batch number for the recurring batch to be submitted
         public ARecurringGiftBatchRow BatchRow
         {
@@ -84,33 +105,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// Initialize values
-        /// </summary>
-        public void InitializeManualCode()
+        private void InitializeManualCode()
         {
             dtpEffectiveDate.Date = DateTime.Now;
-        }
-
-        /// dataset for the whole screen
-        public GiftBatchTDS MainDS
-        {
-            set
-            {
-                FMainDS = value;
-
-                FLedgerNumber = FMainDS.ALedger[0].LedgerNumber;
-                txtCurrencyCodeTo.Text = FMainDS.ALedger[0].BaseCurrency;
-
-                DateTime DefaultDate;
-                TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
-                    out FStartDateCurrentPeriod,
-                    out FEndDateLastForwardingPeriod,
-                    out DefaultDate);
-
-                lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                    FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
-            }
         }
 
         private void LookupCurrencyExchangeRates(DateTime ADate)

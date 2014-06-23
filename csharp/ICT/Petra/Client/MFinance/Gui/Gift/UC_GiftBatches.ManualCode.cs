@@ -1603,11 +1603,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RefreshCurrencyAndExchangeRateControls(bool AFromUserAction = false)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+
+            if ((FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
+            }
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
 

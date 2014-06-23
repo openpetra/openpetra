@@ -530,9 +530,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PBankTable.GetPartnerKeyDBName(),
                 null);
             // filter rows that are blank or <INACTIVE>
-            cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '" + SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ') " +
+            cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '" +
+                                 SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '') " +
-                                 "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '" + SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ')";
+                                 "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '" +
+                                 SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ')";
             cmbBankCode.SelectedValueChanged += new System.EventHandler(this.BankCodeChanged);
         }
 
@@ -632,7 +634,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && (FCurrentBankRow != null)
                  && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
-                || ((cmbBankCode.GetSelectedString() == SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ") && ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " "))))
+                || ((cmbBankCode.GetSelectedString() == SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ")
+                    && ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " "))))
             {
                 // if "<INACTIVE>" has been selected change it to blank
                 FCurrentBankRow = FBankDataset.PBank.NewRowTyped();
