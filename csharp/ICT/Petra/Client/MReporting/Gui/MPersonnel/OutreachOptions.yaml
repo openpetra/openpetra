@@ -4,7 +4,7 @@ RootNode:
     FormTitle: Outreach Options Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MPersonnel
     TemplateParameters:
-        XMLFILES: [Personnel\\\\campaignoptions.xml]
+        XMLFILES: [Personnel\\\\outreachoptions.xml]
         REPORTNAME: Outreach Options
         CURRENTREPORT: Outreach Options
         CONTROLSUSPENDLAYOUT: BLANK

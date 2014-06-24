@@ -476,6 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             // the user has to select an existing partner to make that partner a supplier
             if (TPartnerFindScreenManager.OpenModalForm("",
+                    TPartnerClass.ORGANISATION,
                     out PartnerKey,
                     out ResultStringLbl,
                     out PartnerClass,

@@ -43,7 +43,7 @@ namespace Ict.Petra.Shared.MFinance
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
         public static void UpdateTotalsOfJournal(ref GLBatchTDS AMainDS,
-            GLBatchTDSAJournalRow ACurrentJournal)
+            ref GLBatchTDSAJournalRow ACurrentJournal)
         {
             if (ACurrentJournal == null)
             {
@@ -99,7 +99,7 @@ namespace Ict.Petra.Shared.MFinance
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
         public static void UpdateTotalsOfRecurringJournal(ref GLBatchTDS AMainDS,
-            GLBatchTDSARecurringJournalRow ACurrentJournal)
+            ref GLBatchTDSARecurringJournalRow ACurrentJournal)
         {
             if (ACurrentJournal == null)
             {
@@ -164,14 +164,14 @@ namespace Ict.Petra.Shared.MFinance
                 AJournalTable.GetBatchNumberDBName(),
                 ACurrentBatch.BatchNumber);
 
-            foreach (DataRowView journalview in jnlDataView)
+            foreach (DataRowView journalView in jnlDataView)
             {
-                GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
+                GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)journalView.Row;
 
-                UpdateTotalsOfJournal(ref AMainDS, journalrow);
+                UpdateTotalsOfJournal(ref AMainDS, ref journalRow);
 
-                ACurrentBatch.BatchDebitTotal += journalrow.JournalDebitTotal;
-                ACurrentBatch.BatchCreditTotal += journalrow.JournalCreditTotal;
+                ACurrentBatch.BatchDebitTotal += journalRow.JournalDebitTotal;
+                ACurrentBatch.BatchCreditTotal += journalRow.JournalCreditTotal;
             }
         }
 
@@ -189,7 +189,7 @@ namespace Ict.Petra.Shared.MFinance
             ACurrentBatch.BatchDebitTotal -= ACurrentJournal.JournalDebitTotal;
             ACurrentBatch.BatchCreditTotal -= ACurrentJournal.JournalCreditTotal;
 
-            UpdateTotalsOfJournal(ref AMainDS, ACurrentJournal);
+            UpdateTotalsOfJournal(ref AMainDS, ref ACurrentJournal);
 
             //Add updated Journals amounts
             ACurrentBatch.BatchDebitTotal += ACurrentJournal.JournalDebitTotal;
@@ -212,14 +212,14 @@ namespace Ict.Petra.Shared.MFinance
                 ARecurringJournalTable.GetBatchNumberDBName(),
                 ACurrentBatch.BatchNumber);
 
-            foreach (DataRowView journalview in jnlDataView)
+            foreach (DataRowView journalView in jnlDataView)
             {
-                GLBatchTDSARecurringJournalRow journalrow = (GLBatchTDSARecurringJournalRow)journalview.Row;
+                GLBatchTDSARecurringJournalRow journalRow = (GLBatchTDSARecurringJournalRow)journalView.Row;
 
-                UpdateTotalsOfRecurringJournal(ref AMainDS, journalrow);
+                UpdateTotalsOfRecurringJournal(ref AMainDS, ref journalRow);
 
-                ACurrentBatch.BatchDebitTotal += journalrow.JournalDebitTotal;
-                ACurrentBatch.BatchCreditTotal += journalrow.JournalCreditTotal;
+                ACurrentBatch.BatchDebitTotal += journalRow.JournalDebitTotal;
+                ACurrentBatch.BatchCreditTotal += journalRow.JournalCreditTotal;
             }
         }
 

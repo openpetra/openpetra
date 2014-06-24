@@ -303,17 +303,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
             txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
 
-            if (rbtPeriod.Checked)
+            if (txtStartPeriod.Text.Length == 0)
             {
-                if (txtStartPeriod.Text.Length == 0)
-                {
-                    txtStartPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
-                }
+                txtStartPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
+            }
 
-                if (txtEndPeriod.Text.Length == 0)
-                {
-                    txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
-                }
+            if (txtEndPeriod.Text.Length == 0)
+            {
+                txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
             }
 
             if (cmbPeriodYear.SelectedIndex == -1)

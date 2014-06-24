@@ -28,12 +28,15 @@ using System.IO;
 using System.Windows.Forms;
 
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Verification;
+
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -45,50 +48,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public partial class TFrmRecurringGiftBatchSubmit
     {
-        /// <summary>
-        /// Initialize values
-        /// </summary>
-        public void InitializeManualCode()
-        {
-            dtpEffectiveDate.Date = DateTime.Now;
-        }
-
         private GiftBatchTDS FMainDS;
         private Int32 FLedgerNumber;
         private Int32 FBatchNumber;
-        private ARecurringGiftBatchRow batchRow;
-
-        private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
-
-        /// Batch number for the recurring batch to be submitted
-        public ARecurringGiftBatchRow BatchRow
-
-        {
-            set
-            {
-                batchRow = value;
-                FBatchNumber = batchRow.BatchNumber;
-                txtExchangeRateToBase.Text = TExchangeRateCache.GetDailyExchangeRate(
-                    FMainDS.ALedger[0].BaseCurrency,
-                    batchRow.CurrencyCode,
-                    DateTime.Now).ToString();
-                txtCurrencyCodeFrom.Text = batchRow.CurrencyCode;
-
-                if (batchRow.CurrencyCode == FMainDS.ALedger[0].BaseCurrency)
-                {
-                    txtExchangeRateToBase.Enabled = false;
-                    txtExchangeRateToBase.BackColor = Color.LightPink;
-                }
-                else
-                {
-                    txtExchangeRateToBase.Enabled = true;
-                    txtExchangeRateToBase.BackColor = Color.Empty;
-                }
-            }
-        }
+        private ARecurringGiftBatchRow FBatchRow;
+        private Decimal FExchangeRateToBase = 0;
+        private Decimal FExchangeRateIntlToBase = 0;
 
         DateTime FStartDateCurrentPeriod;
         DateTime FEndDateLastForwardingPeriod;
+
+        private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
+
         /// dataset for the whole screen
         public GiftBatchTDS MainDS
         {
@@ -104,11 +75,87 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     out FStartDateCurrentPeriod,
                     out FEndDateLastForwardingPeriod,
                     out DefaultDate);
+
                 lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                     FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
             }
         }
 
+        /// Batch number for the recurring batch to be submitted
+        public ARecurringGiftBatchRow BatchRow
+        {
+            set
+            {
+                FBatchRow = value;
+                FBatchNumber = FBatchRow.BatchNumber;
+                txtCurrencyCodeFrom.Text = FBatchRow.CurrencyCode;
+
+                if (FBatchRow.CurrencyCode == FMainDS.ALedger[0].BaseCurrency)
+                {
+                    txtExchangeRateToBase.Enabled = false;
+                    txtExchangeRateToBase.BackColor = Color.LightPink;
+                }
+                else
+                {
+                    txtExchangeRateToBase.Enabled = true;
+                    txtExchangeRateToBase.BackColor = Color.Empty;
+                }
+
+                LookupCurrencyExchangeRates(DateTime.Now);
+            }
+        }
+
+        private void InitializeManualCode()
+        {
+            dtpEffectiveDate.Date = DateTime.Now;
+        }
+
+        private void LookupCurrencyExchangeRates(DateTime ADate)
+        {
+            FExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
+                FBatchRow.CurrencyCode,
+                FMainDS.ALedger[0].BaseCurrency,
+                ADate);
+
+            txtExchangeRateToBase.Text = FExchangeRateToBase.ToString();
+
+            FExchangeRateIntlToBase = InternationalCurrencyExchangeRate(ADate);
+        }
+
+        private decimal InternationalCurrencyExchangeRate(DateTime ABatchEffectiveDate)
+        {
+            decimal IntlToBaseCurrencyExchRate = 1;
+
+            string BatchCurrencyCode = FBatchRow.CurrencyCode;
+            DateTime StartOfMonth = new DateTime(ABatchEffectiveDate.Year, ABatchEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            if (LedgerBaseCurrency == LedgerIntlCurrency)
+            {
+                TLogging.Log("Intl:1");
+                IntlToBaseCurrencyExchRate = 1;
+            }
+            else
+            {
+                IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                    LedgerIntlCurrency,
+                    StartOfMonth,
+                    ABatchEffectiveDate);
+
+                if (IntlToBaseCurrencyExchRate == 0)
+                {
+                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                        LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        ABatchEffectiveDate);
+
+                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+
+            return IntlToBaseCurrencyExchRate;
+        }
 
         /// <summary>
         /// this submits the given Batch number
@@ -130,7 +177,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //check the gift batch date
             if (dtpEffectiveDate.Date < FStartDateCurrentPeriod)
             {
-                MessageBox.Show(Catalog.GetString("Your date was before the allowed posting period start date: " +
+                MessageBox.Show(Catalog.GetString("The batch date is before the allowed posting period start date: " +
                         FStartDateCurrentPeriod.ToShortDateString()));
                 dtpEffectiveDate.Focus();
                 dtpEffectiveDate.SelectAll();
@@ -139,7 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (dtpEffectiveDate.Date > FEndDateLastForwardingPeriod)
             {
-                MessageBox.Show(Catalog.GetString("Your date was later than the allowed posting period end date: " +
+                MessageBox.Show(Catalog.GetString("The batch date is later than the allowed posting period end date: " +
                         FEndDateLastForwardingPeriod.ToShortDateString()));
                 dtpEffectiveDate.Focus();
                 dtpEffectiveDate.SelectAll();
@@ -176,8 +223,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!validGiftDetailFound)
             {
-                MessageBox.Show(Catalog.GetString("There are no gifts in this batch that are active or ") + Environment.NewLine +
-                    Catalog.GetString("where the entered Gift Batch date falls within the Donation Period."));
+                MessageBox.Show(Catalog.GetString("There are no active gifts in this batch ") + Environment.NewLine +
+                    Catalog.GetString("where the entered Gift Batch date falls within the relevant Start/End Donation Period."));
 
                 dtpEffectiveDate.Focus();
                 dtpEffectiveDate.SelectAll();
@@ -187,7 +234,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Hashtable requestParams = new Hashtable();
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
                 requestParams.Add("ABatchNumber", FBatchNumber);
-                requestParams.Add("AExchangeRateToBase", Convert.ToDecimal(txtExchangeRateToBase.Text));
+                requestParams.Add("AExchangeRateToBase", FExchangeRateToBase);
+                requestParams.Add("AExchangeRateIntlToBase", FExchangeRateIntlToBase);
                 requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date.Value);
 
                 TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams);
@@ -218,10 +266,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (DateTime.TryParse(aDate, out dateValue))
             {
-                txtExchangeRateToBase.Text = TExchangeRateCache.GetDailyExchangeRate(
-                    txtCurrencyCodeTo.Text,
-                    txtCurrencyCodeFrom.Text,
-                    dateValue).ToString();
+                LookupCurrencyExchangeRates(dateValue);
             }
             else
             {

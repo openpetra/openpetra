@@ -5,7 +5,7 @@ RootNode:
     FormType: browse
     Template: window
     WindowWidth: 410
-    WindowHeight: 260
+    WindowHeight: 230
     Actions:
         actSubmitBatch: {Label=&OK, ActionClick=SubmitBatch}
         actClose: {Label=&Cancel, ActionClick=BtnCloseClick}

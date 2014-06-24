@@ -1612,8 +1612,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 {
                     DateTime dateStart = AParameters["param_start_date"].ToDate();
                     DateTime dateEnd = AParameters["param_end_date"].ToDate();
-                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= " + dateStart.ToString("yyyy-MM-dd") +
-                                 " AND GiftBatch.a_gl_effective_date_d <= " + dateEnd.ToString("yyyy-MM-dd") + " ";
+                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= '" + dateStart.ToString("yyyy-MM-dd") + "'" +
+                                 " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString("yyyy-MM-dd") + "' ";
                 }
 
                 String Query = "SELECT ";
@@ -1628,7 +1628,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
 
                 Query +=
-                    "MotivationDetail.a_account_code_c AS AccountCode, SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, "
+                    "MotivationDetail.a_account_code_c AS AccountCode, SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, SUM(GiftDetail.a_gift_amount_intl_n) AS GiftIntlAmount, SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, "
                     +
                     "GiftDetail.p_recipient_key_n AS RecipientKey, Partner.p_partner_short_name_c AS RecipientShortname, " +
                     "Partner.p_partner_short_name_c AS Narrative " +
@@ -1676,22 +1676,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
                 DataTable resultTable = DbAdapter.RunQuery(Query, "Gifts", Transaction);
 
-                resultTable.Columns.Add("GiftIntlAmount", typeof(Decimal));
                 resultTable.Columns.Add("Reference", typeof(string));
-
-                Boolean InternationalCurrency = AParameters["param_currency"].ToString().ToLower().StartsWith("int");
-                Double ExchangeRate = 1.00;  // TODO Get exchange rate!
 
                 foreach (DataRow r in resultTable.Rows)
                 {
                     if (DbAdapter.IsCancelled)
                     {
                         return resultTable;
-                    }
-
-                    if (InternationalCurrency)
-                    {
-                        r["GiftIntlAmount"] = (Decimal)(Convert.ToDouble(r["GiftBaseAmount"]) * ExchangeRate);
                     }
 
                     r["Reference"] = StringHelper.PartnerKeyToStr(Convert.ToInt64(r["RecipientKey"]));

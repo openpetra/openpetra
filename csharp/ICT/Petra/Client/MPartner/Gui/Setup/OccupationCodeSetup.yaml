@@ -12,9 +12,15 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actAccept: {Label=&Accept, ActionClick=BtnAccept_Click}
+        actCancel: {Label=&Cancel, ActionClick=BtnCancel_Click}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlGridAndModal, pnlDetails]
+            Dock: Fill
+        pnlGridAndModal:
+            Controls: [pnlGrid, pnlAcceptCancelButtons]
+            ControlsOrientation: horizontal
             Dock: Fill
         pnlGrid:
             Dock: Fill
@@ -27,24 +33,37 @@ RootNode:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
-        btnNew:
-            Action: actNew
-            Width: 80
-        btnDelete:
-            Action: actDelete
-            Width: 80
-        grdDetails:
-            Dock: Fill
-            Columns: [DetailOccupationCode, DetailOccupationDescription, DetailValidOccupation, DetailDeletable]
-            SortOrder: DetailOccupationCode ASC
-            ActionFocusRow: FocusedRowChanged
+        pnlAcceptCancelButtons:
+            Dock: Right
+            Controls: [btnAccept, btnCancel]
+            ControlsOrientation: vertical
+            Visible: false
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailOccupationCode, txtDetailOccupationDescription]
                 Row1: [chkDetailValidOccupation]
                 Row2: [chkDetailDeletable]
+  
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailOccupationCode, DetailOccupationDescription, DetailValidOccupation, DetailDeletable]
+            SortOrder: DetailOccupationCode ASC
+            ActionFocusRow: FocusedRowChanged
         txtDetailOccupationCode: {Label=Occupation Code, CharacterCasing=Upper}
         txtDetailOccupationDescription: {Width=205}
         chkDetailValidOccupation: {Label=Assignable}
         chkDetailDeletable:
+
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        btnAccept:
+            Action: actAccept
+            Width: 80
+        btnCancel:
+            Action: actCancel
+            Width: 80

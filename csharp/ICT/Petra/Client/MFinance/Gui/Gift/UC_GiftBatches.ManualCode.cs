@@ -58,6 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FBatchDescription = string.Empty;
         private Boolean FPostingInProgress = false;
         private bool FActiveOnly = false;
+        private string FSelectedBatchMethodOfPayment = String.Empty;
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
@@ -95,11 +96,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public Int32 FSelectedBatchNumber = -1;
 
-        /// <summary>
-        /// Stores the current batch's method of payment
-        /// </summary>//
-        public string FSelectedBatchMethodOfPayment = String.Empty;
-
         private Boolean ViewMode
         {
             get
@@ -123,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             get
             {
-                return cmbDetailMethodOfPaymentCode.GetSelectedString();
+                return FSelectedBatchMethodOfPayment;
             }
         }
 
@@ -1607,11 +1603,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RefreshCurrencyAndExchangeRateControls(bool AFromUserAction = false)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+
+            if ((FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
+            }
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
 

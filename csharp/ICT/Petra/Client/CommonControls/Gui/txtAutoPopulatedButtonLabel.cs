@@ -61,6 +61,9 @@ namespace Ict.Petra.Client.CommonControls
     /// <summary>Partner found</summary>
     public delegate void TDelegatePartnerChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection);
 
+    /// <summary>Partner found</summary>
+    public delegate void TDelegateOccupationFound(string AOccupationCode);
+
     /// <summary>Dataset changed</summary>
     public delegate void TDelegateDatasetChanged(DataSet ADataset);
 
@@ -538,6 +541,17 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// This property gets and sets the Text of this control.
+        /// </summary>
+        public CharacterCasing CharacterCasing
+        {
+            set
+            {
+                this.txtAutoPopulated.txtTextBox.CharacterCasing = value;
+            }
+        }
+
+        /// <summary>
         /// Sets the BorderStyle of the underlying TextBox.
         /// </summary>
         public new System.Windows.Forms.BorderStyle BorderStyle
@@ -566,6 +580,11 @@ namespace Ict.Petra.Client.CommonControls
         /// This property is used to provide a function which sets the Label's and TextBox's Texts.
         /// </summary>
         public event TDelegatePartnerChanged ValueChanged;
+
+        /// <summary>
+        /// This property is used to provide a function which sets the Label's and TextBox's Texts.
+        /// </summary>
+        public event TDelegateOccupationFound OccupationFound;
 
         /// <summary>
         /// This property is used to provide a function which sets the Label's and TextBox's Texts.
@@ -1638,12 +1657,53 @@ namespace Ict.Petra.Client.CommonControls
 
                             // call Progress from here
                             // TLogging.log('txtAutoPopulated_ButtonClick');
-//TODO                            mCmdMPartner.OpenOccupationFindScreen(this.ParentForm, out mResultStringTxt);
-                            mResultStringTxt = "TODO";
 
-                            // I can only return the Occupation Code
-                            TextBoxStringOut = mResultStringTxt;
-                            LabelStringOut = null;
+                            // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
+                            if (TCommonScreensForwarding.OpenOccupationCodeFindScreen != null)
+                            {
+                                // delegate IS defined
+                                // TLogging.Log('PartnerFindScreen is assigned!', [TLoggingType.ToLogfile]);
+                                try
+                                {
+                                    mResultStringTxt = mTextBoxStringOld;
+
+                                    TCommonScreensForwarding.OpenOccupationCodeFindScreen.Invoke(ref mResultStringTxt,
+                                        this.ParentForm);
+
+                                    mResultStringLbl = "";
+
+                                    if (!string.IsNullOrEmpty(mResultStringTxt))
+                                    {
+                                        TextBoxStringOut = mResultStringTxt;
+                                        LabelStringOut = mResultStringLbl;
+
+                                        if (OccupationFound != null)
+                                        {
+                                            OccupationFound(mResultStringTxt);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        TextBoxStringOut = "";
+                                        LabelStringOut = "";
+                                    }
+                                }
+                                catch (Exception exp)
+                                {
+                                    TextBoxStringOut = "";
+                                    LabelStringOut = "";
+                                    throw new EOPAppException("Exception occured while calling OccupationCodeFindScreen Delegate!", exp);
+                                }
+
+                                // end try
+                            }
+                            // end IS assigned
+                            else
+                            {
+                                // delegate IS NOT defined
+                                throw new EOPAppException(
+                                    "DEVELOPER ERROR: OpenOccupationCodeFindScreen Delegate must be assigned on this Control to be able to open a Occupation Code screen!");
+                            }
 
                             // End TListTableEnum.OccupationList:
                             #endregion

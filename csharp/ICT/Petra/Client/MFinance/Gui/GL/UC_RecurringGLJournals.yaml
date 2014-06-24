@@ -69,8 +69,8 @@ RootNode:
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
         # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual
-        #cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
-        cmbDetailTransactionTypeCode:
-            Label: Transaction Type
-            OptionalValues: [STD]
-        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
+        cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
+        #cmbDetailTransactionTypeCode:
+        #    Label: Transaction Type
+        #    OptionalValues: [STD]
+        cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList, CurrencyChanged}

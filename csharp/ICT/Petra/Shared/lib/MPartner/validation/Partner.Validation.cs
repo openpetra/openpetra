@@ -131,12 +131,14 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>void</returns>
-        public static void ValidatePartnerPersonManual(object AContext, PPersonRow ARow,
+        public static void ValidatePartnerPersonManual(object AContext, PPersonRow ARow, TGetCacheableDataTableFromCache ACacheRetriever,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -178,6 +180,32 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'OccupationCode' must be valid
+            ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnOccupationCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!string.IsNullOrEmpty(ARow.OccupationCode))
+                {
+                    Type tmp;
+                    DataTable CachedDT = ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum),
+                            TCacheablePartnerTablesEnum.OccupationList), out tmp);
+                    DataRow FoundDR = CachedDT.Rows.Find(new object[] { ARow.OccupationCode });
+
+                    if (FoundDR == null)
+                    {
+                        VerificationResult = new TVerificationResult(ValidationControlsData.ValidationControl, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_OCCUPATIONCODE_INVALID, new string[] { ARow.OccupationCode }));
+                        VerificationResult = new TScreenVerificationResult(VerificationResult,
+                            ValidationColumn,
+                            ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
             }
         }
 

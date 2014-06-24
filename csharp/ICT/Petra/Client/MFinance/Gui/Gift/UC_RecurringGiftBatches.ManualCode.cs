@@ -48,6 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FInitialFocusActionComplete = false;
         //private string FBatchDescription = string.Empty;
         private bool FActiveOnly = false;
+        private string FSelectedBatchMethodOfPayment = String.Empty;
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
@@ -63,11 +64,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public Int32 FSelectedBatchNumber = -1;
 
         /// <summary>
-        /// Stores the current batch's method of payment
-        /// </summary>//
-        public string FSelectedBatchMethodOfPayment = String.Empty;
-
-        /// <summary>
         /// return the method of Payment for the transaction tab
         /// </summary>
 
@@ -75,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             get
             {
-                return cmbDetailMethodOfPaymentCode.GetSelectedString();
+                return FSelectedBatchMethodOfPayment;
             }
         }
 
@@ -461,6 +457,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             RefreshBankAccountAndCostCentreFilters(FActiveOnly, ARow);
 
+            RefreshCurrencyControls(FPreviouslySelectedDetailRow.CurrencyCode);
+
             FPetraUtilsObject.DetailProtectedMode = false;
 
             UpdateChangeableStatus();
@@ -490,6 +488,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void NewRow(System.Object sender, EventArgs e)
         {
             this.CreateNewARecurringGiftBatch();
+
+            ((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges();
+
             txtDetailBatchDescription.Focus();
 
             UpdateRecordNumberDisplay();
@@ -573,6 +574,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
+                //causes saving issues
+                //UpdateLedgerTableSettings();
+
                 if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                 {
                     MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
@@ -598,6 +602,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
 
+        private void UpdateLedgerTableSettings()
+        {
+            int LedgerLastRecurringGiftBatchNumber = 0;
+
+            //Update the last recurring gift batch number
+            DataView RecurringGiftBatchDV = new DataView(FMainDS.ARecurringGiftBatch);
+
+            RecurringGiftBatchDV.RowFilter = string.Empty;
+            RecurringGiftBatchDV.Sort = string.Format("{0} DESC",
+                ARecurringGiftBatchTable.GetBatchNumberDBName());
+
+            //Recurring batch numbers can be reused so reset current highest number
+            if (RecurringGiftBatchDV.Count > 0)
+            {
+                LedgerLastRecurringGiftBatchNumber = (int)(RecurringGiftBatchDV[0][ARecurringGiftBatchTable.GetBatchNumberDBName()]);
+            }
+
+            if (FMainDS.ALedger[0].LastRecGiftBatchNumber != LedgerLastRecurringGiftBatchNumber)
+            {
+                FMainDS.ALedger[0].LastRecGiftBatchNumber = LedgerLastRecurringGiftBatchNumber;
+            }
+        }
+
         private void MethodOfPaymentChanged(object sender, EventArgs e)
         {
             FSelectedBatchMethodOfPayment = cmbDetailMethodOfPaymentCode.GetSelectedString();
@@ -612,8 +639,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
 
-            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
-            ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+            if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null))
+            {
+                FPreviouslySelectedDetailRow.CurrencyCode = ACurrencyCode;
+                RefreshCurrencyControls(ACurrencyCode);
+            }
         }
 
         private void HashTotalChanged(object sender, EventArgs e)
@@ -767,11 +797,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.ShowCell(FPrevRowChangedRow);
         }
 
-        private void Submit(System.Object sender, System.EventArgs e)
+        private void SubmitBatch(System.Object sender, System.EventArgs e)
         {
             if (FPreviouslySelectedDetailRow == null)
             {
-                // saving failed, therefore do not try to post
                 MessageBox.Show(Catalog.GetString("Please select a Batch before submitting."));
                 return;
             }
@@ -781,9 +810,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // save first, then post
                 if (!((TFrmRecurringGiftBatch)ParentForm).SaveChanges())
                 {
-                    // saving failed, therefore do not try to post
-                    MessageBox.Show(Catalog.GetString("The batch was not submitted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please first save the batch, and then submit it!"));
+                    // saving failed, therefore do not try to submit
+                    MessageBox.Show(Catalog.GetString(
+                            "The recurring batch was not submitted due to problems during saving; ") + Environment.NewLine +
+                        Catalog.GetString("Please fix the batch first and then submit it."),
+                        Catalog.GetString("Submit Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -804,11 +835,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!AccountIsActive(FPreviouslySelectedDetailRow.BankAccountCode) || !CostCentreIsActive(FPreviouslySelectedDetailRow.BankCostCentre))
             {
-                MessageBox.Show(String.Format(Catalog.GetString(
-                            "Recurring batch no. {0} cannot be submitted because it contains an inactive bank account or cost centre code"),
-                        FPreviouslySelectedDetailRow.BatchNumber),
-                    Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (MessageBox.Show(String.Format(Catalog.GetString(
+                                "Recurring batch no. {0} contains an inactive bank account or cost centre code. Do you want to continue submitting?"),
+                            FPreviouslySelectedDetailRow.BatchNumber),
+                        Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning) == DialogResult.No)
+                {
+                    return;
+                }
             }
 
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(FPetraUtilsObject.GetForm());
@@ -824,6 +858,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 submitForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
             }
+        }
+
+        private void RefreshCurrencyControls(string ACurrencyCode)
+        {
+            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
+            ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
         }
     }
 }

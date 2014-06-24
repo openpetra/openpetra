@@ -18,13 +18,13 @@ RootNode:
             Controls: [tabRecurringGLBatch]
             Dock: Fill
         tabRecurringGLBatch: {Dock=Fill, DragTabPageEnabled=false}
-        tpgBatches:
+        tpgRecurringBatches:
             Label: Batches
             Controls: [ucoRecurringBatches]
-        tpgJournals:
+        tpgRecurringJournals:
             Label: Journals
             Controls: [ucoRecurringJournals]
-        tpgTransactions:
+        tpgRecurringTransactions:
             Label: Transactions
             Controls: [ucoRecurringTransactions]
         ucoRecurringBatches:

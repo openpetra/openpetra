@@ -183,6 +183,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 pm.Add("param_date_title", PeriodTitle);
             }
+            else
+            {
+                String PeriodTitle = " " + pm.Get("param_start_date").DateToString("yyyy-MM-dd") + " - " +
+                                     pm.Get("param_end_date").DateToString("yyyy-MM-dd");
+
+                pm.Add("param_date_title", PeriodTitle);
+            }
 
             TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
                                "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";

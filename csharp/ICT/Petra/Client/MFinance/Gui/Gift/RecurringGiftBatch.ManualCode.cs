@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                ucoBatches.LoadBatches(FLedgerNumber);
+                ucoRecurringBatches.LoadBatches(FLedgerNumber);
 
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
@@ -61,19 +61,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-            ucoBatches.RefreshAll();
+            ucoRecurringBatches.RefreshAll();
         }
 
         // Before the dataset is saved, check for correlation between batch and transactions
         private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
-            ucoBatches.CheckBeforeSavingBatch();
+            ucoRecurringBatches.CheckBeforeSavingBatch();
         }
 
         private void InitializeManualCode()
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-            this.tpgTransactions.Enabled = false;
+            this.tpgRecurringTransactions.Enabled = false;
 
             //FPetraUtilsObject.OnDataSavingStart
         }
@@ -88,11 +88,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             switch (tabGiftBatch.SelectedIndex)
             {
                 case (int)eGiftTabs.Batches:
-                    ucoBatches.MniFilterFind_Click(sender, e);
+                    ucoRecurringBatches.MniFilterFind_Click(sender, e);
                     break;
 
                 case (int)eGiftTabs.Transactions:
-                    ucoTransactions.MniFilterFind_Click(sender, e);
+                    ucoRecurringTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
         }
@@ -107,15 +107,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.Shown += delegate
             {
                 // This will ensure the grid gets the focus when the screen is shown for the first time
-                ucoBatches.SetInitialFocus();
+                ucoRecurringBatches.SetInitialFocus();
             };
         }
 
         private void RunOnceOnActivationManual()
         {
-            ucoBatches.Focus();
-            HookupAllInContainer(ucoBatches);
-            HookupAllInContainer(ucoTransactions);
+            ucoRecurringBatches.Focus();
+            HookupAllInContainer(ucoRecurringBatches);
+            HookupAllInContainer(ucoRecurringTransactions);
             this.Resize += new EventHandler(TFrmGiftBatch_Resize);
         }
 
@@ -126,22 +126,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // set the flag that we are maximized
                 FWindowIsMaximized = true;
 
-                if (tabGiftBatch.SelectedTab == this.tpgBatches)
+                if (tabGiftBatch.SelectedTab == this.tpgRecurringBatches)
                 {
-                    ucoTransactions.AutoSizeGrid();
+                    ucoRecurringTransactions.AutoSizeGrid();
                     Console.WriteLine("Maximised - autosizing transactions");
                 }
                 else
                 {
-                    ucoBatches.AutoSizeGrid();
+                    ucoRecurringBatches.AutoSizeGrid();
                     Console.WriteLine("Maximised - autosizing batches");
                 }
             }
             else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
             {
                 // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                ucoBatches.AutoSizeGrid();
-                ucoTransactions.AutoSizeGrid();
+                ucoRecurringBatches.AutoSizeGrid();
+                ucoRecurringTransactions.AutoSizeGrid();
                 FWindowIsMaximized = false;
                 Console.WriteLine("Normal - autosizing both");
             }
@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if new transactions were actually loaded, False if transactions have already been loaded for the ledger/batch</returns>
         public bool LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
+            return this.ucoRecurringTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
         }
 
         /// <summary>
@@ -163,27 +163,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ClearCurrentSelections()
         {
-            if (this.ucoBatches != null)
+            if (this.ucoRecurringBatches != null)
             {
-                this.ucoBatches.ClearCurrentSelection();
+                this.ucoRecurringBatches.ClearCurrentSelection();
             }
 
-            if (this.ucoTransactions != null)
+            if (this.ucoRecurringTransactions != null)
             {
-                this.ucoTransactions.ClearCurrentSelection();
+                this.ucoRecurringTransactions.ClearCurrentSelection();
             }
         }
 
         /// enable the transaction tab page
         public void EnableTransactionsTab(bool AEnable = true)
         {
-            this.tpgTransactions.Enabled = AEnable;
+            this.tpgRecurringTransactions.Enabled = AEnable;
         }
 
         /// enable the transaction tab page
         public void DisableTransactionsTab()
         {
-            this.tpgTransactions.Enabled = false;
+            this.tpgRecurringTransactions.Enabled = false;
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public TUC_RecurringGiftBatches GetBatchControl()
         {
-            return ucoBatches;
+            return ucoRecurringBatches;
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public TUC_RecurringGiftTransactions GetTransactionsControl()
         {
-            return ucoTransactions;
+            return ucoRecurringTransactions;
         }
 
         /// this window contains 2 tabs
@@ -246,19 +246,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ATab == eGiftTabs.Batches)
             {
-                this.tabGiftBatch.SelectedTab = this.tpgBatches;
-                this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
-                this.ucoBatches.SetFocusToGrid();
+                this.tabGiftBatch.SelectedTab = this.tpgRecurringBatches;
+                this.tpgRecurringTransactions.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
+                this.ucoRecurringBatches.SetFocusToGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
-                if (this.tpgTransactions.Enabled)
+                if (this.tpgRecurringTransactions.Enabled)
                 {
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
                     // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
-                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                    this.tabGiftBatch.SelectedTab = this.tpgRecurringTransactions;
 
-                    ARecurringGiftBatchRow SelectedRow = ucoBatches.GetSelectedDetailRow();
+                    ARecurringGiftBatchRow SelectedRow = ucoRecurringBatches.GetSelectedDetailRow();
 
                     // If there's only one GiftBatch row, I'll not require that the user has selected it!
                     if (FMainDS.ARecurringGiftBatch.Rows.Count == 1)
@@ -275,7 +275,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             if (LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber))
                             {
                                 // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
-                                ucoTransactions.AutoSizeGrid();
+                                ucoRecurringTransactions.AutoSizeGrid();
                             }
                         }
                         finally
@@ -284,7 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
 
-                    this.ucoTransactions.FocusGrid();
+                    this.ucoRecurringTransactions.FocusGrid();
                 }
             }
         }
@@ -304,11 +304,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return true;
             }
 
-            if ((tabGiftBatch.SelectedTab == tpgBatches) && (ucoBatches.ProcessParentCmdKey(ref msg, keyData)))
+            if ((tabGiftBatch.SelectedTab == tpgRecurringBatches) && (ucoRecurringBatches.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }
-            else if ((tabGiftBatch.SelectedTab == tpgTransactions) && (ucoTransactions.ProcessParentCmdKey(ref msg, keyData)))
+            else if ((tabGiftBatch.SelectedTab == tpgRecurringTransactions) && (ucoRecurringTransactions.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }
