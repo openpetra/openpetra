@@ -1779,11 +1779,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             DataTable resultTable = null;
 
-            String OrderBy = " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c";
+            String OrderBy = " ORDER BY a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c, glm.a_account_code_c";
 
             if (AParameters["param_sortby"].ToString() == "Account")
             {
-                OrderBy = " ORDER BY glm.a_account_code_c, glm.a_cost_centre_code_c";
+                OrderBy = " ORDER BY glm.a_account_code_c, a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c";
             }
             try
             {
@@ -1792,6 +1792,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                " glmp.a_period_number_i AS Period," +
                                " glm.a_cost_centre_code_c AS CostCentreCode," +
                                " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
+                               " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
                                " a_account.a_debit_credit_indicator_l AS IsDebit," +
                                " glmp."+ ActualFieldName + " AS Balance," +
                                " 0.0 as Debit, " +
