@@ -192,7 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Checks various things on the form before saving
         /// </summary>
-        public void CheckBeforeSavingBatch()
+        public void CheckBeforeSaving()
         {
             //Add code here to run before the batch is saved
         }

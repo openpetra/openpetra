@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 //Enable below if want code to run before standard Save() is executed
-                //FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
             }
         }
 
@@ -104,7 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // Before the dataset is saved, check for correlation between batch and transactions
         private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
-            ucoBatches.CheckBeforeSavingBatch();
+            ucoBatches.CheckBeforeSaving();
+            ucoTransactions.CheckBeforeSaving();
         }
 
         private void InitializeManualCode()

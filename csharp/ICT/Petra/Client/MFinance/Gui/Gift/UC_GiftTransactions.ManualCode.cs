@@ -95,6 +95,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        /// <summary>
+        /// Checks various things on the form before saving
+        /// </summary>
+        public void CheckBeforeSaving()
+        {
+            string KeyMinistry = string.Empty;
+
+            //Add code here to run before the batch is saved
+            if (FInEditMode && FPreviouslySelectedDetailRow != null)
+            {
+                KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+                txtDetailRecipientKeyMinistry.Text = KeyMinistry;
+            }
+        }
+
         private void InitialiseControls()
         {
             //Fix to length of field
@@ -177,7 +192,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPreviouslySelectedDetailRow != null)
             {
                 txtDetailRecipientKeyMinistry.Text = FPreviouslySelectedDetailRow.RecipientKeyMinistry;
-                TLogging.Log("txtDetailRecipientKeyMinistry.Text: " + txtDetailRecipientKeyMinistry.Text);
             }
         }
 
@@ -489,10 +503,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
                 }
 
-                TLogging.Log(string.Format("GetRecipientFundNumber for {0} is {1}",
-                        APartnerKey,
-                        FPreviouslySelectedDetailRow.RecipientLedgerNumber));
-
                 if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
                 {
@@ -769,21 +779,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TLogging.Log("Keyminstry: " + KeyMinistry);
-
             try
             {
                 FInKeyMinistryChanging = true;
 
                 if (cmbKeyMinistries.Count == 0)
                 {
-                    TLogging.Log("No KeyMinistries");
                     cmbKeyMinistries.SelectedIndex = -1;
                     txtDetailRecipientKeyMinistry.Text = string.Empty;
                 }
                 else
                 {
-                    TLogging.Log("KeyMinistry exists: " + KeyMinistry);
                     txtDetailRecipientKeyMinistry.Text = KeyMinistry;
                     FPreviouslySelectedDetailRow.RecipientKeyMinistry = KeyMinistry;
                     txtDetailRecipientKey.Text = RecipientKey;
@@ -1983,23 +1989,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            TLogging.Log("ShowDetails-01");
-
-            TLogging.Log("txtDetailRecipientKeyMinistry.Visible: " + txtDetailRecipientKeyMinistry.Visible.ToString());
-
             if (!txtDetailRecipientKeyMinistry.Visible)
             {
-                TLogging.Log("ShowDetails-02");
                 SetTextBoxOverlayOnKeyMinistryCombo();
             }
 
             if (ARow == null)
             {
-                TLogging.Log("ShowDetails-03");
                 return;
             }
-
-            TLogging.Log("ARow.RecipientKeyMinistry: " + ARow.RecipientKeyMinistry);
 
             try
             {
