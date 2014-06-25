@@ -51,10 +51,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private GLBatchTDS FMainDS;
         private Int32 FLedgerNumber;
-        private Int32 FBatchNumber;
+        //private Int32 FBatchNumber;
         private ARecurringBatchRow FBatchRow;
         private Decimal FExchangeRateToBase = 0;
-        private Decimal FExchangeRateIntlToBase = 0;
+        //private Decimal FExchangeRateIntlToBase = 0;
 
         DateTime FStartDateCurrentPeriod;
         DateTime FEndDateLastForwardingPeriod;
@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             set
             {
                 FBatchRow = value;
-                FBatchNumber = FBatchRow.BatchNumber;
+                //FBatchNumber = FBatchRow.BatchNumber;
 
                 txtExchangeRateToBase.BackColor = Color.Empty;
 
@@ -192,14 +192,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             txtExchangeRateToBase.Text = FExchangeRateToBase.ToString();
 
-            FExchangeRateIntlToBase = InternationalCurrencyExchangeRate(ADate);
+            //FExchangeRateIntlToBase = InternationalCurrencyExchangeRate(ADate);
         }
 
         private decimal InternationalCurrencyExchangeRate(DateTime ABatchEffectiveDate)
         {
             decimal IntlToBaseCurrencyExchRate = 1;
 
-            string BatchCurrencyCode = FCurrencyCode;
+            //string BatchCurrencyCode = FCurrencyCode;
             DateTime StartOfMonth = new DateTime(ABatchEffectiveDate.Year, ABatchEffectiveDate.Month, 1);
             string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
             string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;

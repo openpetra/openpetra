@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             CreateNewPRelation();
         }
-        
+
         private void ValidateDataDetailsManual(PRelationRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;

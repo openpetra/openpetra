@@ -1033,7 +1033,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
-        
+
         /// <summary>
         /// Validates the MPartner Relationship Setup screen data.
         /// </summary>
@@ -1084,7 +1084,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PRelationTable.GetRelationCategoryDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.RelationCategory })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.RelationCategory })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -1094,7 +1095,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
-        
+
         /// <summary>
         /// Validates the Banking Details screen data.
         /// </summary>
