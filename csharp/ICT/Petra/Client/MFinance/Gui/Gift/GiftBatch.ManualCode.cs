@@ -42,6 +42,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
         private bool FWindowIsMaximized = false;
+
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
 
@@ -89,7 +90,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 //Enable below if want code to run before standard Save() is executed
-                //FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
             }
         }
 
@@ -104,15 +105,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // Before the dataset is saved, check for correlation between batch and transactions
         private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
-            ucoBatches.CheckBeforeSavingBatch();
+            ucoBatches.CheckBeforeSaving();
+            ucoTransactions.CheckBeforeSaving();
         }
 
         private void InitializeManualCode()
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgTransactions.Enabled = false;
-
-            //FPetraUtilsObject.OnDataSavingStart
         }
 
         /// <summary>
@@ -129,6 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
 
                 case (int)eGiftTabs.Transactions:
+                    ucoTransactions.ReconcileKeyMinistryControls();
                     ucoTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
@@ -191,8 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
         /// <returns>True if new transactions were actually loaded, False if transactions have already been loaded for the ledger/batch</returns>
-        public bool LoadTransactions(Int32 ALedgerNumber,
-            Int32 ABatchNumber,
+        public bool LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber,
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
             return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus);
@@ -314,8 +314,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             this.Cursor = Cursors.WaitCursor;
 
-                            if (LoadTransactions(SelectedRow.LedgerNumber,
-                                    SelectedRow.BatchNumber,
+                            if (LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber,
                                     SelectedRow.BatchStatus))
                             {
                                 // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)

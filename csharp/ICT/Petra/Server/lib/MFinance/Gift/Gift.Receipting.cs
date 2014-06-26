@@ -737,7 +737,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// For this method, only {bool}Selected, LedgerNumber, BatchNumber and TransactionNumber fields are needed.</param>
         /// <returns>True if successful</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool MarkReceiptsPrinted(DataTable AGiftTbl)
+        public static void MarkReceiptsPrinted(DataTable AGiftTbl)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             AGiftTable Tbl = new AGiftTable();
@@ -764,16 +764,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 AGiftAccess.SubmitChanges(Tbl, Transaction);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
-
-                return true;
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured while marking Receipts as printed:" + Environment.NewLine + Exc.ToString());
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
-
-                return false;
 
                 throw;
             }

@@ -238,8 +238,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             this.Cursor = Cursors.WaitCursor;
 
-            if (TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(SelectedRecords) == true)
+            try
             {
+                TRemote.MFinance.Gift.WebConnectors.MarkReceiptsPrinted(SelectedRecords);
+
                 // remove removed records from datatable
                 DataTable TempTable = FGiftTbl.Copy();
                 int SelectedIndex = grdDetails.GetFirstHighlightedRowIndex();
@@ -271,6 +273,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 PopulateGrid();
 
                 grdDetails.SelectRowInGrid(SelectedIndex);
+            }
+            catch (Exception ex)
+            {
+                this.Cursor = Cursors.Default;
+                throw ex;
             }
 
             this.Cursor = Cursors.Default;
