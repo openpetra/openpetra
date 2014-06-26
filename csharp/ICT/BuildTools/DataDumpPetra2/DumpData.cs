@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, peters
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -171,6 +171,9 @@ namespace Ict.Tools.DataDumpPetra2
                 return;
             }
 
+            StreamWriter MyWriterCount = null;
+            StreamWriter MyWriterTest = null;
+
             try
             {
                 TParseProgressCSV Parser = new TParseProgressCSV(
@@ -187,11 +190,10 @@ namespace Ict.Tools.DataDumpPetra2
                     TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
                     newTable.strName + "_test.sql.gz");
                 Stream gzoStreamTest = new GZipOutputStream(outStreamTest);
-                StreamWriter MyWriterTest = new StreamWriter(gzoStreamTest, Encoding.UTF8);
+                MyWriterTest = new StreamWriter(gzoStreamTest, Encoding.UTF8);
 
                 string rowCountDir = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
                                      Path.DirectorySeparatorChar + "_row_count.txt";
-                StreamWriter MyWriterCount;
 
                 if (File.Exists(rowCountDir))
                 {
@@ -218,8 +220,6 @@ namespace Ict.Tools.DataDumpPetra2
                 MyWriterCount.WriteLine(ProcessedRows);
 
                 MyWriter.Close();
-                MyWriterTest.Close();
-                MyWriterCount.Close();
 
                 TLogging.Log(" after processing file, rows: " + ProcessedRows.ToString());
             }
@@ -231,6 +231,18 @@ namespace Ict.Tools.DataDumpPetra2
                 if (File.Exists(dumpFile + ".sql.gz"))
                 {
                     File.Delete(dumpFile + ".sql.gz");
+                }
+            }
+            finally
+            {
+                if (MyWriterCount != null)
+                {
+                    MyWriterCount.Close();
+                }
+
+                if (MyWriterTest != null)
+                {
+                    MyWriterTest.Close();
                 }
             }
         }
