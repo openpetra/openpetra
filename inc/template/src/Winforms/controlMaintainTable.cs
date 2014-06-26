@@ -1411,6 +1411,7 @@ namespace {#NAMESPACE}
     /// Our main keyboard handler
     public bool ProcessParentCmdKey(ref Message msg, Keys keyData)
     {
+		{#PREPROCESSCMDKEY}
 {#IFDEF FILTERANDFIND}
         {#PROCESSCMDKEYCTRLF}
         {#PROCESSCMDKEYCTRLR}
