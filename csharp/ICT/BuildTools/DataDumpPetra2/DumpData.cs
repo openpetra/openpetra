@@ -171,6 +171,15 @@ namespace Ict.Tools.DataDumpPetra2
                 return;
             }
 
+            string NewFileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                                 newTable.strName + ".sql.gz";
+
+            if (File.Exists(NewFileName))
+            {
+                // for debugging: ignore files that have been written already
+                return;
+            }
+
             StreamWriter MyWriterCount = null;
             StreamWriter MyWriterTest = null;
 
@@ -180,9 +189,7 @@ namespace Ict.Tools.DataDumpPetra2
                     dumpFile + ".d.gz",
                     oldTable.grpTableField.Count);
 
-                FileStream outStream = File.Create(
-                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
-                    newTable.strName + ".sql.gz");
+                FileStream outStream = File.Create(NewFileName);
                 Stream gzoStream = new GZipOutputStream(outStream);
                 StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
 
