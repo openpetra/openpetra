@@ -38,6 +38,26 @@ namespace Ict.Tools.DataDumpPetra2
     public class TPartnerGiftDestination : TFixData
     {
         /// <summary>
+        /// used to store information about a person
+        /// </summary>
+        private class PersonKeyAndRow
+        {
+            /// <summary>
+            /// constructor
+            /// </summary>
+            public PersonKeyAndRow(string APersonKey, string[] APersonRow)
+            {
+                PersonKey = APersonKey;
+                PersonRow = APersonRow;
+            }
+
+            /// the person key
+            public string PersonKey;
+            /// the row from the progress file
+            public string[] PersonRow;
+        }
+
+        /// <summary>
         /// Populate the empty table PPartnerGiftDestination using PmStaffData
         /// </summary>
         public static int PopulatePPartnerGiftDestination(StringCollection AColumnNames,
@@ -110,7 +130,8 @@ namespace Ict.Tools.DataDumpPetra2
                 PersonTable.grpTableField.Count);
 
             StringCollection PersonColumnNames = GetColumnNames(PersonTable);
-            SortedList <string, List <string>>FamilyKeysWithPersons = new SortedList <string, List <string>>();
+            SortedList <string, List <PersonKeyAndRow>>FamilyKeysWithPersons =
+                new SortedList <string, List <PersonKeyAndRow>>();
 
             // add all Persons to a list
             while (true)
@@ -126,10 +147,12 @@ namespace Ict.Tools.DataDumpPetra2
 
                 if (!FamilyKeysWithPersons.ContainsKey(familyKey))
                 {
-                    FamilyKeysWithPersons.Add(familyKey, new List <string>());
+                    FamilyKeysWithPersons.Add(familyKey, new List <PersonKeyAndRow>());
                 }
 
-                FamilyKeysWithPersons[familyKey].Add(GetValue(PersonColumnNames, PersonRow, "p_partner_key_n"));
+                FamilyKeysWithPersons[familyKey].Add(
+                    new PersonKeyAndRow(
+                        GetValue(PersonColumnNames, PersonRow, "p_partner_key_n"), PersonRow));
 
                 Persons.Add(PersonRow);
             }
@@ -162,28 +185,34 @@ namespace Ict.Tools.DataDumpPetra2
 
                 // find Person partners belonging to the family
                 bool CommitmentFound = false;
+                int MinimumFamilyId = int.MaxValue;
 
                 // read through each of the Family's Persons
-                foreach (string PersonKey in FamilyKeysWithPersons[familykey])
+                foreach (PersonKeyAndRow PersonRecord in FamilyKeysWithPersons[familykey])
                 {
                     // find if the Person has a currently active commitment
                     string[] Commitment = ActiveCommitments.Find(e => GetValue(StaffDataColumnNames, e, "p_partner_key_n") ==
-                        PersonKey);
+                        PersonRecord.PersonKey);
 
                     // if currently active commitment exists create a new Gift Destination record
                     if (Commitment != null)
                     {
-                        SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
-                        SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
-                        SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(StaffDataColumnNames, Commitment, "pm_target_field_n"));
-                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
-                            GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"));
-                        SetValue(AColumnNames, ref ANewRow, "p_date_expires_d", GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"));
+                        int CurrentFamilyId = Convert.ToInt32(GetValue(PersonColumnNames, PersonRecord.PersonRow, "p_old_omss_family_id_i"));
 
-                        CommitmentFound = true;
+                        if (CurrentFamilyId < MinimumFamilyId)
+                        {
+                            SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
+                            SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
+                            SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(StaffDataColumnNames, Commitment, "pm_target_field_n"));
+                            SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
+                                GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"));
+                            SetValue(AColumnNames, ref ANewRow, "p_date_expires_d",
+                                GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"));
 
-                        // there can only be one active gift destination per family
-                        break;
+                            CommitmentFound = true;
+
+                            MinimumFamilyId = CurrentFamilyId;
+                        }
                     }
                 }
 
