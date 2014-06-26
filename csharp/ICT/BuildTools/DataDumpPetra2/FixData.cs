@@ -316,10 +316,14 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     RowCounter++;
                     AWriter.WriteLine(CSVFile.StrMergeSpecial(NewRow));
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ANewTable.strName + " FROM stdin;");
-                    AWriterTest.WriteLine(CSVFile.StrMergeSpecial(NewRow));
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ANewTable.strName + " FROM stdin;");
+                        AWriterTest.WriteLine(CSVFile.StrMergeSpecial(NewRow));
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
                 }
             }
 
@@ -901,10 +905,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_default_value_c", SiteKey);
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -972,10 +981,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -1005,10 +1019,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -1155,10 +1174,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, FixedRow, "s_modification_id_t"));
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
 
@@ -1312,10 +1336,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, FixedRow, "s_modification_id_t"));
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -1358,10 +1387,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -1406,10 +1440,15 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                 AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                AWriterTest.WriteLine("\\.");
-                AWriterTest.WriteLine("ROLLBACK;");
+
+                if (AWriterTest != null)
+                {
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                }
+
                 RowCounter++;
             }
 
@@ -1453,10 +1492,15 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                 AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                AWriterTest.WriteLine("\\.");
-                AWriterTest.WriteLine("ROLLBACK;");
+
+                if (AWriterTest != null)
+                {
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                }
+
                 RowCounter++;
             }
 
@@ -1568,10 +1612,15 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                         AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                        AWriterTest.WriteLine("\\.");
-                        AWriterTest.WriteLine("ROLLBACK;");
+
+                        if (AWriterTest != null)
+                        {
+                            AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                            AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                            AWriterTest.WriteLine("\\.");
+                            AWriterTest.WriteLine("ROLLBACK;");
+                        }
+
                         RowCounter++;
                     }
                 }

@@ -237,10 +237,14 @@ namespace Ict.Tools.DataDumpPetra2
                 if (CommitmentFound)
                 {
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY p_partner_gift_destination FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY p_partner_gift_destination FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
 
                     RowCounter++;
                 }
