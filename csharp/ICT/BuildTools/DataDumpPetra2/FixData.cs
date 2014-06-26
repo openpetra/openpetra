@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,6 +39,7 @@ namespace Ict.Tools.DataDumpPetra2
     public class TFixData
     {
         private static int FormSequence = 1;
+        private static List <string>FormElementsWithSequence0 = new List <string>();
         private static List <string>PostcodeRegionsList = new List <string>();
 
         /// <summary>
@@ -682,8 +683,19 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 if (GetValue(AColumnNames, ANewRow, "a_form_sequence_i") == "0")
                 {
-                    SetValue(AColumnNames, ref ANewRow, "a_form_sequence_i", FormSequence.ToString());
-                    FormSequence++;
+                    // check if we have multiple rows with same formcode and formname, with sequence 0
+                    // if patch 2.2.7 has been run, we should already have valid sequences
+                    string FormElementID = GetValue(AColumnNames, ANewRow, "a_form_code_c") + "::" + GetValue(AColumnNames, ANewRow, "a_form_name_c");
+
+                    if (FormElementsWithSequence0.Contains(FormElementID))
+                    {
+                        SetValue(AColumnNames, ref ANewRow, "a_form_sequence_i", FormSequence.ToString());
+                        FormSequence++;
+                    }
+                    else
+                    {
+                        FormElementsWithSequence0.Add(FormElementID);
+                    }
                 }
             }
 
