@@ -204,10 +204,16 @@ namespace Ict.Tools.DataDumpPetra2
                             SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
                             SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
                             SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(StaffDataColumnNames, Commitment, "pm_target_field_n"));
+
+                            TTableField tf = new TTableField();
+                            tf.strName = "pm_start_of_commitment_d";
+                            tf.strType = "DATE";
+
                             SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
-                                GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"));
+                                TFixData.FixValue(GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"), tf));
+                            tf.strName = "pm_end_of_commitment_d";
                             SetValue(AColumnNames, ref ANewRow, "p_date_expires_d",
-                                GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"));
+                                TFixData.FixValue(GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"), tf));
 
                             CommitmentFound = true;
 
@@ -226,7 +232,9 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
                         SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
                         SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_om_field_key_n"));
-                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d", DateTime.Today.AddYears(-1).ToShortDateString());
+                        DateTime LastYear = DateTime.Today.AddYears(-1);
+                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
+                            string.Format("{0}-{1}-{2}", LastYear.Year, LastYear.Month, LastYear.Day));
                         SetValue(AColumnNames, ref ANewRow, "p_date_expires_d", "\\N");
 
                         CommitmentFound = true;

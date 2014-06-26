@@ -99,7 +99,10 @@ namespace Ict.Tools.DataDumpPetra2
             return ColumnNames;
         }
 
-        private static string FixValue(string AValue, TTableField ANewField)
+        /// <summary>
+        /// convert values from Progress notation to Postgresql notation
+        /// </summary>
+        public static string FixValue(string AValue, TTableField ANewField)
         {
             if (ANewField.strName == "s_modification_id_t")
             {
