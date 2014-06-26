@@ -110,6 +110,7 @@ namespace Ict.Tools.DataDumpPetra2
                 PersonTable.grpTableField.Count);
 
             StringCollection PersonColumnNames = GetColumnNames(PersonTable);
+            SortedList <string, List <string>>FamilyKeysWithPersons = new SortedList <string, List <string>>();
 
             // add all Persons to a list
             while (true)
@@ -120,6 +121,15 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     break;
                 }
+
+                string familyKey = GetValue(PersonColumnNames, PersonRow, "p_family_key_n");
+
+                if (!FamilyKeysWithPersons.ContainsKey(familyKey))
+                {
+                    FamilyKeysWithPersons.Add(familyKey, new List <string>());
+                }
+
+                FamilyKeysWithPersons[familyKey].Add(GetValue(PersonColumnNames, PersonRow, "p_partner_key_n"));
 
                 Persons.Add(PersonRow);
             }
@@ -143,18 +153,22 @@ namespace Ict.Tools.DataDumpPetra2
                     break;
                 }
 
-                // find Person partners belonging to the family
-                List <string[]>PersonsInFamily = Persons.FindAll(e => GetValue(PersonColumnNames, e, "p_family_key_n") ==
-                    GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
+                string familykey = GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n");
 
+                if (!FamilyKeysWithPersons.ContainsKey(familykey))
+                {
+                    continue;
+                }
+
+                // find Person partners belonging to the family
                 bool CommitmentFound = false;
 
                 // read through each of the Family's Persons
-                foreach (string[] Person in PersonsInFamily)
+                foreach (string PersonKey in FamilyKeysWithPersons[familykey])
                 {
                     // find if the Person has a currently active commitment
                     string[] Commitment = ActiveCommitments.Find(e => GetValue(StaffDataColumnNames, e, "p_partner_key_n") ==
-                        GetValue(PersonColumnNames, Person, "p_partner_key_n"));
+                        PersonKey);
 
                     // if currently active commitment exists create a new Gift Destination record
                     if (Commitment != null)
