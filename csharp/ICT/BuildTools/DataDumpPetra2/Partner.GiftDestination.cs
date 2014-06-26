@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using Ict.Tools.DBXML;
 using Ict.Common;
 
@@ -80,23 +81,24 @@ namespace Ict.Tools.DataDumpPetra2
                     break;
                 }
 
+                string strStartOfCommitment = GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d");
+                string strEndOfCommitment = GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d");
+
                 try
                 {
                     // if commitment is currently active
-                    if ((DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")) <= DateTime.Today)
-                        && ((GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d") == "\\N")
-                            || (DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")) >= DateTime.Today))
-                        && (GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")
-                            != GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")))
+                    if ((DateTime.ParseExact(strStartOfCommitment, "dd/mm/yyyy", CultureInfo.InvariantCulture) <= DateTime.Today)
+                        && ((strEndOfCommitment == "\\N")
+                            || (DateTime.ParseExact(strEndOfCommitment, "dd/mm/yyyy", CultureInfo.InvariantCulture) >= DateTime.Today))
+                        && (strStartOfCommitment != strEndOfCommitment))
                     {
                         ActiveCommitments.Add(StaffDataRow);
                     }
                 }
                 catch
                 {
-                    TLogging.Log("WARNING: Invalid date: " +
-                        Convert.ToDateTime(GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")) +
-                        " or " + DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")));
+                    TLogging.Log("WARNING: Invalid date in commitment: " +
+                        strStartOfCommitment + " or " + strEndOfCommitment);
                 }
             }
 
