@@ -17,20 +17,11 @@ RootNode:
         grpCurrencies: {Label=Currencies, Width=550, Stretch=horizontally}
             Controls: [cmbBaseCurrency, cmbIntlCurrency]
         grpAccountingPeriods: {Label=Accounting Periods, Width=550, Stretch=horizontally}
-            Controls: [rgrCalendarModeRadio, nudNumberOfAccountingPeriods, dtpFinancialYearStartDate, nudCurrentPeriod, btnViewCalendar]
+            Controls: [rgrCalendarModeRadio, nudNumberOfAccountingPeriods, dtpFinancialYearStartDate, nudCurrentPeriod, btnViewCalendar, nudNumberFwdPostingPeriods]
         grpMiscellaneousFlags: {Label=Miscellaneous, Width=550, Stretch=horizontally}
-            Controls: [pnlFwdPosting, pnlSuspenseAccounts, pnlBudget, pnlBranchProcess]
+            Controls: [chkSuspenseAccountFlag, chkBudgetControlFlag, chkBranchProcessing]
         grpDataRetention: {Label=Data Retention, Width=550, Stretch=horizontally}
             Controls: [nudActualsDataRetention, nudGiftDataRetention]
-        pnlFwdPosting:
-            ControlsOrientation: horizontal
-            Controls: [chkUseDefaultFwdPostingPeriods, nudNumberFwdPostingPeriods]
-        pnlSuspenseAccounts:
-            Controls: [chkSuspenseAccountFlag]
-        pnlBudget:
-            Controls: [chkBudgetControlFlag]
-        pnlBranchProcess:
-            Controls: [chkBranchProcessing]
             
         rgrCalendarModeRadio:
             Controls: [rbtMonthly, rbtNonMonthly]
@@ -54,7 +45,6 @@ RootNode:
         dtpFinancialYearStartDate: {Label=First Day of the Financial Year, Align=bottom}
         chkSuspenseAccountFlag: {Label=Allow use of suspense accounts, CheckBoxAttachedLabel=right, Validation=true}
         chkBudgetControlFlag: {Label=Budget control, CheckBoxAttachedLabel=right}
-        chkUseDefaultFwdPostingPeriods: {Label=Use default forward posting periods, CheckBoxAttachedLabel=right, OnChange=UseDefaultFwdPostingPeriodsChanged}
         nudNumberFwdPostingPeriods: {Label=Forward Posting Periods, Width=60, Validation=true}
         chkBranchProcessing: {Label=Branch processing, CheckBoxAttachedLabel=right}
         nudActualsDataRetention: {Label=Actuals Data Retention Period, Width=60}

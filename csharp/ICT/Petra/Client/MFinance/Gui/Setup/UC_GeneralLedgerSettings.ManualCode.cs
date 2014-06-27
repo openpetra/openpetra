@@ -94,47 +94,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FEditCalendar = true;
             }
 
-            // Panels in group boxes add unwanted extra height -> reduce height manually
-            int DefaultHeight = nudActualsDataRetention.Height;
-            int HeightDifference = pnlSuspenseAccounts.Height - DefaultHeight;
-            int BigHeightDifference = pnlFwdPosting.Height - DefaultHeight;         // pnlFwdPosting.Height is more than the others due to the nudBox
-
-            // correct heights of controls
-            pnlSuspenseAccounts.Height = DefaultHeight;
-            pnlBudget.Height = DefaultHeight;
-            pnlFwdPosting.Height = DefaultHeight;
-            pnlBranchProcess.Height = DefaultHeight;
-
-            grpMiscellaneousFlags.Height -= (int)(3.5 * HeightDifference);
-
-            // move controls into the right place after correcting heights
-            chkUseDefaultFwdPostingPeriods.Location = new System.Drawing.Point(chkUseDefaultFwdPostingPeriods.Location.X,
-                chkUseDefaultFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
-            lblNumberFwdPostingPeriods.Location = new System.Drawing.Point(lblNumberFwdPostingPeriods.Location.X,
-                lblNumberFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
-            nudNumberFwdPostingPeriods.Location = new System.Drawing.Point(nudNumberFwdPostingPeriods.Location.X,
-                nudNumberFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
-
-            pnlSuspenseAccounts.Location = new System.Drawing.Point(pnlSuspenseAccounts.Location.X,
-                pnlSuspenseAccounts.Location.Y - BigHeightDifference);
-            chkSuspenseAccountFlag.Location =
-                new System.Drawing.Point(chkSuspenseAccountFlag.Location.X, chkSuspenseAccountFlag.Location.Y - (int)(0.5 * HeightDifference));
-
-            pnlBudget.Location = new System.Drawing.Point(pnlBudget.Location.X, pnlBudget.Location.Y - BigHeightDifference - HeightDifference);
-            chkBudgetControlFlag.Location =
-                new System.Drawing.Point(chkBudgetControlFlag.Location.X, chkBudgetControlFlag.Location.Y - (int)(0.5 * HeightDifference));
-
-            pnlBranchProcess.Location =
-                new System.Drawing.Point(pnlBranchProcess.Location.X, pnlBranchProcess.Location.Y - BigHeightDifference - (int)(2 * HeightDifference));
-            chkBranchProcessing.Location =
-                new System.Drawing.Point(chkBranchProcessing.Location.X, chkBranchProcessing.Location.Y - (int)(0.5 * HeightDifference));
-
-            grpDataRetention.Location =
-                new System.Drawing.Point(grpDataRetention.Location.X, grpDataRetention.Location.Y - (int)(3.5 * HeightDifference));
-
             // Now we can populate the controls with data
             if (FMainDS.ALedger.Rows.Count > 0)
             {
+                // check if number of forward posting periods is set to 0. This should not be allowed, therefore the value has to be changed here.
+                if (((ALedgerRow)FMainDS.ALedger.Rows[0]).IsNumberFwdPostingPeriodsNull()
+                    || ((ALedgerRow)FMainDS.ALedger.Rows[0]).NumberFwdPostingPeriods == 0)
+                {
+                    int DefaultNumber = MFinanceConstants.GL_DEFAULT_FWD_POSTING_PERIODS;
+
+                    MessageBox.Show(String.Format(Catalog.GetString("Number of Forward Posting Periods for this ledger must not be 0 and will " +
+                                                                    "therefore be set to the default value of {0} unless you cancel the Ledger Settings Screen."),
+                                                                    DefaultNumber.ToString()),
+                        Catalog.GetString("Number of Forward Posting Periods"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                    ((ALedgerRow)FMainDS.ALedger.Rows[0]).NumberFwdPostingPeriods = DefaultNumber;
+                }
+
                 ShowData((ALedgerRow)FMainDS.ALedger.Rows[0]);
             }
         }
@@ -400,26 +376,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
-            }
-        }
-
-        private void UseDefaultFwdPostingPeriodsChanged(Object sender, EventArgs e)
-        {
-            nudNumberFwdPostingPeriods.Enabled = !chkUseDefaultFwdPostingPeriods.Checked;
-            lblNumberFwdPostingPeriods.Enabled = !chkUseDefaultFwdPostingPeriods.Checked;
-
-            if (chkUseDefaultFwdPostingPeriods.Checked)
-            {
-                if ((FMainDS.AAccountingSystemParameter != null)
-                    && (FMainDS.AAccountingSystemParameter.Count > 0))
-                {
-                    nudNumberFwdPostingPeriods.Value =
-                        ((AAccountingSystemParameterRow)FMainDS.AAccountingSystemParameter.Rows[0]).NumberFwdPostingPeriods;
-                }
-                else
-                {
-                    nudNumberFwdPostingPeriods.Value = 2;
-                }
             }
         }
 

@@ -43,8 +43,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences ucoFinance;
         private Boolean tabPageFinanceWasSelected = false;
         
-        public event TabControlEventHandler TabSelectedEvent;
-        
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
             get
