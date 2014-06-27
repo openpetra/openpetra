@@ -187,6 +187,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        /// <summary>
+        /// Constructor used when there's no Reporting UI
+        /// </summary>
+        /// <param name="AReportName"></param>
         public FastReportsWrapper(String AReportName)
         {
             try
@@ -287,6 +291,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        /// <summary>
+        /// Called from a delegate set up by me.
+        /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
+        /// </summary>
+        /// <param name="ACalc"></param>
         public void DesignReport(TRptCalculator ACalc)
         {
             if (FSelectedTemplate != null)
@@ -385,6 +394,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        /// <summary>
+        /// Called from a delegate set up by me.
+        /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
+        /// </summary>
+        /// <param name="ACalc"></param>
         public void GenerateReport(TRptCalculator ACalc)
         {
             if (FSelectedTemplate != null)
