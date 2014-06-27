@@ -190,6 +190,7 @@ OpenPetra:
                         #EditLastUnpostedGiftBatch:
                         #PostGiftBatch:
                         ExportGiftBatches: {Description:Export to CSV file for use with Excel,ActionOpenScreen= TFrmGiftBatchExport}
+                        GiftDetailFind: {Description:Search for gifts across all batches, ActionOpenScreen=TGiftDetailFindScreen}
                     GiftReceipting:
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=TFrmGiftReceiptPrinting}
                         DonorOrRecipientHistory: {ActionOpenScreen=TFrmDonorRecipientHistory}
