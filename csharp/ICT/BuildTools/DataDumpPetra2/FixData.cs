@@ -791,6 +791,17 @@ namespace Ict.Tools.DataDumpPetra2
                 MyWriter.Close();
             }
 
+            if (ATableName == "s_user_defaults")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "s_default_code_c");
+
+                // replace old user default code that contains Petra screen name
+                if (val == "GR1120-NEWDONOR")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "s_default_code_c", "NewDonorWarning");
+                }
+            }
+
             if ((ATableName == "pt_congress_code") || (ATableName == "pt_arrival_point") || (ATableName == "pt_outreach_preference_level")
                 || (ATableName == "pt_leadership_rating"))
             {

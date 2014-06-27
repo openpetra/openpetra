@@ -40,6 +40,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
         static TDelegateOpenEventFindScreen FOpenEventFindScreen;
         static TDelegateOpenExtractFindScreen FOpenExtractFindScreen;
         static TDelegateOpenExtractMasterScreen FOpenExtractMasterScreen;
+        static TDelegateOpenDonorRecipientHistoryScreen FOpenDonorRecipientHistoryScreen;
         static TDelegateOpenExtractMasterScreenHidden FOpenExtractMasterScreenHidden;
         static TDelegateOpenRangeFindScreen FOpenRangeFindScreen;
         static TDelegateOpenOccupationCodeFindScreen FOpenOccupationCodeFindScreen;
@@ -164,6 +165,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenExtractMasterScreen = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which opens the Donor Recipient History screen.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenDonorRecipientHistoryScreen OpenDonorRecipientHistoryScreen
+        {
+            get
+            {
+                return FOpenDonorRecipientHistoryScreen;
+            }
+
+            set
+            {
+                FOpenDonorRecipientHistoryScreen = value;
             }
         }
 

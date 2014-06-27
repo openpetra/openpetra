@@ -338,6 +338,9 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>todoComment</summary>
         public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
 
+        /// <summary>Whether or not the user should be alerted when a new gift is from a new donor</summary>
+        public const String FINANCE_NEW_DONOR_WARNING = "NewDonorWarning";
+
         /*------------------------------------------------------------------------------
          *  Conference Default Constants
          * -------------------------------------------------------------------------------*/

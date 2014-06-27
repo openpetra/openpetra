@@ -435,7 +435,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();

@@ -51,7 +51,7 @@ RootNode:
             ReadOnly: true
             NoLabel: true
             BorderStyle: None
-            Width: 100
+            Width: 125
             
         cmbPartnerStatus: 
             Label: Partner &Status

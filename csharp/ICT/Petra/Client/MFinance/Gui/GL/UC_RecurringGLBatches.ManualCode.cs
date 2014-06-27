@@ -642,7 +642,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void SubmitBatch(System.Object sender, EventArgs e)
         {
             Boolean SubmitCancelled = false;
-            string CurrencyCode = string.Empty;
+            //string CurrencyCode = string.Empty;
             Int32 NumberOfNonBaseCurrencyJournals = 0;
             DateTime DateEffective = DateTime.Today;
             Decimal ExchangeRateToBase;
