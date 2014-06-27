@@ -1219,12 +1219,12 @@ namespace Ict.Tools.DataDumpPetra2
                         ref FixedRow,
                         PersonQualificationColumnNames,
                         PersonQualificationColumnNames,
-                        PersonAbility,
+                        PersonQualification,
                         MappingOfFields,
                         DefaultValues);
 
                     // map old qualification_area_name to new skill category
-                    String QualificationAreaName = GetValue(PersonAbilityColumnNames, FixedRow, "pt_ability_area_name_c");
+                    String QualificationAreaName = GetValue(PersonQualificationColumnNames, FixedRow, "pt_qualification_area_name_c");
                     SkillCategory = "OTHER";
                     Description = "";
 
