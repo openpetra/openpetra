@@ -433,6 +433,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
+                //causes saving issues
+                //UpdateLedgerTableSettings();
                 ((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
                 MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
             }
@@ -455,6 +457,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             SetInitialFocus();
+        }
+
+        private void UpdateLedgerTableSettings()
+        {
+            int LedgerLastRecurringGLBatchNumber = 0;
+
+            //Update the last recurring GL batch number
+            DataView RecurringGLBatchDV = new DataView(FMainDS.ARecurringBatch);
+
+            RecurringGLBatchDV.RowFilter = string.Empty;
+            RecurringGLBatchDV.Sort = string.Format("{0} DESC",
+                ARecurringBatchTable.GetBatchNumberDBName());
+
+            //Recurring batch numbers can be reused so reset current highest number
+            if (RecurringGLBatchDV.Count > 0)
+            {
+                LedgerLastRecurringGLBatchNumber = (int)(RecurringGLBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
+            }
+
+            if (FMainDS.ALedger[0].LastRecurringBatchNumber != LedgerLastRecurringGLBatchNumber)
+            {
+                FMainDS.ALedger[0].LastRecurringBatchNumber = LedgerLastRecurringGLBatchNumber;
+            }
         }
 
         private void ClearControls()
@@ -617,36 +642,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void SubmitBatch(System.Object sender, EventArgs e)
         {
             Boolean SubmitCancelled = false;
+            //string CurrencyCode = string.Empty;
             Int32 NumberOfNonBaseCurrencyJournals = 0;
             DateTime DateEffective = DateTime.Today;
             Decimal ExchangeRateToBase;
 
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                MessageBox.Show(Catalog.GetString("Please select a Batch before submitting."));
+                return;
+            }
+
             if (FPetraUtilsObject.HasChanges)
             {
-                // ask user if he wants to save as otherwise process cannot continue
-                if (MessageBox.Show(Catalog.GetString("Changes need to be saved in order to submit a batch!") + Environment.NewLine +
-                        Catalog.GetString("Do you want to save and continue submitting?"),
-                        Catalog.GetString("Changes not saved"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                {
-                    return;
-                }
-
                 // save first, then submit
                 if (!((TFrmRecurringGLBatch)ParentForm).SaveChanges())
                 {
                     // saving failed, therefore do not try to post
                     MessageBox.Show(Catalog.GetString(
                             "The recurring batch was not submitted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please first save the batch, and then submit it!"),
-                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        Catalog.GetString("Please fix the batch first and then submit it."),
+                        Catalog.GetString("Submit Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
 
-            if (FPreviouslySelectedDetailRow == null)
+            if ((FPreviouslySelectedDetailRow.BatchControlTotal != 0)
+                && (FPreviouslySelectedDetailRow.BatchDebitTotal != FPreviouslySelectedDetailRow.BatchControlTotal))
             {
-                // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("Please select a Batch before submitting."));
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The recurring gl batch total ({0}) for batch {1} does not equal the hash total ({2})."),
+                        FPreviouslySelectedDetailRow.BatchDebitTotal,
+                        FPreviouslySelectedDetailRow.BatchNumber,
+                        FPreviouslySelectedDetailRow.BatchControlTotal));
+
+                txtDetailBatchControlTotal.Focus();
+                txtDetailBatchControlTotal.SelectAll();
                 return;
             }
 
@@ -663,26 +694,39 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
             {
-                //Make sure all data is loaded for batch
-                //clear any journals from other batches
-                FMainDS.ARecurringTransAnalAttrib.Clear();
-                FMainDS.ARecurringTransaction.Clear();
-                FMainDS.ARecurringJournal.Clear();
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(FLedgerNumber, FSelectedBatchNumber));
             }
             else if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
             {
-                FMainDS.ARecurringTransAnalAttrib.Clear();
-                FMainDS.ARecurringTransaction.Clear();
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatchAndContent(FLedgerNumber, FSelectedBatchNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionAndContent(FLedgerNumber, FSelectedBatchNumber));
             }
 
-            //Reset row filter
-            //FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Empty;
-            //FMainDS.ARecurringTransaction.DefaultView.RowFilter = string.Empty;
-            //FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
-
-            bool inactiveCodefound = false;
+            if ((FMainDS.ARecurringJournal.DefaultView.Count == 0) && (FMainDS.ARecurringTransaction.DefaultView.Count == 0))
+            {
+                if (MessageBox.Show(String.Format(Catalog.GetString("The recurring gl batch {0} is empty. Do you still want to submit?"),
+                            FPreviouslySelectedDetailRow.BatchNumber),
+                        Catalog.GetString("Submit Empty Batch"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                {
+                    return;
+                }
+            }
+            else if ((FMainDS.ARecurringJournal.DefaultView.Count != 0) && (FMainDS.ARecurringTransaction.DefaultView.Count == 0))
+            {
+                if (MessageBox.Show(String.Format(Catalog.GetString(
+                                "The recurring gl batch {0} contains empty journals. Do you still want to submit?"),
+                            FPreviouslySelectedDetailRow.BatchNumber),
+                        Catalog.GetString("Submit Empty Journals"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                {
+                    return;
+                }
+            }
+            else if ((FMainDS.ARecurringJournal.DefaultView.Count == 0) && (FMainDS.ARecurringTransaction.DefaultView.Count != 0))
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("The recurring gl batch {0} contains orphaned transactions. PLEASE!"),
+                        FPreviouslySelectedDetailRow.BatchNumber),
+                    Catalog.GetString("Submit Empty Journals"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
 
             // check how many journals have currency different from base currency
             // check for inactive accounts or cost centres
@@ -700,16 +744,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (!AccountIsActive(transRow.AccountCode) || !CostCentreIsActive(transRow.CostCentreCode))
                 {
-                    inactiveCodefound = true;
-
-                    MessageBox.Show(String.Format(Catalog.GetString(
-                                "Recurring batch no. {0} cannot be submitted because transaction {1} in Journal {2} contains an inactive account or cost centre code"),
-                            FSelectedBatchNumber,
-                            transRow.JournalNumber,
-                            transRow.TransactionNumber),
-                        Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    break;
+                    if (MessageBox.Show(String.Format(Catalog.GetString(
+                                    "Recurring batch no. {0} contains an inactive account or cost centre code in journal {1}, transaction {2}. Do you still want to submit the batch?"),
+                                FSelectedBatchNumber,
+                                transRow.JournalNumber,
+                                transRow.TransactionNumber),
+                            Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning) == DialogResult.No)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -719,22 +767,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         analAttribRow.AnalysisTypeCode)
                     || !AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
                 {
-                    inactiveCodefound = true;
-
-                    MessageBox.Show(String.Format(Catalog.GetString(
-                                "Recurring batch no. {0} cannot be submitted because transaction {1} in Journal {2} contains an inactive analysis code|value"),
-                            FSelectedBatchNumber,
-                            analAttribRow.JournalNumber,
-                            analAttribRow.TransactionNumber),
-                        Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                    break;
+                    if (MessageBox.Show(String.Format(Catalog.GetString(
+                                    "Recurring batch no. {0} contains an inactive analysis attribute code/value in journal {1}, transaction {2}. Do you still want to submit the batch?"),
+                                FSelectedBatchNumber,
+                                analAttribRow.JournalNumber,
+                                analAttribRow.TransactionNumber),
+                            Catalog.GetString("Inactive Analysis Attribute Code/Value"), MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Warning) == DialogResult.No)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-            }
-
-            if (inactiveCodefound)
-            {
-                return;
             }
 
             Hashtable requestParams = new Hashtable();
@@ -762,15 +809,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     // set exchange rate to base to 1 as default if no journals with other currencies exist
-                    foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
+                    foreach (DataRowView drv in FMainDS.ARecurringJournal.DefaultView)
                     {
-                        requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1.0);
+                        ARecurringJournalRow rjr = (ARecurringJournalRow)drv.Row;
+                        requestParams.Add("AExchangeRateToBaseForJournal" + rjr.JournalNumber.ToString(), 1.0);
                     }
                 }
                 else
                 {
                     // make sure dialogs for journal rows are displayed in sequential order -> new to use view
                     DataView JournalView = new DataView(FMainDS.ARecurringJournal);
+                    JournalView.RowFilter = string.Format("{0}={1}",
+                        ARecurringJournalTable.GetBatchNumberDBName(),
+                        FPreviouslySelectedDetailRow.BatchNumber);
                     JournalView.Sort = ARecurringJournalTable.GetJournalNumberDBName();
                     Boolean FirstJournal = true;
 
@@ -780,7 +831,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                         if (JournalRow.TransactionCurrency != ((ALedgerRow)FMainDS.ALedger.Rows[0]).BaseCurrency)
                         {
-                            submitForm.JournalRow = JournalRow;
+                            //submitForm.JournalRow = JournalRow;
 
                             if (!FirstJournal)
                             {

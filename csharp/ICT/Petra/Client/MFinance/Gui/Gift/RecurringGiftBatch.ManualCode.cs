@@ -47,12 +47,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                ucoRecurringBatches.LoadBatches(FLedgerNumber);
+                ucoRecurringBatches.LoadRecurringBatches(FLedgerNumber);
 
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 //Enable below if want code to run before standard Save() is executed
-                //FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
             }
         }
 
@@ -67,15 +67,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // Before the dataset is saved, check for correlation between batch and transactions
         private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
-            ucoRecurringBatches.CheckBeforeSavingBatch();
+            ucoRecurringBatches.CheckBeforeSaving();
+            ucoRecurringTransactions.CheckBeforeSaving();
         }
 
         private void InitializeManualCode()
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgRecurringTransactions.Enabled = false;
-
-            //FPetraUtilsObject.OnDataSavingStart
         }
 
         /// <summary>
@@ -92,12 +91,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
 
                 case (int)eGiftTabs.Transactions:
+                    ucoRecurringTransactions.ReconcileKeyMinistryControls();
                     ucoRecurringTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
         }
 
-        private void TFrmGiftBatch_Load(object sender, EventArgs e)
+        private void TFrmRecurringGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if new transactions were actually loaded, False if transactions have already been loaded for the ledger/batch</returns>
         public bool LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            return this.ucoRecurringTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
+            return this.ucoRecurringTransactions.LoadRecurringGifts(ALedgerNumber, ABatchNumber);
         }
 
         /// <summary>
@@ -175,13 +175,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// enable the transaction tab page
-        public void EnableTransactionsTab(bool AEnable = true)
+        public void EnableTransactions(bool AEnable = true)
         {
             this.tpgRecurringTransactions.Enabled = AEnable;
         }
 
         /// enable the transaction tab page
-        public void DisableTransactionsTab()
+        public void DisableTransactions()
         {
             this.tpgRecurringTransactions.Enabled = false;
         }
@@ -284,7 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
 
-                    this.ucoRecurringTransactions.FocusGrid();
+                    ucoRecurringTransactions.FocusGrid();
                 }
             }
         }

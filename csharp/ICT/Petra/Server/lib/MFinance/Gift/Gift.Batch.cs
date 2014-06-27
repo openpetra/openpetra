@@ -101,11 +101,29 @@ namespace Ict.Petra.Server.MFinance.Gift
             ref ALedgerTable LedgerTable,
             Int32 ALedgerNumber)
         {
+            GiftBatchTDS Temp = new GiftBatchTDS();
+
+            ARecurringGiftBatchAccess.LoadViaALedger(Temp, LedgerTable[0].LedgerNumber, Transaction);
+
+            DataView RecurringGiftBatchDV = new DataView(Temp.ARecurringGiftBatch);
+            RecurringGiftBatchDV.RowFilter = string.Empty;
+            RecurringGiftBatchDV.Sort = string.Format("{0} DESC",
+                ARecurringGiftBatchTable.GetBatchNumberDBName());
+
+            //Recurring batch numbers can be reused so check each time for current highest number
+            if (RecurringGiftBatchDV.Count > 0)
+            {
+                LedgerTable[0].LastRecGiftBatchNumber = (int)(RecurringGiftBatchDV[0][ARecurringGiftBatchTable.GetBatchNumberDBName()]);
+            }
+            else
+            {
+                LedgerTable[0].LastRecGiftBatchNumber = 0;
+            }
+
             ARecurringGiftBatchRow NewRow = MainDS.ARecurringGiftBatch.NewRowTyped(true);
 
             NewRow.LedgerNumber = ALedgerNumber;
-            LedgerTable[0].LastRecGiftBatchNumber++;
-            NewRow.BatchNumber = LedgerTable[0].LastRecGiftBatchNumber;
+            NewRow.BatchNumber = ++LedgerTable[0].LastRecGiftBatchNumber;
             NewRow.BatchDescription = Catalog.GetString("Please enter recurring batch description");
             NewRow.BankAccountCode = TLedgerInfo.GetDefaultBankAccount(ALedgerNumber);
             NewRow.BankCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);

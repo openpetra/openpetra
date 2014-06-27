@@ -26,6 +26,7 @@ using System.Data;
 
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
+using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MCommon;
