@@ -53,6 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TDataGetter FDataGetter;
         private Assembly FastReportsDll;
         private object FfastReportInstance;
+        private String FReportName;
 
         Type FFastReportType;
         /// <summary>
@@ -75,7 +76,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void SetTemplate(SReportTemplateRow ATemplate)
         {
             FSelectedTemplate = ATemplate;
-            FPetraUtilsObject.SetWindowTitle();
+            if (FPetraUtilsObject != null)
+            {
+                FPetraUtilsObject.SetWindowTitle();
+            }
         }
 
         /// <summary>The Template Name will be written to the UI title bar</summary>
@@ -110,8 +114,45 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        private Boolean LoadDll()
+        {
+            try
+            {
+                FInitState = TInitState.LoadDll;
+                FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
+
+                FInitState = TInitState.InitSystem;
+                FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
+                FFastReportType = FfastReportInstance.GetType();
+                FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
+            }
+            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            {
+                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        private Boolean LoadDefaultTemplate()
+        {
+            FInitState = TInitState.LoadTemplate;
+            SReportTemplateTable TemplateTable = TRemote.MReporting.WebConnectors.GetTemplateVariants(FReportName,
+                UserInfo.GUserInfo.UserID,
+                true);
+
+            if (TemplateTable.Rows.Count == 0)
+            {
+                TLogging.Log("No FastReports template for " + FReportName);
+                return false;
+            }
+
+            SetTemplate(TemplateTable[0]);
+            return true;
+        }
+
         /// <summary>
-        /// Instance this object and it changes the behaviour to use FastReports if the DLL is installed.
+        /// Instance this object and it changes the behaviour of the ReportForm UI to use FastReports if the DLL is installed.
         /// </summary>
         /// <param name="PetraUtilsObject"></param>
         public FastReportsWrapper(TFrmPetraReportingUtils PetraUtilsObject)
@@ -119,26 +160,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             try
             {
                 LoadedOK = false;
-                FInitState = TInitState.LoadDll;
                 FDataGetter = null;
                 FPetraUtilsObject = PetraUtilsObject;
-                FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
-                SReportTemplateTable TemplateTable = TRemote.MReporting.WebConnectors.GetTemplateVariants(FPetraUtilsObject.FReportName,
-                    UserInfo.GUserInfo.UserID,
-                    true);
-
-                if (TemplateTable.Rows.Count == 0)
+                if (!LoadDll())
                 {
-                    FInitState = TInitState.LoadTemplate;
-                    TLogging.Log("No FastReports template for " + FPetraUtilsObject.FReportName);
                     return;
                 }
 
-                FInitState = TInitState.InitSystem;
-                FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
-                FFastReportType = FfastReportInstance.GetType();
-                FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
-                SetTemplate(TemplateTable[0]);
+                FReportName = FPetraUtilsObject.FReportName;
+                if (!LoadDefaultTemplate())
+                {
+                    return;
+                }
 
                 FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReport;
                 FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
@@ -154,13 +187,37 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        public FastReportsWrapper(String AReportName)
+        {
+            try
+            {
+                LoadedOK = false;
+                FDataGetter = null;
+                if (!LoadDll())
+                {
+                    return;
+                }
+
+                FReportName = AReportName;
+                if (!LoadDefaultTemplate())
+                {
+                    return;
+                }
+
+                LoadedOK = true;
+            }
+            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            {
+                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+            }
+        }
+
         /// <summary>
         /// If the wrapper didn't initialise, the caller can call this.
         /// </summary>
         public void ShowErrorPopup()
         {
-            if (FPetraUtilsObject.GetCallerForm() != null
-               && TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified")
+            if (TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified")
             {
                 String Msg = "";
 
@@ -174,7 +231,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                     case TInitState.LoadTemplate:
                     {
-                        Msg = String.Format("no reporting template found for {0}.", FPetraUtilsObject.FReportName);
+                        Msg = String.Format("no reporting template found for {0}.", FReportName);
                         break;
                     }
 
@@ -230,10 +287,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
-        private void DesignReport(TRptCalculator ACalc)
+        public void DesignReport(TRptCalculator ACalc)
         {
-            if ((FSelectedTemplate != null) && (FDataGetter != null) && FDataGetter(ACalc))
+            if (FSelectedTemplate != null)
             {
+                if (FDataGetter != null)
+                {
+                    FDataGetter(ACalc);
+                }
+
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                     new object[] { FSelectedTemplate.XmlText });
 
@@ -317,20 +379,30 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
             }
 
-            FPetraUtilsObject.UpdateParentFormEndOfReport();
+            if (FPetraUtilsObject != null)
+            {
+                FPetraUtilsObject.UpdateParentFormEndOfReport();
+            }
         }
 
-        private void GenerateReport(TRptCalculator ACalc)
+        public void GenerateReport(TRptCalculator ACalc)
         {
-            if ((FSelectedTemplate != null) && (FDataGetter != null) && FDataGetter(ACalc))
+            if (FSelectedTemplate != null)
             {
+                if (FDataGetter != null)
+                {
+                    FDataGetter(ACalc);
+                }
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                     new object[] { FSelectedTemplate.XmlText });
                 LoadReportParams(ACalc);
                 FFastReportType.GetMethod("Show", new Type[0]).Invoke(FfastReportInstance, null);
             }
 
-            FPetraUtilsObject.UpdateParentFormEndOfReport();
+            if (FPetraUtilsObject != null)
+            {
+                FPetraUtilsObject.UpdateParentFormEndOfReport();
+            }
         }
     }
 }
