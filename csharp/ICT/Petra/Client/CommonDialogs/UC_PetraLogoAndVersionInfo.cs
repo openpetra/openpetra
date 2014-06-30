@@ -140,5 +140,20 @@ namespace Ict.Petra.Client.CommonDialogs
         {
             // not implemented
         }
+
+        void LblPetraVersionClick(object sender, System.EventArgs e)
+        {
+#if DEBUG
+            if (TApplicationVCSInfo.AppVCSData.IsInitialised)
+            {
+                MessageBox.Show("Version Control System: " + TApplicationVCSInfo.AppVCSData.VCSName + Environment.NewLine +
+                    "Revision Number: " + TApplicationVCSInfo.AppVCSData.RevisionNumber + Environment.NewLine +
+                    "Revision ID: " + TApplicationVCSInfo.AppVCSData.RevisionID + Environment.NewLine +
+                    "Revision Date: " + TApplicationVCSInfo.AppVCSData.RevisionDate + Environment.NewLine +
+                    "Revision Checkout Date: " + TApplicationVCSInfo.AppVCSData.RevisionCheckoutDate + Environment.NewLine,
+                    "Version Control System Information About This Build");
+            }
+#endif
+        }
     }
 }

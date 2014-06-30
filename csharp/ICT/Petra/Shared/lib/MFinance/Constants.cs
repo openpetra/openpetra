@@ -87,6 +87,9 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Gift Batch View Options</summary>
         public const String GIFT_BATCH_VIEW_ALL = "All";
 
+        /// <summary>Default value for forward posting periods</summary>
+        public const int GL_DEFAULT_FWD_POSTING_PERIODS = 8;
+
         /// <summary>Gift Batch View Options</summary>
         public const String MARKED_FOR_DELETION = "<<<DELETE>>>";
 
