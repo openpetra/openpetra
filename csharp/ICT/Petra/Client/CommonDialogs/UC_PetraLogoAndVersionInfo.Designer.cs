@@ -70,9 +70,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pnlTextBoxContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbxPetraLogo)).BeginInit();
             this.SuspendLayout();
-            //
+            // 
             // lblTopHorizontalLine
-            //
+            // 
             this.lblTopHorizontalLine.Font = new System.Drawing.Font("Times New Roman",
                 20F,
                 System.Drawing.FontStyle.Underline,
@@ -84,9 +84,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblTopHorizontalLine.TabIndex = 5;
             this.lblTopHorizontalLine.Text = "                  ";
             this.lblTopHorizontalLine.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            //
+            // 
             // lblPetra
-            //
+            // 
             this.lblPetra.Font = new System.Drawing.Font("Times New Roman",
                 20F,
                 System.Drawing.FontStyle.Underline,
@@ -98,9 +98,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblPetra.TabIndex = 0;
             this.lblPetra.Text = "OpenPetra";
             this.lblPetra.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            //
+            // 
             // lblPetraVersion
-            //
+            // 
             this.lblPetraVersion.Font = new System.Drawing.Font("Microsoft Sans Serif",
                 8.25F,
                 System.Drawing.FontStyle.Bold,
@@ -112,9 +112,10 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblPetraVersion.TabIndex = 2;
             this.lblPetraVersion.Text = "Version";
             this.lblPetraVersion.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            //
+            this.lblPetraVersion.Click += new System.EventHandler(this.LblPetraVersionClick);
+            // 
             // pnlTextBoxContainer
-            //
+            // 
             this.pnlTextBoxContainer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(233)))), ((int)(((byte)(216)))));
             this.pnlTextBoxContainer.Controls.Add(this.lblTopHorizontalLine);
             this.pnlTextBoxContainer.Controls.Add(this.lblPetra);
@@ -125,9 +126,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pnlTextBoxContainer.Name = "pnlTextBoxContainer";
             this.pnlTextBoxContainer.Size = new System.Drawing.Size(244, 90);
             this.pnlTextBoxContainer.TabIndex = 3;
-            //
+            // 
             // lblCopyrightNotice
-            //
+            // 
             this.lblCopyrightNotice.Font = new System.Drawing.Font("Microsoft Sans Serif",
                 8.25F,
                 System.Drawing.FontStyle.Regular,
@@ -139,9 +140,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblCopyrightNotice.TabIndex = 8;
             this.lblCopyrightNotice.Text = "© 1995 - 2013 by OM International";
             this.lblCopyrightNotice.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            //
+            // 
             // lblInstallationKind
-            //
+            // 
             this.lblInstallationKind.Font = new System.Drawing.Font("Microsoft Sans Serif",
                 8.25F,
                 System.Drawing.FontStyle.Regular,
@@ -153,9 +154,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblInstallationKind.TabIndex = 3;
             this.lblInstallationKind.Text = "Standalone / Network / Remote";
             this.lblInstallationKind.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            //
+            // 
             // pbxPetraLogo
-            //
+            // 
             this.pbxPetraLogo.Image = ((System.Drawing.Image)(resources.GetObject("pbxPetraLogo.Image")));
             this.pbxPetraLogo.Location = new System.Drawing.Point(70, 1);
             this.pbxPetraLogo.Name = "pbxPetraLogo";
@@ -163,9 +164,9 @@ namespace Ict.Petra.Client.CommonDialogs
             this.pbxPetraLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pbxPetraLogo.TabIndex = 4;
             this.pbxPetraLogo.TabStop = false;
-            //
+            // 
             // TUCPetraLogoAndVersionInfo
-            //
+            // 
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(233)))), ((int)(((byte)(216)))));
             this.Controls.Add(this.pnlTextBoxContainer);
             this.Controls.Add(this.pbxPetraLogo);

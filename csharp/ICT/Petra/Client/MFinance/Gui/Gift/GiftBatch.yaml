@@ -11,6 +11,7 @@ RootNode:
     Events:
         Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
     Actions:
+        actNewDonorWarning: {ActionClick=mniNewDonorWarning_Click}
 
     Controls:
         pnlContent:
@@ -28,4 +29,11 @@ RootNode:
             Dock: Fill
         ucoTransactions:
             Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_GiftTransactions
-            Dock: Fill    
+            Dock: Fill
+
+    Menu:
+        mniFile:
+            mniSeparator: {Label=-, Visible=false}
+            mniNewDonorWarning: {Label=&New Donor Warning}
+                Action: actNewDonorWarning
+            mniSeparator: {Label=-}

@@ -9,7 +9,7 @@ RootNode:
     WindowHeight: 800
 
     Events:
-        Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
+        Load: {class=System.EventHandler, method=TFrmRecurringGiftBatch_Load}    
     Actions:
 
     Controls:
