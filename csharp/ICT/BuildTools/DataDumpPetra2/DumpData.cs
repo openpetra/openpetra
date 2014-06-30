@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, peters
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -171,27 +171,41 @@ namespace Ict.Tools.DataDumpPetra2
                 return;
             }
 
+            string NewFileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                                 newTable.strName + ".sql.gz";
+
+            if (File.Exists(NewFileName))
+            {
+                // for debugging: ignore files that have been written already
+                return;
+            }
+
+            StreamWriter MyWriterCount = null;
+            StreamWriter MyWriterTest = null;
+            FileStream outStreamTest;
+            Stream gzoStreamTest;
+
             try
             {
                 TParseProgressCSV Parser = new TParseProgressCSV(
                     dumpFile + ".d.gz",
                     oldTable.grpTableField.Count);
 
-                FileStream outStream = File.Create(
-                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
-                    newTable.strName + ".sql.gz");
+                FileStream outStream = File.Create(NewFileName);
                 Stream gzoStream = new GZipOutputStream(outStream);
                 StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
 
-                FileStream outStreamTest = File.Create(
-                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
-                    newTable.strName + "_test.sql.gz");
-                Stream gzoStreamTest = new GZipOutputStream(outStreamTest);
-                StreamWriter MyWriterTest = new StreamWriter(gzoStreamTest, Encoding.UTF8);
+                if (TAppSettingsManager.GetValue("create_test_files", "true", false) == "true")
+                {
+                    outStreamTest = File.Create(
+                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                        newTable.strName + "_test.sql.gz");
+                    gzoStreamTest = new GZipOutputStream(outStreamTest);
+                    MyWriterTest = new StreamWriter(gzoStreamTest, Encoding.UTF8);
+                }
 
                 string rowCountDir = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
                                      Path.DirectorySeparatorChar + "_row_count.txt";
-                StreamWriter MyWriterCount;
 
                 if (File.Exists(rowCountDir))
                 {
@@ -212,14 +226,15 @@ namespace Ict.Tools.DataDumpPetra2
                 MyWriter.WriteLine("\\.");
                 MyWriter.WriteLine();
 
-                MyWriterTest.WriteLine();
+                if (MyWriterTest != null)
+                {
+                    MyWriterTest.WriteLine();
+                }
 
                 MyWriterCount.WriteLine(newTable.strName);
                 MyWriterCount.WriteLine(ProcessedRows);
 
                 MyWriter.Close();
-                MyWriterTest.Close();
-                MyWriterCount.Close();
 
                 TLogging.Log(" after processing file, rows: " + ProcessedRows.ToString());
             }
@@ -231,6 +246,18 @@ namespace Ict.Tools.DataDumpPetra2
                 if (File.Exists(dumpFile + ".sql.gz"))
                 {
                     File.Delete(dumpFile + ".sql.gz");
+                }
+            }
+            finally
+            {
+                if (MyWriterCount != null)
+                {
+                    MyWriterCount.Close();
+                }
+
+                if (MyWriterTest != null)
+                {
+                    MyWriterTest.Close();
                 }
             }
         }
@@ -446,13 +473,13 @@ namespace Ict.Tools.DataDumpPetra2
         }
 
         /// <summary>
-        /// if ATableName is empty: collect all sql.gz files and concatenate them to one, and also the sequence file
+        /// if ATableName is empty: collect all _test.sql.gz files and concatenate them to one, and also the sequence file
         /// otherwise just make that one table loadable by adding the PSQL Header
+        ///
+        /// The test file outputs every problem with the database which needs then to be fixed in _load.sql.
         /// </summary>
-        public void CreateNewSQLFile(string ATableName)
+        public void CreateNewTestSQLFile(string ATableName)
         {
-            GetStoreNew();
-
             //create test file
             TLogging.Log("creating _loadTest.sql.gz file...");
 
@@ -549,6 +576,21 @@ namespace Ict.Tools.DataDumpPetra2
             }
 
             TLogging.Log("Success: finished writing the file _loadTest.sql.gz");
+        }
+
+        /// <summary>
+        /// if ATableName is empty: collect all sql.gz files and concatenate them to one, and also the sequence file
+        /// otherwise just make that one table loadable by adding the PSQL Header
+        /// </summary>
+        public void CreateNewSQLFile(string ATableName)
+        {
+            GetStoreNew();
+
+            if (TAppSettingsManager.GetValue("create_test_files", "true", false) == "true")
+            {
+                CreateNewTestSQLFile(ATableName);
+            }
+
             TLogging.Log("creating _load.sql.gz file...");
 
             using (FileStream outStream = File.Create(
