@@ -39,7 +39,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
     public class TReportTemplateWebConnector
     {
         /// <summary>
-        /// For Development only, all templates marked "read only" are also kept in a disc file.
+        /// For Development only, templates are also kept in a disc file.
         /// This means that Bazaar does the internal update management for us.
         /// </summary>
         private static void LoadTemplatesFromBackupFile()
@@ -66,7 +66,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         }
 
         /// <summary>
-        /// For Development only, all templates marked "read only" are also kept in a disc file.
+        /// For Development only, templates are also kept in a disc file.
         /// This means that Bazaar does the internal update management for us.
         /// </summary>
         private static void SaveTemplatesToBackupFile()
@@ -75,13 +75,13 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             if (File.Exists(TemplateBackupFilename))
             {
-                String Query = "SELECT * FROM s_report_template WHERE s_readonly_l=TRUE;";
+                String Query = "SELECT * FROM s_report_template;";
 
                 TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
                 DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "Templates", ReadTrans);
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
-                String FinalQuery = "DELETE FROM s_report_template WHERE s_readonly_l=TRUE;\r\n";
+                String FinalQuery = "DELETE FROM s_report_template;\r\n";
 
                 for (Int32 Idx = 0; Idx < resultTable.Rows.Count; Idx++)
                 {
