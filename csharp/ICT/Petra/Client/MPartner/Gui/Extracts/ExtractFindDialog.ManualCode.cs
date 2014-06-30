@@ -89,6 +89,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 this.clbDetails.DoubleClick += new System.EventHandler(this.AcceptExtract);
             }
 
+            // make sure search button is initially default button so user can press enter to search after entering search criteria
+            AcceptButton = btnSearch;
+            txtExtractName.Focus();
+
             this.ShowDialog();
 
             return true;

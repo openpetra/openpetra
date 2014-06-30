@@ -674,4 +674,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         #endregion
     }
+
+    /// <summary>
+    /// Manages the opening of a Partner's Donor Recipient Screen
+    /// </summary>
+    public static class TDonorRecipientHistoryScreenManager
+    {
+        /// <summary>
+        /// Opens a Modal instance of the Donor Recipient Screen
+        /// </summary>
+        /// <param name="AName">mniMaintainDonorHistory or mniMaintainRecipientHistory</param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AParentForm"></param>
+        /// <returns></returns>
+        public static void OpenForm(String AName,
+            long APartnerKey,
+            Form AParentForm)
+        {
+            TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AName, APartnerKey, AParentForm);
+        }
+    }
 }

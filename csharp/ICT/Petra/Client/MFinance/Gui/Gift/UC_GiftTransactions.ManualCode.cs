@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
@@ -34,10 +35,8 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MCommon;
 
-using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 
@@ -67,6 +66,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private decimal FBatchExchangeRateToBase = 1.0m;
         private bool FGLEffectivePeriodChanged = false;
 
+        private List <Int64>FNewDonorsList = new List <long>();
+
         /// <summary>
         /// The current Ledger number
         /// </summary>
@@ -92,6 +93,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             get
             {
                 return ((TFrmGiftBatch)ParentForm).ViewMode;
+            }
+        }
+
+        /// <summary>
+        /// List of partner keys of first time donors with a gift to be saved
+        /// </summary>
+        public List <Int64>NewDonorsList
+        {
+            get
+            {
+                return FNewDonorsList;
+            }
+            set
+            {
+                FNewDonorsList = value;
             }
         }
 
@@ -1292,11 +1308,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return deletionSuccessful;
             }
 
+            // temporarily disable  New Donor Warning
+            ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = false;
+
             if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
                 return deletionSuccessful;
             }
+
+            ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = true;
 
             //Backup the Dataset for reversion purposes
             GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
@@ -2593,8 +2614,65 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // auto populate recipient info using the donor's last gift
         private void AutoPopulateGiftDetail(long APartnerKey)
         {
-            // get donor's last gift
-            GiftBatchTDSAGiftDetailTable GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(APartnerKey);
+            AGiftTable GiftTable = new AGiftTable();
+            GiftBatchTDSAGiftDetailTable GiftDetailTable = new GiftBatchTDSAGiftDetailTable();
+
+            // check if the donor has another gift in this same batch
+            foreach (AGiftRow GiftRow in FMainDS.AGift.Rows)
+            {
+                if ((GiftRow.DonorKey == APartnerKey)
+                    && (GiftRow.GiftTransactionNumber != GetSelectedDetailRow().GiftTransactionNumber))
+                {
+                    GiftTable.Rows.Add((object[])GiftRow.ItemArray.Clone());
+                }
+            }
+
+            // if the donor does have another gift then get the AGiftDetail records for the most recent gift
+            if (GiftTable.Rows.Count > 0)
+            {
+                // find the most recent gift (probably the last gift in the table)
+                AGiftRow LatestGiftRow = (AGiftRow)GiftTable.Rows[GiftTable.Rows.Count - 1];
+
+                for (int i = GiftTable.Rows.Count - 2; i >= 0; i--)
+                {
+                    if (LatestGiftRow.DateEntered < ((AGiftRow)GiftTable.Rows[i]).DateEntered)
+                    {
+                        LatestGiftRow = (AGiftRow)GiftTable.Rows[i];
+                    }
+                }
+
+                foreach (AGiftDetailRow GiftDetailRow in FMainDS.AGiftDetail.Rows)
+                {
+                    if ((GiftDetailRow.LedgerNumber == LatestGiftRow.LedgerNumber)
+                        && (GiftDetailRow.BatchNumber == LatestGiftRow.BatchNumber)
+                        && (GiftDetailRow.GiftTransactionNumber == LatestGiftRow.GiftTransactionNumber))
+                    {
+                        GiftDetailTable.Rows.Add((object[])GiftDetailRow.ItemArray.Clone());
+                    }
+                }
+            }
+            else
+            {
+                // if the donor does not have another gift in this gift batch then search the database for
+                // the last gift from this donor
+                GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(APartnerKey);
+            }
+
+            // if this is the donor's first ever gift
+            if ((GiftDetailTable == null) || (GiftDetailTable.Rows.Count == 0))
+            {
+                // set FirstTimeGift field in AGift to true
+                GiftBatchTDSAGiftDetailRow CurrentDetail = GetSelectedDetailRow();
+                AGiftRow CurrentGift = (AGiftRow)FMainDS.AGift.Rows.Find(
+                    new object[] { CurrentDetail.LedgerNumber, CurrentDetail.BatchNumber, CurrentDetail.GiftTransactionNumber });
+                CurrentGift.FirstTimeGift = true;
+
+                // add donor key to list so that new donor warning can be shown
+                if (!FNewDonorsList.Contains(APartnerKey))
+                {
+                    FNewDonorsList.Add(APartnerKey);
+                }
+            }
 
             bool SplitGift = false;
 

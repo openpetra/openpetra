@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       peters, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using Ict.Tools.DBXML;
 using Ict.Common;
 
@@ -36,6 +37,26 @@ namespace Ict.Tools.DataDumpPetra2
     /// </summary>
     public class TPartnerGiftDestination : TFixData
     {
+        /// <summary>
+        /// used to store information about a person
+        /// </summary>
+        private class PersonKeyAndRow
+        {
+            /// <summary>
+            /// constructor
+            /// </summary>
+            public PersonKeyAndRow(string APersonKey, string[] APersonRow)
+            {
+                PersonKey = APersonKey;
+                PersonRow = APersonRow;
+            }
+
+            /// the person key
+            public string PersonKey;
+            /// the row from the progress file
+            public string[] PersonRow;
+        }
+
         /// <summary>
         /// Populate the empty table PPartnerGiftDestination using PmStaffData
         /// </summary>
@@ -80,23 +101,24 @@ namespace Ict.Tools.DataDumpPetra2
                     break;
                 }
 
+                string strStartOfCommitment = GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d");
+                string strEndOfCommitment = GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d");
+
                 try
                 {
                     // if commitment is currently active
-                    if ((DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")) <= DateTime.Today)
-                        && ((GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d") == "\\N")
-                            || (DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")) >= DateTime.Today))
-                        && (GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")
-                            != GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")))
+                    if ((DateTime.ParseExact(strStartOfCommitment, "dd/mm/yyyy", CultureInfo.InvariantCulture) <= DateTime.Today)
+                        && ((strEndOfCommitment == "\\N")
+                            || (DateTime.ParseExact(strEndOfCommitment, "dd/mm/yyyy", CultureInfo.InvariantCulture) >= DateTime.Today))
+                        && (strStartOfCommitment != strEndOfCommitment))
                     {
                         ActiveCommitments.Add(StaffDataRow);
                     }
                 }
                 catch
                 {
-                    TLogging.Log("WARNING: Invalid date: " +
-                        Convert.ToDateTime(GetValue(StaffDataColumnNames, StaffDataRow, "pm_start_of_commitment_d")) +
-                        " or " + DateTime.Parse(GetValue(StaffDataColumnNames, StaffDataRow, "pm_end_of_commitment_d")));
+                    TLogging.Log("WARNING: Invalid date in commitment: " +
+                        strStartOfCommitment + " or " + strEndOfCommitment);
                 }
             }
 
@@ -108,6 +130,8 @@ namespace Ict.Tools.DataDumpPetra2
                 PersonTable.grpTableField.Count);
 
             StringCollection PersonColumnNames = GetColumnNames(PersonTable);
+            SortedList <string, List <PersonKeyAndRow>>FamilyKeysWithPersons =
+                new SortedList <string, List <PersonKeyAndRow>>();
 
             // add all Persons to a list
             while (true)
@@ -118,6 +142,17 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     break;
                 }
+
+                string familyKey = GetValue(PersonColumnNames, PersonRow, "p_family_key_n");
+
+                if (!FamilyKeysWithPersons.ContainsKey(familyKey))
+                {
+                    FamilyKeysWithPersons.Add(familyKey, new List <PersonKeyAndRow>());
+                }
+
+                FamilyKeysWithPersons[familyKey].Add(
+                    new PersonKeyAndRow(
+                        GetValue(PersonColumnNames, PersonRow, "p_partner_key_n"), PersonRow));
 
                 Persons.Add(PersonRow);
             }
@@ -141,33 +176,49 @@ namespace Ict.Tools.DataDumpPetra2
                     break;
                 }
 
-                // find Person partners belonging to the family
-                List <string[]>PersonsInFamily = Persons.FindAll(e => GetValue(PersonColumnNames, e, "p_family_key_n") ==
-                    GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
+                string familykey = GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n");
 
+                if (!FamilyKeysWithPersons.ContainsKey(familykey))
+                {
+                    continue;
+                }
+
+                // find Person partners belonging to the family
                 bool CommitmentFound = false;
+                int MinimumFamilyId = int.MaxValue;
 
                 // read through each of the Family's Persons
-                foreach (string[] Person in PersonsInFamily)
+                foreach (PersonKeyAndRow PersonRecord in FamilyKeysWithPersons[familykey])
                 {
                     // find if the Person has a currently active commitment
                     string[] Commitment = ActiveCommitments.Find(e => GetValue(StaffDataColumnNames, e, "p_partner_key_n") ==
-                        GetValue(PersonColumnNames, Person, "p_partner_key_n"));
+                        PersonRecord.PersonKey);
 
                     // if currently active commitment exists create a new Gift Destination record
                     if (Commitment != null)
                     {
-                        SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
-                        SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
-                        SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(StaffDataColumnNames, Commitment, "pm_target_field_n"));
-                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
-                            GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"));
-                        SetValue(AColumnNames, ref ANewRow, "p_date_expires_d", GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"));
+                        int CurrentFamilyId = Convert.ToInt32(GetValue(PersonColumnNames, PersonRecord.PersonRow, "p_old_omss_family_id_i"));
 
-                        CommitmentFound = true;
+                        if (CurrentFamilyId < MinimumFamilyId)
+                        {
+                            SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
+                            SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
+                            SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(StaffDataColumnNames, Commitment, "pm_target_field_n"));
 
-                        // there can only be one active gift destination per family
-                        break;
+                            TTableField tf = new TTableField();
+                            tf.strName = "pm_start_of_commitment_d";
+                            tf.strType = "DATE";
+
+                            SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
+                                TFixData.FixValue(GetValue(StaffDataColumnNames, Commitment, "pm_start_of_commitment_d"), tf));
+                            tf.strName = "pm_end_of_commitment_d";
+                            SetValue(AColumnNames, ref ANewRow, "p_date_expires_d",
+                                TFixData.FixValue(GetValue(StaffDataColumnNames, Commitment, "pm_end_of_commitment_d"), tf));
+
+                            CommitmentFound = true;
+
+                            MinimumFamilyId = CurrentFamilyId;
+                        }
                     }
                 }
 
@@ -181,7 +232,9 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref ANewRow, "p_key_i", RowCounter.ToString());
                         SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_partner_key_n"));
                         SetValue(AColumnNames, ref ANewRow, "p_field_key_n", GetValue(FamilyColumnNames, FamilyRow, "p_om_field_key_n"));
-                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d", DateTime.Today.AddYears(-1).ToShortDateString());
+                        DateTime LastYear = DateTime.Today.AddYears(-1);
+                        SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
+                            string.Format("{0}-{1}-{2}", LastYear.Year, LastYear.Month, LastYear.Day));
                         SetValue(AColumnNames, ref ANewRow, "p_date_expires_d", "\\N");
 
                         CommitmentFound = true;
@@ -192,10 +245,14 @@ namespace Ict.Tools.DataDumpPetra2
                 if (CommitmentFound)
                 {
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY p_partner_gift_destination FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY p_partner_gift_destination FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
 
                     RowCounter++;
                 }

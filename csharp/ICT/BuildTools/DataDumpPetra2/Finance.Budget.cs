@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -143,10 +143,15 @@ namespace Ict.Tools.DataDumpPetra2
                             SetValue(AColumnNames, ref ANewRow, "a_year_i", BudgetYear);
 
                             AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                            AWriterTest.WriteLine("BEGIN; " + "COPY a_budget_revision FROM stdin;");
-                            AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                            AWriterTest.WriteLine("\\.");
-                            AWriterTest.WriteLine("ROLLBACK;");
+
+                            if (AWriterTest != null)
+                            {
+                                AWriterTest.WriteLine("BEGIN; " + "COPY a_budget_revision FROM stdin;");
+                                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                                AWriterTest.WriteLine("\\.");
+                                AWriterTest.WriteLine("ROLLBACK;");
+                            }
+
                             RowCounter++;
 
                             Revisions.Add(LedgerNumber + "_" + BudgetYear);
@@ -245,10 +250,14 @@ namespace Ict.Tools.DataDumpPetra2
                         FixABudgetType(AColumnNames, ref ANewRow);
 
                         AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                        AWriterTest.WriteLine("BEGIN; " + "COPY a_budget FROM stdin;");
-                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                        AWriterTest.WriteLine("\\.");
-                        AWriterTest.WriteLine("ROLLBACK;");
+
+                        if (AWriterTest != null)
+                        {
+                            AWriterTest.WriteLine("BEGIN; " + "COPY a_budget FROM stdin;");
+                            AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                            AWriterTest.WriteLine("\\.");
+                            AWriterTest.WriteLine("ROLLBACK;");
+                        }
                     }
                 }
             }
@@ -359,10 +368,14 @@ namespace Ict.Tools.DataDumpPetra2
                             }
 
                             AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                            AWriterTest.WriteLine("BEGIN; " + "COPY a_budget_period FROM stdin;");
-                            AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                            AWriterTest.WriteLine("\\.");
-                            AWriterTest.WriteLine("ROLLBACK;");
+
+                            if (AWriterTest != null)
+                            {
+                                AWriterTest.WriteLine("BEGIN; " + "COPY a_budget_period FROM stdin;");
+                                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                                AWriterTest.WriteLine("\\.");
+                                AWriterTest.WriteLine("ROLLBACK;");
+                            }
                         }
                     }
                 }

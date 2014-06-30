@@ -544,5 +544,11 @@ useful parameters
     
     <echo message="Target devzip finished at: ${datetime::now()}" />
 </target>
+
+<target name="pullVCSVersionInfo">
+    <exec program="bzr" commandline="version-info" output="${dir.delivery}/bin/vcs-revision.txt"/>
+    <echo message="Version Control System version updated in file ${dir.delivery}/bin/vcs-revision.txt" />
+</target>
+
 </project>
 

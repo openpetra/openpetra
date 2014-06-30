@@ -28,6 +28,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.App.Core;
@@ -50,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // at the moment we only allow a maximum of 8 forward periods
             nudNumberOfFwdPostingPeriods.Maximum = 8;
             nudNumberOfFwdPostingPeriods.Minimum = 1;
-            nudNumberOfFwdPostingPeriods.Value = 8;
+            nudNumberOfFwdPostingPeriods.Value = MFinanceConstants.GL_DEFAULT_FWD_POSTING_PERIODS;
 
             // only allow 12 or 13 periods for now (possibly 14 at a later time if needed)
             nudNumberOfPeriods.Maximum = 13;
