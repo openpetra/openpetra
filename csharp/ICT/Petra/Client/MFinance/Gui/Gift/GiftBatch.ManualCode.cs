@@ -306,6 +306,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// disable the batches tab
+        /// </summary>
+        public void DisableBatches()
+        {
+            this.tpgBatches.Enabled = false;
+        }
+
+        /// <summary>
         /// directly access the batches control
         /// </summary>
         public TUC_GiftBatches GetBatchControl()
