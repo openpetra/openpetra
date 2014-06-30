@@ -28,13 +28,13 @@ using System.Windows.Forms;
 namespace Ict.Petra.Client.App.Core
 {
     /// <summary>
-    /// Stores Version Control System (VCS) Information about the 
+    /// Stores Version Control System (VCS) Information about the
     /// VCS check-out that the build of the application is built against.
     /// </summary>
     public static class TApplicationVCSInfo
     {
         /// <summary>
-        /// Used for storing information about the VCS check-out that the  
+        /// Used for storing information about the VCS check-out that the
         /// build of the application is built against.
         /// </summary>
         public struct ApplicationVCSData
@@ -55,90 +55,90 @@ namespace Ict.Petra.Client.App.Core
                 {
                     return FVCSName;
                 }
-                
+
                 set
                 {
                     FVCSName = value;
                     FIsInitialised = true;
                 }
             }
-            
+
             /// <summary>
             /// Revision ID of the checkout from the VCS.
             /// </summary>
             /// <remarks><see cref="RevisionNumber"/> might be more telling... (it is
             /// in case of Bazaar)</remarks>
-			public string RevisionID 
-			{
-				get 
-				{
-					return FRevisionID;
-				}
-				
-				set
-				{
-				    FRevisionID = value;
-				    FIsInitialised = true;
-				}
-			}
+            public string RevisionID
+            {
+                get
+                {
+                    return FRevisionID;
+                }
 
-			/// <summary>
-			/// Date of the Revision according to the VCS. 
-			/// </summary>
-			public string RevisionDate 
-			{
-				get 
-				{
-					return FRevisionDate;
-				}
-			    
-				set 
-				{
-					FRevisionDate = value;
-					FIsInitialised = true;
-				}
-			}
+                set
+                {
+                    FRevisionID = value;
+                    FIsInitialised = true;
+                }
+            }
 
-			/// <summary>
-			/// Date that the Revision was checked out locally from the VCS.
-			/// </summary>
-			public string RevisionCheckoutDate 
-			{
-				get 
-				{
-					return FRevisionCheckoutDate;
-				}
-			    
-				set 
-				{
-					FRevisionCheckoutDate = value;
-					FIsInitialised = true;
-				}
-			}
+            /// <summary>
+            /// Date of the Revision according to the VCS.
+            /// </summary>
+            public string RevisionDate
+            {
+                get
+                {
+                    return FRevisionDate;
+                }
 
-			/// <summary>
-			/// Revision Number of the checkout from the VCS.
-			/// </summary>
-			public string RevisionNumber 
-			{
-				get 
-				{
-					return FRevisionNumber;
-				}
-				
-				set 
-				{
-					FRevisionNumber = value;
-					FIsInitialised = true;
-				}
-			}
-			
-			/// <summary>
-			/// True if this struct has been initialised with data, otherwise false. It will only be
-			/// initialised if a VCS-data containing file was found at application startup -
-			/// at that time the Method <see cref="DetermineApplicationVCSInfo"/> gets
-			/// called for that purpose!
-			/// </summary>
+                set
+                {
+                    FRevisionDate = value;
+                    FIsInitialised = true;
+                }
+            }
+
+            /// <summary>
+            /// Date that the Revision was checked out locally from the VCS.
+            /// </summary>
+            public string RevisionCheckoutDate
+            {
+                get
+                {
+                    return FRevisionCheckoutDate;
+                }
+
+                set
+                {
+                    FRevisionCheckoutDate = value;
+                    FIsInitialised = true;
+                }
+            }
+
+            /// <summary>
+            /// Revision Number of the checkout from the VCS.
+            /// </summary>
+            public string RevisionNumber
+            {
+                get
+                {
+                    return FRevisionNumber;
+                }
+
+                set
+                {
+                    FRevisionNumber = value;
+                    FIsInitialised = true;
+                }
+            }
+
+            /// <summary>
+            /// True if this struct has been initialised with data, otherwise false. It will only be
+            /// initialised if a VCS-data containing file was found at application startup -
+            /// at that time the Method <see cref="DetermineApplicationVCSInfo"/> gets
+            /// called for that purpose!
+            /// </summary>
             public bool IsInitialised
             {
                 get
@@ -146,76 +146,76 @@ namespace Ict.Petra.Client.App.Core
                     return FIsInitialised;
                 }
             }
-			
         }
 
         /// <summary>
-        /// Public static instance of the single <see cref="ApplicationVCSData"/> struct that there ever is. 
+        /// Public static instance of the single <see cref="ApplicationVCSData"/> struct that there ever is.
         /// </summary>
         /// <remarks>
         /// Inquire this instances' <see cref="ApplicationVCSData.IsInitialised"/> Property to find out if the
         /// struct has been populated with data, or not!
         /// </remarks>
         public static ApplicationVCSData AppVCSData;
-        
+
         /// <summary>
-        /// To be called at application startup time for the determination of the data that 
+        /// To be called at application startup time for the determination of the data that
         /// <see cref="AppVCSData"/> should contain. It will only contain data if a VCS-data-
         /// containing file was found!
         /// </summary>
         public static void DetermineApplicationVCSInfo()
         {
             const string VCS_REVISION_FILE_NAME = "vcs-revision.txt";
-            
+
             string VCSInfoFilePath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + "\\" + VCS_REVISION_FILE_NAME;
             String TextLine;
             int LineCounter = 0;
-            
+
             if (File.Exists(VCSInfoFilePath))
             {
                 using (StreamReader sr = File.OpenText(VCSInfoFilePath))
                 {
                     while ((TextLine = sr.ReadLine()) != null)
                     {
-                        switch (LineCounter) 
+                        switch (LineCounter)
                         {
                             case 0:
+
                                 // Check this is a file that holds output that the "bzr version-info" command generates
                                 // This file is put into the 'bin' folder ONLY when an Installer is built!
-                                if (!TextLine.StartsWith("revision-id:")) 
+                                if (!TextLine.StartsWith("revision-id:"))
                                 {
                                     return;
                                 }
                                 else
                                 {
                                     TApplicationVCSInfo.AppVCSData = new TApplicationVCSInfo.ApplicationVCSData();
-                                    
+
                                     TApplicationVCSInfo.AppVCSData.VCSName = "Bazaar";
                                     TApplicationVCSInfo.AppVCSData.RevisionID = TextLine.Substring(TextLine.IndexOf(':') + 2);
                                 }
-                                
+
                                 break;
-                                
+
                             case 1:
                                 TApplicationVCSInfo.AppVCSData.RevisionDate = TextLine.Substring(TextLine.IndexOf(':') + 2);
-                                
+
                                 break;
-                                
+
                             case 2:
                                 TApplicationVCSInfo.AppVCSData.RevisionCheckoutDate = TextLine.Substring(TextLine.IndexOf(':') + 2);
-                                
+
                                 break;
 
                             case 3:
                                 TApplicationVCSInfo.AppVCSData.RevisionNumber = TextLine.Substring(TextLine.IndexOf(':') + 2);
-                                
+
                                 break;
-                        }                        
-                        
+                        }
+
                         LineCounter++;
                     }
                 }
-            }            
-        }        
+            }
+        }
     }
 }

@@ -38,20 +38,20 @@ namespace Ict.Petra.Client.CommonDialogs
         {
             ucoPetraLogoAndVersionInfo.PetraVersion = TClientInfo.ClientAssemblyVersion;
             ucoPetraLogoAndVersionInfo.InstallationKind = string.Empty;
-            
-#if DEBUG            
-            if (TApplicationVCSInfo.AppVCSData.IsInitialised) 
+
+#if DEBUG
+            if (TApplicationVCSInfo.AppVCSData.IsInitialised)
             {
                 FPetraUtilsObject.SetStatusBarText(btnOK, "Double-click Version Number for VCS Info!");
             }
-#endif                            
+#endif
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             this.Close();
         }
-        
+
         private void Form_Shown(Object Sender, EventArgs e)
         {
             btnOK.Focus();

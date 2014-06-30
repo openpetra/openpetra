@@ -42,7 +42,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private Boolean FViewMode = false;
         private Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences ucoFinance;
         private Boolean tabPageFinanceWasSelected = false;
-        
+
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
             get
@@ -131,6 +131,5 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 tabPageFinanceWasSelected = true;
             }
         }
-
     }
 }

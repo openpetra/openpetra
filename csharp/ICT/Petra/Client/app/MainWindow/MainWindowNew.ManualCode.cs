@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.App.PetraClient
         private void InitializeManualCode()
         {
             string ApplicationTitle = "OpenPetra.org ";
-            
+
             // Currently, only the Main Menu gets an 'OpenPetra styled' StatusBar (an 'OpenPetra styled' StatusBar
             // doesn't go with normal Forms at the moment as pnlContent's BackColor [and UserControls] is white
             // in colour and that doesn't look that good with an 'OpenPetra styled' StatusBar at the bottom).
@@ -125,11 +125,12 @@ namespace Ict.Petra.Client.App.PetraClient
                 // leave out 'Revision'
                 ApplicationTitle += version.ToString(3);
             }
-            
+
 #if DEBUG
-            if (TApplicationVCSInfo.AppVCSData.IsInitialised) 
+            if (TApplicationVCSInfo.AppVCSData.IsInitialised)
             {
-                ApplicationTitle += "         [ " + TApplicationVCSInfo.AppVCSData.VCSName + " Rev. " + TApplicationVCSInfo.AppVCSData.RevisionNumber + " ]";
+                ApplicationTitle += "         [ " + TApplicationVCSInfo.AppVCSData.VCSName + " Rev. " +
+                                    TApplicationVCSInfo.AppVCSData.RevisionNumber + " ]";
             }
 #endif
             this.Text = ApplicationTitle;

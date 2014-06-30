@@ -590,7 +590,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-            	try
+                try
                 {
                     Cursor = Cursors.WaitCursor;
 

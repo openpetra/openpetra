@@ -99,13 +99,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // check if number of forward posting periods is set to 0. This should not be allowed, therefore the value has to be changed here.
                 if (((ALedgerRow)FMainDS.ALedger.Rows[0]).IsNumberFwdPostingPeriodsNull()
-                    || ((ALedgerRow)FMainDS.ALedger.Rows[0]).NumberFwdPostingPeriods == 0)
+                    || (((ALedgerRow)FMainDS.ALedger.Rows[0]).NumberFwdPostingPeriods == 0))
                 {
                     int DefaultNumber = MFinanceConstants.GL_DEFAULT_FWD_POSTING_PERIODS;
 
                     MessageBox.Show(String.Format(Catalog.GetString("Number of Forward Posting Periods for this ledger must not be 0 and will " +
-                                                                    "therefore be set to the default value of {0} unless you cancel the Ledger Settings Screen."),
-                                                                    DefaultNumber.ToString()),
+                                "therefore be set to the default value of {0} unless you cancel the Ledger Settings Screen."),
+                            DefaultNumber.ToString()),
                         Catalog.GetString("Number of Forward Posting Periods"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                     ((ALedgerRow)FMainDS.ALedger.Rows[0]).NumberFwdPostingPeriods = DefaultNumber;
