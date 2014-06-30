@@ -355,7 +355,9 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
 
                 Catalog.Init();
-
+#if DEBUG
+                TApplicationVCSInfo.DetermineApplicationVCSInfo();
+#endif
                 // Register Types that can throw Error Codes (Ict.Common.CommonErrorCodes is automatically added)
                 ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
                 ErrorCodeInventory.RegisteredTypes.Add(new Ict.Common.Verification.TStringChecks().GetType());

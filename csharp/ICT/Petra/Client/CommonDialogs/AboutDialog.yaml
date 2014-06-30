@@ -7,6 +7,9 @@ RootNode:
     Icon: petraico-big.ico
     WindowWidth: 250
     WindowHeight: 250
+    Events: 
+        Shown: {class=System.EventHandler, method=Form_Shown} 
+        
     Controls:
         pnlDialogContent:
             Controls: [ucoPetraLogoAndVersionInfo]
