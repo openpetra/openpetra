@@ -830,6 +830,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 CreateNewExtractFromFoundPartners();
             }
+            else if (ClickedMenuItemName == "mniMailingSubscriptionCancellation")
+            {
+                TPartnerMain.CancelExpiredSubscriptions(this.FindForm());
+            }
             else
             {
                 throw new NotImplementedException();
