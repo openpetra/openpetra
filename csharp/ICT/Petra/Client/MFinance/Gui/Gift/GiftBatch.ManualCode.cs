@@ -186,7 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FGiftDetailTable = null;
                     return;
                 }
-                
+
                 // add changed gift records to datatable
                 GetDataFromControls();
                 FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
