@@ -400,6 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     MaxSet = true;
                 }
             }
+
             return MinSet && MaxSet;
         }
 
@@ -407,6 +408,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             Int32 MinPaymentNumber;
             Int32 MaxPaymentNumber;
+
             GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
 
             Int32 LedgerNumber = FMainDS.AApPayment[0].LedgerNumber;

@@ -176,6 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void FilePrint(object sender, EventArgs e)
         {
             FastReportsWrapper ReportingEngine = new FastReportsWrapper("Cost Centre Hierarchy");
+
             if (!ReportingEngine.LoadedOK)
             {
                 ReportingEngine.ShowErrorPopup();
@@ -187,6 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.ACostCentre.Columns.Add("CostCentrePath", typeof(String));
                 FMainDS.ACostCentre.Columns.Add("CostCentreLevel", typeof(Int32));
             }
+
             DataView PathView = new DataView(FMainDS.ACostCentre);
             PathView.Sort = "a_cost_centre_code_c";
 
@@ -197,9 +199,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 String Path = Row["a_cost_centre_code_c"].ToString();
                 Int32 Level = 0;
                 String ReportsTo = Row["a_cost_centre_to_report_to_c"].ToString();
+
                 while (ReportsTo != "")
                 {
                     Int32 ParentIdx = PathView.Find(ReportsTo);
+
                     if (ParentIdx >= 0)
                     {
                         DataRow ParentRow = PathView[ParentIdx].Row;
@@ -212,6 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         ReportsTo = "";
                     }
                 }
+
                 Row["CostCentrePath"] = Path;
                 Row["CostCentreLevel"] = Level;
             }
@@ -302,8 +307,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tbrMain.Items.Remove(tbbExportHierarchy);
 
                 /* For some reason, this screen never had these menu options!
-                mnuMain.Items.Remove(mniImportHierarchy);
-                mnuMain.Items.Remove(mniExportHierarchy);
+                 * mnuMain.Items.Remove(mniImportHierarchy);
+                 * mnuMain.Items.Remove(mniExportHierarchy);
                  */
             }
         }

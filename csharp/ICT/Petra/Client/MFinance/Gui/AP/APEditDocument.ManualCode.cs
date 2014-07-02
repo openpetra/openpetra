@@ -260,6 +260,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
             tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
+
             if (FRequireApprovalBeforePosting)
             {
                 tbbApproveDocument.Visible = true;
@@ -957,12 +958,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return false;
         }
 
-
         /// <summary>
         /// Approve Document for posting.
         /// See very similar function in TFrmAPSupplierTransactions
         /// </summary>
-        /// 
+        ///
         private void ApproveDocument(object sender, EventArgs e)
         {
             if (FPetraUtilsObject.HasChanges)
@@ -972,7 +972,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            List<Int32> DocsList = new List<int>();
+            List <Int32>DocsList = new List <int>();
 
             DocsList.Add(FMainDS.AApDocument[0].ApDocumentId);
             this.Cursor = Cursors.WaitCursor;
@@ -984,7 +984,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 this.Cursor = Cursors.Default;
                 MessageBox.Show(Catalog.GetString("Document has been approved."), MsgTitle);
 
-                FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED; // The "changed" light isn't lit by this, because the change 
+                FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED; // The "changed" light isn't lit by this, because the change
                                                                                                 // already took place on the server.
                 EnableControls();
 

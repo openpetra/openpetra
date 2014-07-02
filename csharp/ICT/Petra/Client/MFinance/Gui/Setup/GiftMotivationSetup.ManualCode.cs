@@ -100,13 +100,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private void FilePrint(object sender, EventArgs e)
         {
             FastReportsWrapper ReportingEngine = new FastReportsWrapper("Motivation Details");
+
             if (!ReportingEngine.LoadedOK)
             {
                 ReportingEngine.ShowErrorPopup();
                 return;
             }
 
-            ReportingEngine.RegisterData(FMainDS.AMotivationDetail,"MotivationDetail");
+            ReportingEngine.RegisterData(FMainDS.AMotivationDetail, "MotivationDetail");
             TRptCalculator Calc = new TRptCalculator();
             ALedgerRow LedgerRow = FMainDS.ALedger[0];
             Calc.AddParameter("param_ledger_nunmber", LedgerRow.LedgerNumber);

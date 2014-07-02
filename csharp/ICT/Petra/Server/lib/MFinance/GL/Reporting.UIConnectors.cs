@@ -372,7 +372,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 // For each CostCentre / Account combination  I want just a single row, with the opening and closing balances,
                 // so I need to pre-process the stuff I've got in this table, and generate another table.
 
-
                 foreach (DataRow row in GlmTbl.Rows)
                 {
                     if (DbAdapter.IsCancelled)
@@ -1125,7 +1124,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             if (CostCentreOptions == "CostCentreRange")
             {
                 CostCentreFilter = " AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
-                    "' AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
+                                   "' AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
             }
 
             if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
@@ -1706,7 +1705,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable TrialBalanceTable(Dictionary<String, TVariant> AParameters, TReportingDbAdapter DbAdapter)
+        public static DataTable TrialBalanceTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             /* Required columns:
              *   CostCentreCode
@@ -1721,7 +1720,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             /*
              * Trial balance is simply a list of all the account / cost centre balanaces, at the end of the period specified.
              * (If the period is open, it still works.)
-             * 
+             *
              * Trial balance works on Posting accounts and cost centres, so there's no chasing up the hierarchy tree.
              */
 
@@ -1746,14 +1745,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             if (CostCentreOptions == "CostCentreRange")
             {
                 CostCentreFilter = " AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
-                    "' AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
+                                   "' AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
             }
 
             if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
             {
                 CostCentreFilter = " AND a_cost_centre.a_cost_centre_active_flag_l=true";
             }
-
 
             String AccountCodeFilter = "";
             String AccountCodeOptions = AParameters["param_rgrAccounts"].ToString();
@@ -1768,7 +1766,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             if (AccountCodeOptions == "AccountRange")
             {
                 CostCentreFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
-                    "' AND glm.a_account_code_c >='" + AParameters["param_account_code_end"].ToString() + "'";
+                                   "' AND glm.a_account_code_c >='" + AParameters["param_account_code_end"].ToString() + "'";
             }
 
             if (AccountCodeOptions == "AllActiveAccounts") // THIS IS NOT SET AT ALL
@@ -1785,6 +1783,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 OrderBy = " ORDER BY glm.a_account_code_c, a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c";
             }
+
             try
             {
                 String Query = "SELECT DISTINCT" +
@@ -1794,7 +1793,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
                                " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
                                " a_account.a_debit_credit_indicator_l AS IsDebit," +
-                               " glmp."+ ActualFieldName + " AS Balance," +
+                               " glmp." + ActualFieldName + " AS Balance," +
                                " 0.0 as Debit, " +
                                " 0.0 as Credit, " +
                                " glm.a_account_code_c AS AccountCode," +
@@ -1823,13 +1822,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 {
                     Decimal Amount = Convert.ToDecimal(Row["Balance"]);
                     Boolean IsDebit = Convert.ToBoolean(Row["IsDebit"]);
+
                     if (Amount < 0)
                     {
                         IsDebit = !IsDebit;
                         Amount = 0 - Amount;
                     }
-                    String ToField = IsDebit? "Debit": "Credit";
-                    Row [ToField] = Amount;
+
+                    String ToField = IsDebit ? "Debit" : "Credit";
+                    Row[ToField] = Amount;
                 }
 
                 TLogging.Log("", TLoggingType.ToStatusBar);
@@ -1845,6 +1846,5 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             return resultTable;
         } // TrialBalanceTable
-
     }
 }

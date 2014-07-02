@@ -300,7 +300,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Save Document"), Catalog.GetString("The Document has no Document number."),
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Save Document"),
+                                Catalog.GetString("The Document has no Document number."),
                                 TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
                     }
@@ -441,7 +442,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ALedgerInitFlagTable Tbl = ALedgerInitFlagAccess.LoadViaALedger(ALedgerNumber, AReadTrans);
 
             Tbl.DefaultView.RowFilter = "a_init_option_name_c='AP_APPROVE_BLOCK'";
-            return (Tbl.DefaultView.Count > 0);
+            return Tbl.DefaultView.Count > 0;
         }
 
         private static void SetOutstandingAmount(AccountsPayableTDSAApDocumentRow Row, Int32 ALedgerNumber, AApDocumentPaymentTable DocPaymentTbl)
@@ -556,7 +557,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 AApDocumentAccess.LoadByPrimaryKey(MainDS, APDocumentId, Transaction);
                 AApDocumentDetailAccess.LoadViaAApDocument(MainDS, APDocumentId, Transaction);
             }
-            
+
             MustBeApproved = LedgerRquiresDocumentApproval(ALedgerNumber, Transaction);
 
             // do some checks on state of AP documents
@@ -575,8 +576,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 else
                 {
                     if (
-                        (MustBeApproved && document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)
-                        || (!MustBeApproved && document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_OPEN)
+                        (MustBeApproved && (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED))
+                        || (!MustBeApproved && (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_OPEN && document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED))
                         )
                     {
                         AVerifications.Add(new TVerificationResult(
@@ -926,7 +927,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             if (AApproveTheseDocs.Count == 0)
             {
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"), Catalog.GetString("Nothing to do - the document list is empty"),
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"),
+                        Catalog.GetString("Nothing to do - the document list is empty"),
                         TResultSeverity.Resv_Noncritical));
                 return false;
             }
@@ -944,7 +946,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
                 else
                 {
-                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"), Catalog.GetString("Only OPEN documents can be approved"),
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"),
+                            Catalog.GetString("Only OPEN documents can be approved"),
                             TResultSeverity.Resv_Noncritical));
                     return false;
                 }
@@ -1047,8 +1050,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ABatchRow batch;
             TVerificationResultCollection ResultsCollection = new TVerificationResultCollection();
 
-            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access
-                                                        // "out" parameters, so this intermediate variable is used.
             TDBTransaction HighLevelTransaction = null;
             Boolean WillCommit = true;
             Boolean MustBeApproved;
@@ -1056,12 +1057,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref HighLevelTransaction, ref WillCommit,
                 delegate
                 {
-                    AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, 
+                    AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal,
                         out MustBeApproved,
                         out ResultsCollection);
 
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(ResultsCollection))
                     {
+                        PostingWorkedOk = false;
                         return; // This is returning from the AutoTransaction, not from the whole method.
                     }
 
@@ -1100,7 +1102,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         if (Reversal)
                         {
-                            row.DocumentStatus = MustBeApproved? MFinanceConstants.AP_DOCUMENT_APPROVED: MFinanceConstants.AP_DOCUMENT_OPEN;
+                            row.DocumentStatus = MustBeApproved ? MFinanceConstants.AP_DOCUMENT_APPROVED : MFinanceConstants.AP_DOCUMENT_OPEN;
                         }
                         else
                         {
@@ -1126,6 +1128,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         return;
                     }
                 });
+
+            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access
+                                                        // "out" parameters, so this intermediate variable was used.
             return PostingWorkedOk;
         }
 

@@ -205,6 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void FilePrint(object sender, EventArgs e)
         {
             FastReportsWrapper ReportingEngine = new FastReportsWrapper("Account Hierarchy");
+
             if (!ReportingEngine.LoadedOK)
             {
                 ReportingEngine.ShowErrorPopup();
@@ -216,6 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.AAccount.Columns.Add("AccountPath", typeof(String));
                 FMainDS.AAccount.Columns.Add("AccountLevel", typeof(Int32));
             }
+
             DataView PathView = new DataView(FMainDS.AAccountHierarchyDetail);
             PathView.Sort = "a_reporting_account_code_c";
 
@@ -230,9 +232,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 String Path = AccountCode;
                 Int32 Level = 0;
                 String ReportsTo = Row["a_account_code_to_report_to_c"].ToString();
+
                 while (ReportsTo != "")
                 {
                     Int32 ParentIdx = PathView.Find(ReportsTo);
+
                     if (ParentIdx >= 0)
                     {
                         DataRow ParentRow = PathView[ParentIdx].Row;
@@ -607,6 +611,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             // TODO: open file; only will work if there are no GLM records and transactions yet
             XmlDocument doc;
+
             try
             {
                 doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Account Hierarchy from file"));

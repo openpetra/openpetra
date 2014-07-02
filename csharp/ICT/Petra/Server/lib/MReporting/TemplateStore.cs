@@ -128,6 +128,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             Tbl = SReportTemplateAccess.LoadUsingTemplate(TemplateRow, Transaction);
             DBAccess.GDBAccessObj.RollbackTransaction();
+
             if (Tbl.Rows.Count == 0)
             {
                 TLogging.Log("No Report Templates in Database for " + AReportType);

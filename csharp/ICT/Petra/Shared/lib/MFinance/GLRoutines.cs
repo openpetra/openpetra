@@ -51,14 +51,14 @@ namespace Ict.Petra.Shared.MFinance
             }
 
             /* // Since I'm not using ExchangeRateToBase, I don't need to check that it's valid:
-            if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
-                && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
-            {
-                throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
-                        ACurrentJournal.BatchNumber,
-                        ACurrentJournal.JournalNumber));
-            }
-            */
+             * if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
+             *  && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
+             * {
+             *  throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
+             *          ACurrentJournal.BatchNumber,
+             *          ACurrentJournal.JournalNumber));
+             * }
+             */
 
             ACurrentJournal.JournalDebitTotal = 0.0M;
             ACurrentJournal.JournalDebitTotalBase = 0.0M;
@@ -107,15 +107,15 @@ namespace Ict.Petra.Shared.MFinance
             }
 
             /* // Since I'm not using ExchangeRateToBase, I don't need to check that it's valid:
-
-            if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
-                && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
-            {
-                throw new Exception(String.Format("Recurring Batch {0} Journal {1} has invalid exchange rate to base",
-                        ACurrentJournal.BatchNumber,
-                        ACurrentJournal.JournalNumber));
-            }
-            */
+             *
+             * if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
+             *  && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
+             * {
+             *  throw new Exception(String.Format("Recurring Batch {0} Journal {1} has invalid exchange rate to base",
+             *          ACurrentJournal.BatchNumber,
+             *          ACurrentJournal.JournalNumber));
+             * }
+             */
 
             ACurrentJournal.JournalDebitTotal = 0.0M;
             ACurrentJournal.JournalDebitTotalBase = 0.0M;

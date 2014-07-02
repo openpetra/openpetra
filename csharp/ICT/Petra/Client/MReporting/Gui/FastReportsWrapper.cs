@@ -76,6 +76,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void SetTemplate(SReportTemplateRow ATemplate)
         {
             FSelectedTemplate = ATemplate;
+
             if (FPetraUtilsObject != null)
             {
                 FPetraUtilsObject.SetWindowTitle();
@@ -162,12 +163,14 @@ namespace Ict.Petra.Client.MReporting.Gui
                 LoadedOK = false;
                 FDataGetter = null;
                 FPetraUtilsObject = PetraUtilsObject;
+
                 if (!LoadDll())
                 {
                     return;
                 }
 
                 FReportName = FPetraUtilsObject.FReportName;
+
                 if (!LoadDefaultTemplate())
                 {
                     return;
@@ -197,12 +200,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 LoadedOK = false;
                 FDataGetter = null;
+
                 if (!LoadDll())
                 {
                     return;
                 }
 
                 FReportName = AReportName;
+
                 if (!LoadDefaultTemplate())
                 {
                     return;
@@ -251,10 +256,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
 
-                MessageBox.Show("The FastReports plugin did not initialise:\r\n"
-                    + Msg
-                    + "\r\n(To suppress this message, set USEXMLREPORTS in SystemDefaults.)"
-                    , "Reporting engine");
+                MessageBox.Show("The FastReports plugin did not initialise:\r\n" +
+                    Msg +
+                    "\r\n(To suppress this message, set USEXMLREPORTS in SystemDefaults.)",
+                    "Reporting engine");
             }
         }
 
@@ -407,6 +412,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     FDataGetter(ACalc);
                 }
+
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                     new object[] { FSelectedTemplate.XmlText });
                 LoadReportParams(ACalc);

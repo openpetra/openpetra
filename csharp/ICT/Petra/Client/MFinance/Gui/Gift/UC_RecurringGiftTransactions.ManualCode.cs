@@ -1148,10 +1148,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns></returns>
         private ARecurringGiftBatchRow GetCurrentRecurringBatchRow()
         {
-            if (FLedgerNumber != -1 && FBatchNumber != -1)
+            if ((FLedgerNumber != -1) && (FBatchNumber != -1))
             {
                 return (ARecurringGiftBatchRow)FMainDS.ARecurringGiftBatch.Rows.Find(new object[] { FLedgerNumber, FBatchNumber });
             }
+
             return null;
         }
 

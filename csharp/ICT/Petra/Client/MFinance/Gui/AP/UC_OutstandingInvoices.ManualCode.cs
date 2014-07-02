@@ -789,6 +789,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     MessageBox.Show(VerificationResult.BuildVerificationResultString(), MsgTitle);
                 }
+
                 this.Cursor = Cursors.Default;
             }
             else
