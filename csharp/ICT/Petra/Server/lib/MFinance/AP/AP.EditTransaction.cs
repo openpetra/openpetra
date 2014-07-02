@@ -577,7 +577,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     if (
                         (MustBeApproved && (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED))
-                        || (!MustBeApproved && (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_OPEN && document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED))
+                        || (!MustBeApproved
+                            && ((document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_OPEN)
+                                && (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)))
                         )
                     {
                         AVerifications.Add(new TVerificationResult(
