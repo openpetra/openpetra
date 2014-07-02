@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 //TODO temp, needs to be changed
                 NewRowShortTermApp.StApplicationType = "A";
-                NewRowShortTermApp.StBasicOutreachId = "0";
+                NewRowShortTermApp.StBasicOutreachId = NewRowGeneralApp.OldLink;
 
                 FMainDS.PmGeneralApplication.Rows.Add(NewRowGeneralApp);
                 FMainDS.PmShortTermApplication.Rows.Add(NewRowShortTermApp);
