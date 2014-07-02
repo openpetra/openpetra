@@ -754,7 +754,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPetraUtilsObject.HasChanges)
             {
-                // save first, then post
+                // save first, then submit
                 if (!((TFrmRecurringGiftBatch)ParentForm).SaveChanges())
                 {
                     // saving failed, therefore do not try to submit
@@ -766,7 +766,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            if ((FPreviouslySelectedDetailRow.HashTotal != 0) && (FPreviouslySelectedDetailRow.BatchTotal != FPreviouslySelectedDetailRow.HashTotal))
+            if ((FPreviouslySelectedDetailRow.HashTotal != 0)
+                && (FPreviouslySelectedDetailRow.BatchTotal != FPreviouslySelectedDetailRow.HashTotal))
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "The recurring gift batch total ({0}) for batch {1} does not equal the hash total ({2})."),
@@ -780,16 +781,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (!AccountIsActive(FPreviouslySelectedDetailRow.BankAccountCode) || !CostCentreIsActive(FPreviouslySelectedDetailRow.BankCostCentre))
+            if (!LoadAllBatchData() || !AllowInactiveFieldValues())
             {
-                if (MessageBox.Show(String.Format(Catalog.GetString(
-                                "Recurring batch no. {0} contains an inactive bank account or cost centre code. Do you want to continue submitting?"),
-                            FPreviouslySelectedDetailRow.BatchNumber),
-                        Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning) == DialogResult.No)
-                {
-                    return;
-                }
+                return;
             }
 
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(FPetraUtilsObject.GetForm());
@@ -805,6 +799,97 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 submitForm.Dispose();
                 ParentForm.ShowInTaskbar = true;
             }
+        }
+
+        private Boolean LoadAllBatchData(int ABatchNumber = 0)
+        {
+            bool RetVal = false;
+
+            DataView GiftDV = new DataView(FMainDS.ARecurringGift);
+            DataView GiftDetailsDV = new DataView(FMainDS.ARecurringGiftDetail);
+
+            bool NoGiftRows = true;
+            bool NoGiftDetailRows = true;
+
+            if ((ABatchNumber == 0) && (FPreviouslySelectedDetailRow != null))
+            {
+                ABatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            }
+            else if (ABatchNumber == 0)
+            {
+                return RetVal;
+            }
+
+            try
+            {
+                // now load all gift data for this batch
+                GiftDV.RowFilter = String.Format("{0}={1}",
+                    ARecurringGiftTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber);
+                GiftDetailsDV.RowFilter = String.Format("{0}={1}",
+                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber);
+
+                if (GiftDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, FSelectedBatchNumber));
+                }
+
+                NoGiftRows = (GiftDV.Count == 0);
+                NoGiftDetailRows = (GiftDetailsDV.Count == 0);
+
+                if ((NoGiftRows && !NoGiftDetailRows)
+                    || (!NoGiftRows && NoGiftDetailRows))
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "The recurring gift batch {0} contains orphaned gift records. PLEASE DELETE THE RECURRING BATCH AND RECREATE!"),
+                            FPreviouslySelectedDetailRow.BatchNumber),
+                        Catalog.GetString("Orphaned Data"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return RetVal;
+                }
+
+                //Restrict now to active gifts only
+                GiftDV.RowFilter = String.Format("{0}={1} And {2}=true",
+                    ARecurringGiftTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber,
+                    ARecurringGiftTable.GetActiveDBName());
+
+                if (GiftDV.Count == 0)
+                {
+                    if (MessageBox.Show(String.Format(Catalog.GetString(
+                                    "The recurring gift batch {0} has no active gifts. Do you still want to submit?"),
+                                FPreviouslySelectedDetailRow.BatchNumber),
+                            Catalog.GetString("Submit Empty Batch"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    {
+                        return RetVal;
+                    }
+                }
+
+                RetVal = true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return RetVal;
+        }
+
+        private bool AllowInactiveFieldValues()
+        {
+            if (!AccountIsActive(FPreviouslySelectedDetailRow.BankAccountCode) || !CostCentreIsActive(FPreviouslySelectedDetailRow.BankCostCentre))
+            {
+                if (MessageBox.Show(String.Format(Catalog.GetString(
+                                "Recurring batch no. {0} contains an inactive bank account or cost centre code. Do you want to continue submitting?"),
+                            FPreviouslySelectedDetailRow.BatchNumber),
+                        Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning) == DialogResult.No)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void RefreshCurrencyControls(string ACurrencyCode)

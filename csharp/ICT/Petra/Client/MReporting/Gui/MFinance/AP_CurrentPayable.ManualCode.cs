@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
+                dtpReportDate.Date = DateTime.Now;
             }
         }
 
