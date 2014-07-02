@@ -1529,8 +1529,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Control controlToPass = null;
 
             //Local validation
-            if (((txtDebitAmount.NumberValueDecimal.Value == 0)
-                 && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
+            if (((txtDebitAmount.NumberValueDecimal.Value == 0) && (txtCreditAmount.NumberValueDecimal.Value == 0))
+                || (txtDebitAmount.NumberValueDecimal.Value < 0))
             {
                 controlToPass = txtDebitAmount;
             }

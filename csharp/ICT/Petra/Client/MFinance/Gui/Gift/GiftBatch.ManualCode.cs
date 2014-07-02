@@ -50,7 +50,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
         private bool FNewDonorWarning = true;
-
+        // changed gift records
+        GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -176,28 +177,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             };
         }
 
-        // changed gift records
-        GiftBatchTDSAGiftDetailTable GiftDetailTable = null;
-
         private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning(object Sender, EventArgs e)
         {
             if (FNewDonorWarning)
             {
+                if (FMainDS.GetChangesTyped(false) == null)
+                {
+                    FGiftDetailTable = null;
+                    return;
+                }
+                
                 // add changed gift records to datatable
                 GetDataFromControls();
-                GiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
+                FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
             }
         }
 
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
             // if data successfully saved then look for new donors and warn the user
-            if (e.Success && (GiftDetailTable != null) && FNewDonorWarning)
+            if (e.Success && (FGiftDetailTable != null) && FNewDonorWarning)
             {
                 // this list contains a list of all new donors that were entered onto form
                 List <Int64>NewDonorsList = ucoTransactions.NewDonorsList;
 
-                foreach (GiftBatchTDSAGiftDetailRow Row in GiftDetailTable.Rows)
+                foreach (GiftBatchTDSAGiftDetailRow Row in FGiftDetailTable.Rows)
                 {
                     // check changed data is either added or modified and that it is by a new donor
                     if (((Row.RowState == DataRowState.Added) || (Row.RowState == DataRowState.Modified))
