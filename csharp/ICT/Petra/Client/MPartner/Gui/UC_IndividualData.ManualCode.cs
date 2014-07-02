@@ -1161,8 +1161,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoSpecialNeeds.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoSpecialNeeds);
 
-                    SendAllOtherItemsToBackExcluding("FUcoSpecialNeeds");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1187,6 +1185,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbSpecialNeeds.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoSpecialNeeds);
                 FUcoSpecialNeeds.Parent.BringToFront();
             }
             else if (ASender == llbLanguages)
@@ -1212,8 +1211,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPersonalLanguages.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalLanguages);
 
-                    SendAllOtherItemsToBackExcluding("FUcoPersonalLanguages");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1238,6 +1235,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbLanguages.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoPersonalLanguages);
                 FUcoPersonalLanguages.Parent.BringToFront();
             }
             else if (ASender == llbProgressReports)
@@ -1263,8 +1261,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoProgressReports.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoProgressReports);
 
-                    SendAllOtherItemsToBackExcluding("FUcoProgressReports");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1289,6 +1285,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbProgressReports.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoProgressReports);
                 FUcoProgressReports.Parent.BringToFront();
             }
             else if (ASender == llbCommitmentPeriods)
@@ -1314,8 +1311,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoCommitmentPeriods.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoCommitmentPeriods);
 
-                    SendAllOtherItemsToBackExcluding("FUcoCommitmentPeriods");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1340,6 +1335,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbCommitmentPeriods.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoCommitmentPeriods);
                 FUcoCommitmentPeriods.Parent.BringToFront();
             }
             else if (ASender == llbPersonSkills)
@@ -1365,8 +1361,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPersonSkills.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonSkills);
 
-                    SendAllOtherItemsToBackExcluding("FUcoPersonSkills");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1391,6 +1385,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbPersonSkills.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoPersonSkills);
                 FUcoPersonSkills.Parent.BringToFront();
             }
             else if (ASender == llbPersonalAbilities)
@@ -1416,8 +1411,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPersonalAbilities.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalAbilities);
 
-                    SendAllOtherItemsToBackExcluding("FUcoPersonalAbilities");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1442,6 +1435,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbPersonalAbilities.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoPersonalAbilities);
                 FUcoPersonalAbilities.Parent.BringToFront();
             }
             else if (ASender == llbPassportDetails)
@@ -1467,8 +1461,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPassportDetails.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPassportDetails);
 
-                    SendAllOtherItemsToBackExcluding("FUcoPassportDetails");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1493,6 +1485,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbPassportDetails.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoPassportDetails);
                 FUcoPassportDetails.Parent.BringToFront();
             }
             else if (ASender == llbPersonalData)
@@ -1513,8 +1506,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPersonalData.SpecialInitUserControl(FMainDS);
                     FUcoPersonalData.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalData);
-
-                    SendAllOtherItemsToBackExcluding("FUcoPersonalData");
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
@@ -1540,6 +1531,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbPersonalData.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoPersonalData);
                 FUcoPersonalData.Parent.BringToFront();
             }
             else if (ASender == llbEmergencyData)
@@ -1560,8 +1552,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoEmergencyData.SpecialInitUserControl(FMainDS);
                     FUcoEmergencyData.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoEmergencyData);
-
-                    SendAllOtherItemsToBackExcluding("FUcoEmergencyData");
 
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
@@ -1587,6 +1577,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbEmergencyData.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoEmergencyData);
                 FUcoEmergencyData.Parent.BringToFront();
             }
             else if (ASender == llbPreviousExperience)
@@ -1612,8 +1603,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPreviousExperience.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPreviousExperience);
 
-                    SendAllOtherItemsToBackExcluding("FUcoPreviousExperience");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1638,6 +1627,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbPreviousExperience.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoPreviousExperience);
                 FUcoPreviousExperience.Parent.BringToFront();
             }
             else if (ASender == llbPersonalDocuments)
@@ -1663,8 +1653,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoPersonalDocuments.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoPersonalDocuments);
 
-                    SendAllOtherItemsToBackExcluding("FUcoPersonalDocuments");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1689,6 +1677,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbPersonalDocuments.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoPersonalDocuments);
                 FUcoPersonalDocuments.Parent.BringToFront();
             }
             else if (ASender == llbJobAssignments)
@@ -1715,8 +1704,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoJobAssignments.InitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoJobAssignments);
 
-                    SendAllOtherItemsToBackExcluding("FUcoJobAssignments");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1741,6 +1728,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbJobAssignments.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoJobAssignments);
                 FUcoJobAssignments.Parent.BringToFront();
             }
             else if (ASender == llbLocalPersonnelData)
@@ -1766,8 +1754,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoLocalPersonnelData.SpecialInitUserControl();
                     ((IFrmPetraEdit)(this.ParentForm)).GetPetraUtilsObject().HookupAllInContainer(FUcoLocalPersonnelData);
 
-                    SendAllOtherItemsToBackExcluding("FUcoLocalPersonnelData");
-
                     // The following code is not needed at the moment unless there would be some special initialization later on
                     // beyond what it is done in SpecialInitUserControl
                     //OnTabPageEvent(new TTabPageEventArgs(tpgPartnerTypes, FUcoPartnerTypes, "InitialActivation"));
@@ -1792,6 +1778,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 llbLocalPersonnelData.BackColor = PanelHelperBackGround;
 
+                LimitTabStopToItem(FUcoLocalPersonnelData);
                 FUcoLocalPersonnelData.Parent.BringToFront();
             }
 
@@ -1806,75 +1793,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// This method sends all views, excluding the current one, to back.  BE SURE TO ADD EACH NEW VIEW TYPE HERE AS THEY ARE ADDED!!
+        /// This method sets the TabStop only for the given control (individual data link page)
+        /// and removes it for all other individual data item controls.
         /// </summary>
-        /// <param name="exclude">Type: String;  This is the name of the individualData item that will not be sent to back.</param>
-        private void SendAllOtherItemsToBackExcluding(String exclude)
+        /// <param name="control">Only set TabStop for given control, remove for all other controls.</param>
+        private void LimitTabStopToItem(UserControl control)
         {
-            if ((FUcoPersonalLanguages != null) && (exclude != "FUcoPersonalLanguages"))
+            foreach (UserControl tempControl in FUserControlSetup.Values)
             {
-                FUcoPersonalLanguages.SendToBack();
+                tempControl.TabStop = false;
             }
 
-            if ((FUcoSpecialNeeds != null) && (exclude != "FUcoSpecialNeeds"))
-            {
-                FUcoSpecialNeeds.SendToBack();
-            }
-
-            if ((FUcoPersonalAbilities != null) && (exclude != "FUcoPersonalAbilities"))
-            {
-                FUcoPersonalAbilities.SendToBack();
-            }
-
-            if ((FUcoPassportDetails != null) && (exclude != "FUcoPassportDetails"))
-            {
-                FUcoPassportDetails.SendToBack();
-            }
-
-            if ((FUcoPersonalData != null) && (exclude != "FUcoPersonalData"))
-            {
-                FUcoPersonalData.SendToBack();
-            }
-
-            if ((FUcoEmergencyData != null) && (exclude != "FUcoEmergencyData"))
-            {
-                FUcoEmergencyData.SendToBack();
-            }
-
-            if ((FUcoPersonSkills != null) && (exclude != "FUcoPersonSkills"))
-            {
-                FUcoPersonSkills.SendToBack();
-            }
-
-            if ((FUcoProgressReports != null) && (exclude != "FUcoProgressReports"))
-            {
-                FUcoProgressReports.SendToBack();
-            }
-
-            if ((FUcoCommitmentPeriods != null) && (exclude != "FUcoCommitmentPeriods"))
-            {
-                FUcoCommitmentPeriods.SendToBack();
-            }
-
-            if ((FUcoPreviousExperience != null) && (exclude != "FUcoPreviousExperience"))
-            {
-                FUcoPreviousExperience.SendToBack();
-            }
-
-            if ((FUcoPersonalDocuments != null) && (exclude != "FUcoPersonalDocuments"))
-            {
-                FUcoPersonalDocuments.SendToBack();
-            }
-
-            if ((FUcoJobAssignments != null) && (exclude != "FUcoJobAssignments"))
-            {
-                FUcoJobAssignments.SendToBack();
-            }
-
-            if ((FUcoLocalPersonnelData != null) && (exclude != "FUcoLocalPersonnelData"))
-            {
-                FUcoLocalPersonnelData.SendToBack();
-            }
+            control.TabStop = true;
         }
 
         private void OpenBasicDataShepherd(object Sender, EventArgs e)
