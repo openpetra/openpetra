@@ -14,6 +14,7 @@ RootNode:
         cndDiscountEnabled: {InitialValue=false}
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail, Image=New_Record.ico}
         actDelete:  {Label=&Remove Detail, ActionClick=DeleteRecord}
+        actApproveDocument: {Label=Approve, ActionClick=ApproveDocument}
         actPostDocument: {Label=Post, ActionClick=PostDocument}
         actPayDocument: {Label=Pay, ActionClick=PayDocument}
         actLookupExchangeRate: {ActionClick=LookupExchangeRate}
@@ -145,6 +146,8 @@ RootNode:
 #            Width: 150
 #            Enabled: false
     Toolbar:
+        tbbApproveDocument:
+            Action: actApproveDocument
         tbbPostDocument:
             Action: actPostDocument
         tbbPayDocument:

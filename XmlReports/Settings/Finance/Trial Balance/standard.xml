@@ -12,8 +12,10 @@
   <Parameter id="param_daterange" value="eString:false" />
   <Parameter id="param_sortby" value="eString:Account" />
   <Parameter id="param_account_codes" value="eString:*NOTUSED*" />
-  <Parameter id="param_rgrAccounts" value="eString:AccountRange" />
+  <Parameter id="param_rgrAccounts" value="eString:AllAccounts" />
+  <Parameter id="param_account_list_title" value="eString:All Accounts" />
+  <Parameter id="param_cost_centre_list_title" value="eString:All Cost Centres" />
+  <Parameter id="param_rgrCostCentres" value="eString:AllCostCentres" />
   <Parameter id="param_cost_centre_codes" value="eString:*NOTUSED*" />
-  <Parameter id="param_rgrCostCentres" value="eString:CostCentreRange" />
   <Parameter id="param_depth" value="eString:standard" />
 </Parameters>

@@ -407,7 +407,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 APInfos.ApDS.AApSupplier[0].DefaultCostCentre).YtdActual;
 
             Assert.AreEqual(Math.Round(AAmount / AExchangeRatePosting, 2), Math.Round(ExpAccountAfter - AExpAccountBefore,
-                    2), "after posting the invoice, the expense account should be debited the amount in base currency");
+                    2), "after posting the invoice, the expense account should be debited the amount in base currency (Exchange Rate is "+ AExchangeRatePosting + ")");
 
             return APInfos;
         }
