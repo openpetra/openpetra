@@ -707,6 +707,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
             ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AValidLedgerNumberAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
 

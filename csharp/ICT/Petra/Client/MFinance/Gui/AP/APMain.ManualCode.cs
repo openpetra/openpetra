@@ -180,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// Gets whether approval is reqiored before posting
+        /// Gets whether approval is required before posting
         /// </summary>
         public Boolean RequireApprovalBeforePosting
         {

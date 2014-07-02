@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,8 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
@@ -82,9 +84,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 grdDetails.AutoSizeCells();
 
                 this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
+                mniFilePrint.Click += FilePrint;
+                mniFilePrint.Enabled = true;
 
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
+            }
+        }
+
+        /// <summary>
+        /// Print out the Motivation Details using FastReports template.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FilePrint(object sender, EventArgs e)
+        {
+            FastReportsWrapper ReportingEngine = new FastReportsWrapper("Motivation Details");
+
+            if (!ReportingEngine.LoadedOK)
+            {
+                ReportingEngine.ShowErrorPopup();
+                return;
+            }
+
+            ReportingEngine.RegisterData(FMainDS.AMotivationDetail, "MotivationDetail");
+            TRptCalculator Calc = new TRptCalculator();
+            ALedgerRow LedgerRow = FMainDS.ALedger[0];
+            Calc.AddParameter("param_ledger_nunmber", LedgerRow.LedgerNumber);
+            Calc.AddStringParameter("param_ledger_name", LedgerRow.LedgerName);
+
+            if (ModifierKeys.HasFlag(Keys.Control))
+            {
+                ReportingEngine.DesignReport(Calc);
+            }
+            else
+            {
+                ReportingEngine.GenerateReport(Calc);
             }
         }
 

@@ -27,6 +27,7 @@ using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Verification.Exceptions;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -813,6 +814,54 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             return ResultValue;
+        }
+
+        /// <summary>
+        /// Cancel all subscriptions that have a past expiry date and that are not cancelled yet
+        /// </summary>
+        /// <returns>true if cancellation was successful</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool CancelExpiredSubscriptions()
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+
+            //Error handling
+            string ErrorContext = "Create a Batch";
+            string ErrorMessage = String.Empty;
+            //Set default type as non-critical
+            TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+            TVerificationResultCollection VerificationResult = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    try
+                    {
+                        DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE " + PSubscriptionTable.GetTableDBName() +
+                            " SET " + PSubscriptionTable.GetDateCancelledDBName() + " = DATE(NOW()), " +
+                            PSubscriptionTable.GetSubscriptionStatusDBName() + " = 'EXPIRED', " +
+                            PSubscriptionTable.GetReasonSubsCancelledCodeDBName() + " = 'COMPLETE' " +
+                            "WHERE " + PSubscriptionTable.GetExpiryDateDBName() + " < DATE(NOW()) " +
+                            "AND " + PSubscriptionTable.GetDateCancelledDBName() + " IS NULL", Transaction);
+
+                        SubmissionOK = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorMessage =
+                            Catalog.GetString("Unknown error while cancelling expired subscriptions:" +
+                                Environment.NewLine + Environment.NewLine + ex.ToString());
+                        ErrorType = TResultSeverity.Resv_Critical;
+                        VerificationResult = new TVerificationResultCollection();
+                        VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+
+                        throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
+                    }
+                });
+
+            return SubmissionOK;
         }
 
         /// <summary>

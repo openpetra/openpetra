@@ -40,6 +40,8 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using System.Drawing;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
+using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -167,6 +169,78 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
+        /// Print out the Hierarchy using FastReports template.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FilePrint(object sender, EventArgs e)
+        {
+            FastReportsWrapper ReportingEngine = new FastReportsWrapper("Cost Centre Hierarchy");
+
+            if (!ReportingEngine.LoadedOK)
+            {
+                ReportingEngine.ShowErrorPopup();
+                return;
+            }
+
+            if (!FMainDS.ACostCentre.Columns.Contains("CostCentrePath"))
+            {
+                FMainDS.ACostCentre.Columns.Add("CostCentrePath", typeof(String));
+                FMainDS.ACostCentre.Columns.Add("CostCentreLevel", typeof(Int32));
+            }
+
+            DataView PathView = new DataView(FMainDS.ACostCentre);
+            PathView.Sort = "a_cost_centre_code_c";
+
+            // I need to make the "CostCentrePath" field that will be used to sort the table for printout:
+            foreach (DataRowView rv in PathView)
+            {
+                DataRow Row = rv.Row;
+                String Path = Row["a_cost_centre_code_c"].ToString();
+                Int32 Level = 0;
+                String ReportsTo = Row["a_cost_centre_to_report_to_c"].ToString();
+
+                while (ReportsTo != "")
+                {
+                    Int32 ParentIdx = PathView.Find(ReportsTo);
+
+                    if (ParentIdx >= 0)
+                    {
+                        DataRow ParentRow = PathView[ParentIdx].Row;
+                        ReportsTo = ParentRow["a_cost_centre_to_report_to_c"].ToString();
+                        Path = ParentRow["a_cost_centre_code_c"].ToString() + "~" + Path;
+                        Level++;
+                    }
+                    else
+                    {
+                        ReportsTo = "";
+                    }
+                }
+
+                Row["CostCentrePath"] = Path;
+                Row["CostCentreLevel"] = Level;
+            }
+
+            PathView.Sort = "CostCentrePath";
+            DataTable SortedByPath = PathView.ToTable();
+
+            ReportingEngine.RegisterData(SortedByPath, "CostCentreHierarchy");
+            TRptCalculator Calc = new TRptCalculator();
+            ALedgerRow LedgerRow = FMainDS.ALedger[0];
+            Calc.AddParameter("param_ledger_nunmber", LedgerRow.LedgerNumber);
+            Calc.AddStringParameter("param_ledger_name", LedgerRow.LedgerName);
+
+            if (ModifierKeys.HasFlag(Keys.Control))
+            {
+                ReportingEngine.DesignReport(Calc);
+            }
+            else
+            {
+                ReportingEngine.GenerateReport(Calc);
+            }
+        }
+
+        /// <summary>
         /// Called from the user controls when the user selects a row,
         /// this common method keeps both user controls in sync.
         /// </summary>
@@ -223,6 +297,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailCostCentreCode.TextChanged += new EventHandler(txtDetailCostCentreCode_TextChanged);
             FPetraUtilsObject.DataSaved += OnHierarchySaved;
             FormClosing += TFrmGLCostCentreHierarchy_FormClosing;
+
+            mniFilePrint.Click += FilePrint;
+            mniFilePrint.Enabled = true;
+
+            if (TAppSettingsManager.GetBoolean("OmBuild", false)) // In OM, no-one needs to see the import or export functions:
+            {
+                tbrMain.Items.Remove(tbbImportHierarchy);
+                tbrMain.Items.Remove(tbbExportHierarchy);
+
+                /* For some reason, this screen never had these menu options!
+                 * mnuMain.Items.Remove(mniImportHierarchy);
+                 * mnuMain.Items.Remove(mniExportHierarchy);
+                 */
+            }
         }
 
         private void OnHierarchySaved(System.Object sender, TDataSavedEventArgs e)

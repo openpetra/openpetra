@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -56,6 +57,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
             AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
             AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, null);

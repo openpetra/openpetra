@@ -30,16 +30,17 @@
         rgrSorting:
             ParameterName: param_sortby
             Dock: Top
-            Controls: [rbtSortByAccount, rbtSortByCostCentre, rbtSortByDepartment]
+            Controls: [rbtSortByAccount, rbtSortByCostCentre]
+#            , rbtSortByDepartment]
         rbtSortByAccount: 
             Label: Sort by Account
             ParameterValue: Account
         rbtSortByCostCentre: 
             Label: Sort by Cost Centre
             ParameterValue:Cost Centre
-        rbtSortByDepartment:
-            Label: Sort by Department
-            ParameterValue: Department
+#        rbtSortByDepartment:
+#            Label: Sort by Department
+#            ParameterValue: Department
         
         tpgCCAccount:
             Label: Account / Cost Centre Settings
