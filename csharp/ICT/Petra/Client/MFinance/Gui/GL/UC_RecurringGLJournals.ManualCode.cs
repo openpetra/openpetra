@@ -313,7 +313,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailSubSystemCode.Items.Clear();
             this.cmbDetailSubSystemCode.Items.AddRange(new object[] { ARow.SubSystemCode });
 
-            TFinanceControls.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
+            //TFinanceControls.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)

@@ -615,7 +615,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.GiftAmount,
+                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.GiftAmount,
                     ValidationControlsData.ValidationControlLabel + " of " + ValidationContext,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
