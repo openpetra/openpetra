@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // This will populate the periods combos without firing off cascading events
             FSuppressRefreshPeriods = true;
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true); //.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true);
             FSuppressRefreshPeriods = false;
 
             // Now we can set the period part of the filter
@@ -1606,6 +1606,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void CreateFilterFindPanelsManual()
         {
             ((Label)FFindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
+        }
+
+        private AJournalRow GetCurrentJournal()
+        {
+            return (AJournalRow)((TFrmGLBatch) this.ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
     }
 }

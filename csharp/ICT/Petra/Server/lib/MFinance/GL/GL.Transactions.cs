@@ -2222,6 +2222,33 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// Import GL transaction data
+        /// The data file contents from the client is sent as a string, imported in the database
+        /// and committed immediately
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AMainDS"></param>
+        /// <param name="ANewBatchRow"></param>
+        /// <param name="ANewJournalRow"></param>
+        /// <param name="AMessages"></param>
+        /// <returns>false if error</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportGLTransactions(
+            Hashtable ARequestParams,
+            String AImportString,
+            GLBatchTDS AMainDS,
+            ABatchRow ANewBatchRow,
+            AJournalRow ANewJournalRow,
+            out TVerificationResultCollection AMessages
+            )
+        {
+            TGLImporting importing = new TGLImporting();
+
+            return importing.ImportGLTransactions(ARequestParams, AImportString, AMainDS, ANewBatchRow, ANewJournalRow, out AMessages);
+        }
+
+        /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
         ///   Assumes that the dataset has all batch, journal and transaction data loaded.
         /// </summary>

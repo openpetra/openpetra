@@ -45,6 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TUC_GLBatches
     {
         private TDlgSelectCSVSeparator FdlgSeparator;
+
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
@@ -126,6 +127,95 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
                         Catalog.GetString("Batch Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    SaveUserDefaults(dialog, impOptions);
+                    LoadBatches(FLedgerNumber);
+                    FPetraUtilsObject.DisableSaveButton();
+                }
+            }
+        }
+
+        /// <summary>
+        /// this supports the batch export files from Petra 2.x.
+        /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
+        /// </summary>
+        private void ImportTransactions()
+        {
+            bool ok = false;
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
+                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+
+            dialog.Title = Catalog.GetString("Import batches from csv file");
+            dialog.Filter = Catalog.GetString("GL Transactions files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+
+                if (!fileCanOpen)
+                {
+                    MessageBox.Show(Catalog.GetString("Unable to open file."),
+                        Catalog.GetString("Transaction Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return;
+                }
+
+                FdlgSeparator.DateFormat = dateFormatString;
+
+                if (impOptions.Length > 1)
+                {
+                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                }
+
+                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+
+                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                {
+                    Hashtable requestParams = new Hashtable();
+
+                    requestParams.Add("ALedgerNumber", FLedgerNumber);
+                    requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
+                    requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
+                    requestParams.Add("NewLine", Environment.NewLine);
+
+                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                    string importString = File.ReadAllText(dialog.FileName);
+
+                    Thread ImportThread = new Thread(() => ImportGLTransactions(requestParams,
+                                                                                importString,
+                                                                                out AMessages,
+                                                                                out ok));
+
+                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                    {
+                        ImportDialog.ShowDialog();
+                    }
+
+                    ShowMessages(AMessages);
+                }
+
+                if (ok)
+                {
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Transactions Import"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
@@ -246,6 +336,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ImportIsSuccessful = TRemote.MFinance.GL.WebConnectors.ImportGLBatches(
                 ARequestParams,
                 AImportString,
+                out AResultMessages);
+
+            ok = ImportIsSuccessful;
+            AMessages = AResultMessages;
+        }
+
+        /// <summary>
+        /// Wrapper method to handle returned bool value from remoting call to ImportGLTransactions
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AMessages"></param>
+        /// <param name="ok"></param>
+        private void ImportGLTransactions(
+            Hashtable ARequestParams,
+            string AImportString,
+            out TVerificationResultCollection AMessages,
+            out bool ok)
+        {
+            TVerificationResultCollection AResultMessages;
+            bool ImportIsSuccessful;
+
+            AJournalRow CurrentJournal = GetCurrentJournal();
+            
+            ImportIsSuccessful = TRemote.MFinance.GL.WebConnectors.ImportGLTransactions(
+                ARequestParams,
+                AImportString,
+                FMainDS,
+                FPreviouslySelectedDetailRow,
+                CurrentJournal,
                 out AResultMessages);
 
             ok = ImportIsSuccessful;
