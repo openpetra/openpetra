@@ -10,7 +10,7 @@ RootNode:
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
         actDelete: {Label=&Delete Batch, SkipReferenceCheck=true, ActionClick=DeleteRecord}
-        actSubmit: {Label=&Submit Batch, ActionClick=Submit}
+        actSubmit: {Label=&Submit Batch, ActionClick=SubmitBatch}
     Controls:
         pnlContent:
             Dock: Fill

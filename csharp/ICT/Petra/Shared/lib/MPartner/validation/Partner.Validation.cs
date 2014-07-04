@@ -1035,6 +1035,68 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
+        /// Validates the MPartner Relationship Setup screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateRelationshipSetupManual(object AContext, PRelationRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'Relationship Category' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PRelationTable.ColumnRelationCategoryId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PRelationCategoryTable RelationCategoryTable;
+                PRelationCategoryRow RelationCategoryRow;
+
+                VerificationResult = null;
+
+                if ((!ARow.IsRelationCategoryNull())
+                    && (ARow.RelationCategory != String.Empty))
+                {
+                    RelationCategoryTable = (PRelationCategoryTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.RelationCategoryList);
+                    RelationCategoryRow = (PRelationCategoryRow)RelationCategoryTable.Rows.Find(ARow.RelationCategory);
+
+                    // 'Relationship Category' must not be unassignable
+                    if ((RelationCategoryRow != null)
+                        && RelationCategoryRow.UnassignableFlag
+                        && (RelationCategoryRow.IsUnassignableDateNull()
+                            || (RelationCategoryRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        // if 'Relationship Category' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PRelationTable.GetRelationCategoryDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.RelationCategory })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
         /// Validates the Banking Details screen data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>

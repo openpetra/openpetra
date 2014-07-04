@@ -167,7 +167,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 // need to set NOTUSED,
                 // otherwise the report generator complains about the missing parameter
-                // NOTUSED is used as an invalid value, there is no account with this name
+                // *NOTUSED* is used as an invalid value, there is no account with this name
                 ACalculator.AddParameter("param_account_list_title", SelectedAccountCodes);
                 ACalculator.AddParameter("param_account_code_start", "*NOTUSED*");
                 ACalculator.AddParameter("param_account_code_end", "*NOTUSED*");

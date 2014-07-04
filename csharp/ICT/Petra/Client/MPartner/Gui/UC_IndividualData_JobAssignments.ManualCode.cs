@@ -172,7 +172,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
 
-            txtUnitKey.Enabled = (ARow.RowState == DataRowState.Added);
+            if (ARow != null)
+            {
+                txtUnitKey.Enabled = (ARow.RowState == DataRowState.Added);
+            }
         }
 
         /// <summary>

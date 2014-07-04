@@ -397,7 +397,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public CheckBoxGenerator()
-            : base("chk", typeof(CheckBox))
+            : base("chk", "Ict.Common.Controls.TchkVisibleFocus")
         {
             base.FGenerateLabel = true;
             this.FChangeEventName = "CheckedChanged";

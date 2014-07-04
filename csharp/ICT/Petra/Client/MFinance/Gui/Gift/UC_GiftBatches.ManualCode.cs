@@ -27,18 +27,22 @@ using System.Data;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.Printing;
 using Ict.Common.Verification;
+
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -53,15 +57,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
 
-        private string FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
         private bool FInitialFocusActionComplete = false;
-        private string FBatchDescription = string.Empty;
-        private Boolean FPostingInProgress = false;
         private bool FActiveOnly = false;
         private string FSelectedBatchMethodOfPayment = String.Empty;
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
+
+        private string FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
+        private string FBatchDescription = string.Empty;
+        private Boolean FPostingInProgress = false;
 
         //Date related
         private string FPeriodText = String.Empty;
@@ -132,6 +137,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
         }
 
+        private void RunOnceOnParentActivationManual()
+        {
+            // We have to do these because the filter/find panel is displayed when the screen is loaded, so they don not get populated
+            TCmbAutoComplete ffInstance = (TCmbAutoComplete)FFilterPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
+
+            ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
+            ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
+            ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
+
+            ffInstance = (TCmbAutoComplete)FFilterPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
+            ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
+            ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
+            ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
+
+            ffInstance = (TCmbAutoComplete)FFindPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
+            ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
+            ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
+            ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
+
+            ffInstance = (TCmbAutoComplete)FFindPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
+            ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
+            ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
+            ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
+
+            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            AutoSizeGrid();
+        }
+
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// </summary>
@@ -178,10 +214,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean changeable = (FPreviouslySelectedDetailRow != null) && (!ViewMode)
                                  && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
+            pnlDetails.Enabled = changeable;
+
             this.btnNew.Enabled = !ViewMode;
             this.btnCancel.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
-            pnlDetails.Enabled = changeable;
             mniBatch.Enabled = !ViewMode;
             mniPost.Enabled = !ViewMode;
             tbbExportBatches.Enabled = !ViewMode;
@@ -192,7 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Checks various things on the form before saving
         /// </summary>
-        public void CheckBeforeSavingBatch()
+        public void CheckBeforeSaving()
         {
             //Add code here to run before the batch is saved
         }
@@ -297,9 +334,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FSuppressRefreshPeriods = true;
                     TFinanceControls.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
                     FSuppressRefreshPeriods = false;
-                    FSuppressRefreshFilter = true;
+
+                    // Now we can set the period part of the filter
                     RefreshPeriods(null, null);
-                    FSuppressRefreshFilter = false;
                 }
                 finally
                 {
@@ -321,8 +358,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftBatchTable.GetBatchNumberDBName()
                 );
 
-            RefreshBankAccountAndCostCentreData();
             SetupExtraGridFunctionality();
+            RefreshBankAccountAndCostCentreData();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
@@ -542,15 +579,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ShowDataManual()
         {
+            //Nothing to do as yet
         }
 
         private void ShowDetailsManual(AGiftBatchRow ARow)
         {
+            ((TFrmGiftBatch)ParentForm).EnableTransactions(ARow != null
+                && ARow.BatchStatus != MFinanceConstants.BATCH_CANCELLED);
+
             if (ARow == null)
             {
-                ((TFrmGiftBatch)ParentForm).DisableTransactions();
-                dtpDetailGlEffectiveDate.Date = FDefaultDate;
                 FSelectedBatchNumber = -1;
+                dtpDetailGlEffectiveDate.Date = FDefaultDate;
                 return;
             }
 
@@ -560,20 +600,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 RefreshBankAccountAndCostCentreFilters(ActiveOnly, ARow);
             }
 
-            ((TFrmGiftBatch)ParentForm).EnableTransactions(ARow.BatchStatus != MFinanceConstants.BATCH_CANCELLED);
-
             FLedgerNumber = ARow.LedgerNumber;
             FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
+            UpdateChangeableStatus();
 
             //Update the batch period if necessary
             UpdateBatchPeriod();
 
-            UpdateChangeableStatus();
-
             RefreshCurrencyAndExchangeRateControls();
+
             Boolean ComboSetsOk = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
             ComboSetsOk &= cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
 
@@ -621,6 +659,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             pnlDetails.Enabled = true;
+
             this.CreateNewAGiftBatch();
 
             txtDetailBatchDescription.Focus();
@@ -776,7 +815,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 FPreviouslySelectedDetailRow.CurrencyCode = ACurrencyCode;
-
                 RecalculateTransactionAmounts();
                 RefreshCurrencyAndExchangeRateControls(true);
             }
@@ -832,6 +870,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Check if the user has made a Bank Cost Centre or Account Code inactive
             //this was removed because of speed issues!
+            //TODO: Revisit this
             //RefreshBankCostCentreAndAccountCodes();
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
@@ -860,32 +899,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ARow.HashTotal = correctHashValue;
         }
 
-        private void RunOnceOnParentActivationManual()
+        /// <summary>
+        /// Update the Batch total from the transactions values
+        /// </summary>
+        /// <param name="ABatchTotal"></param>
+        /// <param name="ABatchNumber"></param>
+        public void UpdateBatchTotal(decimal ABatchTotal, Int32 ABatchNumber)
         {
-            // We have to do these because the filter/find panel is displayed when the screen is loaded, so they don not get populated
-            TCmbAutoComplete ffInstance = (TCmbAutoComplete)FFilterPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
-
-            ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
-            ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
-            ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
-
-            ffInstance = (TCmbAutoComplete)FFilterPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
-            ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
-            ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
-            ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
-
-            ffInstance = (TCmbAutoComplete)FFindPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
-            ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
-            ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
-            ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
-
-            ffInstance = (TCmbAutoComplete)FFindPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
-            ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
-            ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
-            ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
-
-            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
-            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+            else if (FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber)
+            {
+                FPreviouslySelectedDetailRow.BatchTotal = ABatchTotal;
+                FPetraUtilsObject.HasChanges = true;
+            }
         }
 
         /// <summary>
@@ -918,13 +947,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            Console.WriteLine("RefreshPeriods");
-
             FSuppressRefreshFilter = true;
 
             NewYearSelected = FcmbYearEnding.GetSelectedInt32();
 
-            if (FSelectedYear == NewYearSelected)
+            if ((FSelectedYear == NewYearSelected) && (sender != null))
             {
                 FSuppressRefreshFilter = false;
                 return;
@@ -1153,24 +1180,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //remember grid is out of sync with DataView by 1 because of grid header rows
             return rowPos + 1;
-        }
-
-        /// <summary>
-        /// Update the Batch total from the transactions values
-        /// </summary>
-        /// <param name="ABatchTotal"></param>
-        /// <param name="ABatchNumber"></param>
-        public void UpdateBatchTotal(decimal ABatchTotal, Int32 ABatchNumber)
-        {
-            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
-            {
-                return;
-            }
-            else if (FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber)
-            {
-                FPreviouslySelectedDetailRow.BatchTotal = ABatchTotal;
-                FPetraUtilsObject.HasChanges = true;
-            }
         }
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
@@ -1564,11 +1573,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RefreshCurrencyAndExchangeRateControls(bool AFromUserAction = false)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+
+            if ((FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
+            }
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.CurrencyCode != FMainDS.ALedger[0].BaseCurrency);
 

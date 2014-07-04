@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -338,6 +338,9 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>todoComment</summary>
         public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
 
+        /// <summary>Whether or not the user should be alerted when a new gift is from a new donor</summary>
+        public const String FINANCE_NEW_DONOR_WARNING = "NewDonorWarning";
+
         /*------------------------------------------------------------------------------
          *  Conference Default Constants
          * -------------------------------------------------------------------------------*/
@@ -432,22 +435,22 @@ namespace Ict.Petra.Client.App.Core
 
         /// <summary>
         /// Saves all changed User Defaults.
-        ///
         /// </summary>
-        /// <returns>true if successful, false if not.
-        /// </returns>
         public static void SaveChangedUserDefaults()
         {
             SUserDefaultsTable UserDefaultsDataTableChanges;
 
             UserDefaultsDataTableChanges = UUserDefaultsDataTable.GetChangesTyped();
 
-            // MessageBox.Show('Changed/added User Defaults: ' + UserDefaultsDataTableChanges.Rows.Count.ToString);
-            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
-                ref UserDefaultsDataTableChanges);
+            if (UserDefaultsDataTableChanges != null)
+            {
+                // MessageBox.Show('Changed/added User Defaults: ' + UserDefaultsDataTableChanges.Rows.Count.ToString);
+                TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                    ref UserDefaultsDataTableChanges);
 
-            // TODO 1 oChristianK cUserDefaults / ModificationID : Copy the ModificationID into the Client's DataTable so that the PetraClient's ModificationID's of UserDefaults are the same than the ones of the PetraServer.
-            UUserDefaultsDataTable.AcceptChanges();
+                // TODO 1 oChristianK cUserDefaults / ModificationID : Copy the ModificationID into the Client's DataTable so that the PetraClient's ModificationID's of UserDefaults are the same than the ones of the PetraServer.
+                UUserDefaultsDataTable.AcceptChanges();
+            }
         }
 
         /// <summary>

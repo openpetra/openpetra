@@ -112,6 +112,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblPetraVersion.TabIndex = 2;
             this.lblPetraVersion.Text = "Version";
             this.lblPetraVersion.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblPetraVersion.Click += new System.EventHandler(this.LblPetraVersionClick);
             //
             // pnlTextBoxContainer
             //

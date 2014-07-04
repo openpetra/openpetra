@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FJournalNumberToDelete = -1;
         private ARecurringBatchRow FBatchRow = null;
-
+        private string FCurrencyCodeForJournals = string.Empty;
         /// <summary>
         /// The current active Batch number
         /// </summary>
@@ -78,6 +78,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void WorkAroundInitialization()
         {
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
+            cmbDetailTransactionCurrency.SelectedValueChanged += new System.EventHandler(CurrencyCodeChanged);
         }
 
         private void RunOnceOnParentActivationManual()
@@ -129,9 +130,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 // Now set up the complete current filter
                 ApplyFilter();
-
-                FJournalsLoaded = true;
             }
+
+            //Check for incorrect Exchange rate to base
+            foreach (DataRowView drv in FMainDS.ARecurringJournal.DefaultView)
+            {
+                ARecurringJournalRow rjr = (ARecurringJournalRow)drv.Row;
+
+                if (rjr.ExchangeRateToBase == 0)
+                {
+                    rjr.ExchangeRateToBase = 1;
+                    FPetraUtilsObject.HasChanges = true;
+                }
+            }
+
+            FJournalsLoaded = true;
 
             //This will also call UpdateChangeableStatus
             SelectRowInGrid((BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow);
@@ -220,6 +233,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (JournalRowIsNull)
             {
                 btnAdd.Focus();
+                FCurrencyCodeForJournals = string.Empty;
+            }
+            else
+            {
+                FCurrencyCodeForJournals = ARow.TransactionCurrency;
             }
 
             //Enable the transactions tab accordingly
@@ -240,6 +258,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
+            if ((FPreviouslySelectedDetailRow == null) || (grdDetails.Rows.Count == 1))
+            {
+                ALedgerRow LedgerRow =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                         TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                FCurrencyCodeForJournals = LedgerRow.BaseCurrency;
+            }
+
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
             this.CreateNewARecurringJournal();
@@ -273,7 +300,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ANewRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
             ANewRow.TransactionTypeCode = MFinanceConstants.STANDARD_JOURNAL;
 
-            ANewRow.TransactionCurrency = LedgerRow.BaseCurrency;
+            ANewRow.TransactionCurrency = FCurrencyCodeForJournals;
             ANewRow.ExchangeRateToBase = 1;
             ANewRow.DateEffective = FBatchRow.DateEffective;
             ANewRow.JournalPeriod = FBatchRow.BatchPeriod;
@@ -286,7 +313,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.cmbDetailSubSystemCode.Items.Clear();
             this.cmbDetailSubSystemCode.Items.AddRange(new object[] { ARow.SubSystemCode });
 
-            TFinanceControls.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
+            //TFinanceControls.InitialiseTransactionTypeList(ref cmbDetailTransactionTypeCode, FLedgerNumber, ARow.SubSystemCode);
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
@@ -679,6 +706,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             FucoFilterAndFind.DisplayFindTab();
+        }
+
+        private void CurrencyCodeChanged(object sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            FCurrencyCodeForJournals = cmbDetailTransactionCurrency.GetSelectedString();
+
+            DataView CurrentJournalsDV = new DataView(FMainDS.ARecurringJournal);
+
+            CurrentJournalsDV.RowFilter = string.Format("{0}={1}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                FBatchNumber);
+
+            if (CurrentJournalsDV.Count > 1)
+            {
+                foreach (DataRowView drv in CurrentJournalsDV)
+                {
+                    ARecurringJournalRow rjr = (ARecurringJournalRow)drv.Row;
+
+                    rjr.TransactionCurrency = FCurrencyCodeForJournals;
+                }
+            }
         }
     }
 }
