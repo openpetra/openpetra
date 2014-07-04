@@ -55,7 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
-        private bool FWindowIsMaximized = false;
 
         /// <summary>
         /// use this ledger
