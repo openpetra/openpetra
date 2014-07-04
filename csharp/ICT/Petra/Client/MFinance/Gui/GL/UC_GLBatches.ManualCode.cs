@@ -989,7 +989,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             NewYearSelected = FcmbYearEnding.GetSelectedInt32();
 
-            if (FSelectedYear == NewYearSelected)
+            if ((FSelectedYear == NewYearSelected) && (sender != null))
             {
                 FSuppressRefreshFilter = false;
                 return;

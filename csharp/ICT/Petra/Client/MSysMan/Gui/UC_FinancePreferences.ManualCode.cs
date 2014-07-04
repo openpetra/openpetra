@@ -45,8 +45,18 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void InitializeManualCode()
         {
+            int DefaultLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER);
+
             FCurrentLedger = TLstTasks.CurrentLedger;
-            cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
+
+            if (DefaultLedger > 0)
+            {
+                cmbDefaultLedger.SetSelectedInt32(DefaultLedger);
+            }
+            else
+            {
+                cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
+            }
         }
 
         /// <summary>

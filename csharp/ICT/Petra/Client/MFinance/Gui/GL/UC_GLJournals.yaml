@@ -84,5 +84,5 @@ RootNode:
         cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
-        txtDetailExchangeRateToBase: {Label= Exchange Rate to Base, Validation=true, Format=Decimal(10), Width=130}
+        txtDetailExchangeRateToBase: {Label=Exchange Rate to Base, Validation=true, Format=Decimal(10), Width=130}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}

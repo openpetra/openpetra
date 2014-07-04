@@ -1717,7 +1717,15 @@ namespace Ict.Petra.Server.MFinance.Common
                 RecurringBatchDV.Sort = string.Format("{0} DESC",
                     ARecurringBatchTable.GetBatchNumberDBName());
 
-                MainDS.ALedger[0].LastRecurringBatchNumber = (int)(RecurringBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
+                //Recurring batch numbers can be reused so check each time for current highest number
+                if (RecurringBatchDV.Count > 0)
+                {
+                    MainDS.ALedger[0].LastRecurringBatchNumber = (int)(RecurringBatchDV[0][ARecurringBatchTable.GetBatchNumberDBName()]);
+                }
+                else
+                {
+                    MainDS.ALedger[0].LastRecurringBatchNumber = 0;
+                }
 
                 ARecurringBatchRow NewRow = MainDS.ARecurringBatch.NewRowTyped(true);
                 NewRow.LedgerNumber = ALedgerNumber;

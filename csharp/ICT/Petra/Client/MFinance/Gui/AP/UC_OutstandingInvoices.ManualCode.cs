@@ -790,9 +790,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
                 else
                 {
-                    this.Cursor = Cursors.Default;
                     MessageBox.Show(VerificationResult.BuildVerificationResultString(), MsgTitle);
                 }
+
+                this.Cursor = Cursors.Default;
             }
             else
             {
@@ -951,7 +952,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (ReverseTheseDocs.Count < taggedCount)
             {
-                string msg = Catalog.GetString("Only posted documents can be reversed.  A document cannot be reversed if it has been part-paid.");
+                string msg = Catalog.GetString("A document cannot be reversed if it has been part-paid.");
 
                 if (ReverseTheseDocs.Count == 0)
                 {

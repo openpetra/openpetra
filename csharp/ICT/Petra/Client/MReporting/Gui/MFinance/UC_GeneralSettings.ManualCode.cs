@@ -64,9 +64,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbQuarterYear.Enabled = false;
             cmbBreakdownYear.Enabled = false;
             EnableBreakdownByPeriod(false);
-
-            // don't want this label to display any text but we want to keep the label for layout reasons
-            lblQuarter.Text = "";
         }
 
         /// <summary>
@@ -302,18 +299,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 rbtPeriod.Checked = true;
             }
 
+            txtQuarter.Text = (AParameters.Get("param_end_period_i").ToInt() / 3).ToString();
             txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
             txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
-
-            if (cmbPeriodYear.SelectedIndex == -1)
-            {
-                cmbPeriodYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
-            }
-
-            if (cmbQuarterYear.SelectedIndex == -1)
-            {
-                cmbQuarterYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
-            }
 
             if (txtStartPeriod.Text.Length == 0)
             {
@@ -325,7 +313,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
             }
 
-            txtQuarter.Text = (Math.Ceiling(Convert.ToDecimal(txtEndPeriod.Text) / 3)).ToString();
+            if (cmbPeriodYear.SelectedIndex == -1)
+            {
+                cmbPeriodYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
+            }
+
+            if (cmbQuarterYear.SelectedIndex == -1)
+            {
+                cmbQuarterYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
+            }
+
+            if (cmbBreakdownYear.SelectedIndex == -1)
+            {
+                cmbBreakdownYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
+            }
 
             if (AParameters.Exists("param_start_date"))
             {
@@ -346,6 +347,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtDate.Visible = false;
             lblStartPeriod.Visible = false;
             lblEndPeriod.Visible = false;
+            lblQuarter.Visible = false;
             lblQuarterYear.Visible = false;
             lblStartDate.Visible = false;
             lblEndDate.Visible = false;
@@ -369,6 +371,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             txtStartPeriod.Visible = false;
 
             rbtQuarter.Visible = false;
+            lblQuarter.Visible = false;
             txtQuarter.Visible = false;
             lblQuarterYear.Visible = false;
             cmbQuarterYear.Visible = false;

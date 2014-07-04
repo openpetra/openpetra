@@ -213,6 +213,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FLoadCompleted = true;
             }
 
+            //Check for incorrect Exchange rate to base (mainly for existing Petra data)
+            foreach (DataRowView drv in FMainDS.ARecurringTransaction.DefaultView)
+            {
+                ARecurringTransactionRow rtr = (ARecurringTransactionRow)drv.Row;
+
+                if (rtr.ExchangeRateToBase == 0)
+                {
+                    rtr.ExchangeRateToBase = 1;
+                    FPetraUtilsObject.HasChanges = true;
+                }
+            }
+
             ShowData();
             SelectRowInGrid(1);
             ShowDetails(); //Needed because of how currency is handled
@@ -1517,8 +1529,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Control controlToPass = null;
 
             //Local validation
-            if (((txtDebitAmount.NumberValueDecimal.Value == 0)
-                 && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
+            if (((txtDebitAmount.NumberValueDecimal.Value == 0) && (txtCreditAmount.NumberValueDecimal.Value == 0))
+                || (txtDebitAmount.NumberValueDecimal.Value < 0))
             {
                 controlToPass = txtDebitAmount;
             }

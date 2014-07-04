@@ -300,7 +300,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult("Save Document", "The Document has no Document number.",
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Save Document"),
+                                Catalog.GetString("The Document has no Document number."),
                                 TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
                     }
@@ -315,8 +316,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         if (MatchingRow.ApDocumentId != NewDocRow.ApDocumentId) // This Document Code is in use, and not by me!
                         {
-                            AVerificationResult.Add(new TVerificationResult("Save Document",
-                                    String.Format("Document Code {0} already exists.", NewDocRow.DocumentCode),
+                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Save Document"),
+                                    String.Format(Catalog.GetString("Document Code {0} already exists."), NewDocRow.DocumentCode),
                                     TResultSeverity.Resv_Noncritical));
                             return TSubmitChangesResult.scrInfoNeeded;
                         }
@@ -436,6 +437,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             return MainDS;
         }
 
+        private static Boolean LedgerRquiresDocumentApproval(Int32 ALedgerNumber, TDBTransaction AReadTrans)
+        {
+            ALedgerInitFlagTable Tbl = ALedgerInitFlagAccess.LoadViaALedger(ALedgerNumber, AReadTrans);
+
+            Tbl.DefaultView.RowFilter = "a_init_option_name_c='AP_APPROVE_BLOCK'";
+            return Tbl.DefaultView.Count > 0;
+        }
+
         private static void SetOutstandingAmount(AccountsPayableTDSAApDocumentRow Row, Int32 ALedgerNumber, AApDocumentPaymentTable DocPaymentTbl)
         {
             if (Row.DocumentStatus == MFinanceConstants.AP_DOCUMENT_PAID)
@@ -453,43 +462,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 Row.OutstandingAmount -= UIConnectors.TFindUIConnector.GetPartPaidAmount(Row.ApDocumentId);
             }
         }
-
-        /* Method is not used. (Compiles OK, but no-one seems to want it!)
-         *
-         * /// <summary>
-         * ///
-         * /// </summary>
-         * /// <param name="ALedgerNumber"></param>
-         * /// <param name="ASupplierKey"></param>
-         * /// <param name="ADocumentStatus"></param>
-         * /// <param name="IsCreditNoteNotInvoice"></param>
-         * /// <param name="AHideAgedTransactions"></param>
-         * /// <returns></returns>
-         * [RequireModulePermission("FINANCE-1")]
-         * public static AccountsPayableTDS FindAApDocument(Int32 ALedgerNumber, Int64 ASupplierKey,
-         *  string ADocumentStatus,
-         *  bool IsCreditNoteNotInvoice,
-         *  bool AHideAgedTransactions)
-         * {
-         *  // create the DataSet that will later be passed to the Client
-         *  AccountsPayableTDS MainDS = new AccountsPayableTDS();
-         *
-         *  AApSupplierAccess.LoadByPrimaryKey(MainDS, ASupplierKey, null);
-         *
-         *  // TODO: filters for document status
-         *  AccountsPayableTDSAApDocumentRow DocumentTemplate = MainDS.AApDocument.NewRowTyped(false);
-         *  DocumentTemplate.LedgerNumber = ALedgerNumber;
-         *  DocumentTemplate.PartnerKey = ASupplierKey;
-         *  AApDocumentAccess.LoadUsingTemplate(MainDS, DocumentTemplate, null);
-         *
-         *  foreach (AccountsPayableTDSAApDocumentRow Row in MainDS.AApDocument.Rows)
-         *  {
-         *      SetOutstandingAmount(Row, ALedgerNumber, MainDS.AApDocumentPayment);
-         *  }
-         *
-         *  return MainDS;
-         * }
-         */
 
         private static bool DocumentBalanceOK(AccountsPayableTDS AMainDS, int AApDocumentId, TDBTransaction ATransaction)
         {
@@ -562,12 +534,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="AAPDocumentIds"></param>
         /// <param name="APostingDate"></param>
         /// <param name="Reversal"></param>
+        /// <param name="MustBeApproved"></param>
         /// <param name="AVerifications"></param>
         /// <returns> The TDS for posting</returns>
         private static AccountsPayableTDS LoadDocumentsAndCheck(Int32 ALedgerNumber,
             List <Int32>AAPDocumentIds,
             DateTime APostingDate,
             Boolean Reversal,
+            out Boolean MustBeApproved,
             out TVerificationResultCollection AVerifications)
         {
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
@@ -584,6 +558,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 AApDocumentDetailAccess.LoadViaAApDocument(MainDS, APDocumentId, Transaction);
             }
 
+            MustBeApproved = LedgerRquiresDocumentApproval(ALedgerNumber, Transaction);
+
             // do some checks on state of AP documents
             foreach (AApDocumentRow document in MainDS.AApDocument.Rows)
             {
@@ -599,7 +575,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
                 else
                 {
-                    if (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)
+                    if (
+                        (MustBeApproved && (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED))
+                        || (!MustBeApproved
+                            && ((document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_OPEN)
+                                && (document.DocumentStatus != MFinanceConstants.AP_DOCUMENT_APPROVED)))
+                        )
                     {
                         AVerifications.Add(new TVerificationResult(
                                 Catalog.GetString("Error during posting of AP document"),
@@ -948,7 +929,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             if (AApproveTheseDocs.Count == 0)
             {
-                AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Nothing to do - the document list is empty",
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"),
+                        Catalog.GetString("Nothing to do - the document list is empty"),
                         TResultSeverity.Resv_Noncritical));
                 return false;
             }
@@ -966,7 +948,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
                 else
                 {
-                    AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Only OPEN documents can be approved",
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"),
+                            Catalog.GetString("Only OPEN documents can be approved"),
                             TResultSeverity.Resv_Noncritical));
                     return false;
                 }
@@ -986,7 +969,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
-                AVerificationResult.Add(new TVerificationResult("Approve AP Documents", Exc.Message, TResultSeverity.Resv_Critical));
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Approve AP Documents"), Exc.Message, TResultSeverity.Resv_Critical));
 
                 throw;
             }
@@ -1069,18 +1052,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             ABatchRow batch;
             TVerificationResultCollection ResultsCollection = new TVerificationResultCollection();
 
-            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access
-                                                        // "out" parameters, so this intermediate variable is used.
             TDBTransaction HighLevelTransaction = null;
             Boolean WillCommit = true;
+            Boolean MustBeApproved;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref HighLevelTransaction, ref WillCommit,
                 delegate
                 {
-                    AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, out ResultsCollection);
+                    AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal,
+                        out MustBeApproved,
+                        out ResultsCollection);
 
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(ResultsCollection))
                     {
+                        PostingWorkedOk = false;
                         return; // This is returning from the AutoTransaction, not from the whole method.
                     }
 
@@ -1119,7 +1104,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         if (Reversal)
                         {
-                            row.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+                            row.DocumentStatus = MustBeApproved ? MFinanceConstants.AP_DOCUMENT_APPROVED : MFinanceConstants.AP_DOCUMENT_OPEN;
                         }
                         else
                         {
@@ -1137,14 +1122,17 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         TLogging.Log("An Exception occured during the Posting of an AP Document:" + Environment.NewLine + Exc.ToString());
 
-                        ResultsCollection.Add(new TVerificationResult("Post AP Document",
-                                "NOTE THAT A GL ENTRY MAY HAVE BEEN CREATED." + Environment.NewLine +
+                        ResultsCollection.Add(new TVerificationResult(Catalog.GetString("Post AP Document"),
+                                Catalog.GetString("NOTE THAT A GL ENTRY MAY HAVE BEEN CREATED.") + Environment.NewLine +
                                 Exc.Message,
                                 TResultSeverity.Resv_Critical));
                         PostingWorkedOk = false;
                         return;
                     }
                 });
+
+            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access
+                                                        // "out" parameters, so this intermediate variable was used.
             return PostingWorkedOk;
         }
 
@@ -1274,6 +1262,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         {
                             transactionRowBank = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
                             transactionRowBank.TransactionAmount += documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
+                            transactionRowBank.Narrative = "AP Payment: Multiple suppliers";
                         }
                         else
                         {
@@ -1917,6 +1906,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             // GetNewOrExistingTransaction.
 
             TDBTransaction ReversalTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            Boolean MustBeApproved = LedgerRquiresDocumentApproval(ALedgerNumber, ReversalTransaction);
+
             List <Int32>PostTheseDocs = new List <Int32>();
             try
             {
@@ -1941,7 +1932,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     NewDocumentRow.CreditNoteFlag = !OldDocumentRow.CreditNoteFlag; // Here's the actual reversal!
                     NewDocumentRow.DocumentCode = "Reversal " + OldDocumentRow.DocumentCode;
                     NewDocumentRow.Reference = "Reversal " + OldDocumentRow.Reference;
-                    NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+                    NewDocumentRow.DocumentStatus = MustBeApproved ? MFinanceConstants.AP_DOCUMENT_APPROVED : MFinanceConstants.AP_DOCUMENT_OPEN;
 
                     NewDocumentRow.DateCreated = DateTime.Now;
                     NewDocumentRow.DateEntered = DateTime.Now;
@@ -2059,7 +2050,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     NewDocumentRow.Reference = "Duplicate " + OldDocumentRow.Reference;
                     NewDocumentRow.DateEntered = APostingDate;
                     NewDocumentRow.ApNumber = NewApNum;
-                    NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+                    NewDocumentRow.DocumentStatus = MustBeApproved ? MFinanceConstants.AP_DOCUMENT_APPROVED : MFinanceConstants.AP_DOCUMENT_OPEN;
                     CreateDs.AApDocument.Rows.Add(NewDocumentRow);
 
                     TempDS.AApDocumentDetail.DefaultView.RowFilter = String.Format("{0}={1}",

@@ -34,6 +34,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -78,6 +79,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             CreateNewPRelation();
+        }
+
+        private void ValidateDataDetailsManual(PRelationRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidateRelationshipSetupManual(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

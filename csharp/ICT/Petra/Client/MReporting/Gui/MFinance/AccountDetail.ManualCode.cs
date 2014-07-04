@@ -120,11 +120,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String ReferenceFilter = "";
             String AnalysisTypeFilter = "";
-            String GroupField = "a_account_code_c";
+            String GroupField = "a_account_code_c, a_cost_centre_code_c";
 
             if (pm.Get("param_sortby").ToString() == "Cost Centre")
             {
-                GroupField = "a_cost_centre_code_c";
+                GroupField = "a_cost_centre_code_c, a_account_code_c";
             }
 
             if (pm.Get("param_sortby").ToString() == "Reference")

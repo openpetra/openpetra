@@ -1050,6 +1050,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
+            FTemplate.AddToCodelet("PREPROCESSCMDKEY", "");
             FTemplate.AddToCodelet("PROCESSCMDKEY", "");
             FTemplate.AddToCodelet("PROCESSCMDKEYCTRLF", "");
             FTemplate.AddToCodelet("PROCESSCMDKEYCTRLR", "");
@@ -1081,6 +1082,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             CallHandlerIfProvided("NewRowManual", "INITNEWROWMANUAL", "NewRowManual(ref NewRow);");
             CallHandlerIfProvided("StoreManualCode", "STOREMANUALCODE", "SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);");
             CallHandlerIfProvided("FindAndFilterHookUpEvents", "FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();");
+            CallHandlerIfProvided("PreProcessCommandKey", "PREPROCESSCMDKEY", "PreProcessCommandKey();");
 
             if (FCodeStorage.ManualFileExistsAndContains("SelectTabManual"))
             {

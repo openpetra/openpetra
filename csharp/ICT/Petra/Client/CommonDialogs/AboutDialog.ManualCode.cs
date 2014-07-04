@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christiank
 //
 // Copyright 2004-2013 by OM International
 //
@@ -24,8 +24,10 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.CommonDialogs
 {
@@ -36,11 +38,23 @@ namespace Ict.Petra.Client.CommonDialogs
         {
             ucoPetraLogoAndVersionInfo.PetraVersion = TClientInfo.ClientAssemblyVersion;
             ucoPetraLogoAndVersionInfo.InstallationKind = string.Empty;
+
+#if DEBUG
+            if (TApplicationVCSInfo.AppVCSData.IsInitialised)
+            {
+                FPetraUtilsObject.SetStatusBarText(btnOK, "Double-click Version Number for VCS Info!");
+            }
+#endif
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void Form_Shown(Object Sender, EventArgs e)
+        {
+            btnOK.Focus();
         }
     }
 }

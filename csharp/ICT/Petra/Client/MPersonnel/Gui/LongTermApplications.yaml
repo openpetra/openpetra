@@ -47,7 +47,7 @@ RootNode:
             CustomColumns:
                 PPartner.PartnerShortName: {Label=Attendee Name}
                 PmGeneralApplication.GenAppPossSrvUnitKey: {Label=Target Field}
-                PmYearProgramApplication.YpAppDate: {Label=Date Entered}
+                PmYearProgramApplication.YpAppDate: {Label=Date Entered, Type=DateTime}
 
         rbtAll:
             Height: 15

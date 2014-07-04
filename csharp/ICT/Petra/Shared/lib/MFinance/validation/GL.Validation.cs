@@ -219,9 +219,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     ARow.BatchNumber,
                     ARow.JournalNumber);
 
-                //Doesn't work for these two controls: txtDebitAmount & txtCreditAmount
-                //if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-                //{
                 VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
                     "Amount of " + ValidationContext,
                     AContext, ValidationColumn, AControl);
@@ -236,8 +233,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     VerifResultCollAddedCount++;
                 }
-
-                //}
 
                 return VerifResultCollAddedCount == 0;
             }
@@ -365,6 +360,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
                     "Amount of " + ValidationContext,
                     AContext, ValidationColumn, AControl);
+
+                if (VerificationResult != null)
+                {
+                    VerificationResult.SuppressValidationToolTip = true;
+                }
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))

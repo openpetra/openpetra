@@ -50,6 +50,8 @@ OpenPetra:
                     ImportExport: {Label=Import and Export}
                         ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
+                    Subscriptions: {Label=Subscriptions}
+                        CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster, Singleton=true}
@@ -190,6 +192,7 @@ OpenPetra:
                         #EditLastUnpostedGiftBatch:
                         #PostGiftBatch:
                         ExportGiftBatches: {Description:Export to CSV file for use with Excel,ActionOpenScreen= TFrmGiftBatchExport}
+                        GiftDetailFind: {Description:Search for gifts across all batches, ActionOpenScreen=TGiftDetailFindScreen}
                     GiftReceipting:
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=TFrmGiftReceiptPrinting}
                         DonorOrRecipientHistory: {ActionOpenScreen=TFrmDonorRecipientHistory}

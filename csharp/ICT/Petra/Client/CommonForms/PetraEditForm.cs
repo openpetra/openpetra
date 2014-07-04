@@ -254,7 +254,11 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((ComboBox)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
                 }
-                else if (ctrl.GetType() == typeof(CheckBox))
+                else if (ctrl.GetType() == typeof(CheckBox)) // This could be removed here to prevent its explicit use in forms.
+                {
+                    ((CheckBox)ctrl).CheckedChanged += new EventHandler(this.MultiEventHandler);
+                }
+                else if (ctrl.GetType() == typeof(TchkVisibleFocus))
                 {
                     ((CheckBox)ctrl).CheckedChanged += new EventHandler(this.MultiEventHandler);
                 }

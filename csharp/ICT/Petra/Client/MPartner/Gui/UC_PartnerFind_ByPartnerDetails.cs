@@ -46,7 +46,6 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
-using Ict.Petra.Client.MFinance.Gui.Gift;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Client.MPartner.Logic;
 using Ict.Petra.Client.MReporting.Gui;
@@ -787,14 +786,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (ClickedMenuItemName == "mniMaintainDonorHistory")
             {
 //              TMenuFunctions.OpenDonorGiftHistory(this);
-                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",
+                TCommonScreensForwarding.OpenDonorRecipientHistoryScreen("mniMaintainDonorHistory",
                     PartnerKey,
                     FPetraUtilsObject.GetForm());
             }
             else if (ClickedMenuItemName == "mniMaintainRecipientHistory")
             {
 //              TMenuFunctions.OpenRecipientGiftHistory(this);
-                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",
+                TCommonScreensForwarding.OpenDonorRecipientHistoryScreen("mniMaintainRecipientHistory",
                     PartnerKey,
                     FPetraUtilsObject.GetForm());
             }
@@ -830,6 +829,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (ClickedMenuItemName == "mniMailingGenerateExtract")
             {
                 CreateNewExtractFromFoundPartners();
+            }
+            else if (ClickedMenuItemName == "mniMailingSubscriptionCancellation")
+            {
+                TPartnerMain.CancelExpiredSubscriptions(this.FindForm());
             }
             else
             {

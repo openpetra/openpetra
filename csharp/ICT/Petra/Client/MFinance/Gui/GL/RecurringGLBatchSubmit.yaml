@@ -5,7 +5,7 @@ RootNode:
     FormType: browse
     Template: window
     WindowWidth: 410
-    WindowHeight: 260
+    WindowHeight: 230
     Actions:
         actSubmitBatch: {Label=&OK, ActionClick=SubmitBatch}
         actClose: {Label=&Cancel, ActionClick=BtnCloseClick}
@@ -33,7 +33,7 @@ RootNode:
         btnClose: {Action=actClose}
         btnOK: {Action=actSubmitBatch}   
         lblValidDateRange:             
-        dtpEffectiveDate: {Label=Enter the Gift Batch Date to use, OnLeave=CheckBatchEffectiveDate, Validation=true}
+        dtpEffectiveDate: {Label=Enter the GL Batch Date to use, OnLeave=CheckBatchEffectiveDate, Validation=true}
         txtCurrencyCodeFrom: {Label=From, ReadOnly=true}
         txtCurrencyCodeTo: {Label=To, ReadOnly=true}
         txtExchangeRateToBase: {Label=Exchange Rate, ReadOnly=true, Type=Decimal}

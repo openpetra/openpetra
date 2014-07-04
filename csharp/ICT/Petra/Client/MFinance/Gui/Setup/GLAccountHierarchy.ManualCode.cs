@@ -40,6 +40,8 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.App.Core;
 using System.Drawing;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MReporting.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -195,6 +197,85 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtStatus.Refresh();
         }
 
+        /// <summary>
+        /// Print out the Hierarchy using FastReports template.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FilePrint(object sender, EventArgs e)
+        {
+            FastReportsWrapper ReportingEngine = new FastReportsWrapper("Account Hierarchy");
+
+            if (!ReportingEngine.LoadedOK)
+            {
+                ReportingEngine.ShowErrorPopup();
+                return;
+            }
+
+            if (!FMainDS.AAccount.Columns.Contains("AccountPath"))
+            {
+                FMainDS.AAccount.Columns.Add("AccountPath", typeof(String));
+                FMainDS.AAccount.Columns.Add("AccountLevel", typeof(Int32));
+            }
+
+            DataView PathView = new DataView(FMainDS.AAccountHierarchyDetail);
+            PathView.Sort = "a_reporting_account_code_c";
+
+            DataView AccountView = new DataView(FMainDS.AAccount);
+            AccountView.Sort = "a_account_code_c";
+
+            // I need to make the "AccountPath" field that will be used to sort the table for printout:
+            foreach (DataRowView rv in PathView)
+            {
+                DataRow Row = rv.Row;
+                String AccountCode = Row["a_reporting_account_code_c"].ToString();
+                String Path = AccountCode;
+                Int32 Level = 0;
+                String ReportsTo = Row["a_account_code_to_report_to_c"].ToString();
+
+                while (ReportsTo != "")
+                {
+                    Int32 ParentIdx = PathView.Find(ReportsTo);
+
+                    if (ParentIdx >= 0)
+                    {
+                        DataRow ParentRow = PathView[ParentIdx].Row;
+                        ReportsTo = ParentRow["a_account_code_to_report_to_c"].ToString();
+                        Path = ParentRow["a_reporting_account_code_c"].ToString() + "~" + Path;
+                        Level++;
+                    }
+                    else
+                    {
+                        ReportsTo = "";
+                    }
+                }
+
+                Int32 AccountIdx = AccountView.Find(AccountCode);
+                DataRow AccountRow = AccountView[AccountIdx].Row;
+                AccountRow["AccountPath"] = Path;
+                AccountRow["AccountLevel"] = Level;
+            }
+
+            AccountView.Sort = "AccountPath";
+            DataTable SortedByPath = AccountView.ToTable();
+
+            ReportingEngine.RegisterData(SortedByPath, "AccountHierarchy");
+            ReportingEngine.RegisterData(FMainDS.AAnalysisAttribute, "AnalysisAttribute");
+            TRptCalculator Calc = new TRptCalculator();
+            ALedgerRow LedgerRow = FMainDS.ALedger[0];
+            Calc.AddParameter("param_ledger_nunmber", LedgerRow.LedgerNumber);
+            Calc.AddStringParameter("param_ledger_name", LedgerRow.LedgerName);
+
+            if (ModifierKeys.HasFlag(Keys.Control))
+            {
+                ReportingEngine.DesignReport(Calc);
+            }
+            else
+            {
+                ReportingEngine.GenerateReport(Calc);
+            }
+        }
+
         private void RunOnceOnActivationManual()
         {
             FPetraUtilsObject.UnhookControl(txtDetailAccountCode, false); // I don't want changes in this edit box to cause SetChangedFlag - I'll set it myself.
@@ -213,6 +294,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FormClosing += TFrmGLAccountHierarchy_FormClosing;
             FIAmUpdating = 0;
             FNameForNewAccounts = Catalog.GetString("NEWACCOUNT");
+
+            mniFilePrint.Click += FilePrint;
+            mniFilePrint.Enabled = true;
+
+            if (TAppSettingsManager.GetBoolean("OmBuild", false)) // In OM, no-one needs to see the import or export functions:
+            {
+                tbrMain.Items.Remove(tbbImportHierarchy);
+                tbrMain.Items.Remove(tbbExportHierarchy);
+                mnuMain.Items.Remove(mniImportHierarchy);
+                mnuMain.Items.Remove(mniExportHierarchy);
+            }
         }
 
         /// <summary>If the user sets this strangely, I'll just warn her...</summary>
@@ -518,7 +610,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void ImportHierarchy(object sender, EventArgs e)
         {
             // TODO: open file; only will work if there are no GLM records and transactions yet
-            XmlDocument doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Account Hierarchy from file"));
+            XmlDocument doc;
+
+            try
+            {
+                doc = TImportExportDialogs.ImportWithDialog(Catalog.GetString("Load Account Hierarchy from file"));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, Catalog.GetString("Load Account Hierarchy from file"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             if (doc == null)
             {

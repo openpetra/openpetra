@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
     {
         private Boolean FViewMode = false;
         private Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences ucoFinance;
+        private Boolean tabPageFinanceWasSelected = false;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -62,7 +63,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 return;
             }
 
-            if (ucoAppearance.SaveAppearanceTab() | (tpgFinance.Enabled && ucoFinance.SaveFinanceTab()))
+            if (ucoAppearance.SaveAppearanceTab() | (tpgFinance.Enabled && tabPageFinanceWasSelected && ucoFinance.SaveFinanceTab()))
             {
                 Form MainWindow = FPetraUtilsObject.GetCallerForm();
                 MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
@@ -88,6 +89,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void InitializeManualCode()
         {
             this.AcceptButton = btnOK;
+
+            tabPreferences.Selected += new TabControlEventHandler(tabPreferences_Selected);
         }
 
         private void GetDataFromControlsManual()
@@ -118,6 +121,14 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
                 tpgFinance.Enabled = true;
+            }
+        }
+
+        void tabPreferences_Selected(object sender, TabControlEventArgs e)
+        {
+            if (e.TabPage == tpgFinance)
+            {
+                tabPageFinanceWasSelected = true;
             }
         }
     }
