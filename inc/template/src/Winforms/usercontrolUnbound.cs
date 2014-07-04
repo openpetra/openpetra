@@ -33,7 +33,11 @@ namespace {#NAMESPACE}
 {
 
   /// auto generated user control
-  public partial class {#CLASSNAME}: {#BASECLASSNAME}, {#INTERFACENAME}
+  public partial class {#CLASSNAME}: {#BASECLASSNAME}
+                                     , {#INTERFACENAME}
+{#IFDEF FILTERANDFIND}
+                                     , IFilterAndFind
+{#ENDIF FILTERANDFIND}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 
@@ -160,7 +164,7 @@ namespace {#NAMESPACE}
 {#ENDIF ACTIONENABLING}
         {#INITMANUALCODE}
 {#IFDEF FILTERANDFIND}
-        SetupFilterAndFindControls();
+        FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, null, pnlFilterAndFind, chkToggleFilter);
 {#ENDIF FILTERANDFIND}
     }
     
@@ -178,10 +182,10 @@ namespace {#NAMESPACE}
     public void RunOnceOnParentActivation()
     {
 {#IFDEF FILTERANDFIND}
-        if (FFilterAndFindParameters.FindAndFilterInitiallyExpanded)
+        if (FFilterAndFindObject.FilterAndFindParameters.FindAndFilterInitiallyExpanded)
         {
-            FFilterPanelControls.InitialiseComboBoxes();
-            FFindPanelControls.InitialiseComboBoxes();
+            FFilterAndFindObject.FilterPanelControls.InitialiseComboBoxes();
+            FFilterAndFindObject.FindPanelControls.InitialiseComboBoxes();
         }
 {#ENDIF FILTERANDFIND}    
         {#RUNONCEONPARENTACTIVATIONMANUAL}    
@@ -224,16 +228,26 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
 
 #region Filter and Find
-    {#FILTERANDFINDMETHODS}
 
-    // Dummy method that prevents build message of 'declared but never used'
-    private void ControlValidatedHandler(object sender, EventArgs e)
+    /// <summary>
+    /// Gets the selected grid row as a generic DataRow for use by interfaces
+    /// </summary>
+    /// <returns>The selected row - or null if no row is selected</returns>
+    public DataRow GetSelectedDataRow()
     {
-        if (FFailedValidation_CtrlChangeEventArgsInfo != null)
-        {
-            FFailedValidation_CtrlChangeEventArgsInfo = null;
-        }
+        return FPreviouslySelectedDetailRow;
     }
+
+    /// <summary>
+    /// Gets the selected Data Row index in the grid.  The first data row is 1.
+    /// </summary>
+    /// <returns>The selected row - or -1 if no row is selected</returns>
+    public Int32 GetSelectedRowIndex()
+    {
+        return FPrevRowChangedRow;
+    }
+
+    {#FILTERANDFINDMETHODS}
 #endregion
 {#ENDIF FILTERANDFIND}    
 {#IFDEF ACTIONENABLING}
