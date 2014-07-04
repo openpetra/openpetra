@@ -884,11 +884,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
             ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
 
-            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-
-            AutoSizeGrid();
         }
 
         /// <summary>
@@ -902,48 +899,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
-        /// </summary>
-        /// <param name="Sender"></param>
-        /// <param name="e"></param>
-        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
-        {
-            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
-            {
-                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
-                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
-            }
-        }
-
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
             if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
             {
-                AutoSizeGrid();
+                grdDetails.AutoResizeGrid();
             }
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[1].Width = 120;
-            grdDetails.Columns[3].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
         }
 
         void RefreshPeriods(Object sender, EventArgs e)
@@ -1648,14 +1609,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             RefreshCurrencyAndExchangeRateControls();
-        }
-
-        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
-        {
-            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.AutoResizeGrid();
-            }
         }
     }
 }

@@ -36,8 +36,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private int standardTabIndex = 0;
-        private bool FWindowIsMaximized = false;
-
 
         /// <summary>
         /// use this ledger

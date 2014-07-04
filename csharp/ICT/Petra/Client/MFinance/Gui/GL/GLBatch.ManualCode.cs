@@ -214,14 +214,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 ucoBatches.GetSelectedDetailRow().BatchStatus);
                         }
 
-                    this.ucoTransactions.LoadTransactions(
-                        FLedgerNumber,
-                        ucoJournals.GetSelectedDetailRow().BatchNumber,
-                        ucoJournals.GetSelectedDetailRow().JournalNumber,
-                        ucoJournals.GetSelectedDetailRow().TransactionCurrency,
-                        ucoBatches.GetSelectedDetailRow().BatchStatus,
-                        ucoJournals.GetSelectedDetailRow().JournalStatus,
-                        fromBatchTab);
+                        this.ucoTransactions.LoadTransactions(
+                            FLedgerNumber,
+                            ucoJournals.GetSelectedDetailRow().BatchNumber,
+                            ucoJournals.GetSelectedDetailRow().JournalNumber,
+                            ucoJournals.GetSelectedDetailRow().TransactionCurrency,
+                            ucoBatches.GetSelectedDetailRow().BatchStatus,
+                            ucoJournals.GetSelectedDetailRow().JournalStatus,
+                            fromBatchTab);
 
                         FPreviouslySelectedTab = eGLTabs.Transactions;
                     }

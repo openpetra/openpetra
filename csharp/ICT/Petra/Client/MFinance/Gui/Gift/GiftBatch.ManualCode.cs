@@ -152,7 +152,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.Focus();
             HookupAllInContainer(ucoBatches);
             HookupAllInContainer(ucoTransactions);
-            //this.Resize += new EventHandler(TFrmGiftBatch_Resize);
         }
 
         /// <summary>

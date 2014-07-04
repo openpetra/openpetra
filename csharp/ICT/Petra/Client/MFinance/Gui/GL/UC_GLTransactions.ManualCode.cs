@@ -1891,7 +1891,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // If the grid list changes we might need to disable the Delete All button
             btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
         }
-        }
 
         private void TransDateChanged(object sender, EventArgs e)
         {
@@ -2011,5 +2010,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return RetVal;
+        }
     }
 }

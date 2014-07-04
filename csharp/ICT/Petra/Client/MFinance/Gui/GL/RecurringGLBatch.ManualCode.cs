@@ -204,14 +204,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
                         }
 
-                    this.ucoRecurringTransactions.LoadTransactions(
-                        FLedgerNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
-                        ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
-                        ucoRecurringJournals.GetSelectedDetailRow().JournalStatus,
-                        fromBatchTab);
+                        this.ucoRecurringTransactions.LoadTransactions(
+                            FLedgerNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
+                            fromBatchTab);
 
                         FPreviousTab = eGLTabs.RecurringTransactions;
                     }
@@ -276,10 +274,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public TUC_RecurringGLTransactions GetTransactionsControl()
         {
             return ucoRecurringTransactions;
-        }
-
-        private void RunOnceOnActivationManual()
-        {
         }
 
         #region Menu and command key handlers for our user controls
