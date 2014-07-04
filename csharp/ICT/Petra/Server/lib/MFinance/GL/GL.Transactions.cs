@@ -2229,23 +2229,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ARequestParams"></param>
         /// <param name="AImportString"></param>
         /// <param name="AMainDS"></param>
-        /// <param name="ANewBatchRow"></param>
-        /// <param name="ANewJournalRow"></param>
         /// <param name="AMessages"></param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLTransactions(
             Hashtable ARequestParams,
             String AImportString,
-            GLBatchTDS AMainDS,
-            ABatchRow ANewBatchRow,
-            AJournalRow ANewJournalRow,
+            ref GLBatchTDS AMainDS,
             out TVerificationResultCollection AMessages
             )
         {
             TGLImporting importing = new TGLImporting();
 
-            return importing.ImportGLTransactions(ARequestParams, AImportString, AMainDS, ANewBatchRow, ANewJournalRow, out AMessages);
+            return importing.ImportGLTransactions(ARequestParams, AImportString, ref AMainDS, out AMessages);
         }
 
         /// <summary>

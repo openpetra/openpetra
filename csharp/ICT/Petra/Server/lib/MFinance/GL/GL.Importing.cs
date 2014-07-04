@@ -406,16 +406,12 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ARequestParams"></param>
         /// <param name="AImportString"></param>
         /// <param name="AMainDS"></param>
-        /// <param name="ANewBatchRow"></param>
-        /// <param name="ANewJournalRow"></param>
         /// <param name="AMessages"></param>
         /// <returns></returns>
         public bool ImportGLTransactions(
             Hashtable ARequestParams,
             String AImportString,
-            GLBatchTDS AMainDS,
-            ABatchRow ANewBatchRow,
-            AJournalRow ANewJournalRow,
+            ref GLBatchTDS AMainDS,
             out TVerificationResultCollection AMessages)
         {
             bool RetVal = false;
@@ -431,8 +427,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 5);
 
             AMessages = new TVerificationResultCollection();
+            GLBatchTDS MainDS = (GLBatchTDS)AMainDS.Copy();
             GLSetupTDS SetupDS = new GLSetupTDS();
             StringReader sr = new StringReader(AImportString);
+
+            ABatchRow NewBatchRow = (ABatchRow)MainDS.ABatch[0];
+            AJournalRow NewJournalRow = (AJournalRow)MainDS.AJournal[0];
 
             FDelimiter = (String)ARequestParams["Delimiter"];
             Int32 LedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
@@ -471,7 +471,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (RowType == "T")
                         {
-                            ImportGLTransactionsInner(RowNumber, ref AMainDS, ref SetupDS, ref ANewBatchRow, ref ANewJournalRow,
+                            ImportGLTransactionsInner(RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
                                                     ref ProgressTrackerCounter, ref Transaction,
                                                     ref AMessages);
                         }
@@ -494,6 +494,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
 
                 FImportMessage = Catalog.GetString("Saving counter fields:");
+
+                //Finally save all pending changes (last xxx number is updated)
+                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
+                AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
+
+                MainDS.AcceptChanges();
 
                 DBAccess.GDBAccessObj.CommitTransaction();
 

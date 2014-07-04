@@ -626,5 +626,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
+
+        private void ImportTransactions(object sender, EventArgs e)
+        {
+            ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
+        }
+
     }
 }
