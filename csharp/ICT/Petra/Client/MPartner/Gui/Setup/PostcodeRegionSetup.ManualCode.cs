@@ -88,7 +88,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     return FResult;
                 }
             }
-
         }
 
         /// <summary>
@@ -96,7 +95,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// </summary>
         /// <param name="AList"></param>
         /// <param name="ATitle"></param>
-        private void ReviewMultiDeleteResults(List<TMultiDeleteResult> AList, string ATitle)
+        private void ReviewMultiDeleteResults(List <TMultiDeleteResult>AList, string ATitle)
         {
             int allItemsCount = AList.Count;
             int item = 0;
@@ -113,6 +112,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 if (item < allItemsCount)
                 {
                     details += String.Format(MCommonResourcestrings.StrViewNextDetailOrCancel, Environment.NewLine);
+
                     if (MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OKCancel)
                         == System.Windows.Forms.DialogResult.Cancel)
                     {
@@ -132,6 +132,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private string MakePKValuesString(DataRow ARow)
         {
             string ReturnValue = String.Empty;
+
             object[] items = DataUtilities.GetPKValuesFromDataRow(ARow);
 
             for (int i = 0; i < items.Length; i++)

@@ -98,7 +98,10 @@ namespace Ict.Petra.Client.CommonForms
         private bool FClearingDiscretionaryFilters = false;
         private TEventArgsInfo FFailedValidation_CtrlChangeEventArgsInfo = null;
         private string FCurrentActiveFilter = String.Empty;
-        private string FPreviousFilterTooltip = String.Format("{0}{1}{2}", CommonFormsResourcestrings.StrFilterIsHidden, Environment.NewLine, CommonFormsResourcestrings.StrFilterClickToTurnOn);
+        private string FPreviousFilterTooltip = String.Format("{0}{1}{2}",
+            CommonFormsResourcestrings.StrFilterIsHidden,
+            Environment.NewLine,
+            CommonFormsResourcestrings.StrFilterClickToTurnOn);
 
 
         /// <summary>
@@ -110,8 +113,12 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AButtonPanel">The IButtonPanel associated with the caller form or control.  (Typically simply pass 'this').</param>
         /// <param name="APanelFilterFind">The Panel control associated with the caller form or control.</param>
         /// <param name="AChkToggleFilter">The checkbox control associated with the caller form or control.</param>
-        public TFilterAndFindPanel(IFilterAndFind ACallerFormOrControl, TFrmPetraUtils APetraUtilsObject, TSgrdDataGridPaged AGrid, IButtonPanel AButtonPanel,
-            Panel APanelFilterFind, CheckBox AChkToggleFilter)
+        public TFilterAndFindPanel(IFilterAndFind ACallerFormOrControl,
+            TFrmPetraUtils APetraUtilsObject,
+            TSgrdDataGridPaged AGrid,
+            IButtonPanel AButtonPanel,
+            Panel APanelFilterFind,
+            CheckBox AChkToggleFilter)
         {
             FCallerFormOrControl = ACallerFormOrControl;
             FPetraUtilsObject = APetraUtilsObject;
@@ -309,20 +316,24 @@ namespace Ict.Petra.Client.CommonForms
 
                 if (System.IO.File.Exists(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ICON))
                 {
-                    FFilterImages.Images.Add(FILENAME_FILTER_ICON, Image.FromFile(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ICON));
+                    FFilterImages.Images.Add(FILENAME_FILTER_ICON,
+                        Image.FromFile(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ICON));
                 }
                 else
                 {
-                    MessageBox.Show("LoadFilterIcons: cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ICON);
+                    MessageBox.Show(
+                        "LoadFilterIcons: cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ICON);
                 }
 
                 if (System.IO.File.Exists(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ACTIVEICON))
                 {
-                    FFilterImages.Images.Add(FILENAME_FILTER_ICON, Image.FromFile(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ACTIVEICON));
+                    FFilterImages.Images.Add(FILENAME_FILTER_ICON,
+                        Image.FromFile(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ACTIVEICON));
                 }
                 else
                 {
-                    MessageBox.Show("LoadFilterIcons: cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ACTIVEICON);
+                    MessageBox.Show(
+                        "LoadFilterIcons: cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ACTIVEICON);
                 }
             }
         }
@@ -333,24 +344,28 @@ namespace Ict.Petra.Client.CommonForms
         private void SetStatusBarText()
         {
             Control[] button = FucoFilterAndFind.Controls.Find("btnCloseFilter", true);
+
             if (button.Length > 0)
             {
                 FPetraUtilsObject.SetStatusBarText(button[0], MCommonResourcestrings.StrClickToHideFilterPanel);
             }
 
             button = FucoFilterAndFind.Controls.Find("btnFindNext", true);
+
             if (button.Length > 0)
             {
                 FPetraUtilsObject.SetStatusBarText(button[0], MCommonResourcestrings.StrClickToFindNextRecord);
             }
 
             button = FucoFilterAndFind.Controls.Find("rbtFindDirUp", true);
+
             if (button.Length > 0)
             {
                 FPetraUtilsObject.SetStatusBarText(button[0], MCommonResourcestrings.StrUpDownFindDirection);
             }
 
             button = FucoFilterAndFind.Controls.Find("rbtFindDirDown", true);
+
             if (button.Length > 0)
             {
                 FPetraUtilsObject.SetStatusBarText(button[0], MCommonResourcestrings.StrUpDownFindDirection);
@@ -407,7 +422,7 @@ namespace Ict.Petra.Client.CommonForms
             ToggleFilter();
 
             // If we have errors we need to focus the invalid control
-            if (FPetraUtilsObject.VerificationResultCollection != null && FPetraUtilsObject.VerificationResultCollection.Count > 0)
+            if ((FPetraUtilsObject.VerificationResultCollection != null) && (FPetraUtilsObject.VerificationResultCollection.Count > 0))
             {
                 ((TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[0]).ResultControl.Focus();
             }
@@ -451,12 +466,19 @@ namespace Ict.Petra.Client.CommonForms
                     FucoFilterAndFind.Dock = DockStyle.Fill;
                     FPnlFilterFind.Controls.Add(FucoFilterAndFind);
 
-                    FucoFilterAndFind.Expanded += delegate { ToggleFilter(); };
-                    FucoFilterAndFind.Collapsed += delegate { ToggleFilter(); };
+                    FucoFilterAndFind.Expanded += delegate {
+                        ToggleFilter();
+                    };
+                    FucoFilterAndFind.Collapsed += delegate {
+                        ToggleFilter();
+                    };
 
-                    FucoFilterAndFind.ApplyFilterClicked += new EventHandler<TUcoFilterAndFind.TContextEventExtControlArgs>(FucoFilterAndFind_ApplyFilterClicked);
-                    FucoFilterAndFind.ArgumentCtrlValueChanged += new EventHandler<TUcoFilterAndFind.TContextEventExtControlValueArgs>(FucoFilterAndFind_ArgumentCtrlValueChanged);
-                    FucoFilterAndFind.FindNextClicked += new EventHandler<TUcoFilterAndFind.TContextEventExtSearchDirectionArgs>(FucoFilterAndFind_FindNextClicked);
+                    FucoFilterAndFind.ApplyFilterClicked += new EventHandler <TUcoFilterAndFind.TContextEventExtControlArgs>(
+                        FucoFilterAndFind_ApplyFilterClicked);
+                    FucoFilterAndFind.ArgumentCtrlValueChanged += new EventHandler <TUcoFilterAndFind.TContextEventExtControlValueArgs>(
+                        FucoFilterAndFind_ArgumentCtrlValueChanged);
+                    FucoFilterAndFind.FindNextClicked += new EventHandler <TUcoFilterAndFind.TContextEventExtSearchDirectionArgs>(
+                        FucoFilterAndFind_FindNextClicked);
 
                     SetStatusBarText();
                 }
@@ -465,7 +487,8 @@ namespace Ict.Petra.Client.CommonForms
                 FChkToggleFilter.Checked = true;
                 FCallerFormOrControl.FilterToggled();
 
-                FucoFilterAndFind_ArgumentCtrlValueChanged(FucoFilterAndFind, new TUcoFilterAndFind.TContextEventExtControlValueArgs(TUcoFilterAndFind.EventContext.ecFilterTab, null, null, null));
+                FucoFilterAndFind_ArgumentCtrlValueChanged(FucoFilterAndFind,
+                    new TUcoFilterAndFind.TContextEventExtControlValueArgs(TUcoFilterAndFind.EventContext.ecFilterTab, null, null, null));
             }
             else
             {
@@ -500,13 +523,16 @@ namespace Ict.Petra.Client.CommonForms
                     for (int rowNum = FCallerFormOrControl.GetSelectedRowIndex() - 1; rowNum > 0; rowNum--)
                     {
                         DataRowView rowView = (DataRowView)FGrid.Rows.IndexToDataSourceRow(rowNum);
+
                         if (FCallerFormOrControl.IsMatchingRow(rowView.Row))
                         {
                             FCallerFormOrControl.SelectRowInGrid(rowNum);
+
                             if (sender != null)
                             {
                                 ((Control)sender).Focus();
                             }
+
                             return;
                         }
                     }
@@ -516,13 +542,16 @@ namespace Ict.Petra.Client.CommonForms
                     for (int rowNum = Math.Max(2, FCallerFormOrControl.GetSelectedRowIndex() + 1); rowNum < FGrid.Rows.Count; rowNum++)
                     {
                         DataRowView rowView = (DataRowView)FGrid.Rows.IndexToDataSourceRow(rowNum);
+
                         if (FCallerFormOrControl.IsMatchingRow(rowView.Row))
                         {
                             FCallerFormOrControl.SelectRowInGrid(rowNum);
+
                             if (sender != null)
                             {
                                 ((Control)sender).Focus();
                             }
+
                             return;
                         }
                     }
@@ -568,19 +597,21 @@ namespace Ict.Petra.Client.CommonForms
             // Yes if
             //  1. the panel is being shown and one or other has no ApplyNow button
             //  2. a control has been changed on a panel with no ApplyNow button
-            bool DynamicStandardFilterPanel = (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
-                (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)));
+            bool DynamicStandardFilterPanel = (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None)
+                                                || (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)));
 
-            bool DynamicExtraFilterPanel = FucoFilterAndFind.IsExtraFilterShown && (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
-                (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.StandardFilterOnly)));
+            bool DynamicExtraFilterPanel = FucoFilterAndFind.IsExtraFilterShown
+                                           && (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None)
+                                                || (FucoFilterAndFind.ShowApplyFilterButton ==
+                                                    TUcoFilterAndFind.FilterContext.StandardFilterOnly)));
 
             if ((sender is TUcoFilterAndFind) && (FPnlFilterFind.Width > 0))
             {
-                if ((FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.None ||
-                    FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.ExtraFilterOnly) ||
-                    (FucoFilterAndFind.IsExtraFilterShown &&
-                    (FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.None ||
-                    FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.StandardFilterOnly)))
+                if (((FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.None)
+                     || (FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.ExtraFilterOnly))
+                    || (FucoFilterAndFind.IsExtraFilterShown
+                        && ((FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.None)
+                            || (FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.StandardFilterOnly))))
                 {
                     ApplyFilter();
                     Console.WriteLine("The panel has been toggled ON: Applying the dynamic filter");
@@ -590,18 +621,20 @@ namespace Ict.Petra.Client.CommonForms
                     Console.WriteLine("The panel has been toggled ON: Skipping dynamic filtering because the KeepFilterOn button(s) were depressed.");
                 }
             }
-            else if (((e.Context == TUcoFilterAndFind.EventContext.ecStandardFilterPanel) && DynamicStandardFilterPanel) ||
-                ((e.Context == TUcoFilterAndFind.EventContext.ecExtraFilterPanel) && DynamicExtraFilterPanel))
+            else if (((e.Context == TUcoFilterAndFind.EventContext.ecStandardFilterPanel) && DynamicStandardFilterPanel)
+                     || ((e.Context == TUcoFilterAndFind.EventContext.ecExtraFilterPanel) && DynamicExtraFilterPanel))
             {
                 ApplyFilter();
                 Console.WriteLine("Applying the filter dynamically, due to a control value change");
             }
 
-            if ((DynamicStandardFilterPanel || DynamicExtraFilterPanel) && !FucoFilterAndFind.IgnoreValueChangedEvent && !FClearingDiscretionaryFilters)
+            if ((DynamicStandardFilterPanel
+                 || DynamicExtraFilterPanel) && !FucoFilterAndFind.IgnoreValueChangedEvent && !FClearingDiscretionaryFilters)
             {
                 // If we are dynamic filtering we try to re-select the row we highlighted before - otherwise we keep the highlight in the same position
                 //  However, if we are clearing the filter or the userControl is sending duplicate events, we skip this step
-                int newRowAfterFiltering = FGrid.DataSourceRowToIndex2(FCallerFormOrControl.GetSelectedDataRow(), FCallerFormOrControl.GetSelectedRowIndex() - 1) + 1;
+                int newRowAfterFiltering = FGrid.DataSourceRowToIndex2(
+                    FCallerFormOrControl.GetSelectedDataRow(), FCallerFormOrControl.GetSelectedRowIndex() - 1) + 1;
                 FCallerFormOrControl.SelectRowInGrid(newRowAfterFiltering == 0 ? FCallerFormOrControl.GetSelectedRowIndex() : newRowAfterFiltering);
 
                 if (sender as TUcoFilterAndFind == null)
@@ -616,7 +649,8 @@ namespace Ict.Petra.Client.CommonForms
             if (FCallerFormOrControl.DoValidation(true, true))
             {
                 ApplyFilter();
-                int newRowAfterFiltering = FGrid.DataSourceRowToIndex2(FCallerFormOrControl.GetSelectedDataRow(), FCallerFormOrControl.GetSelectedRowIndex() - 1) + 1;
+                int newRowAfterFiltering = FGrid.DataSourceRowToIndex2(
+                    FCallerFormOrControl.GetSelectedDataRow(), FCallerFormOrControl.GetSelectedRowIndex() - 1) + 1;
                 FCallerFormOrControl.SelectRowInGrid(newRowAfterFiltering == 0 ? FCallerFormOrControl.GetSelectedRowIndex() : newRowAfterFiltering);
 
                 if (sender as TUcoFilterAndFind == null)

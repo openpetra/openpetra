@@ -79,7 +79,6 @@ namespace Ict.Petra.Client.CommonForms
                     return FResult;
                 }
             }
-
         }
 
         /// <summary>
@@ -87,7 +86,7 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         /// <param name="AList"></param>
         /// <param name="ATitle"></param>
-        private static void ReviewMultiDeleteResults(List<TMultiDeleteResult> AList, string ATitle)
+        private static void ReviewMultiDeleteResults(List <TMultiDeleteResult>AList, string ATitle)
         {
             int allItemsCount = AList.Count;
             int item = 0;
@@ -104,6 +103,7 @@ namespace Ict.Petra.Client.CommonForms
                 if (item < allItemsCount)
                 {
                     details += String.Format(MCommonResourcestrings.StrViewNextDetailOrCancel, Environment.NewLine);
+
                     if (MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OKCancel)
                         == System.Windows.Forms.DialogResult.Cancel)
                     {
@@ -123,6 +123,7 @@ namespace Ict.Petra.Client.CommonForms
         private static string MakePKValuesString(DataRow ARow)
         {
             string ReturnValue = String.Empty;
+
             object[] items = DataUtilities.GetPKValuesFromDataRow(ARow);
 
             for (int i = 0; i < items.Length; i++)
@@ -146,7 +147,10 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="APetraUtilsObject">A reference to the PetraUtilsObject associated with the form or control making the call</param>
         /// <param name="AButtonPanel">A reference a form or control that implements the IButtonPanel interface.  This parameter can be null.</param>
         /// <returns>True if any rows were actually deleted</returns>
-        public static bool DeleteRows(IDeleteGridRows ACallerFormOrControl, TSgrdDataGrid AGrid, TFrmPetraEditUtils APetraUtilsObject, IButtonPanel AButtonPanel)
+        public static bool DeleteRows(IDeleteGridRows ACallerFormOrControl,
+            TSgrdDataGrid AGrid,
+            TFrmPetraEditUtils APetraUtilsObject,
+            IButtonPanel AButtonPanel)
         {
             DataRow currentDataRow = ACallerFormOrControl.GetSelectedDataRow();
             Int32 currentRowIndex = ACallerFormOrControl.GetSelectedRowIndex();
@@ -175,6 +179,7 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     TCascadingReferenceCountHandler countHandler = new TCascadingReferenceCountHandler();
                     TFrmExtendedMessageBox.TResult result = countHandler.HandleReferences(APetraUtilsObject, VerificationResults, true);
+
                     if (result == TFrmExtendedMessageBox.TResult.embrYes)
                     {
                         // repeat the count but with no limit to the number of references
@@ -210,7 +215,7 @@ namespace Ict.Petra.Client.CommonForms
                         catch (Exception ex)
                         {
                             MessageBox.Show(String.Format(MCommonResourcestrings.StrErrorWhileDeleting,
-                                Environment.NewLine, ex.Message),
+                                    Environment.NewLine, ex.Message),
                                 MCommonResourcestrings.StrGenericError,
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Warning);
@@ -235,7 +240,7 @@ namespace Ict.Petra.Client.CommonForms
 
                 if (!ACallerFormOrControl.HandlePostDelete(currentDataRow, AllowDeletion, DeletionPerformed, CompletionMessage))
                 {
-                    if (DeletionPerformed && CompletionMessage.Length > 0)
+                    if (DeletionPerformed && (CompletionMessage.Length > 0))
                     {
                         MessageBox.Show(CompletionMessage, MCommonResourcestrings.StrDeletionCompletedTitle);
                     }
@@ -249,8 +254,11 @@ namespace Ict.Petra.Client.CommonForms
 
                 int recordsDeleted = 0;
 
-                string DeletionQuestion = String.Format(MCommonResourcestrings.StrMultiRowDeletionQuestion, HighlightedRows.Length, Environment.NewLine);
+                string DeletionQuestion = String.Format(MCommonResourcestrings.StrMultiRowDeletionQuestion,
+                    HighlightedRows.Length,
+                    Environment.NewLine);
                 DeletionQuestion += MCommonResourcestrings.StrMultiRowDeletionCheck;
+
                 if (MessageBox.Show(DeletionQuestion,
                         MCommonResourcestrings.StrConfirmDeleteTitle,
                         MessageBoxButtons.YesNo,
@@ -259,8 +267,8 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     int recordsUndeletable = 0;
                     int recordsDeleteDisallowed = 0;
-                    List<TMultiDeleteResult> listConflicts = new List<TMultiDeleteResult>();
-                    List<TMultiDeleteResult> listExceptions = new List<TMultiDeleteResult>();
+                    List <TMultiDeleteResult>listConflicts = new List <TMultiDeleteResult>();
+                    List <TMultiDeleteResult>listExceptions = new List <TMultiDeleteResult>();
 
                     APetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
 
@@ -290,7 +298,7 @@ namespace Ict.Petra.Client.CommonForms
                         bool DeletionPerformed = false;
 
                         ACallerFormOrControl.HandlePreDelete(rowToDelete, ref AllowDeletion, ref DeletionQuestion);
-                        
+
                         if (AllowDeletion)
                         {
                             try
@@ -329,7 +337,7 @@ namespace Ict.Petra.Client.CommonForms
                         AButtonPanel.UpdateRecordNumberDisplay();
                     }
 
-                    if (recordsDeleted > 0 && CompletionMessage.Length > 0)
+                    if ((recordsDeleted > 0) && (CompletionMessage.Length > 0))
                     {
                         MessageBox.Show(CompletionMessage, MCommonResourcestrings.StrDeletionCompletedTitle);
                     }
@@ -340,8 +348,9 @@ namespace Ict.Petra.Client.CommonForms
                     if (recordsDeleted > 0)
                     {
                         results = String.Format(
-                                Catalog.GetPluralString(MCommonResourcestrings.StrRecordSuccessfullyDeleted, MCommonResourcestrings.StrRecordsSuccessfullyDeleted, recordsDeleted),
-                                recordsDeleted);
+                            Catalog.GetPluralString(MCommonResourcestrings.StrRecordSuccessfullyDeleted,
+                                MCommonResourcestrings.StrRecordsSuccessfullyDeleted, recordsDeleted),
+                            recordsDeleted);
                     }
                     else
                     {
@@ -352,8 +361,8 @@ namespace Ict.Petra.Client.CommonForms
                     {
                         results += String.Format(
                             Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseNonDeletable,
-                                                    MCommonResourcestrings.StrRowsNotDeletedBecauseNonDeletable,
-                                                    recordsUndeletable),
+                                MCommonResourcestrings.StrRowsNotDeletedBecauseNonDeletable,
+                                recordsUndeletable),
                             Environment.NewLine,
                             recordsUndeletable);
                     }
@@ -362,8 +371,8 @@ namespace Ict.Petra.Client.CommonForms
                     {
                         results += String.Format(
                             Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseDeleteNotAllowed,
-                                                    MCommonResourcestrings.StrRowsNotDeletedBecauseDeleteNotAllowed,
-                                                    recordsDeleteDisallowed),
+                                MCommonResourcestrings.StrRowsNotDeletedBecauseDeleteNotAllowed,
+                                recordsDeleteDisallowed),
                             Environment.NewLine,
                             recordsDeleteDisallowed);
                     }
@@ -375,8 +384,8 @@ namespace Ict.Petra.Client.CommonForms
                         showCancel = true;
                         results += String.Format(
                             Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseReferencedElsewhere,
-                                                    MCommonResourcestrings.StrRowsNotDeletedBecauseReferencedElsewhere,
-                                                    listConflicts.Count),
+                                MCommonResourcestrings.StrRowsNotDeletedBecauseReferencedElsewhere,
+                                listConflicts.Count),
                             Environment.NewLine,
                             listConflicts.Count);
                     }
@@ -386,8 +395,8 @@ namespace Ict.Petra.Client.CommonForms
                         showCancel = true;
                         results += String.Format(
                             Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
-                                                    MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
-                                                    listExceptions.Count),
+                                MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
+                                listExceptions.Count),
                             Environment.NewLine,
                             listExceptions.Count);
                     }
@@ -414,7 +423,7 @@ namespace Ict.Petra.Client.CommonForms
                     }
                 }
 
-                return (recordsDeleted > 0);
+                return recordsDeleted > 0;
             }
         }
     }

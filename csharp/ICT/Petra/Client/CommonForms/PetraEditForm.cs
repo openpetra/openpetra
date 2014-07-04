@@ -558,7 +558,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="ASortedControlList">Pass in the SortedList that will be the final result</param>
         /// <param name="AContainerControl">The contianer control (a Panel) that is to be searched for controls and sub-Panels</param>
         /// <param name="APrefix">A TabIndex prefix - use an empty string for the initial call</param>
-        public void GetSortedControlList(ref SortedList<string, Control> ASortedControlList, Control AContainerControl, string APrefix)
+        public void GetSortedControlList(ref SortedList <string, Control>ASortedControlList, Control AContainerControl, string APrefix)
         {
             foreach (Control control in AContainerControl.Controls)
             {

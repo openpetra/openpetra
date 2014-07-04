@@ -88,14 +88,17 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     ACalc.AddParameter("param_address_start_from", this.dtpAddressStartFrom.Date);
                 }
+
                 if (dtpAddressStartTo.Visible)
                 {
                     ACalc.AddParameter("param_address_start_to", this.dtpAddressStartTo.Date);
                 }
+
                 if (dtpAddressEndFrom.Visible)
                 {
                     ACalc.AddParameter("param_address_end_from", this.dtpAddressEndFrom.Date);
                 }
+
                 if (dtpAddressEndTo.Visible)
                 {
                     ACalc.AddParameter("param_address_end_to", this.dtpAddressEndTo.Date);

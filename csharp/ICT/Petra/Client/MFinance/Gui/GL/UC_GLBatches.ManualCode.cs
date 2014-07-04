@@ -372,7 +372,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0)
+                && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
             FFilterAndFindObject.ApplyFilter();
 
             CreateNewABatch();

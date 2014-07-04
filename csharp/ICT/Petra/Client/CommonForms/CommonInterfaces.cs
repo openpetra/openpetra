@@ -27,14 +27,14 @@ using System.Data;
 
 namespace Ict.Petra.Client.CommonForms
 {
-	/// <summary>
-	/// An interface associated with a button panel beneath a grid
-	/// </summary>
+    /// <summary>
+    /// An interface associated with a button panel beneath a grid
+    /// </summary>
     public interface IButtonPanel
     {
-		/// <summary>
-		/// Method to update the display of the record count
-		/// </summary>
+        /// <summary>
+        /// Method to update the display of the record count
+        /// </summary>
         void UpdateRecordNumberDisplay();
     }
 
@@ -43,20 +43,20 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public interface IGridBase
     {
-		/// <summary>
-		/// Get the row index in the grid, which is 1 more than the row number in the bound data view
-		/// </summary>
+        /// <summary>
+        /// Get the row index in the grid, which is 1 more than the row number in the bound data view
+        /// </summary>
         Int32 GetSelectedRowIndex();
 
-		/// <summary>
-		/// Get the selected grid data as an untyped DataRow
-		/// </summary>
+        /// <summary>
+        /// Get the selected grid data as an untyped DataRow
+        /// </summary>
         DataRow GetSelectedDataRow();
 
-		/// <summary>
-		/// Select the specified row index in the grid.  Can be -1.  The header row is 0.  Data starts at row 1
-		/// </summary>
-		/// <param name="ARowIndex">The row to select</param>
+        /// <summary>
+        /// Select the specified row index in the grid.  Can be -1.  The header row is 0.  Data starts at row 1
+        /// </summary>
+        /// <param name="ARowIndex">The row to select</param>
         void SelectRowInGrid(int ARowIndex);
     }
 }
