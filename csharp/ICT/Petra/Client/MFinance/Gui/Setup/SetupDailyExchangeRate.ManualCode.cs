@@ -832,8 +832,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     cmbDetailToCurrencyCode.GetSelectedString());
             }
 
-            FFilterPanelControls.SetBaseFilter(rowFilter, !chkHideOthers.Checked);
-            ApplyFilter();
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, !chkHideOthers.Checked);
+            FFilterAndFindObject.ApplyFilter();
             SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
         }
 

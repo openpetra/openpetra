@@ -212,8 +212,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
             string rowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
-            FFilterPanelControls.SetBaseFilter(rowFilter, true);
-            ApplyFilter();
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
+            FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
         }

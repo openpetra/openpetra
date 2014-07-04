@@ -144,7 +144,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private void SelectRowInGrid(int ARowNumber)
+        /// <summary>
+        /// Method required by IGridBase.
+        /// </summary>
+        public void SelectRowInGrid(int ARowNumber)
         {
             if (ARowNumber >= grdDetails.Rows.Count)
             {
@@ -189,9 +192,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             bool gotRows = (grdDetails.Rows.Count > 1);
-            bool canApprove = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval")).Checked && gotRows;
-            bool canPost = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting")).Checked && gotRows;
-            bool canPay = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying")).Checked && gotRows;
+            bool canApprove = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval")).Checked && gotRows;
+            bool canPost = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPosting")).Checked && gotRows;
+            bool canPay = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPaying")).Checked && gotRows;
 
             bool canTag = canApprove || canPost || canPay;
 
@@ -217,7 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private bool IsMatchingRowManual(DataRow ARow)
         {
-            string transactionType = ((TCmbAutoComplete)FFindPanelControls.FindControlByName("cmbTransactionType")).Text;
+            string transactionType = ((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbTransactionType")).Text;
 
             if (transactionType != String.Empty)
             {
@@ -227,7 +230,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            string status = ((TCmbAutoComplete)FFindPanelControls.FindControlByName("cmbStatus")).Text;
+            string status = ((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbStatus")).Text;
 
             if (status != String.Empty)
             {
@@ -238,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             DateTime dt;
-            TtxtPetraDate fromDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDate-1");
+            TtxtPetraDate fromDate = (TtxtPetraDate)FFilterAndFindObject.FindPanelControls.FindControlByName("dtpDate-1");
 
             if ((fromDate.Text != String.Empty) && DateTime.TryParse(fromDate.Text, out dt))
             {
@@ -248,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            TtxtPetraDate toDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDate-2");
+            TtxtPetraDate toDate = (TtxtPetraDate)FFilterAndFindObject.FindPanelControls.FindControlByName("dtpDate-2");
 
             if ((toDate.Text != String.Empty) && DateTime.TryParse(toDate.Text, out dt))
             {
@@ -279,7 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
             TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, ALedgerNumber);
             FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
-            Control rbtForApproval = FFilterPanelControls.FindControlByName("rbtForApproval");
+            Control rbtForApproval = FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval");
             rbtForApproval.Enabled = FRequireApprovalBeforePosting;
 
             //
@@ -402,7 +405,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdResult.Visible = true;
             UpdateRowFilter();
-            ApplyFilterManual(ref FCurrentActiveFilter);
+            string currentFilter = FFilterAndFindObject.CurrentActiveFilter;
+            ApplyFilterManual(ref currentFilter);
 
             if (grdResult.TotalPages > 0)
             {
@@ -563,7 +567,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 filter += FHistoryFilter;
 
-                FFilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
             }
         }
 
@@ -646,14 +650,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FStatusFilter = String.Empty;
             string filterJoint = " AND ";
 
-            String SelectedItem = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbStatus")).Text;
+            String SelectedItem = ((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbStatus")).Text;
 
             if (SelectedItem != String.Empty)
             {
                 FStatusFilter = "(Status='" + SelectedItem + "')";
             }
 
-            RadioButton rbtForApproval = (RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval");
+            RadioButton rbtForApproval = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval");
 
             if (rbtForApproval.Checked)
             {
@@ -665,7 +669,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FStatusFilter += ("(Status='OPEN')");
             }
 
-            RadioButton rbtForPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting");
+            RadioButton rbtForPosting = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPosting");
 
             if (rbtForPosting.Checked)
             {
@@ -684,7 +688,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            RadioButton rbtForPaying = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying");
+            RadioButton rbtForPaying = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPaying");
 
             if (rbtForPaying.Checked)
             {
@@ -703,7 +707,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             FTypeFilter = "";
 
-            String SelectedItem = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbTransactionType")).Text;
+            String SelectedItem = ((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbTransactionType")).Text;
 
             if (SelectedItem != String.Empty)
             {
@@ -717,14 +721,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             FHistoryFilter = String.Empty;
 
-            RadioButton rbtRecent = (RadioButton)FFilterPanelControls.FindControlByName("rbtRecent");
+            RadioButton rbtRecent = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtRecent");
 
             if (rbtRecent.Checked)
             {
                 FHistoryFilter = ("(Date >'" + FAgedOlderThan + "')");
             }
 
-            RadioButton rbtQuarter = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastQuarter");
+            RadioButton rbtQuarter = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtLastQuarter");
 
             if (rbtQuarter.Checked)
             {
@@ -736,7 +740,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FHistoryFilter += ("(Date > #" + DateTime.Now.AddMonths(-3).ToString("d", System.Globalization.CultureInfo.InvariantCulture) + "#)");
             }
 
-            RadioButton rbtHalf = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastSixMonths");
+            RadioButton rbtHalf = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtLastSixMonths");
 
             if (rbtHalf.Checked)
             {
@@ -748,7 +752,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FHistoryFilter += ("(Date > #" + DateTime.Now.AddMonths(-6).ToString("d", System.Globalization.CultureInfo.InvariantCulture) + "#)");
             }
 
-            RadioButton rbtYear = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastYear");
+            RadioButton rbtYear = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtLastYear");
 
             if (rbtYear.Checked)
             {

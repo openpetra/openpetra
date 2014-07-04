@@ -514,12 +514,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void ShowFindPanel()
         {
-            if (FucoFilterAndFind == null)
+            if (FFilterAndFindObject.FilterFindPanel == null)
             {
-                ToggleFilter();
+                FFilterAndFindObject.ToggleFilter();
             }
 
-            FucoFilterAndFind.DisplayFindTab();
+            FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
         }
 
         /// <summary>

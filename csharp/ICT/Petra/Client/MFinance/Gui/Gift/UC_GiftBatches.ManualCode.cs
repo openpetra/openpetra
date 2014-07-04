@@ -125,11 +125,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitialiseControls()
         {
-            FrbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
-            FrbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
-            FrbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
-            FcmbYearEnding = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearEnding");
-            FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
+            FrbtEditing = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtEditing");
+            FrbtPosting = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtPosting");
+            FrbtAll = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtAll");
+            FcmbYearEnding = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbYearEnding");
+            FcmbPeriod = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbPeriod");
         }
 
         /// <summary>
@@ -863,23 +863,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void RunOnceOnParentActivationManual()
         {
             // We have to do these because the filter/find panel is displayed when the screen is loaded, so they don not get populated
-            TCmbAutoComplete ffInstance = (TCmbAutoComplete)FFilterPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
+            TCmbAutoComplete ffInstance = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
 
             ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
             ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
             ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
 
-            ffInstance = (TCmbAutoComplete)FFilterPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
+            ffInstance = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
             ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
             ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
             ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
 
-            ffInstance = (TCmbAutoComplete)FFindPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
+            ffInstance = (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
             ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
             ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
             ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
 
-            ffInstance = (TCmbAutoComplete)FFindPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
+            ffInstance = (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
             ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
             ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
             ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
@@ -1013,7 +1013,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (sender is TCmbAutoComplete)
             {
-                if (FucoFilterAndFind.CanIgnoreChangeEvent)
+                if (FFilterAndFindObject.FilterFindPanel.CanIgnoreChangeEvent)
                 {
                     return;
                 }
@@ -1139,9 +1139,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
-                FFilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
                     && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             if (grdDetails.Rows.Count < 2)

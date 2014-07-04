@@ -152,8 +152,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ShowData();
 
                 // Now set up the complete current filter
-                FFilterPanelControls.SetBaseFilter(FMainDS.AJournal.DefaultView.RowFilter, true);
-                ApplyFilter();
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FMainDS.AJournal.DefaultView.RowFilter, true);
+                FFilterAndFindObject.ApplyFilter();
 
                 FJournalsLoaded = true;
             }
@@ -172,8 +172,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FBatchNumber);
 
             FMainDS.AJournal.DefaultView.RowFilter = rowFilter;
-            FFilterPanelControls.SetBaseFilter(rowFilter, true);
-            FCurrentActiveFilter = rowFilter;
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
+            FFilterAndFindObject.CurrentActiveFilter = rowFilter;
 
             FMainDS.AJournal.DefaultView.Sort = String.Format("{0} DESC",
                 AJournalTable.GetJournalNumberDBName()
@@ -534,12 +534,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void ShowFindPanel()
         {
-            if (FucoFilterAndFind == null)
+            if (FFilterAndFindObject.FilterFindPanel == null)
             {
-                ToggleFilter();
+                FFilterAndFindObject.ToggleFilter();
             }
 
-            FucoFilterAndFind.DisplayFindTab();
+            FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
         }
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
