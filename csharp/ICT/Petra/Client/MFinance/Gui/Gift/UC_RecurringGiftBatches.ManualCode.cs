@@ -85,11 +85,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RunOnceOnParentActivationManual()
         {
-            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-
-            AutoSizeGrid();
         }
 
         /// <summary>
