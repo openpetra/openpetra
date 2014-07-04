@@ -39,6 +39,8 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MCommon;
@@ -1692,6 +1694,146 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             finally
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+        }
+        
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable GetAFOReportAccountsData(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapte)
+        {
+        	TDBTransaction Transaction = null;
+            AAccountTable AccountTable = new AAccountTable();
+
+            // create new datatable
+            DataTable Results = new DataTable();
+            Results.Columns.Add(new DataColumn("a_account_code_c", typeof(string)));
+            Results.Columns.Add(new DataColumn("a_account_code_short_desc_c", typeof(string)));
+            Results.Columns.Add(new DataColumn("DebitCreditIndicator", typeof(bool)));
+            Results.Columns.Add(new DataColumn("ActualDebitBase", typeof(Decimal)));
+            Results.Columns.Add(new DataColumn("ActualCreditBase", typeof(Decimal)));
+            Results.Columns.Add(new DataColumn("ActualDebitIntl", typeof(Decimal)));
+            Results.Columns.Add(new DataColumn("ActualCreditIntl", typeof(Decimal)));
+            
+            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            string StandardSummaryCostCentre = LedgerNumber.ToString("00") + "00S";
+            string AccountHierarchyCode = AParameters["param_account_hierarchy_c"].ToString();
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                	ALedgerRow LedgerRow = (ALedgerRow) ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction).Rows[0];
+                	
+                	AAccountHierarchyRow HierarchyRow = (AAccountHierarchyRow) AAccountHierarchyAccess.LoadByPrimaryKey(
+                		LedgerNumber, AccountHierarchyCode, Transaction).Rows[0];
+		            
+		            List <String>list = new List<string>();
+		            
+		            ScanHierarchy(ref list, LedgerNumber, HierarchyRow.RootAccountCode, AccountHierarchyCode, Transaction);
+                	
+		            // get AAccountRows for each account number in list
+		            foreach (string AccountCode in list)
+		            {
+		            	AAccountRow AddRow = (AAccountRow) AAccountAccess.LoadByPrimaryKey(LedgerNumber, AccountCode, Transaction).Rows[0];
+		            	
+		            	if (AddRow != null)
+		            	{
+		            		AccountTable.Rows.Add((object[])AddRow.ItemArray.Clone());
+		            	}
+		            }
+		            
+		            // Populate the Results Dataset
+		            foreach (AAccountRow Account in AccountTable.Rows)
+		            {
+		            	DataRow NewRow = Results.NewRow();
+		            	NewRow["a_account_code_c"] = Account.AccountCode;
+		            	NewRow["a_account_code_short_desc_c"] = Account.AccountCodeShortDesc;
+		            	
+		            	int GLMSequence = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+		            		LedgerNumber, Account.AccountCode, StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32());
+		            	
+		            	// get balances
+		            	if (Account.DebitCreditIndicator)
+		            	{
+		            		NewRow["DebitCreditIndicator"] = true;
+		            		NewRow["ActualDebitBase"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+									            		                                      GLMSequence,
+									            		                                      -1,
+									            		                                      AParameters["param_end_period_i"].ToInt32(),
+									            		                                      LedgerRow.NumberOfAccountingPeriods,
+									            		                                      LedgerRow.CurrentFinancialYear,
+									            		                                      AParameters["param_year_i"].ToInt32(),
+									            		                                      true,
+									            		                                      MFinanceConstants.CURRENCY_BASE);
+		            		NewRow["ActualDebitIntl"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+									            		                                      GLMSequence,
+									            		                                      -1,
+									            		                                      AParameters["param_end_period_i"].ToInt32(),
+									            		                                      LedgerRow.NumberOfAccountingPeriods,
+									            		                                      LedgerRow.CurrentFinancialYear,
+									            		                                      AParameters["param_year_i"].ToInt32(),
+									            		                                      true,
+									            		                                      MFinanceConstants.CURRENCY_INTERNATIONAL);
+		            	}
+		            	else
+		            	{
+		            		NewRow["DebitCreditIndicator"] = false;
+		            		NewRow["ActualCreditBase"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+									            		                                      GLMSequence,
+									            		                                      -1,
+									            		                                      AParameters["param_end_period_i"].ToInt32(),
+									            		                                      LedgerRow.NumberOfAccountingPeriods,
+									            		                                      LedgerRow.CurrentFinancialYear,
+									            		                                      AParameters["param_year_i"].ToInt32(),
+									            		                                      true,
+									            		                                      MFinanceConstants.CURRENCY_BASE);
+		            		NewRow["ActualCreditIntl"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+									            		                                      GLMSequence,
+									            		                                      -1,
+									            		                                      AParameters["param_end_period_i"].ToInt32(),
+									            		                                      LedgerRow.NumberOfAccountingPeriods,
+									            		                                      LedgerRow.CurrentFinancialYear,
+									            		                                      AParameters["param_year_i"].ToInt32(),
+									            		                                      true,
+									            		                                      MFinanceConstants.CURRENCY_INTERNATIONAL);
+		            	}
+		            	
+		            	Results.Rows.Add(NewRow);
+		            }
+                });
+            
+            return Results;
+        }
+
+        /* We want to report on summary accounts at the highest level of the tree that */
+		/* have posting accounts reporting to them.  Recursively descend the tree      */
+		/* looking for accounts that summarize a posting account.  As soon as we find  */
+		/* one, add it to the list, and don't descend any further.  Any values in      */
+		/* summary accounts at lower levels will already have been added in to this    */
+		/* level.                                                                      */
+        private static void ScanHierarchy(ref List<String> AAccountList, int ALedgerNumber, string AAccountCode, string AHierarchyCode, TDBTransaction ATransaction)
+        {
+        	AAccountHierarchyDetailTable AccountHierarchyDetailTable = AAccountHierarchyDetailAccess.LoadViaAAccountAccountCodeToReportTo(ALedgerNumber, AAccountCode, ATransaction);
+        	
+            if (AccountHierarchyDetailTable.Rows.Count > 0)
+            {
+            	foreach (AAccountHierarchyDetailRow Row in AccountHierarchyDetailTable.Rows)
+                {
+                	if (!AAccountList.Contains(Row.AccountCodeToReportTo) && Row.AccountHierarchyCode == AHierarchyCode)
+                    {
+                    	AAccountRow AccountRow = (AAccountRow) AAccountAccess.LoadByPrimaryKey(ALedgerNumber, Row.ReportingAccountCode, ATransaction).Rows[0];
+                    	
+                    	if (AccountRow != null && AccountRow.PostingStatus)
+                    	{
+                    		AAccountList.Add(Row.AccountCodeToReportTo);
+                    	}
+                    	else if (AccountRow != null)
+                    	{
+                    		ScanHierarchy(ref AAccountList, ALedgerNumber, Row.ReportingAccountCode, AHierarchyCode, ATransaction);
+                    	}
+                    }
+                }
             }
         }
     }

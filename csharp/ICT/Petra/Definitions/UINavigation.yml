@@ -178,6 +178,7 @@ OpenPetra:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                       # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
+                        AFO: {Description: Monthly report to be sent to Area Finance Officer, ActionOpenScreen=TFrmAFO}
                 GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Donor, Recipient]
                     GiftEntry:

@@ -103,6 +103,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.IncomeExpenseTable(AParameters, FDbAdapter);
                     break;
 
+                case "AFO":
+                    ResultTbl = TFinanceReportingWebConnector.GetAFOReportAccountsData(AParameters, FDbAdapter);
+                    break;
+
                 default:
                     TLogging.Log("GetDatatableThread unknown ReportType: " + AReportType);
                     break;
