@@ -50,10 +50,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
         private bool FNewDonorWarning = true;
-
         // changed gift records
-        private GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
-
+        GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -195,6 +193,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (FNewDonorWarning)
             {
+                if (FMainDS.GetChangesTyped(false) == null)
+                {
+                    FGiftDetailTable = null;
+                    return;
+                }
+
                 // add changed gift records to datatable
                 GetDataFromControls();
                 FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;

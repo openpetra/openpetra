@@ -334,9 +334,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FSuppressRefreshPeriods = true;
                     TFinanceControls.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
                     FSuppressRefreshPeriods = false;
-                    FSuppressRefreshFilter = true;
+
+                    // Now we can set the period part of the filter
                     RefreshPeriods(null, null);
-                    FSuppressRefreshFilter = false;
                 }
                 finally
                 {
@@ -983,13 +983,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            Console.WriteLine("RefreshPeriods");
-
             FSuppressRefreshFilter = true;
 
             NewYearSelected = FcmbYearEnding.GetSelectedInt32();
 
-            if (FSelectedYear == NewYearSelected)
+            if ((FSelectedYear == NewYearSelected) && (sender != null))
             {
                 FSuppressRefreshFilter = false;
                 return;

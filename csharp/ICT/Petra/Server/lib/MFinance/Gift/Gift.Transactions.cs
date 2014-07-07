@@ -1664,8 +1664,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 APartnerKey
                 );
 
-            TLogging.Log("GetCostCentreCodeSQL: " + GetCostCentreCodeSQL);
-
             DataSet tempDataSet = new DataSet();
 
             try
@@ -1676,8 +1674,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (tempDataSet.Tables[CostCentreCodeTable] != null)
                 {
-                    TLogging.Log("CostCentreCodeTable Row Count: " + tempDataSet.Tables[CostCentreCodeTable].Rows.Count.ToString());
-
                     if (tempDataSet.Tables[CostCentreCodeTable].Rows.Count > 0)
                     {
                         DataRow row = tempDataSet.Tables[CostCentreCodeTable].Rows[0];
@@ -1695,10 +1691,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
-
-            TLogging.Log(String.Format("Cost Centre Code for Partner: {0} is {1}",
-                    APartnerKey,
-                    ACostCentreCode));
 
             return CostCentreExists;
         }
@@ -2640,8 +2632,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 APartnerKey,
                 AGiftDate);
 
-            TLogging.Log("GetPartnerGiftDestinationSQL: " + GetPartnerGiftDestinationSQL);
-
             DataSet tempDataSet = new DataSet();
 
             try
@@ -2652,8 +2642,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (tempDataSet.Tables[PartnerGiftDestinationTable] != null)
                 {
-                    TLogging.Log("CostCentreCodeTable Row Count: " + tempDataSet.Tables[PartnerGiftDestinationTable].Rows.Count.ToString());
-
                     if (tempDataSet.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
                     {
                         DataRow row = tempDataSet.Tables[PartnerGiftDestinationTable].Rows[0];
@@ -2670,10 +2658,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
-
-            TLogging.Log(String.Format("Gift Destination Field for Partner: {0} is {1}",
-                    APartnerKey,
-                    PartnerField));
 
             return PartnerField;
         }

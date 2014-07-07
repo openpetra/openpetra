@@ -369,6 +369,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Decimal ClosingBalance = 0;
                 Int32 MaxPeriod = -1;
                 Int32 MinPeriod = 99;
+                DataRow NewRow = null;
 
                 // For each CostCentre / Account combination  I want just a single row, with the opening and closing balances,
                 // so I need to pre-process the stuff I've got in this table, and generate another table.
@@ -382,18 +383,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     if ((row["a_cost_centre_code_c"].ToString() != CostCentre) || (row["a_account_code_c"].ToString() != AccountCode)) // a new CC/AC combination
                     {
-                        if ((CostCentre != "") && (AccountCode != "")) // Add a new row, but not if there's no data yet.
-                        {
-                            DataRow NewRow = Results.NewRow();
-                            NewRow["a_cost_centre_code_c"] = CostCentre;
-                            NewRow["a_account_code_c"] = AccountCode;
-                            NewRow["OpeningBalance"] = OpeningBalance;
-                            NewRow["ClosingBalance"] = ClosingBalance;
-                            Results.Rows.Add(NewRow);
-                        }
+                        NewRow = Results.NewRow();
 
                         CostCentre = row["a_cost_centre_code_c"].ToString();
+                        NewRow["a_cost_centre_code_c"] = CostCentre;
+
                         AccountCode = row["a_account_code_c"].ToString();
+                        NewRow["a_account_code_c"] = AccountCode;
+                        Results.Rows.Add(NewRow);
+
                         MaxPeriod = -1;
                         MinPeriod = 99;
                     }
@@ -404,12 +402,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         MinPeriod = ThisPeriod;
                         OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
+                        NewRow["OpeningBalance"] = OpeningBalance;
                     }
 
                     if (ThisPeriod > MaxPeriod)
                     {
                         MaxPeriod = ThisPeriod;
                         ClosingBalance = Convert.ToDecimal(row["balance"]);
+                        NewRow["ClosingBalance"] = ClosingBalance;
                     }
                 }
             }
@@ -1116,14 +1116,20 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String CostCentreFilter = "";
             String CostCentreOptions = AParameters["param_costcentreoptions"].ToString();
 
-            if (CostCentreOptions == "SelectedCostCentres")
+            if (CostCentreOptions == "CostCentreList")
             {
                 String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
                 CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
                 CostCentreFilter = " AND glm.a_cost_centre_code_c in ('" + CostCentreList + "')";
             }
 
-            if (CostCentreOptions == "AllActiveCostCentres")
+            if (CostCentreOptions == "CostCentreRange")
+            {
+                CostCentreFilter = " AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
+                                   "' AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
+            }
+
+            if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
             {
                 CostCentreFilter = " AND a_cost_centre.a_cost_centre_active_flag_l=true";
             }
@@ -1695,8 +1701,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-        }
-        
+        } // HosaGiftsTable
+
         /// <summary>
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
@@ -1821,8 +1827,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             	foreach (AAccountHierarchyDetailRow Row in AccountHierarchyDetailTable.Rows)
                 {
                 	if (!AAccountList.Contains(Row.AccountCodeToReportTo) && Row.AccountHierarchyCode == AHierarchyCode)
-                    {
-                    	AAccountRow AccountRow = (AAccountRow) AAccountAccess.LoadByPrimaryKey(ALedgerNumber, Row.ReportingAccountCode, ATransaction).Rows[0];
+                	{
+                		AAccountRow AccountRow = (AAccountRow) AAccountAccess.LoadByPrimaryKey(ALedgerNumber, Row.ReportingAccountCode, ATransaction).Rows[0];
                     	
                     	if (AccountRow != null && AccountRow.PostingStatus)
                     	{
@@ -1832,9 +1838,155 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     	{
                     		ScanHierarchy(ref AAccountList, ALedgerNumber, Row.ReportingAccountCode, AHierarchyCode, ATransaction);
                     	}
-                    }
-                }
+                	}
+            	}
             }
         }
+        
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable TrialBalanceTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            /* Required columns:
+             *   CostCentreCode
+             *   CostCentreName
+             *   AccountCode
+             *   AccountName
+             *   Debit
+             *   Credit
+             */
+
+
+            /*
+             * Trial balance is simply a list of all the account / cost centre balanaces, at the end of the period specified.
+             * (If the period is open, it still works.)
+             *
+             * Trial balance works on Posting accounts and cost centres, so there's no chasing up the hierarchy tree.
+             */
+
+            Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
+            Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
+
+            //
+            // Read different DB fields according to currency setting
+            String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
+
+            String CostCentreFilter = "";
+            String CostCentreOptions = AParameters["param_rgrCostCentres"].ToString();
+
+            if (CostCentreOptions == "SelectedCostCentres")
+            {
+                String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
+                CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
+                CostCentreFilter = " AND glm.a_cost_centre_code_c in ('" + CostCentreList + "')";
+            }
+
+            if (CostCentreOptions == "CostCentreRange")
+            {
+                CostCentreFilter = " AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_start"].ToString() +
+                                   "' AND glm.a_cost_centre_code_c >='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
+            }
+
+            if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
+            {
+                CostCentreFilter = " AND a_cost_centre.a_cost_centre_active_flag_l=true";
+            }
+
+            String AccountCodeFilter = "";
+            String AccountCodeOptions = AParameters["param_rgrAccounts"].ToString();
+
+            if (AccountCodeOptions == "AccountList")
+            {
+                String AccountCodeList = AParameters["param_account_codes"].ToString();
+                AccountCodeList = AccountCodeList.Replace(",", "','");                             // SQL IN List items in single quotes
+                AccountCodeFilter = " AND glm.a_account_code_c in ('" + AccountCodeList + "')";
+            }
+
+            if (AccountCodeOptions == "AccountRange")
+            {
+                CostCentreFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
+                                   "' AND glm.a_account_code_c >='" + AParameters["param_account_code_end"].ToString() + "'";
+            }
+
+            if (AccountCodeOptions == "AllActiveAccounts") // THIS IS NOT SET AT ALL
+            {
+                AccountCodeFilter = " AND a_account.a_account_active_flag_l=true";
+            }
+
+            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            DataTable resultTable = null;
+
+            String OrderBy = " ORDER BY a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c, glm.a_account_code_c";
+
+            if (AParameters["param_sortby"].ToString() == "Account")
+            {
+                OrderBy = " ORDER BY glm.a_account_code_c, a_cost_centre.a_cost_centre_type_c DESC, glm.a_cost_centre_code_c";
+            }
+
+            try
+            {
+                String Query = "SELECT DISTINCT" +
+                               " glm.a_year_i AS Year," +
+                               " glmp.a_period_number_i AS Period," +
+                               " glm.a_cost_centre_code_c AS CostCentreCode," +
+                               " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
+                               " a_cost_centre.a_cost_centre_type_c AS CostCentreType," +
+                               " a_account.a_debit_credit_indicator_l AS IsDebit," +
+                               " glmp." + ActualFieldName + " AS Balance," +
+                               " 0.0 as Debit, " +
+                               " 0.0 as Credit, " +
+                               " glm.a_account_code_c AS AccountCode," +
+                               " a_account.a_account_code_short_desc_c AS AccountName" +
+
+                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                               " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                               " AND glm.a_year_i=" + AccountingYear +
+                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                               " AND glmp.a_period_number_i=" + ReportPeriodEnd +
+                               " AND glmp." + ActualFieldName + " <> 0" +
+
+                               " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                               " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
+                               " AND a_account.a_posting_status_l = true" +
+                               " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i" +
+                               " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c" +
+                               " AND a_cost_centre.a_posting_cost_centre_flag_l = true" +
+                               CostCentreFilter +
+                               AccountCodeFilter +
+                               OrderBy;
+                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                resultTable = DbAdapter.RunQuery(Query, "TrialBalance", ReadTrans);
+
+                foreach (DataRow Row in resultTable.Rows)
+                {
+                    Decimal Amount = Convert.ToDecimal(Row["Balance"]);
+                    Boolean IsDebit = Convert.ToBoolean(Row["IsDebit"]);
+
+                    if (Amount < 0)
+                    {
+                        IsDebit = !IsDebit;
+                        Amount = 0 - Amount;
+                    }
+        
+                    String ToField = IsDebit ? "Debit" : "Credit";
+                    Row[ToField] = Amount;
+                }
+
+                TLogging.Log("", TLoggingType.ToStatusBar);
+            }
+            catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
+            {
+                TLogging.Log(ex.Message);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return resultTable;
+        } // TrialBalanceTable
     }
 }

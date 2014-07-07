@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       berndr
+//       Tim Ingham
 //
 // Copyright 2004-2014 by OM International
 //

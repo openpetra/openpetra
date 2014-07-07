@@ -638,6 +638,31 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// returns ledger table for specified ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadALedgerTable(Int32 ALedgerNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of batches for the given ledger;
         /// also get the ledger for the base currency etc
         /// </summary>
@@ -1931,8 +1956,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
             Int32 ABatchNumber = (Int32)requestParams["ABatchNumber"];
             DateTime AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
-            Decimal AExchangeRateToBase;
+            Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];;
+
+            Decimal AExchangeRateIntlToBase = (Decimal)requestParams["AExchangeRateIntlToBase"];
             int PeriodNumber, YearNr;
+
+            bool TransactionInIntlCurrency = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
@@ -1985,13 +2014,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 JournalRow.TransactionCurrency = recJournal.TransactionCurrency;
                                 JournalRow.JournalCreditTotal = recJournal.JournalCreditTotal;
                                 JournalRow.JournalDebitTotal = recJournal.JournalDebitTotal;
-
-                                Decimal.TryParse(
-                                    requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()].ToString(),
-                                    out AExchangeRateToBase);
-                                //AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
                                 JournalRow.ExchangeRateToBase = AExchangeRateToBase;
-
                                 JournalRow.DateEffective = AEffectiveDate;
                                 JournalRow.JournalPeriod = recJournal.JournalPeriod;
 
@@ -2002,7 +2025,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     BatchRow.LastJournal = JournalRow.JournalNumber;
                                 }
 
-                                //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
+                                TransactionInIntlCurrency = (JournalRow.TransactionCurrency == LedgerTable[0].IntlCurrency);                                //TODO (not here, but in the client or while posting) Check for expired key ministry (while
+                                                                                                                                                            // Posting)
 
                                 foreach (ARecurringTransactionRow recTransaction in RGLMainDS.ARecurringTransaction.Rows)
                                 {
@@ -2026,6 +2050,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         TransactionRow.CostCentreCode = recTransaction.CostCentreCode;
                                         TransactionRow.TransactionAmount = recTransaction.TransactionAmount;
                                         TransactionRow.AmountInBaseCurrency = GLRoutines.Divide(recTransaction.TransactionAmount, AExchangeRateToBase);
+
+                                        if (!TransactionInIntlCurrency)
+                                        {
+                                            TransactionRow.AmountInIntlCurrency = GLRoutines.Divide((decimal)TransactionRow.AmountInBaseCurrency,
+                                                AExchangeRateIntlToBase);
+                                        }
+                                        else
+                                        {
+                                            TransactionRow.AmountInIntlCurrency = TransactionRow.TransactionAmount;
+                                        }
+
                                         TransactionRow.TransactionDate = AEffectiveDate;
                                         TransactionRow.DebitCreditIndicator = recTransaction.DebitCreditIndicator;
                                         TransactionRow.HeaderNumber = recTransaction.HeaderNumber;
@@ -2338,7 +2373,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the current journal
         ///   Assumes that transactions are already loaded into the Dataset
-        /// NOTE this no longer calculates AmountInBaseCurrency
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
