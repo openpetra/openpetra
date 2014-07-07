@@ -34,6 +34,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
+using System.IO;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -297,17 +298,22 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// Called from a delegate set up by me.
+        /// Called from a delegate set up by my constructor.
         /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
         /// </summary>
         /// <param name="ACalc"></param>
         public void DesignReport(TRptCalculator ACalc)
         {
+            ACalc.GetParameters().Add("param_design_template", true);
+
             if (FSelectedTemplate != null)
             {
                 if (FDataGetter != null)
                 {
-                    FDataGetter(ACalc);
+                    if (!FDataGetter(ACalc))
+                    {
+                        return;
+                    }
                 }
 
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
@@ -400,17 +406,40 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// The report will be generated, but not shown to the user.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        public void PrepareWithNoUi(TRptCalculator ACalc)
+        {
+            object HtmlExport = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
+            Type ExporterType = HtmlExport.GetType();
+            FileStream HtmlStream = File.Open("AccountDetail.html",FileMode.Create);
+
+            FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
+                new object[] { FSelectedTemplate.XmlText });
+            LoadReportParams(ACalc);
+            FFastReportType.GetMethod("Prepare", new Type[0]).Invoke(FfastReportInstance, null);
+            FFastReportType.GetMethod("Export", new Type[] { ExporterType, HtmlStream.GetType()}).Invoke(FfastReportInstance, new Object [] {HtmlExport, HtmlStream});
+            HtmlStream.Close();
+        }
+
+        /// <summary>
         /// Called from a delegate set up by me.
         /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
         /// </summary>
         /// <param name="ACalc"></param>
         public void GenerateReport(TRptCalculator ACalc)
         {
+            ACalc.GetParameters().Add("param_design_template", false);
+
             if (FSelectedTemplate != null)
             {
                 if (FDataGetter != null)
                 {
-                    FDataGetter(ACalc);
+                    if (!FDataGetter(ACalc))
+                    {
+                        return;
+                    }
                 }
 
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,

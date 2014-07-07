@@ -156,12 +156,12 @@ OpenPetra:
                         #EditTransactionsInPreviouslyUsedBatch:
                         #PostBatch:
                         #FindTransaction:
-                    PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
-                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
-                        YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
                     ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
                         StewardshipCalculation: {ActionOpenScreen=TFrmStewardshipCalculation, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
                         StewardshipReports: {ActionOpenScreen=TFrmStewardshipReports}
+                    PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
+                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
+                        YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
 #                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}

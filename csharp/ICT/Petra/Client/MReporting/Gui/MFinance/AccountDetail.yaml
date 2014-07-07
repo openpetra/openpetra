@@ -40,6 +40,12 @@
         rbtSortByCostCentre: 
             Label: Sort by Cost Centre
             ParameterValue:Cost Centre
+            Controls: [chkPaginate,chkAutoEmail]
+            ControlsOrientation: horizontal
+        chkPaginate:
+            ParameterName: param_paginate
+        chkAutoEmail:
+            ParameterName: param_auto_email
         rbtSortByReference: 
             ParameterValue: Reference
             Controls: [txtReferenceFrom, txtReferenceTo]

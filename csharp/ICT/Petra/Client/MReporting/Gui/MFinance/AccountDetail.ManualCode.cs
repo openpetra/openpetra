@@ -57,8 +57,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 pnlSorting.Padding = new System.Windows.Forms.Padding(8); // This tweak bring controls inline.
                 FPetraUtilsObject.LoadDefaultSettings();
+                rbtSortByCostCentre.CheckedChanged += rbtSortByCostCentre_CheckedChanged;
 
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+            }
+        }
+
+        void rbtSortByCostCentre_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!rbtSortByCostCentre.Checked)
+            {
+                chkPaginate.Checked = false;
+                chkAutoEmail.Checked = false;
             }
         }
 
@@ -79,6 +89,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String AccountCodeFilter = ""; // Account Filter, as range or list:
             String TranctAccountCodeFilter = "";
             DataTable Balances = new DataTable();
+
+            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this later, for auto_email, but usually it's unused.
 
             if (pm.Get("param_rgrAccounts").ToString() == "AccountList")
             {
@@ -273,6 +285,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(Balances, "balances");
+
+            //
+            // For Account Detail reports that must be sent on email, one page at a time,
+            // I'm calling the FastReports plugin multiple times,
+            // and then I'm going to return false, which will prevent the default action using this dataset.
+
+            if ((pm.Get("param_sortby").ToString() == "Cost Centre")
+                && (pm.Get("param_auto_email").ToBool())
+              && !pm.Get("param_design_template").ToBool()
+                )
+            {
+                String SingleCostCentre = "";
+                String RowCostCentre;
+                foreach (DataRow TransRow in ReportDs.ATransaction.Rows)
+                {
+                    RowCostCentre = TransRow["a_cost_centre_code_c"].ToString();
+                    if (RowCostCentre != SingleCostCentre)
+                    {
+                        SingleCostCentre = RowCostCentre;
+                        ACalc.AddStringParameter("param_linked_partner_cc", RowCostCentre);
+                        FPetraUtilsObject.FFastReportsPlugin.PrepareWithNoUi(ACalc);
+                    }
+                }
+                return false;
+            }
+
             return true;
         }
     }

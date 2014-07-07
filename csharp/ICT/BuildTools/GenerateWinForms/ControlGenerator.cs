@@ -402,6 +402,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             base.FGenerateLabel = true;
             this.FChangeEventName = "CheckedChanged";
             FDefaultHeight = 22;
+            FTemplateSnippetName = "CHECKBOX";
         }
 
         /// <summary>
