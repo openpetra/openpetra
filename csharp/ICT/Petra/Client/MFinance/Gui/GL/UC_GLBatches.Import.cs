@@ -145,11 +145,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             bool ok = false;
 
-            if (FPetraUtilsObject.HasChanges)
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
-                // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
-                        "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            AJournalRow CurrentJournal = GetCurrentJournal();
+
+            if ((FPreviouslySelectedDetailRow == null)
+                || (CurrentJournal == null)
+                || (CurrentJournal.JournalStatus != MFinanceConstants.BATCH_UNPOSTED)
+                || (CurrentJournal.LastTransactionNumber > 0))
+            {
+                MessageBox.Show(Catalog.GetString("Please select an empty unposted journal to import transactions"), "Import GL Transactions");
                 return;
             }
 
@@ -200,9 +208,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     string importString = File.ReadAllText(dialog.FileName);
 
                     Thread ImportThread = new Thread(() => ImportGLTransactions(requestParams,
-                                                                                importString,
-                                                                                out AMessages,
-                                                                                out ok));
+                            importString,
+                            out AMessages,
+                            out ok));
 
                     using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
                     {
@@ -220,7 +228,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxIcon.Information);
 
                     SaveUserDefaults(dialog, impOptions);
-                    //LoadBatches(FLedgerNumber);
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber,
+                            FPreviouslySelectedDetailRow.BatchNumber, CurrentJournal.JournalNumber));
+                    //Update totals and set Journal last transaction number
+                    GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow, true);
+                    ((TFrmGLBatch) this.ParentForm).SaveChanges();
                     FPetraUtilsObject.DisableSaveButton();
                 }
             }
@@ -358,57 +370,39 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
 
-            AJournalRow CurrentJournal = GetCurrentJournal();
+            int CurrentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
+            int CurrentJournalNo = GetCurrentJournal().JournalNumber;
 
-            if (FPreviouslySelectedDetailRow == null
-                || CurrentJournal == null
-                || CurrentJournal.JournalStatus != MFinanceConstants.BATCH_UNPOSTED
-                || CurrentJournal.LastTransactionNumber > 0)
-            {
-                MessageBox.Show(Catalog.GetString("Please select an empty unposted journal to import transactions"), "Import GL Transactions");
-                
-                ImportIsSuccessful = false;
-                AMessages = new TVerificationResultCollection();
-            }
-            else
-            {
-                int CurrentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
-                int CurrentJournalNo = CurrentJournal.JournalNumber;
+            GLBatchTDS MainDS = StripMainDataSetForTransImport(CurrentBatchNo, CurrentJournalNo);
 
-                GLBatchTDS MainDS = StripMainDataSetForTransImport(CurrentBatchNo, CurrentJournalNo);
+            ImportIsSuccessful = TRemote.MFinance.GL.WebConnectors.ImportGLTransactions(
+                ARequestParams,
+                AImportString,
+                ref MainDS,
+                out AResultMessages);
 
-                ImportIsSuccessful = TRemote.MFinance.GL.WebConnectors.ImportGLTransactions(
-                    ARequestParams,
-                    AImportString,
-                    ref MainDS,
-                    out AResultMessages);
-
-                AMessages = AResultMessages;
-            }
-            
             ok = ImportIsSuccessful;
+            AMessages = AResultMessages;
         }
 
         private GLBatchTDS StripMainDataSetForTransImport(int ABatchNumber, int AJournalNumber)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
+
             MainDS.Merge(FMainDS.ABatch);
             MainDS.Merge(FMainDS.AJournal);
-
-            MainDS.ATransAnalAttrib.Clear();
-            MainDS.ATransaction.Clear();
 
             DataView JournalDV = new DataView(MainDS.AJournal);
 
             JournalDV.RowFilter = String.Format("({0}={1} And {2}<>{3}) Or ({0}<>{1})",
-                                                AJournalTable.GetBatchNumberDBName(),
-                                                ABatchNumber,
-                                                AJournalTable.GetJournalNumberDBName(),
-                                                AJournalNumber);
+                AJournalTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                AJournalTable.GetJournalNumberDBName(),
+                AJournalNumber);
 
             JournalDV.Sort = String.Format("{0} DESC, {1} DESC",
-                                            AJournalTable.GetBatchNumberDBName(),
-                                            AJournalTable.GetJournalNumberDBName());
+                AJournalTable.GetBatchNumberDBName(),
+                AJournalTable.GetJournalNumberDBName());
 
             foreach (DataRowView drv in JournalDV)
             {
@@ -419,11 +413,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView BatchDV = new DataView(MainDS.ABatch);
 
             BatchDV.RowFilter = String.Format("{0}<>{1}",
-                                                ABatchTable.GetBatchNumberDBName(),
-                                                ABatchNumber);
+                ABatchTable.GetBatchNumberDBName(),
+                ABatchNumber);
 
             BatchDV.Sort = String.Format("{0} DESC",
-                                            ABatchTable.GetBatchNumberDBName());
+                ABatchTable.GetBatchNumberDBName());
 
             foreach (DataRowView drv in BatchDV)
             {
@@ -435,7 +429,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return MainDS;
         }
-        
+
         private void ShowMessages(TVerificationResultCollection AMessages)
         {
             string ErrorMessages = String.Empty;

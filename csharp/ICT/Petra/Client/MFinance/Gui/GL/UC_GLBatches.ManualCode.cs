@@ -546,21 +546,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.EnableDataChangedEvent();
         }
 
-        /// <summary>
-        /// UpdateTotals
-        /// </summary>
-        public void UpdateTotals()
-        {
-            //Below not needed as yet
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
-                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
-        }
-
         private int CurrentRowIndex()
         {
             int rowIndex = -1;

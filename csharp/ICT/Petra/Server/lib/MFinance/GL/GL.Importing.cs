@@ -133,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             if (NewBatch != null)   // update the totals of the batch that has just been imported
                             {
-                                GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+                                GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch, true);
                             }
 
                             NewBatch = MainDS.ABatch.NewRowTyped(true);
@@ -284,9 +284,9 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                         else if (RowType == "T")
                         {
-                            ImportGLTransactionsInner(RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
-                                                    ref ProgressTrackerCounter, ref Transaction,
-                                                    ref AMessages);
+                            ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
+                                ref ProgressTrackerCounter, ref Transaction,
+                                ref AMessages);
                         }
                         else
                         {
@@ -302,6 +302,8 @@ namespace Ict.Petra.Server.MFinance.GL
                         0);
 
                     TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+                    TLogging.Log("Return from here!");
 
                     return false;
                 }
@@ -340,7 +342,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     String.Format(Catalog.GetString("Problem parsing the file in row {0}"), RowNumber),
                     0);
 
-                return false;
+                ok = false;
             }
             finally
             {
@@ -397,7 +399,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
 
-            return true;
+            return ok;
         }
 
         /// <summary>
@@ -428,6 +430,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
             AMessages = new TVerificationResultCollection();
             GLBatchTDS MainDS = (GLBatchTDS)AMainDS.Copy();
+            MainDS.Merge(AMainDS.ABatch);
+            MainDS.Merge(AMainDS.AJournal);
             GLSetupTDS SetupDS = new GLSetupTDS();
             StringReader sr = new StringReader(AImportString);
 
@@ -471,9 +475,9 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (RowType == "T")
                         {
-                            ImportGLTransactionsInner(RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
-                                                    ref ProgressTrackerCounter, ref Transaction,
-                                                    ref AMessages);
+                            ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
+                                ref ProgressTrackerCounter, ref Transaction,
+                                ref AMessages);
                         }
                         else
                         {
@@ -495,19 +499,27 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 FImportMessage = Catalog.GetString("Saving counter fields:");
 
-                //Finally save all pending changes (last xxx number is updated)
-                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
-                AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
+                if (NewBatchRow != null)   // update the totals of the batch that has just been imported
+                {
+                    //GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
+                }
+
+                //Finally reject and save accordingly
+                MainDS.ABatch.RejectChanges();
+                MainDS.AJournal.RejectChanges();
+                ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
+                ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
 
                 MainDS.AcceptChanges();
 
                 DBAccess.GDBAccessObj.CommitTransaction();
 
                 ok = true;
+                RetVal = ok;
             }
             catch (Exception ex)
             {
-                String speakingExceptionText = SpeakingExceptionMessage(ex);
+                String speakingExceptionText = SpeakingExceptionMessage(ex, "T");
 
                 if (AMessages == null)
                 {
@@ -586,25 +598,24 @@ namespace Ict.Petra.Server.MFinance.GL
             return RetVal;
         }
 
-        private void ImportGLTransactionsInner(Int32 ARowNumber, ref GLBatchTDS AMainDS, ref GLSetupTDS ASetupDS, 
-                                            ref ABatchRow ANewBatchRow, ref AJournalRow ANewJournalRow, 
-                                            ref Int32 AProgressTrackerCounter, ref TDBTransaction ATransaction,
-                                            ref TVerificationResultCollection AMessages)
+        private void ImportGLTransactionsInner(Int32 ALedgerNumber, Int32 ARowNumber, ref GLBatchTDS AMainDS, ref GLSetupTDS ASetupDS,
+            ref ABatchRow ANewBatchRow, ref AJournalRow ANewJournalRow,
+            ref Int32 AProgressTrackerCounter, ref TDBTransaction ATransaction,
+            ref TVerificationResultCollection AMessages)
         {
-            int LedgerNumber = AMainDS.ALedger[0].LedgerNumber;
-            
             GLBatchTDSATransactionRow NewTransaction = AMainDS.ATransaction.NewRowTyped(true);
+
             NewTransaction.LedgerNumber = ANewJournalRow.LedgerNumber;
             NewTransaction.BatchNumber = ANewJournalRow.BatchNumber;
             NewTransaction.JournalNumber = ANewJournalRow.JournalNumber;
             NewTransaction.TransactionNumber = ++ANewJournalRow.LastTransactionNumber;
-            
+
             AMainDS.ATransaction.Rows.Add(NewTransaction);
 
             NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"),
                 ATransactionTable.GetCostCentreCodeLength());
 
-            ACostCentreRow costcentre = (ACostCentreRow)ASetupDS.ACostCentre.Rows.Find(new object[] { LedgerNumber, NewTransaction.CostCentreCode });
+            ACostCentreRow costcentre = (ACostCentreRow)ASetupDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, NewTransaction.CostCentreCode });
 
             // check if cost centre exists, and is a posting costcentre.
             // check if cost centre is active.
@@ -629,7 +640,7 @@ namespace Ict.Petra.Server.MFinance.GL
             NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"),
                 ATransactionTable.GetAccountCodeLength());
 
-            AAccountRow account = (AAccountRow)ASetupDS.AAccount.Rows.Find(new object[] { LedgerNumber, NewTransaction.AccountCode });
+            AAccountRow account = (AAccountRow)ASetupDS.AAccount.Rows.Find(new object[] { ALedgerNumber, NewTransaction.AccountCode });
 
             // check if account exists, and is a posting account.
             // check if account is active
@@ -673,7 +684,7 @@ namespace Ict.Petra.Server.MFinance.GL
             Int32 TransactionYear;
             Int32 TransactionPeriod;
 
-            TFinancialYear.GetLedgerDatePostingPeriod(LedgerNumber, ref TransactionDate,
+            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref TransactionDate,
                 out TransactionYear, out TransactionPeriod, ATransaction, false);
 
             if ((TransactionYear != ANewBatchRow.BatchYear) || (TransactionPeriod != ANewBatchRow.BatchPeriod))
@@ -688,7 +699,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             NewTransaction.TransactionDate = TransactionDate;
-            
+
             decimal DebitAmount = ImportDecimal(Catalog.GetString("transaction") + " - " + Catalog.GetString("debit amount"));
             decimal CreditAmount = ImportDecimal(Catalog.GetString("transaction") + " - " + Catalog.GetString("credit amount"));
 
@@ -744,8 +755,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     DataRow afrow = ASetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, type, val });
                     DataRow anrow =
                         ASetupDS.AAnalysisAttribute.Rows.Find(new Object[] { NewTransaction.LedgerNumber,
-                                                                                        type,
-                                                                                        NewTransaction.AccountCode });
+                                                                             type,
+                                                                             NewTransaction.AccountCode });
 
                     if ((atrow != null) && (afrow != null) && (anrow != null))
                     {
@@ -762,8 +773,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            // update the totals of the last batch that has just been imported
-            GLRoutines.UpdateTotalsOfBatch(ref AMainDS, ANewBatchRow);
+            // update the totals of the batch
+            GLRoutines.UpdateTotalsOfBatch(ref AMainDS, ANewBatchRow, true);
 
             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
             {
@@ -791,8 +802,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     ((AProgressTrackerCounter / 40) + 2) * 10 > 90 ? 90 : ((AProgressTrackerCounter / 40) + 2) * 10);
             }
         }
-        
-        private String SpeakingExceptionMessage(Exception ex)
+
+        private String SpeakingExceptionMessage(Exception ex, string AType = "B")
         {
             //note that this is only done for "user errors" not for program errors!
             String theExMessage = ex.Message;
@@ -817,7 +828,14 @@ namespace Ict.Petra.Server.MFinance.GL
                 return Catalog.GetString("Invalid account code");
             }
 
-            TLogging.Log("Importing GL batch: " + ex.ToString());
+            if (AType == "B")
+            {
+                TLogging.Log("Importing GL batch: " + ex.ToString());
+            }
+            else
+            {
+                TLogging.Log("Importing GL transactions: " + ex.ToString());
+            }
 
             return ex.Message;
         }

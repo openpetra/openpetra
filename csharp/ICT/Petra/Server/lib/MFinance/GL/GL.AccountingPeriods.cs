@@ -577,6 +577,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             //Create the table to populate the combobox
             DataTable ReturnTable = null;
+
             ADisplayMember = "YearEndDate";
             AValueMember = "YearNumber";
             string YearEnd = "YearEndDateLong";
