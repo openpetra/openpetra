@@ -45,6 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     public partial class TUC_GLBatches
     {
         private TDlgSelectCSVSeparator FdlgSeparator;
+
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
@@ -131,6 +132,107 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     SaveUserDefaults(dialog, impOptions);
                     LoadBatches(FLedgerNumber);
+                    FPetraUtilsObject.DisableSaveButton();
+                }
+            }
+        }
+
+        /// <summary>
+        /// this supports the batch export files from Petra 2.x.
+        /// Each line starts with a type specifier, T for transaction
+        /// </summary>
+        public void ImportTransactions()
+        {
+            bool ok = false;
+
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            {
+                return;
+            }
+
+            AJournalRow CurrentJournal = GetCurrentJournal();
+
+            if ((FPreviouslySelectedDetailRow == null)
+                || (CurrentJournal == null)
+                || (CurrentJournal.JournalStatus != MFinanceConstants.BATCH_UNPOSTED)
+                || (CurrentJournal.LastTransactionNumber > 0))
+            {
+                MessageBox.Show(Catalog.GetString("Please select an empty unposted journal to import transactions"), "Import GL Transactions");
+                return;
+            }
+
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            dialog.FileName = TUserDefaults.GetStringDefault("Imp Filename",
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "import.csv");
+
+            dialog.Title = Catalog.GetString("Import batches from csv file");
+            dialog.Filter = Catalog.GetString("GL Transactions files (*.csv)|*.csv");
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+
+                if (!fileCanOpen)
+                {
+                    MessageBox.Show(Catalog.GetString("Unable to open file."),
+                        Catalog.GetString("Transaction Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return;
+                }
+
+                FdlgSeparator.DateFormat = dateFormatString;
+
+                if (impOptions.Length > 1)
+                {
+                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                }
+
+                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+
+                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                {
+                    Hashtable requestParams = new Hashtable();
+
+                    requestParams.Add("ALedgerNumber", FLedgerNumber);
+                    requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
+                    requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
+                    requestParams.Add("NewLine", Environment.NewLine);
+
+                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                    string importString = File.ReadAllText(dialog.FileName);
+
+                    Thread ImportThread = new Thread(() => ImportGLTransactions(requestParams,
+                            importString,
+                            out AMessages,
+                            out ok));
+
+                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                    {
+                        ImportDialog.ShowDialog();
+                    }
+
+                    ShowMessages(AMessages);
+                }
+
+                if (ok)
+                {
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Transactions Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    SaveUserDefaults(dialog, impOptions);
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber,
+                            FPreviouslySelectedDetailRow.BatchNumber, CurrentJournal.JournalNumber));
+                    //Update totals and set Journal last transaction number
+                    GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow, true);
+                    ((TFrmGLBatch) this.ParentForm).SaveChanges();
                     FPetraUtilsObject.DisableSaveButton();
                 }
             }
@@ -250,6 +352,82 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ok = ImportIsSuccessful;
             AMessages = AResultMessages;
+        }
+
+        /// <summary>
+        /// Wrapper method to handle returned bool value from remoting call to ImportGLTransactions
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AMessages"></param>
+        /// <param name="ok"></param>
+        private void ImportGLTransactions(
+            Hashtable ARequestParams,
+            string AImportString,
+            out TVerificationResultCollection AMessages,
+            out bool ok)
+        {
+            TVerificationResultCollection AResultMessages;
+            bool ImportIsSuccessful;
+
+            int CurrentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
+            int CurrentJournalNo = GetCurrentJournal().JournalNumber;
+
+            GLBatchTDS MainDS = StripMainDataSetForTransImport(CurrentBatchNo, CurrentJournalNo);
+
+            ImportIsSuccessful = TRemote.MFinance.GL.WebConnectors.ImportGLTransactions(
+                ARequestParams,
+                AImportString,
+                ref MainDS,
+                out AResultMessages);
+
+            ok = ImportIsSuccessful;
+            AMessages = AResultMessages;
+        }
+
+        private GLBatchTDS StripMainDataSetForTransImport(int ABatchNumber, int AJournalNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            MainDS.Merge(FMainDS.ABatch);
+            MainDS.Merge(FMainDS.AJournal);
+
+            DataView JournalDV = new DataView(MainDS.AJournal);
+
+            JournalDV.RowFilter = String.Format("({0}={1} And {2}<>{3}) Or ({0}<>{1})",
+                AJournalTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                AJournalTable.GetJournalNumberDBName(),
+                AJournalNumber);
+
+            JournalDV.Sort = String.Format("{0} DESC, {1} DESC",
+                AJournalTable.GetBatchNumberDBName(),
+                AJournalTable.GetJournalNumberDBName());
+
+            foreach (DataRowView drv in JournalDV)
+            {
+                AJournalRow jr = (AJournalRow)drv.Row;
+                jr.Delete();
+            }
+
+            DataView BatchDV = new DataView(MainDS.ABatch);
+
+            BatchDV.RowFilter = String.Format("{0}<>{1}",
+                ABatchTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            BatchDV.Sort = String.Format("{0} DESC",
+                ABatchTable.GetBatchNumberDBName());
+
+            foreach (DataRowView drv in BatchDV)
+            {
+                ABatchRow br = (ABatchRow)drv.Row;
+                br.Delete();
+            }
+
+            MainDS.AcceptChanges();
+
+            return MainDS;
         }
 
         private void ShowMessages(TVerificationResultCollection AMessages)

@@ -1229,7 +1229,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (AAutoSizeCells)
             {
-                grdResult.AutoSizeCells();
+                grdResult.AutoResizeGrid();
             }
         }
 

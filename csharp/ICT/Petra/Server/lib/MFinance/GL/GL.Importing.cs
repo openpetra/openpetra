@@ -133,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             if (NewBatch != null)   // update the totals of the batch that has just been imported
                             {
-                                GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
+                                GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch, true);
                             }
 
                             NewBatch = MainDS.ABatch.NewRowTyped(true);
@@ -202,9 +202,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.LedgerNumber = NewBatch.LedgerNumber;
                             NewJournal.BatchNumber = NewBatch.BatchNumber;
                             NewJournal.JournalNumber = NewBatch.LastJournal + 1;
-                            NewJournal.SubSystemCode = "GL";
-                            NewJournal.TransactionTypeCode = "STD";
-                            NewJournal.TransactionCurrency = "EUR";
+                            NewJournal.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+                            NewJournal.TransactionTypeCode = MFinanceConstants.STANDARD_JOURNAL;
+                            NewJournal.TransactionCurrency = LedgerTable[0].BaseCurrency;
                             NewJournal.ExchangeRateToBase = 1;
                             NewJournal.DateEffective = NewBatch.DateEffective;
                             NewJournal.JournalPeriod = NewBatch.BatchPeriod;
@@ -284,211 +284,9 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                         else if (RowType == "T")
                         {
-                            if (NewJournal == null)
-                            {
-                                FImportMessage =
-                                    String.Format(Catalog.GetString("At line number {0}, expected a Journal or Batch line, but found a Transaction"),
-                                        RowNumber);
-                                throw new Exception();
-                            }
-
-                            GLBatchTDSATransactionRow NewTransaction = MainDS.ATransaction.NewRowTyped(true);
-                            NewTransaction.LedgerNumber = NewJournal.LedgerNumber;
-                            NewTransaction.BatchNumber = NewJournal.BatchNumber;
-                            NewTransaction.JournalNumber = NewJournal.JournalNumber;
-                            NewTransaction.TransactionNumber = NewJournal.LastTransactionNumber + 1;
-                            NewJournal.LastTransactionNumber++;
-                            MainDS.ATransaction.Rows.Add(NewTransaction);
-
-                            NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"),
-                                ATransactionTable.GetCostCentreCodeLength());
-
-                            ACostCentreRow costcentre = (ACostCentreRow)SetupDS.ACostCentre.Rows.Find(new object[] { LedgerNumber,
-                                                                                                                     NewTransaction.CostCentreCode });
-
-                            // check if cost centre exists, and is a posting costcentre.
-                            // check if cost centre is active.
-                            if ((costcentre == null) || !costcentre.PostingCostCentreFlag)
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("Invalid cost centre {0} in line {1}"),
-                                            NewTransaction.CostCentreCode,
-                                            RowNumber),
-                                        TResultSeverity.Resv_Critical));
-                            }
-                            else if (!costcentre.CostCentreActiveFlag)
-                            {
-                                // TODO: ask user if he wants to use an inactive cost centre???
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("Inactive cost centre {0} in line {1}"),
-                                            NewTransaction.CostCentreCode,
-                                            RowNumber),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"),
-                                ATransactionTable.GetAccountCodeLength());
-
-                            AAccountRow account = (AAccountRow)SetupDS.AAccount.Rows.Find(new object[] { LedgerNumber, NewTransaction.AccountCode });
-
-                            // check if account exists, and is a posting account.
-                            // check if account is active
-                            if ((account == null) || !account.PostingStatus)
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("Invalid account code {0} in line {1}"),
-                                            NewTransaction.AccountCode,
-                                            RowNumber),
-                                        TResultSeverity.Resv_Critical));
-                            }
-                            else if (!account.AccountActiveFlag)
-                            {
-                                // TODO: ask user if he wants to use an inactive account???
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("Inactive account {0} in line {1}"),
-                                            NewTransaction.AccountCode,
-                                            RowNumber),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"),
-                                ATransactionTable.GetNarrativeLength());
-
-                            if ((NewTransaction.Narrative == null)    // raise error if empty narrative is imported
-                                || (NewTransaction.Narrative == ""))
-                            {
-                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, the transaction narrative must not be empty."),
-                                    RowNumber);
-
-                                throw new EOPAppException();
-                            }
-
-                            NewTransaction.Reference = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"),
-                                ATransactionTable.GetReferenceLength());
-
-                            DateTime TransactionDate = ImportDate(Catalog.GetString("transaction") + " - " + Catalog.GetString("date"));
-                            //
-                            // The DateEffective might be different to that of the Batch,
-                            // but it must be in the same accounting period.
-                            Int32 TransactionYear;
-                            Int32 TransactionPeriod;
-
-                            TFinancialYear.GetLedgerDatePostingPeriod(LedgerNumber, ref TransactionDate,
-                                out TransactionYear, out TransactionPeriod, Transaction, false);
-
-                            if ((TransactionYear != BatchYearNr) || (TransactionPeriod != BatchPeriodNumber))
-                            {
-                                FImportMessage = String.Format(
-                                    Catalog.GetString("At line number {0}, the Transaction date {1} is not in the same period as the batch date {2}."),
-                                    RowNumber, TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
-
-                                throw new EOPAppException();
-                            }
-
-                            NewTransaction.TransactionDate = TransactionDate;
-
-
-                            decimal DebitAmount = ImportDecimal(Catalog.GetString("transaction") + " - " + Catalog.GetString("debit amount"));
-                            decimal CreditAmount = ImportDecimal(Catalog.GetString("transaction") + " - " + Catalog.GetString("credit amount"));
-
-                            if ((DebitAmount == 0) && (CreditAmount == 0))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString(
-                                                "At line number {0}, either the debit amount or the credit amount must be greater than 0."),
-                                            RowNumber),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            if ((DebitAmount < 0) || (CreditAmount < 0))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString(
-                                                "At line number {0}, negative amount specified - debits and credits must be positive."),
-                                            RowNumber),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            if ((DebitAmount != 0) && (CreditAmount != 0))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString(
-                                                "At line number {0}, Transactions cannot have values for both debit and credit amounts."),
-                                            RowNumber),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            if (DebitAmount != 0)
-                            {
-                                NewTransaction.DebitCreditIndicator = true;
-                                NewTransaction.TransactionAmount = DebitAmount;
-                            }
-                            else
-                            {
-                                NewTransaction.DebitCreditIndicator = false;
-                                NewTransaction.TransactionAmount = CreditAmount;
-                            }
-
-                            NewTransaction.AmountInBaseCurrency = GLRoutines.Divide(NewTransaction.TransactionAmount, NewJournal.ExchangeRateToBase);
-
-                            for (int i = 0; i < 10; i++)
-                            {
-                                String type = ImportString(Catalog.GetString("Transaction") + " - " + Catalog.GetString("Analysis Type") + "#" + i);
-                                String val = ImportString(Catalog.GetString("Transaction") + " - " + Catalog.GetString("Analysis Value") + "#" + i);
-
-                                //the analysis data is only imported if all corresponding values are there:
-                                if ((type != null) && (type.Length > 0) && (val != null) && (val.Length > 0))
-                                {
-                                    DataRow atrow = SetupDS.AAnalysisType.Rows.Find(new Object[] { type });
-                                    DataRow afrow = SetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, type, val });
-                                    DataRow anrow =
-                                        SetupDS.AAnalysisAttribute.Rows.Find(new Object[] { NewTransaction.LedgerNumber,
-                                                                                            type,
-                                                                                            NewTransaction.AccountCode });
-
-                                    if ((atrow != null) && (afrow != null) && (anrow != null))
-                                    {
-                                        ATransAnalAttribRow NewTransAnalAttrib = MainDS.ATransAnalAttrib.NewRowTyped(true);
-                                        NewTransAnalAttrib.LedgerNumber = NewTransaction.LedgerNumber;
-                                        NewTransAnalAttrib.BatchNumber = NewTransaction.BatchNumber;
-                                        NewTransAnalAttrib.JournalNumber = NewTransaction.JournalNumber;
-                                        NewTransAnalAttrib.TransactionNumber = NewTransaction.TransactionNumber;
-                                        NewTransAnalAttrib.AnalysisTypeCode = type;
-                                        NewTransAnalAttrib.AnalysisAttributeValue = val;
-                                        NewTransAnalAttrib.AccountCode = NewTransaction.AccountCode;
-                                        MainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttrib);
-                                    }
-                                }
-                            }
-
-                            // update the totals of the last batch that has just been imported
-                            GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
-
-                            if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
-                            {
-                                FImportMessage = Catalog.GetString("Saving the transaction:");
-
-                                // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
-                                ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
-
-                                MainDS.ATransaction.AcceptChanges();
-                                FImportMessage = Catalog.GetString("Saving the attributes:");
-
-                                ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
-
-                                MainDS.ATransAnalAttrib.AcceptChanges();
-                            }
-
-                            // Update progress tracker every 40 records
-                            if (++ProgressTrackerCounter % 40 == 0)
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    string.Format(Catalog.GetString("Batch {0}, Journal {1}: {2}"),
-                                        NewBatch.BatchNumber,
-                                        NewJournal.JournalNumber,
-                                        ProgressTrackerCounter),
-                                    ((ProgressTrackerCounter / 40) + 2) * 10 > 90 ? 90 : ((ProgressTrackerCounter / 40) + 2) * 10);
-                            }
+                            ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
+                                ref ProgressTrackerCounter, ref Transaction,
+                                ref AMessages);
                         }
                         else
                         {
@@ -504,6 +302,8 @@ namespace Ict.Petra.Server.MFinance.GL
                         0);
 
                     TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+                    TLogging.Log("Return from here!");
 
                     return false;
                 }
@@ -524,6 +324,202 @@ namespace Ict.Petra.Server.MFinance.GL
             catch (Exception ex)
             {
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
+
+                if (AMessages == null)
+                {
+                    AMessages = new TVerificationResultCollection();
+                }
+
+                AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
+                        String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
+                        FNewLine +
+                        Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
+                        TResultSeverity.Resv_Critical));
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    String.Format(Catalog.GetString("Problem parsing the file in row {0}"), RowNumber),
+                    0);
+
+                ok = false;
+            }
+            finally
+            {
+                try
+                {
+                    sr.Close();
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("An Exception occured while closing the Import File:" + Environment.NewLine + Exc.ToString());
+
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+
+                    AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
+                            Catalog.GetString("A problem was encountered while closing the Import File:"),
+                            TResultSeverity.Resv_Critical));
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Exception Occurred"),
+                        0);
+
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+                    throw;
+                }
+
+                if (ok)
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Gift batch import successful"),
+                        100);
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+
+                    AMessages.Add(new TVerificationResult("Import",
+                            Catalog.GetString("Data could not be saved."),
+                            TResultSeverity.Resv_Critical));
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Data could not be saved."),
+                        0);
+                }
+
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            }
+
+            return ok;
+        }
+
+        /// <summary>
+        /// Wrapper for importing GL Transactions. Called from client side
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AMainDS"></param>
+        /// <param name="AMessages"></param>
+        /// <returns></returns>
+        public bool ImportGLTransactions(
+            Hashtable ARequestParams,
+            String AImportString,
+            ref GLBatchTDS AMainDS,
+            out TVerificationResultCollection AMessages)
+        {
+            bool RetVal = false;
+
+            Int32 ProgressTrackerCounter = 0;
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Importing GL Batches"),
+                100);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Initialising"),
+                5);
+
+            AMessages = new TVerificationResultCollection();
+            GLBatchTDS MainDS = (GLBatchTDS)AMainDS.Copy();
+            MainDS.Merge(AMainDS.ABatch);
+            MainDS.Merge(AMainDS.AJournal);
+            GLSetupTDS SetupDS = new GLSetupTDS();
+            StringReader sr = new StringReader(AImportString);
+
+            ABatchRow NewBatchRow = (ABatchRow)MainDS.ABatch[0];
+            AJournalRow NewJournalRow = (AJournalRow)MainDS.AJournal[0];
+
+            FDelimiter = (String)ARequestParams["Delimiter"];
+            Int32 LedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
+            FDateFormatString = (String)ARequestParams["DateFormatString"];
+            String NumberFormat = (String)ARequestParams["NumberFormat"];
+            FNewLine = (String)ARequestParams["NewLine"];
+
+            FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
+            FCultureInfoDate = new CultureInfo("en-GB");
+            FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            Int32 RowNumber = 0;
+            bool ok = false;
+
+            try
+            {
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction);
+                AAnalysisTypeAccess.LoadAll(SetupDS, Transaction);
+                AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+                AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+                ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+                AAccountAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+
+                FImportMessage = Catalog.GetString("Parsing first line");
+
+                while ((FImportLine = sr.ReadLine()) != null)
+                {
+                    RowNumber++;
+
+                    // skip empty lines and commented lines
+                    if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
+                    {
+                        string RowType = ImportString(Catalog.GetString("row type"));
+
+                        if (RowType == "T")
+                        {
+                            ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
+                                ref ProgressTrackerCounter, ref Transaction,
+                                ref AMessages);
+                        }
+                        else
+                        {
+                            throw new EOPAppException("Unexpected row type '" + RowType + "' at Row " + RowNumber);
+                        }
+                    }
+                }
+
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Batch has critical errors"),
+                        0);
+
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+                    return false;
+                }
+
+                FImportMessage = Catalog.GetString("Saving counter fields:");
+
+                if (NewBatchRow != null)   // update the totals of the batch that has just been imported
+                {
+                    //GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
+                }
+
+                //Finally reject and save accordingly
+                MainDS.ABatch.RejectChanges();
+                MainDS.AJournal.RejectChanges();
+                ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
+                ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
+
+                MainDS.AcceptChanges();
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+
+                ok = true;
+                RetVal = ok;
+            }
+            catch (Exception ex)
+            {
+                String speakingExceptionText = SpeakingExceptionMessage(ex, "T");
 
                 if (AMessages == null)
                 {
@@ -599,10 +595,215 @@ namespace Ict.Petra.Server.MFinance.GL
                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
 
-            return true;
+            return RetVal;
         }
 
-        private String SpeakingExceptionMessage(Exception ex)
+        private void ImportGLTransactionsInner(Int32 ALedgerNumber, Int32 ARowNumber, ref GLBatchTDS AMainDS, ref GLSetupTDS ASetupDS,
+            ref ABatchRow ANewBatchRow, ref AJournalRow ANewJournalRow,
+            ref Int32 AProgressTrackerCounter, ref TDBTransaction ATransaction,
+            ref TVerificationResultCollection AMessages)
+        {
+            GLBatchTDSATransactionRow NewTransaction = AMainDS.ATransaction.NewRowTyped(true);
+
+            NewTransaction.LedgerNumber = ANewJournalRow.LedgerNumber;
+            NewTransaction.BatchNumber = ANewJournalRow.BatchNumber;
+            NewTransaction.JournalNumber = ANewJournalRow.JournalNumber;
+            NewTransaction.TransactionNumber = ++ANewJournalRow.LastTransactionNumber;
+
+            AMainDS.ATransaction.Rows.Add(NewTransaction);
+
+            NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"),
+                ATransactionTable.GetCostCentreCodeLength());
+
+            ACostCentreRow costcentre = (ACostCentreRow)ASetupDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, NewTransaction.CostCentreCode });
+
+            // check if cost centre exists, and is a posting costcentre.
+            // check if cost centre is active.
+            if ((costcentre == null) || !costcentre.PostingCostCentreFlag)
+            {
+                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                        String.Format(Catalog.GetString("Invalid cost centre {0} in line {1}"),
+                            NewTransaction.CostCentreCode,
+                            ARowNumber),
+                        TResultSeverity.Resv_Critical));
+            }
+            else if (!costcentre.CostCentreActiveFlag)
+            {
+                // TODO: ask user if he wants to use an inactive cost centre???
+                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                        String.Format(Catalog.GetString("Inactive cost centre {0} in line {1}"),
+                            NewTransaction.CostCentreCode,
+                            ARowNumber),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"),
+                ATransactionTable.GetAccountCodeLength());
+
+            AAccountRow account = (AAccountRow)ASetupDS.AAccount.Rows.Find(new object[] { ALedgerNumber, NewTransaction.AccountCode });
+
+            // check if account exists, and is a posting account.
+            // check if account is active
+            if ((account == null) || !account.PostingStatus)
+            {
+                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                        String.Format(Catalog.GetString("Invalid account code {0} in line {1}"),
+                            NewTransaction.AccountCode,
+                            ARowNumber),
+                        TResultSeverity.Resv_Critical));
+            }
+            else if (!account.AccountActiveFlag)
+            {
+                // TODO: ask user if he wants to use an inactive account???
+                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                        String.Format(Catalog.GetString("Inactive account {0} in line {1}"),
+                            NewTransaction.AccountCode,
+                            ARowNumber),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"),
+                ATransactionTable.GetNarrativeLength());
+
+            if ((NewTransaction.Narrative == null)    // raise error if empty narrative is imported
+                || (NewTransaction.Narrative == ""))
+            {
+                FImportMessage = String.Format(Catalog.GetString("At line number {0}, the transaction narrative must not be empty."),
+                    ARowNumber);
+
+                throw new EOPAppException();
+            }
+
+            NewTransaction.Reference = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"),
+                ATransactionTable.GetReferenceLength());
+
+            DateTime TransactionDate = ImportDate(Catalog.GetString("transaction") + " - " + Catalog.GetString("date"));
+
+            // The DateEffective might be different to that of the Batch,
+            // but it must be in the same accounting period.
+            Int32 TransactionYear;
+            Int32 TransactionPeriod;
+
+            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref TransactionDate,
+                out TransactionYear, out TransactionPeriod, ATransaction, false);
+
+            if ((TransactionYear != ANewBatchRow.BatchYear) || (TransactionPeriod != ANewBatchRow.BatchPeriod))
+            {
+                FImportMessage = String.Format(
+                    Catalog.GetString("At line number {0}, the Transaction date {1} is not in the same period as the batch date {2}."),
+                    ARowNumber,
+                    TransactionDate.ToShortDateString(),
+                    ANewBatchRow.DateEffective.ToShortDateString());
+
+                throw new EOPAppException();
+            }
+
+            NewTransaction.TransactionDate = TransactionDate;
+
+            decimal DebitAmount = ImportDecimal(Catalog.GetString("transaction") + " - " + Catalog.GetString("debit amount"));
+            decimal CreditAmount = ImportDecimal(Catalog.GetString("transaction") + " - " + Catalog.GetString("credit amount"));
+
+            if ((DebitAmount == 0) && (CreditAmount == 0))
+            {
+                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                        String.Format(
+                            Catalog.GetString("At line number {0}, either the debit amount or the credit amount must be greater than 0."),
+                            ARowNumber),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            if ((DebitAmount < 0) || (CreditAmount < 0))
+            {
+                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                        String.Format(Catalog.GetString(
+                                "At line number {0}, negative amount specified - debits and credits must be positive."),
+                            ARowNumber),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            if ((DebitAmount != 0) && (CreditAmount != 0))
+            {
+                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                        String.Format(Catalog.GetString(
+                                "At line number {0}, Transactions cannot have values for both debit and credit amounts."),
+                            ARowNumber),
+                        TResultSeverity.Resv_Critical));
+            }
+
+            if (DebitAmount != 0)
+            {
+                NewTransaction.DebitCreditIndicator = true;
+                NewTransaction.TransactionAmount = DebitAmount;
+            }
+            else
+            {
+                NewTransaction.DebitCreditIndicator = false;
+                NewTransaction.TransactionAmount = CreditAmount;
+            }
+
+            NewTransaction.AmountInBaseCurrency = GLRoutines.Divide(NewTransaction.TransactionAmount, ANewJournalRow.ExchangeRateToBase);
+
+            for (int i = 0; i < 10; i++)
+            {
+                String type = ImportString(Catalog.GetString("Transaction") + " - " + Catalog.GetString("Analysis Type") + "#" + i);
+                String val = ImportString(Catalog.GetString("Transaction") + " - " + Catalog.GetString("Analysis Value") + "#" + i);
+
+                //the analysis data is only imported if all corresponding values are there:
+                if ((type != null) && (type.Length > 0) && (val != null) && (val.Length > 0))
+                {
+                    DataRow atrow = ASetupDS.AAnalysisType.Rows.Find(new Object[] { type });
+                    DataRow afrow = ASetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, type, val });
+                    DataRow anrow =
+                        ASetupDS.AAnalysisAttribute.Rows.Find(new Object[] { NewTransaction.LedgerNumber,
+                                                                             type,
+                                                                             NewTransaction.AccountCode });
+
+                    if ((atrow != null) && (afrow != null) && (anrow != null))
+                    {
+                        ATransAnalAttribRow NewTransAnalAttrib = AMainDS.ATransAnalAttrib.NewRowTyped(true);
+                        NewTransAnalAttrib.LedgerNumber = NewTransaction.LedgerNumber;
+                        NewTransAnalAttrib.BatchNumber = NewTransaction.BatchNumber;
+                        NewTransAnalAttrib.JournalNumber = NewTransaction.JournalNumber;
+                        NewTransAnalAttrib.TransactionNumber = NewTransaction.TransactionNumber;
+                        NewTransAnalAttrib.AnalysisTypeCode = type;
+                        NewTransAnalAttrib.AnalysisAttributeValue = val;
+                        NewTransAnalAttrib.AccountCode = NewTransaction.AccountCode;
+                        AMainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttrib);
+                    }
+                }
+            }
+
+            // update the totals of the batch
+            GLRoutines.UpdateTotalsOfBatch(ref AMainDS, ANewBatchRow, true);
+
+            if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+            {
+                FImportMessage = Catalog.GetString("Saving the transaction:");
+
+                // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
+                ATransactionAccess.SubmitChanges(AMainDS.ATransaction, ATransaction);
+
+                AMainDS.ATransaction.AcceptChanges();
+                FImportMessage = Catalog.GetString("Saving the attributes:");
+
+                ATransAnalAttribAccess.SubmitChanges(AMainDS.ATransAnalAttrib, ATransaction);
+
+                AMainDS.ATransAnalAttrib.AcceptChanges();
+            }
+
+            // Update progress tracker every 40 records
+            if (++AProgressTrackerCounter % 40 == 0)
+            {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    string.Format(Catalog.GetString("Batch {0}, Journal {1}: {2}"),
+                        ANewBatchRow.BatchNumber,
+                        ANewJournalRow.JournalNumber,
+                        AProgressTrackerCounter),
+                    ((AProgressTrackerCounter / 40) + 2) * 10 > 90 ? 90 : ((AProgressTrackerCounter / 40) + 2) * 10);
+            }
+        }
+
+        private String SpeakingExceptionMessage(Exception ex, string AType = "B")
         {
             //note that this is only done for "user errors" not for program errors!
             String theExMessage = ex.Message;
@@ -627,7 +828,14 @@ namespace Ict.Petra.Server.MFinance.GL
                 return Catalog.GetString("Invalid account code");
             }
 
-            TLogging.Log("Importing GL batch: " + ex.ToString());
+            if (AType == "B")
+            {
+                TLogging.Log("Importing GL batch: " + ex.ToString());
+            }
+            else
+            {
+                TLogging.Log("Importing GL transactions: " + ex.ToString());
+            }
 
             return ex.Message;
         }

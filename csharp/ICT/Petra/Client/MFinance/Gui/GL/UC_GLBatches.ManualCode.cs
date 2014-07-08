@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // This will populate the periods combos without firing off cascading events
             FSuppressRefreshPeriods = true;
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true); //.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true);
             FSuppressRefreshPeriods = false;
 
             // Now we can set the period part of the filter
@@ -544,21 +544,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchControlTotal.NumberValueDecimal = 0;
             dtpDetailDateEffective.Date = FDefaultDate;
             FPetraUtilsObject.EnableDataChangedEvent();
-        }
-
-        /// <summary>
-        /// UpdateTotals
-        /// </summary>
-        public void UpdateTotals()
-        {
-            //Below not needed as yet
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
-                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
         }
 
         private int CurrentRowIndex()
@@ -1265,55 +1250,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnParentActivationManual()
         {
-            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-
-            AutoSizeGrid();
-        }
-
-        /// <summary>
-        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
-        /// </summary>
-        /// <param name="Sender"></param>
-        /// <param name="e"></param>
-        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
-        {
-            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
-            {
-                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
-                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
-            }
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
             if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
             {
-                AutoSizeGrid();
+                grdDetails.AutoResizeGrid();
             }
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 80;
-            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)
@@ -1606,6 +1552,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void CreateFilterFindPanelsManual()
         {
             ((Label)FFindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
+        }
+
+        private AJournalRow GetCurrentJournal()
+        {
+            return (AJournalRow)((TFrmGLBatch) this.ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
     }
 }

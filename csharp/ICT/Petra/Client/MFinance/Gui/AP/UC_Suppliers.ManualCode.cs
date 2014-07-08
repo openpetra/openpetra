@@ -323,9 +323,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // Size it
-            AutoSizeGrid();
-            this.Width = this.Width - 1;
-            this.Width = this.Width + 1;
+            grdSuppliers.AutoResizeGrid();
 
             UpdateRecordNumberDisplay();
             FMainForm.ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSuppliers.TotalPages > 0));
@@ -364,10 +362,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdSuppliers.Columns.Clear();
-            grdSuppliers.AddTextColumn("Supplier Key", FSupplierTable.Columns[0], 90);
-            grdSuppliers.AddTextColumn("Supplier Name", FSupplierTable.Columns[1], 150);
-            grdSuppliers.AddTextColumn("Currency", FSupplierTable.Columns[2], 85);
-            grdSuppliers.AddTextColumn("Status", FSupplierTable.Columns[3], 85);
+            grdSuppliers.AddTextColumn("Supplier Key", FSupplierTable.Columns[0]);
+            grdSuppliers.AddTextColumn("Supplier Name", FSupplierTable.Columns[1]);
+            grdSuppliers.AddTextColumn("Currency", FSupplierTable.Columns[2]);
+            grdSuppliers.AddTextColumn("Status", FSupplierTable.Columns[3]);
         }
 
         private void SetSupplierFilters(object sender, EventArgs e)
@@ -576,11 +574,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private void FilterToggledManual(bool AFilterIsOff)
-        {
-            AutoSizeGrid();
-        }
-
         private bool IsMatchingRowManual(DataRow ARow)
         {
             string supplierKey = ((TextBox)FFindPanelControls.FindControlByName("txtSupplierKey")).Text;
@@ -604,32 +597,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             return true;
-        }
-
-        private void AutoSizeGrid()
-        {
-            if (grdDetails.Columns.Count == 0)
-            {
-                // Not created yet
-                return;
-            }
-
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            //grdDetails.Columns[0].Width = 20;
-            //grdDetails.Columns[5].Width = 75;
-            //grdDetails.Columns[6].Width = 75;
-            grdDetails.Columns[1].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdSuppliers.SuspendLayout();
-            grdDetails.AutoSizeCells();
-            grdSuppliers.ResumeLayout();
         }
 
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)

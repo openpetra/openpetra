@@ -900,7 +900,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (AShowYearEndings)
             {
-                Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearEndings(ALedgerNr,
+                Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearEnds(ALedgerNr,
                     0,
                     AIncludeNextYear,
                     out DisplayMember,
