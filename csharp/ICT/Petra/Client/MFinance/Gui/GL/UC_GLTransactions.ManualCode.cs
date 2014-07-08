@@ -944,7 +944,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Update totals of Batch
-            GLRoutines.UpdateTotalsOfBatch(ref FMainDS, CurrentBatchRow);
+            GLRoutines.UpdateTotalsOfBatch(ref FMainDS, CurrentBatchRow, true);
 
             // refresh the currency symbols
             if (TransactionRowActive)
@@ -1263,32 +1263,50 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
-                //Backup the Dataset for reversion purposes
-                GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
-
                 try
                 {
                     //Unbind any transactions currently being editied in the Transaction Tab
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                     //Delete transactions
-                    SetTransAnalAttributeDefaultView();
-                    SetTransactionDefaultView();
+                    DataView TransDV = new DataView(FMainDS.ATransaction);
+                    DataView TransAttribDV = new DataView(FMainDS.ATransAnalAttrib);
 
-                    for (int i = FMainDS.ATransAnalAttrib.DefaultView.Count - 1; i >= 0; i--)
+                    TransDV.AllowDelete = true;
+                    TransAttribDV.AllowDelete = true;
+
+                    TransDV.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ATransactionTable.GetJournalNumberDBName(),
+                        FJournalNumber);
+
+                    TransDV.Sort = String.Format("{0} ASC",
+                        ATransactionTable.GetTransactionNumberDBName());
+
+                    TransAttribDV.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ATransactionTable.GetJournalNumberDBName(),
+                        FJournalNumber);
+
+                    TransAttribDV.Sort = String.Format("{0} ASC, {1} ASC",
+                        ATransAnalAttribTable.GetTransactionNumberDBName(),
+                        ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                    for (int i = TransAttribDV.Count - 1; i >= 0; i--)
                     {
-                        FMainDS.ATransAnalAttrib.DefaultView.Delete(i);
+                        TransAttribDV.Delete(i);
                     }
 
-                    for (int i = FMainDS.ATransaction.DefaultView.Count - 1; i >= 0; i--)
+                    for (int i = TransDV.Count - 1; i >= 0; i--)
                     {
-                        FMainDS.ATransaction.DefaultView.Delete(i);
+                        TransDV.Delete(i);
                     }
-
-                    UpdateTransactionTotals();
 
                     // Be sure to set the last transaction number in the parent table before saving all the changes
-                    SetJournalLastTransNumber();
+                    //UpdateTransactionTotals() now does this
+                    //((TFrmGLBatch)this.ParentForm).GetJournalsControl().SetJournalLastTransNumber(true);
 
                     FPetraUtilsObject.SetChangedFlag();
 
@@ -1298,6 +1316,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBox.Show(Catalog.GetString("The journal has been cleared successfully!"),
                             Catalog.GetString("Success"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        UpdateTransactionTotals();
                     }
                     else
                     {
@@ -1306,12 +1326,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 "The journal has been cleared but there were problems during saving; ") + Environment.NewLine +
                             Catalog.GetString("Please try and save immediately."),
                             Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        FMainDS.RejectChanges();
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                    FMainDS = (GLBatchTDS)FTempDS.Copy();
+                    FMainDS.RejectChanges();
                 }
 
                 //If some row(s) still exist after deletion
@@ -1351,7 +1373,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (ADeletionPerformed)
             {
-                SetJournalLastTransNumber();
+                //UpdateTransactionTotals() now does this
+                //((TFrmGLBatch)this.ParentForm).GetJournalsControl().SetJournalLastTransNumber(true);
 
                 UpdateChangeableStatus();
 
@@ -1556,27 +1579,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return deletionSuccessful;
-        }
-
-        private void SetJournalLastTransNumber()
-        {
-            string rowFilter = String.Format("{0}={1} And {2}={3}",
-                ATransactionTable.GetBatchNumberDBName(),
-                FBatchNumber,
-                ATransactionTable.GetJournalNumberDBName(),
-                FJournalNumber);
-            string sort = ATransactionTable.GetTransactionNumberDBName() + " DESC";
-            DataView dv = new DataView(FMainDS.ATransaction, rowFilter, sort, DataViewRowState.CurrentRows);
-
-            if (dv.Count > 0)
-            {
-                ATransactionRow transRow = (ATransactionRow)dv[0].Row;
-                FJournalRow.LastTransactionNumber = transRow.TransactionNumber;
-            }
-            else
-            {
-                FJournalRow.LastTransactionNumber = 0;
-            }
         }
 
         /// <summary>

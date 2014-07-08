@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // This will populate the periods combos without firing off cascading events
             FSuppressRefreshPeriods = true;
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true); //.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true);
             FSuppressRefreshPeriods = false;
 
             // Now we can set the period part of the filter
@@ -544,21 +544,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchControlTotal.NumberValueDecimal = 0;
             dtpDetailDateEffective.Date = FDefaultDate;
             FPetraUtilsObject.EnableDataChangedEvent();
-        }
-
-        /// <summary>
-        /// UpdateTotals
-        /// </summary>
-        public void UpdateTotals()
-        {
-            //Below not needed as yet
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
-                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
         }
 
         private int CurrentRowIndex()
@@ -1567,6 +1552,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void CreateFilterFindPanelsManual()
         {
             ((Label)FFindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
+        }
+
+        private AJournalRow GetCurrentJournal()
+        {
+            return (AJournalRow)((TFrmGLBatch) this.ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
     }
 }
