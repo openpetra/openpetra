@@ -37,7 +37,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
-    public partial class TFrmAFO
+    public partial class TFrmExecutiveSummary
     {
         private Int32 FLedgerNumber;
 
@@ -143,7 +143,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("AFO", paramsDictionary);
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("Executive Summary", paramsDictionary);
 
             if (ReportTable == null)
             {
@@ -158,13 +158,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
             ACalc.AddStringParameter("param_base_currency", uco_GeneralSettings.GetBaseCurrency());
-            ACalc.AddStringParameter("param_intl_currency", uco_GeneralSettings.GetInternationalCurrency());
 
             Boolean HasData = ReportTable.Rows.Count > 0;
 
             if (!HasData)
             {
-                MessageBox.Show(Catalog.GetString("No Summary Accounts found for current Ledger."), "AFO");
+                MessageBox.Show(Catalog.GetString("No Executive Summary data found for current Ledger."), "Executive Summary");
             }
 
             return HasData;

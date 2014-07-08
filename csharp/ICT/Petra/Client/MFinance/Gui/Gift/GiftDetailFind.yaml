@@ -4,7 +4,6 @@ RootNode:
     Template: windowFind
     FormTitle: Gift Detail Find
     ClassName: TGiftDetailFindScreen
-    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     FormType: browse
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     WindowWidth: 900

@@ -698,7 +698,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // get the currently selected row
             DataRow CurrentlySelectedRow = GetCurrentDataRow();
 
-            if ((CurrentlySelectedRow != null) && (FMainDS != null))
+            if (CurrentlySelectedRow != null)
             {
                 try
                 {

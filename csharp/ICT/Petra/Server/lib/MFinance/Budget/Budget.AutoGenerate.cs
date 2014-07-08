@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             if (AForecastType == MFinanceConstants.FORECAST_TYPE_BUDGET)
                             {
                                 budgetAmount =
-                                    Math.Round(TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear, -1, j, numAccPeriods,
+                                    Math.Round(TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear, -1, j, numAccPeriods,
                                             false,
                                             MFinanceConstants.CURRENCY_BASE));
                                 SetBudgetPeriodBaseAmount(ABudgetSeq, j, budgetAmount);
@@ -207,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         {
                             for (int i = currentPeriod; i <= numAccPeriods; i++)
                             {
-                                budgetSum += TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear,
+                                budgetSum += TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear,
                                     -1,
                                     i,
                                     numAccPeriods,
@@ -309,7 +309,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             {
                                 for (int i = currentPeriod; i <= numAccPeriods; i++)
                                 {
-                                    afterAmount += TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear,
+                                    afterAmount += TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear,
                                         -1,
                                         i,
                                         numAccPeriods,
@@ -363,7 +363,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             {
                                 for (int i = currentPeriod; i <= periodOfChange; i++)
                                 {
-                                    priorAmount += TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear,
+                                    priorAmount += TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear,
                                         -1,
                                         i,
                                         numAccPeriods,
@@ -397,7 +397,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             {
                                 for (int i = (periodOfChange + 1); i <= numAccPeriods; i++)
                                 {
-                                    afterAmount += TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear,
+                                    afterAmount += TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear,
                                         -1,
                                         i,
                                         numAccPeriods,

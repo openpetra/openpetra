@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/08/2014 15:06:38" ReportInfo.CreatorVersion="2014.2.1.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using System.Globalization;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    String OmDate(DateTime fld)
+    {
+      return fld.ToString(&quot;dd-MMM-yyyy&quot;);
+    }
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <TableDataSource Name="Accounts" Alias="Executive Summary" ReferenceName="Accounts" DataType="System.Int32" Enabled="true">
+      <Column Name="IncomeThisMonth" DataType="System.Decimal"/>
+      <Column Name="ExpensesThisMonth" DataType="System.Decimal"/>
+      <Column Name="PersonnelCostsThisMonth" DataType="System.Decimal"/>
+      <Column Name="SupportIncomeThisMonth" DataType="System.Decimal"/>
+      <Column Name="CashAndBankThisMonth" DataType="System.Decimal"/>
+      <Column Name="ICHThisMonth" DataType="System.Decimal"/>
+      <Column Name="PaymentsDueThisMonth" DataType="System.Decimal"/>
+      <Column Name="GiftsForOtherFieldsThisMonth" DataType="System.Decimal"/>
+      <Column Name="PersonnelThisMonth" DataType="System.Int32"/>
+      <Column Name="PersonnelOtherFieldsThisMonth" DataType="System.Int32"/>
+      <Column Name="IncomeActualYTD" DataType="System.Decimal"/>
+      <Column Name="ExpensesActualYTD" DataType="System.Decimal"/>
+      <Column Name="PersonnelCostsActualYTD" DataType="System.Decimal"/>
+      <Column Name="SupportIncomeActualYTD" DataType="System.Decimal"/>
+      <Column Name="CashAndBankActualYTD" DataType="System.Decimal"/>
+      <Column Name="ICHActualYTD" DataType="System.Decimal"/>
+      <Column Name="PaymentsDueActualYTD" DataType="System.Decimal"/>
+      <Column Name="GiftsForOtherFieldsActualYTD" DataType="System.Decimal"/>
+      <Column Name="PersonnelActualYTD" DataType="System.Int32"/>
+      <Column Name="PersonnelOtherFieldsActualYTD" DataType="System.Int32"/>
+      <Column Name="IncomeBudgetYTD" DataType="System.Decimal"/>
+      <Column Name="ExpensesBudgetYTD" DataType="System.Decimal"/>
+      <Column Name="PersonnelCostsBudgetYTD" DataType="System.Decimal"/>
+      <Column Name="SupportIncomeBudgetYTD" DataType="System.Decimal"/>
+      <Column Name="CashAndBankBudgetYTD" DataType="System.Decimal"/>
+      <Column Name="ICHBudgetYTD" DataType="System.Decimal"/>
+      <Column Name="PaymentsDueBudgetYTD" DataType="System.Decimal"/>
+      <Column Name="GiftsForOtherFieldsBudgetYTD" DataType="System.Decimal"/>
+      <Column Name="PersonnelBudgetYTD" DataType="System.Int32"/>
+      <Column Name="PersonnelOtherFieldsBudgetYTD" DataType="System.Int32"/>
+      <Column Name="IncomePriorYTD" DataType="System.Decimal"/>
+      <Column Name="ExpensesPriorYTD" DataType="System.Decimal"/>
+      <Column Name="PersonnelCostsPriorYTD" DataType="System.Decimal"/>
+      <Column Name="SupportIncomePriorYTD" DataType="System.Decimal"/>
+      <Column Name="CashAndBankPriorYTD" DataType="System.Decimal"/>
+      <Column Name="ICHPriorYTD" DataType="System.Decimal"/>
+      <Column Name="PaymentsDuePriorYTD" DataType="System.Decimal"/>
+      <Column Name="GiftsForOtherFieldsPriorYTD" DataType="System.Decimal"/>
+      <Column Name="PersonnelPriorYTD" DataType="System.Int32"/>
+      <Column Name="PersonnelOtherFieldsPriorYTD" DataType="System.Int32"/>
+    </TableDataSource>
+    <Parameter Name="param_diff_period_i" DataType="System.Int32"/>
+    <Parameter Name="param_account_hierarchy_c" DataType="System.String"/>
+    <Parameter Name="param_currency" DataType="System.String"/>
+    <Parameter Name="param_period" DataType="System.Boolean"/>
+    <Parameter Name="param_date_checked" DataType="System.Boolean"/>
+    <Parameter Name="param_start_period_i" DataType="System.Int32"/>
+    <Parameter Name="param_end_period_i" DataType="System.Int32"/>
+    <Parameter Name="param_year_i" DataType="System.Int32"/>
+    <Parameter Name="param_start_date" DataType="System.DateTime"/>
+    <Parameter Name="param_end_date" DataType="System.DateTime"/>
+    <Parameter Name="param_sortby" DataType="System.String"/>
+    <Parameter Name="param_account_list_title" DataType="System.String"/>
+    <Parameter Name="param_account_codes" DataType="System.String"/>
+    <Parameter Name="param_account_code_start" DataType="System.Int32"/>
+    <Parameter Name="param_account_code_end" DataType="System.Int32"/>
+    <Parameter Name="param_rgrAccounts" DataType="System.String"/>
+    <Parameter Name="param_cost_centre_list_title" DataType="System.String"/>
+    <Parameter Name="param_cost_centre_codes" DataType="System.String"/>
+    <Parameter Name="param_cost_centre_code_start" DataType="System.String"/>
+    <Parameter Name="param_cost_centre_code_end" DataType="System.String"/>
+    <Parameter Name="param_rgrCostCentres" DataType="System.String"/>
+    <Parameter Name="param_depth" DataType="System.String"/>
+    <Parameter Name="param_ledger_number_i" DataType="System.Int32"/>
+    <Parameter Name="param_with_analysis_attributes" DataType="System.Boolean"/>
+    <Parameter Name="param_quarter" DataType="System.String"/>
+    <Parameter Name="param_daterange" DataType="System.String"/>
+    <Parameter Name="param_groupfield" DataType="System.String"/>
+    <Parameter Name="param_currency_formatter" DataType="System.String"/>
+    <Parameter Name="param_ledger_name" DataType="System.String"/>
+    <Parameter Name="param_analyis_type_start" DataType="System.String"/>
+    <Parameter Name="param_analyis_type_end" DataType="System.String"/>
+    <Parameter Name="param_currency_name" DataType="System.String"/>
+    <Parameter Name="param_real_year" DataType="System.Int32"/>
+    <Parameter Name="param_period_breakdown" DataType="System.Boolean"/>
+    <Parameter Name="param_period_checked" DataType="System.Boolean"/>
+    <Parameter Name="param_quarter_checked" DataType="System.Boolean"/>
+    <Parameter Name="param_real_year_ending" DataType="System.String"/>
+    <Parameter Name="param_ich_number" DataType="System.Int32"/>
+    <Parameter Name="param_date_title" DataType="System.String"/>
+    <Parameter Name="param_base_currency" DataType="System.String"/>
+    <Parameter Name="param_intl_currency" DataType="System.String"/>
+    <Parameter Name="param_base_currency_symbol" DataType="System.String"/>
+    <Parameter Name="param_intl_currency_symbol" DataType="System.String"/>
+    <Parameter Name="param_current_period" DataType="System.Int32"/>
+  </Dictionary>
+  <ReportPage Name="Page1">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="66.15">
+      <TextObject Name="Text1" Left="226.8" Width="245.7" Height="28.35" Text="Executive Summary" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
+      <TextObject Name="Text9" Left="453.6" Width="122.85" Height="18.9" Text="Printed :" HorzAlign="Right"/>
+      <TextObject Name="Text8" Left="576.45" Width="141.75" Height="18.9" Text="[OmDate([Date])]"/>
+      <TextObject Name="Text20" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
+      <TextObject Name="Text10" Left="75.6" Width="170.1" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
+      <TextObject Name="Text22" Top="18.9" Width="75.6" Height="18.9" Text="Period to:" HorzAlign="Right"/>
+      <TextObject Name="Text19" Left="75.6" Top="18.9" Width="198.45" Height="18.9" Text="[ToString([param_end_period_i])] [IIf([param_current_period]&gt;[param_end_period_i],&quot;(CLOSED)&quot;,IIf([param_current_period]&lt;[param_end_period_i],&quot;(FWD PERIOD)&quot;,&quot;(CURRENT)&quot;))]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text42" Left="245.7" Top="18.9" Width="207.9" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
+      <TextObject Name="Text43" Left="274.05" Top="37.8" Width="179.55" Height="18.9"/>
+      <LineObject Name="Line1" Left="718.2" Top="56.7" Width="-718.2" Border.Width="2"/>
+      <TextObject Name="Text56" Left="75.6" Top="37.8" Width="198.45" Height="18.9" Text="[OmDate([param_end_date])]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text61" Left="453.6" Top="18.9" Width="122.85" Height="18.9" Text="Current Period :" HorzAlign="Right"/>
+      <TextObject Name="Text18" Left="576.45" Top="18.9" Width="94.5" Height="18.9" Text="[param_current_period]"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="70.15" Width="718.2" Height="18.9">
+      <TextObject Name="Text7" Left="378" Width="113.4" Height="18.9" Text="Actual YTD" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text12" Left="491.4" Width="113.4" Height="18.9" Text="Budget YTD" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text14" Left="604.8" Width="113.4" Height="18.9" Text="Prior YTD" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text5" Left="264.6" Width="113.4" Height="18.9" Text="This Month" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+    </PageHeaderBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="93.05" Width="718.2" Condition="[Executive Summary.IncomeThisMonth]">
+      <GroupHeaderBand Name="GroupHeader2" Top="97.05" Width="718.2" Condition="[Executive Summary.IncomeThisMonth]">
+        <DataBand Name="Transaction" Top="101.05" Width="718.2" Height="170.1" CanGrow="true" KeepChild="true" DataSource="Accounts" KeepDetail="true">
+          <TextObject Name="Text2" Width="264.6" Height="18.9" Text="Total Income :"/>
+          <TextObject Name="Text4" Left="264.6" Width="113.4" Height="18.9" Text="[Executive Summary.IncomeThisMonth]" NullValue=" " Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text6" Left="378" Width="113.4" Height="18.9" Text="[Executive Summary.IncomeActualYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text11" Left="491.4" Width="113.4" Height="18.9" Text="[Executive Summary.IncomeBudgetYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text13" Left="604.8" Width="113.4" Height="18.9" Text="[Executive Summary.IncomePriorYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text63" Top="18.9" Width="264.6" Height="18.9" Text="Total Expenses :"/>
+          <TextObject Name="Text3" Left="264.6" Top="18.9" Width="113.4" Height="18.9" Text="[Executive Summary.ExpensesThisMonth]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text21" Left="378" Top="18.9" Width="113.4" Height="18.9" Text="[Executive Summary.ExpensesActualYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text26" Left="491.4" Top="18.9" Width="113.4" Height="18.9" Text="[Executive Summary.ExpensesBudgetYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text27" Left="604.8" Top="18.9" Width="113.4" Height="18.9" Text="[Executive Summary.ExpensesPriorYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <LineObject Name="Line2" Left="718.2" Top="47.25" Width="-718.2"/>
+          <TextObject Name="Text57" Top="56.7" Width="56.7" Height="18.9" Text="Surplus" TextFill.Color="Blue"/>
+          <TextObject Name="Text15" Left="264.6" Top="56.7" Width="113.4" Height="18.9" Text="[IIf([Executive Summary.IncomeThisMonth] &gt;= [Executive Summary.ExpensesThisMonth],[Executive Summary.IncomeThisMonth] - [Executive Summary.ExpensesThisMonth],&quot;(&quot; + FormatNumber([Executive Summary.ExpensesThisMonth] - [Executive Summary.IncomeThisMonth], 2) + &quot;)&quot;)]" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue">
+            <Highlight>
+              <Condition Expression="[Executive Summary.IncomeThisMonth] &lt; [Executive Summary.ExpensesThisMonth]"/>
+            </Highlight>
+          </TextObject>
+          <TextObject Name="Text64" Left="66.15" Top="56.7" Width="198.45" Height="18.9" Text=" (Deficit) :" TextFill.Color="Red"/>
+          <TextObject Name="Text65" Left="56.7" Top="56.7" Width="9.45" Height="18.9" Text="/"/>
+          <TextObject Name="Text66" Left="378" Top="56.7" Width="113.4" Height="18.9" Text="[IIf([Executive Summary.IncomeActualYTD] &gt;= [Executive Summary.ExpensesActualYTD],[Executive Summary.IncomeActualYTD] - [Executive Summary.ExpensesActualYTD],&quot;(&quot; + FormatNumber([Executive Summary.ExpensesActualYTD] - [Executive Summary.IncomeActualYTD], 2) + &quot;)&quot;)]" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue">
+            <Highlight>
+              <Condition Expression="[Executive Summary.IncomeActualYTD] &lt; [Executive Summary.ExpensesActualYTD]"/>
+            </Highlight>
+          </TextObject>
+          <TextObject Name="Text67" Left="491.4" Top="56.7" Width="113.4" Height="18.9" Text="[IIf([Executive Summary.IncomeBudgetYTD] &gt;= [Executive Summary.ExpensesBudgetYTD],[Executive Summary.IncomeBudgetYTD] - [Executive Summary.ExpensesBudgetYTD],&quot;(&quot; + FormatNumber([Executive Summary.ExpensesBudgetYTD] - [Executive Summary.IncomeBudgetYTD], 2) + &quot;)&quot;)]" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue">
+            <Highlight>
+              <Condition Expression="[Executive Summary.IncomeBudgetYTD] &lt; [Executive Summary.ExpensesBudgetYTD]"/>
+            </Highlight>
+          </TextObject>
+          <TextObject Name="Text68" Left="604.8" Top="56.7" Width="113.4" Height="18.9" Text="[IIf([Executive Summary.IncomePriorYTD] &gt;= [Executive Summary.ExpensesPriorYTD],[Executive Summary.IncomePriorYTD] - [Executive Summary.ExpensesPriorYTD],&quot;(&quot; + FormatNumber([Executive Summary.ExpensesPriorYTD] - [Executive Summary.IncomePriorYTD], 2) + &quot;)&quot;)]" Format="Number" Format.UseLocale="true" HorzAlign="Right" Font="Arial, 10pt, style=Bold" TextFill.Color="Blue">
+            <Highlight>
+              <Condition Expression="[Executive Summary.IncomePriorYTD] &lt; [Executive Summary.ExpensesPriorYTD]"/>
+            </Highlight>
+          </TextObject>
+          <LineObject Name="Line3" Left="718.2" Top="85.05" Width="-718.2" Border.Width="2"/>
+          <TextObject Name="Text69" Top="151.2" Width="264.6" Height="18.9" Text="Number of Personnel on Field (Adults) :"/>
+          <TextObject Name="Text16" Left="264.6" Top="151.2" Width="113.4" Height="18.9" Text="[Executive Summary.PersonnelThisMonth]" HorzAlign="Right"/>
+          <TextObject Name="Text17" Left="378" Top="151.2" Width="113.4" Height="18.9" Text="[Executive Summary.PersonnelActualYTD]" HorzAlign="Right"/>
+          <TextObject Name="Text24" Left="604.8" Top="151.2" Width="113.4" Height="18.9" Text="[Executive Summary.PersonnelPriorYTD]" HorzAlign="Right"/>
+          <TextObject Name="Text70" Top="94.5" Width="264.6" Height="18.9" Text="Personnel Costs per Team Member :"/>
+          <TextObject Name="Text23" Left="264.6" Top="94.5" Width="113.4" Height="18.9" Text="[Executive Summary.PersonnelCostsThisMonth]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text25" Left="378" Top="94.5" Width="113.4" Height="18.9" Text="[Executive Summary.PersonnelCostsActualYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text28" Left="604.8" Top="94.5" Width="113.4" Height="18.9" Text="[Executive Summary.PersonnelCostsPriorYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <LineObject Name="Line4" Left="718.2" Top="141.75" Width="-718.2" Border.Width="2"/>
+        </DataBand>
+        <GroupFooterBand Name="GroupFooter2" Top="275.15" Width="718.2"/>
+      </GroupHeaderBand>
+      <GroupFooterBand Name="GroupFooter1" Top="279.15" Width="718.2" Height="66.15"/>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="349.3" Width="718.2" Height="18.9">
+      <TextObject Name="Text44" Width="9.45" Height="18.9"/>
+      <TextObject Name="Text45" Left="9.45" Width="9.45" Height="18.9"/>
+      <TextObject Name="Text46" Left="18.9" Width="9.45" Height="18.9"/>
+      <TextObject Name="Text47" Left="28.35" Width="9.45" Height="18.9"/>
+      <TextObject Name="Text48" Left="37.8" Width="9.45" Height="18.9"/>
+      <TextObject Name="Text49" Left="47.25" Width="9.45" Height="18.9"/>
+      <TextObject Name="Text62" Left="557.55" Width="160.65" Height="18.9" Text="[PageNofM]" HorzAlign="Right" Font="Arial, 9pt, style=Bold"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

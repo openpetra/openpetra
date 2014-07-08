@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/07/2014 11:10:08" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/07/2014 12:21:21" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -93,7 +93,7 @@ namespace FastReport
       <TextObject Name="Text20" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
       <TextObject Name="Text10" Left="75.6" Width="170.1" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
       <TextObject Name="Text22" Top="18.9" Width="75.6" Height="18.9" Text="Period to:" HorzAlign="Right"/>
-      <TextObject Name="Text19" Left="75.6" Top="18.9" Width="198.45" Height="18.9" Text="[ToString([param_end_period_i])]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text19" Left="75.6" Top="18.9" Width="198.45" Height="18.9" Text="[ToString([param_end_period_i])] [IIf([param_current_period]&gt;[param_end_period_i],&quot;(CLOSED)&quot;,IIf([param_current_period]&lt;[param_end_period_i],&quot;(FWD PERIOD)&quot;,&quot;(CURRENT)&quot;))]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
       <TextObject Name="Text42" Left="245.7" Top="18.9" Width="207.9" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
       <TextObject Name="Text43" Left="274.05" Top="37.8" Width="179.55" Height="18.9"/>
       <LineObject Name="Line1" Left="718.2" Top="56.7" Width="-718.2" Border.Width="2"/>

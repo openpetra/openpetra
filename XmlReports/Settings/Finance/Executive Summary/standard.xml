@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="currentReport" value="eString:Executive Summary" />
+  <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
+  <Parameter id="param_start_period_i" value="eInteger:1" />
+</Parameters>

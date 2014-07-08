@@ -25,25 +25,28 @@ using System;
 using System.Data;
 using System.Collections;
 using System.Collections.Generic;
-using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
-using Ict.Petra.Server.MFinance.Cacheable;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MFinance;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using System.Data.Common;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
@@ -1707,10 +1710,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable GetAFOReportAccountsData(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapte)
+        public static DataTable AFOTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapte)
         {
         	TDBTransaction Transaction = null;
             AAccountTable AccountTable = new AAccountTable();
+            
+            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            string StandardSummaryCostCentre = LedgerNumber.ToString("00") + "00S";
+            string AccountHierarchyCode = AParameters["param_account_hierarchy_c"].ToString();
 
             // create new datatable
             DataTable Results = new DataTable();
@@ -1721,10 +1728,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("ActualCreditBase", typeof(Decimal)));
             Results.Columns.Add(new DataColumn("ActualDebitIntl", typeof(Decimal)));
             Results.Columns.Add(new DataColumn("ActualCreditIntl", typeof(Decimal)));
-            
-            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-            string StandardSummaryCostCentre = LedgerNumber.ToString("00") + "00S";
-            string AccountHierarchyCode = AParameters["param_account_hierarchy_c"].ToString();
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
@@ -1841,6 +1844,212 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 	}
             	}
             }
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable ExecutiveSummaryTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapte)
+        {
+        	TDBTransaction Transaction = null;
+            AAccountTable AccountTable = new AAccountTable();
+
+            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            string StandardSummaryCostCentre = LedgerNumber.ToString("00") + "00S";
+            DateTime PeriodStartDate = AParameters["param_start_date"].ToDate();
+            DateTime PeriodEndDate = AParameters["param_end_date"].ToDate();
+            int GLMSeqLastYear;
+    		int GLMSeqThisYear;
+    		int GLMSeqNextYear;
+            //string AccountHierarchyCode = AParameters["param_account_hierarchy_c"].ToString();
+
+            // create new datatable
+            DataTable Results = new DataTable();
+            
+            string[] Columns = { "ThisMonth", "ActualYTD", "BudgetYTD", "PriorYTD" };
+            
+            foreach (string Column in Columns)
+            {
+            	Results.Columns.Add(new DataColumn("Income" + Column, typeof(Decimal)));
+            	Results.Columns.Add(new DataColumn("Expenses" + Column, typeof(Decimal)));
+            	Results.Columns.Add(new DataColumn("PersonnelCosts" + Column, typeof(Decimal)));
+            	Results.Columns.Add(new DataColumn("SupportIncome" + Column, typeof(Decimal)));
+            	Results.Columns.Add(new DataColumn("CashAndBank" + Column, typeof(Decimal)));
+            	Results.Columns.Add(new DataColumn("ICH" + Column, typeof(Decimal)));
+            	Results.Columns.Add(new DataColumn("PaymentsDue" + Column, typeof(Decimal)));
+            	Results.Columns.Add(new DataColumn("GiftsForOtherFields" + Column, typeof(Decimal)));
+            	Results.Columns.Add(new DataColumn("Personnel" + Column, typeof(Int32)));
+            	Results.Columns.Add(new DataColumn("PersonnelOtherFields" + Column, typeof(Int32)));
+            }
+            
+            DataRow ResultRow = Results.NewRow();
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                	ALedgerRow LedgerRow = (ALedgerRow) ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction).Rows[0];
+                	
+                	/* Income and Expenses */
+                	string[,] IncomeExpense = { {"Income","INC"}, {"Expenses","EXP"} };
+                	
+                	for (int i=0; i<2; i++)
+                	{
+                		GLMSeqLastYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+                			LedgerNumber, IncomeExpense[i,1], StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32() - 1);
+                		GLMSeqThisYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+		            		LedgerNumber, IncomeExpense[i,1], StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32());
+                		GLMSeqNextYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+		            		LedgerNumber, IncomeExpense[i,1], StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32() + 1);
+                		
+	            		ResultRow[IncomeExpense[i,0] + "ThisMonth"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+												            		                                      GLMSeqThisYear,
+												            		                                      -1,
+												            		                                      AParameters["param_end_period_i"].ToInt32(),
+												            		                                      LedgerRow.NumberOfAccountingPeriods,
+												            		                                      LedgerRow.CurrentFinancialYear,
+												            		                                      AParameters["param_year_i"].ToInt32(),
+												            		                                      false,
+												            		                                      MFinanceConstants.CURRENCY_BASE);
+	            		ResultRow[IncomeExpense[i,0] + "PriorYTD"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+						            		                                      GLMSeqLastYear,
+						            		                                      GLMSeqThisYear,
+						            		                                      AParameters["param_end_period_i"].ToInt32(),
+						            		                                      LedgerRow.NumberOfAccountingPeriods,
+						            		                                      LedgerRow.CurrentFinancialYear,
+						            		                                      AParameters["param_year_i"].ToInt32() - 1,
+						            		                                      true,
+						            		                                      MFinanceConstants.CURRENCY_BASE);
+	            		ResultRow[IncomeExpense[i,0] + "ActualYTD"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+						            		                                      GLMSeqThisYear,
+						            		                                      -1,
+						            		                                      AParameters["param_end_period_i"].ToInt32(),
+						            		                                      LedgerRow.NumberOfAccountingPeriods,
+						            		                                      LedgerRow.CurrentFinancialYear,
+						            		                                      AParameters["param_year_i"].ToInt32(),
+						            		                                      true,
+						            		                                      MFinanceConstants.CURRENCY_BASE);
+	            		ResultRow[IncomeExpense[i,0] + "BudgetYTD"] = TCommonBudgetMaintain.GetBudget(GLMSeqThisYear,
+						            		                                      GLMSeqNextYear,
+						            		                                      AParameters["param_end_period_i"].ToInt32(),
+						            		                                      LedgerRow.NumberOfAccountingPeriods,
+						            		                                      true,
+						            		                                      MFinanceConstants.CURRENCY_BASE);
+                	}
+                	
+                	/* Personnel Costs */
+                	Int64 LocalSiteKey = Convert.ToInt64(TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_SITEKEY));
+                	
+                	/* calculate how many team members */
+					int PersonnelCount = 0;
+					PmStaffDataTable StaffDataTable = PmStaffDataAccess.LoadViaPUnitReceivingField(LocalSiteKey, Transaction);
+					
+					// this month - includes people who are only there for part of the month
+					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+					{
+						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= PeriodStartDate)
+						    && Row.StartOfCommitment <= PeriodEndDate
+						    && Row.ReceivingField == LocalSiteKey)
+						{
+							PersonnelCount++;
+						}
+					}
+					
+					ResultRow["PersonnelThisMonth"] = PersonnelCount;
+					
+					// this year
+					PersonnelCount = 0;
+
+					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+					{
+						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= new DateTime(PeriodStartDate.Year, 1, 1))
+						    && Row.StartOfCommitment <= PeriodEndDate
+						    && Row.ReceivingField == LocalSiteKey)
+						{
+							PersonnelCount++;
+						}
+					}
+					
+					ResultRow["PersonnelActualYTD"] = PersonnelCount;
+					
+					// last year
+					PersonnelCount = 0;
+
+					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+					{
+						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= new DateTime(PeriodStartDate.Year - 1, 1, 1))
+						    && Row.StartOfCommitment <= PeriodEndDate.AddYears(-1)
+						    && Row.ReceivingField == LocalSiteKey)
+						{
+							PersonnelCount++;
+						}
+					}
+					
+					ResultRow["PersonnelPriorYTD"] = PersonnelCount;
+					
+					GLMSeqLastYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+            			LedgerNumber, "4300S", StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32() - 1);
+            		GLMSeqThisYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+	            		LedgerNumber, "4300S", StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32());
+            		GLMSeqNextYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+	            		LedgerNumber, "4300S", StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32() + 1);
+					
+					ResultRow["PersonnelCostsThisMonth"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+									            		                                      GLMSeqThisYear,
+									            		                                      -1,
+									            		                                      AParameters["param_end_period_i"].ToInt32(),
+									            		                                      LedgerRow.NumberOfAccountingPeriods,
+									            		                                      LedgerRow.CurrentFinancialYear,
+									            		                                      AParameters["param_year_i"].ToInt32(),
+									            		                                      false,
+									            		                                      MFinanceConstants.CURRENCY_BASE);
+            		ResultRow["PersonnelCostsPriorYTD"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+								            		                                      GLMSeqLastYear,
+								            		                                      GLMSeqThisYear,
+								            		                                      AParameters["param_end_period_i"].ToInt32(),
+								            		                                      LedgerRow.NumberOfAccountingPeriods,
+								            		                                      LedgerRow.CurrentFinancialYear,
+								            		                                      AParameters["param_year_i"].ToInt32() - 1,
+								            		                                      true,
+								            		                                      MFinanceConstants.CURRENCY_BASE);
+            		ResultRow["PersonnelCostsActualYTD"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+									            		                                      GLMSeqThisYear,
+									            		                                      -1,
+									            		                                      AParameters["param_end_period_i"].ToInt32(),
+									            		                                      LedgerRow.NumberOfAccountingPeriods,
+									            		                                      LedgerRow.CurrentFinancialYear,
+									            		                                      AParameters["param_year_i"].ToInt32(),
+									            		                                      true,
+									            		                                      MFinanceConstants.CURRENCY_BASE);
+            		/*ResultRow["PersonnelCostsBudgetYTD"] = TCommonBudgetMaintain.GetBudget(GLMSeqThisYear,
+									            		                                      GLMSeqNextYear,
+									            		                                      AParameters["param_end_period_i"].ToInt32(),
+									            		                                      LedgerRow.NumberOfAccountingPeriods,
+									            		                                      true,
+									            		                                      MFinanceConstants.CURRENCY_BASE);*/
+            		
+            		if (Convert.ToInt32(ResultRow["PersonnelThisMonth"]) != 0)
+            		{
+            			ResultRow["PersonnelCostsThisMonth"] = 
+            				Convert.ToInt32(ResultRow["PersonnelCostsThisMonth"]) / Convert.ToInt32(ResultRow["PersonnelThisMonth"]);
+            		}
+            		
+            		if (Convert.ToInt32(ResultRow["PersonnelActualYTD"]) != 0)
+            		{
+            			ResultRow["PersonnelCostsActualYTD"] = 
+            				Convert.ToInt32(ResultRow["PersonnelCostsActualYTD"]) / Convert.ToInt32(ResultRow["PersonnelActualYTD"]);
+            		}
+            		
+            		if (Convert.ToInt32(ResultRow["PersonnelPriorYTD"]) != 0)
+            		{
+            			ResultRow["PersonnelCostsPriorYTD"] = 
+            				Convert.ToInt32(ResultRow["PersonnelCostsPriorYTD"]) / Convert.ToInt32(ResultRow["PersonnelPriorYTD"]);
+            		}
+                });
+            
+            Results.Rows.Add(ResultRow);
+            
+            return Results;
         }
         
         /// <summary>

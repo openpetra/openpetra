@@ -293,5 +293,101 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return retVal;
         }
+
+        /// <summary>
+        /// Retrieves a budget value
+        /// </summary>
+        /// <param name="AGLMSeqThisYear"></param>
+        /// <param name="AGLMSeqNextYear"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <param name="ANumberAccountingPeriods"></param>
+        /// <param name="AYTD"></param>
+        /// <param name="ACurrencySelect"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static decimal GetBudget(int AGLMSeqThisYear,
+            int AGLMSeqNextYear,
+            int APeriodNumber,
+            int ANumberAccountingPeriods,
+            bool AYTD,
+            string ACurrencySelect)
+        {
+            decimal retVal = 0;
+
+            if (APeriodNumber > ANumberAccountingPeriods)
+            {
+                retVal = CalculateBudget(AGLMSeqNextYear, 1, (APeriodNumber - ANumberAccountingPeriods), AYTD, ACurrencySelect);
+            }
+            else
+            {
+                retVal = CalculateBudget(AGLMSeqThisYear, 1, APeriodNumber, AYTD, ACurrencySelect);
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///Description: CalculateBudget is only used internally as a helper function for GetBudget.
+        ///Returns the budget for the given period of time,
+        ///  if ytd is set, this period is from start_period to end_period,
+        ///  otherwise it is only the value of the end_period.
+        ///  currency_select is either "B" for base or "I" for international currency
+        /// </summary>
+        /// <param name="AGLMSeq"></param>
+        /// <param name="AStartPeriod"></param>
+        /// <param name="AEndPeriod"></param>
+        /// <param name="AYTD"></param>
+        /// <param name="ACurrencySelect"></param>
+        /// <returns></returns>
+        private static decimal CalculateBudget(int AGLMSeq, int AStartPeriod, int AEndPeriod, bool AYTD, string ACurrencySelect)
+        {
+            decimal retVal = 0;
+
+            decimal lv_currency_amount_n = 0;
+            int lv_ytd_period_i;
+
+            if (AGLMSeq == -1)
+            {
+                return retVal;
+            }
+
+            bool NewTransaction = false;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+            AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
+            AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+
+            if (!AYTD)
+            {
+                AStartPeriod = AEndPeriod;
+            }
+
+            for (lv_ytd_period_i = AStartPeriod; lv_ytd_period_i <= AEndPeriod; lv_ytd_period_i++)
+            {
+                GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeq, lv_ytd_period_i, transaction);
+                GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+
+                if (GeneralLedgerMasterPeriodRow != null)
+                {
+                    if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
+                    {
+                        lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetBase;
+                    }
+                    else if (ACurrencySelect == MFinanceConstants.CURRENCY_INTERNATIONAL)
+                    {
+                        lv_currency_amount_n += GeneralLedgerMasterPeriodRow.BudgetIntl;
+                    }
+                }
+            }
+
+            retVal = lv_currency_amount_n;
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return retVal;
+        }
     }
 }
