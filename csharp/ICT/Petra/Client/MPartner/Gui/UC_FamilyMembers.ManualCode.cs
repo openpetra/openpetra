@@ -1879,5 +1879,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.L | Keys.Control))
+            {
+                grdFamilyMembers.Focus();
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

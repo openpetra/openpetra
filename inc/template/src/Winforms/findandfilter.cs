@@ -329,6 +329,7 @@ private void ToggleFilter()
             SetStatusBarText();
         }
 
+        grdDetails.IncludeFixedRowsInAutoSizeColumns = false;
         pnlFilterAndFind.Width = FFilterAndFindParameters.FindAndFilterInitialWidth;
         chkToggleFilter.Checked = true;
         {#FILTERTOGGLEDMANUAL}
@@ -338,6 +339,7 @@ private void ToggleFilter()
     else
     {
         // Collapse the filter panel and uncheck the button if there is no active filter
+        grdDetails.IncludeFixedRowsInAutoSizeColumns = true;
         pnlFilterAndFind.Width = 0;
         {#FILTERTOGGLEDMANUAL}
         FCurrentActiveFilter = FFilterPanelControls.GetCurrentFilter(

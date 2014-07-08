@@ -583,6 +583,24 @@ namespace {#NAMESPACE}
 
 #endregion
 
+#region Keyboard handler
+
+    /// Our main keyboard handler
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        {#PROCESSCMDKEY}    
+        {#PROCESSCMDKEYMANUAL}    
+
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+    private void FocusFirstEditableControl()
+    {
+        {#FOCUSFIRSTEDITABLEDETAILSPANELCONTROL}
+    }
+
+#endregion
+
   }
 }
 

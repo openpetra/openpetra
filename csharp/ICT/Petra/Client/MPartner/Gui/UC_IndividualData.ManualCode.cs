@@ -2111,5 +2111,58 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if ((FCurrentLinkLabel == llbCommitmentPeriods) && FUcoCommitmentPeriods.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbJobAssignments) && FUcoJobAssignments.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbLanguages) && FUcoPersonalLanguages.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbPassportDetails) && FUcoPassportDetails.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbPersonalDocuments) && FUcoPersonalDocuments.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbPersonSkills) && FUcoPersonSkills.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbPreviousExperience) && FUcoPreviousExperience.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbProgressReports) && FUcoProgressReports.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbEmergencyData) && FUcoEmergencyData.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+            else if ((FCurrentLinkLabel == llbPersonalData) && FUcoPersonalData.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

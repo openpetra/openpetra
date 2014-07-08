@@ -163,5 +163,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidatePersonalDataManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
+
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        //// Special Handlers for menus and command keys for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.E | Keys.Control))
+            {
+                this.txtBelieverSinceYear.Focus();
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }
