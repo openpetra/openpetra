@@ -275,6 +275,7 @@ useful parameters
     <echo message="Target generateSolution started at: ${datetime::now()}" />         
     
     <call target="quickCompile"/>
+    <call target="pullVCSVersionInfo"/>
     
     <echo message="Target generateSolution finished at: ${datetime::now()}" />         
 </target>
