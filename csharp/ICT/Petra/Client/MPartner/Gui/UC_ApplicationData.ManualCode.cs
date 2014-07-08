@@ -244,5 +244,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Event Handlers
 
         #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (this.ucoApplications.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

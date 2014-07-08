@@ -106,8 +106,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.DataPageLoaded += new TDataPageLoadedEventHandler(grdResult_DataPageLoaded);
             grdResult.Selection.SelectionChanged += new SourceGrid.RangeRegionChangedEventHandler(grdResult_SelectionChanged);
 
-            this.Resize += new EventHandler(TFrmAPSupplierTransactions_Resize);
-
             FPetraUtilsObject.SetStatusBarText(grdDetails,
                 Catalog.GetString("Use the navigation keys to select a transaction.  Double-click to view the details"));
             FPetraUtilsObject.SetStatusBarText(btnAddTaggedToPayment, Catalog.GetString("Click to pay the tagged items"));
@@ -211,11 +209,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdDetails.ShowCell(new SourceGrid.Position(grdDetails.Selection.ActivePosition.Row, 0), true);
             }
-        }
-
-        private void FilterToggledManual(bool AFilterIsOff)
-        {
-            AutoSizeGrid();
         }
 
         private bool IsMatchingRowManual(DataRow ARow)
@@ -425,9 +418,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 SelectRowInGrid(1);
             }
 
-            AutoSizeGrid();
-            this.Width = this.Width - 1;
-            this.Width = this.Width + 1;
+            grdResult.AutoResizeGrid();
 
             UpdateSupplierBalance();
             UpdateDisplayedBalance();
@@ -487,15 +478,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdResult.Columns.Clear();
-            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], 17, false);
-//          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"], 50);
-            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 70);
-            grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
-            grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
-            grdResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"], 2);
-            grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"], 90);
-//          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
-            grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
+            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], -1, false);
+//          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"]);
+            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"]);
+            grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"]);
+            grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"]);
+            grdResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"]);
+            grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"]);
+//          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"]);
+            grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"]);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
         }
 
@@ -1146,49 +1137,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             reporter.LedgerNumber = FLedgerNumber;
             reporter.SetPaymentNumber(PaymentNumStart, PaymentNumEnd);
             reporter.Show();
-        }
-
-        private bool FWindowIsMaximized = false;
-        private void TFrmAPSupplierTransactions_Resize(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // set the flag that we are maximized
-                FWindowIsMaximized = true;
-                AutoSizeGrid();
-            }
-            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
-            {
-                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                AutoSizeGrid();
-                FWindowIsMaximized = false;
-            }
-        }
-
-        private void AutoSizeGrid()
-        {
-            if (grdDetails.Columns.Count == 0)
-            {
-                // Not created yet
-                return;
-            }
-
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 20;
-            grdDetails.Columns[1].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[5].Width = 75;
-            grdDetails.Columns[6].Width = 75;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdResult.SuspendLayout();
-            grdDetails.AutoSizeCells();
-            grdResult.ResumeLayout();
         }
 
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)

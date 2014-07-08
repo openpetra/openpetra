@@ -36,29 +36,21 @@ namespace Ict.Petra.Shared.MFinance
     public class GLRoutines
     {
         /// <summary>
-        /// Calculate the base amount for the transactions, and update the totals for the current journal
-        /// NOTE this no longer calculates AmountInBaseCurrency
-        /// ALSO - since the ExchangeRateToBase field is no longer used here, the code that asserts it to be valid is commented out.
+        /// Update the totals for the current journal (no exchange rate calculation at this point)
+        ///   and set LastTransactionNumber
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
+        /// <param name="AUpdateLastTransNumber"></param>
         public static void UpdateTotalsOfJournal(ref GLBatchTDS AMainDS,
-            ref GLBatchTDSAJournalRow ACurrentJournal)
+            ref GLBatchTDSAJournalRow ACurrentJournal, bool AUpdateLastTransNumber = false)
         {
             if (ACurrentJournal == null)
             {
                 return;
             }
 
-            /* // Since I'm not using ExchangeRateToBase, I don't need to check that it's valid:
-             * if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
-             *  && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
-             * {
-             *  throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
-             *          ACurrentJournal.BatchNumber,
-             *          ACurrentJournal.JournalNumber));
-             * }
-             */
+            int LastTransactionNumber = 0;
 
             ACurrentJournal.JournalDebitTotal = 0.0M;
             ACurrentJournal.JournalDebitTotalBase = 0.0M;
@@ -73,10 +65,20 @@ namespace Ict.Petra.Shared.MFinance
                 ATransactionTable.GetJournalNumberDBName(),
                 ACurrentJournal.JournalNumber);
 
+            trnsDataView.Sort = string.Format("{0} DESC",
+                ATransactionTable.GetTransactionNumberDBName());
+
             // transactions are filtered for this journal; add up the total amounts
             foreach (DataRowView v in trnsDataView)
             {
                 ATransactionRow r = (ATransactionRow)v.Row;
+
+                //on first recursion
+                if (AUpdateLastTransNumber && (LastTransactionNumber == 0))
+                {
+                    //Sort order will ensure this is the highest trans number
+                    LastTransactionNumber = r.TransactionNumber;
+                }
 
                 if (r.DebitCreditIndicator)
                 {
@@ -88,6 +90,11 @@ namespace Ict.Petra.Shared.MFinance
                     ACurrentJournal.JournalCreditTotal += r.TransactionAmount;
                     ACurrentJournal.JournalCreditTotalBase += r.AmountInBaseCurrency;
                 }
+            }
+
+            if (AUpdateLastTransNumber)
+            {
+                ACurrentJournal.LastTransactionNumber = LastTransactionNumber;
             }
         }
 
@@ -153,8 +160,9 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="ACurrentBatch"></param>
+        /// <param name="AUpdateJournalLastTransNumber"></param>
         public static void UpdateTotalsOfBatch(ref GLBatchTDS AMainDS,
-            ABatchRow ACurrentBatch)
+            ABatchRow ACurrentBatch, bool AUpdateJournalLastTransNumber = false)
         {
             ACurrentBatch.BatchDebitTotal = 0.0m;
             ACurrentBatch.BatchCreditTotal = 0.0m;
@@ -168,7 +176,7 @@ namespace Ict.Petra.Shared.MFinance
             {
                 GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)journalView.Row;
 
-                UpdateTotalsOfJournal(ref AMainDS, ref journalRow);
+                UpdateTotalsOfJournal(ref AMainDS, ref journalRow, AUpdateJournalLastTransNumber);
 
                 ACurrentBatch.BatchDebitTotal += journalRow.JournalDebitTotal;
                 ACurrentBatch.BatchCreditTotal += journalRow.JournalCreditTotal;

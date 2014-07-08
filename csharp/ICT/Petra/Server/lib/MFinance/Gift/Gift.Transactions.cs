@@ -358,11 +358,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             ADisplayMember = "YearDate";
             AValueMember = "YearNumber";
-            DataTable tab = new DataTable();
-            tab.Columns.Add(AValueMember, typeof(System.Int32));
-            tab.Columns.Add(ADisplayMember, typeof(String));
-            tab.PrimaryKey = new DataColumn[] {
-                tab.Columns[0]
+            DataTable ReturnTable = new DataTable();
+            ReturnTable.Columns.Add(AValueMember, typeof(System.Int32));
+            ReturnTable.Columns.Add(ADisplayMember, typeof(String));
+            ReturnTable.PrimaryKey = new DataColumn[] {
+                ReturnTable.Columns[0]
             };
 
             System.Type typeofTable = null;
@@ -389,21 +389,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 // add the years, which are retrieved by reading from the gift batch tables
                 string sql =
-                    String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
-                        ALedgerNumber.ToString() + " ORDER BY 1 DESC",
+                    String.Format("SELECT DISTINCT {0} AS availYear FROM PUB_{1} WHERE {2}={3} ORDER BY 1 DESC",
                         AGiftBatchTable.GetBatchYearDBName(),
                         AGiftBatchTable.GetTableDBName(),
-                        AGiftBatchTable.GetLedgerNumberDBName());
+                        AGiftBatchTable.GetLedgerNumberDBName(),
+                        ALedgerNumber);
 
                 DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
 
                 foreach (DataRow row in BatchYearTable.Rows)
                 {
-                    DataRow resultRow = tab.NewRow();
+                    DataRow resultRow = ReturnTable.NewRow();
                     resultRow[0] = row[0];
-                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString(
-                        "dd/MM/yyyy");
-                    tab.Rows.Add(resultRow);
+                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToShortDateString();
+                    ReturnTable.Rows.Add(resultRow);
                 }
             }
             finally
@@ -412,15 +411,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             // we should also check if the current year has been added, in case there are no gift batches yet
-            if (null == tab.Rows.Find(LedgerTable[0].CurrentFinancialYear))
+            if (ReturnTable.Rows.Find(LedgerTable[0].CurrentFinancialYear) == null)
             {
-                DataRow resultRow = tab.NewRow();
+                DataRow resultRow = ReturnTable.NewRow();
                 resultRow[0] = LedgerTable[0].CurrentFinancialYear;
-                resultRow[1] = currentYearEnd.ToString("yyyy");
-                tab.Rows.InsertAt(resultRow, 0);
+                resultRow[1] = currentYearEnd.ToShortDateString();
+                ReturnTable.Rows.InsertAt(resultRow, 0);
             }
 
-            return tab;
+            return ReturnTable;
         }
 
         /// <summary>

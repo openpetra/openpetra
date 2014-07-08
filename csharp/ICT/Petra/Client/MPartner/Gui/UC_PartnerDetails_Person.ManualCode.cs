@@ -76,5 +76,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ref VerificationResultCollection,
                 FValidationControlsDict);
         }
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.E | Keys.Control))
+            {
+                this.txtPreferredName.Focus();
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

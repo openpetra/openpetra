@@ -1120,8 +1120,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ProcessTemplate snipSelectRow = FTemplate.GetSnippet("PROCESSCMDKEYSELECTROW");
                         FTemplate.InsertSnippet("PROCESSCMDKEY", snipSelectRow);
 
-                        ProcessTemplate snipFocusFirstControl = FTemplate.GetSnippet("FOCUSFIRSTDETAILSPANELCONTROL");
-                        FTemplate.InsertSnippet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", snipFocusFirstControl);
+                        if (FCodeStorage.ManualFileExistsAndContains("void FocusFirstEditableControlManual()"))
+                        {
+                            FTemplate.SetCodelet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", "FocusFirstEditableControlManual();" + Environment.NewLine);
+                        }
+                        else
+                        {
+                            ProcessTemplate snipFocusFirstControl = FTemplate.GetSnippet("FOCUSFIRSTDETAILSPANELCONTROL");
+                            FTemplate.InsertSnippet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", snipFocusFirstControl);
+                        }
                     }
                 }
 
