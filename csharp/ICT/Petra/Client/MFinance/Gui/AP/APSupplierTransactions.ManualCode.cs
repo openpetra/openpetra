@@ -189,7 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdDetails.ShowCell(new SourceGrid.Position(grdDetails.Selection.ActivePosition.Row, 0), true);
             }
-            
+
             UpdateDisplayedBalance();
         }
 

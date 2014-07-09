@@ -458,7 +458,9 @@ namespace Ict.Petra.Client.CommonForms
                     }
                 }
 
-                string clickString = (FPnlFilterFind.Width > 0) ? CommonFormsResourcestrings.StrFilterClickToTurnOff : CommonFormsResourcestrings.StrFilterClickToTurnOn;
+                string clickString =
+                    (FPnlFilterFind.Width >
+                     0) ? CommonFormsResourcestrings.StrFilterClickToTurnOff : CommonFormsResourcestrings.StrFilterClickToTurnOn;
                 string strToolTip = String.Format("{0}{1}{2}", recordsString, Environment.NewLine, clickString);
 
                 if (strToolTip != PreviousFilterTooltip)
