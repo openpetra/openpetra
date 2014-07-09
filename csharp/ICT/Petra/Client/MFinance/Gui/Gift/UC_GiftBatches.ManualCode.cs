@@ -332,6 +332,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     TFinanceControls.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
                     FSuppressRefreshPeriods = false;
 
+                    FrbtEditing.Checked = true;
                     // Now we can set the period part of the filter
                     RefreshPeriods(null, null);
                 }
@@ -1079,8 +1080,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, FSelectedYear,
-                        FSelectedPeriod));
+                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
+                {
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, FSelectedYear,
+                            FSelectedPeriod));
+                }
+
                 FStatusFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
@@ -1090,8 +1095,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_POSTING;
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_POSTED, FSelectedYear,
-                        FSelectedPeriod));
+                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
+                {
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, FSelectedYear,
+                            FSelectedPeriod));
+                }
+
                 FStatusFilter = String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
                     AGiftBatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED,
@@ -1102,8 +1111,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_ALL;
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, FSelectedYear,
-                        FSelectedPeriod));
+                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_POSTED))
+                {
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, FSelectedYear,
+                            FSelectedPeriod));
+                }
+
                 FStatusFilter = "1 = 1";
                 btnNew.Enabled = true;
             }
@@ -1626,5 +1639,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             RefreshCurrencyAndExchangeRateControls();
         }
+
+        private bool BatchWithStatusIsLoaded(String ABatchStatus)
+        {
+            String Comparison = "=";
+
+            if (ABatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                Comparison = "<>";
+            }
+
+            DataView BatchDV = new DataView(FMainDS.AGiftBatch);
+
+            BatchDV.RowFilter = String.Format("{0}{1}'{2}'",
+                                                AGiftBatchTable.GetBatchStatusDBName(),
+                                                Comparison,
+                                                MFinanceConstants.BATCH_UNPOSTED);
+
+            return (BatchDV.Count > 0);
+        }
+
     }
 }
