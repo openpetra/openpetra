@@ -751,7 +751,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
 
                         UpdateRecordNumberDisplay();
-                        SetRecordNumberDisplayProperties();
+                        FFilterAndFindObject.SetRecordNumberDisplayProperties();
                     }
                 }
             }
@@ -858,7 +858,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     UpdateRecordNumberDisplay();
-                    SetRecordNumberDisplayProperties();
+                    FFilterAndFindObject.SetRecordNumberDisplayProperties();
                 }
             }
         }

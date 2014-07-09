@@ -236,7 +236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             UpdateChangeableStatus();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             return DifferentBatchSelected;
         }

@@ -166,7 +166,7 @@ namespace {#NAMESPACE}
         {#INITMANUALCODE}
 {#IFDEF FILTERANDFIND}
         FinishButtonPanelSetup();
-        FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter);
+        FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter, lblRecordCounter);
         FFilterAndFindObject.SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
     }

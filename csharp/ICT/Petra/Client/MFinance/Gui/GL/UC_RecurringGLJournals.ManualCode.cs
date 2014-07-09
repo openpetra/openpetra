@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SelectRowInGrid((BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow);
 
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
         }
 
         private void SetJournalDefaultView()

@@ -18,59 +18,6 @@ public void MniFilterFind_Click(object sender, EventArgs e)
 
 #region IFilterAndFind interface methods
 
-///<summary>
-/// Sets the image, font and color properties for the record counter label based on the current active filter string
-/// </summary>
-public void SetRecordNumberDisplayProperties()
-{
-    if (grdDetails.DataSource != null)
-    {
-        string recordsString;
-
-        if (lblRecordCounter.Font.Italic)
-        {
-            // Do we need to change from 'filtered'?
-            if (FFilterAndFindObject.IsActiveFilterEqualToBase && FFilterAndFindObject.IsBaseFilterShowingAllRecords)
-            {
-                // No filtering
-                lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
-                lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Regular);
-                chkToggleFilter.Image = FFilterAndFindObject.FilterImages.Images[0]; // 'Filter is inactive' icon
-                recordsString = CommonFormsResourcestrings.StrFilterAllRecordsShown;
-            }
-            else
-            {
-                recordsString = CommonFormsResourcestrings.StrFilterSomeRecordsHidden;
-            }
-        }
-        else
-        {
-            // Do we need to change from 'not filtered'?
-            if (!FFilterAndFindObject.IsActiveFilterEqualToBase || !FFilterAndFindObject.IsBaseFilterShowingAllRecords)
-            {
-                // Now we are filtering
-                lblRecordCounter.ForeColor = System.Drawing.Color.MidnightBlue;
-                lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Italic);
-                chkToggleFilter.Image = FFilterAndFindObject.FilterImages.Images[1];  // 'Filter is active' icon
-                recordsString = CommonFormsResourcestrings.StrFilterSomeRecordsHidden;
-            }
-            else
-            {
-                recordsString = CommonFormsResourcestrings.StrFilterAllRecordsShown;
-            }
-        }
-
-        string clickString = (pnlFilterAndFind.Width > 0) ? CommonFormsResourcestrings.StrFilterClickToTurnOff : CommonFormsResourcestrings.StrFilterClickToTurnOn;
-        string strToolTip = String.Format("{0}{1}{2}", recordsString, Environment.NewLine, clickString);
-
-        if (strToolTip != FFilterAndFindObject.PreviousFilterTooltip)
-        {
-            GetPetraUtilsObject().SetToolTip(chkToggleFilter, strToolTip);
-            FFilterAndFindObject.PreviousFilterTooltip = strToolTip;
-        }
-    }
-}
-
 /// <summary>
 /// Required interface method
 /// </summary>

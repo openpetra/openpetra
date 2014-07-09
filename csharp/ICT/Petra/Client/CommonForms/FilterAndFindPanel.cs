@@ -88,6 +88,7 @@ namespace Ict.Petra.Client.CommonForms
         private IButtonPanel FButtonPanel = null;
         private Panel FPnlFilterFind = null;
         private CheckBox FChkToggleFilter = null;
+        private Label FLblRecordCounter = null;
 
         private TUcoFilterAndFind FucoFilterAndFind = null;
         private TUcoFilterAndFind.FilterAndFindParameters FFilterAndFindParameters;
@@ -113,12 +114,14 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AButtonPanel">The IButtonPanel associated with the caller form or control.  (Typically simply pass 'this').</param>
         /// <param name="APanelFilterFind">The Panel control associated with the caller form or control.</param>
         /// <param name="AChkToggleFilter">The checkbox control associated with the caller form or control.</param>
+        /// <param name="ALblRecordCounter">The Label control displaying the record count associated with the caller form or control.</param>
         public TFilterAndFindPanel(IFilterAndFind ACallerFormOrControl,
             TFrmPetraUtils APetraUtilsObject,
             TSgrdDataGridPaged AGrid,
             IButtonPanel AButtonPanel,
             Panel APanelFilterFind,
-            CheckBox AChkToggleFilter)
+            CheckBox AChkToggleFilter,
+            Label ALblRecordCounter)
         {
             FCallerFormOrControl = ACallerFormOrControl;
             FPetraUtilsObject = APetraUtilsObject;
@@ -126,6 +129,7 @@ namespace Ict.Petra.Client.CommonForms
             FButtonPanel = AButtonPanel;
             FPnlFilterFind = APanelFilterFind;
             FChkToggleFilter = AChkToggleFilter;
+            FLblRecordCounter = ALblRecordCounter;
         }
 
         /// <summary>
@@ -412,6 +416,59 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        ///<summary>
+        /// Sets the image, font and color properties for the record counter label based on the current active filter string
+        /// </summary>
+        public void SetRecordNumberDisplayProperties()
+        {
+            if (FGrid.DataSource != null)
+            {
+                string recordsString;
+
+                if (FLblRecordCounter.Font.Italic)
+                {
+                    // Do we need to change from 'filtered'?
+                    if (IsActiveFilterEqualToBase && IsBaseFilterShowingAllRecords)
+                    {
+                        // No filtering
+                        FLblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+                        FLblRecordCounter.Font = new Font(FLblRecordCounter.Font, FontStyle.Regular);
+                        FChkToggleFilter.Image = FilterImages.Images[0]; // 'Filter is inactive' icon
+                        recordsString = CommonFormsResourcestrings.StrFilterAllRecordsShown;
+                    }
+                    else
+                    {
+                        recordsString = CommonFormsResourcestrings.StrFilterSomeRecordsHidden;
+                    }
+                }
+                else
+                {
+                    // Do we need to change from 'not filtered'?
+                    if (!IsActiveFilterEqualToBase || !IsBaseFilterShowingAllRecords)
+                    {
+                        // Now we are filtering
+                        FLblRecordCounter.ForeColor = System.Drawing.Color.MidnightBlue;
+                        FLblRecordCounter.Font = new Font(FLblRecordCounter.Font, FontStyle.Italic);
+                        FChkToggleFilter.Image = FilterImages.Images[1];  // 'Filter is active' icon
+                        recordsString = CommonFormsResourcestrings.StrFilterSomeRecordsHidden;
+                    }
+                    else
+                    {
+                        recordsString = CommonFormsResourcestrings.StrFilterAllRecordsShown;
+                    }
+                }
+
+                string clickString = (FPnlFilterFind.Width > 0) ? CommonFormsResourcestrings.StrFilterClickToTurnOff : CommonFormsResourcestrings.StrFilterClickToTurnOn;
+                string strToolTip = String.Format("{0}{1}{2}", recordsString, Environment.NewLine, clickString);
+
+                if (strToolTip != PreviousFilterTooltip)
+                {
+                    FPetraUtilsObject.SetToolTip(FChkToggleFilter, strToolTip);
+                    PreviousFilterTooltip = strToolTip;
+                }
+            }
+        }
+
         /// <summary>
         /// Private event handler for the toggle event
         /// </summary>
@@ -506,7 +563,7 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             FButtonPanel.UpdateRecordNumberDisplay();
-            FCallerFormOrControl.SetRecordNumberDisplayProperties();
+            SetRecordNumberDisplayProperties();
             FCallerFormOrControl.SelectRowInGrid(this.FCallerFormOrControl.GetSelectedRowIndex());
             FPnlFilterFind.Visible = FPnlFilterFind.Width > 0;
         }
@@ -690,7 +747,7 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             FButtonPanel.UpdateRecordNumberDisplay();
-            FCallerFormOrControl.SetRecordNumberDisplayProperties();
+            SetRecordNumberDisplayProperties();
         }
 
         /// <summary>
@@ -743,11 +800,6 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public interface IFilterAndFind : IGridBase
     {
-        /// <summary>
-        /// Set the record number display properties on the screen/control
-        /// </summary>
-        void SetRecordNumberDisplayProperties();
-
         /// <summary>
         /// The screen should initialise the filter/find start up parameters from the YAML file
         /// </summary>

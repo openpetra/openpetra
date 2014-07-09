@@ -215,7 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
             FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
         }
 
         private void InitialiseControls()

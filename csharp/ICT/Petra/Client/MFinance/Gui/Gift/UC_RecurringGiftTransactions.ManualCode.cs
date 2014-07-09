@@ -294,7 +294,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // Now we set the full filter
             FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             SelectRowInGrid(1);
 

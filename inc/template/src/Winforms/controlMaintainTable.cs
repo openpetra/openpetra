@@ -184,7 +184,7 @@ namespace {#NAMESPACE}
         FinishButtonPanelSetup();
 {#ENDIF BUTTONPANEL}
 {#IFDEF FILTERANDFIND}
-        FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter);
+        FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter, lblRecordCounter);
         FFilterAndFindObject.SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
         SelectRowInGrid(1);
