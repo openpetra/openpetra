@@ -126,8 +126,6 @@ namespace Ict.Petra.Client.CommonForms
             FButtonPanel = AButtonPanel;
             FPnlFilterFind = APanelFilterFind;
             FChkToggleFilter = AChkToggleFilter;
-
-            SetupFilterAndFindControls();
         }
 
         /// <summary>
@@ -264,9 +262,9 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         ///<summary>
-        /// Sets up the Filter Button and the Filter and Find UserControl.
+        /// Sets up the Filter Button and the Filter and Find UserControl.  Call this immediately after creating an instance of this class.
         /// </summary>
-        private void SetupFilterAndFindControls()
+        public void SetupFilterAndFindControls()
         {
             LoadFilterIcons();
 
@@ -483,6 +481,7 @@ namespace Ict.Petra.Client.CommonForms
                     SetStatusBarText();
                 }
 
+                FGrid.IncludeFixedRowsInAutoSizeColumns = false;
                 FPnlFilterFind.Width = FFilterAndFindParameters.FindAndFilterInitialWidth;
                 FChkToggleFilter.Checked = true;
                 FCallerFormOrControl.FilterToggled();
@@ -493,6 +492,7 @@ namespace Ict.Petra.Client.CommonForms
             else
             {
                 // Collapse the filter panel and uncheck the button if there is no active filter
+                FGrid.IncludeFixedRowsInAutoSizeColumns = true;
                 FPnlFilterFind.Width = 0;
                 FCallerFormOrControl.FilterToggled();
                 FCurrentActiveFilter = FFilterPanelControls.GetCurrentFilter(
