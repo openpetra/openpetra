@@ -118,25 +118,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             utils.SetStatusBarText(chkToggleFilter, Catalog.GetString("Click to show/hide the Filter/Find panel"));
         }
 
-        private void UpdateRecordNumberDisplay()
-        {
-            int RecordCount;
-
-            if (grdDetails.DataSource != null)
-            {
-                int totalTableRecords = grdSuppliers.TotalRecords;
-                int totalGridRecords = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-
-                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-                lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
-                        true),
-                    RecordCount) + String.Format(" ({0})", totalTableRecords);
-
-                SetRecordNumberDisplayProperties();
-            }
-        }
-
         /// <summary>
         /// Called when the main screen is activated
         /// </summary>

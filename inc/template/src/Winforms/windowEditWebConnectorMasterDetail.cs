@@ -109,6 +109,7 @@ namespace {#NAMESPACE}
 {#ENDIF BUTTONPANEL}
 {#IFDEF FILTERANDFIND}
       FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter);
+      FFilterAndFindObject.SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
 {#IFDEF SHOWDETAILS}
 {#IFDEF DETAILTABLE}
@@ -845,11 +846,9 @@ namespace {#NAMESPACE}
     /// </summary>
     public void UpdateRecordNumberDisplay()
     {
-        int RecordCount;
-        
         if (grdDetails.DataSource != null) 
         {
-            RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            int RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
             lblRecordCounter.Text = String.Format(
                 Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
                 RecordCount);
@@ -1443,7 +1442,7 @@ FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
 
 TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
     FMainDS.{#NONCACHEABLETABLENAME},
-    DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
+    DataUtilities.GetPKValuesFromDataRow(ADataRow),
     AMaxReferenceCount,
     out AVerificationResults);
 

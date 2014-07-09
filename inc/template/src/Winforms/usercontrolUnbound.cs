@@ -37,6 +37,7 @@ namespace {#NAMESPACE}
                                      , {#INTERFACENAME}
 {#IFDEF FILTERANDFIND}
                                      , IFilterAndFind
+                                     , IButtonPanel
 {#ENDIF FILTERANDFIND}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
@@ -164,7 +165,9 @@ namespace {#NAMESPACE}
 {#ENDIF ACTIONENABLING}
         {#INITMANUALCODE}
 {#IFDEF FILTERANDFIND}
-        FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, null, pnlFilterAndFind, chkToggleFilter);
+        FinishButtonPanelSetup();
+        FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter);
+        FFilterAndFindObject.SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
     }
     
@@ -228,6 +231,35 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
 
 #region Filter and Find
+
+    ///<summary>
+    /// Finish the set up of the Button Panel.
+    /// </summary>
+    private void FinishButtonPanelSetup()
+    {
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+        lblRecordCounter.AutoSize = true;
+        lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+        lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+        pnlButtonsRecordCounter.AutoSize = true;
+
+        UpdateRecordNumberDisplay();
+    }
+
+    ///<summary>
+    /// Update the text in the button panel indicating details of the record count
+    /// </summary>
+    public void UpdateRecordNumberDisplay()
+    {
+        if (grdDetails.DataSource != null)
+        {
+            int RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            lblRecordCounter.Text = String.Format(
+                Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
+                RecordCount);
+        }
+    }
 
     /// <summary>
     /// Gets the selected grid row as a generic DataRow for use by interfaces

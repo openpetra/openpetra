@@ -130,25 +130,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             utils.SetStatusBarText(chkToggleFilter, Catalog.GetString("Click to show/hide the Filter/Find panel"));
         }
 
-        private void UpdateRecordNumberDisplay()
-        {
-            int RecordCount;
-
-            if (grdDetails.DataSource != null)
-            {
-                int totalTableRecords = grdInvoices.TotalRecords;
-
-                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-                lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
-                        true),
-                    RecordCount) + String.Format(" ({0})", totalTableRecords);
-
-                SetRecordNumberDisplayProperties();
-                UpdateDisplayedBalance();
-            }
-        }
-
         /// <summary>
         /// Call this method to load invoices into the user control
         /// </summary>
@@ -1108,6 +1089,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     grdInvoices.ShowCell(new SourceGrid.Position(grdInvoices.Selection.ActivePosition.Row, 0), true);
                 }
+
+                UpdateDisplayedBalance();
             }
         }
 

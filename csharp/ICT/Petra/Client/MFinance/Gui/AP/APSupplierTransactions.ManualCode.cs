@@ -162,26 +162,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FPrevRowChangedRow = ARowNumber;
         }
 
-        private void UpdateRecordNumberDisplay()
-        {
-            int RecordCount;
-
-            if (grdDetails.DataSource != null)
-            {
-                int totalTableRecords = grdResult.TotalRecords;
-                int totalGridRecords = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-
-                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-                lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
-                        true),
-                    RecordCount) + String.Format(" ({0})", totalTableRecords);
-
-                SetRecordNumberDisplayProperties();
-                UpdateDisplayedBalance();
-            }
-        }
-
         private void ApplyFilterManual(ref string AFilter)
         {
             if (FPagedDataTable != null)
@@ -209,6 +189,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdDetails.ShowCell(new SourceGrid.Position(grdDetails.Selection.ActivePosition.Row, 0), true);
             }
+            
+            UpdateDisplayedBalance();
         }
 
         private bool IsMatchingRowManual(DataRow ARow)
