@@ -284,7 +284,7 @@ namespace Ict.Petra.Client.CommonForms
                         }
 
                         TVerificationResultCollection VerificationResults = null;
-                        ACallerFormOrControl.GetReferenceCount(currentDataRow, APetraUtilsObject.MaxReferenceCountOnDelete, out VerificationResults);
+                        ACallerFormOrControl.GetReferenceCount(rowToDelete, APetraUtilsObject.MaxReferenceCountOnDelete, out VerificationResults);
 
                         if ((VerificationResults != null) && (VerificationResults.Count > 0))
                         {
