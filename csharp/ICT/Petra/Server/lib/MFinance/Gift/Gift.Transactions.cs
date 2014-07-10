@@ -452,55 +452,78 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// also get the ledger for the base currency etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchStatus"></param>
+        /// <param name="AFilterBatchStatus"></param>
         /// <param name="AYear">if -1, the year will be ignored</param>
         /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
         /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used.
         /// Period = -2 means all periods in current year</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, string ABatchStatus, Int32 AYear, Int32 APeriod)
+        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus, Int32 AYear, Int32 APeriod)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-            StringCollection templateOperators = new StringCollection();
-
-            AGiftBatchRow templateRow = MainDS.AGiftBatch.NewRowTyped(false);
-            templateRow.LedgerNumber = ALedgerNumber;
-
-            if ((ABatchStatus != null) && (ABatchStatus.Length > 0))
-            {
-                templateRow.BatchStatus = ABatchStatus;
-                templateOperators.Add("=");
-            }
+            string FilterByPeriod = string.Empty;
 
             if (AYear != -1)
             {
-                templateRow.BatchYear = AYear;
-                templateOperators.Add("=");
+                FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
+                    AGiftBatchTable.GetTableDBName(),
+                    AGiftBatchTable.GetBatchYearDBName(),
+                    AYear);
 
                 if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
                 {
-                    templateRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
-                    templateOperators.Add(">=");
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetBatchPeriodDBName(),
+                        MainDS.ALedger[0].CurrentPeriod);
                 }
                 else if ((APeriod == -2) || (APeriod == -1))
                 {
-                    //All periods
-                    templateRow.BatchPeriod = APeriod;
-                    templateOperators.Add("<>");
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} <> {2}",
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetBatchPeriodDBName(),
+                        APeriod);
                 }
                 else if (APeriod != -1)
                 {
-                    templateRow.BatchPeriod = APeriod;
-                    templateOperators.Add("=");
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetBatchPeriodDBName(),
+                        APeriod);
                 }
             }
 
-            AGiftBatchAccess.LoadUsingTemplate(MainDS, templateRow, templateOperators, null, Transaction, null, 0, 0);
+            string SelectClause =
+                String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
+                    AGiftBatchTable.GetTableDBName(),
+                    AGiftBatchTable.GetLedgerNumberDBName(),
+                    ALedgerNumber);
+
+            string FilterByBatchStatus = string.Empty;
+
+            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
+            {
+                FilterByBatchStatus =
+                    string.Format(" AND {0} <> '{1}'",
+                        AGiftBatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
+            }
+            else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
+            {
+                FilterByBatchStatus =
+                    string.Format(" AND {0} = '{1}'",
+                        AGiftBatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
+            }
+
+            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus + FilterByPeriod,
+                MainDS.AGiftBatch.TableName, Transaction);
+
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
