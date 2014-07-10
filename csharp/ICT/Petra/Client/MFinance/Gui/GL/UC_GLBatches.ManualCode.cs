@@ -136,6 +136,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod, false, false));
 
             FBatchesLoaded = true;
+
+            if (((TFrmGLBatch) this.ParentForm).LoadForImport)
+            {
+                ImportBatches();
+            }
         }
 
         /// Reset the control
@@ -1500,7 +1505,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // csv !
         }
 
-        private void ImportBatches(object sender, EventArgs e)
+        /// <summary>
+        /// ImportBatches called from button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ImportBatches(object sender, EventArgs e)
         {
             if (!SaveChangesAndResetFilter())
             {
@@ -1588,6 +1598,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
                     FSelectedPeriod));
+
+            grdDetails.SelectRowInGrid(1);
         }
 
         private bool SaveChangesAndResetFilter()

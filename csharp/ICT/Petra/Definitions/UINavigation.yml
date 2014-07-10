@@ -148,7 +148,7 @@ OpenPetra:
                     GLBatchMaintenance:
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
                         RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches, ActionOpenScreen=TFrmRecurringGLBatch}
-                        ImportBatches: {Description: Import batch data from CSV file, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
+                        ImportBatches: {Description: Import batch data from CSV file, Namespace=Ict.Petra.Client.MFinance.Gui, ActionClick=TFinanceMain.LoadGLBatchesFormForImport}
                         ImportBatchesFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         ExportBatches: {Description:Export to CSV file for use with Excel, ActionOpenScreen=TFrmGLBatchExport}
                     General:
