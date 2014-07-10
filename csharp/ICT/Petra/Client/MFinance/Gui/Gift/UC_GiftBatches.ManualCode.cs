@@ -970,13 +970,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 IncludeCurrentAndForwardingItem = (FSelectedYear == FMainDS.ALedger[0].CurrentFinancialYear);
             }
 
+            if (sender != null)
+            {
+                RefreshFilter(sender, e);
+            }
+
             //Update the periods for the newly selected year
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref FcmbPeriod, FLedgerNumber, FSelectedYear, 0, IncludeCurrentAndForwardingItem);
         }
 
         void RefreshFilter(Object sender, EventArgs e)
         {
-            int batchNumber = 0;
+            int BatchNumber = 0;
 
             if (FSuppressRefreshFilter
                 || (FPetraUtilsObject == null)
@@ -1010,26 +1015,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (FSelectedYear == newYear)
                 {
-                    if ((newPeriod == -1) && (newPeriodText != String.Empty))
+                    if (((newPeriod == -1) && (newPeriodText != String.Empty))
+                        || ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText)))
                     {
-                        Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
-                        return;
-                    }
-
-                    if ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText))
-                    {
-                        Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
                         return;
                     }
                 }
-
-                Console.WriteLine("Using period {0} periodText {1}", newPeriod, newPeriodText);
             }
 
             //Record the current batch
             if (FPreviouslySelectedDetailRow != null)
             {
-                batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+                BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             ClearCurrentSelection();
@@ -1074,15 +1071,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            Console.WriteLine(" ** " + FPeriodFilter);
-
             if (FrbtEditing.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
 
                 if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
                 {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, FSelectedYear,
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
                             FSelectedPeriod));
                 }
 
@@ -1097,7 +1092,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
                 {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, MFinanceConstants.BATCH_UNPOSTED, FSelectedYear,
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting,
+                            FSelectedYear,
                             FSelectedPeriod));
                 }
 
@@ -1107,13 +1103,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AGiftBatchTable.GetBatchTotalDBName(),
                     AGiftBatchTable.GetHashTotalDBName());
             }
-            else
+            else //(FrbtAll.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_ALL;
 
                 if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_POSTED))
                 {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, string.Empty, FSelectedYear,
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
                             FSelectedPeriod));
                 }
 
@@ -1121,12 +1117,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 btnNew.Enabled = true;
             }
 
-            RefreshGridData(batchNumber, (sender is TCmbAutoComplete));
+            RefreshGridData(BatchNumber, (sender is TCmbAutoComplete));
 
             UpdateChangeableStatus();
-
             UpdateRecordNumberDisplay();
-            Console.WriteLine("RefreshFilter - finished");
         }
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
@@ -1156,7 +1150,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (ANoFocusChange)
                 {
                     SelectRowInGrid(newRowToSelectAfterFilter);
-                    //grdDetails.SelectRowWithoutFocus(newRowToSelectAfterFilter);
                 }
                 else
                 {
@@ -1652,12 +1645,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DataView BatchDV = new DataView(FMainDS.AGiftBatch);
 
             BatchDV.RowFilter = String.Format("{0}{1}'{2}'",
-                                                AGiftBatchTable.GetBatchStatusDBName(),
-                                                Comparison,
-                                                MFinanceConstants.BATCH_UNPOSTED);
+                AGiftBatchTable.GetBatchStatusDBName(),
+                Comparison,
+                MFinanceConstants.BATCH_UNPOSTED);
 
-            return (BatchDV.Count > 0);
+            return BatchDV.Count > 0;
         }
-
     }
 }

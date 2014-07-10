@@ -1042,8 +1042,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (FSelectedYear == newYear)
                 {
-                    if ((newPeriod == -1 && newPeriodText != String.Empty)
-                        || (newPeriod == FSelectedPeriod && newPeriodText == FPeriodText))
+                    if (((newPeriod == -1) && (newPeriodText != String.Empty))
+                        || ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText)))
                     {
                         return;
                     }
@@ -1053,9 +1053,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Record the current batch
             if (FPreviouslySelectedDetailRow != null)
             {
-                //ValidateAllData(true, true);
                 BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-                //TLogging.Log("Description: " + FPreviouslySelectedDetailRow.BatchDescription);
             }
 
             ClearCurrentSelection();
@@ -1121,7 +1119,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting, FSelectedYear,
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting,
+                            FSelectedYear,
                             FSelectedPeriod));
                 }
 
@@ -1581,12 +1580,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView BatchDV = new DataView(FMainDS.ABatch);
 
             BatchDV.RowFilter = String.Format("{0}{1}'{2}'",
-                                                ABatchTable.GetBatchStatusDBName(),
-                                                Comparison,
-                                                MFinanceConstants.BATCH_UNPOSTED);
+                ABatchTable.GetBatchStatusDBName(),
+                Comparison,
+                MFinanceConstants.BATCH_UNPOSTED);
 
-            return (BatchDV.Count > 0);
+            return BatchDV.Count > 0;
         }
-
     }
 }
