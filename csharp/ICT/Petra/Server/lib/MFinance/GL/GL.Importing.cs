@@ -455,7 +455,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
             try
             {
-                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction);
                 AAnalysisTypeAccess.LoadAll(SetupDS, Transaction);
                 AFreeformAnalysisAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                 AAnalysisAttributeAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
