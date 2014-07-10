@@ -131,7 +131,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxIcon.Information);
 
                     SaveUserDefaults(dialog, impOptions);
-                    LoadBatches(FLedgerNumber);
+                    ReloadBatches();
+                    //LoadBatches(FLedgerNumber);
                     FPetraUtilsObject.DisableSaveButton();
                 }
             }

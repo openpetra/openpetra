@@ -10,7 +10,6 @@ RootNode:
     Actions:
         actNew: {Label=&Add Journal, ActionClick=NewRow}
         actCancel: {Label=&Cancel Journal, ActionClick=CancelRow, Image=Delete_Record.ico}
-        actImportTransactions: {Label=&Import Transactions, ActionClick=ImportTransactions}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, pnlDetailGrid, pnlDetails]
@@ -84,11 +83,3 @@ RootNode:
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
         txtDetailExchangeRateToBase: {Label=Exchange Rate to Base, Validation=true, Format=Decimal(10), Width=130}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}
-        tbrTabPage: {NoAttribute=true}
-        mnuTabPage: {NoAttribute=true}
-    Menu:
-        mniJournal:
-            Label: &Journal
-            mniImportTransactions:
-    Toolbar:
-        tbbImportTransactions:

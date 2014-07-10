@@ -350,26 +350,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            if (!FrbtEditing.Checked)
-            {
-                FrbtEditing.Checked = true;
-            }
-
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
-            {
-                return;
-            }
-
-            //Set year and period to correct value
-            if ((FcmbYearEnding.Items.Count > 0) && (FcmbYearEnding.SelectedIndex != 0))
-            {
-                FcmbYearEnding.SelectedIndex = 0;
-            }
-
-            if ((FcmbPeriod.Items.Count > 1) && (FcmbPeriod.SelectedIndex != 1))
-            {
-                FcmbPeriod.SelectedIndex = 1;
-            }
+            if (!SaveChangesAndResetFilter())
+	        {
+		        return;
+	        }
 
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
             FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
@@ -1518,20 +1502,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ImportBatches(object sender, EventArgs e)
         {
+            if (!SaveChangesAndResetFilter())
+            {
+                return;
+            }
+
             ImportBatches();
         }
 
         private void ImportFromClipboard(object sender, EventArgs e)
         {
+            if (!SaveChangesAndResetFilter())
+            {
+                return;
+            }
+
             ImportFromClipboard();
         }
 
         private void ExportBatches(object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.HasChanges)
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
                 // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("Please save changed Data before the Export!"),
+                MessageBox.Show(Catalog.GetString("Please correct and save changed data before the export!"),
                     Catalog.GetString("Export Error"));
                 return;
             }
@@ -1586,5 +1580,52 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return BatchDV.Count > 0;
         }
+
+        /// <summary>
+        /// Reload batches after an import
+        /// </summary>
+        private void ReloadBatches()
+        {
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
+                   FSelectedPeriod));
+        }
+
+        private bool SaveChangesAndResetFilter()
+        {
+            bool RetVal = true;
+            
+            try
+            {
+                if (!FrbtEditing.Checked)
+                {
+                    FrbtEditing.Checked = true;
+                }
+
+                if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)this.ParentForm).SaveChanges())
+                {
+                    RetVal = false;
+                }
+                else
+                {
+                    //Set year and period to correct value
+                    if ((FcmbYearEnding.Items.Count > 0) && (FcmbYearEnding.SelectedIndex != 0))
+                    {
+                        FcmbYearEnding.SelectedIndex = 0;
+                    }
+
+                    if ((FcmbPeriod.Items.Count > 1) && (FcmbPeriod.SelectedIndex != 1))
+                    {
+                        FcmbPeriod.SelectedIndex = 1;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                RetVal = false;
+            }
+
+            return RetVal;
+        }
+
     }
 }

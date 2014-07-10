@@ -2013,5 +2013,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return RetVal;
         }
+
+        private void ImportTransactions(object sender, EventArgs e)
+        {
+            ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
+        }
+
     }
 }
