@@ -508,7 +508,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
             {
-                // FilterByBatchStatus is empty
+                FilterByBatchStatus =
+                    string.Format(" AND {0} <> '{1}'",
+                        AGiftBatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
             }
             else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
             {
