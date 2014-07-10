@@ -351,9 +351,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void NewRow(System.Object sender, EventArgs e)
         {
             if (!SaveChangesAndResetFilter())
-	        {
-		        return;
-	        }
+            {
+                return;
+            }
 
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
             FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
@@ -1587,13 +1587,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ReloadBatches()
         {
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
-                   FSelectedPeriod));
+                    FSelectedPeriod));
         }
 
         private bool SaveChangesAndResetFilter()
         {
             bool RetVal = true;
-            
+
             try
             {
                 if (!FrbtEditing.Checked)
@@ -1601,7 +1601,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FrbtEditing.Checked = true;
                 }
 
-                if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)this.ParentForm).SaveChanges())
+                if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
                 {
                     RetVal = false;
                 }
@@ -1626,6 +1626,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return RetVal;
         }
-
     }
 }

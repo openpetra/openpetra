@@ -2019,5 +2019,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
         }
 
+        public void SelectRow(int ARowNumber)
+        {
+            SelectRowInGrid(ARowNumber);
+        }
     }
 }
