@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/07/2014 12:21:21" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/10/2014 14:28:07" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -80,6 +80,7 @@ namespace FastReport
     <Parameter Name="param_base_currency_symbol" DataType="System.String"/>
     <Parameter Name="param_intl_currency_symbol" DataType="System.String"/>
     <Parameter Name="param_current_period" DataType="System.Int32"/>
+    <Parameter Name="param_current_financial_year" DataType="System.Boolean"/>
     <Total Name="AllActualDebitBase" Expression="[Accounts.ActualDebitBase]" Evaluator="Transaction" PrintOn="GroupFooter1" ResetOnReprint="true"/>
     <Total Name="AllActualCreditBase" Expression="[Accounts.ActualCreditBase]" Evaluator="Transaction" PrintOn="GroupFooter1" ResetOnReprint="true"/>
     <Total Name="AllActualDebitIntl" Expression="[Accounts.ActualDebitIntl]" Evaluator="Transaction" PrintOn="GroupFooter1" ResetOnReprint="true"/>
@@ -93,13 +94,13 @@ namespace FastReport
       <TextObject Name="Text20" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
       <TextObject Name="Text10" Left="75.6" Width="170.1" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
       <TextObject Name="Text22" Top="18.9" Width="75.6" Height="18.9" Text="Period to:" HorzAlign="Right"/>
-      <TextObject Name="Text19" Left="75.6" Top="18.9" Width="198.45" Height="18.9" Text="[ToString([param_end_period_i])] [IIf([param_current_period]&gt;[param_end_period_i],&quot;(CLOSED)&quot;,IIf([param_current_period]&lt;[param_end_period_i],&quot;(FWD PERIOD)&quot;,&quot;(CURRENT)&quot;))]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text19" Left="75.6" Top="18.9" Width="198.45" Height="18.9" Text="[ToString([param_end_period_i])][IIf([param_current_financial_year],IIf([param_current_period]&gt;[param_end_period_i],&quot; (CLOSED)&quot;,IIf([param_current_period]&lt;[param_end_period_i],&quot; (FWD PERIOD)&quot;,&quot; (CURRENT)&quot;)),&quot; (CLOSED)&quot;)]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
       <TextObject Name="Text42" Left="245.7" Top="18.9" Width="207.9" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
       <TextObject Name="Text43" Left="274.05" Top="37.8" Width="179.55" Height="18.9"/>
       <LineObject Name="Line1" Left="718.2" Top="56.7" Width="-718.2" Border.Width="2"/>
       <TextObject Name="Text56" Left="75.6" Top="37.8" Width="198.45" Height="18.9" Text="[OmDate([param_end_date])]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
-      <TextObject Name="Text61" Left="453.6" Top="18.9" Width="122.85" Height="18.9" Text="Current Period :" HorzAlign="Right"/>
-      <TextObject Name="Text18" Left="576.45" Top="18.9" Width="94.5" Height="18.9" Text="[param_current_period]"/>
+      <TextObject Name="Text61" Left="453.6" Top="18.9" Width="122.85" Height="18.9" Text="[IIf([param_current_financial_year],&quot;Current Period :&quot;,&quot;&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text18" Left="576.45" Top="18.9" Width="94.5" Height="18.9" Text="[IIf([param_current_financial_year],[param_current_period],&quot;&quot;)]"/>
     </ReportTitleBand>
     <PageHeaderBand Name="PageHeader1" Top="70.15" Width="718.2" Height="18.9">
       <TextObject Name="Text7" Left="378" Width="113.4" Height="18.9" Text="[param_base_currency] Credits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>

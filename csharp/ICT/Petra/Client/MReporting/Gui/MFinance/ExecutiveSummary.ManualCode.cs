@@ -55,6 +55,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 uco_GeneralSettings.ShowCurrencySelection(false);
                 uco_GeneralSettings.ShowOnlyEndPeriod();
+                uco_GeneralSettings.ShowAccountHierarchy(false);
 
                 FPetraUtilsObject.LoadDefaultSettings();
 
@@ -93,44 +94,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String LedgerFilter = "a_ledger_number_i=" + pm.Get("param_ledger_number_i").ToInt32();
 
-            pm.RemoveVariable("param_start_period_i");
             pm.Add("param_start_period_i",1);
             pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
-
-            pm.Add("param_sortby", "a_account_code_c");
-
-            // only periods can be used for this report
-            if (pm.Get("param_period").ToBool() == true)
-            {
-                DataTable AccountingPeriodTbl =
-                    (AAccountingPeriodTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                        pm.Get("param_ledger_number_i").ToInt32());
-                Int32 PeriodStart = pm.Get("param_start_period_i").ToInt32();
-                Int32 PeriodEnd = pm.Get("param_end_period_i").ToInt32();
-                AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" + PeriodStart;
-                DateTime DateStart = Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_start_date_d"]);
-                pm.Add("param_start_date", DateStart);
-                AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" + PeriodEnd;
-                DateTime DateEnd = Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_end_date_d"]);
-                pm.Add("param_end_date", DateEnd);
-
-                String PeriodTitle = " (" + DateStart.ToString("dd-MMM-yyyy") + " - " + DateEnd.ToString("dd-MMM-yyyy") + ")";
-
-                if (PeriodEnd > PeriodStart)
-                {
-                    PeriodTitle = String.Format("{0} - {1}", PeriodEnd, PeriodStart) + PeriodTitle;
-                }
-                else
-                {
-                    PeriodTitle = String.Format("{0}", PeriodStart) + PeriodTitle;
-                }
-
-                pm.Add("param_date_title", PeriodTitle);
-            }
-            else
-            {
-            	return false;
-            }
             
             ArrayList reportParam = ACalc.GetParameters().Elems;
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();

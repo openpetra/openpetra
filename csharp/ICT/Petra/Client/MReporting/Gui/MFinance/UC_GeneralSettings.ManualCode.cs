@@ -239,6 +239,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12);
                 ACalculator.AddParameter("param_end_date", EndDate);
             }
+            
+            // true if the selected date is in the current financial year
+            ACalculator.AddParameter("param_current_financial_year", FLedgerRow.CurrentFinancialYear == Year);
 
             //
             // I may need to check whether the selected currency has an exchange rate I can use!
