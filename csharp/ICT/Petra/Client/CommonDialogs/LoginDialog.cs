@@ -109,7 +109,6 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblDatabase.Text = Catalog.GetString("Database") + ":";
             this.chkRememberUserName.Text = Catalog.GetString("Remember the username");
             this.label1.Text = Catalog.GetString("Initial Login: demo/demo or sysadmin/CHANGEME");
-            this.label2.Text = Catalog.GetString("Please change the passwords immediately!");
             this.Text = Catalog.GetString("OpenPetra Login");
             #endregion
 
