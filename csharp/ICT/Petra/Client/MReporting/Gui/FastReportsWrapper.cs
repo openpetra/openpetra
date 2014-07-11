@@ -226,7 +226,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void ShowErrorPopup()
         {
-            if (TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified")
+            // Make 2 checks:
+            // Does the system defaults table in the database have an entry 'USEXMLREPORTS'?  If there is an entry we do not show these pop-ups
+            // Have we been launched from a main menu screen?  When we run our tests we do not want these message boxes to pop up.
+            if ((TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified") && (FPetraUtilsObject.GetCallerForm() != null))
             {
                 String Msg = "";
 
