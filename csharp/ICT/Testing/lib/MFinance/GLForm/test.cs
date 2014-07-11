@@ -358,6 +358,67 @@ namespace Tests.MFinance.GLBatches
         }
 
         /// <summary>
+        /// test the import of gl transactions
+        /// </summary>
+        [Test]
+        public void TestImportGLTransactions()
+        {
+            // create a test batch and journal and then import transactions
+
+            string TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GLForm/TestData/TransactionsImport.csv";
+
+            TestFile = Path.GetFullPath(TestFile);
+            Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
+
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
+
+            frmBatch.LedgerNumber = FLedgerNumber;
+            frmBatch.Show();
+
+            // create a new batch and save
+            ButtonTester btnNewBatch = new ButtonTester("ucoBatches.btnNew");
+            btnNewBatch.Click();
+            TextBoxTester txtDetailBatchDescription = new TextBoxTester("txtDetailBatchDescription");
+            txtDetailBatchDescription.Properties.Text = "Created by test TestImportGLTransactions";
+
+            TabControlTester tabGLBatch = new TabControlTester("tabGLBatch");
+
+            // go to Journal tab
+            tabGLBatch.SelectTab(1);
+
+            ButtonTester btnNewJournal = new ButtonTester("ucoJournals.btnAdd");
+            btnNewJournal.Click();
+
+            // go to transaction tab
+            tabGLBatch.SelectTab(2);
+
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                OpenFileDialogTester tester = new OpenFileDialogTester(hWnd);
+
+                ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+                {
+                    TDlgSelectCSVSeparatorTester tester2 = new TDlgSelectCSVSeparatorTester(hWnd2);
+                    TextBoxTester txtDateFormat = new TextBoxTester("txtDateFormat");
+                    txtDateFormat.Properties.Text = "dd/MM/yyyy";
+                    RadioButtonTester rbtSemicolon = new RadioButtonTester("rbtSemicolon");
+                    rbtSemicolon.Properties.Checked = true;
+
+                    ButtonTester btnOK = new ButtonTester("btnOK", tester2.Properties.Name);
+                    btnOK.Click();
+                };
+
+                tester.OpenFile(TestFile);
+            };
+
+            ToolStripButtonTester btnImport = new ToolStripButtonTester("tbbImportTransactions");
+            btnImport.Click();
+
+            TSgrdDataGridPagedTester grdDetails = new TSgrdDataGridPagedTester("grdDetails");
+            Assert.AreNotEqual(1, grdDetails.Count, "The grid should be populated");
+        }
+
+        /// <summary>
         /// simple test to view the transactions of a posted batch and then add a new batch
         /// </summary>
         [Test]
