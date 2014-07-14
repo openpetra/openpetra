@@ -25,6 +25,8 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
+using Ict.Common.Remoting.Client;
+
 namespace Ict.Petra.Client.App.Core
 {
     /// <summary>
@@ -216,6 +218,42 @@ namespace Ict.Petra.Client.App.Core
                     }
                 }
             }
+        }
+    }
+    
+    /// <summary>
+    /// Helper Class for the applications' Version
+    /// </summary>
+    public static class TApplicationVersion
+    {
+        /// <summary>
+        /// Returns the application's Version
+        /// </summary>
+        /// <returns>The application's Version.</returns>
+        public static string GetApplicationVersion()
+        {
+            string ReturnValue = String.Empty;
+            
+            var AssemblyVers = new Version(TClientInfo.ClientAssemblyVersion);
+
+            if (AssemblyVers.Revision > 20)
+            {
+                ReturnValue += AssemblyVers.ToString(4);
+            }
+            else
+            {
+                // leave out 'Revision'
+                ReturnValue += AssemblyVers.ToString(3);
+            }
+
+#if DEBUG
+            if (TApplicationVCSInfo.AppVCSData.IsInitialised)
+            {
+                ReturnValue += "         [ " + TApplicationVCSInfo.AppVCSData.VCSName + " Rev. " +
+                                    TApplicationVCSInfo.AppVCSData.RevisionNumber + " ]";
+            }
+#endif  
+            return ReturnValue;
         }
     }
 }

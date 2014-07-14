@@ -63,52 +63,56 @@ namespace Ict.Petra.Client.CommonDialogs
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.btnLogin = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.lblDatabase = new System.Windows.Forms.Label();
             this.prbLogin = new System.Windows.Forms.ProgressBar();
             this.pnlLoginControls = new System.Windows.Forms.Panel();
             this.chkRememberUserName = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.lblPetraVersion = new System.Windows.Forms.Label();
             this.pnlLoginControls.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             //
             // lblUserName
             //
-            this.lblUserName.Location = new System.Drawing.Point(8, 8);
+            this.lblUserName.Location = new System.Drawing.Point(9, 263);
             this.lblUserName.Name = "lblUserName";
-            this.lblUserName.Size = new System.Drawing.Size(188, 21);
+            this.lblUserName.Size = new System.Drawing.Size(67, 23);
             this.lblUserName.TabIndex = 2;
             this.lblUserName.Text = "&User ID:";
-            this.lblUserName.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblUserName.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtUserName
             //
+            this.txtUserName.BackColor = System.Drawing.Color.LightGray;
             this.txtUserName.Font =
                 new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtUserName.Location = new System.Drawing.Point(8, 30);
+            this.txtUserName.Location = new System.Drawing.Point(77, 260);
             this.txtUserName.Name = "txtUserName";
-            this.txtUserName.Size = new System.Drawing.Size(188, 21);
+            this.txtUserName.Size = new System.Drawing.Size(210, 21);
             this.txtUserName.TabIndex = 3;
             this.txtUserName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtUserNameKeyPress);
             this.txtUserName.Leave += new System.EventHandler(this.TxtUserNameLeave);
             //
             // lblPassword
             //
-            this.lblPassword.Location = new System.Drawing.Point(8, 58);
+            this.lblPassword.Location = new System.Drawing.Point(9, 285);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(188, 23);
+            this.lblPassword.Size = new System.Drawing.Size(67, 23);
             this.lblPassword.TabIndex = 4;
             this.lblPassword.Text = "&Password:";
-            this.lblPassword.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
             //
             // txtPassword
             //
             this.txtPassword.AcceptsReturn = true;
+            this.txtPassword.BackColor = System.Drawing.Color.LightGray;
             this.txtPassword.Font =
                 new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtPassword.Location = new System.Drawing.Point(8, 80);
+            this.txtPassword.Location = new System.Drawing.Point(77, 284);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
-            this.txtPassword.Size = new System.Drawing.Size(188, 21);
+            this.txtPassword.Size = new System.Drawing.Size(210, 21);
             this.txtPassword.TabIndex = 5;
             this.txtPassword.WordWrap = false;
             this.txtPassword.Enter += new System.EventHandler(this.TxtPasswordOnEntering);
@@ -116,13 +120,10 @@ namespace Ict.Petra.Client.CommonDialogs
             //
             // btnLogin
             //
-            this.btnLogin.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
-                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.btnLogin.Image = ((System.Drawing.Image)(resources.GetObject("btnLogin.Image")));
-            this.btnLogin.Location = new System.Drawing.Point(4, 7);
+            this.btnLogin.Location = new System.Drawing.Point(137, 7);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(94, 25);
+            this.btnLogin.Size = new System.Drawing.Size(76, 24);
             this.btnLogin.TabIndex = 6;
             this.btnLogin.Text = " &Login";
             this.btnLogin.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -130,83 +131,91 @@ namespace Ict.Petra.Client.CommonDialogs
             //
             // btnCancel
             //
-            this.btnCancel.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
-                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Image = ((System.Drawing.Image)(resources.GetObject("btnCancel.Image")));
-            this.btnCancel.Location = new System.Drawing.Point(4, 37);
+            this.btnCancel.Location = new System.Drawing.Point(217, 7);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(94, 25);
+            this.btnCancel.Size = new System.Drawing.Size(76, 24);
             this.btnCancel.TabIndex = 7;
-            this.btnCancel.Text = " &Cancel";
+            this.btnCancel.Text = " &Quit";
             this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCancel.Click += new System.EventHandler(this.BtnCancelClick);
             //
-            // lblDatabase
-            //
-            this.lblDatabase.Location = new System.Drawing.Point(8, 106);
-            this.lblDatabase.Name = "lblDatabase";
-            this.lblDatabase.Size = new System.Drawing.Size(188, 32);
-            this.lblDatabase.TabIndex = 8;
-            this.lblDatabase.Text = "Database:";
-            this.lblDatabase.Visible = false;
-            //
             // prbLogin
             //
-            this.prbLogin.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
-                                                      System.Windows.Forms.AnchorStyles.Right)));
-            this.prbLogin.Location = new System.Drawing.Point(27, 38);
+            this.prbLogin.Location = new System.Drawing.Point(61, 9);
             this.prbLogin.Name = "prbLogin";
-            this.prbLogin.Size = new System.Drawing.Size(76, 18);
+            this.prbLogin.Size = new System.Drawing.Size(178, 20);
             this.prbLogin.TabIndex = 10;
             this.prbLogin.Visible = false;
             //
             // pnlLoginControls
             //
+            this.pnlLoginControls.Controls.Add(this.btnLogin);
             this.pnlLoginControls.Controls.Add(this.btnCancel);
             this.pnlLoginControls.Controls.Add(this.prbLogin);
-            this.pnlLoginControls.Controls.Add(this.btnLogin);
-            this.pnlLoginControls.Location = new System.Drawing.Point(205, 76);
+            this.pnlLoginControls.Location = new System.Drawing.Point(7, 353);
             this.pnlLoginControls.Name = "pnlLoginControls";
-            this.pnlLoginControls.Size = new System.Drawing.Size(105, 66);
+            this.pnlLoginControls.Size = new System.Drawing.Size(300, 36);
             this.pnlLoginControls.TabIndex = 11;
             //
             // chkRememberUserName
             //
             this.chkRememberUserName.Checked = true;
             this.chkRememberUserName.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkRememberUserName.Location = new System.Drawing.Point(8, 114);
+            this.chkRememberUserName.Location = new System.Drawing.Point(77, 308);
             this.chkRememberUserName.Name = "chkRememberUserName";
             this.chkRememberUserName.Size = new System.Drawing.Size(188, 24);
             this.chkRememberUserName.TabIndex = 12;
-            this.chkRememberUserName.Text = "Remember the username";
+            this.chkRememberUserName.Text = "&Remember the User ID";
             this.chkRememberUserName.UseVisualStyleBackColor = true;
             //
             // label1
             //
-            this.label1.Location = new System.Drawing.Point(8, 145);
+            this.label1.ForeColor = System.Drawing.Color.DimGray;
+            this.label1.Location = new System.Drawing.Point(7, 334);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(271, 16);
+            this.label1.Size = new System.Drawing.Size(293, 16);
             this.label1.TabIndex = 13;
             this.label1.Text = "Initial Login: demo/demo or sysadmin/CHANGEME";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Location = new System.Drawing.Point(56, 7);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(203, 223);
+            this.pictureBox1.TabIndex = 14;
+            this.pictureBox1.TabStop = false;
+            // 
+            // lblPetraVersion
+            // 
+            this.lblPetraVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblPetraVersion.Location = new System.Drawing.Point(20, 231);
+            this.lblPetraVersion.Name = "lblPetraVersion";
+            this.lblPetraVersion.Size = new System.Drawing.Size(267, 18);
+            this.lblPetraVersion.TabIndex = 2;
+            this.lblPetraVersion.Text = "Version";
+            this.lblPetraVersion.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             //
             // TLoginForm
             //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
+            this.BackColor = System.Drawing.Color.White;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(309, 164);
+            this.ClientSize = new System.Drawing.Size(309, 388);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.lblPetraVersion);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.chkRememberUserName);
             this.Controls.Add(this.pnlLoginControls);
-            this.Controls.Add(this.lblDatabase);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.lblPassword);
             this.Controls.Add(this.txtUserName);
             this.Controls.Add(this.lblUserName);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -217,9 +226,11 @@ namespace Ict.Petra.Client.CommonDialogs
             this.Load += new System.EventHandler(this.TLoginFormLoad);
             this.Shown += new System.EventHandler(this.TLoginFormShown);
             this.pnlLoginControls.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+        private System.Windows.Forms.PictureBox pictureBox1;
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox chkRememberUserName;
@@ -227,9 +238,9 @@ namespace Ict.Petra.Client.CommonDialogs
         private System.Windows.Forms.TextBox txtUserName;
         private System.Windows.Forms.Label lblPassword;
         private System.Windows.Forms.TextBox txtPassword;
+        private System.Windows.Forms.Label lblPetraVersion;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnLogin;
-        private System.Windows.Forms.Label lblDatabase;
         private System.Windows.Forms.ProgressBar prbLogin;
         private System.Windows.Forms.Panel pnlLoginControls;
     }
