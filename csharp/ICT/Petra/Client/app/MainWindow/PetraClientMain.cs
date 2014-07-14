@@ -670,6 +670,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractMasterScreen = @TExtractMasterScreenManager.OpenForm;
             TCommonScreensForwarding.OpenDonorRecipientHistoryScreen = @TDonorRecipientHistoryScreenManager.OpenForm;
+            TCommonScreensForwarding.OpenPartnerEditScreen = @TPartnerEditScreenManager.OpenForm;
             TCommonScreensForwarding.OpenExtractMasterScreenHidden = @TExtractMasterScreenManager.OpenFormHidden;
             TCommonScreensForwarding.OpenRangeFindScreen = @TPostcodeRangeSetupManager.OpenModalForm;
             TCommonScreensForwarding.OpenOccupationCodeFindScreen = @TOccupationCodeSetupManager.OpenModalForm;

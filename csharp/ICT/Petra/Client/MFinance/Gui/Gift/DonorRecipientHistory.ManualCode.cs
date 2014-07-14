@@ -588,19 +588,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// static method for opening the window from partner module
         /// </summary>
-        /// <param name="Name"></param>
-        /// <param name="PartnerKey"></param>
-        /// <param name="theParentForm"></param>
-        public static void OpenWindowDonorRecipientHistory(String Name, Int64 PartnerKey, Form theParentForm)
+        /// <param name="ADonor">True if Donor, false if Recipient</param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AParentForm"></param>
+        public static void OpenWindowDonorRecipientHistory(bool ADonor, Int64 APartnerKey, Form AParentForm)
         {
-            if (PartnerKey == -1)
+            if (APartnerKey == -1)
             {
                 MessageBox.Show(Catalog.GetString("No current partner selected"));
                 return;
             }
 
             Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory frmDRH = new  Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory(
-                theParentForm);
+                AParentForm);
 
             // if the user does not have permission to access any Ledgers
             if (((DataView)frmDRH.cmbLedger.cmbCombobox.DataSource).Count == 0)
@@ -613,13 +613,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 frmDRH.Cursor = Cursors.WaitCursor;
 
-                if (Name.Equals("mniMaintainDonorHistory"))
+                if (ADonor)
                 {
-                    frmDRH.Donor = PartnerKey;
+                    frmDRH.Donor = APartnerKey;
                 }
                 else
                 {
-                    frmDRH.Recipient = PartnerKey;
+                    frmDRH.Recipient = APartnerKey;
                 }
 
                 frmDRH.EnableLedgerDropdown();
@@ -683,15 +683,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Opens a Modal instance of the Donor Recipient Screen
         /// </summary>
-        /// <param name="AName">mniMaintainDonorHistory or mniMaintainRecipientHistory</param>
+        /// <param name="ADonor">True if Donor, false if Recipient</param>
         /// <param name="APartnerKey"></param>
         /// <param name="AParentForm"></param>
         /// <returns></returns>
-        public static void OpenForm(String AName,
+        public static void OpenForm(bool ADonor,
             long APartnerKey,
             Form AParentForm)
         {
-            TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AName, APartnerKey, AParentForm);
+            TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(ADonor, APartnerKey, AParentForm);
         }
     }
 }
