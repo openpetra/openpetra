@@ -2505,7 +2505,7 @@ namespace Ict.Petra.Client.CommonControls
         	
         	if (AOpenPartnerEditScreen)
         	{
-        		CustomContextMenuStrip.Items.Add(Catalog.GetString("Partner Edit Screen"), null, new EventHandler(this.OpenPartnerEditScreen));
+        		CustomContextMenuStrip.Items.Add(Catalog.GetString("Open in Partner Edit Screen"), null, new EventHandler(this.OpenPartnerEditScreen));
         	}
         	
     		CustomContextMenuStrip.Items.Add("-");

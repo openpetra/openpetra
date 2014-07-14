@@ -156,11 +156,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
         	List<Tuple<string, EventHandler>> ItemList = new List<Tuple<string, EventHandler>>();
 
-            ItemList.Add(new Tuple<string, EventHandler>("Donor History", OpenDonorHistory));
+            ItemList.Add(new Tuple<string, EventHandler>("Open Donor History", OpenDonorHistory));
          	txtDetailDonorKey.AddCustomContextMenuItems(ItemList);
          	
          	ItemList.Clear();
-            ItemList.Add(new Tuple<string, EventHandler>("Recipient History", OpenRecipientHistory));
+            ItemList.Add(new Tuple<string, EventHandler>("Open Recipient History", OpenRecipientHistory));
          	txtDetailRecipientKey.AddCustomContextMenuItems(ItemList);
         }
 
