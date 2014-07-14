@@ -358,6 +358,63 @@ namespace Tests.MFinance.GLBatches
         }
 
         /// <summary>
+        /// test the import of gl batches
+        /// </summary>
+        [Test]
+        public void TestImportGLBatch()
+        {
+            int NumberOfBatches = 0;
+
+            string TestFile = TAppSettingsManager.GetValue("Testing.Path") + "/MFinance/GLForm/TestData/BatchImportFloatTest.csv";
+
+            TestFile = Path.GetFullPath(TestFile);
+            Assert.IsTrue(File.Exists(TestFile), "File does not exist: " + TestFile);
+
+            TFrmGLBatch frmBatch = new TFrmGLBatch(null);
+            TFrmGLBatch frmBatch1 = new TFrmGLBatch(null);
+
+            //Open the batch form and count no. of batches
+            frmBatch.LedgerNumber = FLedgerNumber;
+            frmBatch.Show();
+            TSgrdDataGridPagedTester grdDetails = new TSgrdDataGridPagedTester("grdDetails");
+            NumberOfBatches = grdDetails.Count - 1;
+            TLogging.Log("NumberOfBatches: " + NumberOfBatches.ToString());
+
+            //Close the form
+            frmBatch.Close();
+
+            ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+            {
+                OpenFileDialogTester tester = new OpenFileDialogTester(hWnd);
+
+                ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
+                {
+                    TDlgSelectCSVSeparatorTester tester2 = new TDlgSelectCSVSeparatorTester(hWnd2);
+                    TextBoxTester txtDateFormat = new TextBoxTester("txtDateFormat");
+                    txtDateFormat.Properties.Text = "MM/dd/yyyy";
+                    RadioButtonTester rbtSemicolon = new RadioButtonTester("rbtSemicolon");
+                    rbtSemicolon.Properties.Checked = true;
+
+                    ButtonTester btnOK = new ButtonTester("btnOK", tester2.Properties.Name);
+                    btnOK.Click();
+                };
+
+                tester.OpenFile(TestFile);
+            };
+
+            //Set the batch form to open with importing batches dialog
+            frmBatch1.LoadForImport = true;
+            frmBatch1.LedgerNumber = FLedgerNumber;
+            frmBatch1.Show();
+
+            TSgrdDataGridPagedTester grdDetails1 = new TSgrdDataGridPagedTester("grdDetails");
+            TLogging.Log("grdDetails.Count after import: " + grdDetails1.Count.ToString());
+            Assert.AreNotEqual(NumberOfBatches, grdDetails1.Count, "The grid should include imported batches");
+
+            frmBatch1.Close();
+        }
+
+        /// <summary>
         /// test the import of gl transactions
         /// </summary>
         [Test]
