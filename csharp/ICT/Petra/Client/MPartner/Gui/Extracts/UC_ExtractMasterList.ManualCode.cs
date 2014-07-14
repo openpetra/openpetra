@@ -968,7 +968,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 // show the screen in case it has been hidden
                                 FPetraUtilsObject.GetForm().Show();
                                 // filter results to show the new extract
-                                ((TextBox)FFilterPanelControls.FindControlByName("txtExtractName")).Text =
+                                ((TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtExtractName")).Text =
                                     ((TFormsMessage.FormsMessageName)AFormsMessage.MessageObject).Name;
                             });
                     }

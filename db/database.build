@@ -5,7 +5,9 @@
 
     <property name="DBMS.DBName" value="openpetra" unless="${property::exists('DBMS.DBName')}"/>
     <property name="psqlversion" value="9" unless="${property::exists('psqlversion')}"/>
-
+    <!-- CreateDBForPublicInstaller Property gets set to true when the standalone Windows Installer is built! -->
+    <property name="CreateDBForPublicInstaller" value="false"/>
+    
     <target name="patchDatabase" depends="init" description="Update the development database to the latest database version so that the latest OpenPetra server can connect to the db">
 
         <if test="${DBMS.Type=='sqlite'}">
@@ -216,6 +218,7 @@
          </if>
          <property name="BaseData.Dir" value="${OpenPetraRoot.dir}/db/basedata"/>
          <property name="DemoData.Dir" value="${OpenPetraRoot.dir}/db/${SelectedDemo}"/>
+         <property name="PublicInstallerDemoData.Dir" value="${OpenPetraRoot.dir}/db/${PublicInstallerDemo}"/>
 
          <copy file="${DemoData.Dir}/a_accounting_period.csv"
             tofile="${DemoData.Dir}/a_accounting_period.csv.local" overwrite="true" outputencoding="latin1">
@@ -271,6 +274,12 @@
              <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/clean.sql -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
              <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+             <if test="${CreateDBForPublicInstaller=='true'}">
+                 <echo message='Modifying Database for the public installer!'/>
+                 <copy file="${PublicInstallerDemoData.Dir}/init.sql"
+                     tofile="${PublicInstallerDemoData.Dir}/init.sql.local" overwrite="true"/>
+                 <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedb.file} -datapath:${DemoData.Dir} -sqlfile:${PublicInstallerDemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+             </if>
         </if>
         <if test="${DBMS.Type=='postgresql'}">
              <if test="${psqlversion=='9'}">

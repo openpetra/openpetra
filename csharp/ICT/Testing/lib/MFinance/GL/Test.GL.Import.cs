@@ -56,17 +56,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public class TestGLImport
     {
-        private int intLedgerNumber = 43;
+        private int FLedgerNumber = 43;
 
         /// <summary>
         /// Test_01_GL_Import
         /// </summary>
         [Test]
-        public void Test_01_GL_Import()
+        public void Test_01_GL_Batch_Import()
         {
             Hashtable requestParams = new Hashtable();
 
-            requestParams.Add("ALedgerNumber", intLedgerNumber);
+            requestParams.Add("ALedgerNumber", FLedgerNumber);
             requestParams.Add("Delimiter", ";");
             requestParams.Add("DateFormatString", "dd/MM/yyyy");
             requestParams.Add("NumberFormat", "European");
@@ -77,7 +77,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             strContent = strContent.Replace("31/07/2010", "31/07/" + DateTime.Now.Year.ToString());
             strContent = strContent.Replace("02/07/2010", "02/07/" + DateTime.Now.Year.ToString());
-            strContent = strContent.Replace("{ledgernumber}", intLedgerNumber.ToString());
+            strContent = strContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
 
             TVerificationResultCollection verificationResult;
 
@@ -104,19 +104,19 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         private void PrepareTestCaseData()
         {
             // new database because period July has to be open
-            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             // Check if some special test data are available - otherwise load ...
-            bool CostCentreTestCasesAvailable = ACostCentreAccess.Exists(intLedgerNumber, "4301", Transaction);
+            bool CostCentreTestCasesAvailable = ACostCentreAccess.Exists(FLedgerNumber, "4301", Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             if (!CostCentreTestCasesAvailable)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-costcentre-data.sql", intLedgerNumber);
+                    "test-sql\\gl-test-costcentre-data.sql", FLedgerNumber);
             }
         }
 

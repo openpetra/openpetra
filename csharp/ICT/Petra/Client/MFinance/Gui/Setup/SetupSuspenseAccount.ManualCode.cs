@@ -159,7 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 "Parent_a_account_code_short_desc_c",
                 "varchar",
                 String.Empty);
-            FFilterPanelControls.FStandardFilterPanels.Add(iffp);
+            FFilterAndFindObject.FilterPanelControls.FStandardFilterPanels.Add(iffp);
         }
     }
 }

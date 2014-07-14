@@ -24,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
@@ -549,6 +550,30 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     // Clear these controls as well
                     ClearControls(ctrl);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of relevant controls, sorted correctly by multi-level TabIndex in exactly the same way that the system uses to determine screen tab order.
+        /// This includes nested controls so the tab order is, say, 100, 110, 120.30, 120.40, 130
+        /// The method calls itself recursively for each contained panel
+        /// </summary>
+        /// <param name="ASortedControlList">Pass in the SortedList that will be the final result</param>
+        /// <param name="AContainerControl">The contianer control (a Panel) that is to be searched for controls and sub-Panels</param>
+        /// <param name="APrefix">A TabIndex prefix - use an empty string for the initial call</param>
+        public void GetSortedControlList(ref SortedList <string, Control>ASortedControlList, Control AContainerControl, string APrefix)
+        {
+            foreach (Control control in AContainerControl.Controls)
+            {
+                if (control is Panel)
+                {
+                    // Recursive call with an extended prefix
+                    GetSortedControlList(ref ASortedControlList, control, String.Format("{0}{1}.", APrefix, control.TabIndex.ToString("0000")));
+                }
+                else if (control is TextBox || control is ComboBox || control is TCmbAutoPopulated)
+                {
+                    ASortedControlList.Add(String.Format("{0}{1}", APrefix, control.TabIndex.ToString("0000")), control);
                 }
             }
         }

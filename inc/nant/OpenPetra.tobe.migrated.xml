@@ -121,6 +121,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <!-- Some database settings -->
 <property name="DBDoc.Output.dir" value="${dir.delivery}/dbdoc" overwrite="false" />
 <property name="SelectedDemo" value="demodataGermany" overwrite="false"/>
+<property name="PublicInstallerDemo" value="demodataPublicInstaller" overwrite="false"/>
 
 <!-- set platform specific variables -->
 <if test="${'win32'==platform::get-name()}" >

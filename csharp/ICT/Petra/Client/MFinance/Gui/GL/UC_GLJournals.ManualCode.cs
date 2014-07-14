@@ -152,8 +152,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ShowData();
 
                 // Now set up the complete current filter
-                FFilterPanelControls.SetBaseFilter(FMainDS.AJournal.DefaultView.RowFilter, true);
-                ApplyFilter();
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FMainDS.AJournal.DefaultView.RowFilter, true);
+                FFilterAndFindObject.ApplyFilter();
 
                 FJournalsLoaded = true;
             }
@@ -162,7 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SelectRowInGrid((BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow);
 
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
         }
 
         private void SetJournalDefaultView()
@@ -172,8 +172,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FBatchNumber);
 
             FMainDS.AJournal.DefaultView.RowFilter = rowFilter;
-            FFilterPanelControls.SetBaseFilter(rowFilter, true);
-            FCurrentActiveFilter = rowFilter;
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
+            FFilterAndFindObject.CurrentActiveFilter = rowFilter;
 
             FMainDS.AJournal.DefaultView.Sort = String.Format("{0} DESC",
                 AJournalTable.GetJournalNumberDBName()
@@ -534,12 +534,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void ShowFindPanel()
         {
-            if (FucoFilterAndFind == null)
+            if (FFilterAndFindObject.FilterFindPanel == null)
             {
-                ToggleFilter();
+                FFilterAndFindObject.ToggleFilter();
             }
 
-            FucoFilterAndFind.DisplayFindTab();
+            FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
         }
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
@@ -624,50 +624,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetSelectedDetailRow().DateEffective = AEffectiveDate;
                 dtpDetailDateEffective.Date = AEffectiveDate;
                 GetDetailsFromControls(GetSelectedDetailRow());
-            }
-        }
-
-        private void ImportTransactions(object sender, EventArgs e)
-        {
-            ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
-        }
-
-        /// <summary>
-        /// Set the last transaction number for the current journal
-        /// </summary>
-        /// <param name="AFromOutside"></param>
-        public void SetJournalLastTransNumber(bool AFromOutside = false)
-        {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
-
-            int JournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
-
-            string rowFilter = String.Format("{0}={1} And {2}={3}",
-                ATransactionTable.GetBatchNumberDBName(),
-                FBatchNumber,
-                ATransactionTable.GetJournalNumberDBName(),
-                JournalNumber);
-
-            string sort = ATransactionTable.GetTransactionNumberDBName() + " DESC";
-
-            DataView dv = new DataView(FMainDS.ATransaction, rowFilter, sort, DataViewRowState.CurrentRows);
-
-            if ((dv.Count == 0) && !AFromOutside)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(FLedgerNumber, FBatchNumber, JournalNumber));
-            }
-
-            if (dv.Count > 0)
-            {
-                ATransactionRow transRow = (ATransactionRow)dv[0].Row;
-                FPreviouslySelectedDetailRow.LastTransactionNumber = transRow.TransactionNumber;
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow.LastTransactionNumber = 0;
             }
         }
     }
