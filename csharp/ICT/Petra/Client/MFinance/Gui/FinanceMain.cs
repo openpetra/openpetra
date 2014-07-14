@@ -24,6 +24,7 @@
 using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 
@@ -122,6 +123,16 @@ namespace Ict.Petra.Client.MFinance.Gui
 
             frm.CalledFromExtracts = true;
             frm.Show();
+        }
+
+        /// Open screen for importing Batches
+        public static void LoadGLBatchesFormForImport(Form AParentForm, int ALedger)
+        {
+            TFrmGLBatch frmBatch = new TFrmGLBatch(AParentForm);
+
+            frmBatch.LoadForImport = true;
+            frmBatch.LedgerNumber = ALedger;
+            frmBatch.Show();
         }
     }
 }

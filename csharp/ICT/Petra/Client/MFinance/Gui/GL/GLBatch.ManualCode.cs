@@ -56,6 +56,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private eGLTabs FPreviouslySelectedTab = eGLTabs.Batches;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
+        private bool FLoadForImport = false;
+
+        /// <summary>
+        /// specify to load and import batches
+        /// </summary>
+        public Boolean LoadForImport
+        {
+            set
+            {
+                FLoadForImport = value;
+            }
+            get
+            {
+                return FLoadForImport;
+            }
+        }
 
         /// <summary>
         /// use this ledger

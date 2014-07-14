@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxIcon.Information);
 
                     SaveUserDefaults(dialog, impOptions);
-                    LoadBatches(FLedgerNumber);
+                    ReloadBatches();
                     FPetraUtilsObject.DisableSaveButton();
                 }
             }
@@ -232,8 +232,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             FPreviouslySelectedDetailRow.BatchNumber, CurrentJournal.JournalNumber));
                     //Update totals and set Journal last transaction number
                     GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow, true);
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().SelectRow(1);
                     ((TFrmGLBatch) this.ParentForm).SaveChanges();
-                    FPetraUtilsObject.DisableSaveButton();
                 }
             }
         }
