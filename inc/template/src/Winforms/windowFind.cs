@@ -35,7 +35,12 @@ namespace {#NAMESPACE}
 {
 
   /// auto generated: {#FORMTITLE}
-  public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
+  public partial class {#CLASSNAME}: System.Windows.Forms.Form
+                                     , {#INTERFACENAME}
+{#IFDEF FILTERANDFIND}
+                                     , IFilterAndFind
+                                     , IButtonPanel
+{#ENDIF FILTERANDFIND}
   {
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 {#IFDEF DATASETTYPE}
@@ -94,7 +99,9 @@ namespace {#NAMESPACE}
       SetPrimaryKeyControl();
 {#ENDIF MASTERTABLE OR DETAILTABLE}
 {#IFDEF FILTERANDFIND}
-      SetupFilterAndFindControls();
+      FinishButtonPanelSetup();
+      FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter, lblRecordCounter);
+      FFilterAndFindObject.SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
     }
 
@@ -248,6 +255,54 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
 
 #region Filter and Find
+
+    ///<summary>
+    /// Finish the set up of the Button Panel.
+    /// </summary>
+    private void FinishButtonPanelSetup()
+    {
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+        lblRecordCounter.AutoSize = true;
+        lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+        lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+        pnlButtonsRecordCounter.AutoSize = true;
+
+        UpdateRecordNumberDisplay();
+    }
+
+    ///<summary>
+    /// Update the text in the button panel indicating details of the record count
+    /// </summary>
+    public void UpdateRecordNumberDisplay()
+    {
+        if (grdDetails.DataSource != null)
+        {
+            int RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            lblRecordCounter.Text = String.Format(
+                Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
+                RecordCount);
+        }
+    }
+
+    /// <summary>
+    /// Gets the selected grid row as a generic DataRow for use by interfaces
+    /// </summary>
+    /// <returns>The selected row - or null if no row is selected</returns>
+    public DataRow GetSelectedDataRow()
+    {
+        return FPreviouslySelectedDetailRow;
+    }
+
+    /// <summary>
+    /// Gets the selected Data Row index in the grid.  The first data row is 1.
+    /// </summary>
+    /// <returns>The selected row - or -1 if no row is selected</returns>
+    public Int32 GetSelectedRowIndex()
+    {
+        return FPrevRowChangedRow;
+    }
+
     {#FILTERANDFINDMETHODS}
 #endregion
 {#ENDIF FILTERANDFIND}    
@@ -499,15 +554,15 @@ namespace {#NAMESPACE}
             }
         }
 {#IFDEF FILTERANDFIND}
-        else if (FFailedValidation_CtrlChangeEventArgsInfo != null)
+        else if (FFilterAndFindObject.FailedValidation_CtrlChangeEventArgsInfo != null)
         {
             // The validation is all ok...  But we do have an outstanding filter update that we did not show due to previous invalid data
             //  So we can call that now and update the display.
-            FucoFilterAndFind_ArgumentCtrlValueChanged(FFailedValidation_CtrlChangeEventArgsInfo.Sender,
-                (TUcoFilterAndFind.TContextEventExtControlValueArgs)FFailedValidation_CtrlChangeEventArgsInfo.EventArgs);
+            FFilterAndFindObject.FucoFilterAndFind_ArgumentCtrlValueChanged(FFilterAndFindObject.FailedValidation_CtrlChangeEventArgsInfo.Sender,
+                (TUcoFilterAndFind.TContextEventExtControlValueArgs)FFilterAndFindObject.FailedValidation_CtrlChangeEventArgsInfo.EventArgs);
             
             // Reset our cached change event
-            FFailedValidation_CtrlChangeEventArgsInfo = null;
+            FFilterAndFindObject.FailedValidation_CtrlChangeEventArgsInfo = null;
         }
 {#ENDIF FILTERANDFIND}    
     }

@@ -71,10 +71,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdSuppliers.DataPageLoaded += new TDataPageLoadedEventHandler(grdSuppliers_DataPageLoaded);
         }
 
-        /// ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// These methods are stubs that allow the auto-generated code to compile (we don't have a details panel)
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // These methods are stubs that allow the auto-generated code to compile (we don't have a details panel)
+        // Also, although the template implements Filter/Find, it doesn't implement IGridBase
 
-        private void SelectRowInGrid(int ARowNumber)
+        /// <summary>
+        /// Method required by IGridBase.
+        /// </summary>
+        public void SelectRowInGrid(int ARowNumber)
         {
             if (ARowNumber >= grdSuppliers.Rows.Count)
             {
@@ -114,25 +118,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             utils.SetStatusBarText(chkToggleFilter, Catalog.GetString("Click to show/hide the Filter/Find panel"));
         }
 
-        private void UpdateRecordNumberDisplay()
-        {
-            int RecordCount;
-
-            if (grdDetails.DataSource != null)
-            {
-                int totalTableRecords = grdSuppliers.TotalRecords;
-                int totalGridRecords = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-
-                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-                lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
-                        true),
-                    RecordCount) + String.Format(" ({0})", totalTableRecords);
-
-                SetRecordNumberDisplayProperties();
-            }
-        }
-
         /// <summary>
         /// Called when the main screen is activated
         /// </summary>
@@ -147,7 +132,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             cmbSource.InitialiseUserControl();
 
             // Populate our filter combo from this one
-            TCmbAutoComplete cmbCurrency = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbCurrency");
+            TCmbAutoComplete cmbCurrency = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbCurrency");
             cmbCurrency.DisplayMember = cmbSource.cmbCombobox.DisplayMember;
             cmbCurrency.ValueMember = cmbSource.cmbCombobox.ValueMember;
             cmbCurrency.DataSource = ((DataView)cmbSource.cmbCombobox.DataSource).ToTable().DefaultView;
@@ -308,7 +293,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdSuppliers.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
             SetSupplierFilters(null, null);
-            ApplyFilterManual(ref FCurrentActiveFilter);
+            string currentFilter = FFilterAndFindObject.CurrentActiveFilter;
+            ApplyFilterManual(ref currentFilter);
 
             if (grdSuppliers.TotalPages > 0)
             {
@@ -375,14 +361,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 string filter = String.Empty;
                 string filterJoint = " AND ";
 
-                TextBox txtSupplierName = (TextBox)FFilterPanelControls.FindControlByName("txtSupplierName");
+                TextBox txtSupplierName = (TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtSupplierName");
 
                 if (txtSupplierName.Text.Trim().Length > 0)
                 {
                     filter += String.Format("(PartnerShortName LIKE '%{0}%')", txtSupplierName.Text.Trim());
                 }
 
-                TCmbAutoComplete cmbCurrency = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbCurrency");
+                TCmbAutoComplete cmbCurrency = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbCurrency");
 
                 if (cmbCurrency.Text.Length > 0)
                 {
@@ -394,7 +380,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     filter += String.Format("(CurrencyCode='{0}')", cmbCurrency.Text);
                 }
 
-                RadioButton rbtActiveSuppliers = (RadioButton)FFilterPanelControls.FindControlByName("rbtActiveSuppliers");
+                RadioButton rbtActiveSuppliers = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtActiveSuppliers");
 
                 if (rbtActiveSuppliers.Checked)
                 {
@@ -406,7 +392,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     filter += "(StatusCode='ACTIVE')";
                 }
 
-                RadioButton rbtInactiveSuppliers = (RadioButton)FFilterPanelControls.FindControlByName("rbtInactiveSuppliers");
+                RadioButton rbtInactiveSuppliers = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtInactiveSuppliers");
 
                 if (rbtInactiveSuppliers.Checked)
                 {
@@ -418,7 +404,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     filter += "(StatusCode='INACTIVE')";
                 }
 
-                FFilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
             }
         }
 
@@ -576,7 +562,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private bool IsMatchingRowManual(DataRow ARow)
         {
-            string supplierKey = ((TextBox)FFindPanelControls.FindControlByName("txtSupplierKey")).Text;
+            string supplierKey = ((TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtSupplierKey")).Text;
 
             if (supplierKey != String.Empty)
             {
@@ -586,7 +572,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            string supplierName = ((TextBox)FFindPanelControls.FindControlByName("txtSupplierName")).Text.ToLower();
+            string supplierName = ((TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtSupplierName")).Text.ToLower();
 
             if (supplierName != String.Empty)
             {

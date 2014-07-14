@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ShowData();
 
                 // Now set up the complete current filter
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             //Check for incorrect Exchange rate to base
@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SelectRowInGrid((BatchChanged || FirstRun) ? 1 : FPrevRowChangedRow);
 
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
         }
 
         private void SetJournalDefaultView()
@@ -160,8 +160,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FBatchNumber);
 
             FMainDS.ARecurringJournal.DefaultView.RowFilter = rowFilter;
-            FFilterPanelControls.SetBaseFilter(rowFilter, true);
-            FCurrentActiveFilter = rowFilter;
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
+            FFilterAndFindObject.CurrentActiveFilter = rowFilter;
 
             FMainDS.ARecurringJournal.DefaultView.Sort = String.Format("{0} DESC",
                 ARecurringJournalTable.GetJournalNumberDBName()
@@ -700,12 +700,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void ShowFindPanel()
         {
-            if (FucoFilterAndFind == null)
+            if (FFilterAndFindObject.FilterFindPanel == null)
             {
-                ToggleFilter();
+                FFilterAndFindObject.ToggleFilter();
             }
 
-            FucoFilterAndFind.DisplayFindTab();
+            FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
         }
 
         private void CurrencyCodeChanged(object sender, EventArgs e)

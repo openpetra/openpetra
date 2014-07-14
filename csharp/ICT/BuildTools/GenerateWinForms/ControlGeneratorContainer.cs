@@ -813,9 +813,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 writer.Template.SetCodelet("CUSTOMDISPOSING",
-                    "if (FucoFilterAndFind != null)" + Environment.NewLine +
+                    "if (FFilterAndFindObject.FilterFindPanel != null)" + Environment.NewLine +
                     "{" + Environment.NewLine +
-                    "    FucoFilterAndFind.Dispose();" + Environment.NewLine +
+                    "    FFilterAndFindObject.FilterFindPanel.Dispose();" + Environment.NewLine +
                     "}");
 
                 XmlNodeList controlAttributesList = null;
@@ -882,7 +882,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (FCodeStorage.ManualFileExistsAndContains("void ApplyFilterManual(ref"))
                 {
-                    writer.Template.SetCodelet("APPLYFILTERMANUAL", "ApplyFilterManual(ref FCurrentActiveFilter);" + Environment.NewLine);
+                    writer.Template.SetCodelet("APPLYFILTERMANUAL", "ApplyFilterManual(ref AFilterString);" + Environment.NewLine);
                 }
                 else
                 {
@@ -895,7 +895,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    writer.Template.SetCodelet("ISMATCHINGROW", "FFindPanelControls.IsMatchingRow");
+                    writer.Template.SetCodelet("ISMATCHINGROW", "FFilterAndFindObject.FindPanelControls.IsMatchingRow");
                 }
 
                 // Write the whole thing out
@@ -1493,7 +1493,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else if (att.Name == "Width")
                 {
-                    string width = String.Format("Math.Min({0}, FFilterAndFindParameters.FindAndFilterInitialWidth)", att.Value);
+                    string width = String.Format("Math.Min({0}, FFilterAndFindObject.FilterAndFindParameters.FindAndFilterInitialWidth)", att.Value);
                     AddFilterFindProperty(writer, AControlType, APanelType, AControlName, att.Name, width);
                 }
                 else if (att.Name == "Label")

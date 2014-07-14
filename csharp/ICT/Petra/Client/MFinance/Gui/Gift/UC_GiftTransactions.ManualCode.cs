@@ -351,9 +351,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
 
             // Now we set the full filter
-            ApplyFilter();
+            FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             SelectRowInGrid(1);
 
@@ -1484,7 +1484,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 SetGiftDetailDefaultView();
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             UpdateRecordNumberDisplay();
@@ -1643,9 +1643,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 string rowFilter = String.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
-                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
                 FMainDS.AGiftDetail.DefaultView.RowFilter = rowFilter;
-                FCurrentActiveFilter = rowFilter;
+                FFilterAndFindObject.CurrentActiveFilter = rowFilter;
                 // We don't apply the filter yet!
 
                 FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1}",
@@ -1754,24 +1754,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
                 {
-                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                     {
                         MessageBox.Show(
                             MCommonResourcestrings.StrNewRecordIsFiltered,
                             MCommonResourcestrings.StrAddNewRecordTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        FFilterPanelControls.ClearAllDiscretionaryFilters();
+                        FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
 
-                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
                         {
-                            ApplyFilter();
+                            FFilterAndFindObject.ApplyFilter();
                         }
 
                         SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
                     }
                 }
 
-                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
                 UpdateRecordNumberDisplay();
 
                 //Focus accordingly
@@ -2080,7 +2080,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = pnlDetailsEnabledState;
 
             btnDelete.Enabled = pnlDetailsEnabledState;
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
         }
@@ -2247,7 +2247,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.AutoResizeGrid();
             }
 
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)

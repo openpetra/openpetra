@@ -226,7 +226,26 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void ShowErrorPopup()
         {
-            if (TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified")
+            // Note from AlanP: This method will show an appropriate Fast Reports error message box depending on the InitState
+            // We want to show this error if FastReports is supposed to be used but is not installed.
+            // We do not want to show it if FastReports is NOT supposed to be used....
+            // If FastReports is not supposed to be used the database will have an entry: USEXMLREPORTS (in system defaults table)
+            // However the only quirk to this simple arrangement is that in OM we do want to use FastReports - but it does not HAVE to be installed
+            //   in many circumstances.  It may well not be installed on our continuous integration server for example.
+            // When the CI server runs the test suite, one of the tests is to open all the main screens from the main menu.
+            // It does this on a 'new', 'blank' database which will not have 'USEXMLREPORTS' in the defaults table.
+            // As a result the test fails because an unexpected modal dialog appears that is not dealt with
+            // So we would like to know if the method is being run in the context of a test or not.
+            // We achieve this by the first line of code in the method.
+            // If FPetraUtilsObject is null, this wrapper has been created using the constructor that specifies the ReportName.
+            //   This is never used (at present anyway) in the context of a test.
+            // If FPetraUtilsObject is non-null, we can always (at present) detect the difference between a screen opened from the main menu and a screen opened for a test
+            //   because, in the latter case, the CallerForm will be null.
+            // If, in the future, this 'workaround' can no longer be used (because we start to use a FastReports test?), we will have to do things differently.
+
+            Boolean IsTestContext = (FPetraUtilsObject != null) && (FPetraUtilsObject.GetCallerForm() == null);
+
+            if ((TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified") && !IsTestContext)
             {
                 String Msg = "";
 
