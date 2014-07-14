@@ -2013,5 +2013,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return RetVal;
         }
+
+        private void ImportTransactions(object sender, EventArgs e)
+        {
+            ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
+        }
+
+        /// <summary>
+        /// Select a row in the grid
+        ///   Called from outside
+        /// </summary>
+        /// <param name="ARowNumber"></param>
+        public void SelectRow(int ARowNumber)
+        {
+            SelectRowInGrid(ARowNumber);
+        }
     }
 }

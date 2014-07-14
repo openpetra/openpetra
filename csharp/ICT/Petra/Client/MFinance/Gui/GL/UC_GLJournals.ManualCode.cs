@@ -626,49 +626,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
-
-        private void ImportTransactions(object sender, EventArgs e)
-        {
-            ((TFrmGLBatch)ParentForm).GetBatchControl().ImportTransactions();
-        }
-
-        /// <summary>
-        /// Set the last transaction number for the current journal
-        /// </summary>
-        /// <param name="AFromOutside"></param>
-        public void SetJournalLastTransNumber(bool AFromOutside = false)
-        {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
-
-            int JournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
-
-            string rowFilter = String.Format("{0}={1} And {2}={3}",
-                ATransactionTable.GetBatchNumberDBName(),
-                FBatchNumber,
-                ATransactionTable.GetJournalNumberDBName(),
-                JournalNumber);
-
-            string sort = ATransactionTable.GetTransactionNumberDBName() + " DESC";
-
-            DataView dv = new DataView(FMainDS.ATransaction, rowFilter, sort, DataViewRowState.CurrentRows);
-
-            if ((dv.Count == 0) && !AFromOutside)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(FLedgerNumber, FBatchNumber, JournalNumber));
-            }
-
-            if (dv.Count > 0)
-            {
-                ATransactionRow transRow = (ATransactionRow)dv[0].Row;
-                FPreviouslySelectedDetailRow.LastTransactionNumber = transRow.TransactionNumber;
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow.LastTransactionNumber = 0;
-            }
-        }
     }
 }
