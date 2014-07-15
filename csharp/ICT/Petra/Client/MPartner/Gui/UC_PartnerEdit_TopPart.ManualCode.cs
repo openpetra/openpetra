@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtPersonFamilyName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     this.cmbPersonGender.SelectedValueChanged += new System.EventHandler(this.CmbPersonGender_SelectedValueChanged);
 
-                    txtPartnerClass.BackColor = System.Drawing.Color.Yellow;
+                    txtPartnerClass.BackColor = TCommonControlsHelper.PartnerClassPERSONColour;
                     
                     break;
 
