@@ -749,7 +749,7 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
                     }
-            
+
                     AddCustomContextMenuStrip();
 
                     #endregion
@@ -795,9 +795,9 @@ namespace Ict.Petra.Client.CommonControls
                     this.txtAutoPopulated.txtTextBox.Text = "0000000000";
                     this.txtAutoPopulated.Size = this.Size;
                     this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
-            
+
                     AddCustomContextMenuStrip();
-                    
+
                     #endregion
                     break;
 
@@ -817,9 +817,9 @@ namespace Ict.Petra.Client.CommonControls
                     this.txtAutoPopulated.txtTextBox.Text = "0000000000";
                     this.txtAutoPopulated.Size = this.Size;
                     this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
-            
+
                     AddCustomContextMenuStrip();
-                    
+
                     #endregion
                     break;
 
@@ -843,7 +843,7 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
                     }
-            
+
                     AddCustomContextMenuStrip();
 
                     #endregion
@@ -2495,103 +2495,103 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         #endregion
-        
+
         #region Custom ContextMenuStrip
-        
+
         // create ContextMenuStrip with default items
         private void AddCustomContextMenuStrip(bool AOpenPartnerEditScreen = true)
         {
-        	ContextMenuStrip CustomContextMenuStrip = new ContextMenuStrip();
-        	
-        	if (AOpenPartnerEditScreen)
-        	{
-        		CustomContextMenuStrip.Items.Add(Catalog.GetString("Open in Partner Edit Screen"), null, new EventHandler(this.OpenPartnerEditScreen));
-        	}
-        	
-    		CustomContextMenuStrip.Items.Add("-");
-        	CustomContextMenuStrip.Items.Add(Catalog.GetString("Copy"), null, new EventHandler(this.ClickCopy));
-        	CustomContextMenuStrip.Items.Add(new ToolStripSeparator());
-        	CustomContextMenuStrip.Items.Add(Catalog.GetString("Select All"), null, new EventHandler(this.ClickSelectAll));
-        	
-        	this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
-        	
-        	// event is fired just before the contextmenustrip is displayed
-        	this.txtAutoPopulated.lblLabel.ContextMenuStrip.Opening += new CancelEventHandler(CustomContextMenuStrip_Opening);
+            ContextMenuStrip CustomContextMenuStrip = new ContextMenuStrip();
+
+            if (AOpenPartnerEditScreen)
+            {
+                CustomContextMenuStrip.Items.Add(Catalog.GetString("Open in Partner Edit Screen"), null, new EventHandler(this.OpenPartnerEditScreen));
+            }
+
+            CustomContextMenuStrip.Items.Add("-");
+            CustomContextMenuStrip.Items.Add(Catalog.GetString("Copy"), null, new EventHandler(this.ClickCopy));
+            CustomContextMenuStrip.Items.Add(new ToolStripSeparator());
+            CustomContextMenuStrip.Items.Add(Catalog.GetString("Select All"), null, new EventHandler(this.ClickSelectAll));
+
+            this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
+
+            // event is fired just before the contextmenustrip is displayed
+            this.txtAutoPopulated.lblLabel.ContextMenuStrip.Opening += new CancelEventHandler(CustomContextMenuStrip_Opening);
         }
-        
+
         /// <summary>
         /// Adds items to controls ContextMenuStrip
         /// </summary>
         /// <param name="AMenuItems">Item name and corresponding EventHandler</param>
-        public void AddCustomContextMenuItems(List<Tuple<string, EventHandler>> AMenuItems)
+        public void AddCustomContextMenuItems(List <Tuple <string, EventHandler>>AMenuItems)
         {
-        	if (AMenuItems.Count == 0)
-        	{
-        		return;
-        	}
+            if (AMenuItems.Count == 0)
+            {
+                return;
+            }
 
-        	ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
-        	int Index = 1;
-        	
-        	// if a custom ContextMenuIndex has not already been created then do that now (i.e. all textboxes not using Partner Keys)
-        	if (CustomContextMenuStrip == null)
-        	{
-        		AddCustomContextMenuStrip(false);
-        		CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
-        		Index = 0;
-        	}
-        	
-        	foreach (Tuple<string, EventHandler> MenuItem in AMenuItems)
-        	{
-        		CustomContextMenuStrip.Items.Insert(Index, new ToolStripMenuItem(MenuItem.Item1, null, MenuItem.Item2));
-        		Index++;
-        	}
-        	
-        	this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
+            ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
+            int Index = 1;
+
+            // if a custom ContextMenuIndex has not already been created then do that now (i.e. all textboxes not using Partner Keys)
+            if (CustomContextMenuStrip == null)
+            {
+                AddCustomContextMenuStrip(false);
+                CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
+                Index = 0;
+            }
+
+            foreach (Tuple <string, EventHandler>MenuItem in AMenuItems)
+            {
+                CustomContextMenuStrip.Items.Insert(Index, new ToolStripMenuItem(MenuItem.Item1, null, MenuItem.Item2));
+                Index++;
+            }
+
+            this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
         }
-        
+
         private void CustomContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
-    		ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
-        	
-    		// if textbox label is blank then disable each item or vica versa
-    		if (string.IsNullOrEmpty(this.txtAutoPopulated.lblLabel.Text))
-	    	{
-        		foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
-        		{
-        			Item.Enabled = false;
-        		}
-	    	}
-    		else
-			{
-        		foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
-        		{
-        			Item.Enabled = true;
-        		}
-	    	}
-        	
-        	// Set Cancel to false.
-        	e.Cancel = false;
+            ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
+
+            // if textbox label is blank then disable each item or vica versa
+            if (string.IsNullOrEmpty(this.txtAutoPopulated.lblLabel.Text))
+            {
+                foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
+                {
+                    Item.Enabled = false;
+                }
+            }
+            else
+            {
+                foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
+                {
+                    Item.Enabled = true;
+                }
+            }
+
+            // Set Cancel to false.
+            e.Cancel = false;
         }
 
         // Open's partner's PArtner Edit screen
-	    private void OpenPartnerEditScreen(object sender, System.EventArgs e)
-	    {
-	        TCommonScreensForwarding.OpenPartnerEditScreen(Convert.ToInt64(this.txtAutoPopulated.txtTextBox.Text), this.ParentForm);
-	    }
-	    
-	    // Copy selected text
-	    private void ClickCopy(Object sender, EventArgs args)
-	    {
-	    	this.txtAutoPopulated.lblLabel.Copy();
-	    }
-	    
-	    // Select all text
-	    private void ClickSelectAll(Object sender, EventArgs args)
-	    {
-	    	this.txtAutoPopulated.lblLabel.Focus(); this.txtAutoPopulated.lblLabel.SelectAll();
-	    }
-        
+        private void OpenPartnerEditScreen(object sender, System.EventArgs e)
+        {
+            TCommonScreensForwarding.OpenPartnerEditScreen(Convert.ToInt64(this.txtAutoPopulated.txtTextBox.Text), this.ParentForm);
+        }
+
+        // Copy selected text
+        private void ClickCopy(Object sender, EventArgs args)
+        {
+            this.txtAutoPopulated.lblLabel.Copy();
+        }
+
+        // Select all text
+        private void ClickSelectAll(Object sender, EventArgs args)
+        {
+            this.txtAutoPopulated.lblLabel.Focus(); this.txtAutoPopulated.lblLabel.SelectAll();
+        }
+
         #endregion
     }
 

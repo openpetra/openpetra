@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
             }
-            
+
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
             chkNewDonorWarning.Checked = FNewDonorWarning;
         }
@@ -81,11 +81,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                 return true;
             }
-            
+
             if (FNewDonorWarning != chkNewDonorWarning.Checked)
             {
-            	FNewDonorWarning = chkNewDonorWarning.Checked;
-            	TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+                FNewDonorWarning = chkNewDonorWarning.Checked;
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
             }
 
             return false;

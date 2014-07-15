@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.CommonDialogs
             FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(null, this, null);
 
             this.Text = StrPetraLoginFormTitle;
-            
+
             this.lblPetraVersion.Text = Catalog.GetString("Version") + " " + TApplicationVersion.GetApplicationVersion();
 
             //this.Height = 142;
@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.CommonDialogs
                 txtPassword.Enabled = false;
                 txtUserName.Enabled = false;
                 chkRememberUserName.Enabled = false;
-                
+
                 btnLogin.Focus();
 
                 Application.DoEvents();
@@ -261,9 +261,9 @@ namespace Ict.Petra.Client.CommonDialogs
             {
                 MessageBox.Show(Catalog.GetString("Please enter a User ID and a Password to log in into OpenPetra."),
                     StrPetraLoginFormTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                
+
                 SetFocusToCredentials();
-                
+
                 return;
             }
 
@@ -272,9 +272,9 @@ namespace Ict.Petra.Client.CommonDialogs
             {
                 MessageBox.Show(Catalog.GetString("The Caps Lock key is ON. Please switch it off and try to login again"),
                     StrPetraLoginFormTitle);
-                
+
                 SetFocusToCredentials();
-                
+
                 return;
             }
 
@@ -288,7 +288,7 @@ namespace Ict.Petra.Client.CommonDialogs
             StoreUserName(FSelUserName);
 
             UpdateUI(true);
-                        
+
             if (ConnectToPetraServer(FSelUserName, FSelPassWord, out ConnectionError))
             {
                 prbLogin.Value = 90;
@@ -309,7 +309,7 @@ namespace Ict.Petra.Client.CommonDialogs
                 TLogging.UserNamePrefix = UserInfo.GUserInfo.UserID + '_' +
                                           TConnectionManagement.GConnectionManagement.ClientID.ToString();
 
-                UpdateUI(false);            
+                UpdateUI(false);
 
                 // If the user is required to change their password before using OpenPetra.
                 // (This LoginMessage is set in Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors.TUserManagerWebConnector)
@@ -328,8 +328,8 @@ namespace Ict.Petra.Client.CommonDialogs
             else
             {
                 this.Cursor = Cursors.Default;
-                
-                UpdateUI(false);            
+
+                UpdateUI(false);
 
                 // TODO what todo on connection failure?
                 if (ConnectionError.Length > 0)
@@ -337,7 +337,7 @@ namespace Ict.Petra.Client.CommonDialogs
                     // this message box shows if the password is wrong
                     // otherwise there has already been a message box usually
                     MessageBox.Show(ConnectionError, StrPetraLoginFormTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                    
+
                     SetFocusToCredentials();
                 }
             }
@@ -715,10 +715,10 @@ namespace Ict.Petra.Client.CommonDialogs
                     break;
                 }
             }
-            
+
             return false;
         }
-        
+
         private void SetFocusToCredentials()
         {
             if (txtUserName.Text.Length == 0)
@@ -728,7 +728,7 @@ namespace Ict.Petra.Client.CommonDialogs
             else
             {
                 txtPassword.Focus();
-            }                
+            }
         }
 
         /// <summary>

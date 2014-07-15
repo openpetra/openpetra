@@ -123,18 +123,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ucoBatches.CheckBeforeSaving();
             ucoTransactions.CheckBeforeSaving();
-            
+
             if (FNewDonorWarning)
             {
-            	FPetraUtilsObject_DataSavingStarted_NewDonorWarning();
+                FPetraUtilsObject_DataSavingStarted_NewDonorWarning();
             }
         }
 
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
-        	if (FNewDonorWarning)
+            if (FNewDonorWarning)
             {
-            	FPetraUtilsObject_DataSaved_NewDonorWarning(Sender, e);
+                FPetraUtilsObject_DataSaved_NewDonorWarning(Sender, e);
             }
         }
 

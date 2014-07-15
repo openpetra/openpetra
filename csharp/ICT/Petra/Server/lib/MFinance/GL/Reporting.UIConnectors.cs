@@ -1714,15 +1714,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable AFOTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapte)
         {
-        	TDBTransaction Transaction = null;
+            TDBTransaction Transaction = null;
             AAccountTable AccountTable = new AAccountTable();
-            
+
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string StandardSummaryCostCentre = LedgerNumber.ToString("00") + "00S";
             string AccountHierarchyCode = AParameters["param_account_hierarchy_c"].ToString();
 
             // create new datatable
             DataTable Results = new DataTable();
+
             Results.Columns.Add(new DataColumn("a_account_code_c", typeof(string)));
             Results.Columns.Add(new DataColumn("a_account_code_short_desc_c", typeof(string)));
             Results.Columns.Add(new DataColumn("DebitCreditIndicator", typeof(bool)));
@@ -1734,117 +1735,125 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
-                	ALedgerRow LedgerRow = (ALedgerRow) ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction).Rows[0];
-                	
-                	AAccountHierarchyRow HierarchyRow = (AAccountHierarchyRow) AAccountHierarchyAccess.LoadByPrimaryKey(
-                		LedgerNumber, AccountHierarchyCode, Transaction).Rows[0];
-		            
-		            List <String>list = new List<string>();
-		            
-		            ScanHierarchy(ref list, LedgerNumber, HierarchyRow.RootAccountCode, AccountHierarchyCode, Transaction);
-                	
-		            // get AAccountRows for each account number in list
-		            foreach (string AccountCode in list)
-		            {
-		            	AAccountRow AddRow = (AAccountRow) AAccountAccess.LoadByPrimaryKey(LedgerNumber, AccountCode, Transaction).Rows[0];
-		            	
-		            	if (AddRow != null)
-		            	{
-		            		AccountTable.Rows.Add((object[])AddRow.ItemArray.Clone());
-		            	}
-		            }
-		            
-		            // Populate the Results Dataset
-		            foreach (AAccountRow Account in AccountTable.Rows)
-		            {
-		            	DataRow NewRow = Results.NewRow();
-		            	NewRow["a_account_code_c"] = Account.AccountCode;
-		            	NewRow["a_account_code_short_desc_c"] = Account.AccountCodeShortDesc;
-		            	
-		            	int GLMSequence = TCommonBudgetMaintain.GetGLMSequenceForBudget(
-		            		LedgerNumber, Account.AccountCode, StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32());
-		            	
-		            	// get balances
-		            	if (Account.DebitCreditIndicator)
-		            	{
-		            		NewRow["DebitCreditIndicator"] = true;
-		            		NewRow["ActualDebitBase"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
-									            		                                      GLMSequence,
-									            		                                      -1,
-									            		                                      AParameters["param_end_period_i"].ToInt32(),
-									            		                                      LedgerRow.NumberOfAccountingPeriods,
-									            		                                      LedgerRow.CurrentFinancialYear,
-									            		                                      AParameters["param_year_i"].ToInt32(),
-									            		                                      true,
-									            		                                      MFinanceConstants.CURRENCY_BASE);
-		            		NewRow["ActualDebitIntl"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
-									            		                                      GLMSequence,
-									            		                                      -1,
-									            		                                      AParameters["param_end_period_i"].ToInt32(),
-									            		                                      LedgerRow.NumberOfAccountingPeriods,
-									            		                                      LedgerRow.CurrentFinancialYear,
-									            		                                      AParameters["param_year_i"].ToInt32(),
-									            		                                      true,
-									            		                                      MFinanceConstants.CURRENCY_INTERNATIONAL);
-		            	}
-		            	else
-		            	{
-		            		NewRow["DebitCreditIndicator"] = false;
-		            		NewRow["ActualCreditBase"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
-									            		                                      GLMSequence,
-									            		                                      -1,
-									            		                                      AParameters["param_end_period_i"].ToInt32(),
-									            		                                      LedgerRow.NumberOfAccountingPeriods,
-									            		                                      LedgerRow.CurrentFinancialYear,
-									            		                                      AParameters["param_year_i"].ToInt32(),
-									            		                                      true,
-									            		                                      MFinanceConstants.CURRENCY_BASE);
-		            		NewRow["ActualCreditIntl"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
-									            		                                      GLMSequence,
-									            		                                      -1,
-									            		                                      AParameters["param_end_period_i"].ToInt32(),
-									            		                                      LedgerRow.NumberOfAccountingPeriods,
-									            		                                      LedgerRow.CurrentFinancialYear,
-									            		                                      AParameters["param_year_i"].ToInt32(),
-									            		                                      true,
-									            		                                      MFinanceConstants.CURRENCY_INTERNATIONAL);
-		            	}
-		            	
-		            	Results.Rows.Add(NewRow);
-		            }
+                    ALedgerRow LedgerRow = (ALedgerRow)ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction).Rows[0];
+
+                    AAccountHierarchyRow HierarchyRow = (AAccountHierarchyRow)AAccountHierarchyAccess.LoadByPrimaryKey(
+                        LedgerNumber, AccountHierarchyCode, Transaction).Rows[0];
+
+                    List <String>list = new List <string>();
+
+                    ScanHierarchy(ref list, LedgerNumber, HierarchyRow.RootAccountCode, AccountHierarchyCode, Transaction);
+
+                    // get AAccountRows for each account number in list
+                    foreach (string AccountCode in list)
+                    {
+                        AAccountRow AddRow = (AAccountRow)AAccountAccess.LoadByPrimaryKey(LedgerNumber, AccountCode, Transaction).Rows[0];
+
+                        if (AddRow != null)
+                        {
+                            AccountTable.Rows.Add((object[])AddRow.ItemArray.Clone());
+                        }
+                    }
+
+                    // Populate the Results Dataset
+                    foreach (AAccountRow Account in AccountTable.Rows)
+                    {
+                        DataRow NewRow = Results.NewRow();
+                        NewRow["a_account_code_c"] = Account.AccountCode;
+                        NewRow["a_account_code_short_desc_c"] = Account.AccountCodeShortDesc;
+
+                        int GLMSequence = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+                            LedgerNumber, Account.AccountCode, StandardSummaryCostCentre, AParameters["param_year_i"].ToInt32());
+
+                        // get balances
+                        if (Account.DebitCreditIndicator)
+                        {
+                            NewRow["DebitCreditIndicator"] = true;
+                            NewRow["ActualDebitBase"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+                                GLMSequence,
+                                -1,
+                                AParameters["param_end_period_i"].ToInt32(),
+                                LedgerRow.NumberOfAccountingPeriods,
+                                LedgerRow.CurrentFinancialYear,
+                                AParameters["param_year_i"].ToInt32(),
+                                true,
+                                MFinanceConstants.CURRENCY_BASE);
+                            NewRow["ActualDebitIntl"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+                                GLMSequence,
+                                -1,
+                                AParameters["param_end_period_i"].ToInt32(),
+                                LedgerRow.NumberOfAccountingPeriods,
+                                LedgerRow.CurrentFinancialYear,
+                                AParameters["param_year_i"].ToInt32(),
+                                true,
+                                MFinanceConstants.CURRENCY_INTERNATIONAL);
+                        }
+                        else
+                        {
+                            NewRow["DebitCreditIndicator"] = false;
+                            NewRow["ActualCreditBase"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+                                GLMSequence,
+                                -1,
+                                AParameters["param_end_period_i"].ToInt32(),
+                                LedgerRow.NumberOfAccountingPeriods,
+                                LedgerRow.CurrentFinancialYear,
+                                AParameters["param_year_i"].ToInt32(),
+                                true,
+                                MFinanceConstants.CURRENCY_BASE);
+                            NewRow["ActualCreditIntl"] = TCommonBudgetMaintain.GetActual(LedgerNumber,
+                                GLMSequence,
+                                -1,
+                                AParameters["param_end_period_i"].ToInt32(),
+                                LedgerRow.NumberOfAccountingPeriods,
+                                LedgerRow.CurrentFinancialYear,
+                                AParameters["param_year_i"].ToInt32(),
+                                true,
+                                MFinanceConstants.CURRENCY_INTERNATIONAL);
+                        }
+
+                        Results.Rows.Add(NewRow);
+                    }
                 });
-            
+
             return Results;
         }
 
         /* We want to report on summary accounts at the highest level of the tree that */
-		/* have posting accounts reporting to them.  Recursively descend the tree      */
-		/* looking for accounts that summarize a posting account.  As soon as we find  */
-		/* one, add it to the list, and don't descend any further.  Any values in      */
-		/* summary accounts at lower levels will already have been added in to this    */
-		/* level.                                                                      */
-        private static void ScanHierarchy(ref List<String> AAccountList, int ALedgerNumber, string AAccountCode, string AHierarchyCode, TDBTransaction ATransaction)
+        /* have posting accounts reporting to them.  Recursively descend the tree      */
+        /* looking for accounts that summarize a posting account.  As soon as we find  */
+        /* one, add it to the list, and don't descend any further.  Any values in      */
+        /* summary accounts at lower levels will already have been added in to this    */
+        /* level.                                                                      */
+        private static void ScanHierarchy(ref List <String>AAccountList,
+            int ALedgerNumber,
+            string AAccountCode,
+            string AHierarchyCode,
+            TDBTransaction ATransaction)
         {
-        	AAccountHierarchyDetailTable AccountHierarchyDetailTable = AAccountHierarchyDetailAccess.LoadViaAAccountAccountCodeToReportTo(ALedgerNumber, AAccountCode, ATransaction);
-        	
+            AAccountHierarchyDetailTable AccountHierarchyDetailTable = AAccountHierarchyDetailAccess.LoadViaAAccountAccountCodeToReportTo(
+                ALedgerNumber,
+                AAccountCode,
+                ATransaction);
+
             if (AccountHierarchyDetailTable.Rows.Count > 0)
             {
-            	foreach (AAccountHierarchyDetailRow Row in AccountHierarchyDetailTable.Rows)
+                foreach (AAccountHierarchyDetailRow Row in AccountHierarchyDetailTable.Rows)
                 {
-                	if (!AAccountList.Contains(Row.AccountCodeToReportTo) && Row.AccountHierarchyCode == AHierarchyCode)
-                	{
-                		AAccountRow AccountRow = (AAccountRow) AAccountAccess.LoadByPrimaryKey(ALedgerNumber, Row.ReportingAccountCode, ATransaction).Rows[0];
-                    	
-                    	if (AccountRow != null && AccountRow.PostingStatus)
-                    	{
-                    		AAccountList.Add(Row.AccountCodeToReportTo);
-                    	}
-                    	else if (AccountRow != null)
-                    	{
-                    		ScanHierarchy(ref AAccountList, ALedgerNumber, Row.ReportingAccountCode, AHierarchyCode, ATransaction);
-                    	}
-                	}
-            	}
+                    if (!AAccountList.Contains(Row.AccountCodeToReportTo) && (Row.AccountHierarchyCode == AHierarchyCode))
+                    {
+                        AAccountRow AccountRow =
+                            (AAccountRow)AAccountAccess.LoadByPrimaryKey(ALedgerNumber, Row.ReportingAccountCode, ATransaction).Rows[0];
+
+                        if ((AccountRow != null) && AccountRow.PostingStatus)
+                        {
+                            AAccountList.Add(Row.AccountCodeToReportTo);
+                        }
+                        else if (AccountRow != null)
+                        {
+                            ScanHierarchy(ref AAccountList, ALedgerNumber, Row.ReportingAccountCode, AHierarchyCode, ATransaction);
+                        }
+                    }
+                }
             }
         }
 
@@ -1854,7 +1863,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable ExecutiveSummaryTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapte)
         {
-        	TDBTransaction Transaction = null;
+            TDBTransaction Transaction = null;
             AAccountTable AccountTable = new AAccountTable();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
@@ -1864,330 +1873,337 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DateTime EndPeriodStartDate = new DateTime(EndPeriodEndDate.Year, EndPeriodEndDate.Month, 1);
             DateTime NextPeriodStartDate = new DateTime();
             DateTime NextPeriodEndDate = new DateTime();
+
             decimal[] ActualsAndBudget;
-        	Int64 LedgerPartnerKey;
-        	string StandardSummaryCostCentre;
+            Int64 LedgerPartnerKey;
+            string StandardSummaryCostCentre;
 
             // create new datatable
             DataTable Results = new DataTable();
-            
-            string[] Columns = { "ThisMonth", "ActualYTD", "BudgetYTD", "PriorYTD" };
-            
+
+            string[] Columns =
+            {
+                "ThisMonth", "ActualYTD", "BudgetYTD", "PriorYTD"
+            };
+
             foreach (string Column in Columns)
             {
-            	Results.Columns.Add(new DataColumn("Income" + Column, typeof(Decimal)));
-            	Results.Columns.Add(new DataColumn("Expenses" + Column, typeof(Decimal)));
-            	Results.Columns.Add(new DataColumn("PersonnelCosts" + Column, typeof(Decimal)));
-            	Results.Columns.Add(new DataColumn("SupportIncome" + Column, typeof(Decimal)));
-            	Results.Columns.Add(new DataColumn("CashAndBank" + Column, typeof(Decimal)));
-            	Results.Columns.Add(new DataColumn("FromToICH" + Column, typeof(Decimal)));
-            	Results.Columns.Add(new DataColumn("PaymentsDue" + Column, typeof(Decimal)));
-            	Results.Columns.Add(new DataColumn("GiftsForOtherFields" + Column, typeof(Decimal)));
-            	Results.Columns.Add(new DataColumn("Personnel" + Column, typeof(Int32)));
-            	Results.Columns.Add(new DataColumn("PersonnelOtherFields" + Column, typeof(Int32)));
+                Results.Columns.Add(new DataColumn("Income" + Column, typeof(Decimal)));
+                Results.Columns.Add(new DataColumn("Expenses" + Column, typeof(Decimal)));
+                Results.Columns.Add(new DataColumn("PersonnelCosts" + Column, typeof(Decimal)));
+                Results.Columns.Add(new DataColumn("SupportIncome" + Column, typeof(Decimal)));
+                Results.Columns.Add(new DataColumn("CashAndBank" + Column, typeof(Decimal)));
+                Results.Columns.Add(new DataColumn("FromToICH" + Column, typeof(Decimal)));
+                Results.Columns.Add(new DataColumn("PaymentsDue" + Column, typeof(Decimal)));
+                Results.Columns.Add(new DataColumn("GiftsForOtherFields" + Column, typeof(Decimal)));
+                Results.Columns.Add(new DataColumn("Personnel" + Column, typeof(Int32)));
+                Results.Columns.Add(new DataColumn("PersonnelOtherFields" + Column, typeof(Int32)));
             }
-            
+
             DataRow ResultRow = Results.NewRow();
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
-                	ALedgerRow LedgerRow = (ALedgerRow) ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction).Rows[0];
-                	LedgerPartnerKey = LedgerRow.PartnerKey;
-            		StandardSummaryCostCentre = LedgerRow.LedgerNumber.ToString("00") + "00S";
-                	
-                	/* Income and Expenses */
-                	string[,] IncomeExpense = { {"Income", MFinanceConstants.INCOME_HEADING},	// "INC"
-                								{"Expenses", MFinanceConstants.EXPENSE_HEADING} }; // "EXP"
-                	
-                	for (int i=0; i<2; i++)
-                	{
-                		ActualsAndBudget = GetActualsAndBudget(LedgerRow, IncomeExpense[i,1], StandardSummaryCostCentre, EndPeriod, Year);
-                		
-                		ResultRow[IncomeExpense[i,0] + "ThisMonth"] = ActualsAndBudget[0];
-	            		ResultRow[IncomeExpense[i,0] + "PriorYTD"] = ActualsAndBudget[1];
-	            		ResultRow[IncomeExpense[i,0] + "ActualYTD"] = ActualsAndBudget[2];
-	            		ResultRow[IncomeExpense[i,0] + "BudgetYTD"] = ActualsAndBudget[3];
-                	}
-                	
-                	/* Personnel Costs */
-                	
-                	// calculate how many team members
-					int PersonnelCount = 0;
-					PmStaffDataTable StaffDataTable = PmStaffDataAccess.LoadViaPUnitReceivingField(LedgerPartnerKey, Transaction);
-					
-					// this month - includes people who are only there for part of the month
-					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
-					{
-						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= EndPeriodStartDate)
-						    && Row.StartOfCommitment <= EndPeriodEndDate)
-						{
-							PersonnelCount++;
-						}
-					}
-					
-					ResultRow["PersonnelThisMonth"] = PersonnelCount;
-					
-					// this year
-					PersonnelCount = 0;
+                    ALedgerRow LedgerRow = (ALedgerRow)ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction).Rows[0];
+                    LedgerPartnerKey = LedgerRow.PartnerKey;
+                    StandardSummaryCostCentre = LedgerRow.LedgerNumber.ToString("00") + "00S";
 
-					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
-					{
-						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= new DateTime(EndPeriodStartDate.Year, 1, 1))
-						    && Row.StartOfCommitment <= EndPeriodEndDate)
-						{
-							PersonnelCount++;
-						}
-					}
-					
-					ResultRow["PersonnelActualYTD"] = PersonnelCount;
-					
-					// last year
-					PersonnelCount = 0;
+                    /* Income and Expenses */
+                    string[, ] IncomeExpense = { { "Income", MFinanceConstants.INCOME_HEADING },        // "INC"
+                                                 { "Expenses", MFinanceConstants.EXPENSE_HEADING } };                              // "EXP"
 
-					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
-					{
-						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= new DateTime(EndPeriodStartDate.Year - 1, 1, 1))
-						    && Row.StartOfCommitment <= EndPeriodEndDate.AddYears(-1))
-						{
-							PersonnelCount++;
-						}
-					}
-					
-					ResultRow["PersonnelPriorYTD"] = PersonnelCount;
-					
-					/* calculate Personnel Costs per Team Member */
-					ActualsAndBudget = GetActualsAndBudget(LedgerRow, MFinanceConstants.PERSONNEL_EXPENSES, StandardSummaryCostCentre, EndPeriod, Year);	//4300S
-					
-					decimal TotalPersonnelCostsThisMonth = ActualsAndBudget[0];
-            		decimal TotalPersonnelCostsPriorYTD = ActualsAndBudget[1];
-            		decimal TotalPersonnelCostsActualYTD = ActualsAndBudget[2];
-            		decimal TotalPersonnelCostsBudgetYTD = ActualsAndBudget[3];
-            		
-            		if (Convert.ToInt32(ResultRow["PersonnelThisMonth"]) != 0)
-            		{
-            			ResultRow["PersonnelCostsThisMonth"] = TotalPersonnelCostsThisMonth / Convert.ToInt32(ResultRow["PersonnelThisMonth"]);
-            		}
-            		
-            		if (Convert.ToInt32(ResultRow["PersonnelActualYTD"]) != 0)
-            		{
-            			ResultRow["PersonnelCostsActualYTD"] = TotalPersonnelCostsActualYTD / Convert.ToInt32(ResultRow["PersonnelActualYTD"]);
-            		}
-            		
-            		if (Convert.ToInt32(ResultRow["PersonnelPriorYTD"]) != 0)
-            		{
-            			ResultRow["PersonnelCostsPriorYTD"] = TotalPersonnelCostsPriorYTD / Convert.ToInt32(ResultRow["PersonnelPriorYTD"]);
-            		}
-            		
-            		/* SUPPORT INCOME % */
-					ActualsAndBudget = GetActualsAndBudget(
-            			LedgerRow, MFinanceConstants.SUPPORT_GIFTS_LOCAL, StandardSummaryCostCentre, EndPeriod, Year);	// 0100S
-					
-					decimal TotalSupportIncomeThisMonth = ActualsAndBudget[0];
-            		decimal TotalSupportIncomePriorYTD = ActualsAndBudget[1];
-            		decimal TotalSupportIncomeActualYTD = ActualsAndBudget[2];
-            		decimal TotalSupportIncomeBudgetYTD = ActualsAndBudget[3];
-            		
-					ActualsAndBudget = GetActualsAndBudget(
-            			LedgerRow, MFinanceConstants.SUPPORT_GIFTS_FOREIGN, StandardSummaryCostCentre, EndPeriod, Year);	// 1100S
-					
-					TotalSupportIncomeThisMonth += ActualsAndBudget[0];
-            		TotalSupportIncomePriorYTD += ActualsAndBudget[1];
-            		TotalSupportIncomeActualYTD += ActualsAndBudget[2];
-            		TotalSupportIncomeBudgetYTD += ActualsAndBudget[3];
-            		
-            		ResultRow["SupportIncomeThisMonth"] = TotalPersonnelCostsThisMonth != 0 ? 
-            												(TotalSupportIncomeThisMonth / TotalPersonnelCostsThisMonth) : 0;
-            		ResultRow["SupportIncomePriorYTD"] = TotalPersonnelCostsPriorYTD != 0 ? 
-            												(TotalSupportIncomePriorYTD / TotalPersonnelCostsPriorYTD) : 0;
-            		ResultRow["SupportIncomeActualYTD"] = TotalPersonnelCostsActualYTD != 0 ? 
-            												(TotalSupportIncomeActualYTD / TotalPersonnelCostsActualYTD) : 0;
-            		ResultRow["SupportIncomeBudgetYTD"] = TotalPersonnelCostsBudgetYTD != 0 ? 
-            												(TotalSupportIncomeBudgetYTD / TotalPersonnelCostsBudgetYTD) : 0;
-            		
-            		/* Bank */
-                	string[,] Bank = {
-            			{"CashAndBank", MFinanceConstants.BANK_HEADING}, {"FromToICH", MFinanceConstants.ICH_ACCT_ICH} }; // "CASH", 8500
-                	
-                	for (int i=0; i<2; i++)
-                	{
-                		int Multiplier = 1;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        ActualsAndBudget = GetActualsAndBudget(LedgerRow, IncomeExpense[i, 1], StandardSummaryCostCentre, EndPeriod, Year);
 
-                		// find out if ICH balance is credit or debit
-                		AAccountRow AccountRow = (AAccountRow) AAccountAccess.LoadByPrimaryKey(LedgerNumber, Bank[i,1], Transaction).Rows[0];
-                		
-                		if (AccountRow != null && !AccountRow.DebitCreditIndicator)
-                		{
-                			Multiplier = -1;
-                		}
+                        ResultRow[IncomeExpense[i, 0] + "ThisMonth"] = ActualsAndBudget[0];
+                        ResultRow[IncomeExpense[i, 0] + "PriorYTD"] = ActualsAndBudget[1];
+                        ResultRow[IncomeExpense[i, 0] + "ActualYTD"] = ActualsAndBudget[2];
+                        ResultRow[IncomeExpense[i, 0] + "BudgetYTD"] = ActualsAndBudget[3];
+                    }
 
-                		ActualsAndBudget = GetActualsAndBudget(LedgerRow, Bank[i,1], StandardSummaryCostCentre,  EndPeriod, Year);
-                		
-                		// balance sheet item so will be the same as the ytd figure
-                		ResultRow[Bank[i,0] + "ThisMonth"] = ActualsAndBudget[2] * Multiplier;
-	            		ResultRow[Bank[i,0] + "PriorYTD"] = ActualsAndBudget[1] * Multiplier;
-	            		ResultRow[Bank[i,0] + "ActualYTD"] = ActualsAndBudget[2] * Multiplier;
-	            		ResultRow[Bank[i,0] + "BudgetYTD"] = ActualsAndBudget[3] * Multiplier;
-                	}
-            		
-                	/* ACCOUNTS PAYABLE */
-                	// find the dates of the next period
-                	AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(LedgerNumber, Transaction);
-                	AAccountingPeriodRow AccountingPeriodRow = 
-                		(AAccountingPeriodRow) AccountingPeriodTable.Rows.Find(new object[] { LedgerNumber, EndPeriod + 1 });
-                	
-                	if (AccountingPeriodRow == null)
-                	{
-                		AccountingPeriodRow = (AAccountingPeriodRow) AccountingPeriodTable.Rows.Find(new object[] { LedgerNumber, EndPeriod });
-                		
-                		if (AccountingPeriodRow == null)
-                		{
-                			throw new Exception("TFinanceReportingWebConnector.ExecutiveSummaryTable: Accounting Period not available");
-                		}
-                		
-                		NextPeriodStartDate = AccountingPeriodRow.PeriodEndDate.AddDays(1);
-                		// approximate the end date
-                		NextPeriodEndDate = AccountingPeriodRow.PeriodEndDate.AddDays(30);
-                	}
-                	else
-                	{
-                		NextPeriodStartDate = AccountingPeriodRow.PeriodStartDate;
-                		NextPeriodEndDate = AccountingPeriodRow.PeriodEndDate;
-                	}
-                	
-                	if (NextPeriodStartDate == NextPeriodEndDate)
-                	{
-                		// If 13th period then add 32 days to the end date to go into end of January
-                		NextPeriodEndDate = NextPeriodEndDate.AddDays(31);
-                	}
-                	
-                	// this month
-                	ResultRow["PaymentsDueThisMonth"] = 0;
-                	AApDocumentTable ApDocumentTable = AApDocumentAccess.LoadViaALedger(LedgerNumber, Transaction);
-                	
-                	foreach (AApDocumentRow ApDocumentRow in ApDocumentTable.Rows)
-                	{
-                		if (ApDocumentRow.DateIssued.AddDays(ApDocumentRow.CreditTerms) >= NextPeriodStartDate
-                		    && ApDocumentRow.DateIssued.AddDays(ApDocumentRow.CreditTerms) <= NextPeriodEndDate
-                		    && ApDocumentRow.DocumentStatus != MFinanceConstants.BATCH_UNPOSTED
-                		    && ApDocumentRow.DocumentStatus != MFinanceConstants.BATCH_CANCELLED)
-                		{
-                			ResultRow["PaymentsDueThisMonth"] = Convert.ToDecimal(ResultRow["PaymentsDueThisMonth"]) + ApDocumentRow.TotalAmount;
-                		}
-                	}
-                	
-                	/* FOREIGN GIFTS */
-                	ActualsAndBudget = GetActualsAndBudget(
-                		LedgerRow, MFinanceConstants.GIFT_HEADING, MFinanceConstants.INTER_LEDGER_HEADING,  EndPeriod, Year);	// "GIFT", "ILT"
+                    /* Personnel Costs */
 
-            		ResultRow["GiftsForOtherFieldsThisMonth"] = ActualsAndBudget[0];
-            		ResultRow["GiftsForOtherFieldsPriorYTD"] = ActualsAndBudget[1];
-            		ResultRow["GiftsForOtherFieldsActualYTD"] = ActualsAndBudget[2];
-            		ResultRow["GiftsForOtherFieldsBudgetYTD"] = ActualsAndBudget[3];
-            		
-            		/* NUMBER OF PERSONNEL ON OTHER FIELDS */
-            		PersonnelCount = 0;
-					StaffDataTable = PmStaffDataAccess.LoadViaPUnitHomeOffice(LedgerPartnerKey, Transaction);
-					
-					// this month - includes people who are only there for part of the month
-					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
-					{
-						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= EndPeriodStartDate)
-						    && Row.StartOfCommitment <= EndPeriodEndDate
-						    && Row.ReceivingField != LedgerPartnerKey)
-						{
-							PersonnelCount++;
-						}
-					}
-					
-					ResultRow["PersonnelOtherFieldsThisMonth"] = PersonnelCount;
-					
-					// this year
-					PersonnelCount = 0;
+                    // calculate how many team members
+                    int PersonnelCount = 0;
+                    PmStaffDataTable StaffDataTable = PmStaffDataAccess.LoadViaPUnitReceivingField(LedgerPartnerKey, Transaction);
 
-					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
-					{
-						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= new DateTime(EndPeriodStartDate.Year, 1, 1))
-						    && Row.StartOfCommitment <= EndPeriodEndDate
-						    && Row.ReceivingField != LedgerPartnerKey)
-						{
-							PersonnelCount++;
-						}
-					}
-					
-					ResultRow["PersonnelOtherFieldsActualYTD"] = PersonnelCount;
-					
-					// last year
-					PersonnelCount = 0;
+                    // this month - includes people who are only there for part of the month
+                    foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+                    {
+                        if (((Row.EndOfCommitment == null) || (Row.EndOfCommitment >= EndPeriodStartDate))
+                            && (Row.StartOfCommitment <= EndPeriodEndDate))
+                        {
+                            PersonnelCount++;
+                        }
+                    }
 
-					foreach (PmStaffDataRow Row in StaffDataTable.Rows)
-					{
-						if ((Row.EndOfCommitment == null || Row.EndOfCommitment >= new DateTime(EndPeriodStartDate.Year - 1, 1, 1))
-						    && Row.StartOfCommitment <= EndPeriodEndDate.AddYears(-1)
-						    && Row.ReceivingField != LedgerPartnerKey)
-						{
-							PersonnelCount++;
-						}
-					}
-					
-					ResultRow["PersonnelOtherFieldsPriorYTD"] = PersonnelCount;
-            });
-            
+                    ResultRow["PersonnelThisMonth"] = PersonnelCount;
+
+                    // this year
+                    PersonnelCount = 0;
+
+                    foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+                    {
+                        if (((Row.EndOfCommitment == null) || (Row.EndOfCommitment >= new DateTime(EndPeriodStartDate.Year, 1, 1)))
+                            && (Row.StartOfCommitment <= EndPeriodEndDate))
+                        {
+                            PersonnelCount++;
+                        }
+                    }
+
+                    ResultRow["PersonnelActualYTD"] = PersonnelCount;
+
+                    // last year
+                    PersonnelCount = 0;
+
+                    foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+                    {
+                        if (((Row.EndOfCommitment == null) || (Row.EndOfCommitment >= new DateTime(EndPeriodStartDate.Year - 1, 1, 1)))
+                            && (Row.StartOfCommitment <= EndPeriodEndDate.AddYears(-1)))
+                        {
+                            PersonnelCount++;
+                        }
+                    }
+
+                    ResultRow["PersonnelPriorYTD"] = PersonnelCount;
+
+                    /* calculate Personnel Costs per Team Member */
+                    ActualsAndBudget =
+                        GetActualsAndBudget(LedgerRow, MFinanceConstants.PERSONNEL_EXPENSES, StandardSummaryCostCentre, EndPeriod, Year);                                       //4300S
+
+                    decimal TotalPersonnelCostsThisMonth = ActualsAndBudget[0];
+                    decimal TotalPersonnelCostsPriorYTD = ActualsAndBudget[1];
+                    decimal TotalPersonnelCostsActualYTD = ActualsAndBudget[2];
+                    decimal TotalPersonnelCostsBudgetYTD = ActualsAndBudget[3];
+
+                    if (Convert.ToInt32(ResultRow["PersonnelThisMonth"]) != 0)
+                    {
+                        ResultRow["PersonnelCostsThisMonth"] = TotalPersonnelCostsThisMonth / Convert.ToInt32(ResultRow["PersonnelThisMonth"]);
+                    }
+
+                    if (Convert.ToInt32(ResultRow["PersonnelActualYTD"]) != 0)
+                    {
+                        ResultRow["PersonnelCostsActualYTD"] = TotalPersonnelCostsActualYTD / Convert.ToInt32(ResultRow["PersonnelActualYTD"]);
+                    }
+
+                    if (Convert.ToInt32(ResultRow["PersonnelPriorYTD"]) != 0)
+                    {
+                        ResultRow["PersonnelCostsPriorYTD"] = TotalPersonnelCostsPriorYTD / Convert.ToInt32(ResultRow["PersonnelPriorYTD"]);
+                    }
+
+                    /* SUPPORT INCOME % */
+                    ActualsAndBudget = GetActualsAndBudget(
+                        LedgerRow, MFinanceConstants.SUPPORT_GIFTS_LOCAL, StandardSummaryCostCentre, EndPeriod, Year);          // 0100S
+
+                    decimal TotalSupportIncomeThisMonth = ActualsAndBudget[0];
+                    decimal TotalSupportIncomePriorYTD = ActualsAndBudget[1];
+                    decimal TotalSupportIncomeActualYTD = ActualsAndBudget[2];
+                    decimal TotalSupportIncomeBudgetYTD = ActualsAndBudget[3];
+
+                    ActualsAndBudget = GetActualsAndBudget(
+                        LedgerRow, MFinanceConstants.SUPPORT_GIFTS_FOREIGN, StandardSummaryCostCentre, EndPeriod, Year);                // 1100S
+
+                    TotalSupportIncomeThisMonth += ActualsAndBudget[0];
+                    TotalSupportIncomePriorYTD += ActualsAndBudget[1];
+                    TotalSupportIncomeActualYTD += ActualsAndBudget[2];
+                    TotalSupportIncomeBudgetYTD += ActualsAndBudget[3];
+
+                    ResultRow["SupportIncomeThisMonth"] = TotalPersonnelCostsThisMonth != 0 ?
+                                                          (TotalSupportIncomeThisMonth / TotalPersonnelCostsThisMonth) : 0;
+                    ResultRow["SupportIncomePriorYTD"] = TotalPersonnelCostsPriorYTD != 0 ?
+                                                         (TotalSupportIncomePriorYTD / TotalPersonnelCostsPriorYTD) : 0;
+                    ResultRow["SupportIncomeActualYTD"] = TotalPersonnelCostsActualYTD != 0 ?
+                                                          (TotalSupportIncomeActualYTD / TotalPersonnelCostsActualYTD) : 0;
+                    ResultRow["SupportIncomeBudgetYTD"] = TotalPersonnelCostsBudgetYTD != 0 ?
+                                                          (TotalSupportIncomeBudgetYTD / TotalPersonnelCostsBudgetYTD) : 0;
+
+                    /* Bank */
+                    string[, ] Bank =
+                    {
+                        { "CashAndBank", MFinanceConstants.BANK_HEADING }, { "FromToICH", MFinanceConstants.ICH_ACCT_ICH }
+                    };                                                                                                            // "CASH", 8500
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int Multiplier = 1;
+
+                        // find out if ICH balance is credit or debit
+                        AAccountRow AccountRow = (AAccountRow)AAccountAccess.LoadByPrimaryKey(LedgerNumber, Bank[i, 1], Transaction).Rows[0];
+
+                        if ((AccountRow != null) && !AccountRow.DebitCreditIndicator)
+                        {
+                            Multiplier = -1;
+                        }
+
+                        ActualsAndBudget = GetActualsAndBudget(LedgerRow, Bank[i, 1], StandardSummaryCostCentre, EndPeriod, Year);
+
+                        // balance sheet item so will be the same as the ytd figure
+                        ResultRow[Bank[i, 0] + "ThisMonth"] = ActualsAndBudget[2] * Multiplier;
+                        ResultRow[Bank[i, 0] + "PriorYTD"] = ActualsAndBudget[1] * Multiplier;
+                        ResultRow[Bank[i, 0] + "ActualYTD"] = ActualsAndBudget[2] * Multiplier;
+                        ResultRow[Bank[i, 0] + "BudgetYTD"] = ActualsAndBudget[3] * Multiplier;
+                    }
+
+                    /* ACCOUNTS PAYABLE */
+                    // find the dates of the next period
+                    AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(LedgerNumber, Transaction);
+                    AAccountingPeriodRow AccountingPeriodRow =
+                        (AAccountingPeriodRow)AccountingPeriodTable.Rows.Find(new object[] { LedgerNumber, EndPeriod + 1 });
+
+                    if (AccountingPeriodRow == null)
+                    {
+                        AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows.Find(new object[] { LedgerNumber, EndPeriod });
+
+                        if (AccountingPeriodRow == null)
+                        {
+                            throw new Exception("TFinanceReportingWebConnector.ExecutiveSummaryTable: Accounting Period not available");
+                        }
+
+                        NextPeriodStartDate = AccountingPeriodRow.PeriodEndDate.AddDays(1);
+                        // approximate the end date
+                        NextPeriodEndDate = AccountingPeriodRow.PeriodEndDate.AddDays(30);
+                    }
+                    else
+                    {
+                        NextPeriodStartDate = AccountingPeriodRow.PeriodStartDate;
+                        NextPeriodEndDate = AccountingPeriodRow.PeriodEndDate;
+                    }
+
+                    if (NextPeriodStartDate == NextPeriodEndDate)
+                    {
+                        // If 13th period then add 32 days to the end date to go into end of January
+                        NextPeriodEndDate = NextPeriodEndDate.AddDays(31);
+                    }
+
+                    // this month
+                    ResultRow["PaymentsDueThisMonth"] = 0;
+                    AApDocumentTable ApDocumentTable = AApDocumentAccess.LoadViaALedger(LedgerNumber, Transaction);
+
+                    foreach (AApDocumentRow ApDocumentRow in ApDocumentTable.Rows)
+                    {
+                        if ((ApDocumentRow.DateIssued.AddDays(ApDocumentRow.CreditTerms) >= NextPeriodStartDate)
+                            && (ApDocumentRow.DateIssued.AddDays(ApDocumentRow.CreditTerms) <= NextPeriodEndDate)
+                            && (ApDocumentRow.DocumentStatus != MFinanceConstants.BATCH_UNPOSTED)
+                            && (ApDocumentRow.DocumentStatus != MFinanceConstants.BATCH_CANCELLED))
+                        {
+                            ResultRow["PaymentsDueThisMonth"] = Convert.ToDecimal(ResultRow["PaymentsDueThisMonth"]) + ApDocumentRow.TotalAmount;
+                        }
+                    }
+
+                    /* FOREIGN GIFTS */
+                    ActualsAndBudget = GetActualsAndBudget(
+                        LedgerRow, MFinanceConstants.GIFT_HEADING, MFinanceConstants.INTER_LEDGER_HEADING, EndPeriod, Year);            // "GIFT", "ILT"
+
+                    ResultRow["GiftsForOtherFieldsThisMonth"] = ActualsAndBudget[0];
+                    ResultRow["GiftsForOtherFieldsPriorYTD"] = ActualsAndBudget[1];
+                    ResultRow["GiftsForOtherFieldsActualYTD"] = ActualsAndBudget[2];
+                    ResultRow["GiftsForOtherFieldsBudgetYTD"] = ActualsAndBudget[3];
+
+                    /* NUMBER OF PERSONNEL ON OTHER FIELDS */
+                    PersonnelCount = 0;
+                    StaffDataTable = PmStaffDataAccess.LoadViaPUnitHomeOffice(LedgerPartnerKey, Transaction);
+
+                    // this month - includes people who are only there for part of the month
+                    foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+                    {
+                        if (((Row.EndOfCommitment == null) || (Row.EndOfCommitment >= EndPeriodStartDate))
+                            && (Row.StartOfCommitment <= EndPeriodEndDate)
+                            && (Row.ReceivingField != LedgerPartnerKey))
+                        {
+                            PersonnelCount++;
+                        }
+                    }
+
+                    ResultRow["PersonnelOtherFieldsThisMonth"] = PersonnelCount;
+
+                    // this year
+                    PersonnelCount = 0;
+
+                    foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+                    {
+                        if (((Row.EndOfCommitment == null) || (Row.EndOfCommitment >= new DateTime(EndPeriodStartDate.Year, 1, 1)))
+                            && (Row.StartOfCommitment <= EndPeriodEndDate)
+                            && (Row.ReceivingField != LedgerPartnerKey))
+                        {
+                            PersonnelCount++;
+                        }
+                    }
+
+                    ResultRow["PersonnelOtherFieldsActualYTD"] = PersonnelCount;
+
+                    // last year
+                    PersonnelCount = 0;
+
+                    foreach (PmStaffDataRow Row in StaffDataTable.Rows)
+                    {
+                        if (((Row.EndOfCommitment == null) || (Row.EndOfCommitment >= new DateTime(EndPeriodStartDate.Year - 1, 1, 1)))
+                            && (Row.StartOfCommitment <= EndPeriodEndDate.AddYears(-1))
+                            && (Row.ReceivingField != LedgerPartnerKey))
+                        {
+                            PersonnelCount++;
+                        }
+                    }
+
+                    ResultRow["PersonnelOtherFieldsPriorYTD"] = PersonnelCount;
+                });
+
             Results.Rows.Add(ResultRow);
-            
+
             return Results;
         }
-        
+
         // get Actuals for this month, YTD and Prior YTD and Budget YTD
         private static Decimal[] GetActualsAndBudget(
-        	ALedgerRow ALedger, string AAccountCode, string ACostCentreCode, int APeriodNumber, int AYear)
+            ALedgerRow ALedger, string AAccountCode, string ACostCentreCode, int APeriodNumber, int AYear)
         {
-        	decimal[] Results = new decimal[4];
- 
-        	int GLMSeqLastYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
-    			ALedger.LedgerNumber, AAccountCode, ACostCentreCode, AYear - 1);
-    		int GLMSeqThisYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
-        		ALedger.LedgerNumber, AAccountCode, ACostCentreCode, AYear);
-    		int GLMSeqNextYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
-        		ALedger.LedgerNumber, AAccountCode, ACostCentreCode, AYear + 1);
-			
+            decimal[] Results = new decimal[4];
+
+            int GLMSeqLastYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+                ALedger.LedgerNumber, AAccountCode, ACostCentreCode, AYear - 1);
+            int GLMSeqThisYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+                ALedger.LedgerNumber, AAccountCode, ACostCentreCode, AYear);
+            int GLMSeqNextYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(
+                ALedger.LedgerNumber, AAccountCode, ACostCentreCode, AYear + 1);
+
             Results[0] = TCommonBudgetMaintain.GetActual(ALedger.LedgerNumber,
-            		                                      GLMSeqThisYear,
-            		                                      -1,
-            		                                      APeriodNumber,
-            		                                      ALedger.NumberOfAccountingPeriods,
-            		                                      ALedger.CurrentFinancialYear,
-            		                                      AYear,
-            		                                      false,
-            		                                      MFinanceConstants.CURRENCY_BASE);
-    		Results[1] = TCommonBudgetMaintain.GetActual(ALedger.LedgerNumber,
-            		                                      GLMSeqLastYear,
-            		                                      GLMSeqThisYear,
-            		                                      APeriodNumber,
-            		                                      ALedger.NumberOfAccountingPeriods,
-            		                                      ALedger.CurrentFinancialYear,
-            		                                      AYear - 1,
-            		                                      true,
-            		                                      MFinanceConstants.CURRENCY_BASE);
-    		Results[2] = TCommonBudgetMaintain.GetActual(ALedger.LedgerNumber,
-            		                                      GLMSeqThisYear,
-            		                                      -1,
-            		                                      APeriodNumber,
-            		                                      ALedger.NumberOfAccountingPeriods,
-            		                                      ALedger.CurrentFinancialYear,
-            		                                      AYear,
-            		                                      true,
-            		                                      MFinanceConstants.CURRENCY_BASE);
-    		Results[3] = TCommonBudgetMaintain.GetBudget(GLMSeqThisYear,
-            		                                      GLMSeqNextYear,
-            		                                      APeriodNumber,
-            		                                      ALedger.NumberOfAccountingPeriods,
-            		                                      true,
-            		                                      MFinanceConstants.CURRENCY_BASE);
-            
+                GLMSeqThisYear,
+                -1,
+                APeriodNumber,
+                ALedger.NumberOfAccountingPeriods,
+                ALedger.CurrentFinancialYear,
+                AYear,
+                false,
+                MFinanceConstants.CURRENCY_BASE);
+            Results[1] = TCommonBudgetMaintain.GetActual(ALedger.LedgerNumber,
+                GLMSeqLastYear,
+                GLMSeqThisYear,
+                APeriodNumber,
+                ALedger.NumberOfAccountingPeriods,
+                ALedger.CurrentFinancialYear,
+                AYear - 1,
+                true,
+                MFinanceConstants.CURRENCY_BASE);
+            Results[2] = TCommonBudgetMaintain.GetActual(ALedger.LedgerNumber,
+                GLMSeqThisYear,
+                -1,
+                APeriodNumber,
+                ALedger.NumberOfAccountingPeriods,
+                ALedger.CurrentFinancialYear,
+                AYear,
+                true,
+                MFinanceConstants.CURRENCY_BASE);
+            Results[3] = TCommonBudgetMaintain.GetBudget(GLMSeqThisYear,
+                GLMSeqNextYear,
+                APeriodNumber,
+                ALedger.NumberOfAccountingPeriods,
+                true,
+                MFinanceConstants.CURRENCY_BASE);
+
             return Results;
         }
-        
+
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
@@ -2315,7 +2331,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         IsDebit = !IsDebit;
                         Amount = 0 - Amount;
                     }
-        
+
                     String ToField = IsDebit ? "Debit" : "Credit";
                     Row[ToField] = Amount;
                 }

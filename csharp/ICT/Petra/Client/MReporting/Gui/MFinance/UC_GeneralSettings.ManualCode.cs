@@ -239,7 +239,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12);
                 ACalculator.AddParameter("param_end_date", EndDate);
             }
-            
+
             // true if the selected date is in the current financial year
             ACalculator.AddParameter("param_current_financial_year", FLedgerRow.CurrentFinancialYear == Year);
 
@@ -554,32 +554,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             txtEndPeriod.Text = txtStartPeriod.Text;
         }
-        
+
         /// <summary>
         /// Get ledger's base currency
         /// </summary>
         /// <returns></returns>
         public string GetBaseCurrency()
         {
-        	return FLedgerRow.BaseCurrency;
+            return FLedgerRow.BaseCurrency;
         }
-        
+
         /// <summary>
         /// Get ledger's international currency
         /// </summary>
         /// <returns></returns>
         public string GetInternationalCurrency()
         {
-        	return FLedgerRow.IntlCurrency;
+            return FLedgerRow.IntlCurrency;
         }
-        
+
         /// <summary>
         /// Get ledger's current period
         /// </summary>
         /// <returns></returns>
         public int GetCurrentPeiod()
         {
-        	return FLedgerRow.CurrentPeriod;
+            return FLedgerRow.CurrentPeriod;
         }
     }
 }

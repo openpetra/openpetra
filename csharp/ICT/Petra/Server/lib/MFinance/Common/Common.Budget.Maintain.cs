@@ -37,7 +37,7 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public static class TCommonBudgetMaintain
     {
-		/// <summary>
+        /// <summary>
         /// GetGLMSequence
         /// </summary>
         /// <param name="ALedgerNumber"></param>

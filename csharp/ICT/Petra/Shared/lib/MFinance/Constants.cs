@@ -367,7 +367,7 @@ namespace Ict.Petra.Shared.MFinance
         public const string NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH = "Gifts received - Gift Batch";
         /// Narratives
         public const string NARRATIVE_GB_GIFT_BATCH = "GB - Gift Batch";
-        
+
         /// Summary account
         public const string PERSONNEL_EXPENSES = "4300S";
         /// Summary account

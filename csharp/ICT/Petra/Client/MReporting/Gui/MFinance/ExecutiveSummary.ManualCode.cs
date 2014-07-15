@@ -62,14 +62,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
-        
+
         private void RunOnceOnActivationManual()
         {
-        	// if fast reports isn't working then close the screen
-        	if (!FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            // if fast reports isn't working then close the screen
+            if (!FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
             {
-        		MessageBox.Show("No alternative reporting engine is available for this report. This screen will now be closed.", "Reporting engine");
-            	this.Close();
+                MessageBox.Show("No alternative reporting engine is available for this report. This screen will now be closed.", "Reporting engine");
+                this.Close();
             }
         }
 
@@ -94,9 +94,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String LedgerFilter = "a_ledger_number_i=" + pm.Get("param_ledger_number_i").ToInt32();
 
-            pm.Add("param_start_period_i",1);
+            pm.Add("param_start_period_i", 1);
             pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
-            
+
             ArrayList reportParam = ACalc.GetParameters().Elems;
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
