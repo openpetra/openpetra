@@ -684,7 +684,20 @@ namespace Ict.Common.Controls
             {
                 // Text found and identified.
                 // TLogging.Log('Text found and identified. mFoundIndex: ' + mFoundIndex.ToString);
-                this.SelectedIndex = mFoundIndex;
+
+                // Note: AlanP.  Special case in Filter/Find
+                // Some comboBoxes have empty string as their first item, in which case mFoundIndex will be 0
+                //  but the current SelectedIndex may be -1.
+                // We do not want to fire a SelectedIndexChanged event in this case.
+                // (See Mantis 3117, which gives all sorts of problems when shutting down)
+                if ((mFoundIndex == 0) && (mItemString == String.Empty) && (this.SelectedIndex == -1))
+                {
+                    // Do nothing (see above)
+                }
+                else
+                {
+                    this.SelectedIndex = mFoundIndex;
+                }
 
                 if (AcceptNewEntries != null)
                 {
