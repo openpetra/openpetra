@@ -597,6 +597,24 @@ namespace {#NAMESPACE}
 
 #endregion
 
+#region Keyboard handler
+
+    /// Our main keyboard handler
+    public bool ProcessParentCmdKey(ref Message msg, Keys keyData)
+    {
+        {#PROCESSCMDKEY}    
+        {#PROCESSCMDKEYMANUAL}    
+
+        return false;
+    }
+
+    private void FocusFirstEditableControl()
+    {
+        {#FOCUSFIRSTEDITABLEDETAILSPANELCONTROL}
+    }
+
+#endregion
+
   }
 }
 

@@ -83,11 +83,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void InitialiseControls()
         {
-            FcmbYearEnding = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearEnding");
-            FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
-            FrbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
-            FrbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
-            FrbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
+            FcmbYearEnding = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbYearEnding");
+            FcmbPeriod = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbPeriod");
+            FrbtEditing = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtEditing");
+            FrbtPosting = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtPosting");
+            FrbtAll = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtAll");
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // This will populate the periods combos without firing off cascading events
             FSuppressRefreshPeriods = true;
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true); //.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true);
             FSuppressRefreshPeriods = false;
 
             // Now we can set the period part of the filter
@@ -136,6 +136,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod, false, false));
 
             FBatchesLoaded = true;
+
+            if (((TFrmGLBatch) this.ParentForm).LoadForImport)
+            {
+                ImportBatches();
+            }
         }
 
         /// Reset the control
@@ -350,30 +355,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            if (!FrbtEditing.Checked)
-            {
-                FrbtEditing.Checked = true;
-            }
-
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            if (!SaveChangesAndResetFilter())
             {
                 return;
             }
 
-            //Set year and period to correct value
-            if ((FcmbYearEnding.Items.Count > 0) && (FcmbYearEnding.SelectedIndex != 0))
-            {
-                FcmbYearEnding.SelectedIndex = 0;
-            }
-
-            if ((FcmbPeriod.Items.Count > 1) && (FcmbPeriod.SelectedIndex != 1))
-            {
-                FcmbPeriod.SelectedIndex = 1;
-            }
-
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-            FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
-            ApplyFilter();
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0)
+                && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+            FFilterAndFindObject.ApplyFilter();
 
             CreateNewABatch();
 
@@ -544,21 +534,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchControlTotal.NumberValueDecimal = 0;
             dtpDetailDateEffective.Date = FDefaultDate;
             FPetraUtilsObject.EnableDataChangedEvent();
-        }
-
-        /// <summary>
-        /// UpdateTotals
-        /// </summary>
-        public void UpdateTotals()
-        {
-            //Below not needed as yet
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                GLRoutines.UpdateTotalsOfBatch(ref FMainDS, FPreviouslySelectedDetailRow);
-                txtDetailBatchControlTotal.NumberValueDecimal = FPreviouslySelectedDetailRow.BatchControlTotal;
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
         }
 
         private int CurrentRowIndex()
@@ -765,7 +740,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
 
                         UpdateRecordNumberDisplay();
-                        SetRecordNumberDisplayProperties();
+                        FFilterAndFindObject.SetRecordNumberDisplayProperties();
                     }
                 }
             }
@@ -872,7 +847,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     UpdateRecordNumberDisplay();
-                    SetRecordNumberDisplayProperties();
+                    FFilterAndFindObject.SetRecordNumberDisplayProperties();
                 }
             }
         }
@@ -988,7 +963,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             NewYearSelected = FcmbYearEnding.GetSelectedInt32();
 
-            if (FSelectedYear == NewYearSelected)
+            if ((FSelectedYear == NewYearSelected) && (sender != null))
             {
                 FSuppressRefreshFilter = false;
                 return;
@@ -1023,7 +998,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void RefreshFilter(Object sender, EventArgs e)
         {
-            int batchNumber = 0;
+            int BatchNumber = 0;
 
             if (FSuppressRefreshFilter
                 || (FPetraUtilsObject == null)
@@ -1046,7 +1021,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (sender is TCmbAutoComplete)
             {
-                if (FucoFilterAndFind.CanIgnoreChangeEvent)
+                if (FFilterAndFindObject.FilterFindPanel.CanIgnoreChangeEvent)
                 {
                     return;
                 }
@@ -1057,12 +1032,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (FSelectedYear == newYear)
                 {
-                    if ((newPeriod == -1) && (newPeriodText != String.Empty))
-                    {
-                        return;
-                    }
-
-                    if ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText))
+                    if (((newPeriod == -1) && (newPeriodText != String.Empty))
+                        || ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText)))
                     {
                         return;
                     }
@@ -1072,7 +1043,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Record the current batch
             if (FPreviouslySelectedDetailRow != null)
             {
-                batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+                BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             ClearCurrentSelection();
@@ -1121,8 +1092,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
 
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
-                        FSelectedPeriod));
+                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
+                            FSelectedPeriod));
+                }
+
                 FStatusFilter = String.Format("{0} = '{1}'",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED);
@@ -1132,8 +1107,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_POSTING;
 
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting, FSelectedYear,
-                        FSelectedPeriod));
+                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting,
+                            FSelectedYear,
+                            FSelectedPeriod));
+                }
+
                 FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
                     ABatchTable.GetBatchStatusDBName(),
                     MFinanceConstants.BATCH_UNPOSTED,
@@ -1145,13 +1125,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_ALL;
 
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
-                        FSelectedPeriod));
+                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_POSTED))
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
+                            FSelectedPeriod));
+                }
+
                 FStatusFilter = "1 = 1";
                 btnNew.Enabled = true;
             }
 
-            RefreshGridData(batchNumber, (sender is TCmbAutoComplete));
+            RefreshGridData(BatchNumber, (sender is TCmbAutoComplete));
 
             UpdateChangeableStatus();
             UpdateRecordNumberDisplay();
@@ -1165,9 +1149,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
-                FFilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
                     && (FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL));
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             if (grdDetails.Rows.Count < 2)
@@ -1265,55 +1249,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnParentActivationManual()
         {
-            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-
-            AutoSizeGrid();
-        }
-
-        /// <summary>
-        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
-        /// </summary>
-        /// <param name="Sender"></param>
-        /// <param name="e"></param>
-        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
-        {
-            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
-            {
-                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
-                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
-            }
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
             if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
             {
-                AutoSizeGrid();
+                grdDetails.AutoResizeGrid();
             }
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 80;
-            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)
@@ -1561,22 +1506,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // csv !
         }
 
-        private void ImportBatches(object sender, EventArgs e)
+        /// <summary>
+        /// ImportBatches called from button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ImportBatches(object sender, EventArgs e)
         {
+            if (!SaveChangesAndResetFilter())
+            {
+                return;
+            }
+
             ImportBatches();
         }
 
         private void ImportFromClipboard(object sender, EventArgs e)
         {
+            if (!SaveChangesAndResetFilter())
+            {
+                return;
+            }
+
             ImportFromClipboard();
         }
 
         private void ExportBatches(object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.HasChanges)
+            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
             {
                 // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("Please save changed Data before the Export!"),
+                MessageBox.Show(Catalog.GetString("Please correct and save changed data before the export!"),
                     Catalog.GetString("Export Error"));
                 return;
             }
@@ -1605,7 +1565,79 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void CreateFilterFindPanelsManual()
         {
-            ((Label)FFindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
+            ((Label)FFilterAndFindObject.FindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
+        }
+
+        private AJournalRow GetCurrentJournal()
+        {
+            return (AJournalRow)((TFrmGLBatch) this.ParentForm).GetJournalsControl().GetSelectedDetailRow();
+        }
+
+        private bool BatchWithStatusIsLoaded(String ABatchStatus)
+        {
+            String Comparison = "=";
+
+            if (ABatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                Comparison = "<>";
+            }
+
+            DataView BatchDV = new DataView(FMainDS.ABatch);
+
+            BatchDV.RowFilter = String.Format("{0}{1}'{2}'",
+                ABatchTable.GetBatchStatusDBName(),
+                Comparison,
+                MFinanceConstants.BATCH_UNPOSTED);
+
+            return BatchDV.Count > 0;
+        }
+
+        /// <summary>
+        /// Reload batches after an import
+        /// </summary>
+        private void ReloadBatches()
+        {
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
+                    FSelectedPeriod));
+
+            grdDetails.SelectRowInGrid(1);
+        }
+
+        private bool SaveChangesAndResetFilter()
+        {
+            bool RetVal = true;
+
+            try
+            {
+                if (!FrbtEditing.Checked)
+                {
+                    FrbtEditing.Checked = true;
+                }
+
+                if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+                {
+                    RetVal = false;
+                }
+                else
+                {
+                    //Set year and period to correct value
+                    if ((FcmbYearEnding.Items.Count > 0) && (FcmbYearEnding.SelectedIndex != 0))
+                    {
+                        FcmbYearEnding.SelectedIndex = 0;
+                    }
+
+                    if ((FcmbPeriod.Items.Count > 1) && (FcmbPeriod.SelectedIndex != 1))
+                    {
+                        FcmbPeriod.SelectedIndex = 1;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                RetVal = false;
+            }
+
+            return RetVal;
         }
     }
 }

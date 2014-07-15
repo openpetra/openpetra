@@ -45,12 +45,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
-        private bool FWindowIsMaximized = false;
 
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
         private bool FNewDonorWarning = true;
-
+        // changed gift records
+        GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -123,6 +123,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ucoBatches.CheckBeforeSaving();
             ucoTransactions.CheckBeforeSaving();
+
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject_DataSavingStarted_NewDonorWarning();
+            }
+        }
+
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject_DataSaved_NewDonorWarning(Sender, e);
+            }
         }
 
         private void InitializeManualCode()
@@ -134,10 +147,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
             mniNewDonorWarning.Checked = FNewDonorWarning;
 
-            // only add these events if the user want a new donor warning
+            // only add this event if the user want a new donor warning (this will still work without the condition)
             if (FNewDonorWarning)
             {
-                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted_NewDonorWarning);
                 FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             }
         }
@@ -176,28 +188,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             };
         }
 
-        // changed gift records
-        GiftBatchTDSAGiftDetailTable GiftDetailTable = null;
-
-        private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning(object Sender, EventArgs e)
+        private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning()
         {
             if (FNewDonorWarning)
             {
+                if (FMainDS.GetChangesTyped(false) == null)
+                {
+                    FGiftDetailTable = null;
+                    return;
+                }
+
                 // add changed gift records to datatable
                 GetDataFromControls();
-                GiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
+                FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
             }
         }
 
-        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        private void FPetraUtilsObject_DataSaved_NewDonorWarning(object Sender, TDataSavedEventArgs e)
         {
             // if data successfully saved then look for new donors and warn the user
-            if (e.Success && (GiftDetailTable != null) && FNewDonorWarning)
+            if (e.Success && (FGiftDetailTable != null) && FNewDonorWarning)
             {
                 // this list contains a list of all new donors that were entered onto form
                 List <Int64>NewDonorsList = ucoTransactions.NewDonorsList;
 
-                foreach (GiftBatchTDSAGiftDetailRow Row in GiftDetailTable.Rows)
+                foreach (GiftBatchTDSAGiftDetailRow Row in FGiftDetailTable.Rows)
                 {
                     // check changed data is either added or modified and that it is by a new donor
                     if (((Row.RowState == DataRowState.Added) || (Row.RowState == DataRowState.Modified))
@@ -231,35 +246,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.Focus();
             HookupAllInContainer(ucoBatches);
             HookupAllInContainer(ucoTransactions);
-            this.Resize += new EventHandler(TFrmGiftBatch_Resize);
-        }
-
-        void TFrmGiftBatch_Resize(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // set the flag that we are maximized
-                FWindowIsMaximized = true;
-
-                if (tabGiftBatch.SelectedTab == this.tpgBatches)
-                {
-                    ucoTransactions.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing transactions");
-                }
-                else
-                {
-                    ucoBatches.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing batches");
-                }
-            }
-            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
-            {
-                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                ucoBatches.AutoSizeGrid();
-                ucoTransactions.AutoSizeGrid();
-                FWindowIsMaximized = false;
-                Console.WriteLine("Normal - autosizing both");
-            }
         }
 
         /// <summary>
@@ -303,6 +289,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void DisableTransactions()
         {
             this.tpgTransactions.Enabled = false;
+        }
+
+        /// <summary>
+        /// disable the batches tab
+        /// </summary>
+        public void DisableBatches()
+        {
+            this.tpgBatches.Enabled = false;
         }
 
         /// <summary>
@@ -374,7 +368,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (this.tpgTransactions.Enabled)
                 {
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
-                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;
 
                     AGiftBatchRow SelectedRow = ucoBatches.GetSelectedDetailRow();
@@ -391,12 +384,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             this.Cursor = Cursors.WaitCursor;
 
-                            if (LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber,
-                                    SelectedRow.BatchStatus))
-                            {
-                                // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
-                                ucoTransactions.AutoSizeGrid();
-                            }
+                            LoadTransactions(SelectedRow.LedgerNumber,
+                                SelectedRow.BatchNumber,
+                                SelectedRow.BatchStatus);
                         }
                         finally
                         {
@@ -544,18 +534,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // change user default
             TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
-
-            // add/remove events the fire the new donor warning
-            if (FNewDonorWarning)
-            {
-                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted_NewDonorWarning);
-                FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
-            }
-            else
-            {
-                FPetraUtilsObject.DataSavingStarted -= new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted_NewDonorWarning);
-                FPetraUtilsObject.DataSaved -= new TDataSavedHandler(FPetraUtilsObject_DataSaved);
-            }
         }
     }
 }

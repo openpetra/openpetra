@@ -570,12 +570,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <returns>DataTable</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable GetAvailableGLYearEndings(Int32 ALedgerNumber,
+        public static DataTable GetAvailableGLYearEnds(Int32 ALedgerNumber,
             System.Int32 ADiffPeriod,
             bool AIncludeNextYear,
             out String ADisplayMember, out String AValueMember)
         {
             //Create the table to populate the combobox
+            DataTable ReturnTable = null;
+
             ADisplayMember = "YearEndDate";
             AValueMember = "YearNumber";
             string YearEnd = "YearEndDateLong";
@@ -605,25 +607,24 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             //Get last period row
             AAccountingPeriodRow periodRow = (AAccountingPeriodRow)AccountingPeriods.DefaultView[0].Row;
 
-
             //Create the table to populate the combobox
-            DataTable BatchTable = new DataTable();
-            BatchTable.Columns.Add(AValueMember, typeof(System.Int32));
-            BatchTable.Columns.Add(ADisplayMember, typeof(String));
-            BatchTable.Columns.Add(YearEnd, typeof(String));
-            BatchTable.PrimaryKey = new DataColumn[] {
-                BatchTable.Columns[0]
+            ReturnTable = new DataTable();
+            ReturnTable.Columns.Add(AValueMember, typeof(System.Int32));
+            ReturnTable.Columns.Add(ADisplayMember, typeof(String));
+            ReturnTable.Columns.Add(YearEnd, typeof(String));
+            ReturnTable.PrimaryKey = new DataColumn[] {
+                ReturnTable.Columns[0]
             };
 
             //Add the current year to the table
             YearNumber = LedgerRow.CurrentFinancialYear;
             YearEndDate = periodRow.PeriodEndDate;
 
-            DataRow ResultRow = BatchTable.NewRow();
+            DataRow ResultRow = ReturnTable.NewRow();
             ResultRow[0] = YearNumber;
             ResultRow[1] = YearEndDate.ToShortDateString();
             ResultRow[2] = YearEndDate.ToLongDateString();
-            BatchTable.Rows.Add(ResultRow);
+            ReturnTable.Rows.Add(ResultRow);
 
             //Retrieve all previous years
             string sql =
@@ -663,10 +664,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         }
                     }
 
-                    DataRow ResultRow2 = BatchTable.NewRow();
+                    DataRow ResultRow2 = ReturnTable.NewRow();
                     ResultRow2[0] = YearNumber;
                     ResultRow2[1] = YearEndDate.ToShortDateString();
-                    BatchTable.Rows.Add(ResultRow2);
+                    ReturnTable.Rows.Add(ResultRow2);
                 }
             }
             catch (Exception ex)
@@ -680,7 +681,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            return BatchTable;
+            return ReturnTable;
         }
 
         /// <summary>

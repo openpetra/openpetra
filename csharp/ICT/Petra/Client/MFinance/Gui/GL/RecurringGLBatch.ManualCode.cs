@@ -55,7 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
-        private bool FWindowIsMaximized = false;
 
         /// <summary>
         /// use this ledger
@@ -189,7 +188,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (this.tpgRecurringTransactions.Enabled)
                     {
                         // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
-                        // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
                         this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringTransactions;
 
                         bool fromBatchTab = false;
@@ -205,15 +203,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 ucoRecurringBatches.GetSelectedDetailRow().BatchNumber);
                         }
 
-                        if (this.ucoRecurringTransactions.LoadTransactions(
-                                FLedgerNumber,
-                                ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
-                                ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
-                                ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
-                                fromBatchTab))
-                        {
-                            ucoRecurringTransactions.AutoSizeGrid();
-                        }
+                        this.ucoRecurringTransactions.LoadTransactions(
+                            FLedgerNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
+                            fromBatchTab);
 
                         FPreviousTab = eGLTabs.RecurringTransactions;
                     }
@@ -278,44 +273,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public TUC_RecurringGLTransactions GetTransactionsControl()
         {
             return ucoRecurringTransactions;
-        }
-
-        private void RunOnceOnActivationManual()
-        {
-            this.Resize += new EventHandler(TFrmRecurringGLBatch_Resize);
-        }
-
-        void TFrmRecurringGLBatch_Resize(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // set the flag that we are maximized
-                FWindowIsMaximized = true;
-
-                if (tabRecurringGLBatch.SelectedTab == this.tpgRecurringBatches)
-                {
-                    ucoRecurringTransactions.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing transactions");
-                }
-                else if (tabRecurringGLBatch.SelectedTab == this.tpgRecurringTransactions)
-                {
-                    ucoRecurringBatches.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing batches");
-                }
-                else
-                {
-                    ucoRecurringBatches.AutoSizeGrid();
-                    ucoRecurringTransactions.AutoSizeGrid();
-                }
-            }
-            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
-            {
-                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                ucoRecurringBatches.AutoSizeGrid();
-                ucoRecurringTransactions.AutoSizeGrid();
-                FWindowIsMaximized = false;
-                Console.WriteLine("Normal - autosizing both");
-            }
         }
 
         #region Menu and command key handlers for our user controls

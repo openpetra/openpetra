@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,6 +26,7 @@ using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Collections.Generic;
+using System.Threading;
 using Ict.Common;
 
 namespace Ict.Common.IO
@@ -225,6 +226,8 @@ namespace Ict.Common.IO
             }
         }
 
+        private static List <DateTime>FEmailsSentInLastMinute = new List <DateTime>();
+
         /// <summary>
         /// Send an email message
         /// </summary>
@@ -251,6 +254,35 @@ namespace Ict.Common.IO
             try
             {
                 AEmail.IsBodyHtml = AEmail.Body.ToLower().Contains("<html>");
+
+                int LimitEmailsPerMinute = TAppSettingsManager.GetInt32("SmtpLimitMessagesPerMinute", 30);
+                int countInLastMinute = LimitEmailsPerMinute;
+
+                while (countInLastMinute >= LimitEmailsPerMinute)
+                {
+                    countInLastMinute = 0;
+
+                    foreach (DateTime dt in FEmailsSentInLastMinute)
+                    {
+                        // better check the last 2 minutes, to avoid confusion
+                        if (DateTime.Compare(dt.AddMinutes(2), DateTime.Now) >= 0)
+                        {
+                            countInLastMinute++;
+                        }
+                    }
+
+                    if (countInLastMinute == 0)
+                    {
+                        FEmailsSentInLastMinute.Clear();
+                    }
+
+                    if (countInLastMinute >= LimitEmailsPerMinute)
+                    {
+                        Thread.Sleep(TimeSpan.FromSeconds(10));
+                    }
+                }
+
+                FEmailsSentInLastMinute.Add(DateTime.Now);
 
                 FSmtpClient.Send(AEmail);
 

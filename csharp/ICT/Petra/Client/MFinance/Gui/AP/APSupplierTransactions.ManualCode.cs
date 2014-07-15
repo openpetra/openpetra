@@ -106,8 +106,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.DataPageLoaded += new TDataPageLoadedEventHandler(grdResult_DataPageLoaded);
             grdResult.Selection.SelectionChanged += new SourceGrid.RangeRegionChangedEventHandler(grdResult_SelectionChanged);
 
-            this.Resize += new EventHandler(TFrmAPSupplierTransactions_Resize);
-
             FPetraUtilsObject.SetStatusBarText(grdDetails,
                 Catalog.GetString("Use the navigation keys to select a transaction.  Double-click to view the details"));
             FPetraUtilsObject.SetStatusBarText(btnAddTaggedToPayment, Catalog.GetString("Click to pay the tagged items"));
@@ -144,7 +142,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private void SelectRowInGrid(int ARowNumber)
+        /// <summary>
+        /// Method required by IGridBase.
+        /// </summary>
+        public void SelectRowInGrid(int ARowNumber)
         {
             if (ARowNumber >= grdDetails.Rows.Count)
             {
@@ -161,26 +162,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FPrevRowChangedRow = ARowNumber;
         }
 
-        private void UpdateRecordNumberDisplay()
-        {
-            int RecordCount;
-
-            if (grdDetails.DataSource != null)
-            {
-                int totalTableRecords = grdResult.TotalRecords;
-                int totalGridRecords = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-
-                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-                lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
-                        true),
-                    RecordCount) + String.Format(" ({0})", totalTableRecords);
-
-                SetRecordNumberDisplayProperties();
-                UpdateDisplayedBalance();
-            }
-        }
-
         private void ApplyFilterManual(ref string AFilter)
         {
             if (FPagedDataTable != null)
@@ -189,9 +170,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             bool gotRows = (grdDetails.Rows.Count > 1);
-            bool canApprove = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval")).Checked && gotRows;
-            bool canPost = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting")).Checked && gotRows;
-            bool canPay = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying")).Checked && gotRows;
+            bool canApprove = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval")).Checked && gotRows;
+            bool canPost = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPosting")).Checked && gotRows;
+            bool canPay = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPaying")).Checked && gotRows;
 
             bool canTag = canApprove || canPost || canPay;
 
@@ -208,16 +189,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdDetails.ShowCell(new SourceGrid.Position(grdDetails.Selection.ActivePosition.Row, 0), true);
             }
-        }
 
-        private void FilterToggledManual(bool AFilterIsOff)
-        {
-            AutoSizeGrid();
+            UpdateDisplayedBalance();
         }
 
         private bool IsMatchingRowManual(DataRow ARow)
         {
-            string transactionType = ((TCmbAutoComplete)FFindPanelControls.FindControlByName("cmbTransactionType")).Text;
+            string transactionType = ((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbTransactionType")).Text;
 
             if (transactionType != String.Empty)
             {
@@ -227,7 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            string status = ((TCmbAutoComplete)FFindPanelControls.FindControlByName("cmbStatus")).Text;
+            string status = ((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbStatus")).Text;
 
             if (status != String.Empty)
             {
@@ -238,7 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             DateTime dt;
-            TtxtPetraDate fromDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDate-1");
+            TtxtPetraDate fromDate = (TtxtPetraDate)FFilterAndFindObject.FindPanelControls.FindControlByName("dtpDate-1");
 
             if ((fromDate.Text != String.Empty) && DateTime.TryParse(fromDate.Text, out dt))
             {
@@ -248,7 +226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            TtxtPetraDate toDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDate-2");
+            TtxtPetraDate toDate = (TtxtPetraDate)FFilterAndFindObject.FindPanelControls.FindControlByName("dtpDate-2");
 
             if ((toDate.Text != String.Empty) && DateTime.TryParse(toDate.Text, out dt))
             {
@@ -279,7 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
             TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, ALedgerNumber);
             FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
-            Control rbtForApproval = FFilterPanelControls.FindControlByName("rbtForApproval");
+            Control rbtForApproval = FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval");
             rbtForApproval.Enabled = FRequireApprovalBeforePosting;
 
             //
@@ -402,7 +380,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdResult.Visible = true;
             UpdateRowFilter();
-            ApplyFilterManual(ref FCurrentActiveFilter);
+            string currentFilter = FFilterAndFindObject.CurrentActiveFilter;
+            ApplyFilterManual(ref currentFilter);
 
             if (grdResult.TotalPages > 0)
             {
@@ -421,9 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 SelectRowInGrid(1);
             }
 
-            AutoSizeGrid();
-            this.Width = this.Width - 1;
-            this.Width = this.Width + 1;
+            grdResult.AutoResizeGrid();
 
             UpdateSupplierBalance();
             UpdateDisplayedBalance();
@@ -483,15 +460,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdResult.Columns.Clear();
-            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], 17, false);
-//          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"], 50);
-            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 70);
-            grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);
-            grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"], 2);
-            grdResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"], 2);
-            grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"], 90);
-//          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
-            grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
+            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], -1, false);
+//          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"]);
+            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"]);
+            grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"]);
+            grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"]);
+            grdResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"]);
+            grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"]);
+//          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"]);
+            grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"]);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
         }
 
@@ -563,7 +540,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 filter += FHistoryFilter;
 
-                FFilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
             }
         }
 
@@ -646,14 +623,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FStatusFilter = String.Empty;
             string filterJoint = " AND ";
 
-            String SelectedItem = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbStatus")).Text;
+            String SelectedItem = ((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbStatus")).Text;
 
             if (SelectedItem != String.Empty)
             {
                 FStatusFilter = "(Status='" + SelectedItem + "')";
             }
 
-            RadioButton rbtForApproval = (RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval");
+            RadioButton rbtForApproval = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval");
 
             if (rbtForApproval.Checked)
             {
@@ -665,7 +642,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FStatusFilter += ("(Status='OPEN')");
             }
 
-            RadioButton rbtForPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting");
+            RadioButton rbtForPosting = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPosting");
 
             if (rbtForPosting.Checked)
             {
@@ -684,7 +661,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            RadioButton rbtForPaying = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying");
+            RadioButton rbtForPaying = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPaying");
 
             if (rbtForPaying.Checked)
             {
@@ -703,7 +680,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             FTypeFilter = "";
 
-            String SelectedItem = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbTransactionType")).Text;
+            String SelectedItem = ((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbTransactionType")).Text;
 
             if (SelectedItem != String.Empty)
             {
@@ -717,14 +694,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             FHistoryFilter = String.Empty;
 
-            RadioButton rbtRecent = (RadioButton)FFilterPanelControls.FindControlByName("rbtRecent");
+            RadioButton rbtRecent = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtRecent");
 
             if (rbtRecent.Checked)
             {
                 FHistoryFilter = ("(Date >'" + FAgedOlderThan + "')");
             }
 
-            RadioButton rbtQuarter = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastQuarter");
+            RadioButton rbtQuarter = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtLastQuarter");
 
             if (rbtQuarter.Checked)
             {
@@ -736,7 +713,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FHistoryFilter += ("(Date > #" + DateTime.Now.AddMonths(-3).ToString("d", System.Globalization.CultureInfo.InvariantCulture) + "#)");
             }
 
-            RadioButton rbtHalf = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastSixMonths");
+            RadioButton rbtHalf = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtLastSixMonths");
 
             if (rbtHalf.Checked)
             {
@@ -748,7 +725,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FHistoryFilter += ("(Date > #" + DateTime.Now.AddMonths(-6).ToString("d", System.Globalization.CultureInfo.InvariantCulture) + "#)");
             }
 
-            RadioButton rbtYear = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastYear");
+            RadioButton rbtYear = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtLastYear");
 
             if (rbtYear.Checked)
             {
@@ -1142,49 +1119,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             reporter.LedgerNumber = FLedgerNumber;
             reporter.SetPaymentNumber(PaymentNumStart, PaymentNumEnd);
             reporter.Show();
-        }
-
-        private bool FWindowIsMaximized = false;
-        private void TFrmAPSupplierTransactions_Resize(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // set the flag that we are maximized
-                FWindowIsMaximized = true;
-                AutoSizeGrid();
-            }
-            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
-            {
-                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                AutoSizeGrid();
-                FWindowIsMaximized = false;
-            }
-        }
-
-        private void AutoSizeGrid()
-        {
-            if (grdDetails.Columns.Count == 0)
-            {
-                // Not created yet
-                return;
-            }
-
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 20;
-            grdDetails.Columns[1].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[5].Width = 75;
-            grdDetails.Columns[6].Width = 75;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdResult.SuspendLayout();
-            grdDetails.AutoSizeCells();
-            grdResult.ResumeLayout();
         }
 
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)

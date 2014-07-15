@@ -786,14 +786,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (ClickedMenuItemName == "mniMaintainDonorHistory")
             {
 //              TMenuFunctions.OpenDonorGiftHistory(this);
-                TCommonScreensForwarding.OpenDonorRecipientHistoryScreen("mniMaintainDonorHistory",
+                TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
                     PartnerKey,
                     FPetraUtilsObject.GetForm());
             }
             else if (ClickedMenuItemName == "mniMaintainRecipientHistory")
             {
 //              TMenuFunctions.OpenRecipientGiftHistory(this);
-                TCommonScreensForwarding.OpenDonorRecipientHistoryScreen("mniMaintainRecipientHistory",
+                TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
                     PartnerKey,
                     FPetraUtilsObject.GetForm());
             }
@@ -829,6 +829,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (ClickedMenuItemName == "mniMailingGenerateExtract")
             {
                 CreateNewExtractFromFoundPartners();
+            }
+            else if (ClickedMenuItemName == "mniMailingSubscriptionCancellation")
+            {
+                TPartnerMain.CancelExpiredSubscriptions(this.FindForm());
             }
             else
             {
@@ -1225,7 +1229,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (AAutoSizeCells)
             {
-                grdResult.AutoSizeCells();
+                grdResult.AutoResizeGrid();
             }
         }
 

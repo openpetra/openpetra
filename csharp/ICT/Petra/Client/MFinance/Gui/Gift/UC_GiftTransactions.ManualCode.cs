@@ -32,6 +32,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MCommon;
 
@@ -140,6 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
 
+            SetupTextBoxMenuItems();
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
 
             //Set initial width of this textbox
@@ -148,6 +150,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Setup hidden text boxes used to speed up reading transactions
             SetupComboTextBoxOverlayControls();
+        }
+
+        private void SetupTextBoxMenuItems()
+        {
+            List <Tuple <string, EventHandler>>ItemList = new List <Tuple <string, EventHandler>>();
+
+            ItemList.Add(new Tuple <string, EventHandler>("Open Donor History", OpenDonorHistory));
+            txtDetailDonorKey.AddCustomContextMenuItems(ItemList);
+
+            ItemList.Clear();
+            ItemList.Add(new Tuple <string, EventHandler>("Open Recipient History", OpenRecipientHistory));
+            txtDetailRecipientKey.AddCustomContextMenuItems(ItemList);
         }
 
         private void SetupComboTextBoxOverlayControls()
@@ -351,9 +365,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
 
             // Now we set the full filter
-            ApplyFilter();
+            FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             SelectRowInGrid(1);
 
@@ -1484,7 +1498,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 SetGiftDetailDefaultView();
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             UpdateRecordNumberDisplay();
@@ -1643,9 +1657,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 string rowFilter = String.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
-                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
                 FMainDS.AGiftDetail.DefaultView.RowFilter = rowFilter;
-                FCurrentActiveFilter = rowFilter;
+                FFilterAndFindObject.CurrentActiveFilter = rowFilter;
                 // We don't apply the filter yet!
 
                 FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1}",
@@ -1754,24 +1768,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
                 {
-                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                     {
                         MessageBox.Show(
                             MCommonResourcestrings.StrNewRecordIsFiltered,
                             MCommonResourcestrings.StrAddNewRecordTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        FFilterPanelControls.ClearAllDiscretionaryFilters();
+                        FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
 
-                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
                         {
-                            ApplyFilter();
+                            FFilterAndFindObject.ApplyFilter();
                         }
 
                         SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
                     }
                 }
 
-                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
                 UpdateRecordNumberDisplay();
 
                 //Focus accordingly
@@ -2080,7 +2094,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = pnlDetailsEnabledState;
 
             btnDelete.Enabled = pnlDetailsEnabledState;
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
         }
@@ -2244,38 +2258,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
             {
-                AutoSizeGrid();
+                grdDetails.AutoResizeGrid();
             }
 
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 60;
-            grdDetails.Columns[1].Width = 60;
-            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[3].Width = 50;
-            grdDetails.Columns[4].Width = 25;
-            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
-
-            Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
@@ -2869,6 +2855,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 dr.Delete();
             }
+        }
+
+        private void OpenDonorHistory(System.Object sender, EventArgs e)
+        {
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
+                Convert.ToInt64(txtDetailDonorKey.Text),
+                FPetraUtilsObject.GetForm());
+        }
+
+        private void OpenRecipientHistory(System.Object sender, EventArgs e)
+        {
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
+                Convert.ToInt64(txtDetailRecipientKey.Text),
+                FPetraUtilsObject.GetForm());
         }
     }
 }

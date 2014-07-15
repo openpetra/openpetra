@@ -79,14 +79,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
             FRequireApprovalBeforePosting = FMainForm.RequireApprovalBeforePosting;
-            Control rbtForApproval = FFilterPanelControls.FindControlByName("rbtForApproval");
+            Control rbtForApproval = FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval");
             rbtForApproval.Enabled = FRequireApprovalBeforePosting;
         }
 
-        /// ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /// These methods are stubs that allow the auto-generated code to compile (we don't have a details panel)
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // These methods are stubs that allow the auto-generated code to compile (we don't have a details panel)
 
-        private void SelectRowInGrid(int ARowNumber)
+        /// <summary>
+        /// Method required by IGridBase.
+        /// </summary>
+        public void SelectRowInGrid(int ARowNumber)
         {
             if (ARowNumber >= grdInvoices.Rows.Count)
             {
@@ -125,26 +128,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             utils.SetStatusBarText(btnTagAll, Catalog.GetString("Click to tag all the displayed items"));
             utils.SetStatusBarText(btnUntagAll, Catalog.GetString("Click to un-tag all the displayed items"));
             utils.SetStatusBarText(chkToggleFilter, Catalog.GetString("Click to show/hide the Filter/Find panel"));
-        }
-
-        private void UpdateRecordNumberDisplay()
-        {
-            int RecordCount;
-
-            if (grdDetails.DataSource != null)
-            {
-                int totalTableRecords = grdInvoices.TotalRecords;
-                int totalGridRecords = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-
-                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-                lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
-                        true),
-                    RecordCount) + String.Format(" ({0})", totalTableRecords);
-
-                SetRecordNumberDisplayProperties();
-                UpdateDisplayedBalance();
-            }
         }
 
         /// <summary>
@@ -302,7 +285,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdInvoices.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
             SetInvoiceFilters(null, null);
-            ApplyFilterManual(ref FCurrentActiveFilter);
+            string currentFilter = FFilterAndFindObject.CurrentActiveFilter;
+            ApplyFilterManual(ref currentFilter);
 
             if (grdInvoices.TotalPages > 0)
             {
@@ -317,9 +301,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // Size it
-            AutoSizeGrid();
-            this.Width = this.Width - 1;
-            this.Width = this.Width + 1;
+            grdInvoices.AutoResizeGrid();
 
             UpdateRecordNumberDisplay();
             UpdateInvoiceBalance();
@@ -370,15 +352,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdInvoices.Columns.Clear();
-            grdInvoices.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 17, false);
-            grdInvoices.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
-            grdInvoices.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
-            grdInvoices.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);
-            grdInvoices.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
-            grdInvoices.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
-            grdInvoices.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
+            grdInvoices.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], -1, false);
+            grdInvoices.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"]);
+            grdInvoices.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"]);
+            grdInvoices.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"]);
+            grdInvoices.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"]);
+            grdInvoices.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"]);
+            grdInvoices.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"]);
             grdInvoices.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
-            grdInvoices.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"], 100);
+            grdInvoices.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"]);
             grdInvoices.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
         }
 
@@ -390,14 +372,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 string filterJoint = " AND ";
                 DateTime dtToday = DateTime.Today;
 
-                TextBox txtSupplierName = (TextBox)FFilterPanelControls.FindControlByName("txtSupplierName");
+                TextBox txtSupplierName = (TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtSupplierName");
 
                 if (txtSupplierName.Text.Trim().Length > 0)
                 {
                     filter += String.Format("(PartnerShortName LIKE '%{0}%')", txtSupplierName.Text.Trim());
                 }
 
-                RadioButton rbtOverdue = (RadioButton)FFilterPanelControls.FindControlByName("rbtOverdue");
+                RadioButton rbtOverdue = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtOverdue");
 
                 if (rbtOverdue.Checked)
                 {
@@ -409,7 +391,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     filter += String.Format("(DateDue < #{0}#)", dtToday.ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
-                RadioButton rbtDueToday = (RadioButton)FFilterPanelControls.FindControlByName("rbtDueToday");
+                RadioButton rbtDueToday = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtDueToday");
 
                 if (rbtDueToday.Checked)
                 {
@@ -421,7 +403,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     filter += String.Format("(DateDue = #{0}#)", dtToday.ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
-                RadioButton rbtDueThisWeek = (RadioButton)FFilterPanelControls.FindControlByName("rbtDueThisWeek");
+                RadioButton rbtDueThisWeek = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtDueThisWeek");
 
                 if (rbtDueThisWeek.Checked)
                 {
@@ -435,7 +417,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         dtToday.AddDays(7).ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
-                RadioButton rbtDueThisMonth = (RadioButton)FFilterPanelControls.FindControlByName("rbtDueThisMonth");
+                RadioButton rbtDueThisMonth = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtDueThisMonth");
 
                 if (rbtDueThisMonth.Checked)
                 {
@@ -449,7 +431,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         dtToday.AddDays(30).ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
-                RadioButton rbtDueThisQuarter = (RadioButton)FFilterPanelControls.FindControlByName("rbtDueThisQuarter");
+                RadioButton rbtDueThisQuarter = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtDueThisQuarter");
 
                 if (rbtDueThisQuarter.Checked)
                 {
@@ -463,7 +445,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         dtToday.AddDays(90).ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
-                RadioButton rbtForApproval = (RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval");
+                RadioButton rbtForApproval = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval");
 
                 if (rbtForApproval.Checked)
                 {
@@ -475,7 +457,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     filter += ("(DocumentStatus='OPEN')");
                 }
 
-                RadioButton rbtForPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting");
+                RadioButton rbtForPosting = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPosting");
 
                 if (rbtForPosting.Checked)
                 {
@@ -494,7 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     }
                 }
 
-                RadioButton rbtForPaying = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying");
+                RadioButton rbtForPaying = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPaying");
 
                 if (rbtForPaying.Checked)
                 {
@@ -506,7 +488,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     filter += ("(DocumentStatus='POSTED' OR DocumentStatus='PARTPAID')");
                 }
 
-                FFilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
             }
         }
 
@@ -1079,9 +1061,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FInvoiceTable.DefaultView.RowFilter = AFilter;
 
                 bool gotRows = (grdDetails.Rows.Count > 1);
-                bool canApprove = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval")).Checked && gotRows;
-                bool canPost = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting")).Checked && gotRows;
-                bool canPay = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying")).Checked && gotRows;
+                bool canApprove = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval")).Checked && gotRows;
+                bool canPost = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPosting")).Checked && gotRows;
+                bool canPay = ((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPaying")).Checked && gotRows;
 
                 bool canTag = canApprove || canPost || canPay;
 
@@ -1107,17 +1089,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     grdInvoices.ShowCell(new SourceGrid.Position(grdInvoices.Selection.ActivePosition.Row, 0), true);
                 }
-            }
-        }
 
-        private void FilterToggledManual(bool AFilterIsOff)
-        {
-            AutoSizeGrid();
+                UpdateDisplayedBalance();
+            }
         }
 
         private bool IsMatchingRowManual(DataRow ARow)
         {
-            string invoiceNumber = ((TextBox)FFindPanelControls.FindControlByName("txtInvoiceNumber")).Text.ToLower();
+            string invoiceNumber = ((TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtInvoiceNumber")).Text.ToLower();
 
             if (invoiceNumber != String.Empty)
             {
@@ -1127,7 +1106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            string supplierName = ((TextBox)FFindPanelControls.FindControlByName("txtSupplierName")).Text.ToLower();
+            string supplierName = ((TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtSupplierName")).Text.ToLower();
 
             if (supplierName != String.Empty)
             {
@@ -1138,7 +1117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             DateTime dt;
-            TtxtPetraDate fromDueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDueDate-1");
+            TtxtPetraDate fromDueDate = (TtxtPetraDate)FFilterAndFindObject.FindPanelControls.FindControlByName("dtpDueDate-1");
 
             if ((fromDueDate.Text != String.Empty) && DateTime.TryParse(fromDueDate.Text, out dt))
             {
@@ -1148,7 +1127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            TtxtPetraDate toDueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDueDate-2");
+            TtxtPetraDate toDueDate = (TtxtPetraDate)FFilterAndFindObject.FindPanelControls.FindControlByName("dtpDueDate-2");
 
             if ((toDueDate.Text != String.Empty) && DateTime.TryParse(toDueDate.Text, out dt))
             {
@@ -1158,7 +1137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            TtxtPetraDate fromIssueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpIssueDate-1");
+            TtxtPetraDate fromIssueDate = (TtxtPetraDate)FFilterAndFindObject.FindPanelControls.FindControlByName("dtpIssueDate-1");
 
             if ((fromIssueDate.Text != String.Empty) && DateTime.TryParse(fromIssueDate.Text, out dt))
             {
@@ -1168,7 +1147,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            TtxtPetraDate toIssueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpIssueDate-2");
+            TtxtPetraDate toIssueDate = (TtxtPetraDate)FFilterAndFindObject.FindPanelControls.FindControlByName("dtpIssueDate-2");
 
             if ((toIssueDate.Text != String.Empty) && DateTime.TryParse(toIssueDate.Text, out dt))
             {
@@ -1179,33 +1158,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             return true;
-        }
-
-        private void AutoSizeGrid()
-        {
-            if (grdDetails.Columns.Count == 0)
-            {
-                // Not created yet
-                return;
-            }
-
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 20;
-            grdDetails.Columns[1].Width = 75;
-            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[3].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[6].Width = 75;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdInvoices.SuspendLayout();
-            grdDetails.AutoSizeCells();
-            grdInvoices.ResumeLayout();
         }
 
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)

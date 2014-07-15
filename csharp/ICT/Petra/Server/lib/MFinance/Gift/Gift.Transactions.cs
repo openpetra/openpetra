@@ -358,11 +358,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             ADisplayMember = "YearDate";
             AValueMember = "YearNumber";
-            DataTable tab = new DataTable();
-            tab.Columns.Add(AValueMember, typeof(System.Int32));
-            tab.Columns.Add(ADisplayMember, typeof(String));
-            tab.PrimaryKey = new DataColumn[] {
-                tab.Columns[0]
+            DataTable ReturnTable = new DataTable();
+            ReturnTable.Columns.Add(AValueMember, typeof(System.Int32));
+            ReturnTable.Columns.Add(ADisplayMember, typeof(String));
+            ReturnTable.PrimaryKey = new DataColumn[] {
+                ReturnTable.Columns[0]
             };
 
             System.Type typeofTable = null;
@@ -389,21 +389,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 // add the years, which are retrieved by reading from the gift batch tables
                 string sql =
-                    String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
-                        ALedgerNumber.ToString() + " ORDER BY 1 DESC",
+                    String.Format("SELECT DISTINCT {0} AS availYear FROM PUB_{1} WHERE {2}={3} ORDER BY 1 DESC",
                         AGiftBatchTable.GetBatchYearDBName(),
                         AGiftBatchTable.GetTableDBName(),
-                        AGiftBatchTable.GetLedgerNumberDBName());
+                        AGiftBatchTable.GetLedgerNumberDBName(),
+                        ALedgerNumber);
 
                 DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
 
                 foreach (DataRow row in BatchYearTable.Rows)
                 {
-                    DataRow resultRow = tab.NewRow();
+                    DataRow resultRow = ReturnTable.NewRow();
                     resultRow[0] = row[0];
-                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToString(
-                        "dd/MM/yyyy");
-                    tab.Rows.Add(resultRow);
+                    resultRow[1] = currentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0]))).ToShortDateString();
+                    ReturnTable.Rows.Add(resultRow);
                 }
             }
             finally
@@ -412,15 +411,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             // we should also check if the current year has been added, in case there are no gift batches yet
-            if (null == tab.Rows.Find(LedgerTable[0].CurrentFinancialYear))
+            if (ReturnTable.Rows.Find(LedgerTable[0].CurrentFinancialYear) == null)
             {
-                DataRow resultRow = tab.NewRow();
+                DataRow resultRow = ReturnTable.NewRow();
                 resultRow[0] = LedgerTable[0].CurrentFinancialYear;
-                resultRow[1] = currentYearEnd.ToString("yyyy");
-                tab.Rows.InsertAt(resultRow, 0);
+                resultRow[1] = currentYearEnd.ToShortDateString();
+                ReturnTable.Rows.InsertAt(resultRow, 0);
             }
 
-            return tab;
+            return ReturnTable;
         }
 
         /// <summary>
@@ -453,55 +452,78 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// also get the ledger for the base currency etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchStatus"></param>
+        /// <param name="AFilterBatchStatus"></param>
         /// <param name="AYear">if -1, the year will be ignored</param>
         /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
         /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used.
         /// Period = -2 means all periods in current year</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, string ABatchStatus, Int32 AYear, Int32 APeriod)
+        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus, Int32 AYear, Int32 APeriod)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-            StringCollection templateOperators = new StringCollection();
-
-            AGiftBatchRow templateRow = MainDS.AGiftBatch.NewRowTyped(false);
-            templateRow.LedgerNumber = ALedgerNumber;
-
-            if ((ABatchStatus != null) && (ABatchStatus.Length > 0))
-            {
-                templateRow.BatchStatus = ABatchStatus;
-                templateOperators.Add("=");
-            }
+            string FilterByPeriod = string.Empty;
 
             if (AYear != -1)
             {
-                templateRow.BatchYear = AYear;
-                templateOperators.Add("=");
+                FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
+                    AGiftBatchTable.GetTableDBName(),
+                    AGiftBatchTable.GetBatchYearDBName(),
+                    AYear);
 
                 if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
                 {
-                    templateRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
-                    templateOperators.Add(">=");
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetBatchPeriodDBName(),
+                        MainDS.ALedger[0].CurrentPeriod);
                 }
                 else if ((APeriod == -2) || (APeriod == -1))
                 {
-                    //All periods
-                    templateRow.BatchPeriod = APeriod;
-                    templateOperators.Add("<>");
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} <> {2}",
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetBatchPeriodDBName(),
+                        APeriod);
                 }
                 else if (APeriod != -1)
                 {
-                    templateRow.BatchPeriod = APeriod;
-                    templateOperators.Add("=");
+                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetBatchPeriodDBName(),
+                        APeriod);
                 }
             }
 
-            AGiftBatchAccess.LoadUsingTemplate(MainDS, templateRow, templateOperators, null, Transaction, null, 0, 0);
+            string SelectClause =
+                String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
+                    AGiftBatchTable.GetTableDBName(),
+                    AGiftBatchTable.GetLedgerNumberDBName(),
+                    ALedgerNumber);
+
+            string FilterByBatchStatus = string.Empty;
+
+            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
+            {
+                FilterByBatchStatus =
+                    string.Format(" AND {0} <> '{1}'",
+                        AGiftBatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
+            }
+            else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
+            {
+                FilterByBatchStatus =
+                    string.Format(" AND {0} = '{1}'",
+                        AGiftBatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
+            }
+
+            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus + FilterByPeriod,
+                MainDS.AGiftBatch.TableName, Transaction);
+
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDS;
         }
@@ -522,6 +544,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
             AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, ADetailNumber, Transaction);
+            AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
+            AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a GiftBatchTDS for a whole transaction (i.e. all details in the transaction)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AGiftTransactionNumber"></param>
+        /// <returns>DataSet containing the transation's data</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadWholeTransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AGiftTransactionNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+            AGiftDetailAccess.LoadViaAGift(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
             AGiftAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AGiftTransactionNumber, Transaction);
             AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 

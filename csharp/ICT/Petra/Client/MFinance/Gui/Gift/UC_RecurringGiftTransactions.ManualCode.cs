@@ -292,9 +292,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // Now we set the full filter
-            ApplyFilter();
+            FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             SelectRowInGrid(1);
 
@@ -1406,7 +1406,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 SetGiftDetailDefaultView();
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             UpdateRecordNumberDisplay();
@@ -1565,9 +1565,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 string rowFilter = String.Format("{0}={1}",
                     ARecurringGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
-                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
                 FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = rowFilter;
-                FCurrentActiveFilter = rowFilter;
+                FFilterAndFindObject.CurrentActiveFilter = rowFilter;
                 // We don't apply the filter yet!
 
                 FMainDS.ARecurringGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
@@ -1678,17 +1678,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1))
                 {
-                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                     {
                         MessageBox.Show(
                             MCommonResourcestrings.StrNewRecordIsFiltered,
                             MCommonResourcestrings.StrAddNewRecordTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        FFilterPanelControls.ClearAllDiscretionaryFilters();
+                        FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
 
-                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
                         {
-                            ApplyFilter();
+                            FFilterAndFindObject.ApplyFilter();
                         }
 
                         SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
@@ -2153,36 +2153,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
             {
-                AutoSizeGrid();
+                grdDetails.AutoResizeGrid();
             }
-        }
-
-        /// <summary>
-        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
-        /// </summary>
-        public void AutoSizeGrid()
-        {
-            //TODO: Using this manual code until we can do something better
-            //      Autosizing all the columns is very time consuming when there are many rows
-            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
-            {
-                column.Width = 100;
-                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
-            }
-
-            grdDetails.Columns[0].Width = 60;
-            grdDetails.Columns[1].Width = 60;
-            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-            grdDetails.Columns[3].Width = 50;
-            grdDetails.Columns[4].Width = 25;
-            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
-
-            grdDetails.AutoStretchColumnsToFitWidth = true;
-            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
-            grdDetails.AutoSizeCells();
-            grdDetails.ShowCell(FPrevRowChangedRow);
-
-            Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
         }
     }
 }

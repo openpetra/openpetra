@@ -36,8 +36,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     {
         private Int32 FLedgerNumber;
         private int standardTabIndex = 0;
-        private bool FWindowIsMaximized = false;
-
 
         /// <summary>
         /// use this ledger
@@ -116,35 +114,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoRecurringBatches.Focus();
             HookupAllInContainer(ucoRecurringBatches);
             HookupAllInContainer(ucoRecurringTransactions);
-            this.Resize += new EventHandler(TFrmGiftBatch_Resize);
-        }
-
-        void TFrmGiftBatch_Resize(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // set the flag that we are maximized
-                FWindowIsMaximized = true;
-
-                if (tabGiftBatch.SelectedTab == this.tpgRecurringBatches)
-                {
-                    ucoRecurringTransactions.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing transactions");
-                }
-                else
-                {
-                    ucoRecurringBatches.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing batches");
-                }
-            }
-            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
-            {
-                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                ucoRecurringBatches.AutoSizeGrid();
-                ucoRecurringTransactions.AutoSizeGrid();
-                FWindowIsMaximized = false;
-                Console.WriteLine("Normal - autosizing both");
-            }
         }
 
         /// <summary>
@@ -255,7 +224,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (this.tpgRecurringTransactions.Enabled)
                 {
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
-                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
                     this.tabGiftBatch.SelectedTab = this.tpgRecurringTransactions;
 
                     ARecurringGiftBatchRow SelectedRow = ucoRecurringBatches.GetSelectedDetailRow();
@@ -272,11 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             this.Cursor = Cursors.WaitCursor;
 
-                            if (LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber))
-                            {
-                                // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
-                                ucoRecurringTransactions.AutoSizeGrid();
-                            }
+                            LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber);
                         }
                         finally
                         {

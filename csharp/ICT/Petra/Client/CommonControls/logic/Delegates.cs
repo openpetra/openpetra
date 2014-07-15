@@ -77,8 +77,12 @@ namespace Ict.Petra.Client.CommonControls.Logic
     public delegate void TDelegateOpenExtractMasterScreen(Form AParentForm);
 
     /// <summary>Delegate for a call to open the Donor Recipient History screen</summary>
-    public delegate void TDelegateOpenDonorRecipientHistoryScreen(String AName,
+    public delegate void TDelegateOpenDonorRecipientHistoryScreen(bool ADonor,
         long APartnerKey,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open the Partner Edit screen</summary>
+    public delegate void TDelegateOpenPartnerEditScreen(long APartnerKey,
         Form AParentForm);
 
     /// <summary>Delegate for a call to open the Extract Master screen</summary>

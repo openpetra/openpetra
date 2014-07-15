@@ -148,7 +148,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
             {
-                // FilterByBatchStatus is empty
+                FilterByBatchStatus =
+                    string.Format(" AND {0} <> '{1}'",
+                        ABatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
             }
             else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
             {
@@ -2219,6 +2222,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TGLImporting importing = new TGLImporting();
 
             return importing.ImportGLBatches(requestParams, importString, out AMessages);
+        }
+
+        /// <summary>
+        /// Import GL transaction data
+        /// The data file contents from the client is sent as a string, imported in the database
+        /// and committed immediately
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AMainDS"></param>
+        /// <param name="AMessages"></param>
+        /// <returns>false if error</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportGLTransactions(
+            Hashtable ARequestParams,
+            String AImportString,
+            ref GLBatchTDS AMainDS,
+            out TVerificationResultCollection AMessages
+            )
+        {
+            TGLImporting importing = new TGLImporting();
+
+            return importing.ImportGLTransactions(ARequestParams, AImportString, ref AMainDS, out AMessages);
         }
 
         /// <summary>

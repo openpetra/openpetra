@@ -103,6 +103,14 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.IncomeExpenseTable(AParameters, FDbAdapter);
                     break;
 
+                case "AFO":
+                    ResultTbl = TFinanceReportingWebConnector.AFOTable(AParameters, FDbAdapter);
+                    break;
+
+                case "Executive Summary":
+                    ResultTbl = TFinanceReportingWebConnector.ExecutiveSummaryTable(AParameters, FDbAdapter);
+                    break;
+
                 case "TrialBalance":
                     ResultTbl = TFinanceReportingWebConnector.TrialBalanceTable(AParameters, FDbAdapter);
                     break;
