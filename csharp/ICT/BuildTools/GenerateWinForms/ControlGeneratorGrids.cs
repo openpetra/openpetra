@@ -38,7 +38,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class SourceGridGenerator : TControlGenerator
     {
         Int16 FDecimalPrecision = 2;
-        
+
         private Int16 FColumnIndex = -1;
         private string FPrevControlName = String.Empty;
 

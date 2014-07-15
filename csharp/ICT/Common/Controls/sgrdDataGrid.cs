@@ -1409,7 +1409,8 @@ namespace Ict.Common.Controls
         {
             int r = this.Rows.Count;
             int c = this.Columns.Count;
-            SourceGrid.Cells.Cell cell = (SourceGrid.Cells.Cell)this.GetCell(0, AColumnNumber);
+
+            SourceGrid.Cells.Cell cell = (SourceGrid.Cells.Cell) this.GetCell(0, AColumnNumber);
 
             // If the cell is null we cannot set the text
             // The cell will be null if the DataSource has not yet been bound to the grid.

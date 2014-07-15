@@ -47,19 +47,23 @@ namespace Ict.Common.Data
         public static int GetDataViewIndexByDataTableIndex(DataView ADataView, DataTable ADataTable, int ARowNumberInTable)
         {
             Int32 RowNumberInView = -1;
+
             for (int Counter = 0; Counter < ADataView.Count; Counter++)
             {
                 bool found = true;
+
                 foreach (DataColumn myColumn in ADataTable.PrimaryKey)
                 {
                     string value1 = ADataTable.Rows[ARowNumberInTable][myColumn].ToString();
                     string value2 = ADataView[Counter][myColumn.Ordinal].ToString();
+
                     if (value1 != value2)
                     {
                         found = false;
                         break;
                     }
                 }
+
                 if (found)
                 {
                     RowNumberInView = Counter;
@@ -81,15 +85,18 @@ namespace Ict.Common.Data
             int RowNumberInData = -1;
 
             int dataRowIndex = 0;
+
             foreach (DataRow myRow in ADataTable.Rows)
             {
                 bool found = true;
+
                 foreach (DataColumn myColumn in ADataTable.PrimaryKey)
                 {
                     if (myRow.RowState != DataRowState.Deleted)
                     {
                         string value1 = myRow[myColumn].ToString();
                         string value2 = ADataRowView[myColumn.Ordinal].ToString();
+
                         if (value1 != value2)
                         {
                             found = false;

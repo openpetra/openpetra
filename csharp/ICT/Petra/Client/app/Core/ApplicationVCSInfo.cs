@@ -220,7 +220,7 @@ namespace Ict.Petra.Client.App.Core
             }
         }
     }
-    
+
     /// <summary>
     /// Helper Class for the applications' Version
     /// </summary>
@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.App.Core
         public static string GetApplicationVersion()
         {
             string ReturnValue = String.Empty;
-            
+
             var AssemblyVers = new Version(TClientInfo.ClientAssemblyVersion);
 
             if (AssemblyVers.Revision > 20)
@@ -250,9 +250,9 @@ namespace Ict.Petra.Client.App.Core
             if (TApplicationVCSInfo.AppVCSData.IsInitialised)
             {
                 ReturnValue += "         [ " + TApplicationVCSInfo.AppVCSData.VCSName + " Rev. " +
-                                    TApplicationVCSInfo.AppVCSData.RevisionNumber + " ]";
+                               TApplicationVCSInfo.AppVCSData.RevisionNumber + " ]";
             }
-#endif  
+#endif
             return ReturnValue;
         }
     }

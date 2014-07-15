@@ -179,19 +179,23 @@ namespace Ict.Petra.Client.CommonDialogs
             this.label1.TabIndex = 13;
             this.label1.Text = "Initial Login: demo/demo or sysadmin/CHANGEME";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
+            //
             // pictureBox1
-            // 
+            //
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(56, 7);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(203, 223);
             this.pictureBox1.TabIndex = 14;
             this.pictureBox1.TabStop = false;
-            // 
+            //
             // lblPetraVersion
-            // 
-            this.lblPetraVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            //
+            this.lblPetraVersion.Font = new System.Drawing.Font("Microsoft Sans Serif",
+                8.25F,
+                System.Drawing.FontStyle.Bold,
+                System.Drawing.GraphicsUnit.Point,
+                ((byte)(0)));
             this.lblPetraVersion.Location = new System.Drawing.Point(20, 231);
             this.lblPetraVersion.Name = "lblPetraVersion";
             this.lblPetraVersion.Size = new System.Drawing.Size(267, 18);
@@ -230,6 +234,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
         private System.Windows.Forms.PictureBox pictureBox1;
 
         private System.Windows.Forms.Label label1;
