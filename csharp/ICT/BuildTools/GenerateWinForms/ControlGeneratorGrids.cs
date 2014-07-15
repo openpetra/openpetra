@@ -38,6 +38,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     public class SourceGridGenerator : TControlGenerator
     {
         Int16 FDecimalPrecision = 2;
+        
+        private Int16 FColumnIndex = -1;
+        private string FPrevControlName = String.Empty;
 
         /// <summary>constructor</summary>
         public SourceGridGenerator()
@@ -63,12 +66,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         private void AddColumnToGrid(TFormWriter writer, string AGridControlName, string AColumnType, string ALabel,
-            string ATableName, string AColumnName)
+            string AHeaderTooltip, string ATableName, string AColumnName)
         {
             string ColumnType = "Text";
             string PotentialDecimalPrecision;
             string TrueString = string.Empty;
             string FalseString = string.Empty;
+            string HeaderTooltip = (AHeaderTooltip == string.Empty) ? ALabel : AHeaderTooltip;
 
             if (AColumnType.Contains("DateTime"))
             {
@@ -165,6 +169,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ATableName + ".Column" +
                     AColumnName + ", " + FDecimalPrecision.ToString() + ");" + Environment.NewLine);
             }
+
+            if (AGridControlName != FPrevControlName)
+            {
+                FColumnIndex = 0;
+                FPrevControlName = AGridControlName;
+            }
+
+            writer.Template.AddToCodelet("GRIDHEADERTOOLTIP",
+                AGridControlName + ".SetHeaderTooltip(" + FColumnIndex.ToString() + ", \"" + HeaderTooltip + "\");" +
+                Environment.NewLine);
+            FColumnIndex++;
         }
 
         /// <summary>
@@ -264,6 +279,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             AddColumnToGrid(writer, ctrl.controlName,
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
+                                TYml2Xml.GetAttribute(CustomColumnNode, "Tooltip"),
                                 TableName,
                                 ColumnName);
                         }
@@ -272,6 +288,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             AddColumnToGrid(writer, ctrl.controlName,
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
+                                TYml2Xml.GetAttribute(CustomColumnNode, "Tooltip"),
                                 TableFieldTable,
                                 ColumnFieldNameResolved);
                         }
@@ -292,6 +309,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         AddColumnToGrid(writer, ctrl.controlName,
                             field.iDecimals == 10 && field.iLength == 24 ? "Currency" : field.GetDotNetType(),
                             field.strLabel,
+                            String.Empty,
                             TTable.NiceTableName(field.strTableName),
                             TTable.NiceFieldName(field.strName));
                     }
