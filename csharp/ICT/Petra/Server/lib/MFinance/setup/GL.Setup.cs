@@ -793,7 +793,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 + " '' AS EmailAddress,"
                 + " p_partner_short_name_c As PartnerShortName"
                 + " FROM a_valid_ledger_number, p_partner" 
-                + " WHERE a_ledger_number_i=" + ALedgerNumber + ACostCentreFilter
+                + " WHERE a_ledger_number_i=" + ALedgerNumber 
+                + ACostCentreFilter
                 + " AND p_partner.p_partner_key_n = a_valid_ledger_number.p_partner_key_n"
                 + " ORDER BY a_cost_centre_code_c";
 

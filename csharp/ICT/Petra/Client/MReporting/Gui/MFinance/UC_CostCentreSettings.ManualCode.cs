@@ -101,6 +101,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_costcentreoptions", "SelectedCostCentres");
             }
 
+            ACalculator.AddParameter("param_paginate", chkPaginate.Checked);
+            ACalculator.AddParameter("param_auto_email", chkAutoEmail.Checked);
+
             String CostCentreListTitle;
 
             if (rbtAllCostCentres.Checked || rbtAllActiveCostCentres.Checked)
@@ -156,6 +159,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtSelectedCostCentres.Checked = AParameters.Get("param_costcentreoptions").ToString() == "SelectedCostCentres";
 
             FCostCenterCodesDuringLoad = AParameters.Get("param_cost_centre_codes").ToString();
+            clbCostCentres.SetCheckedStringList(FCostCenterCodesDuringLoad);
 
             chkCostCentreBreakdown.Checked = AParameters.Get("param_cost_centre_breakdown").ToBool();
             chkExcludeInactiveCostCentres.Checked = AParameters.Get("ExcludeInactiveCostCentres").ToBool();
@@ -164,6 +168,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtDetail.Checked = AParameters.Get("param_depth").ToString() == "detail";
             rbtStandard.Checked = AParameters.Get("param_depth").ToString() == "standard";
             rbtSummary.Checked = AParameters.Get("param_depth").ToString() == "summary";
+            chkPaginate.Checked = AParameters.Get("param_paginate").ToBool();
+            chkAutoEmail.Checked = AParameters.Get("param_auto_email").ToBool();
         }
 
         #endregion

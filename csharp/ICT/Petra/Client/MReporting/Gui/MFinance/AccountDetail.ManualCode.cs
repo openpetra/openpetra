@@ -26,7 +26,6 @@ using System;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MSysMan.Gui;
 using System.Windows.Forms;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common;
@@ -297,106 +296,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
               && !pm.Get("param_design_template").ToBool()
                 )
             {
-                String CurrentCostCentre = "";
-                String RowCostCentre;
-                MemoryStream ReportStream;
-
-                //
-                // I need to find the email addresses for the linked partners I'm sending to.
-
-                DataTable LinkedPartners = TRemote.MFinance.Setup.WebConnectors.GetLinkedPartners(FLedgerNumber, CostCentreFilter);
-                LinkedPartners.DefaultView.Sort = "CostCentreCode";
-
-                Int32 SuccessfulCount = 0;
-                String UnlinkedCC = "";
-                String NoEmailAddr = "";
-                String FailedAddresses = "";
-                foreach (DataRow TransRow in ReportDs.ATransaction.Rows)
-                {
-                    RowCostCentre = TransRow["a_cost_centre_code_c"].ToString();
-                    if (RowCostCentre != CurrentCostCentre)
-                    {
-                        CurrentCostCentre = RowCostCentre;
-                        Int32 Idx = LinkedPartners.DefaultView.Find(RowCostCentre);
-                        if (Idx > -1) // There's a partner for this Cost Centre..
-                        {
-                            DataRow LinkedPartner = LinkedPartners.DefaultView[Idx].Row;
-                            if (LinkedPartner["EmailAddress"].ToString() != "")
-                            {
-                                ACalc.AddStringParameter("param_linked_partner_cc", RowCostCentre);
-                                ReportStream = FPetraUtilsObject.FFastReportsPlugin.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
-                                ReportStream.Position = 0;
-                                StreamReader sr = new StreamReader(ReportStream);
-                                String ReportHtml = sr.ReadToEnd();
-
-                                TUC_EmailPreferences.LoadEmailDefaults();
-                                TSmtpSender EmailSender = new TSmtpSender(
-                                        TUserDefaults.GetStringDefault("SmtpHost"), 
-                                        TUserDefaults.GetInt16Default("SmtpPort"), 
-                                        TUserDefaults.GetBooleanDefault("SmtpUseSsl"), 
-                                        TUserDefaults.GetStringDefault("SmtpUser"),
-                                        TUserDefaults.GetStringDefault("SmtpPassword"), 
-                                        "");
-                                EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
-                                EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
-
-                                String EmailBody = "";
-                                if (TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment"))
-                                {
-                                    EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
-                                    EmailSender.AttachFromStream(ReportStream, "AccountDetail.html");
-                                }
-                                else
-                                {
-                                    EmailBody = ReportHtml;
-                                }
-
-                                Boolean SentOk = EmailSender.SendEmail(
-                                    TUserDefaults.GetStringDefault("SmtpFromAccount"),
-                                    TUserDefaults.GetStringDefault("SmtpDisplayName"),
-                                    "tim.ingham@om.org", //LinkedPartner["EmailAddress"]
-                                    "Account Detail for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
-                                    EmailBody);
-
-                                if (SentOk)
-                                {
-                                    SuccessfulCount++;
-                                }
-                                else // Email didn't send for some reason
-                                {
-                                    FailedAddresses += ("\r\n" + LinkedPartner["EmailAddress"]);
-                                }
-                            }
-                            else // No Email Address for this Partner
-                            {
-                                NoEmailAddr += ("\r\n" + LinkedPartner["PartnerKey"] + " " + LinkedPartner["PartnerShortName"]);
-                            }
-                        }
-                        else // No Partner for this Cost Centre
-                        {
-                            UnlinkedCC += ("\r\n" + RowCostCentre);
-                        }
-                    }
-                }
-                String SendReport = "";
-                if (SuccessfulCount > 0)
-                {
-                    SendReport += String.Format(Catalog.GetString("Reports emailed to {0} addresses."), SuccessfulCount) + "\r\n\r\n";
-                }
-                if (UnlinkedCC != "")
-                {
-                    SendReport += (Catalog.GetString("These Cost Centres are not linked to Partners:") + UnlinkedCC + "\r\n\r\n");
-                }
-                if (NoEmailAddr != "")
-                {
-                    SendReport += (Catalog.GetString("These Partners have no email addresses:") + NoEmailAddr + "\r\n\r\n");
-                }
-                if (FailedAddresses != "")
-                {
-                    SendReport += (Catalog.GetString("Failed to send email to these addresses:") + FailedAddresses + "\r\n\r\n");
-                }
-                MessageBox.Show(SendReport, Catalog.GetString("Auto-email AccountDetail"));
-
+                FPetraUtilsObject.FFastReportsPlugin.AutoEmailReports(ACalc, FLedgerNumber, CostCentreFilter);
                 return false;
             }
 

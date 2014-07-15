@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=0;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(0,'Income Expense Statement','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/07/2014 12:32:09" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/15/2014 15:56:55" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -149,6 +149,22 @@ namespace FastReport
         CostCentreGroup.Visible = false;
       }
     }
+    
+    //
+    // When the page starts, if there''s a linked_partner filter, I''ll set it
+    // (And then only one Partner''s Cost Centre will be printed.)
+    
+    private void Page1_StartPage(object sender, EventArgs e)
+    {
+      CostCentreGroup.StartNewPage = ((Boolean)Report.GetParameterValue(&quot;param_paginate&quot;));
+//    MessageBox.Show(&quot;Page1_StartPage&quot;);
+      String LinkedPartner = (String)Report.GetParameterValue(&quot;param_linked_partner_cc&quot;);
+      if (LinkedPartner != &quot;&quot;)
+      {
+        TransactionBand.Filter = &quot;[IncomeExpense.CostCentreCode]==[param_linked_partner_cc]&quot;;
+        Report.SetParameterValue(&quot;param_cost_centre_list_title&quot;, LinkedPartner);
+      }
+    }
   }
 }
 </ScriptText>
@@ -219,8 +235,12 @@ namespace FastReport
     <Parameter Name="param_quarter_checked" DataType="System.Boolean"/>
     <Parameter Name="param_real_year_ending" DataType="System.String"/>
     <Parameter Name="param_design_template" DataType="System.Boolean"/>
+    <Parameter Name="param_current_financial_year" DataType="System.Boolean"/>
+    <Parameter Name="param_linked_partner_cc" DataType="System.String"/>
+    <Parameter Name="param_paginate" DataType="System.Boolean"/>
+    <Parameter Name="param_auto_email" DataType="System.Boolean"/>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" StartPageEvent="Page1_StartPage">
     <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="66.15">
       <TextObject Name="Text1" Left="368.55" Width="283.5" Height="18.9" Text="Income Expense Statement" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
       <TextObject Name="Text9" Left="831.6" Width="85.05" Height="18.9" Text="Printed :" HorzAlign="Right"/>

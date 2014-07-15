@@ -10,7 +10,7 @@ RootNode:
             ActionClick: UnselectAll
     Controls:
         pnlContent:
-            Controls: [rgrCostCentreOptions, chkCostCentreBreakdown, rgrDepth]
+            Controls: [rgrCostCentreOptions, pnlAutoEmail, chkCostCentreBreakdown, rgrDepth]
             Dock: Fill
         rgrCostCentreOptions: 
             ParameterName: param_costcentreoptions
@@ -35,6 +35,13 @@ RootNode:
         btnUnselectAllCostCentres: 
             Label: Unselect All
             Action: actUnselectAll
+        pnlAutoEmail:
+            Controls: [chkPaginate,chkAutoEmail]
+            ControlsOrientation: horizontal
+        chkPaginate:
+            ParameterName: param_paginate
+        chkAutoEmail:
+            ParameterName: param_auto_email
         chkCostCentreBreakdown: 
             ParameterName: param_cost_centre_breakdown
             Tooltip: group not by costcentre but by account
