@@ -8,6 +8,8 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
+        actDonorHistory: {ActionClick=OpenDonorHistory}
+        actRecipientHistory: {ActionClick=OpenRecipientHistory}
         actNewGift: {Label=&Add Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail, Image=New_Record.ico}
         actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
@@ -163,3 +165,6 @@ RootNode:
             mniReverseGiftBatch: {Action=actReverseGiftBatch}
             mniReverseGift: {Action=actReverseGift}
             mniReverseGiftDetail: {Action=actReverseGiftDetail}
+            mniSeparator: {Label=-}
+            mniDonorHistory: {Action: actDonorHistory}
+            mniRecipientHistory: {Action: actRecipientHistory}

@@ -33,6 +33,8 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MFinance;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -125,19 +127,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtGiftBatchNumber.NumberValueInt = null;
             txtGiftTransactionNumber.NumberValueInt = null;
             txtReceiptNumber.NumberValueInt = null;
+            txtMinimumAmount.NumberValueInt = null;
+            txtMaximumAmount.NumberValueInt = null;
 
             // set button to be on the very right of the screen (can't make this work in YAML)
             btnClear.Location = new System.Drawing.Point(linCriteriaDivider.Location.X + linCriteriaDivider.Width - btnClear.Width,
                 btnClear.Location.Y);
-
-            // default max amount
-            txtMaximumAmount.NumberValueInt = 999999999;
 
             // set to blank initially
             lblRecordCounter.Text = "";
 
             // event fired on screen close
             this.Closed += new System.EventHandler(this.TGiftDetailFindScreen_Closed);
+
+            // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+
+            // fix tab order
+            int Temp = txtDonor.TabIndex;
+            txtDonor.TabIndex = cmbMotivationGroup.TabIndex;
+            cmbMotivationGroup.TabIndex = txtRecipient.TabIndex;
+            txtRecipient.TabIndex = dtpDateTo.TabIndex;
+            dtpDateTo.TabIndex = txtMinimumAmount.TabIndex;
+            txtMinimumAmount.TabIndex = txtComment1.TabIndex;
+            txtComment1.TabIndex = dtpDateFrom.TabIndex;
+            dtpDateFrom.TabIndex = cmbMotivationDetail.TabIndex;
+            cmbMotivationDetail.TabIndex = txtReceiptNumber.TabIndex;
+            txtReceiptNumber.TabIndex = txtGiftTransactionNumber.TabIndex;
+            txtGiftTransactionNumber.TabIndex = Temp;
+
+            this.ActiveControl = txtGiftBatchNumber;
+
+            // set statusbar messages
+            FPetraUtilsObject.SetStatusBarText(cmbLedger, Catalog.GetString("Select a ledger"));
+            FPetraUtilsObject.SetStatusBarText(txtGiftBatchNumber, Catalog.GetString("Enter a Gift Batch Number"));
+            FPetraUtilsObject.SetStatusBarText(txtGiftTransactionNumber, Catalog.GetString("Enter a Gift Transaction Number"));
+            FPetraUtilsObject.SetStatusBarText(txtReceiptNumber, Catalog.GetString("Enter a Gift Receipt Number"));
+            FPetraUtilsObject.SetStatusBarText(cmbMotivationGroup, Catalog.GetString("Select a Motivation Group"));
+            FPetraUtilsObject.SetStatusBarText(cmbMotivationDetail, Catalog.GetString("Select a Motivation Detail"));
+            FPetraUtilsObject.SetStatusBarText(txtReceiptNumber, Catalog.GetString("Enter a Comment"));
+            FPetraUtilsObject.SetStatusBarText(txtDonor, Catalog.GetString("Enter a Donor's Partner Key"));
+            FPetraUtilsObject.SetStatusBarText(txtRecipient, Catalog.GetString("Enter a Recipient's Partner Key"));
+            FPetraUtilsObject.SetStatusBarText(dtpDateFrom, Catalog.GetString("Enter a date for which gifts must have been entered on or after"));
+            FPetraUtilsObject.SetStatusBarText(dtpDateTo, Catalog.GetString("Enter a date for which gifts must have been enetered on or before"));
+            FPetraUtilsObject.SetStatusBarText(txtMinimumAmount,
+                Catalog.GetString("Enter an amount for which gifts must have an amount equal or greater than"));
+            FPetraUtilsObject.SetStatusBarText(txtMaximumAmount,
+                Catalog.GetString("Enter an amount for which gifts must have an amount equal or less than"));
+            FPetraUtilsObject.SetStatusBarText(btnSearch, Catalog.GetString("Searches the OpenPetra database with above criteria"));
+            FPetraUtilsObject.SetStatusBarText(btnClear, Catalog.GetString("Clears the search criteria fields and the search result"));
+            FPetraUtilsObject.SetStatusBarText(btnView, Catalog.GetString("Views the selected Gift"));
         }
 
         // populate the motivation detail and motivation group comboboxes
@@ -191,6 +230,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdResult.AddTextColumn(Catalog.GetString("Comment One"), FPagedDataTable.Columns["a_gift_comment_one_c"]);
                 grdResult.AddTextColumn(Catalog.GetString("Comment Two"), FPagedDataTable.Columns["a_gift_comment_two_c"]);
                 grdResult.AddTextColumn(Catalog.GetString("Comment Three"), FPagedDataTable.Columns["a_gift_comment_three_c"]);
+
+                this.grdResult.DoubleClickCell += new Ict.Common.Controls.TDoubleClickCellEventHandler(this.GrdResult_DoubleClickCell);
             }
             catch (Exception exp)
             {
@@ -271,8 +312,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 CriteriaRow["To"] = dtpDateTo.Date;
             }
 
-            CriteriaRow["MinAmount"] = txtMinimumAmount.NumberValueInt;
-            CriteriaRow["MaxAmount"] = txtMaximumAmount.NumberValueInt;
+            if (txtMinimumAmount.NumberValueInt != null)
+            {
+                CriteriaRow["MinAmount"] = txtMinimumAmount.NumberValueInt;
+            }
+
+            if (txtMaximumAmount.NumberValueInt != null)
+            {
+                CriteriaRow["MaxAmount"] = txtMaximumAmount.NumberValueInt;
+            }
+
             FCriteriaDataTable.Rows.Add(CriteriaRow);
         }
 
@@ -427,8 +476,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             // Display the number of found gift details
                             UpdateRecordNumberDisplay();
 
-                            // StatusBar update
-                            //FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
                             Application.DoEvents();
 
                             btnSearch.Enabled = true;
@@ -459,9 +506,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Application.DoEvents();
                     }
                 }
-
-                // Enable/disable remaining controls
-                //btnClearCriteria.Enabled = Convert.ToBoolean(AEnable);
             }
         }
 
@@ -487,6 +531,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FGiftDetailFindObject != null)
             {
                 ReturnValue = FGiftDetailFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+
+                // enable or disable btnView
+                if (ATotalPages > 0)
+                {
+                    btnView.Enabled = true;
+                }
+                else
+                {
+                    btnView.Enabled = false;
+                }
             }
 
             return ReturnValue;
@@ -518,6 +572,57 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TEnsureKeepAlive.UnRegister(FGiftDetailFindObject);
                 FGiftDetailFindObject = null;
             }
+        }
+
+        private DataRow GetCurrentDataRow()
+        {
+            if (grdResult != null)
+            {
+                DataRowView[] TheDataRowViewArray = grdResult.SelectedDataRowsAsDataRowView;
+
+                if (TheDataRowViewArray.Length > 0)
+                {
+                    return TheDataRowViewArray[0].Row;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Determines if a combo box's value has been changed while the list is dropped down
+        /// and that that combo box still contains the focus.
+        /// </summary>
+        /// <returns></returns>
+        public bool ComboboxDroppedDown()
+        {
+            if (MotivationGroupDroppedDown && cmbMotivationGroup.ContainsFocus)
+            {
+                MotivationGroupDroppedDown = false;
+                return true;
+            }
+            else if (MotivationDetailDroppedDown && cmbMotivationDetail.ContainsFocus)
+            {
+                MotivationDetailDroppedDown = false;
+                return true;
+            }
+            else if (LedgerDroppedDown && cmbLedger.ContainsFocus)
+            {
+                LedgerDroppedDown = false;
+                return true;
+            }
+
+            MotivationGroupDroppedDown = false;
+            MotivationDetailDroppedDown = false;
+            LedgerDroppedDown = false;
+
+            return false;
         }
 
         #endregion
@@ -555,7 +660,94 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             PerformSearch();
         }
 
-        private void OnCmbLedgerChange(System.Object sender, EventArgs e)
+        // reset to default values
+        private void BtnClear_Click(Object sender, EventArgs e)
+        {
+            txtGiftBatchNumber.NumberValueInt = null;
+            txtGiftTransactionNumber.NumberValueInt = null;
+            txtReceiptNumber.NumberValueInt = null;
+            cmbMotivationGroup.SetSelectedString("");
+            cmbMotivationDetail.SetSelectedString("");
+            txtComment1.ResetText();
+            txtDonor.Text = "0";
+            txtRecipient.Text = "0";
+            dtpDateFrom.ResetText();
+            dtpDateTo.ResetText();
+            txtMinimumAmount.NumberValueInt = null;
+            txtMaximumAmount.NumberValueInt = null;
+        }
+
+        private void CatchEnterKey(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                if (!ComboboxDroppedDown())
+                {
+                    BtnSearch_Click(sender, e);
+                    e.Handled = true;
+                }
+            }
+            else
+            {
+                e.Handled = false;
+            }
+        }
+
+        private void BtnView_Click(object sender, EventArgs e)
+        {
+            // get the currently selected row
+            DataRow CurrentlySelectedRow = GetCurrentDataRow();
+
+            if (CurrentlySelectedRow != null)
+            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+
+                    TFrmGiftBatch gb = new TFrmGiftBatch(this);
+
+                    // load dataset with data for whole transaction (all details)
+                    gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadWholeTransaction(FLedgerNumber,
+                        (int)CurrentlySelectedRow["a_batch_number_i"],
+                        (int)CurrentlySelectedRow["a_gift_transaction_number_i"]);
+
+                    if (gb.ViewModeTDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_POSTED)
+                    {
+                        // read only if gift belongs to a posted batch
+                        gb.ViewMode = true;
+                        gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"]);
+                    }
+                    else
+                    {
+                        gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"]);
+                        gb.DisableBatches();
+                    }
+
+                    gb.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
+                    gb.FindGiftDetail((AGiftDetailRow)gb.ViewModeTDS.AGiftDetail.Rows.Find(
+                            new object[] { FLedgerNumber,
+                                           CurrentlySelectedRow["a_batch_number_i"],
+                                           CurrentlySelectedRow["a_gift_transaction_number_i"],
+                                           CurrentlySelectedRow["a_detail_number_i"] }));
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
+            }
+        }
+
+        private void GrdResult_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
+        {
+            BtnView_Click(this, null);
+        }
+
+        // These are used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down.
+        private bool LedgerDroppedDown = false;
+        private bool MotivationGroupDroppedDown = false;
+        private bool MotivationDetailDroppedDown = false;
+
+        private void OnCmbLedgerChange(Object sender, EventArgs e)
         {
             LedgerNumber = cmbLedger.GetSelectedInt32();
 
@@ -563,7 +755,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (cmbLedger.cmbCombobox.DroppedDown)
             {
                 // this is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down
-                //LedgerDroppedDown = true;
+                LedgerDroppedDown = true;
             }
         }
 
@@ -573,20 +765,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (cmbMotivationGroup.cmbCombobox.DroppedDown)
             {
                 // this is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down
-                //MotivationGroupDroppedDown = true;
+                MotivationGroupDroppedDown = true;
             }
 
             if (cmbMotivationDetail.cmbCombobox.DroppedDown)
             {
                 // this is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down
-                //MotivationDetailDroppedDown = true;
+                MotivationDetailDroppedDown = true;
             }
         }
-
-        // These are used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down.
-        //private bool LedgerDroppedDown = false;
-        //private bool MotivationGroupDroppedDown = false;
-        //private bool MotivationDetailDroppedDown = false;
 
         #endregion
     }

@@ -113,12 +113,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             int currentPeriod = ledgerRow.CurrentPeriod;
             int numAccPeriods = ledgerRow.NumberOfAccountingPeriods;
 
-            gLMSequenceThisYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber,
+            gLMSequenceThisYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(ALedgerNumber,
                 accountCode,
                 costCentreCode,
                 currentFinancialYear);
 
-            gLMSequenceLastYear = TBudgetMaintainWebConnector.GetGLMSequenceForBudget(ALedgerNumber,
+            gLMSequenceLastYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(ALedgerNumber,
                 accountCode,
                 costCentreCode,
                 (currentFinancialYear - 1));
@@ -143,7 +143,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         for (int i = 1; i < currentPeriod; i++)
                         {
                             //Set budget period
-                            actualAmount = TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                            actualAmount = TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                 gLMSequenceLastYear,
                                 gLMSequenceThisYear,
                                 i,
@@ -160,14 +160,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             if (AForecastType == MFinanceConstants.FORECAST_TYPE_BUDGET)
                             {
                                 budgetAmount =
-                                    Math.Round(TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear, -1, j, numAccPeriods,
+                                    Math.Round(TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear, -1, j, numAccPeriods,
                                             false,
                                             MFinanceConstants.CURRENCY_BASE));
                                 SetBudgetPeriodBaseAmount(ABudgetSeq, j, budgetAmount);
                             }
                             else
                             {
-                                actualAmount = TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                actualAmount = TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     j,
@@ -188,7 +188,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         if ((currentPeriod - 1) != 0)
                         {
                             budgetSum =
-                                TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceThisYear,
                                     -1,
                                     (currentPeriod - 1),
@@ -207,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         {
                             for (int i = currentPeriod; i <= numAccPeriods; i++)
                             {
-                                budgetSum += TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear,
+                                budgetSum += TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear,
                                     -1,
                                     i,
                                     numAccPeriods,
@@ -219,7 +219,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         {
                             if (currentPeriod > 1)
                             {
-                                budgetSum += TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                budgetSum += TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     numAccPeriods,
@@ -228,7 +228,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                     (currentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                             TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                             TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     (currentPeriod - 1),
@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             }
                             else
                             {
-                                budgetSum += TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                budgetSum += TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     numAccPeriods,
@@ -275,7 +275,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         /* Calculate average prior to change and after change. */
                         if (periodOfChange < (currentPeriod - 1))
                         {
-                            priorAmount = TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                            priorAmount = TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                 gLMSequenceThisYear,
                                 -1,
                                 periodOfChange,
@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                 MFinanceConstants.CURRENCY_BASE);
 
                             afterAmount =
-                                TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceThisYear,
                                     -1,
                                     (currentPeriod - 1),
@@ -295,7 +295,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                     currentFinancialYear,
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceThisYear,
                                     -1,
                                     periodOfChange + 1,
@@ -309,7 +309,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             {
                                 for (int i = currentPeriod; i <= numAccPeriods; i++)
                                 {
-                                    afterAmount += TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear,
+                                    afterAmount += TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear,
                                         -1,
                                         i,
                                         numAccPeriods,
@@ -319,7 +319,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             }
                             else
                             {
-                                afterAmount += TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                afterAmount += TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     numAccPeriods,
@@ -328,7 +328,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                     (currentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                               TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                               TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     currentPeriod,
@@ -344,7 +344,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             if ((currentPeriod - 1) != 0)
                             {
                                 priorAmount =
-                                    TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                    TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                         gLMSequenceThisYear,
                                         -1,
                                         (currentPeriod - 1),
@@ -363,7 +363,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             {
                                 for (int i = currentPeriod; i <= periodOfChange; i++)
                                 {
-                                    priorAmount += TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear,
+                                    priorAmount += TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear,
                                         -1,
                                         i,
                                         numAccPeriods,
@@ -373,7 +373,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             }
                             else
                             {
-                                priorAmount = TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                priorAmount = TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     periodOfChange,
@@ -382,7 +382,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                     (currentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                              TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                              TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     currentPeriod,
@@ -397,7 +397,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             {
                                 for (int i = (periodOfChange + 1); i <= numAccPeriods; i++)
                                 {
-                                    afterAmount += TBudgetMaintainWebConnector.GetBudget(gLMSequenceThisYear,
+                                    afterAmount += TCommonBudgetMaintain.GetBudget(gLMSequenceThisYear,
                                         -1,
                                         i,
                                         numAccPeriods,
@@ -407,7 +407,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             }
                             else
                             {
-                                afterAmount = TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                afterAmount = TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     numAccPeriods,
@@ -416,7 +416,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                                     (currentFinancialYear - 1),
                                     true,
                                     MFinanceConstants.CURRENCY_BASE) -
-                                              TBudgetMaintainWebConnector.GetActual(ALedgerNumber,
+                                              TCommonBudgetMaintain.GetActual(ALedgerNumber,
                                     gLMSequenceLastYear,
                                     gLMSequenceThisYear,
                                     (periodOfChange + 1),

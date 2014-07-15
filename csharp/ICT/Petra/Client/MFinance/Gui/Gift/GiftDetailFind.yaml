@@ -4,7 +4,6 @@ RootNode:
     Template: windowFind
     FormTitle: Gift Detail Find
     ClassName: TGiftDetailFindScreen
-    DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     FormType: browse
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     WindowWidth: 900
@@ -14,6 +13,8 @@ RootNode:
 
     Actions:
         actSearch: {Label=Search, ActionClick=BtnSearch_Click}
+        actClear: {Label=Clear, ActionClick=BtnClear_Click}
+        actView: {Label=View, ActionClick=BtnView_Click}
 
     Controls:
         pnlContent: 
@@ -30,7 +31,6 @@ RootNode:
                 Row5: [cmbMotivationDetail, txtMinimumAmount]
                 Row6: [txtComment1, txtMaximumAmount]
                 Row7: [btnSearch, btnClear]
-            TabOrder: Vertically
         pnlGrid:
             Dock: Fill
             Controls: [pnlButtons, grdResult, pnlBlankSearchResult]
@@ -69,9 +69,8 @@ RootNode:
             Width: 75
             Height: 23
             Align: right
-            Visible: false
+            Action: actClear
         btnView:
-            #Action: actView
+            Action: actView
             Width: 80
             Enabled: false
-            Visible: false
