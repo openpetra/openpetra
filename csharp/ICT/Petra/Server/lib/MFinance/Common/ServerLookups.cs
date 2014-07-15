@@ -22,9 +22,6 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 
 using Ict.Common;
@@ -36,14 +33,13 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 {
     /// <summary>
-    /// Performs server-side lookups for the Client in the MPartner.ServerLookups
+    /// Performs server-side lookups for the Client in the MFinance.Common.ServerLookups
     /// sub-namespace.
     ///
     /// </summary>

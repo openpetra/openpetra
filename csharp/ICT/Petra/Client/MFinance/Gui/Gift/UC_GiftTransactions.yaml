@@ -103,10 +103,10 @@ RootNode:
                 Row1: [grpDetailsForEachGift]
         grpDetailsForDonor: {Width:930, Height:123}
             Controls:
-                Row0: [txtDetailDonorKey, cmbDetailMethodOfGivingCode]
-                Row1: [txtGiftTotal, cmbDetailMethodOfPaymentCode]
+                Row0: [txtDetailDonorKey, txtGiftReceipting]
+                Row1: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference, cmbDetailReceiptLetterCode]
-                Row3: [dtpDateEntered]
+                Row3: [dtpDateEntered, txtGiftTotal]
         grpDetailsForEachGift: {Width:930, Height:242}
             Controls:
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
@@ -122,6 +122,7 @@ RootNode:
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged, Validation=true}
+        txtGiftReceipting: {NoLabel=true, ReadOnly=true, Stretch=horizontally}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code

@@ -91,8 +91,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
 
-            String LedgerFilter = "a_ledger_number_i=" + pm.Get("param_ledger_number_i").ToInt32();
-
             pm.RemoveVariable("param_start_period_i");
             pm.Add("param_start_period_i", 1);
             pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
