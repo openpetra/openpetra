@@ -120,6 +120,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.AddTextColumn("Name", FMainDS.PDataLabelUse.Columns[NameOrdinal]);
             grdDetails.AddTextColumn("Group Heading", FMainDS.PDataLabelUse.Columns[GroupOrdinal]);
             grdDetails.AddTextColumn("Description", FMainDS.PDataLabelUse.Columns[DescriptionOrdinal]);
+            grdDetails.Selection.SelectionChanged += new SourceGrid.RangeRegionChangedEventHandler(grdDetails_RowSelected);
 
             // Remove the first column.  We added this in the YAML so that the auto-generator had something to do
             grdDetails.Columns.Remove(0);
@@ -137,9 +138,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         }
 
         private PDataLabelUseRow FPreviouslySelectedDetailRow = null;
-        private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+        private void grdDetails_RowSelected(System.Object sender, SourceGrid.RangeRegionChangedEventArgs e)
         {
-            UpdateButtons(e.Row);
+            int gridRow = grdDetails.Selection.ActivePosition.Row;
+
+            UpdateButtons((grdDetails.Rows.Count > 1) ? gridRow : 0);
         }
 
         private void DataFieldPromote(System.Object sender, System.EventArgs e)
