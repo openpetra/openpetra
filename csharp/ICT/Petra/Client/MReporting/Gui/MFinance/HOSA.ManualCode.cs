@@ -194,19 +194,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
                                "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
             String TranctCostCentreFilter = " AND a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
-            String OrderBy = " ORDER BY a_account_code_c, a_transaction_date_d";
 
-
-            Csv = StringHelper.AddCSV(Csv, "AAccount/*/a_account/" + LedgerFilter + " AND a_posting_status_l=true AND a_account_active_flag_l=true");
-            Csv = StringHelper.AddCSV(Csv, "ACostCentre/*/a_cost_centre/" + LedgerFilter + " AND a_cost_centre_code_c IN (" + CostCentreCodes +
+            Csv = StringHelper.AddCSV(Csv, "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + " AND a_posting_status_l=true AND a_account_active_flag_l=true");
+            Csv = StringHelper.AddCSV(Csv, "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + " AND a_cost_centre_code_c IN (" + CostCentreCodes +
                 ")  AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
             Csv = StringHelper.AddCSV(
                 Csv,
-                "ATransaction/*/a_transaction/" + LedgerFilter +
+                "ATransaction/SELECT * FROM a_transaction WHERE " + LedgerFilter +
                 TranctCostCentreFilter + " AND " + TranctDateFilter +
-                " AND NOT (a_system_generated_l = true AND (a_narrative_c LIKE 'Gifts received - Gift Batch%' OR a_narrative_c LIKE 'GB - Gift Batch%' OR a_narrative_c LIKE 'Year end re-allocation%'))"
-                +
-                "/" + OrderBy);
+                " AND NOT (a_system_generated_l = true AND (a_narrative_c LIKE 'Gifts received - Gift Batch%' OR a_narrative_c LIKE 'GB - Gift Batch%' OR a_narrative_c LIKE 'Year end re-allocation%'))" +
+                " ORDER BY a_account_code_c, a_transaction_date_d");
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
             ArrayList reportParam = ACalc.GetParameters().Elems;

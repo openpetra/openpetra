@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
 
             ucoPartner.SavePartnerTab();
-
+            ucoEmail.GetDataFromControls();
             Close();
         }
 

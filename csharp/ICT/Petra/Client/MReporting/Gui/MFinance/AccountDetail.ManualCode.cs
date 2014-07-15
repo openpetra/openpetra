@@ -26,15 +26,18 @@ using System;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MSysMan.Gui;
 using System.Windows.Forms;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using System.Collections;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared;
 using System.Data;
 using Ict.Petra.Client.App.Core;
+using System.IO;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -175,16 +178,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            String OrderBy = " ORDER BY " + GroupField + ", a_transaction_date_d";
             pm.Add("param_groupfield", GroupField);
 
             String Csv = "";
-            Csv = StringHelper.AddCSV(Csv, "ALedger/*/a_ledger/" + LedgerFilter);
+            Csv = StringHelper.AddCSV(Csv, "ALedger/SELECT * FROM a_ledger WHERE " + LedgerFilter);
             Csv = StringHelper.AddCSV(Csv,
-                "AAccount/*/a_account/" + LedgerFilter + AccountCodeFilter + "AND a_posting_status_l=true AND a_account_active_flag_l=true");
+                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + AccountCodeFilter + " AND a_posting_status_l=true AND a_account_active_flag_l=true");
             Csv = StringHelper.AddCSV(
                 Csv,
-                "ACostCentre/*/a_cost_centre/" + LedgerFilter + CostCentreFilter +
+                "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + CostCentreFilter +
                 " AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
 
             if (pm.Get("param_sortby").ToString() == "Analysis Type")  // To sort by analysis type, I need a different (and more horible) query:
@@ -192,10 +194,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Csv = StringHelper.AddCSV(
                     Csv,
                     "ATransaction/" +
-                    "a_transaction.*,a_trans_anal_attrib.a_analysis_type_code_c,a_analysis_type.a_analysis_type_description_c,a_trans_anal_attrib.a_analysis_attribute_value_c"
-                    +
-                    "/a_transaction, a_trans_anal_attrib, a_analysis_type/" +
-                    "a_transaction." + LedgerFilter +
+                    "SELECT a_transaction.*,a_trans_anal_attrib.a_analysis_type_code_c,a_analysis_type.a_analysis_type_description_c,a_trans_anal_attrib.a_analysis_attribute_value_c" +
+                    " FROM a_transaction, a_trans_anal_attrib, a_analysis_type" +
+                    " WHERE a_transaction." + LedgerFilter +
                     " AND a_trans_anal_attrib.a_ledger_number_i = a_transaction.a_ledger_number_i " +
                     " AND a_trans_anal_attrib.a_batch_number_i = a_transaction.a_batch_number_i" +
                     " AND a_trans_anal_attrib.a_journal_number_i = a_transaction.a_journal_number_i" +
@@ -204,14 +205,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     AnalysisTypeFilter +
                     TranctAccountCodeFilter + TranctCostCentreFilter + " AND " + TranctDateFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
-                    "/" + OrderBy);
+                    " ORDER BY " + GroupField + ", a_transaction_date_d");
             }
             else
             {
-                Csv = StringHelper.AddCSV(Csv, "ATransaction/*/a_transaction/" + LedgerFilter + TranctAccountCodeFilter +
+                Csv = StringHelper.AddCSV(Csv, "ATransaction/SELECT * FROM a_transaction WHERE " + LedgerFilter + TranctAccountCodeFilter +
                     TranctCostCentreFilter + " AND " + TranctDateFilter + ReferenceFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
-                    "/" + OrderBy);
+                    " ORDER BY " + GroupField + ", a_transaction_date_d");
             }
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
@@ -267,10 +268,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Csv = "";
                 Csv = StringHelper.AddCSV(
                     Csv,
-                    "ATransAnalAttrib/*/a_trans_anal_attrib/" + LedgerFilter + " AND a_batch_number_i >= " + FirstBatch +
-                    " AND a_batch_number_i <= " +
-                    LastBatch);
-                Csv = StringHelper.AddCSV(Csv, "AAnalysisType/*/a_analysis_type/1=1");
+                    "ATransAnalAttrib/SELECT * FROM a_trans_anal_attrib WHERE " + LedgerFilter + 
+                    " AND a_batch_number_i >= " + FirstBatch +
+                    " AND a_batch_number_i <= " + LastBatch);
+                Csv = StringHelper.AddCSV(Csv, "AAnalysisType/SELECT * FROM a_analysis_type");
                 ReportDs.Merge(TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv));
             }
 
@@ -296,18 +297,106 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
               && !pm.Get("param_design_template").ToBool()
                 )
             {
-                String SingleCostCentre = "";
+                String CurrentCostCentre = "";
                 String RowCostCentre;
+                MemoryStream ReportStream;
+
+                //
+                // I need to find the email addresses for the linked partners I'm sending to.
+
+                DataTable LinkedPartners = TRemote.MFinance.Setup.WebConnectors.GetLinkedPartners(FLedgerNumber, CostCentreFilter);
+                LinkedPartners.DefaultView.Sort = "CostCentreCode";
+
+                Int32 SuccessfulCount = 0;
+                String UnlinkedCC = "";
+                String NoEmailAddr = "";
+                String FailedAddresses = "";
                 foreach (DataRow TransRow in ReportDs.ATransaction.Rows)
                 {
                     RowCostCentre = TransRow["a_cost_centre_code_c"].ToString();
-                    if (RowCostCentre != SingleCostCentre)
+                    if (RowCostCentre != CurrentCostCentre)
                     {
-                        SingleCostCentre = RowCostCentre;
-                        ACalc.AddStringParameter("param_linked_partner_cc", RowCostCentre);
-                        FPetraUtilsObject.FFastReportsPlugin.PrepareWithNoUi(ACalc);
+                        CurrentCostCentre = RowCostCentre;
+                        Int32 Idx = LinkedPartners.DefaultView.Find(RowCostCentre);
+                        if (Idx > -1) // There's a partner for this Cost Centre..
+                        {
+                            DataRow LinkedPartner = LinkedPartners.DefaultView[Idx].Row;
+                            if (LinkedPartner["EmailAddress"].ToString() != "")
+                            {
+                                ACalc.AddStringParameter("param_linked_partner_cc", RowCostCentre);
+                                ReportStream = FPetraUtilsObject.FFastReportsPlugin.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
+                                ReportStream.Position = 0;
+                                StreamReader sr = new StreamReader(ReportStream);
+                                String ReportHtml = sr.ReadToEnd();
+
+                                TUC_EmailPreferences.LoadEmailDefaults();
+                                TSmtpSender EmailSender = new TSmtpSender(
+                                        TUserDefaults.GetStringDefault("SmtpHost"), 
+                                        TUserDefaults.GetInt16Default("SmtpPort"), 
+                                        TUserDefaults.GetBooleanDefault("SmtpUseSsl"), 
+                                        TUserDefaults.GetStringDefault("SmtpUser"),
+                                        TUserDefaults.GetStringDefault("SmtpPassword"), 
+                                        "");
+                                EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                                EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+
+                                String EmailBody = "";
+                                if (TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment"))
+                                {
+                                    EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
+                                    EmailSender.AttachFromStream(ReportStream, "AccountDetail.html");
+                                }
+                                else
+                                {
+                                    EmailBody = ReportHtml;
+                                }
+
+                                Boolean SentOk = EmailSender.SendEmail(
+                                    TUserDefaults.GetStringDefault("SmtpFromAccount"),
+                                    TUserDefaults.GetStringDefault("SmtpDisplayName"),
+                                    "tim.ingham@om.org", //LinkedPartner["EmailAddress"]
+                                    "Account Detail for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
+                                    EmailBody);
+
+                                if (SentOk)
+                                {
+                                    SuccessfulCount++;
+                                }
+                                else // Email didn't send for some reason
+                                {
+                                    FailedAddresses += ("\r\n" + LinkedPartner["EmailAddress"]);
+                                }
+                            }
+                            else // No Email Address for this Partner
+                            {
+                                NoEmailAddr += ("\r\n" + LinkedPartner["PartnerKey"] + " " + LinkedPartner["PartnerShortName"]);
+                            }
+                        }
+                        else // No Partner for this Cost Centre
+                        {
+                            UnlinkedCC += ("\r\n" + RowCostCentre);
+                        }
                     }
                 }
+                String SendReport = "";
+                if (SuccessfulCount > 0)
+                {
+                    SendReport += String.Format(Catalog.GetString("Reports emailed to {0} addresses."), SuccessfulCount) + "\r\n\r\n";
+                }
+                if (UnlinkedCC != "")
+                {
+                    SendReport += (Catalog.GetString("These Cost Centres are not linked to Partners:") + UnlinkedCC + "\r\n\r\n");
+                }
+                if (NoEmailAddr != "")
+                {
+                    SendReport += (Catalog.GetString("These Partners have no email addresses:") + NoEmailAddr + "\r\n\r\n");
+                }
+                if (FailedAddresses != "")
+                {
+                    SendReport += (Catalog.GetString("Failed to send email to these addresses:") + FailedAddresses + "\r\n\r\n");
+                }
+                MessageBox.Show(SendReport, Catalog.GetString("Auto-email AccountDetail"));
+
                 return false;
             }
 

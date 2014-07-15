@@ -406,21 +406,27 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// Must be specified for 
+        /// </summary>
+        public enum ReportExportType { Html, Text };
+
+        /// <summary>
         /// The report will be generated, but not shown to the user.
         /// </summary>
         /// <param name="ACalc"></param>
-        public void PrepareWithNoUi(TRptCalculator ACalc)
+        /// <param name="Format"></param>
+        public MemoryStream ExportToStream(TRptCalculator ACalc, ReportExportType Format)
         {
             object HtmlExport = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
             Type ExporterType = HtmlExport.GetType();
-            FileStream HtmlStream = File.Open("AccountDetail.html",FileMode.Create);
+            MemoryStream HtmlStream = new MemoryStream();
 
             FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                 new object[] { FSelectedTemplate.XmlText });
             LoadReportParams(ACalc);
             FFastReportType.GetMethod("Prepare", new Type[0]).Invoke(FfastReportInstance, null);
             FFastReportType.GetMethod("Export", new Type[] { ExporterType, HtmlStream.GetType()}).Invoke(FfastReportInstance, new Object [] {HtmlExport, HtmlStream});
-            HtmlStream.Close();
+            return HtmlStream;
         }
 
         /// <summary>

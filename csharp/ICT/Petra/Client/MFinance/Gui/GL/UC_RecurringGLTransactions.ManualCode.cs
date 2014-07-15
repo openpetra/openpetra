@@ -1559,17 +1559,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 object ValidationContext;
 
                 ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnAccountCodeId];
-                ValidationContext = String.Format("Analysis Attributes for Account Code {0} in Transaction {1}.{2}{2}" +
-                    "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}",
-                    ARow.AccountCode,
-                    ARow.TransactionNumber,
-                    Environment.NewLine);
+                ValidationContext = "unused because of OverrideResultText"; 
 
                 // This code is only running because of failure, so cause an error to occur.
                 VerificationResult = TStringChecks.StringMustNotBeEmpty("",
                     ValidationContext.ToString(),
                     this, ValidationColumn, null);
 
+                VerificationResult.OverrideResultText(String.Format("A value must be entered for 'Analysis Attributes' for Account Code {0} in Transaction {1}.{2}{2}" +
+                    "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}",
+                    ARow.AccountCode,
+                    ARow.TransactionNumber,
+                    Environment.NewLine));
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
             }

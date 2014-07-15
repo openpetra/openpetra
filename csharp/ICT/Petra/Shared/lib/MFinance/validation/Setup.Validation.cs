@@ -83,6 +83,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
+            else // If the Account is not foreign, I have nothing at all to say about the contents of the currency field.
+            {
+                AVerificationResultCollection.AddOrRemove(null, ARow.Table.Columns[AAccountTable.ColumnForeignCurrencyCodeId]);
+            }
         }
     }
 }

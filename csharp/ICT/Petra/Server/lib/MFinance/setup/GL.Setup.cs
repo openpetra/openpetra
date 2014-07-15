@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
@@ -57,7 +58,7 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Cascading;
-using System.Collections.Generic;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -778,6 +779,51 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return PartnerCostCentreTbl;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCentreFilter"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetLinkedPartners(Int32 ALedgerNumber, String ACostCentreFilter)
+        {
+            String SqlQuery = "SELECT p_partner.p_partner_key_n as PartnerKey, "
+                + " a_cost_centre_code_c as CostCentreCode, "
+                + " '' AS EmailAddress,"
+                + " p_partner_short_name_c As PartnerShortName"
+                + " FROM a_valid_ledger_number, p_partner" 
+                + " WHERE a_ledger_number_i=" + ALedgerNumber + ACostCentreFilter
+                + " AND p_partner.p_partner_key_n = a_valid_ledger_number.p_partner_key_n"
+                + " ORDER BY a_cost_centre_code_c";
+
+            DataTable PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", null);
+
+            PLocationTable tbl;
+            PPartnerLocationTable PartnerLocation;
+            String CountryNameLocal;
+            String EmailAddress;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                    {
+                        TAddressTools.GetBestAddress(
+                            Convert.ToInt64(Row["PartnerKey"]),
+                            out tbl,
+                            out PartnerLocation,
+                            out CountryNameLocal,
+                            out EmailAddress,
+                            Transaction
+                            );
+                        Row["EmailAddress"] = EmailAddress;
+                    }
+                });
+
+            return PartnerCostCentreTbl;
+        }
         /// <summary>
         ///
         /// </summary>
