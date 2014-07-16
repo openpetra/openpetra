@@ -75,8 +75,7 @@ namespace Ict.Common.Controls
     public class TCmbLabelled : System.Windows.Forms.UserControl
     {
         private const Int32 UNIT_HEIGHT = 22;
-        private const Int32 UNIT_LABEL_LEFT_OFFSET = 5;
-        private const Int32 UNIT_LABEL_TOP_OFFSET = 3;
+        private const Int32 UNIT_LABEL_LEFT_OFFSET = 6;
 
         /// <summary>Denotes what this Control regards as the identifier string of inactive combobox items.</summary>
         private static readonly string FInactiveIdentifier = "";
@@ -91,8 +90,9 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// the label that is part of this user control
+        /// Note: this control is actually a TextBox disguised as a Label. This makes it possible to select and copy this control's text
         /// </summary>
-        protected System.Windows.Forms.Label lblDescription;
+        protected System.Windows.Forms.TextBox lblDescription;
 
         /// <summary>
         /// define which column of the combobox will be used for the label
@@ -221,8 +221,8 @@ namespace Ict.Common.Controls
 
                 if (lblDescription.Visible)
                 {
-                    this.lblDescription.SetBounds(this.cmbCombobox.Bounds.X + value,
-                        this.cmbCombobox.Bounds.Y,
+                    this.lblDescription.SetBounds(this.cmbCombobox.Bounds.X + value + UNIT_LABEL_LEFT_OFFSET,
+                        this.cmbCombobox.Bounds.Y + GetYCoordStartLabel(),
                         this.Bounds.Width - value,
                         UNIT_HEIGHT);
                 }
@@ -429,7 +429,7 @@ namespace Ict.Common.Controls
         }
 
         /// the label attached to the combobox
-        public Label AttachedLabel
+        public TextBox AttachedLabel
         {
             get
             {
@@ -548,18 +548,24 @@ namespace Ict.Common.Controls
         {
             this.SuspendLayout();
 
-            this.lblDescription = new System.Windows.Forms.Label();
+            this.lblDescription = new System.Windows.Forms.TextBox();
 
             //
             // lblDescription
             //
             this.lblDescription.BackColor = System.Drawing.SystemColors.Control;
-            this.lblDescription.Location = new System.Drawing.Point(216, 0);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(168, 22);
+            this.lblDescription.Size = new System.Drawing.Size(168, this.cmbCombobox.Height);
             this.lblDescription.TabIndex = 1;
-            this.lblDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblDescription.TextAlign = HorizontalAlignment.Left;
             this.lblDescription.Paint += new PaintEventHandler(this.LblDescription_Paint);
+            
+            this.lblDescription.Multiline = false;
+            this.lblDescription.WordWrap = false;
+            this.lblDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lblDescription.ReadOnly = true;
+            this.lblDescription.Location = new System.Drawing.Point(GetLabelRectangle().Left + UNIT_LABEL_LEFT_OFFSET , GetYCoordStartLabel());
+            this.lblDescription.TabStop = false;
 
             //
             // TCmbLabelled
@@ -712,6 +718,29 @@ namespace Ict.Common.Controls
 
             this.lblDescription.Width = mLabelWidth;
         }
+        
+        /// <summary>
+        /// This function gets the start Y - Coordinate for the Label.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        private int GetYCoordStartLabel()
+        {
+            System.Single mLabelHeight;
+            System.Int32 mOffset;
+            double mYCoord;
+            mLabelHeight = this.lblDescription.CreateGraphics().MeasureString("SampleText", this.lblDescription.Font).Height;
+            mOffset = this.Size.Height - Convert.ToInt32(mLabelHeight);
+
+            if (mOffset < 0)
+            {
+                mOffset = 0;
+            }
+
+            mYCoord = mOffset / 2.0;
+
+            return Convert.ToInt32(mYCoord);
+        }
 
         /// <summary>
         /// in some cases, we don't want the labelled combobox, the description and the display are the same
@@ -849,7 +878,7 @@ namespace Ict.Common.Controls
 
             Rectangle mRectangle = this.GetLabelRectangle();
             int mXCoord = mRectangle.Left + UNIT_LABEL_LEFT_OFFSET;
-            int mYCoord = mRectangle.Top + UNIT_LABEL_TOP_OFFSET;
+            int mYCoord = mRectangle.Top + GetYCoordStartLabel();
 
             // Clear background
             e.Graphics.Clear(this.lblDescription.BackColor);
