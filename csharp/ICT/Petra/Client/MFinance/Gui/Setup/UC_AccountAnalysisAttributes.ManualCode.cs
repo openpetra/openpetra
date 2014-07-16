@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FLedgerNumber = value;
                 FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
                 cmbDetailAnalTypeCode.SelectedValueChanged += new System.EventHandler(OnDetailAnalysisTypeCodeChange);
+                grdDetails.Selection.EnableMultiSelection = false;
             }
         }
 
@@ -139,7 +140,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FAccountCode);
                 FMainDS.AAnalysisAttribute.DefaultView.Sort = AAnalysisAttributeTable.GetAnalysisTypeCodeDBName();
 
-                SelectByIndex(1);
+                grdDetails.SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
             }
         }
@@ -258,7 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // The change may have altered the ordering of the list,
                 // so now I need to re-select the item, wherever it's gone!
                 Int32 RowIdx = FMainDS.AAnalysisAttribute.DefaultView.Find(cmbDetailAnalTypeCode.Text);
-                SelectByIndex(RowIdx + 1);
+                grdDetails.SelectRowInGrid(RowIdx + 1);
             }
         }
 
@@ -278,33 +279,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            grdDetails.Selection.ResetSelection(true);
-
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-                chkDetailActive.Checked = false;
-            }
         }
     }
 }
