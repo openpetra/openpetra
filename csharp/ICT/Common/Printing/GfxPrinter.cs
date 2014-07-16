@@ -138,25 +138,19 @@ namespace Ict.Common.Printing
             base.Init(AOrientation, APrinterLayout, AMarginType);
             SetPageSize();
 
-            try
+            if (AOrientation == eOrientation.ePortrait)
             {
-                if (AOrientation == eOrientation.ePortrait)
-                {
-                    FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                    FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                    FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                    FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(1) * 100);
-                }
-                else if (AOrientation == eOrientation.eLandscape)
-                {
-                    FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                    FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(1) * 100);
-                    FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                    FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(0.5f) * 100);
-                }
+                FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(1) * 100);
             }
-            catch (Exception)
+            else if (AOrientation == eOrientation.eLandscape)
             {
+                FDocument.DefaultPageSettings.Margins.Left = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                FDocument.DefaultPageSettings.Margins.Right = Convert.ToInt32(Cm2Inch(1) * 100);
+                FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
+                FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(0.5f) * 100);
             }
             // Associate the eventhandling method with the
             // document's PrintPage event.
@@ -174,6 +168,10 @@ namespace Ict.Common.Printing
                 FNumberOfPages = CurrentPageNr;
             }
 
+            if (AEv != null)
+            {
+                FprintAction = AEv.PrintAction;
+            }
             CurrentPageNr = 0;
             CurrentDocumentNr = 1;
             FPrinterLayout.StartPrintDocument();
@@ -1088,7 +1086,7 @@ namespace Ict.Common.Printing
         /// The PrintPage event is raised for each page to be printed.
         /// </summary>
         /// <returns>void</returns>
-        protected virtual void PrintPage(object ASender, PrintPageEventArgs AEv)
+        protected virtual void PrintPage(Object ASender, PrintPageEventArgs AEv)
         {
             this.FEv = AEv;
 
@@ -1106,8 +1104,8 @@ namespace Ict.Common.Printing
                     // if no printer is installed, use default values
                     FLeftMargin = 0;
                     FTopMargin = 0.1f;
-                    FRightMargin = -0.00333374f;
-                    FBottomMargin = 0.00166687f;
+                    FRightMargin = -0.1f;
+                    FBottomMargin = 0.1f;
                     FWidth = 8.268333f;
                     FHeight = 11.69333f;
 
@@ -1138,6 +1136,12 @@ namespace Ict.Common.Printing
                     FBottomMargin = FEv.MarginBounds.Bottom / 100.0f;
                     FWidth = FEv.MarginBounds.Width / 100.0f;
                     FHeight = FEv.MarginBounds.Height / 100.0f;
+
+                    if (FprintAction != PrintAction.PrintToPreview) // A "real printer" prints from the hard margin, but the preview has no hard margin.
+                    {
+                        FLeftMargin = 0;
+                        FTopMargin = 0;
+                    }
                 }
                 else if (FMarginType == eMarginType.eCalculatedMargins)
                 {

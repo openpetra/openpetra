@@ -149,11 +149,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                        "' AND a_cost_centre_code_c >='" + pm.Get("param_cost_centre_code_end").ToString() + "'";
                 }
 
-                if (CostCentreOptions == "AllActiveCostCentres") // THIS IS NOT SET AT ALL!
-                {
-                    CostCentreFilter = " AND a_cost_centre_active_flag_l=true";
-                }
-
                 FPetraUtilsObject.FFastReportsPlugin.AutoEmailReports(ACalc, FLedgerNumber, CostCentreFilter);
                 return false;
             }
