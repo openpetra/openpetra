@@ -187,6 +187,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     Convert.ToInt32(nudNumberOfPeriods.Value),
                     Convert.ToInt32(nudCurrentPeriod.Value),
                     Convert.ToInt32(nudNumberOfFwdPostingPeriods.Value),
+                    rbtIchIsAsset.Checked,
                     chkActivateGiftProcessing.Checked,
                     StartingReceiptNumber,
                     chkActivateAccountsPayable.Checked,
