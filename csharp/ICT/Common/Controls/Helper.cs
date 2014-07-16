@@ -107,7 +107,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                APartnerKeyTextBox.BackColor = AOriginalPartnerClassColour ?? System.Drawing.SystemColors.Control;
+                APartnerKeyTextBox.BackColor = AOriginalPartnerClassColour ?? System.Drawing.Color.White;
             }
         }
     }
