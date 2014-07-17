@@ -1427,7 +1427,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
                 GLSetupTDSAccess.SubmitChanges(AInspectDS);
-
+                AInspectDS.AAnalysisAttribute.AcceptChanges(); // This may prevent a constraints exception when the dataset is returned and merged.
                 ReturnValue = TSubmitChangesResult.scrOK;
             }
 

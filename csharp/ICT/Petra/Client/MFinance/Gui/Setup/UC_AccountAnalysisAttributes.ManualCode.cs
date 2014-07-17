@@ -253,8 +253,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (!FIamUpdating && (FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
-                FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
+/*
+                // This code in comments addresses a strange problem where 
+                // the dataset returned from SaveGLSetupTDS on the server causes 
+                // a consraints exception when merged with the local dataset.
+                // The problem has been addressed on the server instead, by calling AcceptChanges
+                // on the AAnalysisAttributes table after the call to SubmitChanges.
 
+                AAnalysisAttributeRow NewRow = FMainDS.AAnalysisAttribute.NewRowTyped();
+                NewRow.LedgerNumber = FPreviouslySelectedDetailRow.LedgerNumber;
+                NewRow.AccountCode = FPreviouslySelectedDetailRow.AccountCode;
+                FPreviouslySelectedDetailRow.Delete();
+                NewRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
+                FMainDS.AAnalysisAttribute.Rows.Add(NewRow);
+*/
+                FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
                 //
                 // The change may have altered the ordering of the list,
                 // so now I need to re-select the item, wherever it's gone!
