@@ -203,8 +203,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 // specify the filter and bind  the data
                 string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewValue);
-                FFilterPanelControls.SetBaseFilter(filter, true);
-                ApplyFilter();
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(filter, true);
+                FFilterAndFindObject.ApplyFilter();
                 grdDetails.SelectRowWithoutFocus(FPrevRowChangedRow);
             }
 
@@ -273,8 +273,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Now we need to display the grid again based on the modified code
             _currentContactAttribute = NewCode;
             string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewCode);
-            FFilterPanelControls.SetBaseFilter(filter, true);
-            ApplyFilter();
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(filter, true);
+            FFilterAndFindObject.ApplyFilter();
             SelectRowInGrid(curRow);
 
             // The number of rows should be the same as before, so this should be unnecessary!

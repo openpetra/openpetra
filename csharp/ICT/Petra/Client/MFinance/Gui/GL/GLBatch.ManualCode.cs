@@ -356,14 +356,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         StartOfMonth,
                         AEffectiveDate);
 
-                    if (IntlToBaseCurrencyExchRate == 0 && FWarnAboutMissingIntlExchangeRate)
+                    if ((IntlToBaseCurrencyExchRate == 0) && FWarnAboutMissingIntlExchangeRate)
                     {
                         FWarnAboutMissingIntlExchangeRate = false;
 
-                        string IntlRateErrorMessage = String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
-                            LedgerBaseCurrency,
-                            LedgerIntlCurrency,
-                            AEffectiveDate);
+                        string IntlRateErrorMessage =
+                            String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
+                                LedgerBaseCurrency,
+                                LedgerIntlCurrency,
+                                AEffectiveDate);
 
                         MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }

@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
 
-            FFilterPanelControls.SetBaseFilter("Context=" + ((int)CurrentContext).ToString(), true);
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter("Context=" + ((int)CurrentContext).ToString(), true);
 
             grdDetails.SelectRowWithoutFocus(1);
         }
@@ -1051,20 +1051,20 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 null,
                 "bit",
                 "HasManualFilter");
-            FFilterPanelControls.FStandardFilterPanels.Add(iffp);
+            FFilterAndFindObject.FilterPanelControls.FStandardFilterPanels.Add(iffp);
         }
 
         private void ApplyFilterManual(ref string AFilterString)
         {
             if (CurrentContext == Context.Partner)
             {
-                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkPerson"), ref AFilterString);
-                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkFamily"), ref AFilterString);
-                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkChurch"), ref AFilterString);
-                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkOrganisation"), ref AFilterString);
-                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkBank"), ref AFilterString);
-                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkUnit"), ref AFilterString);
-                ApplyFilterFromCheckBox((CheckBox)FFilterPanelControls.FindControlByName("chkVenue"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkPerson"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkFamily"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkChurch"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkOrganisation"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkBank"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkUnit"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkVenue"), ref AFilterString);
             }
         }
 

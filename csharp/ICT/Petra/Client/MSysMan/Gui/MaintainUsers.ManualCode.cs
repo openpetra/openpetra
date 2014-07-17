@@ -76,8 +76,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             // Event to reload the grid after every save.
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
-
-            FPetraUtilsObject.SetStatusBarText(txtDetailPasswordHash, Catalog.GetString("Enter a password for the user"));
         }
 
         private void LoadAvailableModulesIntoCheckedListBox()

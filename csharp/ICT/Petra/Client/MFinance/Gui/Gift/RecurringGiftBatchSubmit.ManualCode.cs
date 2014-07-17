@@ -155,10 +155,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (IntlToBaseCurrencyExchRate == 0)
                 {
-                    string IntlRateErrorMessage = String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
-                        LedgerBaseCurrency,
-                        LedgerIntlCurrency,
-                        ABatchEffectiveDate);
+                    string IntlRateErrorMessage =
+                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
+                            LedgerBaseCurrency,
+                            LedgerIntlCurrency,
+                            ABatchEffectiveDate);
 
                     MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }

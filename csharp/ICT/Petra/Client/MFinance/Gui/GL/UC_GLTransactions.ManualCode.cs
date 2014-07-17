@@ -184,7 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
 
                 // Now we set the full filter
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
 
                 if (grdAnalAttributes.Columns.Count == 1)
                 {
@@ -204,6 +204,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 SetTransAnalAttributeDefaultView();
                 FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
                 grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
+                grdAnalAttributes.SetHeaderTooltip(0, "Type");
+                grdAnalAttributes.SetHeaderTooltip(1, "Value");
 
                 // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
                 bool ActiveOnly = (this.Enabled && FIsUnposted);
@@ -236,7 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             UpdateChangeableStatus();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             return DifferentBatchSelected;
         }
@@ -254,8 +256,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FJournalNumber);
 
                 FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
-                FFilterPanelControls.SetBaseFilter(rowFilter, true);
-                FCurrentActiveFilter = rowFilter;
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
+                FFilterAndFindObject.CurrentActiveFilter = rowFilter;
                 // We don't apply the filter yet!
 
                 FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} " + sort,
@@ -349,7 +351,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ValidateAllData(true, false);
 
             pnlTransAnalysisAttributes.Enabled = true;
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
 
             //Needs to be called at end of addition process to process Analysis Attributes
             AccountCodeDetailChanged(null, null);
@@ -899,7 +901,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
                         else
                         {
-                            tr.AmountInIntlCurrency = (IntlRateToBaseCurrency == 0) ? 0 : GLRoutines.Divide(tr.AmountInBaseCurrency, IntlRateToBaseCurrency);
+                            tr.AmountInIntlCurrency = (IntlRateToBaseCurrency == 0) ? 0 : GLRoutines.Divide(tr.AmountInBaseCurrency,
+                                IntlRateToBaseCurrency);
                         }
                     }
 
@@ -1235,7 +1238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                               && (GetBatchRow() != null)
                               && (FIsUnposted)
                               && (FJournalRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
-            bool canDeleteAll = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            bool canDeleteAll = (FFilterAndFindObject.IsActiveFilterEqualToBase);
             bool rowsInGrid = (grdDetails.Rows.Count > 1);
 
             // pnlDetailsProtected must be changed first: when the enabled property of the control is changed, the focus changes, which triggers validation
@@ -1574,7 +1577,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             finally
             {
                 SetTransactionDefaultView();
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             return deletionSuccessful;
@@ -1869,12 +1872,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void ShowFindPanel()
         {
-            if (FucoFilterAndFind == null)
+            if (FFilterAndFindObject.FilterFindPanel == null)
             {
-                ToggleFilter();
+                FFilterAndFindObject.ToggleFilter();
             }
 
-            FucoFilterAndFind.DisplayFindTab();
+            FFilterAndFindObject.FilterFindPanel.DisplayFindTab();
         }
 
         private void RunOnceOnParentActivationManual()
@@ -1890,7 +1893,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // If the grid list changes we might need to disable the Delete All button
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
         }
 
         private void TransDateChanged(object sender, EventArgs e)

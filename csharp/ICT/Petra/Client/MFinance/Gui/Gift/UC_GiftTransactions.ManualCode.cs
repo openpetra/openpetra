@@ -32,6 +32,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MCommon;
 
@@ -140,6 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
 
+            SetupTextBoxMenuItems();
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
 
             //Set initial width of this textbox
@@ -148,6 +150,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Setup hidden text boxes used to speed up reading transactions
             SetupComboTextBoxOverlayControls();
+        }
+
+        private void SetupTextBoxMenuItems()
+        {
+            List <Tuple <string, EventHandler>>ItemList = new List <Tuple <string, EventHandler>>();
+
+            ItemList.Add(new Tuple <string, EventHandler>("Open Donor History", OpenDonorHistory));
+            txtDetailDonorKey.AddCustomContextMenuItems(ItemList);
+
+            ItemList.Clear();
+            ItemList.Add(new Tuple <string, EventHandler>("Open Recipient History", OpenRecipientHistory));
+            txtDetailRecipientKey.AddCustomContextMenuItems(ItemList);
         }
 
         private void SetupComboTextBoxOverlayControls()
@@ -243,7 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FBatchUnposted && FInEditMode)
             {
-                if (!EmptyRow && cmbKeyMinistries.SelectedIndex > -1)
+                if (!EmptyRow && (cmbKeyMinistries.SelectedIndex > -1))
                 {
                     KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
                 }
@@ -262,13 +276,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FBatchUnposted && FInEditMode)
             {
-                if (!EmptyRow && txtDetailRecipientKeyMinistry.Text.Length > 0)
+                if (!EmptyRow && (txtDetailRecipientKeyMinistry.Text.Length > 0))
                 {
                     KeyMinistry = txtDetailRecipientKeyMinistry.Text;
                     cmbKeyMinistries.SetSelectedString(KeyMinistry);
                 }
                 else
-                { 
+                {
                     cmbKeyMinistries.SelectedIndex = -1;
                 }
             }
@@ -381,9 +395,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
 
             // Now we set the full filter
-            ApplyFilter();
+            FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             SelectRowInGrid(1);
 
@@ -1514,7 +1528,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 SetGiftDetailDefaultView();
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             UpdateRecordNumberDisplay();
@@ -1673,9 +1687,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 string rowFilter = String.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
-                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
                 FMainDS.AGiftDetail.DefaultView.RowFilter = rowFilter;
-                FCurrentActiveFilter = rowFilter;
+                FFilterAndFindObject.CurrentActiveFilter = rowFilter;
                 // We don't apply the filter yet!
 
                 FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1}",
@@ -1784,24 +1798,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
                 {
-                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                     {
                         MessageBox.Show(
                             MCommonResourcestrings.StrNewRecordIsFiltered,
                             MCommonResourcestrings.StrAddNewRecordTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        FFilterPanelControls.ClearAllDiscretionaryFilters();
+                        FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
 
-                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
                         {
-                            ApplyFilter();
+                            FFilterAndFindObject.ApplyFilter();
                         }
 
                         SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
                     }
                 }
 
-                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
                 UpdateRecordNumberDisplay();
 
                 //Focus accordingly
@@ -2115,7 +2129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = pnlDetailsEnabledState;
 
             btnDelete.Enabled = pnlDetailsEnabledState;
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
         }
@@ -2282,7 +2296,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.AutoResizeGrid();
             }
 
-            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
@@ -2505,8 +2519,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!IsTransactionInIntlCurrency)
                 {
-                    FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftAmount,
-                                                                        IntlToBaseCurrencyExchRate);
+                    FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
+                        FPreviouslySelectedDetailRow.GiftAmount,
+                        IntlToBaseCurrencyExchRate);
                 }
                 else
                 {
@@ -2523,7 +2538,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (!IsTransactionInIntlCurrency)
                     {
-                        FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftAmount,
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
+                            FPreviouslySelectedDetailRow.GiftAmount,
                             IntlToBaseCurrencyExchRate);
                     }
                     else
@@ -2875,6 +2891,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 dr.Delete();
             }
+        }
+
+        private void OpenDonorHistory(System.Object sender, EventArgs e)
+        {
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
+                Convert.ToInt64(txtDetailDonorKey.Text),
+                FPetraUtilsObject.GetForm());
+        }
+
+        private void OpenRecipientHistory(System.Object sender, EventArgs e)
+        {
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
+                Convert.ToInt64(txtDetailRecipientKey.Text),
+                FPetraUtilsObject.GetForm());
         }
     }
 }

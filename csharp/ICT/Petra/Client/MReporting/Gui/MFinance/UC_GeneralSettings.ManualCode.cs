@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
@@ -238,6 +239,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12);
                 ACalculator.AddParameter("param_end_date", EndDate);
             }
+
+            // true if the selected date is in the current financial year
+            ACalculator.AddParameter("param_current_financial_year", FLedgerRow.CurrentFinancialYear == Year);
 
             //
             // I may need to check whether the selected currency has an exchange rate I can use!
@@ -549,6 +553,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         void txtStartPeriod_TextChanged(object sender, EventArgs e)
         {
             txtEndPeriod.Text = txtStartPeriod.Text;
+        }
+
+        /// <summary>
+        /// Get ledger's base currency
+        /// </summary>
+        /// <returns></returns>
+        public string GetBaseCurrency()
+        {
+            return FLedgerRow.BaseCurrency;
+        }
+
+        /// <summary>
+        /// Get ledger's international currency
+        /// </summary>
+        /// <returns></returns>
+        public string GetInternationalCurrency()
+        {
+            return FLedgerRow.IntlCurrency;
+        }
+
+        /// <summary>
+        /// Get ledger's current period
+        /// </summary>
+        /// <returns></returns>
+        public int GetCurrentPeiod()
+        {
+            return FLedgerRow.CurrentPeriod;
         }
     }
 }

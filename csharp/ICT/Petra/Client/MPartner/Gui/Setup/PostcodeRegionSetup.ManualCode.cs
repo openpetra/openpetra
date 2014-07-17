@@ -38,6 +38,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
@@ -49,6 +50,104 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmPostcodeRegionSetup
     {
+        /// <summary>
+        /// A helper class that stores information about the deletion result of a single row when deleting multiple rows
+        /// </summary>
+        private class TMultiDeleteResult
+        {
+            private string FRecordID;
+            private string FResult;
+
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            public TMultiDeleteResult(string ARecordID, string AResult)
+            {
+                FRecordID = ARecordID;
+                FResult = AResult;
+            }
+
+            /// <summary>
+            /// Get the recordID
+            /// </summary>
+            public string RecordID
+            {
+                get
+                {
+                    return FRecordID;
+                }
+            }
+
+            /// <summary>
+            /// Get the result string
+            /// </summary>
+            public string Result
+            {
+                get
+                {
+                    return FResult;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Shows message boxes for each result where a row was not deleted
+        /// </summary>
+        /// <param name="AList"></param>
+        /// <param name="ATitle"></param>
+        private void ReviewMultiDeleteResults(List <TMultiDeleteResult>AList, string ATitle)
+        {
+            int allItemsCount = AList.Count;
+            int item = 0;
+
+            foreach (TMultiDeleteResult result in AList)
+            {
+                item++;
+                string s1 = result.RecordID;
+                string s2 = result.Result;
+
+                string details = String.Format(MCommonResourcestrings.StrItemXofYRecordColon,
+                    ATitle, item, allItemsCount, Environment.NewLine, s1, s2);
+
+                if (item < allItemsCount)
+                {
+                    details += String.Format(MCommonResourcestrings.StrViewNextDetailOrCancel, Environment.NewLine);
+
+                    if (MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OKCancel)
+                        == System.Windows.Forms.DialogResult.Cancel)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OK);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Makes a comma separated string of primary key values in order to identify the row to the user
+        /// </summary>
+        private string MakePKValuesString(DataRow ARow)
+        {
+            string ReturnValue = String.Empty;
+
+            object[] items = DataUtilities.GetPKValuesFromDataRow(ARow);
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (i > 0)
+                {
+                    ReturnValue += ", ";
+                }
+
+                ReturnValue += items[i].ToString();
+            }
+
+            return ReturnValue;
+        }
+
         private PPostcodeRegionRangeRow FPreviouslySelectedRangeRow = null;
 
         private void InitializeManualCode()

@@ -214,7 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FInEditMode)
             {
-                if (!EmptyRow && cmbKeyMinistries.SelectedIndex > -1)
+                if (!EmptyRow && (cmbKeyMinistries.SelectedIndex > -1))
                 {
                     KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
                 }
@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FInEditMode)
             {
-                if (!EmptyRow && txtDetailRecipientKeyMinistry.Text.Length > 0)
+                if (!EmptyRow && (txtDetailRecipientKeyMinistry.Text.Length > 0))
                 {
                     KeyMinistry = txtDetailRecipientKeyMinistry.Text;
                     cmbKeyMinistries.SetSelectedString(KeyMinistry);
@@ -324,9 +324,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // Now we set the full filter
-            ApplyFilter();
+            FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
-            SetRecordNumberDisplayProperties();
+            FFilterAndFindObject.SetRecordNumberDisplayProperties();
 
             SelectRowInGrid(1);
 
@@ -1439,7 +1439,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 SetGiftDetailDefaultView();
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             UpdateRecordNumberDisplay();
@@ -1598,9 +1598,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 string rowFilter = String.Format("{0}={1}",
                     ARecurringGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
-                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, true);
                 FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = rowFilter;
-                FCurrentActiveFilter = rowFilter;
+                FFilterAndFindObject.CurrentActiveFilter = rowFilter;
                 // We don't apply the filter yet!
 
                 FMainDS.ARecurringGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
@@ -1711,17 +1711,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1))
                 {
-                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                     {
                         MessageBox.Show(
                             MCommonResourcestrings.StrNewRecordIsFiltered,
                             MCommonResourcestrings.StrAddNewRecordTitle,
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        FFilterPanelControls.ClearAllDiscretionaryFilters();
+                        FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
 
-                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
                         {
-                            ApplyFilter();
+                            FFilterAndFindObject.ApplyFilter();
                         }
 
                         SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);

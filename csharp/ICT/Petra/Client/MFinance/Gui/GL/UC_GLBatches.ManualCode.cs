@@ -83,11 +83,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void InitialiseControls()
         {
-            FcmbYearEnding = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearEnding");
-            FcmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
-            FrbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
-            FrbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
-            FrbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
+            FcmbYearEnding = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbYearEnding");
+            FcmbPeriod = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbPeriod");
+            FrbtEditing = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtEditing");
+            FrbtPosting = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtPosting");
+            FrbtAll = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtAll");
         }
 
         /// <summary>
@@ -361,8 +361,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-            FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
-            ApplyFilter();
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0)
+                && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+            FFilterAndFindObject.ApplyFilter();
 
             CreateNewABatch();
 
@@ -739,7 +740,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
 
                         UpdateRecordNumberDisplay();
-                        SetRecordNumberDisplayProperties();
+                        FFilterAndFindObject.SetRecordNumberDisplayProperties();
                     }
                 }
             }
@@ -846,7 +847,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     UpdateRecordNumberDisplay();
-                    SetRecordNumberDisplayProperties();
+                    FFilterAndFindObject.SetRecordNumberDisplayProperties();
                 }
             }
         }
@@ -1020,7 +1021,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (sender is TCmbAutoComplete)
             {
-                if (FucoFilterAndFind.CanIgnoreChangeEvent)
+                if (FFilterAndFindObject.FilterFindPanel.CanIgnoreChangeEvent)
                 {
                     return;
                 }
@@ -1148,9 +1149,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
-                FFilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
+                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
                     && (FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL));
-                ApplyFilter();
+                FFilterAndFindObject.ApplyFilter();
             }
 
             if (grdDetails.Rows.Count < 2)
@@ -1564,7 +1565,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void CreateFilterFindPanelsManual()
         {
-            ((Label)FFindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
+            ((Label)FFilterAndFindObject.FindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
         }
 
         private AJournalRow GetCurrentJournal()

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       tim-ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,8 +32,7 @@ namespace Ict.Common.Controls
     public class TchkVisibleFocus : System.Windows.Forms.CheckBox
     {
         /// <summary>
-        /// This is just an ordinary checkbox, but unlike the standard .NET one,
-        /// the user can see when it has focus.
+        /// Constructor.
         /// </summary>
         public TchkVisibleFocus() : base()
         {
@@ -42,19 +41,20 @@ namespace Ict.Common.Controls
 
         private void InitializeComponent()
         {
-            this.FlatStyle = FlatStyle.Flat;
+            this.FlatStyle = FlatStyle.Standard;
+
             this.GotFocus += TchkClearFocus_GotFocus;
             this.LostFocus += TchkClearFocus_LostFocus;
         }
 
         private void TchkClearFocus_GotFocus(object sender, System.EventArgs e)
         {
-            this.FlatStyle = FlatStyle.Standard;
+            this.FlatStyle = FlatStyle.Flat;
         }
 
         private void TchkClearFocus_LostFocus(object sender, System.EventArgs e)
         {
-            this.FlatStyle = FlatStyle.Flat;
+            this.FlatStyle = FlatStyle.Standard;
         }
     }
 }

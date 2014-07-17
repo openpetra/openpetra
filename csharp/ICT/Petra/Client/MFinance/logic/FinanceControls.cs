@@ -704,6 +704,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             Boolean ARefreshData = false)
         {
             string CurrentRowFilter = string.Empty;
+
             AFieldNumber = 0;
 
             if ((FKeyMinTable != null) && !ARefreshData)
@@ -729,8 +730,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 CurrentRowFilter = FKeyMinTable.DefaultView.RowFilter;
                 FKeyMinTable.DefaultView.RowFilter = String.Format("{0}='{1}'",
-                                                                    PUnitTable.GetUnitTypeCodeDBName(),
-                                                                    MPartnerConstants.UNIT_TYPE_KEYMIN);
+                    PUnitTable.GetUnitTypeCodeDBName(),
+                    MPartnerConstants.UNIT_TYPE_KEYMIN);
 
                 FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 

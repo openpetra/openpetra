@@ -472,11 +472,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblCounty.Text = Catalog.GetString("Co&unty") + ":";
             this.lblCountry.Text = Catalog.GetString("Co&untry") + ":";
             this.lblMailingAddressOnly.Text = Catalog.GetString("Mailin&g Addresses Only") + ":";
-            this.lblAccountName.Text = Catalog.GetString("&Account Name") + ":";
-            this.lblAccountNumber.Text = Catalog.GetString("A&ccount Number") + ":";
-            this.lblIban.Text = Catalog.GetString("&IBAN") + ":";
-            this.lblBic.Text = Catalog.GetString("B&IC/SWIFT Code") + ":";
-            this.lblBankCode.Text = Catalog.GetString("&Bank/Branch Code") + ":";
+            this.lblAccountName.Text = Catalog.GetString("Account Name") + ":";
+            this.lblAccountNumber.Text = Catalog.GetString("Account Number") + ":";
+            this.lblIban.Text = Catalog.GetString("IBAN") + ":";
+            this.lblBic.Text = Catalog.GetString("BIC") + ":";
+            this.lblBankKey.Text = Catalog.GetString("Bank Key") + ":";
+            this.txtBankKey.ButtonText = Catalog.GetString("Find");
+            this.lblBankName.Text = Catalog.GetString("Bank/Branch Name") + ":";
+            this.lblBankCode.Text = Catalog.GetString("Branch/Bank Code") + ":";
             #endregion
         }
 

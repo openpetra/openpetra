@@ -1,0 +1,26 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Executive Summary
+    WindowWidth: 640
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        REPORTNAME: Executive Summary
+        CURRENTREPORT: Executive Summary
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [uco_GeneralSettings]
+        uco_GeneralSettings:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
+            Height: 270
+            Dock: Fill
