@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -27,6 +27,8 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Text;
 using System.Windows.Forms;
+
+using Ict.Common;
 
 namespace Ict.Common.Printing
 {
@@ -66,6 +68,32 @@ namespace Ict.Common.Printing
         public CoolPrintPreviewDialog(Control parentForm)
         {
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this._toolStrip.Text = Catalog.GetString("toolStrip1");
+            this._btnPrint.Text = Catalog.GetString("Print Document");
+            this._btnPageSetup.Text = Catalog.GetString("Page Setup");
+            this._btnZoom.Text = Catalog.GetString("&Zoom");
+            this._itemActualSize.Text = Catalog.GetString("Actual Size");
+            this._itemFullPage.Text = Catalog.GetString("Full Page");
+            this._itemPageWidth.Text = Catalog.GetString("Page Width");
+            this._itemTwoPages.Text = Catalog.GetString("Two Pages");
+            this._item500.Text = Catalog.GetString("500%");
+            this._item200.Text = Catalog.GetString("200%");
+            this._item150.Text = Catalog.GetString("150%");
+            this._item100.Text = Catalog.GetString("100%");
+            this._item75.Text = Catalog.GetString("75%");
+            this._item50.Text = Catalog.GetString("50%");
+            this._item25.Text = Catalog.GetString("25%");
+            this._item10.Text = Catalog.GetString("10%");
+            this._btnFirst.Text = Catalog.GetString("First Page");
+            this._btnPrev.Text = Catalog.GetString("Previous Page");
+            this._btnNext.Text = Catalog.GetString("Next Page");
+            this._btnLast.Text = Catalog.GetString("Last Page");
+            this._btnCancel.Text = Catalog.GetString("Cancel");
+            this.Text = Catalog.GetString("Print Preview");
+            #endregion
 
             if (parentForm != null)
             {

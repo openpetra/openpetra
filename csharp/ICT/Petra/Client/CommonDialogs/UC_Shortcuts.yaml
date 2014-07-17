@@ -11,7 +11,7 @@ RootNode:
         grpDescription:
             Controls: [lblDescription]
             Dock: Top
-        lblDescription: {NoLabel=true, Text=Hello, Height=60}
+        lblDescription: {NoLabel=true, Height=60}
         pnlGrid:
             Controls: [grdHelp]
             Dock: Fill
