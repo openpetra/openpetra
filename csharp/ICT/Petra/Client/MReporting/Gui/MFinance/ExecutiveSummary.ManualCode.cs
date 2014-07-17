@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void RunOnceOnActivationManual()
         {
             // if fast reports isn't working then close the screen
-            if (!FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            if ((FPetraUtilsObject.GetCallerForm() != null) && !FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
             {
                 MessageBox.Show("No alternative reporting engine is available for this report. This screen will now be closed.", "Reporting engine");
                 this.Close();
