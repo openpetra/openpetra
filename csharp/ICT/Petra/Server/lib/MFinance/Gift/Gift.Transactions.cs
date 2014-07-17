@@ -697,6 +697,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
+            // find PPartnerRows for all donors (needed for receipt frequency info)
+            foreach (AGiftRow Row in MainDS.AGift.Rows)
+            {
+                MainDS.DonorPartners.Merge(PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, Transaction));
+            }
+
             //Add a temp table
             if (FailedUpdates.Length > 0)
             {
