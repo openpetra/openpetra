@@ -139,7 +139,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ColumnType == "Boolean")
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
                     AColumnName + ", Catalog.GetString(\"" + TrueString + "\"), Catalog.GetString(\"" + FalseString + "\"));" + Environment.NewLine);
@@ -148,7 +148,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                      || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
                     AColumnName + ");" + Environment.NewLine);
@@ -156,7 +156,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (ColumnType == "PartnerKey")
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
                     AColumnName + ");" + Environment.NewLine);
@@ -164,12 +164,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
                     AColumnName + ", " + FDecimalPrecision.ToString() + ");" + Environment.NewLine);
             }
 
+            // Are we still working with the same grid?  If not reset our tracking variables back to the first column
             if (AGridControlName != FPrevControlName)
             {
                 FColumnIndex = 0;
@@ -177,7 +178,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
 
             writer.Template.AddToCodelet("GRIDHEADERTOOLTIP",
-                AGridControlName + ".SetHeaderTooltip(" + FColumnIndex.ToString() + ", \"" + HeaderTooltip + "\");" +
+                AGridControlName + ".SetHeaderTooltip(" + FColumnIndex.ToString() + ", Catalog.GetString(\"" + HeaderTooltip + "\"));" +
                 Environment.NewLine);
             FColumnIndex++;
         }
