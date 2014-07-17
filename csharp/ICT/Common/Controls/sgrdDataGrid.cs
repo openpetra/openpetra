@@ -828,7 +828,7 @@ namespace Ict.Common.Controls
 
             FGridTooltipController = new SourceGrid.Cells.Controllers.ToolTipText();
             FGridTooltipController.IsBalloon = false;
-            FGridTooltipController.ToolTipTitle = Catalog.GetString("Column Header");
+            FGridTooltipController.ToolTipTitle = Catalog.GetString("Column Header:");
 
             // Hook up our custom DoubleClick Handler
             this.Controller.AddController(new DoubleClickController());
@@ -1405,19 +1405,24 @@ namespace Ict.Common.Controls
             AddTextColumn(AColumnTitle, ADataColumn, -1, TimeEditor);
         }
 
+        /// <summary>
+        /// Set a tooltip that is displayed when the user mouses over the specified column header row
+        /// </summary>
+        /// <param name="AColumnNumber">0-based column index</param>
+        /// <param name="ATipText">Text to show in the tooltip</param>
         public void SetHeaderTooltip(int AColumnNumber, string ATipText)
         {
-            int r = this.Rows.Count;
-            int c = this.Columns.Count;
-
-            SourceGrid.Cells.Cell cell = (SourceGrid.Cells.Cell) this.GetCell(0, AColumnNumber);
-
-            // If the cell is null we cannot set the text
-            // The cell will be null if the DataSource has not yet been bound to the grid.
-            if (cell != null)
+            if (AColumnNumber < this.Columns.Count)
             {
-                cell.ToolTipText = ATipText;
-                cell.AddController(FGridTooltipController);
+                SourceGrid.Cells.Cell cell = (SourceGrid.Cells.Cell)this.GetCell(0, AColumnNumber);
+
+                // If the cell is null we cannot set the text
+                // The cell will be null if the DataSource has not yet been bound to the grid.
+                if (cell != null)
+                {
+                    cell.ToolTipText = ATipText;
+                    cell.AddController(FGridTooltipController);
+                }
             }
         }
 
