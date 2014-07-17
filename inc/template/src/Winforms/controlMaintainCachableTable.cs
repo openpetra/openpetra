@@ -997,6 +997,7 @@ namespace {#NAMESPACE}
             FFilterAndFindObject.FindPanelControls.InitialiseComboBoxes();
         }
 {#ENDIF FILTERANDFIND}    
+        {#GRIDHEADERTOOLTIP}
         {#RUNONCEONPARENTACTIVATIONMANUAL}    
     }
 

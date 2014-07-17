@@ -988,6 +988,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
+        {#GRIDHEADERTOOLTIP}
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
         {#USERCONTROLSRUNONCEONACTIVATION}

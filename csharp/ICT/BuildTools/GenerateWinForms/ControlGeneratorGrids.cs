@@ -39,6 +39,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         Int16 FDecimalPrecision = 2;
 
+        private Int16 FColumnIndex = -1;
+        private string FPrevControlName = String.Empty;
+
         /// <summary>constructor</summary>
         public SourceGridGenerator()
             : base("grd", "Ict.Common.Controls.TSgrdDataGridPaged")
@@ -63,12 +66,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         private void AddColumnToGrid(TFormWriter writer, string AGridControlName, string AColumnType, string ALabel,
-            string ATableName, string AColumnName)
+            string AHeaderTooltip, string ATableName, string AColumnName)
         {
             string ColumnType = "Text";
             string PotentialDecimalPrecision;
             string TrueString = string.Empty;
             string FalseString = string.Empty;
+            string HeaderTooltip = (AHeaderTooltip == string.Empty) ? ALabel : AHeaderTooltip;
 
             if (AColumnType.Contains("DateTime"))
             {
@@ -135,7 +139,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ColumnType == "Boolean")
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
                     AColumnName + ", Catalog.GetString(\"" + TrueString + "\"), Catalog.GetString(\"" + FalseString + "\"));" + Environment.NewLine);
@@ -144,7 +148,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                      || ((ColumnType == "Currency") && (FDecimalPrecision == 2)))
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
                     AColumnName + ");" + Environment.NewLine);
@@ -152,7 +156,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (ColumnType == "PartnerKey")
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
                     AColumnName + ");" + Environment.NewLine);
@@ -160,11 +164,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else
             {
                 writer.Template.AddToCodelet("INITMANUALCODE",
-                    AGridControlName + ".Add" + ColumnType + "Column(\"" + ALabel + "\", " +
+                    AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
                     AColumnName + ", " + FDecimalPrecision.ToString() + ");" + Environment.NewLine);
             }
+
+            // Are we still working with the same grid?  If not reset our tracking variables back to the first column
+            if (AGridControlName != FPrevControlName)
+            {
+                FColumnIndex = 0;
+                FPrevControlName = AGridControlName;
+            }
+
+            writer.Template.AddToCodelet("GRIDHEADERTOOLTIP",
+                AGridControlName + ".SetHeaderTooltip(" + FColumnIndex.ToString() + ", Catalog.GetString(\"" + HeaderTooltip + "\"));" +
+                Environment.NewLine);
+            FColumnIndex++;
         }
 
         /// <summary>
@@ -264,6 +280,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             AddColumnToGrid(writer, ctrl.controlName,
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
+                                TYml2Xml.GetAttribute(CustomColumnNode, "Tooltip"),
                                 TableName,
                                 ColumnName);
                         }
@@ -272,6 +289,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             AddColumnToGrid(writer, ctrl.controlName,
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
+                                TYml2Xml.GetAttribute(CustomColumnNode, "Tooltip"),
                                 TableFieldTable,
                                 ColumnFieldNameResolved);
                         }
@@ -292,6 +310,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         AddColumnToGrid(writer, ctrl.controlName,
                             field.iDecimals == 10 && field.iLength == 24 ? "Currency" : field.GetDotNetType(),
                             field.strLabel,
+                            String.Empty,
                             TTable.NiceTableName(field.strTableName),
                             TTable.NiceFieldName(field.strName));
                     }

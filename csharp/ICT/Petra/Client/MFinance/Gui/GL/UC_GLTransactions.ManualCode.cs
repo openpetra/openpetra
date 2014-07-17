@@ -204,6 +204,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 SetTransAnalAttributeDefaultView();
                 FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
                 grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
+                grdAnalAttributes.SetHeaderTooltip(0, "Type");
+                grdAnalAttributes.SetHeaderTooltip(1, "Value");
 
                 // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
                 bool ActiveOnly = (this.Enabled && FIsUnposted);
