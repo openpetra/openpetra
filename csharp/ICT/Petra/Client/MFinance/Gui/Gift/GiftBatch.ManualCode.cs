@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
         private bool FNewDonorWarning = true;
+        private bool FWarnAboutMissingIntlExchangeRate = true;
         // changed gift records
         GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
 
@@ -156,7 +157,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
 
                 case (int)eGiftTabs.Transactions:
-                    ucoTransactions.ReconcileKeyMinistryControls();
+                    ucoTransactions.ReconcileKeyMinistryFromCombo();
                     ucoTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
@@ -481,9 +482,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     StartOfMonth,
                     BatchEffectiveDate);
 
-                if (IntlToBaseCurrencyExchRate == 0)
+                if (IntlToBaseCurrencyExchRate == 0 && FWarnAboutMissingIntlExchangeRate)
                 {
-                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                    FWarnAboutMissingIntlExchangeRate = false;
+
+                    string IntlRateErrorMessage = String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
                         LedgerBaseCurrency,
                         LedgerIntlCurrency,
                         BatchEffectiveDate);

@@ -461,7 +461,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                FPreviouslySelectedDetailRow.ReceiptNumber = Convert.ToInt32(APartnerKey);
+                FPreviouslySelectedDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
 
                 FPetraUtilsObject.SuppressChangeDetection = true;

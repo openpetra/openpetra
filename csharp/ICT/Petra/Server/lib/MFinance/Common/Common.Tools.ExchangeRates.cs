@@ -620,66 +620,6 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// Get the latest Corporate exchange rate
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AIntlExchangeRate"></param>
-        /// <returns></returns>
-        public static bool GetLatestIntlCorpExchangeRate(int ALedgerNumber, out decimal AIntlExchangeRate)
-        {
-            bool retVal = true;
-            string CurrencyFrom;
-            string CurrencyTo;
-            DateTime StartDate;
-            DateTime EndDate;
-
-            AIntlExchangeRate = decimal.MinValue;
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-            string IntlCurrency = LedgerRow.IntlCurrency.Trim();
-            string BaseCurrency = LedgerRow.BaseCurrency;
-            int CurrentPeriod = LedgerRow.CurrentPeriod;
-
-            if (IntlCurrency != string.Empty)
-            {
-                //ACurrencyTable CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(IntlCurrency, null);
-                AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, CurrentPeriod, Transaction);
-                AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                if (BaseCurrency == IntlCurrency)
-                {
-                    AIntlExchangeRate = 1;
-                }
-                else
-                {
-                    CurrencyFrom = BaseCurrency;
-                    CurrencyTo = IntlCurrency;
-                    StartDate = AccountingPeriodRow.PeriodStartDate;
-                    EndDate = AccountingPeriodRow.PeriodEndDate;
-                    retVal = GetCorporateExchangeRate(CurrencyFrom, CurrencyTo, StartDate, EndDate, out AIntlExchangeRate);
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (AIntlExchangeRate == decimal.MinValue)
-            {
-                retVal = false;
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
         /// Checks whether or not a given currency exists in the Currency table
         /// </summary>
         /// <param name="ACurrencyCode">The currency code to look for</param>

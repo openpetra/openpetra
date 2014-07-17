@@ -176,7 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (IntlToBaseCurrencyExchRate == 0)
                 {
-                    string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
+                    string IntlRateErrorMessage = String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
                         LedgerBaseCurrency,
                         LedgerIntlCurrency,
                         ABatchEffectiveDate);

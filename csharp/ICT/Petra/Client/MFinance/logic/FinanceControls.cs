@@ -703,6 +703,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             out Int64 AFieldNumber,
             Boolean ARefreshData = false)
         {
+            string CurrentRowFilter = string.Empty;
             AFieldNumber = 0;
 
             if ((FKeyMinTable != null) && !ARefreshData)
@@ -720,21 +721,37 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
-            FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
-            AFieldNumber = FFieldNumber;
-            FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 
-            cmbMinistry.InitialiseUserControl(FKeyMinTable,
-                ValueMember,
-                DisplayMember,
-                DisplayMember,
-                null);
-            cmbMinistry.AppearanceSetup(new int[] { 250 }, -1);
-
-            if (!FindAndSelect(ref cmbMinistry, APartnerKey))
+            try
             {
-                //Clear the combobox
-                cmbMinistry.SelectedIndex = -1;
+                FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
+                AFieldNumber = FFieldNumber;
+
+                CurrentRowFilter = FKeyMinTable.DefaultView.RowFilter;
+                FKeyMinTable.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                                                                    PUnitTable.GetUnitTypeCodeDBName(),
+                                                                    MPartnerConstants.UNIT_TYPE_KEYMIN);
+
+                FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
+
+                DataTable dt = FKeyMinTable.DefaultView.ToTable();
+
+                cmbMinistry.InitialiseUserControl(dt,
+                    ValueMember,
+                    DisplayMember,
+                    DisplayMember,
+                    null);
+                cmbMinistry.AppearanceSetup(new int[] { 250 }, -1);
+
+                if (!FindAndSelect(ref cmbMinistry, APartnerKey))
+                {
+                    //Clear the combobox
+                    cmbMinistry.SelectedIndex = -1;
+                }
+            }
+            finally
+            {
+                FKeyMinTable.DefaultView.RowFilter = CurrentRowFilter;
             }
         }
 
