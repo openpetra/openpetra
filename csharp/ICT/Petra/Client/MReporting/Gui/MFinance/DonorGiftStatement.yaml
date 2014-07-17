@@ -46,16 +46,20 @@
             Label: Ledger
         grpReportType:
             Label: Report Type
+            Stretch: horizontally
             Controls: [cmbReportType]
         grpDateSelection:
             Label: Select Date
+            Stretch: horizontally
             Controls: [dtpFromDate, dtpToDate]
         rgrDonorSelection:
             Label: Select Donors
+            Stretch: horizontally
             Controls: [rbtAllDonors, rbtExtract, rbtPartner]
             ParameterName: param_donor
         grpCurrencySelection:
             Label: Gift Limit
+            Stretch: horizontally
             Controls: [txtMinAmount, txtMaxAmount, cmbCurrency]
         cmbReportType:
             ParameterName: param_report_type

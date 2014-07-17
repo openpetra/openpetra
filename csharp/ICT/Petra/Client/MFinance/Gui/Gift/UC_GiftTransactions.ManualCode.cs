@@ -570,11 +570,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (APartnerKey > 0)
                 {
                     RetrieveRecipientCostCentreCode(APartnerKey);
+            		mniRecipientHistory.Enabled = true;
                 }
                 else
                 {
                     UpdateRecipientKeyText(APartnerKey);
                     RetrieveMotivationDetailCostCentreCode();
+            		mniRecipientHistory.Enabled = false;
                 }
             }
             finally
@@ -604,6 +606,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FShowingDetails || (APartnerKey == 0))
             {
+            	mniDonorHistory.Enabled = false;
                 return;
             }
             else
@@ -639,6 +642,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         AutoPopulateGiftDetail(APartnerKey);
                         ShowReceiptFrequency(APartnerKey);
+            	
+                		mniDonorHistory.Enabled = true;
                     }
                 }
                 finally
@@ -1745,6 +1750,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGift.Rows.Add(giftRow);
 
                     CurrentGiftRow = giftRow;
+            	
+                    mniDonorHistory.Enabled = false;
                 }
                 else
                 {
@@ -1810,6 +1817,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //  to the pnlDetails to ensure FInEditMode is correct.
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 UpdateRecipientKeyText(0);
+            		
+                mniRecipientHistory.Enabled = false;
             }
         }
 

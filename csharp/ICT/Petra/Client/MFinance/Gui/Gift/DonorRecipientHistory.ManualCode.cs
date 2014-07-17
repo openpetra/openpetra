@@ -128,6 +128,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // catch enter on all controls, to trigger search
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+            
+            // catch enter on grid to view the selected transaction
+            this.grdDetails.EnterKeyPressed += new Ict.Common.Controls.TKeyPressedEventHandler(this.ViewTransaction);
 
             // focus on txtDonor
             this.ActiveControl = txtDonor;
@@ -518,6 +521,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             this.ActiveControl = btnSearch;
             Search(false);
+        }
+        
+        private void BtnClearClick(object sender, EventArgs e)
+        {
+        	if (cmbLedger.Enabled)
+        	{
+        		EnableLedgerDropdown();
+        	}
+        	
+        	txtDonor.Text = "0000000000";
+        	txtRecipient.Text = "0000000000";
+        	dtpDateFrom.Clear();
+        	dtpDateTo.Clear();
         }
 
         private void DonorGiftStatement(object sender, EventArgs e)

@@ -31,20 +31,20 @@
             Dock: Fill
         grpReportType:
             Label: Report Type
-            Dock: Top
+            Stretch: horizontally
             Controls: [cmbReportType]
         grpDateSelection:
             Label: Select Date
-            Dock: Top
+            Stretch: horizontally
             Controls: [dtpFromDate, dtpToDate]
         rgrRecipientSelection:
             Label: Select Recipients
-            Dock: Top
+            Stretch: horizontally
             Controls: [rbtAllRecipients, rbtExtract, rbtPartner]
             ParameterName: param_recipient
         grpCurrencySelection:
             Label: Select Currency
-            Dock: Top
+            Stretch: horizontally
             Controls: [cmbCurrency]
         cmbReportType:
             ParameterName: param_report_type
