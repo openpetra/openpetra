@@ -150,6 +150,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Setup hidden text boxes used to speed up reading transactions
             SetupComboTextBoxOverlayControls();
+            
+            //Make TextBox look like a label
+            txtGiftReceipting.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            txtGiftReceipting.Font = TAppSettingsManager.GetDefaultBoldFont();
         }
 
         private void SetupTextBoxMenuItems()
@@ -566,11 +570,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (APartnerKey > 0)
                 {
                     RetrieveRecipientCostCentreCode(APartnerKey);
+            		mniRecipientHistory.Enabled = true;
                 }
                 else
                 {
                     UpdateRecipientKeyText(APartnerKey);
                     RetrieveMotivationDetailCostCentreCode();
+            		mniRecipientHistory.Enabled = false;
                 }
             }
             finally
@@ -600,6 +606,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FShowingDetails || (APartnerKey == 0))
             {
+            	mniDonorHistory.Enabled = false;
                 return;
             }
             else
@@ -616,6 +623,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             PPartnerRow pr = PartnerDT[0];
                             chkDetailConfidentialGiftFlag.Checked = pr.AnonymousDonor;
+                            
+                            // add row to dataset to access receipt frequency info for donors
+                        	FMainDS.DonorPartners.Merge(PartnerDT);
                         }
 
                         FLastDonor = APartnerKey;
@@ -631,6 +641,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
 
                         AutoPopulateGiftDetail(APartnerKey);
+                        ShowReceiptFrequency(APartnerKey);
+            	
+                		mniDonorHistory.Enabled = true;
                     }
                 }
                 finally
@@ -1737,6 +1750,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGift.Rows.Add(giftRow);
 
                     CurrentGiftRow = giftRow;
+            	
+                    mniDonorHistory.Enabled = false;
                 }
                 else
                 {
@@ -1802,6 +1817,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //  to the pnlDetails to ensure FInEditMode is correct.
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 UpdateRecipientKeyText(0);
+            		
+                mniRecipientHistory.Enabled = false;
             }
         }
 
@@ -1919,6 +1936,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     txtField.Text = ARow.RecipientField.ToString();
                 }
+                
+                ShowReceiptFrequency(Convert.ToInt64(txtDetailDonorKey.Text));
 
                 UpdateControlsProtection(ARow);
             }
@@ -1927,6 +1946,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FShowingDetails = false;
                 this.Cursor = Cursors.Default;
             }
+        }
+        
+        // dispalays information about the donor's receipt frequency options
+        private void ShowReceiptFrequency(long APartnerKey)
+        {
+        	txtGiftReceipting.Text = "";
+
+        	if (APartnerKey == 0)
+        	{
+        		return;
+        	}
+        	
+        	// find PPartnerRow from dataset
+        	PPartnerRow DonorRow = (PPartnerRow) FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
+        	
+        	// if PPartnerRow cannot be found load it from db
+        	if (DonorRow == null)
+        	{
+    			DonorRow = (PPartnerRow) TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey).Rows[0];
+        	}
+        	
+        	if (DonorRow.ReceiptEachGift)
+        	{
+        		txtGiftReceipting.Text = "*" + Catalog.GetString("Receipt Each Gift") + "*";
+        	}
+        	
+        	if (!string.IsNullOrEmpty(DonorRow.ReceiptLetterFrequency))
+        	{
+        		if (DonorRow.ReceiptEachGift)
+        		{
+        			txtGiftReceipting.Text += "; ";
+        		}
+        		
+        		txtGiftReceipting.Text += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
+        	}
         }
 
         private void ShowDetailsForGift(AGiftRow ACurrentGiftRow)

@@ -91,6 +91,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // add additional event to chkbox
             chkShowInactive.CheckedChanged += new System.EventHandler(this.SelectRowInGrid);
+            
+            // set initial focus
+            this.ActiveControl = txtBranchName;
+            
+            // catch enter on all controls, to move focus to the grid
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
         }
 
         /// <summary>
@@ -183,6 +189,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
 
             SelectRowInGrid();
+            FocusedRowChanged(this, null);
             UpdateRecordNumberDisplay();
             Filter(this, null);
         }
@@ -231,10 +238,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             int RowPos = 1;
 
             // if no bank is selected then no row should be selected
-            if (FBankPartnerKey == 0)
+            if (grdDetails.Rows.Count <= 1 || FBankPartnerKey == 0)
             {
-                btnAccept.Enabled = false;
-                btnEdit.Enabled = false;
+            	// select the first row in the grid
+            	if (grdDetails.Rows.Count > 1)
+            	{
+            		grdDetails.SelectRowWithoutFocus(1);
+            	}
+            	else
+            	{
+                	btnAccept.Enabled = false;
+                	btnEdit.Enabled = false;
+            	}
 
                 return;
             }
@@ -271,9 +286,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     RowPos++;
                 }
             }
-
-            btnAccept.Enabled = false;
-            btnEdit.Enabled = false;
         }
 
         // update the record counter
@@ -298,6 +310,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void SelectRowInGrid(System.Object sender, EventArgs e)
         {
             SelectRowInGrid();
+            FocusedRowChanged(this, null);
         }
 
         private void grdDetails_DoubleClickCell(object Sender, SourceGrid.CellContextEventArgs e)
@@ -307,7 +320,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void grdDetails_EnterKey(object Sender, EventArgs e)
         {
-            Accept(e, null);
+        	Accept(e, null);
         }
 
         /// <summary>
@@ -406,6 +419,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             UpdateRecordNumberDisplay();
             SelectRowInGrid();
+            FocusedRowChanged(this, null);
         }
 
         // A new row is selected in the grid
@@ -451,6 +465,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             frm.SetParameters(TScreenMode.smEdit, FBankPartnerKey);
             frm.Show();
+        }
+
+        // use 'Enter' key to move focus to the grid
+        private void CatchEnterKey(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+            	this.ActiveControl = grdDetails;
+            }
+            else
+            {
+                e.Handled = false;
+            }
         }
 
         #endregion

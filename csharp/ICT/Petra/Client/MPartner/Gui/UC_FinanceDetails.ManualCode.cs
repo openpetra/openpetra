@@ -498,7 +498,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void BankNameChanged(System.Object sender, EventArgs e)
         {
             // if a blank name has just been selected
-            if ((cmbBankName.GetSelectedString() == "") && (FCurrentBankRow.BranchName != ""))
+            if (string.IsNullOrEmpty(cmbBankName.GetSelectedString()) 
+                && (FCurrentBankRow == null || string.IsNullOrEmpty(FCurrentBankRow.BranchName)))
             {
                 txtBankKey.Text = "0";
             }

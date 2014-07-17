@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
 
@@ -340,6 +341,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                     }
                 }
             }
+            
+            TSharedFinanceValidation_Gift.ValidateGiftMotivationSetupManual(this, ARow, ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

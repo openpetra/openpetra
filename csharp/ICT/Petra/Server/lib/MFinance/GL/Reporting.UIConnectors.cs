@@ -1864,7 +1864,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable ExecutiveSummaryTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapte)
         {
             TDBTransaction Transaction = null;
-            AAccountTable AccountTable = new AAccountTable();
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             int EndPeriod = AParameters["param_end_period_i"].ToInt32();
