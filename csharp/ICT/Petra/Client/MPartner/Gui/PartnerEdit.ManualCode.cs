@@ -2376,14 +2376,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainDonorHistory(System.Object sender, System.EventArgs e)
         {
-            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen("mniMaintainDonorHistory",
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
                 PartnerKey,
                 FPetraUtilsObject.GetForm());
         }
 
         private void MaintainRecipientHistory(System.Object sender, System.EventArgs e)
         {
-            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen("mniMaintainRecipientHistory",
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
                 PartnerKey,
                 FPetraUtilsObject.GetForm());
         }
@@ -3677,5 +3677,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Manages the opening of a Partner's Edit Screen
+    /// </summary>
+    public static class TPartnerEditScreenManager
+    {
+        /// <summary>
+        /// Opens an instance of the Partner Edit Screen
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AParentForm"></param>
+        /// <returns></returns>
+        public static void OpenForm(long APartnerKey,
+            Form AParentForm)
+        {
+            TFrmPartnerEdit frm = new TFrmPartnerEdit(AParentForm);
+
+            frm.SetParameters(TScreenMode.smEdit, APartnerKey);
+            frm.Show();
+        }
     }
 }

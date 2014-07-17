@@ -32,6 +32,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MCommon;
 
@@ -140,6 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
 
+            SetupTextBoxMenuItems();
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
 
             //Set initial width of this textbox
@@ -148,6 +150,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Setup hidden text boxes used to speed up reading transactions
             SetupComboTextBoxOverlayControls();
+        }
+
+        private void SetupTextBoxMenuItems()
+        {
+            List <Tuple <string, EventHandler>>ItemList = new List <Tuple <string, EventHandler>>();
+
+            ItemList.Add(new Tuple <string, EventHandler>("Open Donor History", OpenDonorHistory));
+            txtDetailDonorKey.AddCustomContextMenuItems(ItemList);
+
+            ItemList.Clear();
+            ItemList.Add(new Tuple <string, EventHandler>("Open Recipient History", OpenRecipientHistory));
+            txtDetailRecipientKey.AddCustomContextMenuItems(ItemList);
         }
 
         private void SetupComboTextBoxOverlayControls()
@@ -2841,6 +2855,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 dr.Delete();
             }
+        }
+
+        private void OpenDonorHistory(System.Object sender, EventArgs e)
+        {
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
+                Convert.ToInt64(txtDetailDonorKey.Text),
+                FPetraUtilsObject.GetForm());
+        }
+
+        private void OpenRecipientHistory(System.Object sender, EventArgs e)
+        {
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
+                Convert.ToInt64(txtDetailRecipientKey.Text),
+                FPetraUtilsObject.GetForm());
         }
     }
 }

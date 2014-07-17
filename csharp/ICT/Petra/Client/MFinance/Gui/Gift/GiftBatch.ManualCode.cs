@@ -123,6 +123,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ucoBatches.CheckBeforeSaving();
             ucoTransactions.CheckBeforeSaving();
+
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject_DataSavingStarted_NewDonorWarning();
+            }
+        }
+
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject_DataSaved_NewDonorWarning(Sender, e);
+            }
         }
 
         private void InitializeManualCode()
@@ -134,10 +147,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
             mniNewDonorWarning.Checked = FNewDonorWarning;
 
-            // only add these events if the user want a new donor warning
+            // only add this event if the user want a new donor warning (this will still work without the condition)
             if (FNewDonorWarning)
             {
-                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted_NewDonorWarning);
                 FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             }
         }
@@ -176,7 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             };
         }
 
-        private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning(object Sender, EventArgs e)
+        private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning()
         {
             if (FNewDonorWarning)
             {
@@ -192,7 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        private void FPetraUtilsObject_DataSaved_NewDonorWarning(object Sender, TDataSavedEventArgs e)
         {
             // if data successfully saved then look for new donors and warn the user
             if (e.Success && (FGiftDetailTable != null) && FNewDonorWarning)
@@ -277,6 +289,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void DisableTransactions()
         {
             this.tpgTransactions.Enabled = false;
+        }
+
+        /// <summary>
+        /// disable the batches tab
+        /// </summary>
+        public void DisableBatches()
+        {
+            this.tpgBatches.Enabled = false;
         }
 
         /// <summary>
@@ -514,18 +534,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // change user default
             TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
-
-            // add/remove events the fire the new donor warning
-            if (FNewDonorWarning)
-            {
-                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted_NewDonorWarning);
-                FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
-            }
-            else
-            {
-                FPetraUtilsObject.DataSavingStarted -= new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted_NewDonorWarning);
-                FPetraUtilsObject.DataSaved -= new TDataSavedHandler(FPetraUtilsObject_DataSaved);
-            }
         }
     }
 }

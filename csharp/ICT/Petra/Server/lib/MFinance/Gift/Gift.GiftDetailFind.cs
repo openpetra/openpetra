@@ -100,9 +100,6 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             // Create Field List
             sb = new System.Text.StringBuilder();
-            //sb.AppendFormat("{0},{1}", "PUB.a_gift.p_donor_key_n", Environment.NewLine);
-            //sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_ledger_number_i", Environment.NewLine);
-
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_batch_number_i", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_gift_transaction_number_i", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_detail_number_i", Environment.NewLine);
@@ -293,7 +290,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (((Int64)CriteriaRow["Donor"]) > 0)
             {
                 new TDynamicSearchHelper(AGiftTable.TableId,
-                    AGiftTable.ColumnReceiptNumberId, CriteriaRow, "Donor", "",
+                    AGiftTable.ColumnDonorKeyId, CriteriaRow, "Donor", "",
                     ref CustomWhereCriteria,
                     ref InternalParameters);
             }
@@ -359,7 +356,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     InternalParameters.Add(miParam);
                 }
 
-                if (CriteriaRow["MaxAmount"] != null)
+                if (CriteriaRow["MaxAmount"].ToString().Length > 0)
                 {
                     CustomWhereCriteria = String.Format("{0} AND {1} <= ?", CustomWhereCriteria,
                         AGiftDetailTable.GetGiftAmountDBName());
