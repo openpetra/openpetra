@@ -402,6 +402,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             grdResult.AutoResizeGrid();
 
+            grdResult.SetHeaderTooltip(0, Catalog.GetString("Check to Tag"));
+            grdResult.SetHeaderTooltip(1, Catalog.GetString("Inv#"));
+            grdResult.SetHeaderTooltip(2, Catalog.GetString("Type"));
+            grdResult.SetHeaderTooltip(3, Catalog.GetString("Amount"));
+            grdResult.SetHeaderTooltip(4, Catalog.GetString("Outstanding"));
+            grdResult.SetHeaderTooltip(5, Catalog.GetString("Currency"));
+            grdResult.SetHeaderTooltip(6, Catalog.GetString("Status"));
+            grdResult.SetHeaderTooltip(7, Catalog.GetString("Date"));
+
             UpdateSupplierBalance();
             UpdateDisplayedBalance();
             UpdateRecordNumberDisplay();
@@ -462,14 +471,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.Columns.Clear();
             grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], -1, false);
 //          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"]);
-            grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"]);
-            grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"]);
-            grdResult.AddCurrencyColumn("Amount", FPagedDataTable.Columns["Amount"]);
-            grdResult.AddCurrencyColumn("Outstanding", FPagedDataTable.Columns["OutstandingAmount"]);
-            grdResult.AddTextColumn("Currency", FPagedDataTable.Columns["Currency"]);
+            grdResult.AddTextColumn(Catalog.GetString("Inv#"), FPagedDataTable.Columns["InvNum"]);
+            grdResult.AddTextColumn(Catalog.GetString("Type"), FPagedDataTable.Columns["Type"]);
+            grdResult.AddCurrencyColumn(Catalog.GetString("Amount"), FPagedDataTable.Columns["Amount"]);
+            grdResult.AddCurrencyColumn(Catalog.GetString("Outstanding"), FPagedDataTable.Columns["OutstandingAmount"]);
+            grdResult.AddTextColumn(Catalog.GetString("Currency"), FPagedDataTable.Columns["Currency"]);
 //          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"]);
-            grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"]);
-            grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
+            grdResult.AddTextColumn(Catalog.GetString("Status"), FPagedDataTable.Columns["Status"]);
+            grdResult.AddDateColumn(Catalog.GetString("Date"), FPagedDataTable.Columns["Date"]);
         }
 
         private void UpdateDisplayedBalance()

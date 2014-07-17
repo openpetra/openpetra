@@ -117,13 +117,16 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
 
             // Add columns to the grid for the label details
-            grdDetails.AddTextColumn("Name", FMainDS.PDataLabelUse.Columns[NameOrdinal]);
-            grdDetails.AddTextColumn("Group Heading", FMainDS.PDataLabelUse.Columns[GroupOrdinal]);
-            grdDetails.AddTextColumn("Description", FMainDS.PDataLabelUse.Columns[DescriptionOrdinal]);
+            grdDetails.AddTextColumn(Catalog.GetString("Name"), FMainDS.PDataLabelUse.Columns[NameOrdinal]);
+            grdDetails.AddTextColumn(Catalog.GetString("Group Heading"), FMainDS.PDataLabelUse.Columns[GroupOrdinal]);
+            grdDetails.AddTextColumn(Catalog.GetString("Description"), FMainDS.PDataLabelUse.Columns[DescriptionOrdinal]);
             grdDetails.Selection.SelectionChanged += new SourceGrid.RangeRegionChangedEventHandler(grdDetails_RowSelected);
 
             // Remove the first column.  We added this in the YAML so that the auto-generator had something to do
             grdDetails.Columns.Remove(0);
+            grdDetails.SetHeaderTooltip(0, Catalog.GetString("Name"));
+            grdDetails.SetHeaderTooltip(1, Catalog.GetString("Group Heading"));
+            grdDetails.SetHeaderTooltip(2, Catalog.GetString("Description"));
 
             // Create a view that will only show the rows applicable to our currentContext
             DataView contextView = new DataView(FMainDS.PDataLabelUse, "p_use_c='" + Context + "'", "p_idx1_i", DataViewRowState.CurrentRows);

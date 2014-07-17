@@ -303,6 +303,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Size it
             grdInvoices.AutoResizeGrid();
 
+            grdInvoices.SetHeaderTooltip(0, Catalog.GetString("Check to Tag"));
+            grdInvoices.SetHeaderTooltip(1, Catalog.GetString("AP#"));
+            grdInvoices.SetHeaderTooltip(2, Catalog.GetString("Inv#"));
+            grdInvoices.SetHeaderTooltip(3, Catalog.GetString("Supplier"));
+            grdInvoices.SetHeaderTooltip(4, Catalog.GetString("Amount"));
+            grdInvoices.SetHeaderTooltip(5, Catalog.GetString("Outstanding"));
+            grdInvoices.SetHeaderTooltip(6, Catalog.GetString("Currency"));
+            grdInvoices.SetHeaderTooltip(7, Catalog.GetString("Due Date"));
+            grdInvoices.SetHeaderTooltip(8, Catalog.GetString("Status"));
+            grdInvoices.SetHeaderTooltip(9, Catalog.GetString("Issued"));
+
             UpdateRecordNumberDisplay();
             UpdateInvoiceBalance();
             UpdateDisplayedBalance();
@@ -353,15 +364,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             grdInvoices.Columns.Clear();
             grdInvoices.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], -1, false);
-            grdInvoices.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"]);
-            grdInvoices.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"]);
-            grdInvoices.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"]);
-            grdInvoices.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"]);
-            grdInvoices.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"]);
-            grdInvoices.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"]);
-            grdInvoices.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
-            grdInvoices.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"]);
-            grdInvoices.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
+            grdInvoices.AddTextColumn(Catalog.GetString("AP#"), FInvoiceTable.Columns["ApNumber"]);
+            grdInvoices.AddTextColumn(Catalog.GetString("Inv#"), FInvoiceTable.Columns["DocumentCode"]);
+            grdInvoices.AddTextColumn(Catalog.GetString("Supplier"), FInvoiceTable.Columns["PartnerShortName"]);
+            grdInvoices.AddCurrencyColumn(Catalog.GetString("Amount"), FInvoiceTable.Columns["TotalAmount"]);
+            grdInvoices.AddCurrencyColumn(Catalog.GetString("Outstanding"), FInvoiceTable.Columns["OutstandingAmount"]);
+            grdInvoices.AddTextColumn(Catalog.GetString("Currency"), FInvoiceTable.Columns["CurrencyCode"]);
+            grdInvoices.AddDateColumn(Catalog.GetString("Due Date"), FInvoiceTable.Columns["DateDue"]);
+            grdInvoices.AddTextColumn(Catalog.GetString("Status"), FInvoiceTable.Columns["DocumentStatus"]);
+            grdInvoices.AddDateColumn(Catalog.GetString("Issued"), FInvoiceTable.Columns["DateIssued"]);
         }
 
         private void SetInvoiceFilters(object sender, EventArgs e)
