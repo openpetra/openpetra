@@ -91,10 +91,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // add additional event to chkbox
             chkShowInactive.CheckedChanged += new System.EventHandler(this.SelectRowInGrid);
-            
+
             // set initial focus
             this.ActiveControl = txtBranchName;
-            
+
             // catch enter on all controls, to move focus to the grid
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
         }
@@ -238,18 +238,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             int RowPos = 1;
 
             // if no bank is selected then no row should be selected
-            if (grdDetails.Rows.Count <= 1 || FBankPartnerKey == 0)
+            if ((grdDetails.Rows.Count <= 1) || (FBankPartnerKey == 0))
             {
-            	// select the first row in the grid
-            	if (grdDetails.Rows.Count > 1)
-            	{
-            		grdDetails.SelectRowWithoutFocus(1);
-            	}
-            	else
-            	{
-                	btnAccept.Enabled = false;
-                	btnEdit.Enabled = false;
-            	}
+                // select the first row in the grid
+                if (grdDetails.Rows.Count > 1)
+                {
+                    grdDetails.SelectRowWithoutFocus(1);
+                }
+                else
+                {
+                    btnAccept.Enabled = false;
+                    btnEdit.Enabled = false;
+                }
 
                 return;
             }
@@ -320,7 +320,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void grdDetails_EnterKey(object Sender, EventArgs e)
         {
-        	Accept(e, null);
+            Accept(e, null);
         }
 
         /// <summary>
@@ -472,7 +472,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.KeyCode == Keys.Enter)
             {
-            	this.ActiveControl = grdDetails;
+                this.ActiveControl = grdDetails;
             }
             else
             {

@@ -341,8 +341,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                     }
                 }
             }
-            
-            TSharedFinanceValidation_Gift.ValidateGiftMotivationSetupManual(this, ARow, ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict);
+
+            TSharedFinanceValidation_Gift.ValidateGiftMotivationSetupManual(this,
+                ARow,
+                ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
         }
     }
 }

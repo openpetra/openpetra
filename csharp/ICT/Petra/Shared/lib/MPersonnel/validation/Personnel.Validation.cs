@@ -969,85 +969,85 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
+
             // following validation only relevant for event applications
             if (AEventApplication)
             {
-	            // 'Organization Contact 1' must not be unassignable
-	            ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenContact1Id];
-	
-	            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-	            {
-	                PtContactTable ContactTable;
-	                PtContactRow ContactRow;
-	
-	                VerificationResult = null;
-	
-	                if ((!ARow.IsGenContact1Null())
-	                    && (ARow.GenContact1 != String.Empty))
-	                {
-	                    ContactTable = (PtContactTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
-	                		TCacheablePersonTablesEnum.ContactList);
-	                    ContactRow = (PtContactRow)ContactTable.Rows.Find(ARow.GenContact1);
-	
-	                    // 'Contact' must not be unassignable
-	                    if ((ContactRow != null)
-	                        && ContactRow.UnassignableFlag
-	                        && (ContactRow.IsUnassignableDateNull()
-	                            || (ContactRow.UnassignableDate <= DateTime.Today)))
-	                    {
-	                        // if 'Contact' is unassignable then check if the value has been changed or if it is a new record
-	                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenContact1DBName()))
-	                        {
-	                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-	                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
-	                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.GenContact1 })),
-	                                ValidationColumn, ValidationControlsData.ValidationControl);
-	                        }
-	                    }
-	                }
-	
-	                // Handle addition/removal to/from TVerificationResultCollection
-	                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-	            }
-	            
-	            // 'Organization Contact 2' must not be unassignable
-	            ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenContact2Id];
-	
-	            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-	            {
-	                PtContactTable ContactTable;
-	                PtContactRow ContactRow;
-	
-	                VerificationResult = null;
-	
-	                if ((!ARow.IsGenContact2Null())
-	                    && (ARow.GenContact2 != String.Empty))
-	                {
-	                    ContactTable = (PtContactTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
-	                		TCacheablePersonTablesEnum.ContactList);
-	                    ContactRow = (PtContactRow)ContactTable.Rows.Find(ARow.GenContact2);
-	
-	                    // 'Contact' must not be unassignable
-	                    if ((ContactRow != null)
-	                        && ContactRow.UnassignableFlag
-	                        && (ContactRow.IsUnassignableDateNull()
-	                            || (ContactRow.UnassignableDate <= DateTime.Today)))
-	                    {
-	                        // if 'Contact' is unassignable then check if the value has been changed or if it is a new record
-	                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenContact2DBName()))
-	                        {
-	                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-	                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
-	                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.GenContact2 })),
-	                                ValidationColumn, ValidationControlsData.ValidationControl);
-	                        }
-	                    }
-	                }
-	
-	                // Handle addition/removal to/from TVerificationResultCollection
-	                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-	            }
+                // 'Organization Contact 1' must not be unassignable
+                ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenContact1Id];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    PtContactTable ContactTable;
+                    PtContactRow ContactRow;
+
+                    VerificationResult = null;
+
+                    if ((!ARow.IsGenContact1Null())
+                        && (ARow.GenContact1 != String.Empty))
+                    {
+                        ContactTable = (PtContactTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
+                            TCacheablePersonTablesEnum.ContactList);
+                        ContactRow = (PtContactRow)ContactTable.Rows.Find(ARow.GenContact1);
+
+                        // 'Contact' must not be unassignable
+                        if ((ContactRow != null)
+                            && ContactRow.UnassignableFlag
+                            && (ContactRow.IsUnassignableDateNull()
+                                || (ContactRow.UnassignableDate <= DateTime.Today)))
+                        {
+                            // if 'Contact' is unassignable then check if the value has been changed or if it is a new record
+                            if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenContact1DBName()))
+                            {
+                                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                            new string[] { ValidationControlsData.ValidationControlLabel, ARow.GenContact1 })),
+                                    ValidationColumn, ValidationControlsData.ValidationControl);
+                            }
+                        }
+                    }
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                // 'Organization Contact 2' must not be unassignable
+                ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenContact2Id];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    PtContactTable ContactTable;
+                    PtContactRow ContactRow;
+
+                    VerificationResult = null;
+
+                    if ((!ARow.IsGenContact2Null())
+                        && (ARow.GenContact2 != String.Empty))
+                    {
+                        ContactTable = (PtContactTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
+                            TCacheablePersonTablesEnum.ContactList);
+                        ContactRow = (PtContactRow)ContactTable.Rows.Find(ARow.GenContact2);
+
+                        // 'Contact' must not be unassignable
+                        if ((ContactRow != null)
+                            && ContactRow.UnassignableFlag
+                            && (ContactRow.IsUnassignableDateNull()
+                                || (ContactRow.UnassignableDate <= DateTime.Today)))
+                        {
+                            // if 'Contact' is unassignable then check if the value has been changed or if it is a new record
+                            if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenContact2DBName()))
+                            {
+                                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                            new string[] { ValidationControlsData.ValidationControlLabel, ARow.GenContact2 })),
+                                    ValidationColumn, ValidationControlsData.ValidationControl);
+                            }
+                        }
+                    }
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
             }
 
             // following validation only relevant for field applications
@@ -1337,7 +1337,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-	            
+
             // 'Arrival Point' must not be unassignable
             ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnArrivalPointCodeId];
 
@@ -1352,7 +1352,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                     && (ARow.ArrivalPointCode != String.Empty))
                 {
                     ArrivalPointTable = (PtArrivalPointTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
-                		TCacheablePersonTablesEnum.ArrivalDeparturePointList);
+                        TCacheablePersonTablesEnum.ArrivalDeparturePointList);
                     ArrivalPointRow = (PtArrivalPointRow)ArrivalPointTable.Rows.Find(ARow.ArrivalPointCode);
 
                     // 'Arrival Point' must not be unassignable
@@ -1375,7 +1375,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
+
             // 'Departure Point' must not be unassignable
             ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnDeparturePointCodeId];
 
@@ -1390,7 +1390,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                     && (ARow.DeparturePointCode != String.Empty))
                 {
                     ArrivalPointTable = (PtArrivalPointTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTable(
-                		TCacheablePersonTablesEnum.ArrivalDeparturePointList);
+                        TCacheablePersonTablesEnum.ArrivalDeparturePointList);
                     ArrivalPointRow = (PtArrivalPointRow)ArrivalPointTable.Rows.Find(ARow.DeparturePointCode);
 
                     // 'Arrival Point' must not be unassignable

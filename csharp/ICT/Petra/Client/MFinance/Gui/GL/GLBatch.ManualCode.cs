@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
         private bool FLoadForImport = false;
+        private bool FWarnAboutMissingIntlExchangeRate = true;
 
         /// <summary>
         /// specify to load and import batches
@@ -334,7 +335,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="AEffectiveDate"></param>
         /// <returns></returns>
-        public decimal GetInternationalCurrencyExchangeRate(DateTime AEffectiveDate)
+        private decimal GetInternationalCurrencyExchangeRate(DateTime AEffectiveDate)
         {
             DateTime StartOfMonth = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
             string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
@@ -355,12 +356,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         StartOfMonth,
                         AEffectiveDate);
 
-                    if (IntlToBaseCurrencyExchRate == 0)
+                    if ((IntlToBaseCurrencyExchRate == 0) && FWarnAboutMissingIntlExchangeRate)
                     {
-                        string IntlRateErrorMessage = String.Format("No corporate exchange rate exists for {0} to {1} for the date: {2}!",
-                            LedgerBaseCurrency,
-                            LedgerIntlCurrency,
-                            AEffectiveDate);
+                        FWarnAboutMissingIntlExchangeRate = false;
+
+                        string IntlRateErrorMessage =
+                            String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
+                                LedgerBaseCurrency,
+                                LedgerIntlCurrency,
+                                AEffectiveDate);
 
                         MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }

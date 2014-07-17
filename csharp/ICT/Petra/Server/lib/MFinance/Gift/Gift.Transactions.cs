@@ -696,11 +696,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     table.Clear();
                 }
             }
-            
+
             // find PPartnerRows for all donors (needed for receipt frequency info)
             foreach (AGiftRow Row in MainDS.AGift.Rows)
             {
-            	MainDS.DonorPartners.Merge(PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, Transaction));
+                MainDS.DonorPartners.Merge(PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, Transaction));
             }
 
             //Add a temp table
@@ -1780,7 +1780,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
 
-                    if ((RecipientUnitRow != null) && (RecipientUnitRow.UnitTypeCode == MFinanceConstants.UNIT_TYPE_CODE_KEY_MIN))
+                    if ((RecipientUnitRow != null) && (RecipientUnitRow.UnitTypeCode == MPartnerConstants.UNIT_TYPE_KEYMIN))
                     {
                         giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
                     }
@@ -1873,7 +1873,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
 
-                    if ((RecipientUnitRow != null) && (RecipientUnitRow.UnitTypeCode == MFinanceConstants.UNIT_TYPE_CODE_KEY_MIN))
+                    if ((RecipientUnitRow != null) && (RecipientUnitRow.UnitTypeCode == MPartnerConstants.UNIT_TYPE_KEYMIN))
                     {
                         giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
                     }
@@ -2211,7 +2211,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 AVerifications.Add(
                     new TVerificationResult(
                         "Posting Gift Batch",
-                        String.Format("Cannot fine Corporate Exchange rate for date {0}",
+                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for the month: {2:MMMM yyyy}!"),
                             GLEffectiveDate),
                         TResultSeverity.Resv_Critical));
                 return null;

@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
-            
+
             // catch enter on grid to view the selected transaction
             this.grdResult.EnterKeyPressed += new Ict.Common.Controls.TKeyPressedEventHandler(this.BtnView_Click);
 

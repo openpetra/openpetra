@@ -559,12 +559,12 @@ namespace Ict.Common.Controls
             this.lblDescription.TabIndex = 1;
             this.lblDescription.TextAlign = HorizontalAlignment.Left;
             this.lblDescription.Paint += new PaintEventHandler(this.LblDescription_Paint);
-            
+
             this.lblDescription.Multiline = false;
             this.lblDescription.WordWrap = false;
             this.lblDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.lblDescription.ReadOnly = true;
-            this.lblDescription.Location = new System.Drawing.Point(GetLabelRectangle().Left + UNIT_LABEL_LEFT_OFFSET , GetYCoordStartLabel());
+            this.lblDescription.Location = new System.Drawing.Point(GetLabelRectangle().Left + UNIT_LABEL_LEFT_OFFSET, GetYCoordStartLabel());
             this.lblDescription.TabStop = false;
 
             //
@@ -718,7 +718,7 @@ namespace Ict.Common.Controls
 
             this.lblDescription.Width = mLabelWidth;
         }
-        
+
         /// <summary>
         /// This function gets the start Y - Coordinate for the Label.
         ///

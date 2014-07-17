@@ -771,7 +771,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 return;
             }
-            
+
             // 'Motivation Group' must not be unassignable
             ValidationColumn = ARow.Table.Columns[AMotivationDetailTable.ColumnMotivationGroupCodeId];
 
@@ -786,9 +786,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     && (ARow.MotivationGroupCode != String.Empty))
                 {
                     MotivationGroupTable = (AMotivationGroupTable)TSharedDataCache.TMFinance.GetCacheableFinanceTable(
-                		TCacheableFinanceTablesEnum.MotivationGroupList);
+                        TCacheableFinanceTablesEnum.MotivationGroupList);
                     MotivationGroupPointRow = (AMotivationGroupRow)MotivationGroupTable.Rows.Find(
-                		new object[] { ARow.LedgerNumber, ARow.MotivationGroupCode });
+                        new object[] { ARow.LedgerNumber, ARow.MotivationGroupCode });
 
                     // 'Motivation Group' must not be unassignable
                     if ((MotivationGroupPointRow != null)

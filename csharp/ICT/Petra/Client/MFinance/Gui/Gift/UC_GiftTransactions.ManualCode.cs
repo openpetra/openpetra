@@ -117,12 +117,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void CheckBeforeSaving()
         {
-            ReconcileKeyMinistryControls();
+            ReconcileKeyMinistryFromCombo();
         }
 
         private void PreProcessCommandKey()
         {
-            ReconcileKeyMinistryControls();
+            ReconcileKeyMinistryFromCombo();
         }
 
         private void RunOnceOnParentActivationManual()
@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Setup hidden text boxes used to speed up reading transactions
             SetupComboTextBoxOverlayControls();
-            
+
             //Make TextBox look like a label
             txtGiftReceipting.BorderStyle = System.Windows.Forms.BorderStyle.None;
             txtGiftReceipting.Font = TAppSettingsManager.GetDefaultBoldFont();
@@ -218,7 +218,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void SetTextBoxOverlayOnKeyMinistryCombo()
+        private void SetTextBoxOverlayOnKeyMinistryCombo(bool AReadComboValue = false)
         {
             ResetMotivationDetailCodeFilter();
 
@@ -226,9 +226,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailRecipientKeyMinistry.BringToFront();
             txtDetailRecipientKeyMinistry.Parent.Refresh();
 
-            if (FPreviouslySelectedDetailRow != null)
+            if (AReadComboValue)
             {
-                txtDetailRecipientKeyMinistry.Text = FPreviouslySelectedDetailRow.RecipientKeyMinistry;
+                ReconcileKeyMinistryFromCombo();
+            }
+            else
+            {
+                ReconcileKeyMinistryFromTextbox();
             }
         }
 
@@ -240,23 +244,51 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 PopulateKeyMinistry();
 
+                ReconcileKeyMinistryFromTextbox();
+
                 //hide the overlay box during editing
                 txtDetailRecipientKeyMinistry.Visible = false;
             }
         }
 
         /// <summary>
-        /// Deal with case when user clicks on a control
-        /// that does not result in a lost focus, e.g. menu
+        /// Keep the combo and textboxes together
         /// </summary>
-        public void ReconcileKeyMinistryControls()
+        public void ReconcileKeyMinistryFromCombo()
         {
             string KeyMinistry = string.Empty;
+            bool EmptyRow = (FPreviouslySelectedDetailRow == null);
 
-            if (FBatchUnposted && FInEditMode && (FPreviouslySelectedDetailRow != null))
+            if (FBatchUnposted && FInEditMode)
             {
-                KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+                if (!EmptyRow && (cmbKeyMinistries.SelectedIndex > -1))
+                {
+                    KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+                }
+
                 txtDetailRecipientKeyMinistry.Text = KeyMinistry;
+            }
+        }
+
+        /// <summary>
+        /// Keep the combo and textboxes together
+        /// </summary>
+        public void ReconcileKeyMinistryFromTextbox()
+        {
+            string KeyMinistry = string.Empty;
+            bool EmptyRow = (FPreviouslySelectedDetailRow == null);
+
+            if (FBatchUnposted && FInEditMode)
+            {
+                if (!EmptyRow && (txtDetailRecipientKeyMinistry.Text.Length > 0))
+                {
+                    KeyMinistry = txtDetailRecipientKeyMinistry.Text;
+                    cmbKeyMinistries.SetSelectedString(KeyMinistry);
+                }
+                else
+                {
+                    cmbKeyMinistries.SelectedIndex = -1;
+                }
             }
         }
 
@@ -318,8 +350,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateBaseAmount(false);
                 }
 
-                SetTextBoxOverlayOnKeyMinistryCombo();
-
                 return false;
             }
 
@@ -380,9 +410,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FSuppressListChanged = false;
             grdDetails.ResumeLayout();
 
-            FTransactionsLoaded = true;
             UpdateTotals();
 
+            FTransactionsLoaded = true;
             return true;
         }
 
@@ -538,7 +568,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                FPreviouslySelectedDetailRow.ReceiptNumber = Convert.ToInt32(APartnerKey);
+                FPreviouslySelectedDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
 
                 FPetraUtilsObject.SuppressChangeDetection = true;
@@ -570,18 +600,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (APartnerKey > 0)
                 {
                     RetrieveRecipientCostCentreCode(APartnerKey);
-            		mniRecipientHistory.Enabled = true;
+                    mniRecipientHistory.Enabled = true;
                 }
                 else
                 {
                     UpdateRecipientKeyText(APartnerKey);
                     RetrieveMotivationDetailCostCentreCode();
-            		mniRecipientHistory.Enabled = false;
+                    mniRecipientHistory.Enabled = false;
                 }
             }
             finally
             {
                 FInRecipientKeyChanging = false;
+                ReconcileKeyMinistryFromCombo();
                 FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
@@ -606,7 +637,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (FShowingDetails || (APartnerKey == 0))
             {
-            	mniDonorHistory.Enabled = false;
+                mniDonorHistory.Enabled = false;
                 return;
             }
             else
@@ -623,9 +654,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             PPartnerRow pr = PartnerDT[0];
                             chkDetailConfidentialGiftFlag.Checked = pr.AnonymousDonor;
-                            
+
                             // add row to dataset to access receipt frequency info for donors
-                        	FMainDS.DonorPartners.Merge(PartnerDT);
+                            FMainDS.DonorPartners.Merge(PartnerDT);
                         }
 
                         FLastDonor = APartnerKey;
@@ -642,8 +673,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         AutoPopulateGiftDetail(APartnerKey);
                         ShowReceiptFrequency(APartnerKey);
-            	
-                		mniDonorHistory.Enabled = true;
+
+                        mniDonorHistory.Enabled = true;
                     }
                 }
                 finally
@@ -1201,7 +1232,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                //FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED &&
                 txtGiftTotal.NumberValueDecimal = sum;
                 txtGiftTotal.CurrencyCode = txtDetailGiftTransactionAmount.CurrencyCode;
                 txtGiftTotal.ReadOnly = true;
@@ -1750,7 +1780,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGift.Rows.Add(giftRow);
 
                     CurrentGiftRow = giftRow;
-            	
+
                     mniDonorHistory.Enabled = false;
                 }
                 else
@@ -1817,7 +1847,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //  to the pnlDetails to ensure FInEditMode is correct.
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 UpdateRecipientKeyText(0);
-            		
+                cmbKeyMinistries.Clear();
                 mniRecipientHistory.Enabled = false;
             }
         }
@@ -1876,6 +1906,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
             if (!txtDetailRecipientKeyMinistry.Visible)
+            {
+                SetTextBoxOverlayOnKeyMinistryCombo(true);
+            }
+            else if (!FTransactionsLoaded)
             {
                 SetTextBoxOverlayOnKeyMinistryCombo();
             }
@@ -1936,7 +1970,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     txtField.Text = ARow.RecipientField.ToString();
                 }
-                
+
                 ShowReceiptFrequency(Convert.ToInt64(txtDetailDonorKey.Text));
 
                 UpdateControlsProtection(ARow);
@@ -1947,40 +1981,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 this.Cursor = Cursors.Default;
             }
         }
-        
+
         // dispalays information about the donor's receipt frequency options
         private void ShowReceiptFrequency(long APartnerKey)
         {
-        	txtGiftReceipting.Text = "";
+            txtGiftReceipting.Text = "";
 
-        	if (APartnerKey == 0)
-        	{
-        		return;
-        	}
-        	
-        	// find PPartnerRow from dataset
-        	PPartnerRow DonorRow = (PPartnerRow) FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
-        	
-        	// if PPartnerRow cannot be found load it from db
-        	if (DonorRow == null)
-        	{
-    			DonorRow = (PPartnerRow) TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey).Rows[0];
-        	}
-        	
-        	if (DonorRow.ReceiptEachGift)
-        	{
-        		txtGiftReceipting.Text = "*" + Catalog.GetString("Receipt Each Gift") + "*";
-        	}
-        	
-        	if (!string.IsNullOrEmpty(DonorRow.ReceiptLetterFrequency))
-        	{
-        		if (DonorRow.ReceiptEachGift)
-        		{
-        			txtGiftReceipting.Text += "; ";
-        		}
-        		
-        		txtGiftReceipting.Text += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
-        	}
+            if (APartnerKey == 0)
+            {
+                return;
+            }
+
+            // find PPartnerRow from dataset
+            PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
+
+            // if PPartnerRow cannot be found load it from db
+            if (DonorRow == null)
+            {
+                DonorRow = (PPartnerRow)TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey).Rows[0];
+            }
+
+            if (DonorRow.ReceiptEachGift)
+            {
+                txtGiftReceipting.Text = "*" + Catalog.GetString("Receipt Each Gift") + "*";
+            }
+
+            if (!string.IsNullOrEmpty(DonorRow.ReceiptLetterFrequency))
+            {
+                if (DonorRow.ReceiptEachGift)
+                {
+                    txtGiftReceipting.Text += "; ";
+                }
+
+                txtGiftReceipting.Text += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
+            }
         }
 
         private void ShowDetailsForGift(AGiftRow ACurrentGiftRow)
@@ -2382,7 +2416,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     revertForm.GiftMainDS = FMainDS;
                 }
 
-//                revertForm.GiftBatchRow = giftBatch;   // TODO Decide whether to remove altogether
+                //revertForm.GiftBatchRow = giftBatch;   // TODO Decide whether to remove altogether
 
                 revertForm.GiftDetailRow = FPreviouslySelectedDetailRow;
 
@@ -2524,8 +2558,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             IntlToBaseCurrencyExchRate = ((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(CurrentBatchRow,
                 out IsTransactionInIntlCurrency);
 
-            if (!EnsureGiftDataPresent(LedgerNumber, CurrentBatchNumber)
-                || (IntlToBaseCurrencyExchRate == 0))
+            if (!EnsureGiftDataPresent(LedgerNumber, CurrentBatchNumber))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;
@@ -2539,7 +2572,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!IsTransactionInIntlCurrency)
                 {
-                    FPreviouslySelectedDetailRow.GiftAmountIntl = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftAmount,
+                    FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
+                        FPreviouslySelectedDetailRow.GiftAmount,
                         IntlToBaseCurrencyExchRate);
                 }
                 else
@@ -2557,7 +2591,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (!IsTransactionInIntlCurrency)
                     {
-                        FPreviouslySelectedDetailRow.GiftAmountIntl = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftAmount,
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
+                            FPreviouslySelectedDetailRow.GiftAmount,
                             IntlToBaseCurrencyExchRate);
                     }
                     else
@@ -2600,7 +2635,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!ATransactionInIntlCurrency)
                 {
-                    gdr.GiftAmountIntl = GLRoutines.Divide(gdr.GiftAmount, AIntlToBaseCurrencyExchRate);
+                    gdr.GiftAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(gdr.GiftAmount, AIntlToBaseCurrencyExchRate);
                 }
                 else
                 {

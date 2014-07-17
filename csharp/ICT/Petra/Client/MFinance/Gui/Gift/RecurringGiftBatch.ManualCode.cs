@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
 
                 case (int)eGiftTabs.Transactions:
-                    ucoRecurringTransactions.ReconcileKeyMinistryControls();
+                    ucoRecurringTransactions.ReconcileKeyMinistryFromCombo();
                     ucoRecurringTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
