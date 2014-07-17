@@ -86,12 +86,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void CheckBeforeSaving()
         {
-            ReconcileKeyMinistryControls();
+            ReconcileKeyMinistryFromCombo();
         }
 
         private void PreProcessCommandKey()
         {
-            ReconcileKeyMinistryControls();
+            ReconcileKeyMinistryFromCombo();
         }
 
         private void RunOnceOnParentActivationManual()
@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void SetTextBoxOverlayOnKeyMinistryCombo()
+        private void SetTextBoxOverlayOnKeyMinistryCombo(bool AReadComboValue = false)
         {
             ResetMotivationDetailCodeFilter();
 
@@ -178,9 +178,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailRecipientKeyMinistry.BringToFront();
             txtDetailRecipientKeyMinistry.Parent.Refresh();
 
-            if (FPreviouslySelectedDetailRow != null)
+            if (AReadComboValue)
             {
-                txtDetailRecipientKeyMinistry.Text = FPreviouslySelectedDetailRow.RecipientKeyMinistry;
+                ReconcileKeyMinistryFromCombo();
+            }
+            else
+            {
+                ReconcileKeyMinistryFromTextbox();
             }
         }
 
@@ -192,6 +196,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 PopulateKeyMinistry();
 
+                ReconcileKeyMinistryFromTextbox();
+
                 //hide the overlay box during editing
                 txtDetailRecipientKeyMinistry.Visible = false;
             }
@@ -201,15 +207,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Deal with case when user clicks on a control
         /// that does not result in a lost focus, e.g. menu
         /// </summary>
-        public void ReconcileKeyMinistryControls()
+        public void ReconcileKeyMinistryFromCombo()
         {
             string KeyMinistry = string.Empty;
+            bool EmptyRow = (FPreviouslySelectedDetailRow == null);
 
-            //Add code here to run before the batch is saved
-            if (FInEditMode && (FPreviouslySelectedDetailRow != null))
+            if (FInEditMode)
             {
-                KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+                if (!EmptyRow && cmbKeyMinistries.SelectedIndex > -1)
+                {
+                    KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+                }
+
                 txtDetailRecipientKeyMinistry.Text = KeyMinistry;
+            }
+        }
+
+        /// <summary>
+        /// Keep the combo and textboxes together
+        /// </summary>
+        public void ReconcileKeyMinistryFromTextbox()
+        {
+            string KeyMinistry = string.Empty;
+            bool EmptyRow = (FPreviouslySelectedDetailRow == null);
+
+            if (FInEditMode)
+            {
+                if (!EmptyRow && txtDetailRecipientKeyMinistry.Text.Length > 0)
+                {
+                    KeyMinistry = txtDetailRecipientKeyMinistry.Text;
+                    cmbKeyMinistries.SetSelectedString(KeyMinistry);
+                }
+                else
+                {
+                    cmbKeyMinistries.SelectedIndex = -1;
+                }
             }
         }
 
@@ -303,9 +335,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FSuppressListChanged = false;
             grdDetails.ResumeLayout();
 
-            FTransactionsLoaded = true;
             UpdateTotals();
 
+            FTransactionsLoaded = true;
             return true;
         }
 
@@ -503,6 +535,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 FInRecipientKeyChanging = false;
+                ReconcileKeyMinistryFromCombo();
                 FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
@@ -1711,6 +1744,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //  to the pnlDetails to ensure FInEditMode is correct.
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 UpdateRecipientKeyText(0);
+                cmbKeyMinistries.Clear();
             }
         }
 
@@ -1767,6 +1801,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ShowDetailsManual(GiftBatchTDSARecurringGiftDetailRow ARow)
         {
             if (!txtDetailRecipientKeyMinistry.Visible)
+            {
+                SetTextBoxOverlayOnKeyMinistryCombo(true);
+            }
+            else if (!FTransactionsLoaded)
             {
                 SetTextBoxOverlayOnKeyMinistryCombo();
             }

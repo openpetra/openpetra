@@ -1818,6 +1818,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //  to the pnlDetails to ensure FInEditMode is correct.
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 UpdateRecipientKeyText(0);
+                cmbKeyMinistries.Clear();
             }
         }
 
