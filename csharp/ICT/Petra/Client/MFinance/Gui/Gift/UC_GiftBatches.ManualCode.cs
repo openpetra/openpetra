@@ -1085,8 +1085,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // This needs a better fix after we send out a new release today!!!
                 //if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
                 //{
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
-                            FSelectedPeriod));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
+                        FSelectedPeriod));
                 //}
 
                 FStatusFilter = String.Format("{0} = '{1}'",
@@ -1100,9 +1100,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
                 //{
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting,
-                            FSelectedYear,
-                            FSelectedPeriod));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting,
+                        FSelectedYear,
+                        FSelectedPeriod));
                 //}
 
                 FStatusFilter = String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
@@ -1117,8 +1117,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_POSTED))
                 //{
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
-                            FSelectedPeriod));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
+                        FSelectedPeriod));
                 //}
 
                 FStatusFilter = "1 = 1";
