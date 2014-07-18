@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -91,6 +91,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         /// <summary>
         /// Loads all available AnalTypeCodes into the Combo, ensuring that the current value is allowed!
+        /// 
+        /// Any types for which there are currently no values are already excluded.
         /// </summary>
         private void LoadCmbAnalType(String AalwaysAllow)
         {

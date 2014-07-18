@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,9 +88,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.AnalysisTypeCode = newName;
         }
 
-        private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
+        private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitTDS, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitChanges, out AVerificationResult);
+            //
+            // I'll warn the user if they have created analysis Types with no values:
+
+            String EmptyTypesWarning = "";
+            foreach (AAnalysisTypeRow TypeRow in ASubmitTDS.AAnalysisType.Rows)
+            {
+                if (TypeRow.RowState == DataRowState.Deleted)
+                    continue;
+
+                Boolean NoValuesProvided = true;
+                if (ASubmitTDS.AFreeformAnalysis != null)
+                {
+                    ASubmitTDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("a_analysis_type_code_c='{0}'", TypeRow["a_analysis_type_code_c"]);
+                    NoValuesProvided = ASubmitTDS.AFreeformAnalysis.DefaultView.Count == 0;
+                }
+
+                if (NoValuesProvided)
+                {
+                    if (EmptyTypesWarning != "")
+                    {
+                        EmptyTypesWarning += "\r\n";
+                    }
+                    EmptyTypesWarning += String.Format(Catalog.GetString("Type {0} has no values, and therefore it cannot yet be applied to any account."), TypeRow["a_analysis_type_code_c"]);
+                }
+            }
+            if (EmptyTypesWarning != "")
+            {
+                MessageBox.Show(EmptyTypesWarning, Catalog.GetString("Empty Analysis Types"),MessageBoxButtons.OK,MessageBoxIcon.Information);
+            }
+
+            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitTDS, out AVerificationResult);
         }
 
         /// <summary>

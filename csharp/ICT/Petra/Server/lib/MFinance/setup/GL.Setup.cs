@@ -689,6 +689,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
+            // Don't include any AnalysisType for which there are no values set
+            MainDS.AFreeformAnalysis.DefaultView.Sort = "a_analysis_type_code_c";
+            foreach (AAnalysisTypeRow TypeRow in MainDS.AAnalysisType.Rows)
+            {
+                Int32 Idx = MainDS.AFreeformAnalysis.DefaultView.Find(TypeRow.AnalysisTypeCode);
+                if (Idx < 0)
+                {
+                    TypeRow.Delete();
+                }
+            }
+
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
 
@@ -1427,7 +1438,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
                 GLSetupTDSAccess.SubmitChanges(AInspectDS);
-                AInspectDS.AAnalysisAttribute.AcceptChanges(); // This may prevent a constraints exception when the dataset is returned and merged.
+                if (AInspectDS.AAnalysisAttribute != null)
+                {
+                    AInspectDS.AAnalysisAttribute.AcceptChanges(); // This may prevent a constraints exception when the dataset is returned and merged.
+                }
                 ReturnValue = TSubmitChangesResult.scrOK;
             }
 

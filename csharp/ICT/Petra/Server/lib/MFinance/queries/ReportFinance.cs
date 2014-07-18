@@ -212,7 +212,7 @@ namespace Ict.Petra.Server.MFinance.queries
                          + " AND motive.a_ledger_number_i = " + LedgerNum +
                          " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
                          " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
-                         " AND motive.a_receipt_l = true");
+                         " AND motive.a_receipt_l=true");
             Boolean newTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
             DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
                 if (mnth == 12)
                 {
-                    nextMonthStart = String.Format("#{0:0000}-12-31#", Year);
+                    nextMonthStart = String.Format("#{0:0000}-01-01#", Year+1);
                 }
 
                 tempTbl.DefaultView.RowFilter = "Date >= " + monthStart + " AND Date < " + nextMonthStart;
@@ -311,7 +311,7 @@ namespace Ict.Petra.Server.MFinance.queries
                          + " AND motive.a_ledger_number_i = " + LedgerNum +
                          " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
                          " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
-                         " AND motive.a_receipt_l = true");
+                         " AND motive.a_receipt_l=true");
             Boolean newTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
             DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);

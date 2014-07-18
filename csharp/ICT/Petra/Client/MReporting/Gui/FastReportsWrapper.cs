@@ -152,6 +152,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             SetTemplate(TemplateTable[0]);
+            FInitState = TInitState.LoadedOK;
             return true;
         }
 

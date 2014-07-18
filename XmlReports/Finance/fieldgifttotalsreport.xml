@@ -95,33 +95,22 @@
 					<queryDetail>
 						<value>
 						FROM
-							 PUB_a_gift as gift, 
-							 PUB_a_gift_detail as detail,
-							 PUB_a_gift_batch
+							PUB_a_gift as gift, 
+							PUB_a_gift_detail as detail,
+							PUB_a_gift_batch,
+                            PUB_a_motivation_detail as motivation
 						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
+							detail.a_ledger_number_i = {param_ledger_number_i}
+							AND motivation.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+							AND detail.a_motivation_group_code_c = 'GIFT'
+							AND detail.a_motivation_detail_code_c = motivation.a_motivation_detail_code_c
 							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
-							AND detail.a_motivation_group_code_c = 'GIFT'
-							AND detail.a_motivation_detail_code_c = 'SUPPORT'
+							AND motivation.a_motivation_group_code_c = 'GIFT'
+                            AND motivation.a_report_column_c = 'Worker'
 							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_ledger_number_i}, 2)">
-						<value>
-							AND ( detail.a_motivation_detail_code_c = 'SUPPORT'
-								OR detail.a_motivation_detail_code_c = 'USA SUPP'
-								OR detail.a_motivation_detail_code_c = 'SHRTTERM'
-								OR detail.a_motivation_detail_code_c = 'UNKFLD' )
-						</value>
-					</queryDetail>
-					<queryDetail condition="not(eq({param_ledger_number_i}, 2))">
-						<value>
-							AND detail.a_motivation_group_code_c = 'GIFT'
-							AND ( detail.a_motivation_detail_code_c = 'SUPPORT'
-								OR detail.a_motivation_detail_code_c = 'PERSONAL' )
 						</value>
 					</queryDetail>
 					<queryDetail condition="lt({{Month0}}, 9)">
@@ -157,7 +146,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="SelectMonthField" returns="MonthField, CountField" returnsFormat="row">
 				<query>
 					<queryDetail condition="eq({param_currency}, Base)">
@@ -170,30 +159,35 @@
 						<value>
 							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthField,
 							COUNT (detail.a_gift_amount_n) AS CountField
-						 </value>
+						</value>
 					</queryDetail>
 					<queryDetail>
 						<value>
 						FROM
-							 PUB_a_gift as gift, 
-							 PUB_a_gift_detail as detail,
-							 PUB_a_gift_batch
+							PUB_a_gift as gift, 
+							PUB_a_gift_detail as detail,
+							PUB_a_gift_batch,
+                            PUB_a_motivation_detail as motivation
 						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
+							detail.a_ledger_number_i = {param_ledger_number_i}
+							AND motivation.a_ledger_number_i = {param_ledger_number_i}
+							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
 							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
-							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
+							AND detail.a_motivation_detail_code_c = motivation.a_motivation_detail_code_c
 							AND detail.a_motivation_group_code_c = 'GIFT'
-							AND detail.a_motivation_detail_code_c = 'FIELD'
+							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
+							AND motivation.a_motivation_group_code_c = 'GIFT'
+                            AND motivation.a_report_column_c = 'Field'
+                            AND motivation.a_receipt_l=true
 							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
-						 </value>
+						</value>
 					</queryDetail>
 					<queryDetail condition="lt({{Month0}}, 9)">
 						<value>
 							AND gift.a_date_entered_d &gt;= #{{Year0}}-0{{Month0}}-01# 
 							AND gift.a_date_entered_d &lt; #{{Year0}}-0{{Month1}}-01#
-						 </value>
+						</value>
 					</queryDetail>
 					<queryDetail condition="eq({{Month0}}, 9)">
 						<value>
@@ -205,13 +199,13 @@
 						<value>
 							AND gift.a_date_entered_d &gt;= #{{Year0}}-{{Month0}}-01# 
 							AND gift.a_date_entered_d &lt; #{{Year0}}-{{Month1}}-01#
-						 </value>
+						</value>
 					</queryDetail>
 					<queryDetail condition="eq({{Month0}}, 12)">
 						<value>
 							AND gift.a_date_entered_d &gt;= #{{Year0}}-{{Month0}}-01# 
 							AND gift.a_date_entered_d &lt;= #{{Year0}}-{{Month0}}-31#
-						 </value>
+						</value>
 					</queryDetail>
 					<queryDetail>
 						<value>
@@ -255,14 +249,14 @@
 				<caption><value text="Field"/></caption>
 				<query>
 					<queryDetail><value variable="FieldKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Field Name" returnsFormat="text" returns="text">
 				<caption><value text="Field Name"/></caption>
 				<query>
 					<queryDetail><value variable="FieldName"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			
@@ -270,7 +264,7 @@
 				<caption><value text="Month"/></caption>
 				<query>
 					<queryDetail><value variable="Month"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="AmountWorker" returnsFormat="currency" returns="amount">
