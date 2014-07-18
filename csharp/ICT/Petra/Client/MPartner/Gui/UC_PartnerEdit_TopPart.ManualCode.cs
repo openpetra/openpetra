@@ -161,7 +161,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     this.cmbPersonGender.SelectedValueChanged += new System.EventHandler(this.CmbPersonGender_SelectedValueChanged);
 
                     txtPartnerClass.BackColor = TCommonControlsHelper.PartnerClassPERSONColour;
-                    
+
                     break;
 
                 case TPartnerClass.FAMILY:

@@ -199,7 +199,7 @@ OpenPetra:
                         GiftDetailFind: {Description:Search for gifts across all batches, ActionOpenScreen=TGiftDetailFindScreen}
                     GiftReceipting:
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=TFrmGiftReceiptPrinting}
-                        DonorOrRecipientHistory: {ActionOpenScreen=TFrmDonorRecipientHistory}
+                        DonorRecipientHistory: {Label=Donor / Recipient History, Description:Gift history for a Donor and/or Recipient, ActionOpenScreen=TFrmDonorRecipientHistory}
                         #PrintSingleReceipt:
                         ReceiptControl:{ActionOpenScreen=TFrmReceiptControl}
                     FormLetters:

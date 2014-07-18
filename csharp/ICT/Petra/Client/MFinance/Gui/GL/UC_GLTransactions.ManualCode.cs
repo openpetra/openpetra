@@ -204,6 +204,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 SetTransAnalAttributeDefaultView();
                 FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
                 grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
+                grdAnalAttributes.SetHeaderTooltip(0, "Type");
+                grdAnalAttributes.SetHeaderTooltip(1, "Value");
 
                 // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
                 bool ActiveOnly = (this.Enabled && FIsUnposted);
@@ -827,8 +829,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Get the corporate exchange rate
             IntlRateToBaseCurrency = ((TFrmGLBatch) this.ParentForm).GetInternationalCurrencyExchangeRate();
 
-            if (!EnsureGLDataPresent(LedgerNumber, CurrentBatchNumber, CurrentJournalNumber, ref JournalsToUpdateDV, TransactionRowActive)
-                || (IntlRateToBaseCurrency == 0))
+            if (!EnsureGLDataPresent(LedgerNumber, CurrentBatchNumber, CurrentJournalNumber, ref JournalsToUpdateDV, TransactionRowActive))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;
@@ -900,7 +901,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
                         else
                         {
-                            tr.AmountInIntlCurrency = GLRoutines.Divide(tr.AmountInBaseCurrency, IntlRateToBaseCurrency);
+                            tr.AmountInIntlCurrency = (IntlRateToBaseCurrency == 0) ? 0 : GLRoutines.Divide(tr.AmountInBaseCurrency,
+                                IntlRateToBaseCurrency);
                         }
                     }
 

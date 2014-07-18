@@ -311,6 +311,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Size it
             grdSuppliers.AutoResizeGrid();
 
+            grdSuppliers.SetHeaderTooltip(0, Catalog.GetString("Supplier Key"));
+            grdSuppliers.SetHeaderTooltip(1, Catalog.GetString("Supplier Name"));
+            grdSuppliers.SetHeaderTooltip(2, Catalog.GetString("Currency"));
+            grdSuppliers.SetHeaderTooltip(3, Catalog.GetString("Status"));
+
             UpdateRecordNumberDisplay();
             FMainForm.ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSuppliers.TotalPages > 0));
         }
@@ -348,10 +353,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdSuppliers.Columns.Clear();
-            grdSuppliers.AddTextColumn("Supplier Key", FSupplierTable.Columns[0]);
-            grdSuppliers.AddTextColumn("Supplier Name", FSupplierTable.Columns[1]);
-            grdSuppliers.AddTextColumn("Currency", FSupplierTable.Columns[2]);
-            grdSuppliers.AddTextColumn("Status", FSupplierTable.Columns[3]);
+            grdSuppliers.AddTextColumn(Catalog.GetString("Supplier Key"), FSupplierTable.Columns[0]);
+            grdSuppliers.AddTextColumn(Catalog.GetString("Supplier Name"), FSupplierTable.Columns[1]);
+            grdSuppliers.AddTextColumn(Catalog.GetString("Currency"), FSupplierTable.Columns[2]);
+            grdSuppliers.AddTextColumn(Catalog.GetString("Status"), FSupplierTable.Columns[3]);
         }
 
         private void SetSupplierFilters(object sender, EventArgs e)

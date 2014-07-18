@@ -1031,6 +1031,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("GRIDMULTISELECTION", "");
+            FTemplate.AddToCodelet("GRIDHEADERTOOLTIP", "");
             FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("RUNONCEONPARENTACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", "");
