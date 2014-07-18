@@ -1071,15 +1071,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
+            this.ParentForm.Cursor = Cursors.WaitCursor;
+
             if (FrbtEditing.Checked)
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_EDITING;
 
-                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
-                {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
-                            FSelectedPeriod));
-                }
+                // Note from Alan to Chris...
+                // Its me that has commented out these three 'if' statements
+                // The logic in the test to see if we already have this information is wrong - so as a result
+                //  we load the initial screen for current and forwarding periods for the current year - but then fail to load
+                //  any further data for other years/periods  (see Mantis case 3203)
+                // This needs a better fix after we send out a new release today!!!
+                //if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
+                //{
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
+                        FSelectedPeriod));
+                //}
 
                 FStatusFilter = String.Format("{0} = '{1}'",
                     AGiftBatchTable.GetBatchStatusDBName(),
@@ -1090,12 +1098,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_POSTING;
 
-                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
-                {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting,
-                            FSelectedYear,
-                            FSelectedPeriod));
-                }
+                //if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
+                //{
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting,
+                        FSelectedYear,
+                        FSelectedPeriod));
+                //}
 
                 FStatusFilter = String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
                     AGiftBatchTable.GetBatchStatusDBName(),
@@ -1107,11 +1115,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FCurrentBatchViewOption = MFinanceConstants.GIFT_BATCH_VIEW_ALL;
 
-                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_POSTED))
-                {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
-                            FSelectedPeriod));
-                }
+                //if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_POSTED))
+                //{
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
+                        FSelectedPeriod));
+                //}
 
                 FStatusFilter = "1 = 1";
                 btnNew.Enabled = true;
@@ -1121,6 +1129,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateChangeableStatus();
             UpdateRecordNumberDisplay();
+
+            this.ParentForm.Cursor = Cursors.Default;
         }
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)

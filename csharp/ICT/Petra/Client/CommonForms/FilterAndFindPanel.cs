@@ -476,23 +476,20 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         private void ToggleFilterPanel(System.Object sender, EventArgs e)
         {
-            ToggleFilter();
+            if (FCallerFormOrControl.DoValidation(true, true))
+            {
+                ToggleFilter();
 
-            // If we have errors we need to focus the invalid control
-            if ((FPetraUtilsObject.VerificationResultCollection != null) && (FPetraUtilsObject.VerificationResultCollection.Count > 0))
-            {
-                ((TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[0]).ResultControl.Focus();
-            }
-            else if (!FucoFilterAndFind.IsCollapsed)
-            {
-                // No errors so we can focus the first filter/find panel
-                if (FucoFilterAndFind.IsFindTabActive)
+                if (!FucoFilterAndFind.IsCollapsed)
                 {
-                    FFindPanelControls.FFindPanels[0].PanelControl.Focus();
-                }
-                else
-                {
-                    FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();
+                    if (FucoFilterAndFind.IsFindTabActive)
+                    {
+                        FFindPanelControls.FFindPanels[0].PanelControl.Focus();
+                    }
+                    else
+                    {
+                        FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();
+                    }
                 }
             }
         }
