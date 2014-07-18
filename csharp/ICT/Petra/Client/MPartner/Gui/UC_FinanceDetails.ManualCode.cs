@@ -109,11 +109,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // add event to txtBankKey that is fired when the dataset is changed in the FindBank dialog
             txtBankKey.DatasetChanged += new TDelegateDatasetChanged(this.DatasetChanged);
 
-            // change status bar texts
-            FPetraUtilsObject.SetStatusBarText(txtBankKey, Catalog.GetString("Select a Bank."));
-            FPetraUtilsObject.SetStatusBarText(cmbBankName, Catalog.GetString("Select a Bank Name."));
-            FPetraUtilsObject.SetStatusBarText(cmbBankCode, Catalog.GetString("Select a Bank Code."));
-
             // add event which will populate the bank combo boxes when 'Finance details' tab is shown for the first time
             pnlDetails.VisibleChanged += new EventHandler(pnlDetails_VisibleChanged);
         }

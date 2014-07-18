@@ -171,13 +171,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetupMotivationComboboxes()
         {
-            // no need to change combobox lists if the ledger has not been changed
-            if (!FLedgerChanged)
-            {
-                return;
-            }
+        	/* cmbMotivationGroup */
 
             TFinanceControls.InitialiseMotivationGroupList(ref cmbMotivationGroup, FLedgerNumber, false);
+            
+            // remove motivation groups that are not used in the results
+            List<int> RemoveIndexes = new List<int>();
+            
+            for (int i=0; i<cmbMotivationGroup.Table.Rows.Count; i++)
+            {
+            	bool NotFound = true;
+
+            	foreach (DataRow DetailRow in FMainDS.Tables[TEMP_TABLE_NAME].Rows)
+            	{
+            		if (cmbMotivationGroup.Table.Rows[i]["a_motivation_group_code_c"].ToString() == DetailRow["MotivationGroupCode"].ToString())
+            		{
+            			NotFound = false;
+            			break;
+            		}
+            	}
+            	
+            	if (NotFound)
+            	{
+            		RemoveIndexes.Add(i);
+            	}
+            }
+            
+            for (int i=RemoveIndexes.Count-1; i>=0; i--)
+            {
+            	cmbMotivationGroup.Table.Rows.RemoveAt(RemoveIndexes[i]);
+            }
+            
             DataRow BlankRow = cmbMotivationGroup.Table.NewRow();
             BlankRow["a_ledger_number_i"] = FLedgerNumber;
             BlankRow["a_motivation_group_code_c"] = ALL;
@@ -187,8 +211,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbMotivationGroup.ColumnWidthCol2 = 300;
             cmbMotivationGroup.Enabled = true;
             cmbMotivationGroup.cmbCombobox.SelectionLength = 0;
+   
+        	/* cmbMotivationDetail */
 
             TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivationDetail, FLedgerNumber, false);
+            
+            // remove motivation details that are not used in the results
+            RemoveIndexes.Clear();
+            
+            for (int i=0; i<cmbMotivationDetail.Table.Rows.Count; i++)
+            {
+            	bool NotFound = true;
+
+            	foreach (DataRow DetailRow in FMainDS.Tables[TEMP_TABLE_NAME].Rows)
+            	{
+            		if (cmbMotivationDetail.Table.Rows[i]["a_motivation_detail_code_c"].ToString() == DetailRow["MotivationDetailCode"].ToString())
+            		{
+            			NotFound = false;
+            			break;
+            		}
+            	}
+            	
+            	if (NotFound)
+            	{
+            		RemoveIndexes.Add(i);
+            	}
+            }
+            
+            for (int i=RemoveIndexes.Count-1; i>=0; i--)
+            {
+            	cmbMotivationDetail.Table.Rows.RemoveAt(RemoveIndexes[i]);
+            }
+            
             BlankRow = cmbMotivationDetail.Table.NewRow();
             BlankRow["a_ledger_number_i"] = FLedgerNumber;
             BlankRow["a_motivation_group_code_c"] = "";
@@ -320,8 +374,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     DataView myDataView = FMainDS.Tables[TEMP_TABLE_NAME].DefaultView;
                     myDataView.AllowNew = false;
                     grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-
-                    SelectDetailRowByDataTableIndex(0);
                 }
 
                 btnView.Enabled = grdDetails.Rows.Count > 1;
@@ -332,6 +384,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 UpdateRecordNumberDisplay();
                 SetupMotivationComboboxes();
 
+                if (FMainDS != null)
+                {
+                	// select the first row in the grid
+                	SelectDetailRowByDataTableIndex(1);
+                    this.ActiveControl = grdDetails;
+                }
+                
                 // Enabled or disable Gift Statement buttons depending on what partner keys have been provided
                 if (FDonorKey > 0)
                 {

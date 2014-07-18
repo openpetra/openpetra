@@ -125,18 +125,21 @@ RootNode:
             OnLeave: PartnerKeyChanged
             Width: 120
             Type: Bank
+            Tooltip: Select a Bank
         cmbBankName:
             List: UserDefinedList
             Label: Bank Name
             ClearIfSettingEmpty: true
             Width: 230
             OnEnter: CheckIfRowIsShared
+            Tooltip: Select a Bank Name
         cmbBankCode:
             List: UserDefinedList
             Label: Bank Code
             ClearIfSettingEmpty: true
             Width: 210
             OnEnter: CheckIfRowIsShared
+            Tooltip: Select a Bank Code
         lblBicSwiftCode:
             Label: BIC/SWIFT Code
             Width: 250
