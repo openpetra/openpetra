@@ -126,7 +126,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtSendEmail.Text = Catalog.GetString("Send Email");
             this.tbtSendEmail.ToolTipText = Catalog.GetString("Send the Report as an Email with Excel attachment");
             this.tbtGenerateChart.Text = Catalog.GetString("Generate Chart");
-            this.tbtGenerateChart.ToolTipText = Catalog.GetString("Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)");
+            this.tbtGenerateChart.ToolTipText = Catalog.GetString(
+                "Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)");
             this.Text = Catalog.GetString("Print Preview");
             #endregion
 

@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Donor Recipient History
+    FormTitle: Donor / Recipient History
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     TempTableName: DonorRecipientHistoryTempTable
@@ -11,6 +11,7 @@ RootNode:
     WindowHeight: 650
     Actions:
         actSearch: {Label=Search, ActionClick=BtnSearchClick}
+        actClear: {Label=Clear, ActionClick=BtnClearClick}
         actView: {Label=View, ActionClick=ViewTransaction}
         actRecipientGiftStatement: {ActionClick=RecipientGiftStatement}
         actDonorGiftStatement: {ActionClick=DonorGiftStatement}
@@ -28,7 +29,7 @@ RootNode:
                 Row0: [cmbLedger]
                 Row1: [txtDonor, dtpDateFrom]
                 Row2: [txtRecipient, dtpDateTo]
-                Row3: [btnSearch]
+                Row3: [btnSearch, Empty, btnClear]
         pnlFilter:
             Controls: 
                 Row0: [cmbMotivationGroup, cmbMotivationDetail]
@@ -64,6 +65,9 @@ RootNode:
 
         btnSearch:
             Action: actSearch
+        btnClear:
+            Action: actClear
+            Align: right
         btnView:
             Action: actView
             Width: 80
@@ -86,3 +90,5 @@ RootNode:
                 Action: actRecipientGiftStatement
                 Enabled: false
             mniSeparator: {Label=-}
+
+    Empty:

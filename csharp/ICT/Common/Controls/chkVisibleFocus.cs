@@ -42,7 +42,7 @@ namespace Ict.Common.Controls
         private void InitializeComponent()
         {
             this.FlatStyle = FlatStyle.Standard;
-            
+
             this.GotFocus += TchkClearFocus_GotFocus;
             this.LostFocus += TchkClearFocus_LostFocus;
         }
@@ -53,7 +53,7 @@ namespace Ict.Common.Controls
         }
 
         private void TchkClearFocus_LostFocus(object sender, System.EventArgs e)
-        {            
+        {
             this.FlatStyle = FlatStyle.Standard;
         }
     }

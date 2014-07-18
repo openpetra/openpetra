@@ -30,7 +30,7 @@ RootNode:
                 Row2: [txtCity, txtCountry, btnClear]
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Bottom
             ControlsOrientation: horizontal

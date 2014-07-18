@@ -829,8 +829,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Get the corporate exchange rate
             IntlRateToBaseCurrency = ((TFrmGLBatch) this.ParentForm).GetInternationalCurrencyExchangeRate();
 
-            if (!EnsureGLDataPresent(LedgerNumber, CurrentBatchNumber, CurrentJournalNumber, ref JournalsToUpdateDV, TransactionRowActive)
-                || (IntlRateToBaseCurrency == 0))
+            if (!EnsureGLDataPresent(LedgerNumber, CurrentBatchNumber, CurrentJournalNumber, ref JournalsToUpdateDV, TransactionRowActive))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;
@@ -902,7 +901,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         }
                         else
                         {
-                            tr.AmountInIntlCurrency = GLRoutines.Divide(tr.AmountInBaseCurrency, IntlRateToBaseCurrency);
+                            tr.AmountInIntlCurrency = (IntlRateToBaseCurrency == 0) ? 0 : GLRoutines.Divide(tr.AmountInBaseCurrency,
+                                IntlRateToBaseCurrency);
                         }
                     }
 
