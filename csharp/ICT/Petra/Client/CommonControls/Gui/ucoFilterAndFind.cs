@@ -1790,11 +1790,17 @@ namespace Ict.Petra.Client.CommonControls
                 {
                     ControlAsComboBox.TextChanged += delegate(object sender, EventArgs e)
                     {
-                        OnArgumentCtrlValueChanged(sender, e);
+                        if (!FIgnoreValueChangedEvent)
+                        {
+                            OnArgumentCtrlValueChanged(sender, e);
+                        }
                     };
                     ControlAsComboBox.SelectedValueChanged += delegate(object sender, EventArgs e)
                     {
-                        OnArgumentCtrlValueChanged(sender, e);
+                        if (!FIgnoreValueChangedEvent)
+                        {
+                            OnArgumentCtrlValueChanged(sender, e);
+                        }
                     };
                 }
 
