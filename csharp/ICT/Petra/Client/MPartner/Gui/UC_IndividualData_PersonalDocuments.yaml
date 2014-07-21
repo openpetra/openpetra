@@ -79,6 +79,7 @@ RootNode:
             Validation: Pair(dtpDateOfStart)
             
         txtContact:
+            DataField: PmDocument.ContactPartnerKey
             Type: PartnerKey
             ColSpan: 2
         
