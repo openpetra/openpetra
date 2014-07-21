@@ -229,7 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 DataRow Row = rv.Row;
                 String AccountCode = Row["a_reporting_account_code_c"].ToString();
-                String Path = AccountCode;
+                String Path = Row["a_report_order_i"] + "-" + AccountCode + '~';
                 Int32 Level = 0;
                 String ReportsTo = Row["a_account_code_to_report_to_c"].ToString();
 
@@ -241,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         DataRow ParentRow = PathView[ParentIdx].Row;
                         ReportsTo = ParentRow["a_account_code_to_report_to_c"].ToString();
-                        Path = ParentRow["a_reporting_account_code_c"].ToString() + "~" + Path;
+                        Path = ParentRow["a_report_order_i"] + "-" + ParentRow["a_reporting_account_code_c"].ToString() + "~" + Path;
                         Level++;
                     }
                     else

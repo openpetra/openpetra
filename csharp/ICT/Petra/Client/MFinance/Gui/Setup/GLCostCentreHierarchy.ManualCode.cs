@@ -196,7 +196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             foreach (DataRowView rv in PathView)
             {
                 DataRow Row = rv.Row;
-                String Path = Row["a_cost_centre_code_c"].ToString();
+                String Path = Row["a_cost_centre_code_c"].ToString() + '~';
                 Int32 Level = 0;
                 String ReportsTo = Row["a_cost_centre_to_report_to_c"].ToString();
 
