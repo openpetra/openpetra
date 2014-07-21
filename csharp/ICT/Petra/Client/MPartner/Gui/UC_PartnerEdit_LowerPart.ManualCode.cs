@@ -357,18 +357,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
         public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
         {
-            bool ReturnValue = false;
+            bool ReturnValue = true;
 
             ReturnValue = ucoPartnerTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
 
-            if (ReturnValue)
+            if (!ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors))
             {
-                ReturnValue = ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
-            }
-
-            if (ReturnValue)
-            {
-                // TODO Other TabSets (Finance Data)
+                ReturnValue = false;
             }
 
             return ReturnValue;
