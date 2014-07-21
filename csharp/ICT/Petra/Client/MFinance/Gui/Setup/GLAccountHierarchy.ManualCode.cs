@@ -994,7 +994,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void TFrmGLAccountHierarchy_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = CheckAccountCodeValueChanged();
+            e.Cancel |= CheckAccountCodeValueChanged();
         }
     } // TFrmGLAccountHierarchy
 }

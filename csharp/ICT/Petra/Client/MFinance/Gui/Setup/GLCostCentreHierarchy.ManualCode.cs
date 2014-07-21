@@ -285,8 +285,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.UnhookControl(pnlDetails, true); // I don't want changes in these values to cause SetChangedFlag - I'll set it myself.
             FPetraUtilsObject.UnhookControl(txtStatus, false); // This control is not to be spied on!
 
-            txtDetailCostCentreCode.Leave += new EventHandler(UpdateOnControlChanged);
-            txtDetailCostCentreName.Leave += new EventHandler(UpdateOnControlChanged);
+            txtDetailCostCentreName.TextChanged += new EventHandler(UpdateOnControlChanged);
             chkDetailCostCentreActiveFlag.CheckedChanged += new EventHandler(UpdateOnControlChanged);
             cmbDetailCostCentreType.SelectedIndexChanged += new EventHandler(UpdateOnControlChanged);
             txtDetailCostCentreCode.Validated -= ControlValidatedHandler; // Don't trigger validation on change - I need to do it manually
@@ -849,7 +848,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void TFrmGLCostCentreHierarchy_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = CheckCostCentreValueChanged();
+            e.Cancel |= CheckCostCentreValueChanged();
         }
     } // TFrmGLCostCentreHierarchy
 } // namespace
