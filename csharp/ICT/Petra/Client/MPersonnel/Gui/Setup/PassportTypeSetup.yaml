@@ -38,6 +38,7 @@ RootNode:
             Columns: [DetailCode, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
                 DetailCode: {Label=Passport Type}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             SortOrder: DetailCode ASC
             ActionFocusRow: FocusedRowChanged

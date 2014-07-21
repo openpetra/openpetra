@@ -38,6 +38,7 @@ RootNode:
             Columns: [DetailLevel, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
                 DetailLevel: {Label="Skill Level", Type=Integer}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             SortOrder: DetailLevel ASC
             ActionFocusRow: FocusedRowChanged

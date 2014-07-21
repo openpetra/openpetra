@@ -36,7 +36,8 @@
             BackColor: System.Drawing.SystemColors.Control
             Columns: [DonorKey, DonorShortName, RecipientDescription]
             CustomColumns:
-                DonorShortName: {Label=DonorShortName, Type=String}
+                DonorKey: {Label=Donor Partner Key, Type=PartnerKey}
+                DonorShortName: {Label=Donor Name, Type=String}
                 RecipientDescription: {Label=Recipient, Type=String}
             ActionFocusRow: FocusedRowChanged
         preLetters:

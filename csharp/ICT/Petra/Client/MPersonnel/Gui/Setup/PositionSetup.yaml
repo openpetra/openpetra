@@ -38,6 +38,7 @@ RootNode:
             Columns: [DetailPositionName, DetailPositionDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
                 DetailCode: {Label=Relationship Category Code}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             SortOrder: DetailPositionName ASC
             ActionFocusRow: FocusedRowChanged
