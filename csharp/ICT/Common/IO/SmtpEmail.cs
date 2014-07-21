@@ -55,11 +55,12 @@ namespace Ict.Common.IO
         /// After SendMessage, this array should be empty.
         /// If it is not empty, the contents must be shown to the user.
         /// </summary>
-        public List<TsmtpFailedRecipient> FailedRecipients;
+        public List <TsmtpFailedRecipient>FailedRecipients;
 
-        private void Initialise (string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
+        private void Initialise(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
         {
             FSmtpClient = new SmtpClient();
+
             if (AOutputEMLToDirectory.Length > 0)
             {
                 FSmtpClient.PickupDirectoryLocation = AOutputEMLToDirectory;
@@ -74,7 +75,8 @@ namespace Ict.Common.IO
                 FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
                 FSmtpClient.EnableSsl = AEnableSsl;
             }
-            FailedRecipients = new List<TsmtpFailedRecipient>();
+
+            FailedRecipients = new List <TsmtpFailedRecipient>();
         }
 
         /// <summary>
@@ -83,7 +85,7 @@ namespace Ict.Common.IO
         public TSmtpSender(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
         {
             //Set up SMTP client
-            Initialise (ASMTPHost, ASMTPPort, AEnableSsl, AUsername, APassword, AOutputEMLToDirectory);
+            Initialise(ASMTPHost, ASMTPPort, AEnableSsl, AUsername, APassword, AOutputEMLToDirectory);
         }
 
         /// <summary>
@@ -93,15 +95,16 @@ namespace Ict.Common.IO
         {
             //Set up SMTP client
             String EmailDirectory = "";
+
             if (TAppSettingsManager.HasValue("OutputEMLToDirectory"))
             {
                 EmailDirectory = TAppSettingsManager.GetValue("OutputEMLToDirectory");
             }
 
             Initialise(
-                TAppSettingsManager.GetValue("SmtpHost"), 
-                TAppSettingsManager.GetInt16("SmtpPort", 25), 
-                TAppSettingsManager.GetBoolean("SmtpEnableSsl", false), 
+                TAppSettingsManager.GetValue("SmtpHost"),
+                TAppSettingsManager.GetInt16("SmtpPort", 25),
+                TAppSettingsManager.GetBoolean("SmtpEnableSsl", false),
                 TAppSettingsManager.GetValue("SmtpUser", ""),
                 TAppSettingsManager.GetValue("SmtpPassword", ""),
                 EmailDirectory);
@@ -162,6 +165,7 @@ namespace Ict.Common.IO
                     email.Sender = new MailAddress(fromemail, fromDisplayName);
                     email.From = new MailAddress(fromemail, fromDisplayName);
                     email.To.Add(receipients);
+
                     if (CcEverythingTo != "")
                     {
                         email.CC.Add(new MailAddress(CcEverythingTo));
@@ -289,13 +293,12 @@ namespace Ict.Common.IO
                 AEmail.Headers.Add("Date-Sent", DateTime.Now.ToString());
                 return true;
             }
-
             catch (SmtpFailedRecipientsException frEx)  // If the SMTP server knows that the send failed because of failed recipients,
-                                                        // I can produce a list of failed recipient addresses, and return false. 
+            {                                           // I can produce a list of failed recipient addresses, and return false.
                                                         // The caller can then retrieve the list and inform the user.
-            {
                 TLogging.Log("SmtpEmail: Email to the following addresses did not succeed:");
                 SmtpFailedRecipientException[] failureList = frEx.InnerExceptions;
+
                 foreach (SmtpFailedRecipientException problem in failureList)
                 {
                     TsmtpFailedRecipient FailureDetails = new TsmtpFailedRecipient();
@@ -304,6 +307,7 @@ namespace Ict.Common.IO
                     FailedRecipients.Add(FailureDetails);
                     TLogging.Log(problem.FailedRecipient + " : " + problem.Message);
                 }
+
                 return false;
             }
             catch (Exception ex)

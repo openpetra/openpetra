@@ -40,9 +40,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
     {
         private static String TemplateBackupFilename(String AType, String ATemplateId)
         {
-            return TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "/Backup_"
-                + AType + "_"
-                + ATemplateId + ".sql";
+            return TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "/Backup_" +
+                   AType + "_" +
+                   ATemplateId + ".sql";
         }
 
         /// <summary>
@@ -52,7 +52,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         private static void LoadTemplatesFromBackupFile(String AType)
         {
             String BackupFilename = TemplateBackupFilename(AType, "*");
-            String[] BackupFiles = Directory.GetFiles(Path.GetDirectoryName (BackupFilename), Path.GetFileName(BackupFilename));
+
+            String[] BackupFiles = Directory.GetFiles(Path.GetDirectoryName(BackupFilename), Path.GetFileName(BackupFilename));
+
             foreach (String fname in BackupFiles)
             {
                 if (File.Exists(fname))
@@ -83,7 +85,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         {
             String BackupFilename = TemplateBackupFilename(Row.ReportType, Row.TemplateId.ToString());
 
-            if (File.Exists(Path.GetDirectoryName (BackupFilename) + "\\FastReportsBackup.sql"))
+            if (File.Exists(Path.GetDirectoryName(BackupFilename) + "\\FastReportsBackup.sql"))
             {
                 String Query = "SELECT * FROM s_report_template WHERE s_template_id_i=" + Row.TemplateId;
 
@@ -169,8 +171,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             SReportTemplateTable ChangedTemplates = editedTemplates.GetChangesTyped();
+
             SReportTemplateAccess.SubmitChanges(ChangedTemplates, Transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
+
             foreach (SReportTemplateRow Row in ChangedTemplates.Rows)
             {
                 SaveTemplatesToBackupFile(Row);

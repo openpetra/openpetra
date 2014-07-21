@@ -251,14 +251,14 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
 
                     AGeneralLedgerMasterPeriodRow glmpRow = glmpTbl[0];
-                    
+
                     //
                     // If ActualForeign has not been set, I can't allow the ORM to even attempt to access them:
                     // (If ActualForeign is NULL, that's probably a fault, but this has occured in historical data.)
 
                     if (glmpRow.IsActualBaseNull() || glmpRow.IsActualForeignNull())
                     {
-                        continue; 
+                        continue;
                     }
 
                     decimal delta = AccountDelta(glmpRow.ActualBase,

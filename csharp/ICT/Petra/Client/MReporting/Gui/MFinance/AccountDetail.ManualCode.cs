@@ -181,8 +181,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String Csv = "";
             Csv = StringHelper.AddCSV(Csv, "ALedger/SELECT * FROM a_ledger WHERE " + LedgerFilter);
-            Csv = StringHelper.AddCSV(Csv,
-                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + AccountCodeFilter + " AND a_posting_status_l=true AND a_account_active_flag_l=true");
+            Csv = StringHelper.AddCSV(
+                Csv,
+                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + AccountCodeFilter +
+                " AND a_posting_status_l=true AND a_account_active_flag_l=true");
             Csv = StringHelper.AddCSV(
                 Csv,
                 "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + CostCentreFilter +
@@ -193,7 +195,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Csv = StringHelper.AddCSV(
                     Csv,
                     "ATransaction/" +
-                    "SELECT a_transaction.*,a_trans_anal_attrib.a_analysis_type_code_c,a_analysis_type.a_analysis_type_description_c,a_trans_anal_attrib.a_analysis_attribute_value_c" +
+                    "SELECT a_transaction.*,a_trans_anal_attrib.a_analysis_type_code_c,a_analysis_type.a_analysis_type_description_c,a_trans_anal_attrib.a_analysis_attribute_value_c"
+                    +
                     " FROM a_transaction, a_trans_anal_attrib, a_analysis_type" +
                     " WHERE a_transaction." + LedgerFilter +
                     " AND a_trans_anal_attrib.a_ledger_number_i = a_transaction.a_ledger_number_i " +
@@ -267,7 +270,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Csv = "";
                 Csv = StringHelper.AddCSV(
                     Csv,
-                    "ATransAnalAttrib/SELECT * FROM a_trans_anal_attrib WHERE " + LedgerFilter + 
+                    "ATransAnalAttrib/SELECT * FROM a_trans_anal_attrib WHERE " + LedgerFilter +
                     " AND a_batch_number_i >= " + FirstBatch +
                     " AND a_batch_number_i <= " + LastBatch);
                 Csv = StringHelper.AddCSV(Csv, "AAnalysisType/SELECT * FROM a_analysis_type");
@@ -293,7 +296,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if ((pm.Get("param_sortby").ToString() == "Cost Centre")
                 && (pm.Get("param_auto_email").ToBool())
-              && !pm.Get("param_design_template").ToBool()
+                && !pm.Get("param_design_template").ToBool()
                 )
             {
                 FPetraUtilsObject.FFastReportsPlugin.AutoEmailReports(ACalc, FLedgerNumber, CostCentreFilter);

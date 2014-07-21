@@ -94,15 +94,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // I'll warn the user if they have created analysis Types with no values:
 
             String EmptyTypesWarning = "";
+
             foreach (AAnalysisTypeRow TypeRow in ASubmitTDS.AAnalysisType.Rows)
             {
                 if (TypeRow.RowState == DataRowState.Deleted)
+                {
                     continue;
+                }
 
                 Boolean NoValuesProvided = true;
+
                 if (ASubmitTDS.AFreeformAnalysis != null)
                 {
-                    ASubmitTDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("a_analysis_type_code_c='{0}'", TypeRow["a_analysis_type_code_c"]);
+                    ASubmitTDS.AFreeformAnalysis.DefaultView.RowFilter =
+                        String.Format("a_analysis_type_code_c='{0}'", TypeRow["a_analysis_type_code_c"]);
                     NoValuesProvided = ASubmitTDS.AFreeformAnalysis.DefaultView.Count == 0;
                 }
 
@@ -112,12 +117,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         EmptyTypesWarning += "\r\n";
                     }
-                    EmptyTypesWarning += String.Format(Catalog.GetString("Type {0} has no values, and therefore it cannot yet be applied to any account."), TypeRow["a_analysis_type_code_c"]);
+
+                    EmptyTypesWarning +=
+                        String.Format(Catalog.GetString("Type {0} has no values, and therefore it cannot yet be applied to any account."),
+                            TypeRow["a_analysis_type_code_c"]);
                 }
             }
+
             if (EmptyTypesWarning != "")
             {
-                MessageBox.Show(EmptyTypesWarning, Catalog.GetString("Empty Analysis Types"),MessageBoxButtons.OK,MessageBoxIcon.Information);
+                MessageBox.Show(EmptyTypesWarning, Catalog.GetString("Empty Analysis Types"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
 
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitTDS, out AVerificationResult);

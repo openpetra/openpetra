@@ -691,9 +691,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // Don't include any AnalysisType for which there are no values set
             MainDS.AFreeformAnalysis.DefaultView.Sort = "a_analysis_type_code_c";
+
             foreach (AAnalysisTypeRow TypeRow in MainDS.AAnalysisType.Rows)
             {
                 Int32 Idx = MainDS.AFreeformAnalysis.DefaultView.Find(TypeRow.AnalysisTypeCode);
+
                 if (Idx < 0)
                 {
                     TypeRow.Delete();
@@ -791,7 +793,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ACostCentreFilter"></param>
@@ -799,15 +801,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static DataTable GetLinkedPartners(Int32 ALedgerNumber, String ACostCentreFilter)
         {
-            String SqlQuery = "SELECT p_partner.p_partner_key_n as PartnerKey, "
-                + " a_cost_centre_code_c as CostCentreCode, "
-                + " '' AS EmailAddress,"
-                + " p_partner_short_name_c As PartnerShortName"
-                + " FROM a_valid_ledger_number, p_partner" 
-                + " WHERE a_ledger_number_i=" + ALedgerNumber 
-                + ACostCentreFilter
-                + " AND p_partner.p_partner_key_n = a_valid_ledger_number.p_partner_key_n"
-                + " ORDER BY a_cost_centre_code_c";
+            String SqlQuery = "SELECT p_partner.p_partner_key_n as PartnerKey, " +
+                              " a_cost_centre_code_c as CostCentreCode, " +
+                              " '' AS EmailAddress," +
+                              " p_partner_short_name_c As PartnerShortName" +
+                              " FROM a_valid_ledger_number, p_partner" +
+                              " WHERE a_ledger_number_i=" + ALedgerNumber +
+                              ACostCentreFilter +
+                              " AND p_partner.p_partner_key_n = a_valid_ledger_number.p_partner_key_n" +
+                              " ORDER BY a_cost_centre_code_c";
 
             DataTable PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", null);
 
@@ -836,6 +838,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return PartnerCostCentreTbl;
         }
+
         /// <summary>
         ///
         /// </summary>
@@ -1438,10 +1441,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
                 GLSetupTDSAccess.SubmitChanges(AInspectDS);
+
                 if (AInspectDS.AAnalysisAttribute != null)
                 {
                     AInspectDS.AAnalysisAttribute.AcceptChanges(); // This may prevent a constraints exception when the dataset is returned and merged.
                 }
+
                 ReturnValue = TSubmitChangesResult.scrOK;
             }
 
@@ -2412,6 +2417,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500", Transaction);
             AAccountRow IchAccountRow = null;
+
             if (AccountTbl.Rows.Count > 0)
             {
                 IchAccountRow = AccountTbl[0];
@@ -2423,6 +2429,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             //
             // The Summary account also needs to be re-tweaked:
             AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500S", Transaction);
+
             if (AccountTbl.Rows.Count > 0)
             {
                 IchAccountRow = AccountTbl[0]; // If there's no row 0, something very bad has happened!
@@ -2435,12 +2442,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // ICH ("8500S") normally reports to "CRS". I need it to report to "DRS" instead:
             AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadByPrimaryKey(
                 ANewLedgerNumber, "STANDARD", "8500S", Transaction);
+
             if (HierarchyTbl.Rows.Count > 0)
             {
                 AAccountHierarchyDetailRow HierarchyRow = HierarchyTbl[0];
                 HierarchyRow.AccountCodeToReportTo = "DRS";
                 AAccountHierarchyDetailAccess.SubmitChanges(HierarchyTbl, Transaction);
             }
+
             DBAccess.GDBAccessObj.CommitTransaction();
         }
 
@@ -2828,6 +2837,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (AllOK)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
+
                     //
                     // If the user has specified that ICH is an asset,
                     // I need to re-write it into the hierarchy:

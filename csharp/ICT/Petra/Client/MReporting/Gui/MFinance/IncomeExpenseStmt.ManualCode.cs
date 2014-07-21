@@ -130,7 +130,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
 
             if ((pm.Get("param_auto_email").ToBool())
-              && !pm.Get("param_design_template").ToBool()
+                && !pm.Get("param_design_template").ToBool()
                 )
             {
                 String CostCentreFilter = "";

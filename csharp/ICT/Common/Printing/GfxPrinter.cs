@@ -152,6 +152,7 @@ namespace Ict.Common.Printing
                 FDocument.DefaultPageSettings.Margins.Top = Convert.ToInt32(Cm2Inch(0.5f) * 100);
                 FDocument.DefaultPageSettings.Margins.Bottom = Convert.ToInt32(Cm2Inch(0.5f) * 100);
             }
+
             // Associate the eventhandling method with the
             // document's PrintPage event.
             FDocument.PrintPage += new PrintPageEventHandler(this.PrintPage);
@@ -172,6 +173,7 @@ namespace Ict.Common.Printing
             {
                 FprintAction = AEv.PrintAction;
             }
+
             CurrentPageNr = 0;
             CurrentDocumentNr = 1;
             FPrinterLayout.StartPrintDocument();

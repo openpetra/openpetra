@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
                 if (mnth == 12)
                 {
-                    nextMonthStart = String.Format("#{0:0000}-01-01#", Year+1);
+                    nextMonthStart = String.Format("#{0:0000}-01-01#", Year + 1);
                 }
 
                 tempTbl.DefaultView.RowFilter = "Date >= " + monthStart + " AND Date < " + nextMonthStart;
