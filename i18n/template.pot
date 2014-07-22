@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-21 12:09+0200\n"
+"POT-Creation-Date: 2014-07-22 12:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1810,7 +1810,7 @@ msgstr ""
 
 
 #: csharp\ICT\Petra\Client\CommonDialogs\UC_PetraLogoAndVersionInfo.cs:54 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "© 1995 - 2013 by OM International"
+msgid "© 1995 - 2014 by OM International"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\CommonDialogs\UC_PetraLogoAndVersionInfo.cs:55 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -12518,6 +12518,10 @@ msgid "Enter the document expiration date."
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:193
+msgid "Enter the contact partner key"
+msgstr ""
+
+#: csharp\ICT\Petra\Client\MPartner\Gui\UC_IndividualData_PersonalDocuments-generated.cs:194
 msgid "Enter comments and details for the document"
 msgstr ""
 
