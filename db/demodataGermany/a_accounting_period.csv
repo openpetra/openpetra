@@ -18,6 +18,3 @@
 43,18,June,${datetime::get-year(datetime::now()) + 1}-6-1,${datetime::get-year(datetime::now()) + 1}-6-30,2010-6-15,2010-6-15,?,?,?,?
 43,19,July,${datetime::get-year(datetime::now()) + 1}-7-1,${datetime::get-year(datetime::now()) + 1}-7-31,2010-6-15,2010-6-15,?,?,?,?
 43,20,August,${datetime::get-year(datetime::now()) + 1}-8-1,${datetime::get-year(datetime::now()) + 1}-8-31,2010-6-15,2010-6-15,?,?,?,?
-43,21,September,${datetime::get-year(datetime::now()) + 1}-9-1,${datetime::get-year(datetime::now()) + 1}-9-30,2010-6-15,2010-6-15,?,?,?,?
-43,22,October,${datetime::get-year(datetime::now()) + 1}-10-1,${datetime::get-year(datetime::now()) + 1}-10-31,2010-6-15,2010-6-15,?,?,?,?
-43,23,November,${datetime::get-year(datetime::now()) + 1}-11-1,${datetime::get-year(datetime::now()) + 1}-11-30,2010-6-15,2010-6-15,?,?,?,?

@@ -173,6 +173,8 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         /// <param name="ACriteriaData">HashTable containing non-empty Find parameters</param>
         public void PerformSearch(DataTable ACriteriaData)
         {
+            string PaymentNumberSQLPart;
+            
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
 
             FPagedDataSetObject = new TPagedDataSet(null);
@@ -185,15 +187,26 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             FAsyncExecProgress.StopAsyncronousExecution += new System.EventHandler(this.StopSearch);
 
             DataRow CriteriaRow = PrepareDataRow(ACriteriaData);
-            Int32 ledgerNumber = (Int32)CriteriaRow["LedgerNumber"];
+            Int32 ledgerNumber = (Int32)CriteriaRow["LedgerNumber"];                        
 
             if (FSearchTransactions)
             {
+                if (CommonTypes.ParseDBType(DBAccess.GDBAccessObj.DBType) == TDBType.SQLite)
+                {
+                    // Fix for SQLite: it does not support the 'to_char' Function
+                    PaymentNumberSQLPart = "PUB_a_ap_payment.a_payment_number_i as InvNum, ";
+                }
+                else
+                {
+                    // whereas PostgreSQL does!
+                    PaymentNumberSQLPart = "to_char(PUB_a_ap_payment.a_payment_number_i, '99999') as InvNum, ";
+                }
+                                
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
                 String SqlQuery = "SELECT DISTINCT " +
                                   "0 as ApDocumentId, " +
                                   "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
-                                  "to_char(PUB_a_ap_payment.a_payment_number_i, '99999') as InvNum, " +
+                                  PaymentNumberSQLPart +
                                   "true as CreditNote, " +
                                   "'Payment' as Type, " +
                                   "PUB_a_ap_payment.a_currency_code_c as Currency, " +

@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Data;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
 using Ict.Petra.Shared.MFinance.AP.Data;
@@ -374,6 +375,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             InitialiseGrid();
+            
+            // Fix for SQLite: it returns a DataColumn of DataType 'double' for the 'Amount' and 'OutstandingAmount' DataColumns, 
+            // which the 'AddCurrencyColumn' of TSgrdDataGrid can't deal with!
+            if (FPagedDataTable.Columns["Amount"].DataType == typeof(double)) 
+            {
+                DataUtilities.ChangeDataColumnDataType(FPagedDataTable, "Amount", typeof(decimal));    
+            }
+            if ((FPagedDataTable.Columns["OutstandingAmount"].DataType == typeof(double))
+                || (FPagedDataTable.Columns["OutstandingAmount"].DataType == typeof(System.Int64)))  // Int64 only when no outstanding amount, else double
+            {
+                DataUtilities.ChangeDataColumnDataType(FPagedDataTable, "OutstandingAmount", typeof(decimal));
+            }
+                                               
             DataView myDataView = FPagedDataTable.DefaultView;
             myDataView.AllowNew = false;
 
