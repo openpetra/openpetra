@@ -656,8 +656,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             bool BatchStatusUnposted;
             bool NewTransaction = false;
+            bool SubmissionOK = false;
             string FailedUpdates = string.Empty;
-
+            TDBTransaction ReceiptFrequInfoTransaction = null;            
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
@@ -697,11 +698,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            // find PPartnerRows for all donors (needed for receipt frequency info)
-            foreach (AGiftRow Row in MainDS.AGift.Rows)
-            {
-                MainDS.DonorPartners.Merge(PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, Transaction));
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReceiptFrequInfoTransaction, ref SubmissionOK,
+                delegate
+                {            
+                    // find PPartnerRows for all donors (needed for receipt frequency info)
+                    foreach (AGiftRow Row in MainDS.AGift.Rows)
+                    {
+                        MainDS.DonorPartners.Merge(PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, ReceiptFrequInfoTransaction));
+                    }
+                    
+                    SubmissionOK = true;
+                });
 
             //Add a temp table
             if (FailedUpdates.Length > 0)
