@@ -37,6 +37,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailContactName, DetailContactDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
                 DetailContactDescr: {Label=Description}
             SortOrder: DetailContactName ASC

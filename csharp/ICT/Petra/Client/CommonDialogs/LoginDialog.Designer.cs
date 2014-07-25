@@ -121,9 +121,9 @@ namespace Ict.Petra.Client.CommonDialogs
             // btnLogin
             //
             this.btnLogin.Image = ((System.Drawing.Image)(resources.GetObject("btnLogin.Image")));
-            this.btnLogin.Location = new System.Drawing.Point(137, 7);
+            this.btnLogin.Location = new System.Drawing.Point(103, 7);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(76, 24);
+            this.btnLogin.Size = new System.Drawing.Size(95, 24);
             this.btnLogin.TabIndex = 6;
             this.btnLogin.Text = " &Login";
             this.btnLogin.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -133,9 +133,9 @@ namespace Ict.Petra.Client.CommonDialogs
             //
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Image = ((System.Drawing.Image)(resources.GetObject("btnCancel.Image")));
-            this.btnCancel.Location = new System.Drawing.Point(217, 7);
+            this.btnCancel.Location = new System.Drawing.Point(202, 7);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(76, 24);
+            this.btnCancel.Size = new System.Drawing.Size(95, 24);
             this.btnCancel.TabIndex = 7;
             this.btnCancel.Text = " &Quit";
             this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;

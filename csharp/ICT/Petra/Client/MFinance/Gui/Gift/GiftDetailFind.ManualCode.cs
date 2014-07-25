@@ -86,19 +86,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             for (int i = 0; i < cmbLedgerDataView.Count; i++)
             {
-            	string LedgerNumber;
-            	
-            	// postgress
-            	if (cmbLedgerDataView[i].Row[0].GetType().Equals(typeof(int)))
-            	{
-            		LedgerNumber = ((int)cmbLedgerDataView[i].Row[0]).ToString("0000");
-            	}
-            	else // sqlite
-            	{
-            		LedgerNumber = ((Int64)cmbLedgerDataView[i].Row[0]).ToString("0000");
-            	}
+                string LedgerNumberStr;
 
-                if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber))
+                // postgresql
+                if (cmbLedgerDataView[i].Row[0].GetType().Equals(typeof(int)))
+                {
+                    LedgerNumberStr = ((int)cmbLedgerDataView[i].Row[0]).ToString("0000");
+                }
+                else // sqlite
+                {
+                    LedgerNumberStr = ((Int64)cmbLedgerDataView[i].Row[0]).ToString("0000");
+                }
+
+                if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumberStr))
                 {
                     cmbLedgerDataView.Delete(i);
                     i--;

@@ -473,7 +473,7 @@ namespace Ict.Petra.Server.MCommon
             }
             catch (Exception Exp)
             {
-                TLogging.LogAtLevel(7, this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; general Exception occured: " + Exp.ToString());
+                TLogging.Log(this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; general Exception occured: " + Exp.ToString());
 
                 FAsyncExecProgress.ProgressInformation = "Query cancelled!";
                 FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;

@@ -201,6 +201,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // temporarily remove the event that enables the save button when data is changed
             FPetraUtilsObject.ActionEnablingEvent -= ((TFrmPartnerEdit)FPetraUtilsObject.GetForm()).ActionEnabledEvent;
+
         	// temporily remove events from comboboxes
             cmbBankName.SelectedValueChanged -= new System.EventHandler(this.BankNameChanged);
             cmbBankCode.SelectedValueChanged -= new System.EventHandler(this.BankCodeChanged);
