@@ -84,9 +84,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // remove from the combobox all ledger numbers which the user does not have permission to access
             DataView cmbLedgerDataView = (DataView)cmbLedger.cmbCombobox.DataSource;
 
-            for (int i = 0; i < cmbLedgerDataView.Count; i++) // cmbLedger.cmbCombobox.Items.Count; i++)
+            for (int i = 0; i < cmbLedgerDataView.Count; i++)
             {
-                string LedgerNumber = ((int)cmbLedgerDataView[i].Row[0]).ToString("0000");
+            	string LedgerNumber;
+            	
+            	// postgress
+            	if (cmbLedgerDataView[i].Row[0].GetType().Equals(typeof(int)))
+            	{
+            		LedgerNumber = ((int)cmbLedgerDataView[i].Row[0]).ToString("0000");
+            	}
+            	else // sqlite
+            	{
+            		LedgerNumber = ((Int64)cmbLedgerDataView[i].Row[0]).ToString("0000");
+            	}
 
                 if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber))
                 {

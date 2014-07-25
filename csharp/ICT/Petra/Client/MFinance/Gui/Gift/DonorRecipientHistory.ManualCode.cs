@@ -56,7 +56,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FDateFrom = string.Empty;
         private string FDateTo = string.Empty;
         private string ALL = "[" + Catalog.GetString("All") + "]";
-        private bool FLedgerChanged = false;
 
         /// the Donor
         public long Donor
@@ -86,7 +85,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FLedgerNumber = value;
                     cmbLedger.SetSelectedInt32(FLedgerNumber);
-                    FLedgerChanged = true;
                 }
             }
         }
@@ -100,9 +98,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // remove from the combobox all ledger numbers which the user does not have permission to access
             DataView cmbLedgerDataView = (DataView)cmbLedger.cmbCombobox.DataSource;
 
-            for (int i = 0; i < cmbLedgerDataView.Count; i++) // cmbLedger.cmbCombobox.Items.Count; i++)
+            for (int i = 0; i < cmbLedgerDataView.Count; i++)
             {
-                string LedgerNumber = ((int)cmbLedgerDataView[i].Row[0]).ToString("0000");
+            	string LedgerNumber;
+            	
+            	// postgresql
+            	if (cmbLedgerDataView[i].Row[0].GetType().Equals(typeof(int)))
+            	{
+            		LedgerNumber = ((int)cmbLedgerDataView[i].Row[0]).ToString("0000");
+            	}
+            	else // sqlite
+            	{
+            		LedgerNumber = ((Int64)cmbLedgerDataView[i].Row[0]).ToString("0000");
+            	}
 
                 if (!UserInfo.GUserInfo.IsInModule("LEDGER" + LedgerNumber))
                 {
@@ -253,8 +261,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbMotivationDetail.ColumnWidthCol2 = 300;
             cmbMotivationDetail.Enabled = true;
             cmbMotivationDetail.cmbCombobox.SelectionLength = 0;
-
-            FLedgerChanged = false;
         }
 
         #endregion

@@ -497,10 +497,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Load bank records. (I don't think this will ever be null. Database is populated when tab is loaded.)
             if (FBankDataset == null)
             {
-                // Do not load bank locations as this is much faster.
-                // Downside is that 'Find Bank' dialog must then load bank data from scratch from the database. But this is ok.
-                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(false);
-                //txtBankKey.DataSet = FBankDataset;
+                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
             }
 
             // add empty row

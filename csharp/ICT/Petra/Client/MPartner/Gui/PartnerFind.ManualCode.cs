@@ -761,9 +761,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Populate the combo boxes (if not done already)
                 if (ucoFindByBankDetails.PartnerFindCriteria.FBankDataset == null)
                 {
-                    // Do not load bank locations as this is much faster.
-                    // Downside is that 'Find Bank' dialog must then load bank data from scratch from the database. But this is ok.
-                    ucoFindByBankDetails.PartnerFindCriteria.FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(false);
+                    ucoFindByBankDetails.PartnerFindCriteria.FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
 
                     Thread NewThread = new Thread(ucoFindByBankDetails.PartnerFindCriteria.PopulateBankComboBoxes);
                     NewThread.Start();
