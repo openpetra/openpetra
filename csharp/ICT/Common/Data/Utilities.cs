@@ -820,7 +820,7 @@ namespace Ict.Common.Data
 
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Changes a DataColumns' DataType to the desired DataType. This works even when the DataTable already holds data!
         /// </summary>
@@ -830,8 +830,8 @@ namespace Ict.Common.Data
         /// </para>
         /// <para>
         /// The Method utilises <see cref="System.Convert.ChangeType(object, Type)" /> for the conversion of the type. Only conversions
-        /// that <see cref="System.Convert.ChangeType(object, Type)" /> supports will work. If 
-        /// <see cref="System.Convert.ChangeType(object, Type)" /> throws an Exception then the 
+        /// that <see cref="System.Convert.ChangeType(object, Type)" /> supports will work. If
+        /// <see cref="System.Convert.ChangeType(object, Type)" /> throws an Exception then the
         /// <see cref="ChangeDataColumnDataType" /> Method will return false.
         /// </para>
         /// </remarks>
@@ -845,37 +845,37 @@ namespace Ict.Common.Data
             {
                 return false;
             }
-        
+
             DataColumn ColumnToReplace = ATable.Columns[AColumnName];
-            
+
             if (ColumnToReplace.DataType == ANewType)
             {
                 return true;
             }
-        
+
             try
             {
                 DataColumn ColumnWithReplacedType = new DataColumn("Tmp", ANewType);
-                
+
                 ATable.Columns.Add(ColumnWithReplacedType);
                 ColumnWithReplacedType.SetOrdinal(ATable.Columns.IndexOf(ColumnToReplace)); // Ensures that column is inserted at the same spot in the DataColumn Collection
-                
+
                 foreach (DataRow ConvertRow in ATable.Rows)
                 {
                     ConvertRow["Tmp"] = Convert.ChangeType(ConvertRow[AColumnName], ANewType);
                 }
-                
+
                 ATable.Columns.Remove(AColumnName);
-                
+
                 ColumnWithReplacedType.ColumnName = AColumnName;
             }
             catch (Exception)
             {
                 return false;
             }
-        
+
             return true;
-        }        
+        }
     }
 
     /// <summary>

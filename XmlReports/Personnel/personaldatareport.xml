@@ -620,10 +620,10 @@
           <lowerLevelReport level="Personal Documents Lowest Level1"/>
           <lowerLevelReport level="Personal Documents Lowest Level2"/>
           <lowerLevelReport level="Personal Documents Lowest Level3"/>
-          <lowerLevelReport level="Personal Documents Contact Level1" condition="not(isNull({pm_contact_partner_key_n}))" calculation="GetContactPartnerName"/>
-          <lowerLevelReport level="Personal Documents Contact Level2" condition="not(isNull({pm_contact_partner_key_n}))"/>
-          <lowerLevelReport level="Personal Documents Contact Level3" condition="not(isNull({pm_contact_partner_key_n}))"/>
-          <lowerLevelReport level="Personal Documents Contact Level4" condition="not(isNull({pm_contact_partner_key_n}))"/>
+          <lowerLevelReport level="Personal Documents Contact Level1" condition="gt({pm_contact_partner_key_n},0)" calculation="GetContactPartnerName"/>
+          <lowerLevelReport level="Personal Documents Contact Level2" condition="gt({pm_contact_partner_key_n},0)"/>
+          <lowerLevelReport level="Personal Documents Contact Level3" condition="gt({pm_contact_partner_key_n},0)"/>
+          <lowerLevelReport level="Personal Documents Contact Level4" condition="gt({pm_contact_partner_key_n},0)"/>
         </detail>
         <footer space="below"/>
       </level>
