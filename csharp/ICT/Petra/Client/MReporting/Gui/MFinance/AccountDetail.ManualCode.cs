@@ -29,12 +29,14 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using System.Windows.Forms;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using System.Collections;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared;
 using System.Data;
 using Ict.Petra.Client.App.Core;
+using System.IO;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -57,8 +59,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 pnlSorting.Padding = new System.Windows.Forms.Padding(8); // This tweak bring controls inline.
                 FPetraUtilsObject.LoadDefaultSettings();
+                rbtSortByCostCentre.CheckedChanged += rbtSortByCostCentre_CheckedChanged;
 
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+            }
+        }
+
+        void rbtSortByCostCentre_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!rbtSortByCostCentre.Checked)
+            {
+                chkPaginate.Checked = false;
+                chkAutoEmail.Checked = false;
             }
         }
 
@@ -79,6 +91,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String AccountCodeFilter = ""; // Account Filter, as range or list:
             String TranctAccountCodeFilter = "";
             DataTable Balances = new DataTable();
+
+            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this later, for auto_email, but usually it's unused.
 
             if (pm.Get("param_rgrAccounts").ToString() == "AccountList")
             {
@@ -163,16 +177,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            String OrderBy = " ORDER BY " + GroupField + ", a_transaction_date_d";
             pm.Add("param_groupfield", GroupField);
 
             String Csv = "";
-            Csv = StringHelper.AddCSV(Csv, "ALedger/*/a_ledger/" + LedgerFilter);
-            Csv = StringHelper.AddCSV(Csv,
-                "AAccount/*/a_account/" + LedgerFilter + AccountCodeFilter + "AND a_posting_status_l=true AND a_account_active_flag_l=true");
+            Csv = StringHelper.AddCSV(Csv, "ALedger/SELECT * FROM a_ledger WHERE " + LedgerFilter);
             Csv = StringHelper.AddCSV(
                 Csv,
-                "ACostCentre/*/a_cost_centre/" + LedgerFilter + CostCentreFilter +
+                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + AccountCodeFilter +
+                " AND a_posting_status_l=true AND a_account_active_flag_l=true");
+            Csv = StringHelper.AddCSV(
+                Csv,
+                "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + CostCentreFilter +
                 " AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
 
             if (pm.Get("param_sortby").ToString() == "Analysis Type")  // To sort by analysis type, I need a different (and more horible) query:
@@ -180,10 +195,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Csv = StringHelper.AddCSV(
                     Csv,
                     "ATransaction/" +
-                    "a_transaction.*,a_trans_anal_attrib.a_analysis_type_code_c,a_analysis_type.a_analysis_type_description_c,a_trans_anal_attrib.a_analysis_attribute_value_c"
+                    "SELECT a_transaction.*,a_trans_anal_attrib.a_analysis_type_code_c,a_analysis_type.a_analysis_type_description_c,a_trans_anal_attrib.a_analysis_attribute_value_c"
                     +
-                    "/a_transaction, a_trans_anal_attrib, a_analysis_type/" +
-                    "a_transaction." + LedgerFilter +
+                    " FROM a_transaction, a_trans_anal_attrib, a_analysis_type" +
+                    " WHERE a_transaction." + LedgerFilter +
                     " AND a_trans_anal_attrib.a_ledger_number_i = a_transaction.a_ledger_number_i " +
                     " AND a_trans_anal_attrib.a_batch_number_i = a_transaction.a_batch_number_i" +
                     " AND a_trans_anal_attrib.a_journal_number_i = a_transaction.a_journal_number_i" +
@@ -192,14 +207,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     AnalysisTypeFilter +
                     TranctAccountCodeFilter + TranctCostCentreFilter + " AND " + TranctDateFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
-                    "/" + OrderBy);
+                    " ORDER BY " + GroupField + ", a_transaction_date_d");
             }
             else
             {
-                Csv = StringHelper.AddCSV(Csv, "ATransaction/*/a_transaction/" + LedgerFilter + TranctAccountCodeFilter +
+                Csv = StringHelper.AddCSV(Csv, "ATransaction/SELECT * FROM a_transaction WHERE " + LedgerFilter + TranctAccountCodeFilter +
                     TranctCostCentreFilter + " AND " + TranctDateFilter + ReferenceFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
-                    "/" + OrderBy);
+                    " ORDER BY " + GroupField + ", a_transaction_date_d");
             }
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
@@ -255,10 +270,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Csv = "";
                 Csv = StringHelper.AddCSV(
                     Csv,
-                    "ATransAnalAttrib/*/a_trans_anal_attrib/" + LedgerFilter + " AND a_batch_number_i >= " + FirstBatch +
-                    " AND a_batch_number_i <= " +
-                    LastBatch);
-                Csv = StringHelper.AddCSV(Csv, "AAnalysisType/*/a_analysis_type/1=1");
+                    "ATransAnalAttrib/SELECT * FROM a_trans_anal_attrib WHERE " + LedgerFilter +
+                    " AND a_batch_number_i >= " + FirstBatch +
+                    " AND a_batch_number_i <= " + LastBatch);
+                Csv = StringHelper.AddCSV(Csv, "AAnalysisType/SELECT * FROM a_analysis_type");
                 ReportDs.Merge(TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv));
             }
 
@@ -273,6 +288,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(Balances, "balances");
+
+            //
+            // For Account Detail reports that must be sent on email, one page at a time,
+            // I'm calling the FastReports plugin multiple times,
+            // and then I'm going to return false, which will prevent the default action using this dataset.
+
+            if ((pm.Get("param_sortby").ToString() == "Cost Centre")
+                && (pm.Get("param_auto_email").ToBool())
+                && !pm.Get("param_design_template").ToBool()
+                )
+            {
+                FPetraUtilsObject.FFastReportsPlugin.AutoEmailReports(ACalc, FLedgerNumber, CostCentreFilter);
+                return false;
+            }
+
             return true;
         }
     }

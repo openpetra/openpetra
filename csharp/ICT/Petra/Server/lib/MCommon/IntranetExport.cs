@@ -873,7 +873,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 }
                 else
                 {
-                    FExportTrace += "\r\nEmail cannot be sent.";
+                    FExportTrace += "\r\nError: Data encryption failed.";
                 }
             }
             catch (Exception e)

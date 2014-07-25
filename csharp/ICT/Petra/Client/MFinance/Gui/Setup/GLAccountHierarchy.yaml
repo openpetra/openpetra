@@ -78,7 +78,7 @@ RootNode:
         chkDetailAccountActiveFlag: {Label=Active}
         chkDetailIsSummary: {LabelWidth=130, Label=Summary}
         txtRptOrder: {LabelWidth=73, Width=45}
-        chkDetailForeignCurrencyFlag: {LabelWidth=130, Label=Foriegn Currency}
+        chkDetailForeignCurrencyFlag: {LabelWidth=130, Label=Foreign Currency}
         cmbDetailForeignCurrencyCode: {Width=180, NoLabel=true, List=CurrencyCodeList}
         ucoAccountAnalysisAttributes:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes

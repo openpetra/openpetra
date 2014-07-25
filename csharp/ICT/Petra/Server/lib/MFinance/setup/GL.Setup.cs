@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
@@ -57,7 +58,7 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Cascading;
-using System.Collections.Generic;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -688,6 +689,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
             }
 
+            // Don't include any AnalysisType for which there are no values set
+            MainDS.AFreeformAnalysis.DefaultView.Sort = "a_analysis_type_code_c";
+
+            foreach (AAnalysisTypeRow TypeRow in MainDS.AAnalysisType.Rows)
+            {
+                Int32 Idx = MainDS.AFreeformAnalysis.DefaultView.Find(TypeRow.AnalysisTypeCode);
+
+                if (Idx < 0)
+                {
+                    TypeRow.Delete();
+                }
+            }
+
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
 
@@ -774,6 +788,53 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     }
                 }
             }
+
+            return PartnerCostCentreTbl;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCentreFilter"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetLinkedPartners(Int32 ALedgerNumber, String ACostCentreFilter)
+        {
+            String SqlQuery = "SELECT p_partner.p_partner_key_n as PartnerKey, " +
+                              " a_cost_centre_code_c as CostCentreCode, " +
+                              " '' AS EmailAddress," +
+                              " p_partner_short_name_c As PartnerShortName" +
+                              " FROM a_valid_ledger_number, p_partner" +
+                              " WHERE a_ledger_number_i=" + ALedgerNumber +
+                              ACostCentreFilter +
+                              " AND p_partner.p_partner_key_n = a_valid_ledger_number.p_partner_key_n" +
+                              " ORDER BY a_cost_centre_code_c";
+
+            DataTable PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", null);
+
+            PLocationTable tbl;
+            PPartnerLocationTable PartnerLocation;
+            String CountryNameLocal;
+            String EmailAddress;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                    {
+                        TAddressTools.GetBestAddress(
+                            Convert.ToInt64(Row["PartnerKey"]),
+                            out tbl,
+                            out PartnerLocation,
+                            out CountryNameLocal,
+                            out EmailAddress,
+                            Transaction
+                            );
+                        Row["EmailAddress"] = EmailAddress;
+                    }
+                });
 
             return PartnerCostCentreTbl;
         }
@@ -1380,6 +1441,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
                 GLSetupTDSAccess.SubmitChanges(AInspectDS);
+
+                if (AInspectDS.AAnalysisAttribute != null)
+                {
+                    AInspectDS.AAnalysisAttribute.AcceptChanges(); // This may prevent a constraints exception when the dataset is returned and merged.
+                }
 
                 ReturnValue = TSubmitChangesResult.scrOK;
             }
@@ -2342,6 +2408,52 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// On creation of a new Ledger, if the user requested ICH Account is Asset,
+        /// this does the rewire.
+        /// But if there was no ICH in the newly created Hierarchy, it doesn't panic.
+        /// </summary>
+        private static void RewireIchIsAsset(Int32 ANewLedgerNumber)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500", Transaction);
+            AAccountRow IchAccountRow = null;
+
+            if (AccountTbl.Rows.Count > 0)
+            {
+                IchAccountRow = AccountTbl[0];
+                IchAccountRow.AccountType = "Asset";
+                IchAccountRow.DebitCreditIndicator = true;
+                AAccountAccess.SubmitChanges(AccountTbl, Transaction);
+            }
+
+            //
+            // The Summary account also needs to be re-tweaked:
+            AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500S", Transaction);
+
+            if (AccountTbl.Rows.Count > 0)
+            {
+                IchAccountRow = AccountTbl[0]; // If there's no row 0, something very bad has happened!
+                IchAccountRow.AccountType = "Asset";
+                IchAccountRow.DebitCreditIndicator = true;
+                AAccountAccess.SubmitChanges(AccountTbl, Transaction);
+            }
+
+            //
+            // ICH ("8500S") normally reports to "CRS". I need it to report to "DRS" instead:
+            AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadByPrimaryKey(
+                ANewLedgerNumber, "STANDARD", "8500S", Transaction);
+
+            if (HierarchyTbl.Rows.Count > 0)
+            {
+                AAccountHierarchyDetailRow HierarchyRow = HierarchyTbl[0];
+                HierarchyRow.AccountCodeToReportTo = "DRS";
+                AAccountHierarchyDetailAccess.SubmitChanges(HierarchyTbl, Transaction);
+            }
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
@@ -2354,6 +2466,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ANumberOfPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberOfFwdPostingPeriods,
+            bool IchIsAsset,
             bool AActivateGiftProcessing,
             Int32 AStartingReceiptNumber,
             bool AActivateAccountsPayable,
@@ -2680,7 +2793,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
                 ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
-
                 // TODO: modify UI navigation yml file etc?
                 // TODO: permissions for which users?
 
@@ -2725,6 +2837,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (AllOK)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
+
+                    //
+                    // If the user has specified that ICH is an asset,
+                    // I need to re-write it into the hierarchy:
+                    if (IchIsAsset)
+                    {
+                        RewireIchIsAsset(ANewLedgerNumber);
+                    }
                 }
                 else
                 {

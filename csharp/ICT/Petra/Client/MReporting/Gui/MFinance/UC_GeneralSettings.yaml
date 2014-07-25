@@ -54,7 +54,7 @@ RootNode:
             Controls: [txtQuarter, cmbQuarterYear]
             NoParameter: true
         txtQuarter:
-            Label: temp
+            Label: Q
             Width: 30
             NoParameter: true
         cmbQuarterYear: 
@@ -62,7 +62,6 @@ RootNode:
             List: UserDefinedList
             ParameterName: param_year_i
             Width:200
-#           ComboBoxWidth:120 # don't do this - it doesn't work.
 
         rbtDate:
             ControlsOrientation: horizontal
