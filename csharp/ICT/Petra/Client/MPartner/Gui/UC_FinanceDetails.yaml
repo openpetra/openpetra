@@ -46,7 +46,7 @@ RootNode:
             Width: 460
             Height: 41
         pnlTaxDeductible:
-            Controls: [txtTaxDeductiblePercentage, dtpValidFrom]
+            Controls: [txtTaxDeductiblePercentage, dtpTaxDeductibleValidFrom]
             ControlsOrientation: horizontal
             Padding: -4,-7,0,0
             Visible: false
@@ -117,7 +117,8 @@ RootNode:
         txtTaxDeductiblePercentage:
             Format: PercentDecimal(2)
             Enabled: false
-        dtpValidFrom:
+        dtpTaxDeductibleValidFrom:
+            Label: Valid From
             Enabled: false
         txtFinanceComment:
             Multiline: true

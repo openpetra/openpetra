@@ -98,7 +98,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         private TPartnerClass FPartnerClass;
         private TPartnerClass FNewPartnerPartnerClass;
         private PartnerEditTDS FSubmissionDS;
-        private bool FTaxDeductiblePercentage = false;
+        private bool FTaxDeductiblePercentageEnabled = false;
 
         #region TPartnerEditUIConnector
 
@@ -276,14 +276,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // p_banking_details
             try
             {
-            	//FTaxDeductiblePercentage = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+            	//FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
             		//SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
-        		FTaxDeductiblePercentage = false;
+        		FTaxDeductiblePercentageEnabled = true;
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 
-                if (FTaxDeductiblePercentage)
+                if (FTaxDeductiblePercentageEnabled)
                 {
                 	PPartnerTaxDeductiblePctAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 }
@@ -318,9 +318,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// gets system default TaxDeduct%OnRecipient (default false)
         /// </summary>
         /// <returns></returns>
-        public bool GetTaxDeductiblePercentage()
+        public bool IsTaxDeductiblePercentageEnabled()
         {
-        	return FTaxDeductiblePercentage;
+        	return FTaxDeductiblePercentageEnabled;
         }
 
         #endregion

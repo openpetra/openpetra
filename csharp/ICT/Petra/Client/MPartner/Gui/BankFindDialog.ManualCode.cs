@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void LoadDataGrid(bool AFirstTime)
         {
             // Only call data from server if the dataset is actually empty.
-            // (A filled dataset is passed to this screen from the 'Finance Details' tab.)
+            // (A filled dataset is passed to this screen from the 'Finance Details' tab and 'Find By Bank Details'.)
             if ((FMainDS == null) || (FMainDS.PBank.Rows.Count == 0))
             {
                 FMainDS = new BankTDS();

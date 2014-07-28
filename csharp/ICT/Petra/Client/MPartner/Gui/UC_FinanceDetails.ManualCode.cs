@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         
-        private bool FTaxDeductiblePercentage = false;
+        private bool FTaxDeductiblePercentageEnabled = false;
         
         private bool FFirstTime = true;
         
@@ -122,9 +122,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             // add event which will populate the bank combo boxes when 'Finance details' tab is shown for the first time
             pnlDetails.VisibleChanged += new EventHandler(pnlDetails_VisibleChanged);
             
-            FTaxDeductiblePercentage = FPartnerEditUIConnector.GetTaxDeductiblePercentage();
+            // set up Tax Deductibility (specifically for OM Switzerland)
+            FTaxDeductiblePercentageEnabled = FPartnerEditUIConnector.IsTaxDeductiblePercentageEnabled();
             
-            if (FTaxDeductiblePercentage)
+            if (FTaxDeductiblePercentageEnabled)
             {
             	chkLimitTaxDeductibility.Visible = true;
             	pnlTaxDeductible.Visible = true;
@@ -133,10 +134,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             	grpLeftMiscSettings.Height += 27;
             	pnlRightMiscSettings.Height += 27;
             	grpOther.Location = new System.Drawing.Point(grpOther.Location.X, grpOther.Location.Y + 27);
+            	
+            	dtpTaxDeductibleValidFrom.AllowEmpty = false;
             }
             else
             {
-            	lblTaxDeductiblePercentage.Visible = false;
+            	grpRecipientGiftReceipting.Controls.Remove(this.lblLimitTaxDeductibility);
             }
         }
 
@@ -176,31 +179,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void PopulateComboBoxes()
         {
-        	// For some reason this method sets the RowState of one PLocation record and one PPartnerLocation record from MainDS to modified,
-            // even if it hasn't been modified. This causes the save button to be enabled even though no data was changed.
-            // There is no clear reason why! To avoid this I record all records that are Unchanged at the start of the method and ensure they are
-            // still unchanged at the end of the method.
-            List <int>PartnerLocationList = new List <int>();
-            List <int>LocationList = new List <int>();
-
-            for (int i = 0; i < FMainDS.PPartnerLocation.Rows.Count; i++)
-            {
-                if (FMainDS.PPartnerLocation.Rows[i].RowState == DataRowState.Unchanged)
-                {
-                    PartnerLocationList.Add(i);
-                }
-            }
-
-            for (int i = 0; i < FMainDS.PLocation.Rows.Count; i++)
-            {
-                if (FMainDS.PLocation.Rows[i].RowState == DataRowState.Unchanged)
-                {
-                    LocationList.Add(i);
-                }
-            }
+        	// For some reason this method enables the save button
 
             // temporarily remove the event that enables the save button when data is changed
             FPetraUtilsObject.ActionEnablingEvent -= ((TFrmPartnerEdit)FPetraUtilsObject.GetForm()).ActionEnabledEvent;
+            bool HasChanges = FPetraUtilsObject.HasChanges;
 
         	// temporily remove events from comboboxes
             cmbBankName.SelectedValueChanged -= new System.EventHandler(this.BankNameChanged);
@@ -242,9 +225,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             emptyRow[PBankTable.ColumnBranchCodeId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ";
             ComboboxTable.Rows.Add(emptyRow);
 
-            cmbBankName.InitialiseUserControl();
-            cmbBankCode.InitialiseUserControl();
-
             // populate the bank name combo box
             cmbBankName.InitialiseUserControl(ComboboxTable,
                 PBankTable.GetPartnerKeyDBName(),
@@ -282,17 +262,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FPetraUtilsObject.ActionEnablingEvent += ((TFrmPartnerEdit)FPetraUtilsObject.GetForm()).ActionEnabledEvent;
-
-            // reject any unwanted changes
-            foreach (int i in PartnerLocationList)
-            {
-                FMainDS.PPartnerLocation.Rows[i].RejectChanges();
-            }
-
-            foreach (int i in LocationList)
-            {
-                FMainDS.PLocation.Rows[i].RejectChanges();
-            }
+            FPetraUtilsObject.HasChanges = HasChanges;
         }
 
         #endregion
@@ -301,6 +271,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDataManual()
         {
+        	if (FTaxDeductiblePercentageEnabled)
+        	{
+	        	if (FMainDS.PPartnerTaxDeductiblePct != null && FMainDS.PPartnerTaxDeductiblePct.Rows.Count > 0)
+	        	{
+	        		chkLimitTaxDeductibility.Checked = true;
+	        		txtTaxDeductiblePercentage.NumberValueDecimal = 
+	        			((PPartnerTaxDeductiblePctRow) FMainDS.PPartnerTaxDeductiblePct.Rows[0]).PercentageTaxDeductible;
+	        		dtpTaxDeductibleValidFrom.Text = ((PPartnerTaxDeductiblePctRow) FMainDS.PPartnerTaxDeductiblePct.Rows[0]).DateValidFrom.ToString();
+	        	}
+        	}
+        	
             if (grdDetails.Rows.Count > 1)
             {
                 btnSetMainAccount.Enabled = true;
@@ -430,6 +411,45 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
                 FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
                 FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
+                
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                	if (chkLimitTaxDeductibility.Checked)
+                	{
+                		if (!dtpTaxDeductibleValidFrom.ValidDate(false))
+                		{
+                			ValidateValidFromDate();
+                			return false;
+                		}
+
+	                	if (FMainDS.PPartnerTaxDeductiblePct == null)
+	                	{
+	                		FMainDS.Tables.Add(new PPartnerTaxDeductiblePctTable());
+	                		FMainDS.InitVars();
+	                	}
+	                	
+	                	if (FMainDS.PPartnerTaxDeductiblePct.Count == 0)
+	                	{
+	                		PPartnerTaxDeductiblePctRow NewRow = FMainDS.PPartnerTaxDeductiblePct.NewRowTyped(true);
+	                		NewRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+	                		NewRow.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+	                		NewRow.PercentageTaxDeductible = (decimal) txtTaxDeductiblePercentage.NumberValueDecimal;
+	                		FMainDS.PPartnerTaxDeductiblePct.Rows.Add(NewRow);
+	                	}
+	                	else
+	                	{
+		                	FMainDS.PPartnerTaxDeductiblePct[0].DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+		                	FMainDS.PPartnerTaxDeductiblePct[0].PercentageTaxDeductible = (decimal) txtTaxDeductiblePercentage.NumberValueDecimal;
+	                	}
+                	}
+                	else
+                	{
+                		if (FMainDS.PPartnerTaxDeductiblePct != null && FMainDS.PPartnerTaxDeductiblePct.Count > 0)
+                		{
+                			FMainDS.PPartnerTaxDeductiblePct[0].Delete();
+                		}
+                	}
+                }
             }
             catch (ConstraintException)
             {
@@ -942,7 +962,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ChkLimitTaxDeductibility_Change(System.Object sender, System.EventArgs e)
         {
         	txtTaxDeductiblePercentage.Enabled = chkLimitTaxDeductibility.Checked;
-        	dtpValidFrom.Enabled = chkLimitTaxDeductibility.Checked;
+        	dtpTaxDeductibleValidFrom.Enabled = chkLimitTaxDeductibility.Checked;
+        	
+        	if (dtpTaxDeductibleValidFrom.Enabled && string.IsNullOrEmpty(dtpTaxDeductibleValidFrom.Text))
+        	{
+        		dtpTaxDeductibleValidFrom.Text = DateTime.Today.ToString();
+        	}
         }
 
         #endregion
@@ -1083,8 +1108,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return;
             }
+            
+        	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+    		// validate dtpTaxDeductibleValidFrom
+    		ValidateValidFromDate();
 
             // obtain the bank's country code (if it exists)
             string CountryCode = "";
@@ -1112,6 +1140,38 @@ namespace Ict.Petra.Client.MPartner.Gui
             	
             	FValidateBankingDetailsExtra = false;
             }
+        }
+        
+        /// <summary>
+        /// Adds validation for dtpTaxDeductibleValidFrom
+        /// </summary>
+        /// <returns>Returns false if validation error</returns>
+        public bool ValidateValidFromDate()
+        {
+        	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+        	TScreenVerificationResult VerificationResult = null;
+        	DataColumn ValidationColumn = FMainDS.PPartnerTaxDeductiblePct.ColumnDateValidFrom;
+        	bool ReturnValue = true;
+
+    		// validate dtpTaxDeductibleValidFrom
+            if (FTaxDeductiblePercentageEnabled && chkLimitTaxDeductibility.Checked)
+            {
+            	if (!dtpTaxDeductibleValidFrom.ValidDate(false))
+            	{
+            		VerificationResult = new TScreenVerificationResult(dtpTaxDeductibleValidFrom.DateVerificationResult,
+													                        ValidationColumn,
+													                        dtpTaxDeductibleValidFrom);
+            		VerificationResult.OverrideResultContext(this);
+            		
+            		ReturnValue = false;
+            	}
+            }
+
+            VerificationResultCollection.Remove(ValidationColumn);
+    		VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+    		
+    		return ReturnValue;
         }
 
         #endregion
