@@ -132,6 +132,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitTDS, out AVerificationResult);
         }
 
+        private void DeleteRecord(object sender, EventArgs e)
+        {
+            if (ucoValues.Count > 0)
+            {
+                MessageBox.Show(
+                    Catalog.GetString("You must delete all the Analysis Values for the selected Analysis Type before you can delete this record."), 
+                    MCommon.MCommonResourcestrings.StrRecordDeletionTitle);
+                return;
+            }
+
+            DeleteAAnalysisType();
+        }
+
         /// <summary>
         /// Performs checks to determine whether a deletion of the current row is permissable
         /// </summary>
