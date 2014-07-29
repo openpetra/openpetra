@@ -155,9 +155,6 @@ RootNode:
         Para44:
             Name: Dietary Needs
             Parameter: 5.0
-        Para45:
-            Name: Driver Status
-            Parameter: 4.0
         Para46:
             Name: Event Code
             Parameter: 3.0

@@ -37,6 +37,4 @@
   <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
   <Parameter id="param_calculation" column="7" value="eString:Leadership Rating" />
   <Parameter id="ColumnWidth" column="7" value="eInteger:3" />
-  <Parameter id="param_calculation" column="8" value="eString:Driver Status" />
-  <Parameter id="ColumnWidth" column="8" value="eInteger:4" />
 </Parameters>

@@ -215,9 +215,6 @@
             <queryDetail condition="eq({param_church_detail}, true)">
                 <value function="GetChurch({PartnerKey})"/>
             </queryDetail>
-            <queryDetail condition="columnexist(eString:Driver Status)">
-                <value function="assign(DriverStatus, GetDriverStatus({PartnerKey}))"/>
-            </queryDetail>
             <queryDetail condition="columnexist(eString:Dietary Needs)">
                 <value function="assign(Dietary, GetDietary({PartnerKey}))"/>
             </queryDetail>
@@ -656,15 +653,6 @@
         </query>
     </calculation>
     
-    <calculation align="left" id="Driver Status" returns="text" returnsFormat="text">
-        <caption><value text="Dirver Status"></value></caption>
-        <query>
-            <queryDetail>
-                <value variable="DriverStatus"></value>
-            </queryDetail>
-        </query>
-    </calculation>
-
     <calculation align="left" id="Address Email" returns="text" returnsFormat="text">
         <caption><value text="Email"></value></caption>
         <query>
