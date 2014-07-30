@@ -169,6 +169,44 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 }
             }
 
+            // 'Marital Status' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnMaritalStatusId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PtMaritalStatusTable TypeTable;
+                PtMaritalStatusRow TypeRow;
+
+                VerificationResult = null;
+
+                if ((!ARow.IsMaritalStatusNull())
+                    && (ARow.MaritalStatus != String.Empty))
+                {
+                    TypeTable = (PtMaritalStatusTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.MaritalStatusList);
+                    TypeRow = (PtMaritalStatusRow)TypeTable.Rows.Find(ARow.MaritalStatus);
+
+                    // 'Marital Status' must not be unassignable
+                    if ((TypeRow != null)
+                        && !TypeRow.AssignableFlag
+                        && (TypeRow.IsAssignableDateNull()
+                            || (TypeRow.AssignableDate <= DateTime.Today)))
+                    {
+                        // if 'Marital Status' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PPersonTable.GetMaritalStatusDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.MaritalStatus })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
             // 'MaritalStatusSince' must be valid
             ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnMaritalStatusSinceId];
 
@@ -230,6 +268,44 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (ARow.RowState == DataRowState.Deleted)
             {
                 return;
+            }
+
+            // 'Marital Status' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PFamilyTable.ColumnMaritalStatusId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PtMaritalStatusTable TypeTable;
+                PtMaritalStatusRow TypeRow;
+
+                VerificationResult = null;
+
+                if ((!ARow.IsMaritalStatusNull())
+                    && (ARow.MaritalStatus != String.Empty))
+                {
+                    TypeTable = (PtMaritalStatusTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.MaritalStatusList);
+                    TypeRow = (PtMaritalStatusRow)TypeTable.Rows.Find(ARow.MaritalStatus);
+
+                    // 'Marital Status' must not be unassignable
+                    if ((TypeRow != null)
+                        && !TypeRow.AssignableFlag
+                        && (TypeRow.IsAssignableDateNull()
+                            || (TypeRow.AssignableDate <= DateTime.Today)))
+                    {
+                        // if 'Marital Status' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PFamilyTable.GetMaritalStatusDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.MaritalStatus })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
             // 'MaritalStatusSince' must be valid
