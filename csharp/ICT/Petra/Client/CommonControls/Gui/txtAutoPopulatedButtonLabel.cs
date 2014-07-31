@@ -67,6 +67,9 @@ namespace Ict.Petra.Client.CommonControls
 
     /// <summary>Dataset changed</summary>
     public delegate void TDelegateDatasetChanged(DataSet ADataset);
+    
+    /// <summary>Partner Class changed for a control of type 'PartnerKey'</summary>
+    public delegate void TDelegatePartnerClassChanged(TPartnerClass? APartnerClass);
 
     class txtAutoPopulatedButtonLabel
     {
@@ -199,6 +202,9 @@ namespace Ict.Petra.Client.CommonControls
 
         /// <summary></summary>
         protected String FPartnerClass;
+
+        /// <summary></summary>
+        protected TPartnerClass? FCurrentPartnerClass = null;
 
         /// <summary></summary>
         protected String FValueMember;
@@ -455,6 +461,24 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// This property gets the partner's Partner Class for a control of type 'PartnerKey'
+        /// </summary>
+        public TPartnerClass? CurrentPartnerClass
+        {
+            get
+            {
+            	if (string.IsNullOrEmpty(this.Text))
+            	{
+            		return null;
+            	}
+            	else
+            	{
+                	return this.FCurrentPartnerClass;
+            	}
+            }
+        }
+
+        /// <summary>
         /// This property determines whether the text in the edit control can be
         /// changed or not.
         /// </summary>
@@ -596,6 +620,11 @@ namespace Ict.Petra.Client.CommonControls
         /// This property is used to provide a function which sets calling screen's dataset.
         /// </summary>
         public event TDelegateDatasetChanged DatasetChanged;
+
+        /// <summary>
+        /// This event is fired when the Partner Class is changed for a control of type 'PartnerKey'
+        /// </summary>
+        public event TDelegatePartnerClassChanged PartnerClassChanged;
 
         /// <summary>
         /// Here the hosting form has to provide a function to come up with a partner short name.
@@ -1747,6 +1776,13 @@ namespace Ict.Petra.Client.CommonControls
                                         {
                                             PartnerClassOut = SharedTypes.PartnerClassEnumToString(mPartnerClass2.Value);
                                         }
+                                        
+                                    	if (PartnerClassChanged != null && FCurrentPartnerClass != mPartnerClass2)
+				                        {
+                                    		PartnerClassChanged((TPartnerClass) mPartnerClass2);
+				                        }
+				                        
+				                        FCurrentPartnerClass = mPartnerClass2;
 
                                         if (PartnerFound != null)
                                         {
@@ -2099,12 +2135,25 @@ namespace Ict.Petra.Client.CommonControls
                             ValidResult = true;
                         }
 
+                        if (PartnerClassChanged != null && FCurrentPartnerClass != mPartnerClass)
+                        {
+                        	PartnerClassChanged(mPartnerClass);
+                        }
+                        
+                        FCurrentPartnerClass = mPartnerClass;
                         APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
                     }
                     else
                     {
                         mPartnerKey = 0;
                         mPartnerShortName = "";
+                        
+                        if (PartnerClassChanged != null && FCurrentPartnerClass != null)
+                        {
+                        	PartnerClassChanged(null);
+                        }
+                        
+                        FCurrentPartnerClass = null;
                     }
 
                     if ((ValueChanged != null) && (OldLabelText != mPartnerShortName))
@@ -2520,7 +2569,7 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// Adds items to controls ContextMenuStrip
+        /// Adds items to control's ContextMenuStrip
         /// </summary>
         /// <param name="AMenuItems">Item name and corresponding EventHandler</param>
         public void AddCustomContextMenuItems(List <Tuple <string, EventHandler>>AMenuItems)
@@ -2546,6 +2595,31 @@ namespace Ict.Petra.Client.CommonControls
                 CustomContextMenuStrip.Items.Insert(Index, new ToolStripMenuItem(MenuItem.Item1, null, MenuItem.Item2));
                 Index++;
             }
+
+            this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
+        }
+
+        /// <summary>
+        /// Changes the visibility of an item in a Custom ContextMenuStrip
+        /// </summary>
+        /// <param name="AItemText"></param>
+        /// <param name="AVisible"></param>
+        public void CustomContextMenuItemsVisibility(string AItemText, bool AVisible)
+        {
+            ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
+ 
+            if (CustomContextMenuStrip == null)
+            {
+                return;
+            }
+            
+        	foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
+        	{
+        		if (Item.Text == AItemText)
+        		{
+        			Item.Visible = AVisible;
+        		}
+        	}
 
             this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
         }

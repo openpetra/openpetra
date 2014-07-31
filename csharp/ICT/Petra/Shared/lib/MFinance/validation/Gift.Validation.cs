@@ -246,7 +246,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         ARecipientField,
                         MFinanceConstants.MOTIVATION_GROUP_GIFT,
                         "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()) + Environment.NewLine,
-                        "",
+                        AContext,
                         ValidationColumn,
                         null);
 

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
 
@@ -33,9 +34,12 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
-using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MPartner.Gui;
 
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -154,18 +158,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Make TextBox look like a label
             txtGiftReceipting.BorderStyle = System.Windows.Forms.BorderStyle.None;
             txtGiftReceipting.Font = TAppSettingsManager.GetDefaultBoldFont();
+            
+            //Event fires when the recipient key is changed and the new partner has a different Partner Class
+            txtDetailRecipientKey.PartnerClassChanged += RecipientPartnerClassChanged;
         }
 
         private void SetupTextBoxMenuItems()
         {
             List <Tuple <string, EventHandler>>ItemList = new List <Tuple <string, EventHandler>>();
 
-            ItemList.Add(new Tuple <string, EventHandler>("Open Donor History", OpenDonorHistory));
+            ItemList.Add(new Tuple <string, EventHandler>(Catalog.GetString("Open Donor History"), OpenDonorHistory));
             txtDetailDonorKey.AddCustomContextMenuItems(ItemList);
 
             ItemList.Clear();
-            ItemList.Add(new Tuple <string, EventHandler>("Open Recipient History", OpenRecipientHistory));
+            ItemList.Add(new Tuple <string, EventHandler>(Catalog.GetString("Open Recipient History"), OpenRecipientHistory));
+            ItemList.Add(new Tuple<string, EventHandler>(Catalog.GetString("Open Recipient Gift Destination"), OpenGiftDestination));
             txtDetailRecipientKey.AddCustomContextMenuItems(ItemList);
+
+            ItemList.Clear();
+            ItemList.Add(new Tuple<string, EventHandler>(Catalog.GetString("Open Recipient Gift Destination"), OpenGiftDestination));
+            txtField.AddCustomContextMenuItems(ItemList);
         }
 
         private void SetupComboTextBoxOverlayControls()
@@ -595,6 +607,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!FInKeyMinistryChanging)
                 {
                     GetRecipientData(APartnerKey);
+            		ValidateGiftDestination();
                 }
 
                 if (APartnerKey > 0)
@@ -815,6 +828,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMotivationDetail = string.Empty;
 
             ApplyMotivationDetailCodeFilter();
+            
+            ValidateGiftDestination();
         }
 
         private void ApplyMotivationDetailCodeFilter()
@@ -1970,6 +1985,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     txtField.Text = ARow.RecipientField.ToString();
                 }
+                
+                if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+                {
+                    mniRecipientHistory.Enabled = false;
+                    RecipientPartnerClassChanged(null);
+                }
+                else
+                {
+                	mniRecipientHistory.Enabled = true;
+                
+	                if (Convert.ToInt64(txtField.Text) == 0)
+	                {
+	                    RecipientPartnerClassChanged(null);
+	                }
+                }
 
                 ShowReceiptFrequency(Convert.ToInt64(txtDetailDonorKey.Text));
 
@@ -2311,6 +2341,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 dtpDateEntered,
                 ref VerificationResultCollection,
                 FValidationControlsDict);
+        }
+        
+        private void ValidateGiftDestination()
+        {
+        	// if no gift destination exists for parter then give the user the option to open Gift Destination maintenance screen
+        	if (Convert.ToInt64(txtField.Text) == 0 && FPreviouslySelectedDetailRow.RecipientKey != 0
+        	    && cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT &&
+        	    MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ")
+        	                      	+ FPreviouslySelectedDetailRow.RecipientDescription
+        	                      	+ " (" + FPreviouslySelectedDetailRow.RecipientKey + ").\n\n"
+        	                      	+ string.Format(Catalog.GetString("A Gift Destination will need to be assigned to this Partner before"
+        	                      		+ " this gift can be saved with the Motivation Group '{0}'."
+								  	+ " Would you like to do this now?"), MFinanceConstants.MOTIVATION_GROUP_GIFT),
+                              	Catalog.GetString("No valid Gift Destination"),
+                              	MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+    	    {
+        		TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), FPreviouslySelectedDetailRow.RecipientKey);
+				GiftDestinationForm.Show();
+        	}
         }
 
         /// <summary>
@@ -2958,6 +3007,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
                 Convert.ToInt64(txtDetailRecipientKey.Text),
                 FPetraUtilsObject.GetForm());
+        }
+        
+        private void OpenGiftDestination(System.Object sender, EventArgs e)
+    	{
+        	if (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
+        	{
+	    		TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(
+	        		FPetraUtilsObject.GetForm(), FPreviouslySelectedDetailRow.RecipientKey);
+				GiftDestinationForm.Show();
+        	}
+    	}
+        
+        // modifies menu items depending on the Recipeint's Partner class
+        private void RecipientPartnerClassChanged(TPartnerClass? APartnerClass)
+        {
+        	string ItemText = Catalog.GetString("Open Recipient Gift Destination");
+        		
+        	if (APartnerClass == TPartnerClass.UNIT || APartnerClass == null)
+        	{
+            	txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, false);
+            	txtField.CustomContextMenuItemsVisibility(ItemText, false);
+            	mniRecipientGiftDestination.Enabled = false;
+        	}
+        	else if (APartnerClass == TPartnerClass.FAMILY)
+        	{
+        		txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, true);
+            	txtField.CustomContextMenuItemsVisibility(ItemText, true);
+            	mniRecipientGiftDestination.Enabled = true;
+        	}
+        }
+        
+        /// <summary>
+        /// Update Gift Destination based on a broadcast message
+        /// </summary>
+        /// <param name="AFormsMessage"></param>
+        public void ProcessGiftDetainationBroadcastMessage(TFormsMessage AFormsMessage)
+        {
+        	if (Convert.ToInt64(txtDetailRecipientKey.Text) == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
+            {
+                foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).GiftDestinationTable.Rows)
+                {
+                    // check if record is active for today
+                    if ((Row.DateEffective <= DateTime.Today)
+                        && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
+                        && (Row.DateEffective != Row.DateExpires))
+                    {
+                    	txtField.Text = Row.FieldKey.ToString();
+                    }
+                }
+            }
         }
     }
 }
