@@ -571,7 +571,7 @@ useful parameters
 </target>
 
 <target name="pullVCSVersionInfo">
-    <exec program="bzr" commandline="version-info" output="${dir.delivery}/bin/vcs-revision.txt"/>
+    <exec program="bzr" commandline="version-info" output="${dir.delivery}/bin/vcs-revision.txt" failonerror="false"/>
     <echo message="Version Control System version updated in file ${dir.delivery}/bin/vcs-revision.txt" />
 </target>
 
