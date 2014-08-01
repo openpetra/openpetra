@@ -147,6 +147,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             SetupTextBoxMenuItems();
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
+            
+            //Event fires when the recipient key is changed and the new partner has a different Partner Class
+            txtDetailRecipientKey.PartnerClassChanged += RecipientPartnerClassChanged;
 
             //Set initial width of this textbox
             cmbKeyMinistries.ComboBoxWidth = 250;
@@ -158,9 +161,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Make TextBox look like a label
             txtGiftReceipting.BorderStyle = System.Windows.Forms.BorderStyle.None;
             txtGiftReceipting.Font = TAppSettingsManager.GetDefaultBoldFont();
-            
-            //Event fires when the recipient key is changed and the new partner has a different Partner Class
-            txtDetailRecipientKey.PartnerClassChanged += RecipientPartnerClassChanged;
         }
 
         private void SetupTextBoxMenuItems()
@@ -2357,8 +2357,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                               	Catalog.GetString("No valid Gift Destination"),
                               	MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
     	    {
-        		TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), FPreviouslySelectedDetailRow.RecipientKey);
-				GiftDestinationForm.Show();
+				OpenGiftDestination(this, null);
         	}
         }
 

@@ -27,6 +27,7 @@ using Ict.Common;
 using Ict.Common.Data;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
@@ -305,5 +306,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Tables.Remove("AUpdateErrors");
             }
         }
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            // update gift destination
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)
+            {
+            	ucoRecurringTransactions.ProcessGiftDetainationBroadcastMessage(AFormsMessage);
+            	
+            	MessageProcessed = true;
+            }
+
+            return MessageProcessed;
+        }
+
+        #endregion
     }
 }
