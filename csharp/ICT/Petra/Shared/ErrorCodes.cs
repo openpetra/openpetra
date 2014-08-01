@@ -290,6 +290,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Invalid Occupation Code entered: The Occupation specified with Occupation Code {0} is not valid.")]
         public const String ERR_OCCUPATIONCODE_INVALID = "PARTN.00031V";
 
+        /// <summary>Duplicate Family ID in one Family.</summary>
+        [ErrCodeAttribute("Duplicate Family ID.",
+             ErrorMessageText = "Duplicate Family IDs not allowed within one Family: More than one Person has been assigned Family ID {0}.")]
+        public const String ERR_DUPLICATE_FAMILY_ID = "PARTN.00032V";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

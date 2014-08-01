@@ -28,6 +28,10 @@ RootNode:
         tpgFinance: 
             Label: Finance
             Enabled: false
+        tpgEmail:
+            Label: Email
+            Controls: [ucoEmail]
+
         ucoGeneral:
             Type: Ict.Petra.Client.MSysMan.Gui.TUC_GeneralPreferences
             Dock: Fill
@@ -36,4 +40,7 @@ RootNode:
             Dock: Fill
         ucoPartner:
             Type: Ict.Petra.Client.MSysMan.Gui.TUC_PartnerPreferences
+            Dock: Fill
+        ucoEmail:
+            Type: Ict.Petra.Client.MSysMan.Gui.TUC_EmailPreferences
             Dock: Fill

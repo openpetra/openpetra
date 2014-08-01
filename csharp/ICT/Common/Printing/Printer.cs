@@ -25,6 +25,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using Ict.Common.Printing;
+using System.Drawing.Printing;
 
 namespace Ict.Common.Printing
 {
@@ -240,6 +241,9 @@ namespace Ict.Common.Printing
 
         /// current state of printer
         protected TPrinterState FCurrentState = new TPrinterState();
+
+        /// I can check whether I'm printing to a preview or a real printer.
+        protected PrintAction FprintAction;
 
         /// <summary>todoComment</summary>
         public System.Int32 CurrentPageNr

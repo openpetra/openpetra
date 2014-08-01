@@ -306,7 +306,6 @@
                         <value function="assign(GroupLeader, Yes)" condition="{pm_st_fg_leader_l}"/>
                         <value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
                         <value function="assign(MissingInformation, GetMissingInfo({AttendeeKey}, {ApplicationKey}, {RegistrationOffice}))"/>
-                        <value function="assign(DriverStatus, GetDriverStatus({AttendeeKey}))"/>
                         <value function="CalculateOneAttendeeFieldCost({Age}, {AttendeeKey}, {ApplicationKey}, {RegistrationOffice}, {ChargedOffice}, {OutreachType}, {RegistrationDate} )"/>
                     </queryDetail>
                 </query>
@@ -317,15 +316,6 @@
                 <query>
                     <queryDetail>
                         <value variable="MissingInformation"></value>
-                    </queryDetail>
-                </query>
-            </calculation>
-            
-            <calculation align="left" id="Driver Status" returns="text" returnsFormat="#,##0.00">
-                <caption><value text="Driver Status"></value></caption>
-                <query>
-                    <queryDetail>
-                        <value variable="DriverStatus"></value>
                     </queryDetail>
                 </query>
             </calculation>
@@ -692,9 +682,9 @@
     
     <level name="DummyLevel2">
         <detail>
-			<field whichfield="Columns">
-				<value text=""/>
-			</field>
+            <field whichfield="Columns">
+                <value text=""/>
+            </field>
         </detail>
     </level>
     

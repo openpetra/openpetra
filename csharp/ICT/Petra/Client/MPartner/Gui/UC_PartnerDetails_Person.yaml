@@ -37,7 +37,7 @@ RootNode:
         dtpDateOfBirth: {Validation=true}
         txtDecorations:
             Padding: 45,0,0,0
-        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Width:200}
+        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Width:200, Validation=true}
         txtAcademicTitle:
             Padding: 45,0,0,0
         dtpMaritalStatusSince: {Validation=true}

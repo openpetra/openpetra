@@ -32,7 +32,7 @@ RootNode:
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
             
-        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
+        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Validation=true}
         dtpMaritalStatusSince: {Validation=true}
         txtMaritalStatusComment:
             Multiline: true

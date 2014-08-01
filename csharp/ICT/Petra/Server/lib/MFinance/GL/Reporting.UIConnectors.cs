@@ -1121,7 +1121,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String CostCentreFilter = "";
             String CostCentreOptions = AParameters["param_costcentreoptions"].ToString();
 
-            if (CostCentreOptions == "CostCentreList")
+            if (CostCentreOptions == "SelectedCostCentres")
             {
                 String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
                 CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes

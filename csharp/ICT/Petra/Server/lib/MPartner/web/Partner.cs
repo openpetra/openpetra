@@ -212,7 +212,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (ResultValue
                 && (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
                             "SELECT COUNT(*) FROM PUB_" + ALedgerTable.GetTableDBName() +
-                            " WHERE " + ALedgerTable.GetLedgerNumberDBName() + " * 1000000 = " + APartnerKey.ToString(),
+                            " WHERE " + ALedgerTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString(),
                             Transaction)) > 0))
             {
                 ResultValue = false;

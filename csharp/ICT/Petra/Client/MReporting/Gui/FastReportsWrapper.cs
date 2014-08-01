@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.MSysMan.Gui;
 using System.Collections;
 using Ict.Common;
 using System.Reflection;
@@ -34,6 +35,8 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
+using System.IO;
+using Ict.Common.IO;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -149,6 +152,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             SetTemplate(TemplateTable[0]);
+            FInitState = TInitState.LoadedOK;
             return true;
         }
 
@@ -316,17 +320,22 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// Called from a delegate set up by me.
+        /// Called from a delegate set up by my constructor.
         /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
         /// </summary>
         /// <param name="ACalc"></param>
         public void DesignReport(TRptCalculator ACalc)
         {
+            ACalc.GetParameters().Add("param_design_template", true);
+
             if (FSelectedTemplate != null)
             {
                 if (FDataGetter != null)
                 {
-                    FDataGetter(ACalc);
+                    if (!FDataGetter(ACalc))
+                    {
+                        return;
+                    }
                 }
 
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
@@ -419,17 +428,57 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// Must be specified for ExportToStream
+        /// </summary>
+        public enum ReportExportType
+        {
+            /// <summary>
+            /// Allows text formatting but not external assets
+            /// </summary>
+            Html,
+            /// <summary>
+            /// Plain text
+            /// </summary>
+            Text
+        };
+
+        /// <summary>
+        /// The report will be generated, but not shown to the user.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        /// <param name="Format"></param>
+        public MemoryStream ExportToStream(TRptCalculator ACalc, ReportExportType Format)
+        {
+            object HtmlExport = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
+            Type ExporterType = HtmlExport.GetType();
+            MemoryStream HtmlStream = new MemoryStream();
+
+            FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
+                new object[] { FSelectedTemplate.XmlText });
+            LoadReportParams(ACalc);
+            FFastReportType.GetMethod("Prepare", new Type[0]).Invoke(FfastReportInstance, null);
+            FFastReportType.GetMethod("Export", new Type[] { ExporterType, HtmlStream.GetType() }).Invoke(FfastReportInstance,
+                new Object[] { HtmlExport, HtmlStream });
+            return HtmlStream;
+        }
+
+        /// <summary>
         /// Called from a delegate set up by me.
         /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
         /// </summary>
         /// <param name="ACalc"></param>
         public void GenerateReport(TRptCalculator ACalc)
         {
+            ACalc.GetParameters().Add("param_design_template", false);
+
             if (FSelectedTemplate != null)
             {
                 if (FDataGetter != null)
                 {
-                    FDataGetter(ACalc);
+                    if (!FDataGetter(ACalc))
+                    {
+                        return;
+                    }
                 }
 
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
@@ -442,6 +491,103 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FPetraUtilsObject.UpdateParentFormEndOfReport();
             }
+        }
+
+        /// <summary>
+        /// The report will be sent to a list of email addresses derived from the Cost Centres in the supplied CostCentreFilter.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCentreFilter"></param>
+        public void AutoEmailReports(TRptCalculator ACalc, Int32 ALedgerNumber, String ACostCentreFilter)
+        {
+            Int32 SuccessfulCount = 0;
+            String NoEmailAddr = "";
+            String FailedAddresses = "";
+
+            //
+            // I need to find the email addresses for the linked partners I'm sending to.
+
+            DataTable LinkedPartners = TRemote.MFinance.Setup.WebConnectors.GetLinkedPartners(ALedgerNumber, ACostCentreFilter);
+
+            LinkedPartners.DefaultView.Sort = "CostCentreCode";
+
+            foreach (DataRowView rv in LinkedPartners.DefaultView)
+            {
+                DataRow LinkedPartner = rv.Row;
+
+                if (LinkedPartner["EmailAddress"].ToString() != "")
+                {
+                    ACalc.AddStringParameter("param_linked_partner_cc", LinkedPartner["CostCentreCode"].ToString());
+                    FPetraUtilsObject.WriteToStatusBar("Generate " + FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
+                    MemoryStream ReportStream = FPetraUtilsObject.FFastReportsPlugin.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
+                    ReportStream.Position = 0;
+
+                    TUC_EmailPreferences.LoadEmailDefaults();
+                    TSmtpSender EmailSender = new TSmtpSender(
+                        TUserDefaults.GetStringDefault("SmtpHost"),
+                        TUserDefaults.GetInt16Default("SmtpPort"),
+                        TUserDefaults.GetBooleanDefault("SmtpUseSsl"),
+                        TUserDefaults.GetStringDefault("SmtpUser"),
+                        TUserDefaults.GetStringDefault("SmtpPassword"),
+                        "");
+                    EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                    EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+
+                    String EmailBody = "";
+
+                    if (TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment"))
+                    {
+                        EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
+                        EmailSender.AttachFromStream(ReportStream, FReportName + ".html");
+                    }
+                    else
+                    {
+                        StreamReader sr = new StreamReader(ReportStream);
+                        EmailBody = sr.ReadToEnd();
+                    }
+
+                    Boolean SentOk = EmailSender.SendEmail(
+                        TUserDefaults.GetStringDefault("SmtpFromAccount"),
+                        TUserDefaults.GetStringDefault("SmtpDisplayName"),
+                        "tim.ingham@om.org", //LinkedPartner["EmailAddress"]
+                        FReportName + " Report for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
+                        EmailBody);
+
+                    if (SentOk)
+                    {
+                        SuccessfulCount++;
+                    }
+                    else // Email didn't send for some reason
+                    {
+                        FailedAddresses += ("\r\n" + LinkedPartner["EmailAddress"]);
+                    }
+                }
+                else // No Email Address for this Partner
+                {
+                    NoEmailAddr += ("\r\n" + LinkedPartner["PartnerKey"] + " " + LinkedPartner["PartnerShortName"]);
+                }
+            }
+
+            String SendReport = "";
+
+            if (SuccessfulCount > 0)
+            {
+                SendReport += String.Format(Catalog.GetString("Reports emailed to {0} addresses."), SuccessfulCount) + "\r\n\r\n";
+            }
+
+            if (NoEmailAddr != "")
+            {
+                SendReport += (Catalog.GetString("These Partners have no email addresses:") + NoEmailAddr + "\r\n\r\n");
+            }
+
+            if (FailedAddresses != "")
+            {
+                SendReport += (Catalog.GetString("Failed to send email to these addresses:") + FailedAddresses + "\r\n\r\n");
+            }
+
+            MessageBox.Show(SendReport, Catalog.GetString("Auto-email to linked partners"));
+            FPetraUtilsObject.WriteToStatusBar("");
         }
     }
 }
