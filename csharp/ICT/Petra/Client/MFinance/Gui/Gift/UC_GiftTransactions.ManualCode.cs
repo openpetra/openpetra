@@ -72,6 +72,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FGLEffectivePeriodChanged = false;
 
         private List <Int64>FNewDonorsList = new List <long>();
+        
+        // this should be updated each time  txtField is updated to prevent problems at validation
+        private Int64 FCorrespondingRecipientKeyToField = 0;
 
         /// <summary>
         /// The current Ledger number
@@ -1166,11 +1169,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtField, APartnerKey, true);
 
-            if (Convert.ToInt64(txtField.Text) == 0)
+            if (Convert.ToInt64(txtField.Text) == 0 && APartnerKey != 0)
             {
                 txtField.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey,
                     FPreviouslySelectedDetailRow.DateEntered).ToString();
             }
+            
+            FCorrespondingRecipientKeyToField = APartnerKey;
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -1738,6 +1743,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailGiftTransactionAmount.NumberValueDecimal = 0;
                 txtDetailRecipientKey.Text = string.Empty;
                 txtField.Text = string.Empty;
+                FCorrespondingRecipientKeyToField = 0;
                 txtDetailAccountCode.Clear();
                 cmbDetailReceiptLetterCode.SelectedIndex = -1;
                 cmbDetailMotivationGroupCode.SelectedIndex = -1;
@@ -1980,10 +1986,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (ARow.IsRecipientFieldNull())
                 {
                     txtField.Text = string.Empty;
+                    FCorrespondingRecipientKeyToField = 0;
                 }
                 else
                 {
                     txtField.Text = ARow.RecipientField.ToString();
+                    FCorrespondingRecipientKeyToField = ARow.RecipientField;
                 }
                 
                 if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
@@ -2325,6 +2333,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
+        	
+        	// this happens if validation is called after recipient key has been changed but before RecipientKeyChanged is called,
+        	// meaning that the Field has not yet been updated
+        	if (ARow.RecipientKey != FCorrespondingRecipientKeyToField)
+        	{
+        		GetRecipientData(Convert.ToInt64(txtDetailRecipientKey.Text));
+        		FPreviouslySelectedDetailRow.RecipientField = Convert.ToInt64(txtField.Text);
+        	}
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
@@ -3053,6 +3069,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         && (Row.DateEffective != Row.DateExpires))
                     {
                     	txtField.Text = Row.FieldKey.ToString();
+                    	FCorrespondingRecipientKeyToField = Row.FieldKey;
                     }
                 }
             }
