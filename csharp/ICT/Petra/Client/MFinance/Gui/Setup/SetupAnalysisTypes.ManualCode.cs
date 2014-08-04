@@ -136,9 +136,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (ucoValues.Count > 0)
             {
-                MessageBox.Show(
-                    Catalog.GetString("You must delete all the Analysis Values for the selected Analysis Type before you can delete this record."), 
-                    MCommon.MCommonResourcestrings.StrRecordDeletionTitle);
+                string msg = string.Empty;
+
+                if (ucoValues.GridCount == 0)
+                {
+                    // The grid must be filtered because it has no rows!
+                    msg += Catalog.GetString("The selected Analysis Type has Analysis Values associated with it, but they are being filtered out of the display.");
+                    msg += "  ";
+                }
+
+                msg += Catalog.GetString("You must delete all the Analysis Values for the selected Analysis Type before you can delete this record.");
+                MessageBox.Show(msg, MCommon.MCommonResourcestrings.StrRecordDeletionTitle);
                 return;
             }
 
