@@ -1111,8 +1111,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             
         	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-    		// validate dtpTaxDeductibleValidFrom
-    		ValidateValidFromDate();
+        	if (FTaxDeductiblePercentageEnabled && chkLimitTaxDeductibility.Checked)
+        	{
+	    		// validate dtpTaxDeductibleValidFrom
+	    		ValidateValidFromDate();
+        	}
 
             // obtain the bank's country code (if it exists)
             string CountryCode = "";
@@ -1155,18 +1158,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         	bool ReturnValue = true;
 
     		// validate dtpTaxDeductibleValidFrom
-            if (FTaxDeductiblePercentageEnabled && chkLimitTaxDeductibility.Checked)
-            {
-            	if (!dtpTaxDeductibleValidFrom.ValidDate(false))
-            	{
-            		VerificationResult = new TScreenVerificationResult(dtpTaxDeductibleValidFrom.DateVerificationResult,
-													                        ValidationColumn,
-													                        dtpTaxDeductibleValidFrom);
-            		VerificationResult.OverrideResultContext(this);
-            		
-            		ReturnValue = false;
-            	}
-            }
+        	if (!dtpTaxDeductibleValidFrom.ValidDate(false))
+        	{
+        		VerificationResult = new TScreenVerificationResult(dtpTaxDeductibleValidFrom.DateVerificationResult,
+												                        ValidationColumn,
+												                        dtpTaxDeductibleValidFrom);
+        		VerificationResult.OverrideResultContext(this);
+        		
+        		ReturnValue = false;
+        	}
 
             VerificationResultCollection.Remove(ValidationColumn);
     		VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
