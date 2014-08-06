@@ -146,7 +146,6 @@ OpenPetra:
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Transaction, Batch]
                     GLBatchMaintenance:
-                        AllocationJournal: {ActionOpenScreen=TFrmAllocationJournalDialog}
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
                         RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches, ActionOpenScreen=TFrmRecurringGLBatch}
                         ImportBatches: {Description: Import batch data from CSV file, Namespace=Ict.Petra.Client.MFinance.Gui, ActionClick=TFinanceMain.LoadGLBatchesFormForImport}

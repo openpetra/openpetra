@@ -191,7 +191,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.txtDetailAmount.TextChanged += new System.EventHandler(this.AmountChanged);
 	    }
 	    
-	    /// delete all rows
+	    // delete highlighted row/s
+	    private void DeleteRecord(Object Sender, EventArgs e)
+	    {
+	    	this.DeleteAllocations();
+	    }
+	    
+	    // delete all rows
 	    private void DeleteAllAllocations(Object Sender, EventArgs e)
 	    {
 	    	if (FPreviouslySelectedDetailRow == null)
@@ -236,6 +242,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 	    private void ValidateEverything()
 	    {
 	    	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+	    	
+	    	TSharedFinanceValidation_GL.ValidateAllocationJournalDialogEverything(this, txtReference,
+	    		ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict);
 	    }
 	    
 	    #endregion

@@ -481,6 +481,30 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             return VerifResultCollAddedCount == 0;
         }
+
+        /// <summary>
+        /// Extra validation for the AllocationJournalDialog.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ATxtReference">Control for the Reference</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        public static bool ValidateAllocationJournalDialogEverything(object AContext, Control ATxtReference,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+        	// Does nothing at the moment.
+        	
+            /*DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult;
+            int VerifResultCollAddedCount = 0;
+
+            return VerifResultCollAddedCount == 0;*/
+            return true;
+        }
     }
 
     /// Detailed information for each debit and credit in a general ledger journal.

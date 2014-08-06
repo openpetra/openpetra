@@ -48,7 +48,7 @@ RootNode:
                Row3: [rbtPercentageOption, txtDetailPercentage]
         pnlDetailButtons:
             Dock: Bottom
-            Controls: [btnNew, btnDelete, btnDeleteAll]
+            Controls: [btnNew, btnDeleteAllocation, btnDeleteAll]
             ControlsOrientation: horizontal
 
         grdDetails:
@@ -102,5 +102,5 @@ RootNode:
             Validation: true
         
         btnNew: {Action=actNew, Width=80}
-        btnDelete: {Action=actDelete, Width=80}
+        btnDeleteAllocation: {Action=actDelete, Width=80}
         btnDeleteAll: {Action=actDeleteAll, Width=80}
