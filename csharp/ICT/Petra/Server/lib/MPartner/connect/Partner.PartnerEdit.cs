@@ -276,9 +276,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // p_banking_details
             try
             {
-            	//FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
-            		//SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
-        		FTaxDeductiblePercentageEnabled = true;
+            	FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+            		SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);

@@ -1,0 +1,106 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Enter Allocation Journal Information
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.AllocationJournalTDS
+    DetailTable: Allocations
+    UtilObjectClass: TFrmPetraEditUtils
+    InterfaceName: IFrmPetraEdit
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Validation]
+    FormType: dialog
+    Template: windowEdit
+    WindowWidth: 470
+    WindowHeight: 560
+
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
+        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllAllocations}
+    Controls:
+        pnlDialogContent:
+    #        Padding: 4,0,8,0
+            Controls: [pnlInfo, grpAllocateFrom, grpAllocateTo]
+            Dock: Fill
+        pnlInfo:
+            Controls:
+                Row0: [txtLedgerNumber, txtBatchNumber]
+                Row1: [txtNarrative]
+                Row2: [txtReference]
+            Dock: Top
+        grpAllocateFrom:
+            Controls:
+                Row0: [cmbFromCostCentreCode]
+                Row1: [cmbFromAccountCode]
+                Row2: [rgrDebitCredit, txtFromAmount]
+            Dock: Top
+        grpAllocateTo:
+            Controls: [pnlDetailGrid, pnlDetails]
+            Dock: Fill
+        pnlDetailGrid:
+            Dock: Fill
+            Controls: [pnlDetailButtons, grdDetails]
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+               Row0: [cmbDetailCostCentreCode]
+               Row1: [cmbDetailAccountCode]
+               Row2: [rbtAmountOption, txtDetailAmount]
+               Row3: [rbtPercentageOption, txtDetailPercentage]
+        pnlDetailButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete, btnDeleteAll]
+            ControlsOrientation: horizontal
+
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailPercentage, DetailAmount, DetailCostCentreCode, DetailAccountCode]
+            CustomColumns:
+                DetailPercentage: {Label=%, Type=Decimal}
+                DetailAmount: {Label=Amount, Type=Decimal}
+                DetailCostCentreCode: {Label=Cost Centre}
+                DetailAccountCode: {Label=Account}
+
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, Width=100}
+        txtNarrative:
+            Stretch: horizontally
+            ColSpan: 2
+            Height: 60
+            Multiline: true
+            Stretch: horizontally
+            ScrollBars: Vertical
+        txtReference:
+        cmbFromCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, ColSpan=2}
+        cmbFromAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2}
+        rgrDebitCredit:
+            ControlsOrientation: horizontal
+            OptionalValues: [Debit, =Credit]
+            NoLabel: true
+            BorderVisible: false
+        txtFromAmount:
+            Label: Amount
+            Width: 120
+            Format: Currency
+            Padding: 0,14,0,0
+            OnChange: FromAmountChanged
+            Validation: true
+        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, ColSpan=2}
+        cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2}
+        rbtAmountOption: {Label=Amount}
+        rbtPercentageOption: {Label=Percentage, OnChange=AmountPercentageChanged}
+        txtDetailAmount: {NoLabel=true}
+            Label: Amount
+            Width: 120
+            Format: Currency
+            Enabled: false
+            OnChange: AmountChanged
+            Validation: true
+        txtDetailPercentage: {NoLabel=true}
+            Width: 80
+            Format: PercentDecimal
+            OnChange: PercentageChanged
+            Validation: true
+        
+        btnNew: {Action=actNew, Width=80}
+        btnDelete: {Action=actDelete, Width=80}
+        btnDeleteAll: {Action=actDeleteAll, Width=80}
