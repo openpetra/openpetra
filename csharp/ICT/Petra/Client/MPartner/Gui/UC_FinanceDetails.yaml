@@ -21,28 +21,39 @@ RootNode:
     
         pnlMiscSettings:
             Dock: Top
+            Height: 114
             Controls:
-                Row0: [grpDonorGiftReceipting, pnlRightMiscSettings]
-        grpDonorGiftReceipting:
+                Row0: [grpLeftMiscSettings, pnlRightMiscSettings]
+        grpLeftMiscSettings:
             Label: Gift Processing (for donors)
             Controls:
                 Row0: [cmbReceiptLetterFrequency]
                 Row1: [chkReceiptEachGift]
                 Row2: [chkAnonymousDonor]
-            Width: 380
-            Height: 110
+            Width: 310
+            Height: 95
         pnlRightMiscSettings:
             Controls:
                 Row0: [grpRecipientGiftReceipting]
                 Row1: [grpOther]
-            Width: 390
+            Width: 470
+            Padding: -7,0,0,0
         grpRecipientGiftReceipting:
-            Controls: [chkEmailGiftStatement]
+            Controls:
+                Row0: [chkEmailGiftStatement, chkLimitTaxDeductibility]
+                Row1: [pnlTaxDeductible]
             Padding: 0,-7,0,0
-            Width: 385
+            Width: 460
+            Height: 41
+        pnlTaxDeductible:
+            Controls: [txtTaxDeductiblePercentage, dtpTaxDeductibleValidFrom]
+            ControlsOrientation: horizontal
+            Padding: -4,-7,0,0
+            Visible: false
+            ColSpan: 2
         grpOther:
             Controls: [txtFinanceComment]
-            Width: 385
+            Width: 460
             Padding: 0,-7,0,0
             Label: Finance Comment
    
@@ -91,7 +102,6 @@ RootNode:
             Width: 210
             Padding: -5,0,0,0
             Controls: [lblAccountSharedWith, grdAccountSharedWith]
-            
   
         cmbReceiptLetterFrequency: 
             List: FrequencyList
@@ -101,10 +111,19 @@ RootNode:
         chkAnonymousDonor:
         chkEmailGiftStatement:
             Label: Email Recipient Gift Statement
+        chkLimitTaxDeductibility:
+           Visible: false
+           OnChange: ChkLimitTaxDeductibility_Change
+        txtTaxDeductiblePercentage:
+            Format: PercentDecimal(2)
+            Enabled: false
+        dtpTaxDeductibleValidFrom:
+            Label: Valid From
+            Enabled: false
         txtFinanceComment:
             Multiline: true
-            Height: 47
-            Width: 375
+            Height: 32
+            Width: 445
             NoLabel: true
             ScrollBars: Vertical
  
@@ -125,18 +144,21 @@ RootNode:
             OnLeave: PartnerKeyChanged
             Width: 120
             Type: Bank
+            Tooltip: Select a Bank
         cmbBankName:
             List: UserDefinedList
             Label: Bank Name
             ClearIfSettingEmpty: true
             Width: 230
             OnEnter: CheckIfRowIsShared
+            Tooltip: Select a Bank Name
         cmbBankCode:
             List: UserDefinedList
             Label: Bank Code
             ClearIfSettingEmpty: true
             Width: 210
             OnEnter: CheckIfRowIsShared
+            Tooltip: Select a Bank Code
         lblBicSwiftCode:
             Label: BIC/SWIFT Code
             Width: 250
@@ -164,7 +186,7 @@ RootNode:
             OnEnter: CheckIfRowIsShared
         txtComment:
             Width: 430
-            Height: 34
+            Height: 32
             Multiline: true
             ScrollBars: Vertical
             OnEnter: CheckIfRowIsShared
@@ -176,14 +198,14 @@ RootNode:
             EnableMultiSelection: false
  
  
-        btnNew: {Width=80}
+        btnNew: {Width=80, Height=22}
             Action: actNew
-        btnShare: {Width=95}
+        btnShare: {Width=95, Height=22}
             Action: actShare
-        btnDelete: {Width=80}
+        btnDelete: {Width=80, Height=22}
             Action: actDelete
             Padding: 8,0,0,0
-        btnSetMainAccount: {Width=120, StartNewButtonGroup=true, Enabled=false}
+        btnSetMainAccount: {Width=120, Height=22, StartNewButtonGroup=true, Enabled=false}
             Action: actSetMainAccount
             Padding: 8,0,0,0
 

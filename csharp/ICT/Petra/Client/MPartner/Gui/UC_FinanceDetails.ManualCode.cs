@@ -21,32 +21,25 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+using SourceGrid;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using Ict.Common;
-using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
-using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Shared.MCommon;
-using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MPartner.Validation;
-using Ict.Petra.Shared.MPartner.Partner.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -63,6 +56,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
+        private bool FTaxDeductiblePercentageEnabled = false;
+
+        private bool FFirstTime = true;
+
+        private bool FValidateBankingDetailsExtra = false;
+
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
         {
@@ -74,6 +73,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FPartnerEditUIConnector = value;
+            }
+        }
+
+        /// <summary>
+        /// run extra validation checks
+        /// </summary>
+        public bool ValidateBankingDetailsExtra
+        {
+            set
+            {
+                FValidateBankingDetailsExtra = value;
             }
         }
 
@@ -109,13 +119,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             // add event to txtBankKey that is fired when the dataset is changed in the FindBank dialog
             txtBankKey.DatasetChanged += new TDelegateDatasetChanged(this.DatasetChanged);
 
-            // change status bar texts
-            FPetraUtilsObject.SetStatusBarText(txtBankKey, Catalog.GetString("Select a Bank."));
-            FPetraUtilsObject.SetStatusBarText(cmbBankName, Catalog.GetString("Select a Bank Name."));
-            FPetraUtilsObject.SetStatusBarText(cmbBankCode, Catalog.GetString("Select a Bank Code."));
-
             // add event which will populate the bank combo boxes when 'Finance details' tab is shown for the first time
             pnlDetails.VisibleChanged += new EventHandler(pnlDetails_VisibleChanged);
+
+            // set up Tax Deductibility (specifically for OM Switzerland)
+            FTaxDeductiblePercentageEnabled = FPartnerEditUIConnector.IsTaxDeductiblePercentageEnabled();
+
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                chkLimitTaxDeductibility.Visible = true;
+                pnlTaxDeductible.Visible = true;
+                pnlMiscSettings.Height += 27;
+                grpRecipientGiftReceipting.Height += 27;
+                grpLeftMiscSettings.Height += 27;
+                pnlRightMiscSettings.Height += 27;
+                grpOther.Location = new System.Drawing.Point(grpOther.Location.X, grpOther.Location.Y + 27);
+
+                dtpTaxDeductibleValidFrom.AllowEmpty = false;
+            }
+            else
+            {
+                grpRecipientGiftReceipting.Controls.Remove(this.lblLimitTaxDeductibility);
+            }
         }
 
         /// <summary>
@@ -154,31 +179,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void PopulateComboBoxes()
         {
-            // For some reason this method sets the RowState of one PLocation record and one PPartnerLocation record from MainDS to modified,
-            // even if it hasn't been modified. This causes the save button to be enabled even though no data might was changed.
-            // There is no clear reason why! To avoid this I record all records that are Unchanged at the start of the method and ensure they are
-            // still unchanged at the end of the method.
-            List <int>PartnerLocationList = new List <int>();
-            List <int>LocationList = new List <int>();
-
-            for (int i = 0; i < FMainDS.PPartnerLocation.Rows.Count; i++)
-            {
-                if (FMainDS.PPartnerLocation.Rows[i].RowState == DataRowState.Unchanged)
-                {
-                    PartnerLocationList.Add(i);
-                }
-            }
-
-            for (int i = 0; i < FMainDS.PLocation.Rows.Count; i++)
-            {
-                if (FMainDS.PLocation.Rows[i].RowState == DataRowState.Unchanged)
-                {
-                    LocationList.Add(i);
-                }
-            }
+            // For some reason this method enables the save button
 
             // temporarily remove the event that enables the save button when data is changed
             FPetraUtilsObject.ActionEnablingEvent -= ((TFrmPartnerEdit)FPetraUtilsObject.GetForm()).ActionEnabledEvent;
+            bool HasChanges = FPetraUtilsObject.HasChanges;
 
             // temporily remove events from comboboxes
             cmbBankName.SelectedValueChanged -= new System.EventHandler(this.BankNameChanged);
@@ -187,29 +192,41 @@ namespace Ict.Petra.Client.MPartner.Gui
             // load bank records
             if (FBankDataset == null)
             {
-                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(true);
+                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
                 txtBankKey.DataSet = FBankDataset;
             }
 
-            // add empty row
-            DataRow emptyRow = FBankDataset.PBank.NewRow();
-            emptyRow[PBankTable.ColumnPartnerKeyId] = 0;
-            emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
-            emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("");
-            FBankDataset.PBank.Rows.Add(emptyRow);
+            // create new datatable without any partnerkey duplicates (same bank with different locations)
+            PBankTable ComboboxTable = new PBankTable();
 
-            // add inactive row
-            emptyRow = FBankDataset.PBank.NewRow();
+            foreach (BankTDSPBankRow Row in FBankDataset.PBank.Rows)
+            {
+                if (!ComboboxTable.Rows.Contains(Row.PartnerKey))
+                {
+                    PBankRow AddRow = (PBankRow)ComboboxTable.NewRow();
+                    AddRow.PartnerKey = Row.PartnerKey;
+                    AddRow.BranchName = Row.BranchName;
+                    AddRow.BranchCode = Row.BranchCode;
+                    ComboboxTable.Rows.Add(AddRow);
+                }
+            }
+
+            // add empty row
+            DataRow emptyRow = ComboboxTable.NewRow();
             emptyRow[PBankTable.ColumnPartnerKeyId] = -1;
             emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
-            emptyRow[PBankTable.ColumnBranchCodeId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ";
-            FBankDataset.PBank.Rows.Add(emptyRow);
+            emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("");
+            ComboboxTable.Rows.Add(emptyRow);
 
-            cmbBankName.InitialiseUserControl();
-            cmbBankCode.InitialiseUserControl();
+            // add inactive row
+            emptyRow = ComboboxTable.NewRow();
+            emptyRow[PBankTable.ColumnPartnerKeyId] = -2;
+            emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
+            emptyRow[PBankTable.ColumnBranchCodeId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ";
+            ComboboxTable.Rows.Add(emptyRow);
 
             // populate the bank name combo box
-            cmbBankName.InitialiseUserControl(FBankDataset.PBank,
+            cmbBankName.InitialiseUserControl(ComboboxTable,
                 PBankTable.GetPartnerKeyDBName(),
                 PBankTable.GetBranchNameDBName(),
                 PBankTable.GetBranchCodeDBName(),
@@ -222,7 +239,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
 
             // populate the bank code combo box
-            cmbBankCode.InitialiseUserControl(FBankDataset.PBank,
+            cmbBankCode.InitialiseUserControl(ComboboxTable,
                 PBankTable.GetBranchCodeDBName(),
                 PBankTable.GetPartnerKeyDBName(),
                 null);
@@ -245,17 +262,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FPetraUtilsObject.ActionEnablingEvent += ((TFrmPartnerEdit)FPetraUtilsObject.GetForm()).ActionEnabledEvent;
-
-            // reject any unwanted changes
-            foreach (int i in PartnerLocationList)
-            {
-                FMainDS.PPartnerLocation.Rows[i].RejectChanges();
-            }
-
-            foreach (int i in LocationList)
-            {
-                FMainDS.PLocation.Rows[i].RejectChanges();
-            }
+            FPetraUtilsObject.HasChanges = HasChanges;
         }
 
         #endregion
@@ -264,10 +271,30 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDataManual()
         {
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                if ((FMainDS.PPartnerTaxDeductiblePct != null) && (FMainDS.PPartnerTaxDeductiblePct.Rows.Count > 0))
+                {
+                    chkLimitTaxDeductibility.Checked = true;
+                    txtTaxDeductiblePercentage.NumberValueDecimal =
+                        ((PPartnerTaxDeductiblePctRow)FMainDS.PPartnerTaxDeductiblePct.Rows[0]).PercentageTaxDeductible;
+                    dtpTaxDeductibleValidFrom.Text = ((PPartnerTaxDeductiblePctRow)FMainDS.PPartnerTaxDeductiblePct.Rows[0]).DateValidFrom.ToString();
+                }
+            }
+
             if (grdDetails.Rows.Count > 1)
             {
                 btnSetMainAccount.Enabled = true;
                 pnlDetails.Visible = true;
+            }
+
+            // modify events on first run only
+            if (FFirstTime)
+            {
+                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeaving);
+                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeavingManual);
+
+                FFirstTime = false;
             }
         }
 
@@ -384,6 +411,45 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
                 FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
                 FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    if (chkLimitTaxDeductibility.Checked)
+                    {
+                        if (!dtpTaxDeductibleValidFrom.ValidDate(false))
+                        {
+                            ValidateValidFromDate();
+                            return false;
+                        }
+
+                        if (FMainDS.PPartnerTaxDeductiblePct == null)
+                        {
+                            FMainDS.Tables.Add(new PPartnerTaxDeductiblePctTable());
+                            FMainDS.InitVars();
+                        }
+
+                        if (FMainDS.PPartnerTaxDeductiblePct.Count == 0)
+                        {
+                            PPartnerTaxDeductiblePctRow NewRow = FMainDS.PPartnerTaxDeductiblePct.NewRowTyped(true);
+                            NewRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+                            NewRow.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+                            NewRow.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
+                            FMainDS.PPartnerTaxDeductiblePct.Rows.Add(NewRow);
+                        }
+                        else
+                        {
+                            FMainDS.PPartnerTaxDeductiblePct[0].DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+                            FMainDS.PPartnerTaxDeductiblePct[0].PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
+                        }
+                    }
+                    else
+                    {
+                        if ((FMainDS.PPartnerTaxDeductiblePct != null) && (FMainDS.PPartnerTaxDeductiblePct.Count > 0))
+                        {
+                            FMainDS.PPartnerTaxDeductiblePct[0].Delete();
+                        }
+                    }
+                }
             }
             catch (ConstraintException)
             {
@@ -393,6 +459,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             return true;
         }
 
+        private BankTDSPBankRow GetCurrentRow(long APartnerKey)
+        {
+            BankTDSPBankRow ReturnValue = null;
+
+            // Multiple rows could have the same partner keys but different locaitons.
+            // We just want the first row.
+            foreach (BankTDSPBankRow Row in FBankDataset.PBank.Rows)
+            {
+                if (Row.PartnerKey == APartnerKey)
+                {
+                    ReturnValue = Row;
+                    break;
+                }
+            }
+
+            return ReturnValue;
+        }
+
         #endregion
 
         #region ActionHandling
@@ -400,7 +484,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// The currently selected account's PBank row
         /// </summary>
-        private PBankRow FCurrentBankRow;
+        private BankTDSPBankRow FCurrentBankRow;
 
         // called when FindBank dialog is accepted
         private void PartnerKeyChanged(long APartnerKey, String APartnerShortName, bool AValidSelection)
@@ -416,7 +500,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PopulateComboBoxes();
             }
 
-            FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { APartnerKey });
+            FCurrentBankRow = GetCurrentRow(APartnerKey);
 
             // change the BankName combo (if it was not the control used to change the bank)
             if ((FCurrentBankRow != null) && (cmbBankName.GetSelectedString() != FCurrentBankRow.PartnerKey.ToString()))
@@ -430,7 +514,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 while (cmbBankName.GetSelectedString() != FCurrentBankRow.BranchName
                        && cmbBankName.GetSelectedDescription() != FCurrentBankRow.BranchCode)
                 {
-                    cmbBankName.SelectedIndex += 1;
+                    cmbBankName.cmbCombobox.SelectedIndex += 1;
                 }
 
                 cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
@@ -464,17 +548,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             if ((FCurrentBankRow != null) && (APartnerKey != 0) && (APartnerKey != -1))
             {
                 lblBicSwiftCode.Text = Catalog.GetString("BIC/SWIFT Code: ") + FCurrentBankRow.Bic;
-                lblCountry.Text = Catalog.GetString("Country: No Valid Address On File");
+                lblCountry.Text = Catalog.GetString("Country: ");
 
-                foreach (PPartnerLocationRow Row in FBankDataset.PPartnerLocation.Rows)
+                if (!string.IsNullOrEmpty(FCurrentBankRow.CountryCode))
                 {
-                    if ((Row.PartnerKey == FCurrentBankRow.PartnerKey)
-                        && (Row.IsDateGoodUntilNull() || (Row.DateGoodUntil >= DateTime.Today)))
-                    {
-                        lblCountry.Text = "Country: " +
-                                          ((PLocationRow)FBankDataset.PLocation.Rows.Find(new object[] { Row.SiteKey, Row.LocationKey })).CountryCode;
-                        break;
-                    }
+                    lblCountry.Text += FCurrentBankRow.CountryCode;
+                }
+                else
+                {
+                    lblCountry.Text += Catalog.GetString("No Valid Address On File");
                 }
             }
             else
@@ -509,11 +591,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                      && (cmbBankName.GetSelectedString() != "")
                      && cmbBankName.ContainsFocus)
             {
-                FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { Convert.ToInt64(cmbBankName.GetSelectedString()) });
+                FCurrentBankRow = GetCurrentRow(Convert.ToInt64(cmbBankName.GetSelectedString()));
 
                 // update partner key in txtBankKey
-                txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
-                PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
+                if (FCurrentBankRow != null)
+                {
+                    txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
+                    PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
+                }
+                else
+                {
+                    txtBankKey.Text = "0";
+                    PartnerKeyChanged(0, "", true);
+                }
             }
         }
 
@@ -534,7 +624,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString()))
             {
-                FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { cmbBankCode.GetSelectedDescription() });
+                FCurrentBankRow = GetCurrentRow(Convert.ToInt64(cmbBankCode.GetSelectedDescription()));
 
                 // update partner key in txtBankKey
                 txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
@@ -566,7 +656,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Cursor.Current = Cursors.WaitCursor;
 
                 // load bank records
-                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(true);
+                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
                 txtBankKey.DataSet = FBankDataset;
 
                 // populate the comboboxes for Bank Name and Bank Code
@@ -576,6 +666,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Cursor.Current = Cursors.Default;
             }
 
+            FValidateBankingDetailsExtra = true;
             this.CreateNewPBankingDetails();
         }
 
@@ -851,14 +942,31 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Cursor.Current = Cursors.WaitCursor;
 
                 // load bank records
-                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(true);
+                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
                 txtBankKey.DataSet = FBankDataset;
-
-                Cursor.Current = Cursors.Default;
 
                 // populate the comboboxes for Bank Name and Bank Code
                 Thread NewThread = new Thread(PopulateComboBoxes);
                 NewThread.Start();
+
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        private void grdDetails_FocusRowLeavingManual(object sender, SourceGrid.RowCancelEventArgs e)
+        {
+            FValidateBankingDetailsExtra = true;
+            grdDetails_FocusRowLeaving(sender, e);
+        }
+
+        private void ChkLimitTaxDeductibility_Change(System.Object sender, System.EventArgs e)
+        {
+            txtTaxDeductiblePercentage.Enabled = chkLimitTaxDeductibility.Checked;
+            dtpTaxDeductibleValidFrom.Enabled = chkLimitTaxDeductibility.Checked;
+
+            if (dtpTaxDeductibleValidFrom.Enabled && string.IsNullOrEmpty(dtpTaxDeductibleValidFrom.Text))
+            {
+                dtpTaxDeductibleValidFrom.Text = DateTime.Today.ToString();
             }
         }
 
@@ -1003,6 +1111,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            if (FTaxDeductiblePercentageEnabled && chkLimitTaxDeductibility.Checked)
+            {
+                // validate dtpTaxDeductibleValidFrom
+                ValidateValidFromDate();
+            }
+
             // obtain the bank's country code (if it exists)
             string CountryCode = "";
 
@@ -1018,6 +1132,46 @@ namespace Ict.Petra.Client.MPartner.Gui
                 CountryCode,
                 ref VerificationResultCollection,
                 FValidationControlsDict);
+
+            // extra validation
+            if (FValidateBankingDetailsExtra)
+            {
+                TSharedPartnerValidation_Partner.ValidateBankingDetailsExtra(this,
+                    ARow,
+                    ref VerificationResultCollection,
+                    FValidationControlsDict);
+
+                FValidateBankingDetailsExtra = false;
+            }
+        }
+
+        /// <summary>
+        /// Adds validation for dtpTaxDeductibleValidFrom
+        /// </summary>
+        /// <returns>Returns false if validation error</returns>
+        public bool ValidateValidFromDate()
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TScreenVerificationResult VerificationResult = null;
+            DataColumn ValidationColumn = FMainDS.PPartnerTaxDeductiblePct.ColumnDateValidFrom;
+            bool ReturnValue = true;
+
+            // validate dtpTaxDeductibleValidFrom
+            if (!dtpTaxDeductibleValidFrom.ValidDate(false))
+            {
+                VerificationResult = new TScreenVerificationResult(dtpTaxDeductibleValidFrom.DateVerificationResult,
+                    ValidationColumn,
+                    dtpTaxDeductibleValidFrom);
+                VerificationResult.OverrideResultContext(this);
+
+                ReturnValue = false;
+            }
+
+            VerificationResultCollection.Remove(ValidationColumn);
+            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+
+            return ReturnValue;
         }
 
         #endregion

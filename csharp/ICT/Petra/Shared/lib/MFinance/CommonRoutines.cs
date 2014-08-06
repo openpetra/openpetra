@@ -490,7 +490,7 @@ namespace Ict.Petra.Shared.MFinance
             else if ((AAcountNumber.Length != 9)
                      && (AAcountNumber.Length != 10))
             {
-                return -1;         // wrong lenght
+                return -1;         // wrong length
             }
 
             if ((AAcountNumber.Length == 10)

@@ -201,7 +201,7 @@ namespace {#NAMESPACE}
     {
         if(ValidateAllData(true, true))
         {    
-            {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
+            {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
             {#INITNEWROWMANUAL}
             FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
         
@@ -314,7 +314,7 @@ namespace {#NAMESPACE}
         if (FPrevRowChangedRow > 0 && FPreviouslySelectedDetailRow != null)
         {
             DataRowView drv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView[FPrevRowChangedRow - 1];
-            RowNumberInData = DataUtilities.GetDataTableIndexByDataRowView(FMainDS.{#DETAILTABLETYPE}, drv);
+            RowNumberInData = DataUtilities.GetDataTableIndexByDataRowView(FMainDS.{#DETAILTABLE}, drv);
         }
 
         return RowNumberInData;
@@ -416,7 +416,7 @@ namespace {#NAMESPACE}
 
             if (rowView != null)
             {
-                FPreviouslySelectedDetailRow = ({#DETAILTABLE}Row)(rowView.Row);
+                FPreviouslySelectedDetailRow = ({#DETAILTABLETYPE}Row)(rowView.Row);
             }
 
             FPrevRowChangedRow = ARowNumberInGrid;
@@ -448,7 +448,7 @@ namespace {#NAMESPACE}
     /// IMPORTANT: Do not call this method from manual code because the internal variables will no longer match.
     /// </summary>
     /// <param name="ARow">The row for which details will be shown</param>
-    private void ShowDetails({#DETAILTABLE}Row ARow)
+    private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
 
@@ -479,7 +479,7 @@ namespace {#NAMESPACE}
     ///   ShowDetails(NewRow)
     /// so that the reference to the row object is updated automatically.
     /// </summary>
-    private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
+    private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
     
     /// <summary>
     /// This variable may become obsolete in future.  It used to hold the most recent row passed as the parameter to the FocusedRowChanged event.
@@ -688,7 +688,7 @@ namespace {#NAMESPACE}
     /// <param name="ARow">Do not use</param>
     /// <param name="AIsNewRow">Do not use</param>
     /// <param name="AControl">Do not use</param>
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow, bool AIsNewRow = false, Control AControl=null)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, bool AIsNewRow = false, Control AControl=null)
     {
         if (ARow != null && !grdDetails.Sorting)
         {            
@@ -1261,7 +1261,7 @@ namespace {#NAMESPACE}
     }
 {#ENDIF MASTERTABLE}
 {#IFDEF DETAILTABLE}
-    private void ValidateDataDetails({#DETAILTABLE}Row ARow)
+    private void ValidateDataDetails({#DETAILTABLETYPE}Row ARow)
     {
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
@@ -1289,7 +1289,7 @@ namespace {#NAMESPACE}
         // and initialise the 'prime' primary key control on pnlDetails.
         // This is the last control in the tab order that matches a key
         int lastTabIndex = -1;
-        DataRow row = (new {#DETAILTABLE}Table()).NewRow();
+        DataRow row = (new {#DETAILTABLETYPE}Table()).NewRow();
         for (int i = 0; i < row.Table.PrimaryKey.Length; i++)
         {
             DataColumn column = row.Table.PrimaryKey[i];

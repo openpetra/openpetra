@@ -527,6 +527,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TUC_FinanceDetails UCFinanceDetails =
                     (TUC_FinanceDetails)FTabSetup[TDynamicLoadableUserControls.dlucFinanceDetails];
 
+                // enable extra validation on tab change
+                UCFinanceDetails.ValidateBankingDetailsExtra = true;
+
                 if (!UCFinanceDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
                     ReturnValue = false;
