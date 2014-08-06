@@ -49,6 +49,7 @@
     <Table sqltable="p_foundation_proposal"/>
     <Table sqltable="p_foundation_proposal_detail"/>
     <Table sqltable="p_partner_gift_destination"/>
+    <Table sqltable="p_partner_tax_deductible_pct"/>
     <Table sqltable="p_partner_interest">
       <Field name="InterestCategory" sqltable="p_interest" sqlfield="p_category_c"/>
     </Table>
@@ -526,12 +527,16 @@
     </Table>
   </DataSet>
 
+	<!-- used for Finance Details tab and Bank Find dialog -->
   <DataSet name="BankTDS">
     <Table sqltable="p_bank">
       <Field name="StatusCode" sqltable="p_partner" sqlfield="p_status_code_c"/>
+      <Field name="SiteKey" sqltable="p_location" sqlfield="p_site_key_n" initial="-1"/>
+      <Field name="LocationKey" sqltable="p_location" sqlfield="p_location_key_i" initial="-1"/>
+      <Field name="City" sqltable="p_location" sqlfield="p_city_c"/>
+      <Field name="CountryCode" sqltable="p_location" sqlfield="p_country_code_c"/>
+  	  <PrimaryKey thisFields="p_partner_key_n, SiteKey, LocationKey"/>
     </Table>
-    <Table sqltable="p_partner_location"/>
-    <Table sqltable="p_location"/>
   </DataSet>
   
 </PetraDataSets>

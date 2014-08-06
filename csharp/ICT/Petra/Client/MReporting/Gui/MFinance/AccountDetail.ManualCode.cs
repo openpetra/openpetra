@@ -78,6 +78,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_with_analysis_attributes", false);
+
+            // if rbtSortByCostCentre is checked then these parameters are added in generated code
+            if (!rbtSortByCostCentre.Checked)
+            {
+                ACalc.AddParameter("param_paginate", false);
+                ACalc.AddParameter("param_auto_email", false);
+            }
         }
 
         //

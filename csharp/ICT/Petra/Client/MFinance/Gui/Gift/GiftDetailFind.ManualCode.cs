@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // remove from the combobox all ledger numbers which the user does not have permission to access
             DataView cmbLedgerDataView = (DataView)cmbLedger.cmbCombobox.DataSource;
 
-            for (int i = 0; i < cmbLedgerDataView.Count; i++) // cmbLedger.cmbCombobox.Items.Count; i++)
+            for (int i = 0; i < cmbLedgerDataView.Count; i++)
             {
                 string LedgerNumberStr;
 

@@ -8,6 +8,9 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
+        actDonorHistory: {ActionClick=OpenDonorHistory}
+        actRecipientHistory: {ActionClick=OpenRecipientHistory}
+        actRecipientGiftDestination: {ActionClick=OpenGiftDestination}
         actNewGift: {Label=&Add Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
         actDelete: {Label=&Delete Detail, SkipReferenceCheck=true, ActionClick=DeleteRecord}
@@ -148,7 +151,6 @@ RootNode:
     Menu:
         mniTransactions:
             Label: &Gift Transaction
-
-   
-                   
-        
+            mniDonorHistory: {Action: actDonorHistory}
+            mniRecipientHistory: {Action: actRecipientHistory}
+            mniRecipientGiftDestination: {Action: actRecipientGiftDestination}

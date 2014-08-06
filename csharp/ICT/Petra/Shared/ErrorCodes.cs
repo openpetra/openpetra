@@ -204,6 +204,16 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Key Ministry has been deactivated and cannot be used.")]
         public const String ERR_KEY_MINISTRY_DEACTIVATED = "FIN.00009V";
 
+        /// <summary>Allocation journal.</summary>
+        [ErrCodeAttribute("Amount is too large.",
+             ErrorMessageText = "The amount '{0}' is too large. An individual amount cannot be greater than the total amount.")]
+        public const String ERR_AMOUNT_TOO_LARGE = "FIN.00010V";
+
+        /// <summary>Allocation journal.</summary>
+        [ErrCodeAttribute("Percentage is above 100%.",
+             ErrorMessageText = "Percentage cannot be greater than 100%.")]
+        public const String ERR_PERCENTAGE_TOO_LARGE = "FIN.00011V";
+
         #endregion
 
         #region Partner Module-specific error codes
