@@ -144,7 +144,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         NewBankRow[PBankTable.GetBranchCodeDBName()] = BankRow.BranchCode;
                     }
-                    
+
                     NewBankRow[BankTDSPBankTable.GetSiteKeyDBName()] = BankRow.SiteKey;
                     NewBankRow[BankTDSPBankTable.GetLocationKeyDBName()] = BankRow.LocationKey;
 
@@ -225,21 +225,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             BankTDSPBankRow BankRow = null;
-            
+
             // Multiple rows could have the same partner keys but different locations.
             // We just want the first row.
             foreach (BankTDSPBankRow Row in FMainDS.PBank.Rows)
             {
-            	if (Row.PartnerKey == FBankPartnerKey)
-            	{
-            		BankRow = Row;
-            		break;
-            	}
+                if (Row.PartnerKey == FBankPartnerKey)
+                {
+                    BankRow = Row;
+                    break;
+                }
             }
 
             // if current bank is 'inactive' then make sure chkShowInactive is checked (unchecked by default)
-            if (BankRow != null 
-                && BankRow.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE)
+            if ((BankRow != null)
+                && (BankRow.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
                 && (chkShowInactive.Checked == false))
             {
                 chkShowInactive.Checked = true;
@@ -247,33 +247,33 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (BankRow == null)
             {
-            	grdDetails.SelectRowWithoutFocus(1);
+                grdDetails.SelectRowWithoutFocus(1);
             }
             else
             {
-	            // look through each row in the grid
-	            foreach (DataRowView RowView in FCriteriaData.DefaultView)
-	            {
-	                // if current grid row is the row we are looking for the select it
-	                if (Convert.ToInt64(RowView[PBankTable.GetPartnerKeyDBName()]) == FBankPartnerKey)
-	                {
-	                    grdDetails.SelectRowWithoutFocus(RowPos);
-	
-	                    btnAccept.Enabled = true;
-	                    btnEdit.Enabled = true;
-	
-	                    return;
-	                }
-	
-	                // account for grid rows being filtered by being inactive
-	                if (chkShowInactive.Checked
-	                    || (!chkShowInactive.Checked
-	                        && (RowView[BankTDSPBankTable.GetStatusCodeDBName()].ToString() ==
-	                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))))
-	                {
-	                    RowPos++;
-	                }
-	            }
+                // look through each row in the grid
+                foreach (DataRowView RowView in FCriteriaData.DefaultView)
+                {
+                    // if current grid row is the row we are looking for the select it
+                    if (Convert.ToInt64(RowView[PBankTable.GetPartnerKeyDBName()]) == FBankPartnerKey)
+                    {
+                        grdDetails.SelectRowWithoutFocus(RowPos);
+
+                        btnAccept.Enabled = true;
+                        btnEdit.Enabled = true;
+
+                        return;
+                    }
+
+                    // account for grid rows being filtered by being inactive
+                    if (chkShowInactive.Checked
+                        || (!chkShowInactive.Checked
+                            && (RowView[BankTDSPBankTable.GetStatusCodeDBName()].ToString() ==
+                                SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))))
+                    {
+                        RowPos++;
+                    }
+                }
             }
         }
 

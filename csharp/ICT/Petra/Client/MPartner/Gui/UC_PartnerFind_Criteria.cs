@@ -501,22 +501,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
             }
-            
+
             txtBankKey.DataSet = FBankDataset;
-            
+
             // create new datatable without any partnerkey duplicates (same bank with different locations)
             PBankTable ComboboxTable = new PBankTable();
 
-        	foreach (BankTDSPBankRow Row in FBankDataset.PBank.Rows)
+            foreach (BankTDSPBankRow Row in FBankDataset.PBank.Rows)
             {
-            	if (!ComboboxTable.Rows.Contains(Row.PartnerKey))
-        		{
-        			PBankRow AddRow = (PBankRow) ComboboxTable.NewRow();
-	        		AddRow.PartnerKey = Row.PartnerKey;
-	        		AddRow.BranchName = Row.BranchName;
-	        		AddRow.BranchCode = Row.BranchCode;
-	        		ComboboxTable.Rows.Add(AddRow);
-        		}
+                if (!ComboboxTable.Rows.Contains(Row.PartnerKey))
+                {
+                    PBankRow AddRow = (PBankRow)ComboboxTable.NewRow();
+                    AddRow.PartnerKey = Row.PartnerKey;
+                    AddRow.BranchName = Row.BranchName;
+                    AddRow.BranchCode = Row.BranchCode;
+                    ComboboxTable.Rows.Add(AddRow);
+                }
             }
 
             // add empty row
@@ -587,9 +587,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // populate the comboboxes for Bank Name and Bank Code if not done already (this should never actually happen!)
                 PopulateBankComboBoxes();
             }
-            
+
             FCurrentBankRow = GetCurrentRow(APartnerKey);
-            
+
             // set search criteria
             FFindCriteriaDataTable.Rows[0]["BankKey"] = APartnerKey;
 
@@ -660,18 +660,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                      && (cmbBankName.GetSelectedString() != "")
                      && cmbBankName.ContainsFocus)
             {
-	            FCurrentBankRow = GetCurrentRow(Convert.ToInt64(cmbBankName.GetSelectedString()));
+                FCurrentBankRow = GetCurrentRow(Convert.ToInt64(cmbBankName.GetSelectedString()));
 
                 // update partner key in txtBankKey
                 if (FCurrentBankRow != null)
                 {
-                	txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
-                	PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
+                    txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
+                    PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
                 }
                 else
                 {
-                	txtBankKey.Text = "0";
-                	PartnerKeyChanged(0, "", true);
+                    txtBankKey.Text = "0";
+                    PartnerKeyChanged(0, "", true);
                 }
             }
         }
@@ -700,22 +700,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
             }
         }
-        
+
         private BankTDSPBankRow GetCurrentRow(long APartnerKey)
         {
-        	BankTDSPBankRow ReturnValue = null;
+            BankTDSPBankRow ReturnValue = null;
 
-        	// Multiple rows could have the same partner keys but different locaitons.
+            // Multiple rows could have the same partner keys but different locaitons.
             // We just want the first row.
             foreach (BankTDSPBankRow Row in FBankDataset.PBank.Rows)
             {
-            	if (Row.PartnerKey == APartnerKey)
-            	{
-            		ReturnValue = Row;
-            		break;
-            	}
+                if (Row.PartnerKey == APartnerKey)
+                {
+                    ReturnValue = Row;
+                    break;
+                }
             }
-            
+
             return ReturnValue;
         }
 

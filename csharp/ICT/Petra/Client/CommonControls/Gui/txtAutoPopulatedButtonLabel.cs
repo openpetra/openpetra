@@ -67,9 +67,9 @@ namespace Ict.Petra.Client.CommonControls
 
     /// <summary>Dataset changed</summary>
     public delegate void TDelegateDatasetChanged(DataSet ADataset);
-    
+
     /// <summary>Partner Class changed for a control of type 'PartnerKey'</summary>
-    public delegate void TDelegatePartnerClassChanged(TPartnerClass? APartnerClass);
+    public delegate void TDelegatePartnerClassChanged(TPartnerClass ? APartnerClass);
 
     class txtAutoPopulatedButtonLabel
     {
@@ -463,18 +463,18 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// This property gets the partner's Partner Class for a control of type 'PartnerKey'
         /// </summary>
-        public TPartnerClass? CurrentPartnerClass
+        public TPartnerClass ? CurrentPartnerClass
         {
             get
             {
-            	if (string.IsNullOrEmpty(this.Text))
-            	{
-            		return null;
-            	}
-            	else
-            	{
-                	return this.FCurrentPartnerClass;
-            	}
+                if (string.IsNullOrEmpty(this.Text))
+                {
+                    return null;
+                }
+                else
+                {
+                    return this.FCurrentPartnerClass;
+                }
             }
         }
 
@@ -740,7 +740,7 @@ namespace Ict.Petra.Client.CommonControls
             // TLogging.Log('ButtonTextAlign: ' + Enum.GetName(typeof(System.Drawing.ContentAlignment), this.FButtonTextAlign));
             switch (AListTable)
             {
-                case TListTableEnum.OccupationList:
+                case TListTableEnum.OccupationList :
                     #region TListTableEnum.OccupationList
 
                     // Settings for the button
@@ -758,7 +758,7 @@ namespace Ict.Petra.Client.CommonControls
                     #endregion
                     break;
 
-                case TListTableEnum.PartnerKey:
+                case TListTableEnum.PartnerKey :
                     #region TListTableEnum.PartnerKey
 
                     // Settings for the button
@@ -1776,13 +1776,13 @@ namespace Ict.Petra.Client.CommonControls
                                         {
                                             PartnerClassOut = SharedTypes.PartnerClassEnumToString(mPartnerClass2.Value);
                                         }
-                                        
-                                    	if (PartnerClassChanged != null && FCurrentPartnerClass != mPartnerClass2)
-				                        {
-                                    		PartnerClassChanged((TPartnerClass) mPartnerClass2);
-				                        }
-				                        
-				                        FCurrentPartnerClass = mPartnerClass2;
+
+                                        if ((PartnerClassChanged != null) && (FCurrentPartnerClass != mPartnerClass2))
+                                        {
+                                            PartnerClassChanged((TPartnerClass)mPartnerClass2);
+                                        }
+
+                                        FCurrentPartnerClass = mPartnerClass2;
 
                                         if (PartnerFound != null)
                                         {
@@ -2135,11 +2135,11 @@ namespace Ict.Petra.Client.CommonControls
                             ValidResult = true;
                         }
 
-                        if (PartnerClassChanged != null && FCurrentPartnerClass != mPartnerClass)
+                        if ((PartnerClassChanged != null) && (FCurrentPartnerClass != mPartnerClass))
                         {
-                        	PartnerClassChanged(mPartnerClass);
+                            PartnerClassChanged(mPartnerClass);
                         }
-                        
+
                         FCurrentPartnerClass = mPartnerClass;
                         APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
                     }
@@ -2147,12 +2147,12 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         mPartnerKey = 0;
                         mPartnerShortName = "";
-                        
-                        if (PartnerClassChanged != null && FCurrentPartnerClass != null)
+
+                        if ((PartnerClassChanged != null) && (FCurrentPartnerClass != null))
                         {
-                        	PartnerClassChanged(null);
+                            PartnerClassChanged(null);
                         }
-                        
+
                         FCurrentPartnerClass = null;
                     }
 
@@ -2607,19 +2607,19 @@ namespace Ict.Petra.Client.CommonControls
         public void CustomContextMenuItemsVisibility(string AItemText, bool AVisible)
         {
             ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
- 
+
             if (CustomContextMenuStrip == null)
             {
                 return;
             }
-            
-        	foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
-        	{
-        		if (Item.Text == AItemText)
-        		{
-        			Item.Visible = AVisible;
-        		}
-        	}
+
+            foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
+            {
+                if (Item.Text == AItemText)
+                {
+                    Item.Visible = AVisible;
+                }
+            }
 
             this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
         }

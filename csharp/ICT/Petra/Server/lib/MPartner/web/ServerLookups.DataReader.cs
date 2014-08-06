@@ -507,10 +507,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 string QueryBankRecords =
                     "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c, PUB_p_location.* " +
                     "FROM PUB_p_bank JOIN PUB_p_partner ON PUB_p_partner.p_partner_key_n = PUB_p_bank.p_partner_key_n " +
-                    "LEFT OUTER JOIN PUB_p_partner_location ON PUB_p_bank.p_partner_key_n = PUB_p_partner_location.p_partner_key_n " + 
-                	"AND (PUB_p_partner_location.p_date_good_until_d IS NULL OR PUB_p_partner_location.p_date_good_until_d >= DATE(NOW())) " +
-                    "JOIN PUB_p_location ON PUB_p_partner_location.p_site_key_n = PUB_p_location.p_site_key_n " + 
-                	"AND PUB_p_partner_location.p_location_key_i = PUB_p_location.p_location_key_i";
+                    "LEFT OUTER JOIN PUB_p_partner_location ON PUB_p_bank.p_partner_key_n = PUB_p_partner_location.p_partner_key_n " +
+                    "AND (PUB_p_partner_location.p_date_good_until_d IS NULL OR PUB_p_partner_location.p_date_good_until_d >= DATE(NOW())) " +
+                    "JOIN PUB_p_location ON PUB_p_partner_location.p_site_key_n = PUB_p_location.p_site_key_n " +
+                    "AND PUB_p_partner_location.p_location_key_i = PUB_p_location.p_location_key_i";
 
                 DBAccess.GDBAccessObj.Select(ReturnValue,
                     QueryBankRecords,

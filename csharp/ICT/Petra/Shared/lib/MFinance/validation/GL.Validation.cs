@@ -432,8 +432,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateAllocationJournalDialog(object AContext, AllocationJournalTDSAllocationsRow ARow, bool AAmountEnabled, decimal? ATotalAmount,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        public static bool ValidateAllocationJournalDialog(object AContext,
+            AllocationJournalTDSAllocationsRow ARow,
+            bool AAmountEnabled,
+            decimal? ATotalAmount,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -447,16 +451,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             // an individual amount cannot be great than total amount
-            if (AAmountEnabled && ARow.Amount > ATotalAmount)
+            if (AAmountEnabled && (ARow.Amount > ATotalAmount))
             {
                 ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnAmountId];
 
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
-                	VerificationResult = new TScreenVerificationResult(
-                		new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
-                			PetraErrorCodes.ERR_AMOUNT_TOO_LARGE, new string[] { ARow.Amount.ToString() })),
-                		ValidationColumn, ValidationControlsData.ValidationControl);
+                    VerificationResult = new TScreenVerificationResult(
+                        new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_AMOUNT_TOO_LARGE, new string[] { ARow.Amount.ToString() })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -464,15 +468,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             // a percentage cannot be greater than 100%
-            if (!AAmountEnabled && ARow.Percentage > 100)
+            if (!AAmountEnabled && (ARow.Percentage > 100))
             {
                 ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnPercentageId];
 
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     VerificationResult = new TScreenVerificationResult(
-                		new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PERCENTAGE_TOO_LARGE)),
-                		ValidationColumn, ValidationControlsData.ValidationControl);
+                        new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PERCENTAGE_TOO_LARGE)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
@@ -495,14 +499,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         public static bool ValidateAllocationJournalDialogEverything(object AContext, Control ATxtReference,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
-        	// Does nothing at the moment.
-        	
-            /*DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
-            TScreenVerificationResult VerificationResult;
-            int VerifResultCollAddedCount = 0;
+            // Does nothing at the moment.
 
-            return VerifResultCollAddedCount == 0;*/
+            /*DataColumn ValidationColumn;
+             * TValidationControlsData ValidationControlsData;
+             * TScreenVerificationResult VerificationResult;
+             * int VerifResultCollAddedCount = 0;
+             *
+             * return VerifResultCollAddedCount == 0;*/
             return true;
         }
     }

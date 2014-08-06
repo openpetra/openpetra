@@ -52,17 +52,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     FLedgerNumber = value;
                     txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-                    
+
                     // populate combo boxes
-		            TFinanceControls.InitialiseCostCentreList(ref cmbFromCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
-		        	TFinanceControls.InitialiseAccountList(ref cmbFromAccountCode, FLedgerNumber,
-		                true, false, FActiveOnly, false, FTransactionCurrency, true);
-		            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
-		        	TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-		                true, false, FActiveOnly, false, FTransactionCurrency, true);
-		            
-		            // can delete this when not using hardcoded data
-		            ShowDetails(FPrevRowChangedRow);
+                    TFinanceControls.InitialiseCostCentreList(ref cmbFromCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
+                    TFinanceControls.InitialiseAccountList(ref cmbFromAccountCode, FLedgerNumber,
+                        true, false, FActiveOnly, false, FTransactionCurrency, true);
+                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
+                    TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
+                        true, false, FActiveOnly, false, FTransactionCurrency, true);
+
+                    // can delete this when not using hardcoded data
+                    ShowDetails(FPrevRowChangedRow);
                 }
             }
         }
@@ -80,127 +80,127 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
-        
+
         private void InitializeManualCode()
         {
-        	rbtPercentageOption.Checked = true;
-        	
-        	// set currency codes
-        	txtFromAmount.CurrencyCode = FTransactionCurrency;
-        	txtDetailAmount.CurrencyCode = FTransactionCurrency;
-        	
-        	// disallow negative numbers
-        	txtFromAmount.NegativeValueAllowed = false;
-        	txtDetailAmount.NegativeValueAllowed = false;
-        	txtDetailPercentage.NegativeValueAllowed = false;
+            rbtPercentageOption.Checked = true;
 
-        	// correct label position which doesn't get moved when using padding
-        	lblFromAmount.Location = new System.Drawing.Point(lblFromAmount.Location.X, txtFromAmount.Location.Y + 5);
-        	
-        	// correct this radio group hiding another control
-        	rgrDebitCredit.SendToBack();
+            // set currency codes
+            txtFromAmount.CurrencyCode = FTransactionCurrency;
+            txtDetailAmount.CurrencyCode = FTransactionCurrency;
 
-        	// TODO tmp hardcoded test data
-        	txtFromAmount.NumberValueDecimal = 100;
-        	DataRow NewRow = FMainDS.Allocations.NewRow();
-        	NewRow["Percentage"] = 25;
-        	NewRow["Amount"] = 15.25;
-        	NewRow["a_cost_centre_code_c"] = "2600";
-        	NewRow["a_account_code_c"] = "0407";
-        	FMainDS.Allocations.Rows.Add(NewRow);
+            // disallow negative numbers
+            txtFromAmount.NegativeValueAllowed = false;
+            txtDetailAmount.NegativeValueAllowed = false;
+            txtDetailPercentage.NegativeValueAllowed = false;
+
+            // correct label position which doesn't get moved when using padding
+            lblFromAmount.Location = new System.Drawing.Point(lblFromAmount.Location.X, txtFromAmount.Location.Y + 5);
+
+            // correct this radio group hiding another control
+            rgrDebitCredit.SendToBack();
+
+            // TODO tmp hardcoded test data
+            txtFromAmount.NumberValueDecimal = 100;
+            DataRow NewRow = FMainDS.Allocations.NewRow();
+            NewRow["Percentage"] = 25;
+            NewRow["Amount"] = 15.25;
+            NewRow["a_cost_centre_code_c"] = "2600";
+            NewRow["a_account_code_c"] = "0407";
+            FMainDS.Allocations.Rows.Add(NewRow);
         }
-        
+
         private void NewRowManual(ref AllocationJournalTDSAllocationsRow ANewRow)
         {
-        	ANewRow.CostCentreCode = System.DBNull.Value.ToString();
-        	ANewRow.AccountCode = System.DBNull.Value.ToString();
+            ANewRow.CostCentreCode = System.DBNull.Value.ToString();
+            ANewRow.AccountCode = System.DBNull.Value.ToString();
         }
-        
+
         private void ShowDetailsManual(AllocationJournalTDSAllocationsRow ARow)
         {
-        	btnDeleteAll.Enabled = pnlDetails.Enabled;
+            btnDeleteAll.Enabled = pnlDetails.Enabled;
         }
-    	
+
         #region Events
-        
+
         bool FValidateEverything = false;
-        
-	    private void BtnOK_Click(Object Sender, EventArgs e)
-	    {
-	    	FValidateEverything = true;
-	    	
-	    	if (ValidateAllData(false, true))
-	    	{
-	        	Close();
-	    	}
-	    	
-	    	FValidateEverything = false;
-	    }
-	    
-	    // This does nothing yet.
-	    private TSubmitChangesResult StoreManualCode(ref AllocationJournalTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
-	    {
-	    	AVerificationResult = null;
-	    	return TSubmitChangesResult.scrOK;
-	    }
-	    
-	    private void NewRow(Object Sender, EventArgs e)
-	    {
-	    	if (CreateNewAllocations())
-	    	{
-		    	txtDetailAmount.NumberValueDecimal = 0;
-		    	txtDetailPercentage.NumberValueDecimal = 0;
-	    	}
-	    }
-	    
-	    // update allocation percentages or amounts when the total 'from' amount is changed
-	    private void FromAmountChanged(Object Sender, EventArgs e)
-	    {
-	    	if (txtDetailAmount.Enabled)
-	    	{
-	    		AmountChanged(Sender, e);
-	    	}
-	    	else
-	    	{
-	    		PercentageChanged(Sender, e);
-	    	}
-	    }
-	    
-	    // radio selection has changed
-	    private void AmountPercentageChanged(Object Sender, EventArgs e)
-	    {
-	    	txtDetailAmount.Enabled = rbtAmountOption.Checked;
-	    	txtDetailPercentage.Enabled = rbtPercentageOption.Checked;
-	    }
-	    
-	    private void AmountChanged(Object Sender, EventArgs e)
-	    {
+
+        private void BtnOK_Click(Object Sender, EventArgs e)
+        {
+            FValidateEverything = true;
+
+            if (ValidateAllData(false, true))
+            {
+                Close();
+            }
+
+            FValidateEverything = false;
+        }
+
+        // This does nothing yet.
+        private TSubmitChangesResult StoreManualCode(ref AllocationJournalTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = null;
+            return TSubmitChangesResult.scrOK;
+        }
+
+        private void NewRow(Object Sender, EventArgs e)
+        {
+            if (CreateNewAllocations())
+            {
+                txtDetailAmount.NumberValueDecimal = 0;
+                txtDetailPercentage.NumberValueDecimal = 0;
+            }
+        }
+
+        // update allocation percentages or amounts when the total 'from' amount is changed
+        private void FromAmountChanged(Object Sender, EventArgs e)
+        {
+            if (txtDetailAmount.Enabled)
+            {
+                AmountChanged(Sender, e);
+            }
+            else
+            {
+                PercentageChanged(Sender, e);
+            }
+        }
+
+        // radio selection has changed
+        private void AmountPercentageChanged(Object Sender, EventArgs e)
+        {
+            txtDetailAmount.Enabled = rbtAmountOption.Checked;
+            txtDetailPercentage.Enabled = rbtPercentageOption.Checked;
+        }
+
+        private void AmountChanged(Object Sender, EventArgs e)
+        {
             this.txtDetailPercentage.TextChanged -= new System.EventHandler(this.PercentageChanged);
-            
-	    	txtDetailPercentage.NumberValueDecimal = (txtDetailAmount.NumberValueDecimal / txtFromAmount.NumberValueDecimal) * 100;
-	    	
+
+            txtDetailPercentage.NumberValueDecimal = (txtDetailAmount.NumberValueDecimal / txtFromAmount.NumberValueDecimal) * 100;
+
             this.txtDetailPercentage.TextChanged += new System.EventHandler(this.PercentageChanged);
-	    }
-	    
-	    private void PercentageChanged(Object Sender, EventArgs e)
-	    {
+        }
+
+        private void PercentageChanged(Object Sender, EventArgs e)
+        {
             this.txtDetailAmount.TextChanged -= new System.EventHandler(this.AmountChanged);
 
-	    	txtDetailAmount.NumberValueDecimal = (txtDetailPercentage.NumberValueDecimal / 100) * txtFromAmount.NumberValueDecimal;
-	    	
+            txtDetailAmount.NumberValueDecimal = (txtDetailPercentage.NumberValueDecimal / 100) * txtFromAmount.NumberValueDecimal;
+
             this.txtDetailAmount.TextChanged += new System.EventHandler(this.AmountChanged);
-	    }
-	    
-	    // delete highlighted row/s
-	    private void DeleteRecord(Object Sender, EventArgs e)
-	    {
-	    	this.DeleteAllocations();
-	    }
-	    
-	    // delete all rows
-	    private void DeleteAllAllocations(Object Sender, EventArgs e)
-	    {
-	    	if (FPreviouslySelectedDetailRow == null)
+        }
+
+        // delete highlighted row/s
+        private void DeleteRecord(Object Sender, EventArgs e)
+        {
+            this.DeleteAllocations();
+        }
+
+        // delete all rows
+        private void DeleteAllAllocations(Object Sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow == null)
             {
                 return;
             }
@@ -211,42 +211,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
-	    		DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+                DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
 
-	            for (int i = dv.Count - 1; i >= 0; i--)
-	            {
-	                dv[i].Delete();
-	            }
-	
-	            SelectRowInGrid(1);
-	    	}
-	    }
-	    
-	    #endregion
-	    
-	    #region Validation
-	    
-	    private void ValidateDataDetailsManual(AllocationJournalTDSAllocationsRow ARow)
-	    {
-	    	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+                for (int i = dv.Count - 1; i >= 0; i--)
+                {
+                    dv[i].Delete();
+                }
+
+                SelectRowInGrid(1);
+            }
+        }
+
+        #endregion
+
+        #region Validation
+
+        private void ValidateDataDetailsManual(AllocationJournalTDSAllocationsRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             if (TSharedFinanceValidation_GL.ValidateAllocationJournalDialog(this, ARow, rbtAmountOption.Checked, txtFromAmount.NumberValueDecimal,
-                ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict)
+                    ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict)
                 && FValidateEverything)
-	    	{
-	    		ValidateEverything();
-	    	}
-	    }
-	    
-	    // validate all data (even data not in DataRow)
-	    private void ValidateEverything()
-	    {
-	    	TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-	    	
-	    	TSharedFinanceValidation_GL.ValidateAllocationJournalDialogEverything(this, txtReference,
-	    		ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict);
-	    }
-	    
-	    #endregion
+            {
+                ValidateEverything();
+            }
+        }
+
+        // validate all data (even data not in DataRow)
+        private void ValidateEverything()
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedFinanceValidation_GL.ValidateAllocationJournalDialogEverything(this, txtReference,
+                ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        #endregion
     }
 }

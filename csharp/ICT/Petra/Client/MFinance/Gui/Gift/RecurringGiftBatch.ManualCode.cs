@@ -329,9 +329,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // update gift destination
             if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)
             {
-            	ucoRecurringTransactions.ProcessGiftDetainationBroadcastMessage(AFormsMessage);
-            	
-            	MessageProcessed = true;
+                ucoRecurringTransactions.ProcessGiftDetainationBroadcastMessage(AFormsMessage);
+
+                MessageProcessed = true;
             }
 
             return MessageProcessed;

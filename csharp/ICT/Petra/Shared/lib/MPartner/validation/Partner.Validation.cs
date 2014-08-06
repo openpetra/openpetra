@@ -1209,7 +1209,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl
                         );
                 }
-                
+
                 // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
                 // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
                 // ResultText!
@@ -1250,20 +1250,20 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             // validate the account number (if validation exists for bank's country)
             ValidationColumn = ARow.Table.Columns[PBankingDetailsTable.ColumnBankAccountNumberId];
-            
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-	            CommonRoutines Routines = new CommonRoutines();
-	
-	            if (!string.IsNullOrEmpty(ARow.BankAccountNumber) && (Routines.CheckAccountNumber(ARow.BankAccountNumber, ACountryCode) <= 0))
-	            {
-	            	VerificationResult = new TScreenVerificationResult(
-					                        new TVerificationResult(
-					                            AContext,
-					                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ACCOUNTNUMBER_INVALID)),
-					                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
-					                        ValidationControlsData.ValidationControl);
-	            }
+                CommonRoutines Routines = new CommonRoutines();
+
+                if (!string.IsNullOrEmpty(ARow.BankAccountNumber) && (Routines.CheckAccountNumber(ARow.BankAccountNumber, ACountryCode) <= 0))
+                {
+                    VerificationResult = new TScreenVerificationResult(
+                        new TVerificationResult(
+                            AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ACCOUNTNUMBER_INVALID)),
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
+                        ValidationControlsData.ValidationControl);
+                }
 
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
@@ -1272,17 +1272,18 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             // validate the IBAN (if it exists)
             ValidationColumn = ARow.Table.Columns[PBankingDetailsTable.ColumnIbanId];
-            
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	AVerificationResultCollection.Remove(ValidationColumn);
-                	
-	            if (!string.IsNullOrEmpty(ARow.Iban) && (CommonRoutines.CheckIBAN(ARow.Iban, out VerificationResult) == false))
-	            {
-	                VerificationResult = new TScreenVerificationResult(
-	                	new TVerificationResult(AContext, VerificationResult.ResultText, VerificationResult.ResultCode, VerificationResult.ResultSeverity), 
-	                	ValidationColumn,  ValidationControlsData.ValidationControl);
-	            }
+                AVerificationResultCollection.Remove(ValidationColumn);
+
+                if (!string.IsNullOrEmpty(ARow.Iban) && (CommonRoutines.CheckIBAN(ARow.Iban, out VerificationResult) == false))
+                {
+                    VerificationResult = new TScreenVerificationResult(
+                        new TVerificationResult(AContext, VerificationResult.ResultText, VerificationResult.ResultCode,
+                            VerificationResult.ResultSeverity),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
 
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
@@ -1325,7 +1326,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
-            	
+
             VerificationResult = null;
 
             // Account Number and IBAN cannot both be empty
@@ -1333,14 +1334,14 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-	            if (string.IsNullOrEmpty(ARow.BankAccountNumber) && string.IsNullOrEmpty(ARow.Iban))
-	            {
-	                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-	                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
-	                    ValidationColumn, ValidationControlsData.ValidationControl);
-	            }
-	                
-	            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                if (string.IsNullOrEmpty(ARow.BankAccountNumber) && string.IsNullOrEmpty(ARow.Iban))
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
 

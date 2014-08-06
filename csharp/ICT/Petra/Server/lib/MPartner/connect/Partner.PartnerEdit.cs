@@ -276,15 +276,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // p_banking_details
             try
             {
-            	FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
-            		SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                    SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
-                
+
                 if (FTaxDeductiblePercentageEnabled)
                 {
-                	PPartnerTaxDeductiblePctAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                    PPartnerTaxDeductiblePctAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 }
             }
             catch (Exception)
@@ -312,14 +312,14 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             return localDS;
         }
-  
+
         /// <summary>
         /// gets system default TaxDeduct%OnRecipient (default false)
         /// </summary>
         /// <returns></returns>
         public bool IsTaxDeductiblePercentageEnabled()
         {
-        	return FTaxDeductiblePercentageEnabled;
+            return FTaxDeductiblePercentageEnabled;
         }
 
         #endregion
