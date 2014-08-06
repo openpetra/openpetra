@@ -434,7 +434,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 for (int Counter2 = Counter + 1; Counter2 <= (GetNumberOfRows() - 1); Counter2 += 1)
                 {
                     if (FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()].ToString() ==
-                           FFamilyMembersDV[Counter2].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()].ToString())
+                        FFamilyMembersDV[Counter2].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()].ToString())
                     {
                         DuplicateFamilyID = (int)FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()];
                         break;
