@@ -705,16 +705,10 @@ namespace Ict.Petra.Client.CommonControls
 
                 if (IsFindTabActive)
                 {
-                    Console.WriteLine("Find: Tpg={0}  FindPanel={1}  Options={2}  O/A={3}",
-                        FTbpFind.Width,
-                        FPnlFindControls.Width,
-                        FPnlFindControls.Controls["pnlFindOptions"].Width,
-                        this.Width);
                     return FTbpFind.VerticalScroll.Visible;
                 }
                 else
                 {
-                    Console.WriteLine("Filter: Tpg={0}  FilterPanel={1}  O/A={2}", FTbpFilter.Width, pnlFilterControls.Width, this.Width);
                     return FTbpFilter.VerticalScroll.Visible;
                 }
             }
