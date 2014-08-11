@@ -57,6 +57,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             // populate list with data to be loaded
             this.LoadListData("");
+
+            // TODO: At the moment this group box is not needed as we currently only consider commitments. "Worker Field" does not exist
+            // any longer. If in the future "Gift Destination" (as replacement for "Worker Field") for this extract becomes important
+            // then this group box needs to be modified and displayed accordingly.
+            rbtCommitmentsOnly.Checked = true;
+            rgrCommitmentsOnly.Visible = false;
         }
 
         /// <summary>

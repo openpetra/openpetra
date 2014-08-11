@@ -172,6 +172,9 @@ namespace Ict.Petra.Shared
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_GLREFMANDATORY = "GLRefMandatory";
 
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE = "TaxDeduct%OnRecipient";
+
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_DISCONNECT = "DISCONNECT";
 

@@ -10,6 +10,7 @@ RootNode:
     Actions:
         actDonorHistory: {ActionClick=OpenDonorHistory}
         actRecipientHistory: {ActionClick=OpenRecipientHistory}
+        actRecipientGiftDestination: {ActionClick=OpenGiftDestination}
         actNewGift: {Label=&Add Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail, Image=New_Record.ico}
         actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
@@ -169,3 +170,4 @@ RootNode:
             mniSeparator: {Label=-}
             mniDonorHistory: {Action: actDonorHistory}
             mniRecipientHistory: {Action: actRecipientHistory}
+            mniRecipientGiftDestination: {Action: actRecipientGiftDestination}

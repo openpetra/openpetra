@@ -89,9 +89,6 @@ RootNode:
         Para102:
             Name: Application Status
             Parameter: 1.0
-        Para103:
-            Name: Driver Status
-            Parameter: 3.0
         Para104:
             Name: Finance Details
             Parameter: 3.0

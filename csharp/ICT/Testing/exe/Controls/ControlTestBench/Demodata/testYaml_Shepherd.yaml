@@ -68,6 +68,4 @@ TaskGroup:
     Task9:
         Label: "&Abilities"
     Task10:
-        Label: "&Driver Status"
-    Task11:
         Label: "Summar&y"

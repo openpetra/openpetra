@@ -563,7 +563,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 else
                 {
                     txtDetailExchangeRateToBase.NumberValueDecimal = 0M;
-                    ValidateAllData(false, true, (Control)txtDetailExchangeRateToBase);
                     btnGetSetExchangeRate.Enabled = true;
                 }
             }

@@ -480,23 +480,55 @@ namespace Ict.Petra.Client.MCommon.Gui
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_FLOAT)
             {
                 TextBoxNumericEditor = new TTxtNumericTextBox();
-                TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
-                TextBoxNumericEditor.DecimalPlaces = ADataLabelRow.NumDecimalPlaces;
-                TextBoxNumericEditor.NullValueAllowed = true;
-                cellControl = TextBoxNumericEditor;
 
-                if (DataLabelValuePartnerRow != null)
+                if (ADataLabelRow.NumDecimalPlaces == 0)
                 {
-                    TextBoxNumericEditor.NumberValueDecimal = DataLabelValuePartnerRow.ValueNum;
-                }
-                else if (DataLabelValueApplicationRow != null)
-                {
-                    TextBoxNumericEditor.NumberValueDecimal = DataLabelValueApplicationRow.ValueNum;
+                    TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.LongInteger;
+                    TextBoxNumericEditor.MaxLength = 14;
                 }
                 else
                 {
-                    // Default value if no Label data exists for the Partner
-                    TextBoxNumericEditor.NumberValueDecimal = null;
+                    TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
+                    TextBoxNumericEditor.DecimalPlaces = ADataLabelRow.NumDecimalPlaces;
+
+                    // limit text length. 14 for number of digits, 5 for decimal and thousands separators
+                    TextBoxNumericEditor.MaxLength = 14 + 5 + ADataLabelRow.NumDecimalPlaces;
+                }
+
+                TextBoxNumericEditor.NullValueAllowed = true;
+                cellControl = TextBoxNumericEditor;
+
+                if (ADataLabelRow.NumDecimalPlaces == 0)
+                {
+                    if (DataLabelValuePartnerRow != null)
+                    {
+                        TextBoxNumericEditor.NumberValueLongInt = (long)DataLabelValuePartnerRow.ValueNum;
+                    }
+                    else if (DataLabelValueApplicationRow != null)
+                    {
+                        TextBoxNumericEditor.NumberValueLongInt = (long)DataLabelValueApplicationRow.ValueNum;
+                    }
+                    else
+                    {
+                        // Default value if no Label data exists for the Partner
+                        TextBoxNumericEditor.NumberValueLongInt = null;
+                    }
+                }
+                else
+                {
+                    if (DataLabelValuePartnerRow != null)
+                    {
+                        TextBoxNumericEditor.NumberValueDecimal = DataLabelValuePartnerRow.ValueNum;
+                    }
+                    else if (DataLabelValueApplicationRow != null)
+                    {
+                        TextBoxNumericEditor.NumberValueDecimal = DataLabelValueApplicationRow.ValueNum;
+                    }
+                    else
+                    {
+                        // Default value if no Label data exists for the Partner
+                        TextBoxNumericEditor.NumberValueDecimal = null;
+                    }
                 }
 
                 // enable save button in editor when cell contents have changed
@@ -1112,13 +1144,27 @@ namespace Ict.Petra.Client.MCommon.Gui
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
 
-                    if (DataLabelValuePartnerRow != null)
+                    if (DataLabelRow.NumDecimalPlaces == 0)
                     {
-                        DataLabelValuePartnerRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
+                        if (DataLabelValuePartnerRow != null)
+                        {
+                            DataLabelValuePartnerRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueLongInt.GetValueOrDefault();
+                        }
+                        else if (DataLabelValueApplicationRow != null)
+                        {
+                            DataLabelValueApplicationRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueLongInt.GetValueOrDefault();
+                        }
                     }
-                    else if (DataLabelValueApplicationRow != null)
+                    else
                     {
-                        DataLabelValueApplicationRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
+                        if (DataLabelValuePartnerRow != null)
+                        {
+                            DataLabelValuePartnerRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
+                        }
+                        else if (DataLabelValueApplicationRow != null)
+                        {
+                            DataLabelValueApplicationRow.ValueNum = ((TTxtNumericTextBox)CurrentControl).NumberValueDecimal.GetValueOrDefault();
+                        }
                     }
                 }
 
