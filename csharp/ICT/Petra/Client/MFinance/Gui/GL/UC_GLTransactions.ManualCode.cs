@@ -72,6 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private SourceGrid.Cells.Editors.ComboBox FcmbAnalAttribValues;
 
+        private bool FDoneComboInitialise = false;
         private bool FIsUnposted = true;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
@@ -188,13 +189,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (grdAnalAttributes.Columns.Count == 1)
                 {
-                    grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
-
                     FcmbAnalAttribValues = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
                     FcmbAnalAttribValues.EnableEdit = true;
                     FcmbAnalAttribValues.EditableMode = EditableMode.Focus;
                     grdAnalAttributes.AddTextColumn("Value",
-                        FMainDS.ATransAnalAttrib.Columns[ATransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
+                        FMainDS.ATransAnalAttrib.Columns[ATransAnalAttribTable.GetAnalysisAttributeValueDBName()], 150,
                         FcmbAnalAttribValues);
                     FcmbAnalAttribValues.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
 
@@ -2031,6 +2030,68 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void SelectRow(int ARowNumber)
         {
             SelectRowInGrid(ARowNumber);
+        }
+
+        
+        private void FilterToggledManual(bool AFilterIsOff)
+        {
+            // The first time the filter is toggled on we need to set up the cost centre and account comboBoxes
+            // This means showing inactive values in red
+            // We achieve this by using our own owner draw mode event
+            // Also the data source for the combos will be wrong because they have been cloned from items that may not have shown inactive values
+            if ((AFilterIsOff == false) && !FDoneComboInitialise)
+            {
+                InitFilterFindComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbDetailAccountCode"),
+                    TCacheableFinanceTablesEnum.AccountList);
+                InitFilterFindComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbDetailCostCentreCode"),
+                    TCacheableFinanceTablesEnum.CostCentreList);
+                InitFilterFindComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailAccountCode"),
+                    TCacheableFinanceTablesEnum.AccountList);
+                InitFilterFindComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailCostCentreCode"),
+                    TCacheableFinanceTablesEnum.CostCentreList);
+
+                FDoneComboInitialise = true;
+            }
+        }
+
+        /// <summary>
+        /// Helper method that we can call to initialise each of the filter/find comboBoxes
+        /// </summary>
+        private void InitFilterFindComboBox(TCmbAutoComplete AFFInstance, TCacheableFinanceTablesEnum AListTable)
+        {
+            AFFInstance.DataSource = TDataCache.TMFinance.GetCacheableFinanceTable(AListTable, FLedgerNumber).DefaultView;
+            AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
+            AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
+        }
+
+        /// <summary>
+        /// This method is called when the system wants to draw a comboBox item in the list.
+        /// We choose the colour and weight for the font, showing inactive codes in bold red text
+        /// </summary>
+        private void DrawComboBoxItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+
+            TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
+            DataRowView drv = (DataRowView)cmb.Items[e.Index];
+            string content = drv[1].ToString();
+            Brush brush;
+
+            if (cmb.Name.StartsWith("cmbDetailCostCentre"))
+            {
+                brush = CostCentreIsActive(content) ? Brushes.Black : Brushes.Red;
+            }
+            else if (cmb.Name.StartsWith("cmbDetailAccount"))
+            {
+                brush = AccountIsActive(content) ? Brushes.Black : Brushes.Red;
+            }
+            else
+            {
+                throw new ArgumentException("Unexpected caller of DrawComboBoxItem event");
+            }
+
+            Font font = new Font(((Control)sender).Font, (brush == Brushes.Red) ? FontStyle.Bold : FontStyle.Regular);
+            e.Graphics.DrawString(content, font, brush, new PointF(e.Bounds.X, e.Bounds.Y));
         }
     }
 }
