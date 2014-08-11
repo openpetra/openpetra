@@ -141,7 +141,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (ucoValues.GridCount == 0)
                 {
                     // The grid must be filtered because it has no rows!
-                    msg += Catalog.GetString("The selected Analysis Type has Analysis Values associated with it, but they are being filtered out of the display.");
+                    msg += Catalog.GetString(
+                        "The selected Analysis Type has Analysis Values associated with it, but they are being filtered out of the display.");
                     msg += "  ";
                 }
 

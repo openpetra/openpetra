@@ -160,7 +160,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Helper method that we can call to initialise each of the filter/find comboBoxes
         /// </summary>
-        private void InitFilterFindComboBox(TCmbAutoPopulated AClonedFromComboBox, TCmbAutoComplete AFFInstance, TCacheableFinanceTablesEnum AListTableEnum)
+        private void InitFilterFindComboBox(TCmbAutoPopulated AClonedFromComboBox,
+            TCmbAutoComplete AFFInstance,
+            TCacheableFinanceTablesEnum AListTableEnum)
         {
             AFFInstance.DisplayMember = AClonedFromComboBox.DisplayMember;
             AFFInstance.ValueMember = AClonedFromComboBox.ValueMember;

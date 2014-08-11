@@ -2032,7 +2032,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SelectRowInGrid(ARowNumber);
         }
 
-        
         private void FilterToggledManual(bool AFilterIsOff)
         {
             // The first time the filter is toggled on we need to set up the cost centre and account comboBoxes
