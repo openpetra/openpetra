@@ -1460,6 +1460,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 this.Cursor = Cursors.Default;
             }
 
+            DataTable GiftsWithInactiveKeyMinistries;
+
+            if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, currentBatchNo,
+                    out GiftsWithInactiveKeyMinistries))
+            {
+                string listOfRow = "Gift--Detail--Recipient------KeyMinistry";
+
+                foreach (DataRow dr in GiftsWithInactiveKeyMinistries.Rows)
+                {
+                    listOfRow += String.Format("{0}{1} {2} {3} {4}",
+                        Environment.NewLine,
+                        dr[0],
+                        dr[1],
+                        dr[2],
+                        dr[3]);
+                }
+
+                string msg = String.Format(Catalog.GetString("Cannot post Batch {0} as inactive Key Ministries found in gifts:{1}{1}{2}"),
+                    currentBatchNo,
+                    Environment.NewLine,
+                    listOfRow);
+
+                MessageBox.Show(msg, Catalog.GetString("Inactive Key Ministries Found"));
+
+                return;
+            }
+
             //Read current rows position ready to reposition after removal of posted row from grid
             int newCurrentRowPos = GetSelectedRowIndex();
 

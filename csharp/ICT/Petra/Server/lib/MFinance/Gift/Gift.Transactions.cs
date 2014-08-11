@@ -2147,7 +2147,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool NewTransaction = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
+                IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -2441,7 +2441,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-                        NewTransaction = false;
                     }
 
                     return true;
@@ -2749,6 +2748,37 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Check if Key Ministry exists
+        /// </summary>
+        /// <param name="AKeyMinPartnerKey">Partner Key </param>
+        /// <returns>return true if AKeyMinPartnerKey identifies an active Key Ministry</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean KeyMinistryIsActive(Int64 AKeyMinPartnerKey)
+        {
+            Boolean KeyMinistryIsActive = false;
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(AKeyMinPartnerKey, Transaction);
+                PPartnerRow PartnerRow = PartnerTable[0];
+
+                KeyMinistryIsActive = (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE);
+            }
+            finally
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return KeyMinistryIsActive;
+        }
+
+        /// <summary>
         /// Load key Ministry
         /// </summary>
         /// <param name="partnerKey">Partner Key </param>
@@ -2822,6 +2852,58 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DBAccess.GDBAccessObj.SelectDT(UnitTable, sqlLoadKeyMinistriesOfField, ATransaction, new OdbcParameter[0], 0, 0);
 
             return UnitTable;
+        }
+
+        /// <summary>
+        /// Load Inactive Key Ministries Found In Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AInactiveKMsTable"></param>
+        /// <returns>Return true if inactive ones found</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool InactiveKeyMinistriesFoundInBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out DataTable AInactiveKMsTable)
+        {
+            TDBTransaction Transaction = null;
+            bool NewTransaction = false;
+
+            AInactiveKMsTable = new DataTable();
+            AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetGiftTransactionNumberDBName(), typeof(Int32)));
+            AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetDetailNumberDBName(), typeof(Int32)));
+            AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetRecipientKeyDBName(), typeof(Int64)));
+            AInactiveKMsTable.Columns.Add(new DataColumn(PUnitTable.GetUnitNameDBName(), typeof(String)));
+
+            string SQLLoadInactiveKeyMinistriesInBatch = string.Empty;
+
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+                SQLLoadInactiveKeyMinistriesInBatch =
+                    "SELECT gd.a_gift_transaction_number_i, a_detail_number_i, p_recipient_key_n, unit.p_unit_name_c" +
+                    " FROM a_gift_detail gd, um_unit_structure us, p_unit unit, p_partner partner" +
+                    " WHERE gd.p_recipient_key_n = partner.p_partner_key_n" +
+                    "   AND gd.a_ledger_number_i = " + ALedgerNumber.ToString() +
+                    "   AND gd.a_batch_number_i = " + ABatchNumber.ToString() +
+                    "   AND gd.a_gift_transaction_amount_n > 0" +
+                    "   AND partner.p_partner_key_n = unit.p_partner_key_n" +
+                    "   AND partner.p_status_code_c = '" + MPartnerConstants.PARTNERSTATUS_INACTIVE + "'" +
+                    "   AND unit.p_partner_key_n = us.um_child_unit_key_n" +
+                    "   AND unit.u_unit_type_code_c = '" + MPartnerConstants.UNIT_TYPE_KEYMIN + "';";
+
+                TLogging.Log(SQLLoadInactiveKeyMinistriesInBatch);
+
+                DBAccess.GDBAccessObj.SelectDT(AInactiveKMsTable, SQLLoadInactiveKeyMinistriesInBatch, Transaction, new OdbcParameter[0], 0, 0);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return AInactiveKMsTable.Rows.Count > 0;
         }
 
         #region Data Validation

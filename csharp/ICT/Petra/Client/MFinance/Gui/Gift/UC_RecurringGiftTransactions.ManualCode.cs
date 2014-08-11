@@ -1900,15 +1900,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateRecipientKeyText(ARow.RecipientKey);
                 }
 
-                if (ARow.IsRecipientLedgerNumberNull())
+                if (ARow.IsRecipientFieldNull())
                 {
                     txtField.Text = string.Empty;
                     FCorrespondingRecipientKeyToField = 0;
                 }
                 else
                 {
-                    txtField.Text = ARow.RecipientLedgerNumber.ToString();
-                    FCorrespondingRecipientKeyToField = ARow.RecipientField;
+                    txtField.Text = ARow.RecipientField.ToString();
+                    FCorrespondingRecipientKeyToField = ARow.RecipientKey;
                 }
 
                 if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
@@ -2341,7 +2341,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         && (Row.DateEffective != Row.DateExpires))
                     {
                         txtField.Text = Row.FieldKey.ToString();
-                        FCorrespondingRecipientKeyToField = Row.FieldKey;
+                        FCorrespondingRecipientKeyToField = Row.PartnerKey;
                     }
                 }
             }

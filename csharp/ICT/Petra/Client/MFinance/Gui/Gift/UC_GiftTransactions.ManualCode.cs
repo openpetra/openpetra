@@ -1991,7 +1991,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     txtField.Text = ARow.RecipientField.ToString();
-                    FCorrespondingRecipientKeyToField = ARow.RecipientField;
+                    FCorrespondingRecipientKeyToField = ARow.RecipientKey;
                 }
 
                 if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
@@ -3070,7 +3070,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         && (Row.DateEffective != Row.DateExpires))
                     {
                         txtField.Text = Row.FieldKey.ToString();
-                        FCorrespondingRecipientKeyToField = Row.FieldKey;
+                        FCorrespondingRecipientKeyToField = Row.PartnerKey;
                     }
                 }
             }
