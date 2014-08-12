@@ -1065,6 +1065,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private Int32 GetNumberOfRows()
         {
+            if (grdFamilyMembers.DataSource == null)
+            {
+                return 0;
+            }
+
             return grdFamilyMembers.DataSource.Count;
         }
 
