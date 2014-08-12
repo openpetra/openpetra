@@ -9,6 +9,7 @@ RootNode:
     MasterTable: PmPersonalData
     Controls:
         pnlContent: {ControlsOrientation=vertical}
+            AutoScroll: true              
             Controls: [grpBelieverSince]              
             Dock: Fill
        

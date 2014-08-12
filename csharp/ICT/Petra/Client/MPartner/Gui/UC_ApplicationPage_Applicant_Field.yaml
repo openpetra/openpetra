@@ -11,6 +11,7 @@ RootNode:
     Controls:
         pnlDetails:
             Controls: [grpComments, grpStatus, grpFinance]
+            AutoScroll: true
             Dock: Fill
         grpComments: {Label=Additional Preferences or Comments}
             Controls: 

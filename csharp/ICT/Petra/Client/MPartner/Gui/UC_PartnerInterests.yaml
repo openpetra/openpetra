@@ -12,10 +12,19 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [sptInterests]
             Dock: Fill
+        sptInterests:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlGrid
+            Panel2: pnlDetails
         pnlGrid:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlButtons, grdDetails]
         pnlButtons:
             Dock: Bottom
@@ -30,7 +39,8 @@ RootNode:
             Columns: []
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Dock: Bottom
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls:
                 Row0: [cmbPPartnerInterestInterestCategory]
                 Row1: [cmbPPartnerInterestInterest]
@@ -53,6 +63,7 @@ RootNode:
         txtPPartnerInterestComment: {ColSpan=2}
             Label: Comment
             Height: 70
+            MinimumSize: 50, 50
             Multiline: true
             ScrollBars: Vertical
             Stretch: fully
