@@ -21,8 +21,8 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailDocCode, txtDetailDescription, cmbDetailDocCategory, chkDetailUnassignableFlag, chkDetailDeletableFlag]
-            FindControls: [txtDetailDocCode, txtDetailDescription, cmbDetailDocCategory]
+            FilterControls: [txtDetailDocCode, cmbDetailDocCategory, txtDetailDescription, chkDetailUnassignableFlag, chkDetailDeletableFlag]
+            FindControls: [txtDetailDocCode, cmbDetailDocCategory, txtDetailDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -37,7 +37,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailDocCode, DetailDocCategory, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
-                DetailCode: {Label=Document Code}
+                DetailDocCode: {Label=Document Type}
                 DetailDocCategory: {Label=Document Category}
                 DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
@@ -50,7 +50,7 @@ RootNode:
                 Row1: [cmbDetailDocCategory]
                 Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row3: [chkDetailDeletableFlag]
-        txtDetailDocCode: {Label=Document Code, CharacterCasing=Upper, Width=160}
+        txtDetailDocCode: {Label=Document Type, CharacterCasing=Upper, Width=160}
         txtDetailDescription: {Label=Description, Width=340}
         cmbDetailDocCategory: {Label=Document Category, List=DocumentTypeCategoryList, ColSpan=2, ComboBoxWidth=130}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
