@@ -4273,7 +4273,7 @@
                 descr=""
                 thisFields="a_ep_match_key_i"/>
     <uniquekey name="a_ep_match_uk"
-               descr=""
+               descr="unique key"
                thisFields="a_match_text_c, a_detail_i, a_ledger_number_i"/>
     <foreignkey name="a_ep_match_fk1"
                 descr=""
