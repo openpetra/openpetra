@@ -214,8 +214,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 {
                                     if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
                                         && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
-                                        && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= DateTime.Today))
-                                        && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= DateTime.Today))
+                                        && ((recGiftDetail.StartDonations == null) || (AEffectiveDate >= recGiftDetail.StartDonations))
+                                        && ((recGiftDetail.EndDonations == null) || (AEffectiveDate <= recGiftDetail.EndDonations))
                                         )
                                     {
                                         foundDetail = true;
@@ -265,8 +265,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                     if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
                                         && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
-                                        && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= DateTime.Today))
-                                        && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= DateTime.Today))
+                                        && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= AEffectiveDate))
+                                        && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= AEffectiveDate))
                                         )
                                     {
                                         AGiftDetailRow detail = GMainDS.AGiftDetail.NewRowTyped();
