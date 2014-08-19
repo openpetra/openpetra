@@ -1106,6 +1106,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("HASPOSTDELETEMANUAL", "true");
             }
 
+            if (FCodeStorage.ManualFileExistsAndContains("GetChangedRecordCountManual"))
+            {
+                FTemplate.AddToCodelet("GETCHANGEDRECORDCOUNT", "return GetChangedRecordCountManual(out AMessage);");
+            }
+            else
+            {
+                FTemplate.AddToCodelet("GETCHANGEDRECORDCOUNT", "return FPetraUtilsObject.GetChangedRecordCount(FMainDS, out AMessage);");
+            }
+
             if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLL"))
             {
                 if (FCodeStorage.FControlList.ContainsKey("grdDetails") && !FCodeStorage.FControlList["grdDetails"].HasAttribute("IgnoreEditMove]"))
