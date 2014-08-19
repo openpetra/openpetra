@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Threading;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -52,17 +53,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     FLedgerNumber = value;
                     txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-
-                    // populate combo boxes
-                    TFinanceControls.InitialiseCostCentreList(ref cmbFromCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
-                    TFinanceControls.InitialiseAccountList(ref cmbFromAccountCode, FLedgerNumber,
-                        true, false, FActiveOnly, false, FTransactionCurrency, true);
-                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
-                    TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-                        true, false, FActiveOnly, false, FTransactionCurrency, true);
-
-                    // can delete this when not using hardcoded data
-                    ShowDetails(FPrevRowChangedRow);
+                    
+                    Thread thread = new Thread(SetupComboboxes);
+                    thread.Start();
                 }
             }
         }
@@ -81,33 +74,72 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// TODO might need this
+        /// </summary>
+        /*public AllocationJournalTDS MainDS
+        {
+            get
+            {
+            	return FMainDS;
+            }
+            set
+            {
+            	FMainDS = value;
+            }
+        }*/
+
         private void InitializeManualCode()
         {
             rbtPercentageOption.Checked = true;
 
             // set currency codes
-            txtFromAmount.CurrencyCode = FTransactionCurrency;
+            txtTotalAmount.CurrencyCode = FTransactionCurrency;
             txtDetailAmount.CurrencyCode = FTransactionCurrency;
 
             // disallow negative numbers
-            txtFromAmount.NegativeValueAllowed = false;
+            txtTotalAmount.NegativeValueAllowed = false;
             txtDetailAmount.NegativeValueAllowed = false;
             txtDetailPercentage.NegativeValueAllowed = false;
 
             // correct label position which doesn't get moved when using padding
-            lblFromAmount.Location = new System.Drawing.Point(lblFromAmount.Location.X, txtFromAmount.Location.Y + 5);
+            lblTotalAmount.Location = new System.Drawing.Point(lblTotalAmount.Location.X, txtTotalAmount.Location.Y + 5);
 
             // correct this radio group hiding another control
             rgrDebitCredit.SendToBack();
+            
+            // ok button disabled until two allocations are added
+            btnOK.Enabled = false;
 
             // TODO tmp hardcoded test data
-            txtFromAmount.NumberValueDecimal = 100;
+            txtTotalAmount.NumberValueDecimal = 100;
             DataRow NewRow = FMainDS.Allocations.NewRow();
-            NewRow["Percentage"] = 25;
-            NewRow["Amount"] = 15.25;
+            NewRow["Percentage"] = 25.00;
+            NewRow["Amount"] = 25.00;
             NewRow["a_cost_centre_code_c"] = "2600";
             NewRow["a_account_code_c"] = "0407";
             FMainDS.Allocations.Rows.Add(NewRow);
+            NewRow = FMainDS.Allocations.NewRow();
+            NewRow["Percentage"] = 45.00;
+            NewRow["Amount"] = 45.00;
+            NewRow["a_cost_centre_code_c"] = "8042";
+            NewRow["a_account_code_c"] = "9800";
+            FMainDS.Allocations.Rows.Add(NewRow);
+            btnOK.Enabled = true;
+        }
+        
+        private void SetupComboboxes()
+        {
+            if (FLedgerNumber != -1)
+            {
+            	// populate combo boxes
+                TFinanceControls.InitialiseCostCentreList(ref cmbFromCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
+                TFinanceControls.InitialiseAccountList(ref cmbFromAccountCode, FLedgerNumber,
+                    true, false, FActiveOnly, false, FTransactionCurrency, true);
+                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
+                TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
+                    true, false, FActiveOnly, false, FTransactionCurrency, true);
+            }
         }
 
         private void NewRowManual(ref AllocationJournalTDSAllocationsRow ANewRow)
@@ -127,10 +159,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
+        	// Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
+        	FPetraUtilsObject.VerificationResultCollection.Clear();
+        	
             FValidateEverything = true;
 
             if (ValidateAllData(false, true))
             {
+            	this.DialogResult = DialogResult.OK;
                 Close();
             }
 
@@ -150,11 +186,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 txtDetailAmount.NumberValueDecimal = 0;
                 txtDetailPercentage.NumberValueDecimal = 0;
+            
+	            if (grdDetails.Rows.Count > 2)
+	            {
+	            	btnOK.Enabled = true;
+	            }
             }
         }
 
         // update allocation percentages or amounts when the total 'from' amount is changed
-        private void FromAmountChanged(Object Sender, EventArgs e)
+        private void TotalAmountChanged(Object Sender, EventArgs e)
         {
             if (txtDetailAmount.Enabled)
             {
@@ -177,7 +218,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.txtDetailPercentage.TextChanged -= new System.EventHandler(this.PercentageChanged);
 
-            txtDetailPercentage.NumberValueDecimal = (txtDetailAmount.NumberValueDecimal / txtFromAmount.NumberValueDecimal) * 100;
+            txtDetailPercentage.NumberValueDecimal = (txtDetailAmount.NumberValueDecimal / txtTotalAmount.NumberValueDecimal) * 100;
 
             this.txtDetailPercentage.TextChanged += new System.EventHandler(this.PercentageChanged);
         }
@@ -186,7 +227,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.txtDetailAmount.TextChanged -= new System.EventHandler(this.AmountChanged);
 
-            txtDetailAmount.NumberValueDecimal = (txtDetailPercentage.NumberValueDecimal / 100) * txtFromAmount.NumberValueDecimal;
+            txtDetailAmount.NumberValueDecimal = (txtDetailPercentage.NumberValueDecimal / 100) * txtTotalAmount.NumberValueDecimal;
 
             this.txtDetailAmount.TextChanged += new System.EventHandler(this.AmountChanged);
         }
@@ -195,6 +236,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void DeleteRecord(Object Sender, EventArgs e)
         {
             this.DeleteAllocations();
+            
+            if (grdDetails.Rows.Count <= 2)
+            {
+            	btnOK.Enabled = false;
+            }
         }
 
         // delete all rows
@@ -219,6 +265,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 SelectRowInGrid(1);
+                
+                btnOK.Enabled = false;
             }
         }
 
@@ -230,21 +278,136 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            if (TSharedFinanceValidation_GL.ValidateAllocationJournalDialog(this, ARow, rbtAmountOption.Checked, txtFromAmount.NumberValueDecimal,
-                    ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict)
-                && FValidateEverything)
+            TSharedFinanceValidation_GL.ValidateAllocationJournalDialog(this, ARow, rbtAmountOption.Checked, txtTotalAmount.NumberValueDecimal,
+                                                                        ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict);
+ 
+            if (VerificationResultCollection.Count == 0 && FValidateEverything)
             {
                 ValidateEverything();
             }
         }
 
-        // validate all data (even data not in DataRow)
+        /// validate all data not in a DataRow
         private void ValidateEverything()
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            TScreenVerificationResult VerificationResult;
 
-            TSharedFinanceValidation_GL.ValidateAllocationJournalDialogEverything(this, txtReference,
-                ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict);
+            // Validate Reference
+            if (!string.IsNullOrEmpty(txtReference.Text) && txtReference.Text.Length > 100)
+            {
+                // 'Reference' must not contain more than 100 characters
+                VerificationResult = new TScreenVerificationResult(TStringChecks.StringLengthLesserOrEqual(txtReference.Text, 100,
+                    "Reference", txtReference), null, txtReference);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(txtReference, VerificationResult, null);
+            }
+            else if (string.IsNullOrEmpty(txtReference.Text))
+            {
+            	// 'Reference' must not be empty
+                VerificationResult = new TScreenVerificationResult(TStringChecks.StringMustNotBeEmpty(txtReference.Text,
+                    "Reference", txtReference), null, txtReference);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(txtReference, VerificationResult, null);
+            }
+            
+            // Validate Narrative
+            if (!string.IsNullOrEmpty(txtNarrative.Text) && txtNarrative.Text.Length > 500)
+            {
+                // 'Narrative' must not contain more than 100 characters
+                VerificationResult = new TScreenVerificationResult(TStringChecks.StringLengthLesserOrEqual(txtNarrative.Text, 500,
+                    "Narrative", txtNarrative), null, txtNarrative);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(txtNarrative, VerificationResult, null);
+            }
+            else if (string.IsNullOrEmpty(txtNarrative.Text))
+            {
+            	// 'Narrative' must not be empty
+                VerificationResult = new TScreenVerificationResult(TStringChecks.StringMustNotBeEmpty(txtNarrative.Text,
+                    "Narrative", txtNarrative), null, txtNarrative);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(txtNarrative, VerificationResult, null);
+            }
+            
+            // Validate FromCostCentreCode
+            if (string.IsNullOrEmpty(cmbFromCostCentreCode.GetSelectedString()))
+            {
+            	// 'Cost Centre Code' must not be empty
+                VerificationResult = new TScreenVerificationResult(TStringChecks.StringMustNotBeEmpty(cmbFromCostCentreCode.Text,
+                    "Cost Centre Code", cmbFromCostCentreCode), null, cmbFromCostCentreCode);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(cmbFromCostCentreCode, VerificationResult, null);
+            }
+            
+            // Validate FromAccountCode
+            if (string.IsNullOrEmpty(cmbFromAccountCode.GetSelectedString()))
+            {
+            	// 'Account Code' must not be empty
+                VerificationResult = new TScreenVerificationResult(TStringChecks.StringMustNotBeEmpty(cmbFromAccountCode.Text,
+                    "Account Code", cmbFromAccountCode), null, cmbFromAccountCode);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(cmbFromAccountCode, VerificationResult, null);
+            }
+            
+            // Validate TotalAmount
+            if (Convert.ToDecimal(txtTotalAmount.Text) <= 0)
+            {
+            	// 'Account Code' must not be empty
+            	VerificationResult = new TScreenVerificationResult(TNumericalChecks.IsPositiveDecimal(Convert.ToDecimal(txtTotalAmount.Text),
+                    "Amount", txtTotalAmount), null, txtTotalAmount);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(txtTotalAmount, VerificationResult, null);
+            }
+            else
+            {
+            	// Validate Allocations' amounts
+            	if (rbtAmountOption.Checked)
+            	{
+            		decimal TotalAmountInAllocations = 0;
+            		
+            		foreach (AllocationJournalTDSAllocationsRow Row in FMainDS.Allocations.Rows)
+            		{
+            			TotalAmountInAllocations += Row.Amount;
+            		}
+            		
+            		if (TotalAmountInAllocations != Convert.ToDecimal(txtTotalAmount.Text))
+            		{
+            			VerificationResult = new TScreenVerificationResult(this, null,
+                           Catalog.GetString("The amounts entered do not match the total amount of the Allocation. Please check the amounts entered."),
+                           txtTotalAmount, TResultSeverity.Resv_Critical);
+
+		                // Handle addition/removal to/from TVerificationResultCollection
+		                VerificationResultCollection.Auto_Add_Or_AddOrRemove(txtTotalAmount, VerificationResult, null);
+            		}
+            	}
+            	// Validate Allocations' percentages
+            	else
+            	{
+            		decimal TotalPercentageInAllocations = 0;
+            		
+            		foreach (AllocationJournalTDSAllocationsRow Row in FMainDS.Allocations.Rows)
+            		{
+            			TotalPercentageInAllocations += Row.Percentage;
+            		}
+            		
+            		if (TotalPercentageInAllocations != 100)
+            		{
+            			VerificationResult = new TScreenVerificationResult(this, null,
+                           Catalog.GetString("The percentages entered must add up to 100%."),
+                           txtTotalAmount, TResultSeverity.Resv_Critical);
+
+		                // Handle addition/removal to/from TVerificationResultCollection
+		                VerificationResultCollection.Auto_Add_Or_AddOrRemove(txtDetailPercentage, VerificationResult, null);
+            		}
+            	}
+            }
         }
 
         #endregion

@@ -625,5 +625,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
+        
+        private void AddAllocation(Object sender, EventArgs e)
+        {
+        	TFrmAllocationJournalDialog AddAllocationJournal = new TFrmAllocationJournalDialog(this.FindForm());
+        	AddAllocationJournal.LedgerNumber = FLedgerNumber;
+        	AddAllocationJournal.BatchNumber = FBatchNumber;
+        	//AllocationJournalTDS test = AddAllocationJournal.MainDS;
+        	
+        	// open as a modal form
+        	DialogResult Result = AddAllocationJournal.ShowDialog();
+        }
     }
 }

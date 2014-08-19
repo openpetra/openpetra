@@ -31,7 +31,7 @@ RootNode:
             Controls:
                 Row0: [cmbFromCostCentreCode]
                 Row1: [cmbFromAccountCode]
-                Row2: [rgrDebitCredit, txtFromAmount]
+                Row2: [rgrDebitCredit, txtTotalAmount]
             Dock: Top
         grpAllocateTo:
             Controls: [pnlDetailGrid, pnlDetails]
@@ -77,12 +77,12 @@ RootNode:
             OptionalValues: [Debit, =Credit]
             NoLabel: true
             BorderVisible: false
-        txtFromAmount:
+        txtTotalAmount:
             Label: Amount
             Width: 120
             Format: Currency
             Padding: 0,14,0,0
-            OnChange: FromAmountChanged
+            OnChange: TotalAmountChanged
             Validation: true
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, ColSpan=2}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2}

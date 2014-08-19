@@ -441,7 +441,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
-            TScreenVerificationResult VerificationResult;
+            TScreenVerificationResult VerificationResult = null;
             int VerifResultCollAddedCount = 0;
 
             // Don't validate deleted DataRows
@@ -450,64 +450,47 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
+            ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnAmountId];
+                
             // an individual amount cannot be great than total amount
             if (AAmountEnabled && (ARow.Amount > ATotalAmount))
             {
-                ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnAmountId];
-
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     VerificationResult = new TScreenVerificationResult(
                         new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
                                 PetraErrorCodes.ERR_AMOUNT_TOO_LARGE, new string[] { ARow.Amount.ToString() })),
                         ValidationColumn, ValidationControlsData.ValidationControl);
-
-                    // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+            {
+            	VerifResultCollAddedCount++;
+            }
+            
+            VerificationResult = null;
+            ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnPercentageId];
 
             // a percentage cannot be greater than 100%
             if (!AAmountEnabled && (ARow.Percentage > 100))
             {
-                ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnPercentageId];
-
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     VerificationResult = new TScreenVerificationResult(
                         new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PERCENTAGE_TOO_LARGE)),
                         ValidationColumn, ValidationControlsData.ValidationControl);
-
-                    // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
 
+            // Handle addition to/removal from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+            {
+            	VerifResultCollAddedCount++;
+            }
+
             return VerifResultCollAddedCount == 0;
-        }
-
-        /// <summary>
-        /// Extra validation for the AllocationJournalDialog.
-        /// </summary>
-        /// <param name="AContext">Context that describes where the data validation failed.</param>
-        /// <param name="ATxtReference">Control for the Reference</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
-        /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
-        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateAllocationJournalDialogEverything(object AContext, Control ATxtReference,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
-        {
-            // Does nothing at the moment.
-
-            /*DataColumn ValidationColumn;
-             * TValidationControlsData ValidationControlsData;
-             * TScreenVerificationResult VerificationResult;
-             * int VerifResultCollAddedCount = 0;
-             *
-             * return VerifResultCollAddedCount == 0;*/
-            return true;
         }
     }
 
