@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
         private bool FNewDonorWarning = true;
-        private bool FWarnAboutMissingIntlExchangeRate = true;
+        private bool FWarnAboutMissingIntlExchangeRate = false;
         // changed gift records
         GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
 
@@ -475,7 +475,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AIsTransactionInIntlCurrency"></param>
         /// <returns></returns>
         public decimal InternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow,
-            out bool AIsTransactionInIntlCurrency)
+            out bool AIsTransactionInIntlCurrency, bool AAlwaysReportError = false)
         {
             decimal IntlToBaseCurrencyExchRate = 1;
 
@@ -503,7 +503,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     StartOfMonth,
                     BatchEffectiveDate);
 
-                if ((IntlToBaseCurrencyExchRate == 0) && FWarnAboutMissingIntlExchangeRate)
+                if ((IntlToBaseCurrencyExchRate == 0) && (FWarnAboutMissingIntlExchangeRate || AAlwaysReportError))
                 {
                     FWarnAboutMissingIntlExchangeRate = false;
 
@@ -513,7 +513,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             LedgerIntlCurrency,
                             BatchEffectiveDate);
 
-                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(IntlRateErrorMessage, Catalog.GetString(
+                            "Lookup Corporate Exchange Rate"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
 

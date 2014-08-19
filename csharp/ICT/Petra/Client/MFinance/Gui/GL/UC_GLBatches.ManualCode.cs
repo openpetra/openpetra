@@ -996,7 +996,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 IncludeCurrentAndForwardingItem);
         }
 
-        void RefreshFilter(Object sender, EventArgs e)
+        private void RefreshFilter(Object sender, EventArgs e)
         {
             int BatchNumber = 0;
 
@@ -1060,9 +1060,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FSelectedYear == -1)
             {
+                FSelectedYear = CurrentLedgerYear;
+
                 FPeriodFilter = String.Format(
                     "{0} = {1}",
-                    ABatchTable.GetBatchYearDBName(), CurrentLedgerYear);
+                    ABatchTable.GetBatchYearDBName(), FSelectedYear);
             }
             else
             {
@@ -1088,57 +1090,52 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            if (FrbtEditing.Checked)
+            try
             {
-                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
+                this.ParentForm.Cursor = Cursors.WaitCursor;
 
-                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
+                if (!BatchYearIsLoaded(FSelectedYear))
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
-                            FSelectedPeriod));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FSelectedYear, FSelectedPeriod));
                 }
 
-                FStatusFilter = String.Format("{0} = '{1}'",
-                    ABatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED);
-                btnNew.Enabled = true;
-            }
-            else if (FrbtPosting.Checked)
-            {
-                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_POSTING;
-
-                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_UNPOSTED))
+                if (FrbtEditing.Checked)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfReadyForPosting,
-                            FSelectedYear,
-                            FSelectedPeriod));
+                    FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
+
+                    FStatusFilter = String.Format("{0} = '{1}'",
+                        ABatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED);
+                    btnNew.Enabled = true;
+                }
+                else if (FrbtPosting.Checked)
+                {
+                    FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_POSTING;
+
+                    FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
+                        ABatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED,
+                        ABatchTable.GetBatchCreditTotalDBName(),
+                        ABatchTable.GetBatchDebitTotalDBName(),
+                        ABatchTable.GetBatchControlTotalDBName());
+                }
+                else //(FrbtAll.Checked)
+                {
+                    FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_ALL;
+
+                    FStatusFilter = "1 = 1";
+                    btnNew.Enabled = true;
                 }
 
-                FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
-                    ABatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED,
-                    ABatchTable.GetBatchCreditTotalDBName(),
-                    ABatchTable.GetBatchDebitTotalDBName(),
-                    ABatchTable.GetBatchControlTotalDBName());
+                RefreshGridData(BatchNumber, (sender is TCmbAutoComplete));
+
+                UpdateChangeableStatus();
+                UpdateRecordNumberDisplay();
             }
-            else //(FrbtAll.Checked)
+            finally
             {
-                FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_ALL;
-
-                if (!BatchWithStatusIsLoaded(MFinanceConstants.BATCH_POSTED))
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, FSelectedYear,
-                            FSelectedPeriod));
-                }
-
-                FStatusFilter = "1 = 1";
-                btnNew.Enabled = true;
+                this.ParentForm.Cursor = Cursors.Default;
             }
-
-            RefreshGridData(BatchNumber, (sender is TCmbAutoComplete));
-
-            UpdateChangeableStatus();
-            UpdateRecordNumberDisplay();
         }
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
@@ -1573,21 +1570,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return (AJournalRow)((TFrmGLBatch) this.ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
 
-        private bool BatchWithStatusIsLoaded(String ABatchStatus)
+        private bool BatchYearIsLoaded(Int32 AYear)
         {
-            String Comparison = "=";
-
-            if (ABatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-            {
-                Comparison = "<>";
-            }
-
             DataView BatchDV = new DataView(FMainDS.ABatch);
 
-            BatchDV.RowFilter = String.Format("{0}{1}'{2}'",
-                ABatchTable.GetBatchStatusDBName(),
-                Comparison,
-                MFinanceConstants.BATCH_UNPOSTED);
+            BatchDV.RowFilter = String.Format("{0}={1}",
+                ABatchTable.GetBatchYearDBName(),
+                AYear);
 
             return BatchDV.Count > 0;
         }
@@ -1597,8 +1586,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ReloadBatches()
         {
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfEditing, FSelectedYear,
-                    FSelectedPeriod));
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FSelectedYear, FSelectedPeriod));
 
             grdDetails.SelectRowInGrid(1);
         }

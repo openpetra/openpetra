@@ -11,7 +11,7 @@ RootNode:
         actDonorHistory: {ActionClick=OpenDonorHistory}
         actRecipientHistory: {ActionClick=OpenRecipientHistory}
         actRecipientGiftDestination: {ActionClick=OpenGiftDestination}
-        actNewGift: {Label=&Add Gift, ActionClick=NewGift}
+        actNewGift: {Label=&New Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail, Image=New_Record.ico}
         actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
         actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllGifts}
@@ -111,7 +111,7 @@ RootNode:
         grpDetailsForEachGift: {Width:930, Height:242}
             Controls:
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
-                Row1: [txtField, chkDetailChargeFlag]
+                Row1: [txtDetailRecipientLedgerNumber, chkDetailChargeFlag]
                 Row2: [cmbKeyMinistries, chkDetailTaxDeductible]
                 Row3: [txtDetailGiftTransactionAmount, cmbDetailMailingCode]
                 Row4: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
@@ -134,7 +134,7 @@ RootNode:
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
-        txtField: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
+        txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}

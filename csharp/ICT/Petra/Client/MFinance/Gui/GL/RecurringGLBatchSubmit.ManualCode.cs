@@ -227,7 +227,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            txtExchangeRateToBase.Text = selectedExchangeRate.ToString();
+            FExchangeRateToBase = selectedExchangeRate;
+            txtExchangeRateToBase.Text = FExchangeRateToBase.ToString();
         }
 
         /// <summary>

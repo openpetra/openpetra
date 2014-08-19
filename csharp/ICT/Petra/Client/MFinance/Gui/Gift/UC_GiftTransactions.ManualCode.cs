@@ -73,9 +73,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private List <Int64>FNewDonorsList = new List <long>();
 
-        // this should be updated each time  txtField is updated to prevent problems at validation
-        private Int64 FCorrespondingRecipientKeyToField = 0;
-
         /// <summary>
         /// The current Ledger number
         /// </summary>
@@ -143,7 +140,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailReference.MaxLength = 20;
 
             //Fix a layering issue
-            txtField.SendToBack();
+            txtDetailRecipientLedgerNumber.SendToBack();
 
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
@@ -180,7 +177,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ItemList.Clear();
             ItemList.Add(new Tuple <string, EventHandler>(Catalog.GetString("Open Recipient Gift Destination"), OpenGiftDestination));
-            txtField.AddCustomContextMenuItems(ItemList);
+            txtDetailRecipientLedgerNumber.AddCustomContextMenuItems(ItemList);
         }
 
         private void SetupComboTextBoxOverlayControls()
@@ -427,6 +424,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateTotals();
 
+            if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            {
+                GetRecipientData(FPreviouslySelectedDetailRow.RecipientKey);
+            }
+
             FTransactionsLoaded = true;
             return true;
         }
@@ -486,7 +488,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string CurrentCostCentreCode = ARow.CostCentreCode;
             string NewCostCentreCode = string.Empty;
 
-            Int64 RecipientField = Convert.ToInt64(txtField.Text);
+            Int64 RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
 
             string MotivationGroup = ARow.MotivationGroupCode;
             string MotivationDetail = ARow.MotivationDetailCode;
@@ -1044,7 +1046,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //    PartnerKey,
                 //    out ValidLedgerNumberCostCentreCode);
 
-                Int64 RecipientField = Convert.ToInt64(txtField.Text);
+                Int64 RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
 
                 if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, PartnerKey, RecipientField,
                         out ValidLedgerNumberCostCentreCode)
@@ -1167,15 +1169,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
             }
 
-            TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtField, APartnerKey, true);
+            TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
 
-            if ((Convert.ToInt64(txtField.Text) == 0) && (APartnerKey != 0))
+            if ((Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))
             {
-                txtField.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey,
+                txtDetailRecipientLedgerNumber.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey,
                     FPreviouslySelectedDetailRow.DateEntered).ToString();
             }
-
-            FCorrespondingRecipientKeyToField = APartnerKey;
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -1742,8 +1742,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtGiftTotal.NumberValueDecimal = 0;
                 txtDetailGiftTransactionAmount.NumberValueDecimal = 0;
                 txtDetailRecipientKey.Text = string.Empty;
-                txtField.Text = string.Empty;
-                FCorrespondingRecipientKeyToField = 0;
+                txtDetailRecipientLedgerNumber.Text = string.Empty;
                 txtDetailAccountCode.Clear();
                 cmbDetailReceiptLetterCode.SelectedIndex = -1;
                 cmbDetailMotivationGroupCode.SelectedIndex = -1;
@@ -1983,17 +1982,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateRecipientKeyText(ARow.RecipientKey);
                 }
 
-                if (ARow.IsRecipientFieldNull())
-                {
-                    txtField.Text = string.Empty;
-                    FCorrespondingRecipientKeyToField = 0;
-                }
-                else
-                {
-                    txtField.Text = ARow.RecipientField.ToString();
-                    FCorrespondingRecipientKeyToField = ARow.RecipientField;
-                }
-
                 if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
                 {
                     mniRecipientHistory.Enabled = false;
@@ -2003,7 +1991,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     mniRecipientHistory.Enabled = true;
 
-                    if (Convert.ToInt64(txtField.Text) == 0)
+                    if (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                     {
                         RecipientPartnerClassChanged(null);
                     }
@@ -2271,13 +2259,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 UpdateRecipientKeyText(ARow.RecipientKey);
             }
 
-            if (txtField.Text.Length == 0)
+            if (txtDetailRecipientLedgerNumber.Text.Length == 0)
             {
                 ARow.SetRecipientFieldNull();
+                ARow.SetRecipientLedgerNumberNull();
             }
             else
             {
-                ARow.RecipientField = Convert.ToInt64(txtField.Text);
+                ARow.RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
+                ARow.RecipientLedgerNumber = ARow.RecipientField;
             }
 
             //Handle gift table fields for first detail only
@@ -2334,14 +2324,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            // this happens if validation is called after recipient key has been changed but before RecipientKeyChanged is called,
-            // meaning that the Field has not yet been updated
-            if (ARow.RecipientKey != FCorrespondingRecipientKeyToField)
-            {
-                GetRecipientData(Convert.ToInt64(txtDetailRecipientKey.Text));
-                FPreviouslySelectedDetailRow.RecipientField = Convert.ToInt64(txtField.Text);
-            }
-
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
@@ -2362,7 +2344,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ValidateGiftDestination()
         {
             // if no gift destination exists for parter then give the user the option to open Gift Destination maintenance screen
-            if ((Convert.ToInt64(txtField.Text) == 0) && (FPreviouslySelectedDetailRow.RecipientKey != 0)
+            if ((Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) && (FPreviouslySelectedDetailRow.RecipientKey != 0)
                 && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)
                 && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +
                         FPreviouslySelectedDetailRow.RecipientDescription +
@@ -3042,13 +3024,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((APartnerClass == TPartnerClass.UNIT) || (APartnerClass == null))
             {
                 txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, false);
-                txtField.CustomContextMenuItemsVisibility(ItemText, false);
+                txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, false);
                 mniRecipientGiftDestination.Enabled = false;
             }
             else if (APartnerClass == TPartnerClass.FAMILY)
             {
                 txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, true);
-                txtField.CustomContextMenuItemsVisibility(ItemText, true);
+                txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
                 mniRecipientGiftDestination.Enabled = true;
             }
         }
@@ -3069,8 +3051,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
                         && (Row.DateEffective != Row.DateExpires))
                     {
-                        txtField.Text = Row.FieldKey.ToString();
-                        FCorrespondingRecipientKeyToField = Row.FieldKey;
+                        txtDetailRecipientLedgerNumber.Text = Row.FieldKey.ToString();
                     }
                 }
             }
