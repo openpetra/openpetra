@@ -168,6 +168,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FCurrentAccount = AnewSelection;
             ucoAccountsList.SelectedAccount = AnewSelection;
             ucoAccountsTree.SelectedAccount = AnewSelection;
+
+            pnlDetails.Enabled = (AnewSelection != null);
+
+            if (pnlDetails.Enabled)
+            {
+                Console.WriteLine("Current account code is {0}", FCurrentAccount.AccountRow.AccountCode);
+            }
         }
 
         /// <summary>
@@ -450,9 +457,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtDetailAccountCodeShortDesc.Text = "";
                 txtDetailEngAccountCodeLongDesc.Text = "";
                 txtDetailEngAccountCodeShortDesc.Text = "";
+
+                pnlDetails.Enabled = false;
             }
             else
             {
+                pnlDetails.Enabled = true;
+
                 strOldDetailAccountCode = txtDetailAccountCode.Text;
                 ucoAccountAnalysisAttributes.Enabled = ARow.PostingStatus;
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
@@ -818,12 +829,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             FIAmUpdating++;
             FPetraUtilsObject.SuppressChangeDetection = true;
-            ShowDetails((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
+
+            if (FCurrentAccount == null)
+            {
+                ShowDetails(null);
+            }
+            else
+            {
+                ShowDetails((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
+            }
+
             FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-            tbbAddNewAccount.Enabled = (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false);
-            tbbDeleteAccount.Enabled = (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false);
+            tbbAddNewAccount.Enabled = ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false));
+            tbbDeleteAccount.Enabled = ((FCurrentAccount != null) && (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false));
 
             FPetraUtilsObject.HasChanges = hasChanges;
         }
@@ -838,6 +858,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (ucoAccountsTree.Visible)
             {
+                ucoAccountsList.CollapseFilterFind();
+
                 ucoAccountsTree.Focus();
                 ucoAccountsTree.RefreshSelectedAccount();
             }
