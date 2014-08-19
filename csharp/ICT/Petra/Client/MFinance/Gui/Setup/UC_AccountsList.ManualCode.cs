@@ -201,7 +201,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FFilterChkBankAccount = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkBankAccount");
                 FFilterChkActive = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
                 FFilterChkSummary = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkSummary");
-                FFilterChkPostable = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkPostable");
                 FFilterChkForeign = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkForeign");
                 
                 FIsFilterPanelInitialised = true;
