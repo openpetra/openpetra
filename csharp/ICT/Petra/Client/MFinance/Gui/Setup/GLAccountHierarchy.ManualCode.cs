@@ -465,8 +465,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 pnlDetails.Enabled = true;
 
                 strOldDetailAccountCode = txtDetailAccountCode.Text;
+
                 ucoAccountAnalysisAttributes.Enabled = ARow.PostingStatus;
+                // This call to an external user control resets change detection suppression so we need to re-enable it
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
+                FPetraUtilsObject.DisableDataChangedEvent();
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
                 chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
@@ -865,6 +868,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
+                ucoAccountsList.UpdateRecordNumberDisplay();
                 ucoAccountsList.Focus();
             }
         }
