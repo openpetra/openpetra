@@ -513,7 +513,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             LedgerIntlCurrency,
                             BatchEffectiveDate);
 
-                    MessageBox.Show(IntlRateErrorMessage, Catalog.GetString("Lookup Corporate Exchange Rate"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(IntlRateErrorMessage, Catalog.GetString(
+                            "Lookup Corporate Exchange Rate"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
 

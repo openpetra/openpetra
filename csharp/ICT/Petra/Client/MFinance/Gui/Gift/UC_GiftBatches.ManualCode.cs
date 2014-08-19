@@ -1449,7 +1449,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Check for missing international exchange rate
             bool IsTransactionInIntlCurrency = false;
-            if (((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(FPreviouslySelectedDetailRow, out IsTransactionInIntlCurrency, true) == 0)
+
+            if (((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(FPreviouslySelectedDetailRow, out IsTransactionInIntlCurrency,
+                    true) == 0)
             {
                 return;
             }

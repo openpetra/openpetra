@@ -423,7 +423,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.ResumeLayout();
 
             UpdateTotals();
-            if (FPreviouslySelectedDetailRow != null && FBatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+
+            if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 GetRecipientData(FPreviouslySelectedDetailRow.RecipientKey);
             }

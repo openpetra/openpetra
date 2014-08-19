@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -309,7 +309,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         AddColumnToGrid(writer, ctrl.controlName,
                             field.iDecimals == 10 && field.iLength == 24 ? "Currency" : field.GetDotNetType(),
-                            field.strLabel,
+                            field.strLabel.Length > 0 ? field.strLabel : field.strName,
                             String.Empty,
                             TTable.NiceTableName(field.strTableName),
                             TTable.NiceFieldName(field.strName));
