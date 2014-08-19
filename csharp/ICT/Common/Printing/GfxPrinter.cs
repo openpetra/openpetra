@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -121,7 +121,7 @@ namespace Ict.Common.Printing
             // using GPL Font Code 128 from Grand Zebu http://grandzebu.net/
             FBarCodeFont = new System.Drawing.Font("Code 128", 35, FontStyle.Regular);
 
-            FBiggestLastUsedFont = FDefaultFont;
+            FBiggestLastUsedFont = null;
             FRight = new StringFormat(StringFormat.GenericDefault);
             FRight.Alignment = StringAlignment.Far;
             FLeft = new StringFormat(StringFormat.GenericDefault);
@@ -256,7 +256,7 @@ namespace Ict.Common.Printing
         /// <param name="AFont"></param>
         protected virtual bool UpdateBiggestLastUsedFont(eFont AFont)
         {
-            if (GetFont(AFont).GetHeight(FEv.Graphics) > FBiggestLastUsedFont.GetHeight(FEv.Graphics))
+            if ((FBiggestLastUsedFont == null) || (GetFont(AFont).GetHeight(FEv.Graphics) > FBiggestLastUsedFont.GetHeight(FEv.Graphics)))
             {
                 FBiggestLastUsedFont = GetFont(AFont);
                 return true;
@@ -298,6 +298,13 @@ namespace Ict.Common.Printing
         /// </summary>
         public override Boolean PrintString(String ATxt, eFont AFont, eAlignment AAlign)
         {
+            if ((ATxt == null) || (ATxt.Length == 0))
+            {
+                return false;
+            }
+
+            UpdateBiggestLastUsedFont(AFont);
+
             RectangleF rect;
 
             rect = new RectangleF(FLeftMargin, CurrentYPos, FWidth, GetFont(AFont).GetHeight(FEv.Graphics));
@@ -308,7 +315,7 @@ namespace Ict.Common.Printing
                 FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, GetStringFormat(AAlign));
             }
 
-            return (ATxt != null) && (ATxt.Length != 0);
+            return true;
         }
 
         /// <summary>
@@ -317,12 +324,19 @@ namespace Ict.Common.Printing
         /// </summary>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos)
         {
+            if ((ATxt == null) || (ATxt.Length == 0))
+            {
+                return false;
+            }
+
+            UpdateBiggestLastUsedFont(AFont);
+
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
                 FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, AXPos, CurrentYPos);
             }
 
-            return (ATxt != null) && (ATxt.Length != 0);
+            return true;
         }
 
         /// <summary>
@@ -331,6 +345,13 @@ namespace Ict.Common.Printing
         /// <returns>true if something was printed</returns>
         public override Boolean PrintString(String ATxt, eFont AFont, float AXPos, float AWidth, eAlignment AAlign)
         {
+            if ((ATxt == null) || (ATxt.Length == 0))
+            {
+                return false;
+            }
+
+            UpdateBiggestLastUsedFont(AFont);
+
             RectangleF rect = new RectangleF(AXPos, CurrentYPos, AWidth, GetFont(AFont).GetHeight(FEv.Graphics));
 
             if (PrintingMode == ePrintingMode.eDoPrint)
@@ -346,7 +367,7 @@ namespace Ict.Common.Printing
                 FEv.Graphics.DrawString(ATxt, GetFont(AFont), Brushes.Black, rect, f);
             }
 
-            return (ATxt != null) && (ATxt.Length != 0);
+            return true;
         }
 
         /// <summary>
@@ -544,8 +565,6 @@ namespace Ict.Common.Printing
                 {
                     string toPrint = ATxt.Substring(0, length);
                     ATxt = ATxt.Substring(length);
-
-                    UpdateBiggestLastUsedFont(AFont);
 
                     if (FPrinterBehaviour == ePrinterBehaviour.eFormLetter)
                     {
@@ -785,10 +804,15 @@ namespace Ict.Common.Printing
         /// <returns>the new current line</returns>
         public override float LineFeed()
         {
+            if (FBiggestLastUsedFont == null)
+            {
+                FBiggestLastUsedFont = GetFont(eFont.eDefaultFont);
+            }
+
             CurrentYPos = CurrentYPos + FBiggestLastUsedFont.GetHeight(FEv.Graphics);
 
             // reset the biggest last used font
-            FBiggestLastUsedFont = FDefaultFont;
+            FBiggestLastUsedFont = null;
             return CurrentYPos;
         }
 
