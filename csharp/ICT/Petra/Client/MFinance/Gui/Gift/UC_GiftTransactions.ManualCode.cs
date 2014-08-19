@@ -73,9 +73,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private List <Int64>FNewDonorsList = new List <long>();
 
-        // this should be updated each time txtDetailRecipientLedgerNumber is updated to prevent problems at validation
-        private Int64 FCorrespondingRecipientKeyToField = 0;
-
         /// <summary>
         /// The current Ledger number
         /// </summary>
@@ -426,6 +423,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.ResumeLayout();
 
             UpdateTotals();
+            if (FPreviouslySelectedDetailRow != null && FBatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+            {
+                GetRecipientData(FPreviouslySelectedDetailRow.RecipientKey);
+            }
 
             FTransactionsLoaded = true;
             return true;
@@ -1174,8 +1175,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailRecipientLedgerNumber.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey,
                     FPreviouslySelectedDetailRow.DateEntered).ToString();
             }
-
-            FCorrespondingRecipientKeyToField = APartnerKey;
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -1743,7 +1742,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailGiftTransactionAmount.NumberValueDecimal = 0;
                 txtDetailRecipientKey.Text = string.Empty;
                 txtDetailRecipientLedgerNumber.Text = string.Empty;
-                FCorrespondingRecipientKeyToField = 0;
                 txtDetailAccountCode.Clear();
                 cmbDetailReceiptLetterCode.SelectedIndex = -1;
                 cmbDetailMotivationGroupCode.SelectedIndex = -1;
@@ -1981,15 +1979,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
                     UpdateRecipientKeyText(ARow.RecipientKey);
-                }
-
-                if (ARow.IsRecipientFieldNull())
-                {
-                    FCorrespondingRecipientKeyToField = 0;
-                }
-                else
-                {
-                    FCorrespondingRecipientKeyToField = ARow.RecipientKey;
                 }
 
                 if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
@@ -2272,10 +2261,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (txtDetailRecipientLedgerNumber.Text.Length == 0)
             {
                 ARow.SetRecipientFieldNull();
+                ARow.SetRecipientLedgerNumberNull();
             }
             else
             {
                 ARow.RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
+                ARow.RecipientLedgerNumber = ARow.RecipientField;
             }
 
             //Handle gift table fields for first detail only
@@ -2330,14 +2321,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 || (GetCurrentBatchRow().BatchNumber != ARow.BatchNumber))
             {
                 return;
-            }
-
-            // this happens if validation is called after recipient key has been changed but before RecipientKeyChanged is called,
-            // meaning that the Field has not yet been updated
-            if (ARow.RecipientKey != FCorrespondingRecipientKeyToField)
-            {
-                GetRecipientData(Convert.ToInt64(txtDetailRecipientKey.Text));
-                FPreviouslySelectedDetailRow.RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
             }
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -3068,7 +3051,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         && (Row.DateEffective != Row.DateExpires))
                     {
                         txtDetailRecipientLedgerNumber.Text = Row.FieldKey.ToString();
-                        FCorrespondingRecipientKeyToField = Row.PartnerKey;
                     }
                 }
             }

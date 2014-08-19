@@ -1447,6 +1447,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 this.Cursor = Cursors.Default;
             }
 
+            //Check for missing international exchange rate
+            bool IsTransactionInIntlCurrency = false;
+            if (((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(FPreviouslySelectedDetailRow, out IsTransactionInIntlCurrency, true) == 0)
+            {
+                return;
+            }
+
+            //Check for inactive KeyMinistries
             DataTable GiftsWithInactiveKeyMinistries;
 
             if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, currentBatchNo,
