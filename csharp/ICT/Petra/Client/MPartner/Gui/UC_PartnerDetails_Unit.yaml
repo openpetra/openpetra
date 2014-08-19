@@ -9,7 +9,7 @@ RootNode:
     MasterTable: PUnit
     Controls:
         pnlContent:
-            Controls: [grpNames, grpMisc, grpOutreachInfo]
+            Controls: [grpOutreachInfo, grpNames, grpMisc]
             Dock: Fill
 
         grpNames:
@@ -54,7 +54,7 @@ RootNode:
             ActionClick: OpenUnitHierarchy
             Label: Position in Unit Hierarchy...
 
-        grpOutreachInfo: {Label=Outreach Information, Dock=Top}
+        grpOutreachInfo: {Label=Outreach Information}
             Controls: 
                 Row0: [txtOutreachCode]
                 Row1: [txtOutreachCost, cmbOutreachCostCurrencyCode]

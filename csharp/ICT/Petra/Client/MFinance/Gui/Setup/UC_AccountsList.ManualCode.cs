@@ -57,7 +57,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private CheckBox FFilterChkBankAccount = null;
         private CheckBox FFilterChkActive = null;
         private CheckBox FFilterChkSummary = null;
-        private CheckBox FFilterChkPostable = null;
         private CheckBox FFilterChkForeign = null;
 
         private TSgrdDataGridPaged grdDetails = null;
