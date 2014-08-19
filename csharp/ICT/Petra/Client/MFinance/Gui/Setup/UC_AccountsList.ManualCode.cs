@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FFilterChkActive = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
                 FFilterChkSummary = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkSummary");
                 FFilterChkForeign = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkForeign");
-                
+
                 FIsFilterPanelInitialised = true;
             }
         }

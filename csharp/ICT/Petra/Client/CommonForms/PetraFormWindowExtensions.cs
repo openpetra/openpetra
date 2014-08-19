@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.CommonForms
         private static bool FWindowPositionsLoaded = false;
 
         /// dictionary to hold the most recent window position for floating (multi-use) windows
-        private static Dictionary <string, Point>FDicFloatingWindowLocations = new Dictionary<string, Point>();
+        private static Dictionary <string, Point>FDicFloatingWindowLocations = new Dictionary <string, Point>();
 
         /// private class variable that stores the splitter positions that have already been displayed
         private List <string>FSplittersDisplayed = new List <string>();
@@ -80,8 +80,8 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // Restore the window positions if we know them
                 // (Note: Nant tests do not have a caller so we need to allow for this possibility)
-                if ((FWinForm.Name == "TFrmMainWindowNew") || (FWinForm.Name == "TFrmPartnerEdit") ||
-                    ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
+                if ((FWinForm.Name == "TFrmMainWindowNew") || (FWinForm.Name == "TFrmPartnerEdit")
+                    || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                 {
                     // Either we are loading the main window or we have been opened by the main window
                     if (!FWindowPositionsLoaded)

@@ -57,22 +57,23 @@ namespace Ict.Petra.Client.CommonForms
 
 // TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
 
-        /// 
+        ///
         protected static readonly string StrSingleRecordToSave = Catalog.GetString("There is 1 record that needs to be saved.");
 
-        /// 
+        ///
         protected static readonly string StrPluralRecordsToSave = Catalog.GetString("There are {0} records that need to be saved.");
 
-        /// 
-        protected static readonly string StrConsequenceIfNotSaved = Catalog.GetString("{0}If you close this window without saving, you will lose all the changes that you have made.");
+        ///
+        protected static readonly string StrConsequenceIfNotSaved = Catalog.GetString(
+            "{0}If you close this window without saving, you will lose all the changes that you have made.");
 
-        /// 
+        ///
         protected static readonly string StrSingleTableToSave = Catalog.GetString("The following table has data that needs to be saved:");
 
-        /// 
+        ///
         protected static readonly string StrPluralTablesToSave = Catalog.GetString("The following tables have data that needs to be saved:");
 
-        /// 
+        ///
         protected static readonly string StrRecordsInTable = Catalog.GetString("{0}   {1} {2} in the '{3}' table.");
 
         #endregion
@@ -561,7 +562,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <returns>The total number of changed records in all tables of the DataSet</returns>
         public int GetChangedRecordCount(DataSet ADataSet, out string AMessage)
         {
-            List<Tuple<string, int>> TableAndCountList = new List<Tuple<string, int>>();
+            List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
             int allChangesCount = 0;
 
             foreach (DataTable dt in ADataSet.Tables)
@@ -581,7 +582,7 @@ namespace Ict.Petra.Client.CommonForms
 
                     if (tableChangesCount > 0)
                     {
-                        TableAndCountList.Add(new Tuple<string, int>(dt.TableName, tableChangesCount));
+                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
                     }
                 }
             }
@@ -593,7 +594,8 @@ namespace Ict.Petra.Client.CommonForms
                 if (ADataSet.Tables.Count == 1)
                 {
                     // single table DataSet so we are only interested in the count
-                    Tuple<string, int> TableAndCount = TableAndCountList[0];
+                    Tuple <string, int>TableAndCount = TableAndCountList[0];
+
                     if (TableAndCount.Item2 > 0)
                     {
                         if (TableAndCount.Item2 == 1)
@@ -622,22 +624,22 @@ namespace Ict.Petra.Client.CommonForms
                         AMessage = TFrmPetraEditUtils.StrPluralTablesToSave;
                     }
 
-                    foreach (Tuple<string, int> TableAndCount in TableAndCountList)
+                    foreach (Tuple <string, int>TableAndCount in TableAndCountList)
                     {
                         string NiceTableName = StringHelper.ReverseUpperCamelCase(TableAndCount.Item1);
                         NiceTableName = NiceTableName.Substring(NiceTableName.IndexOf(' ') + 1);
 
                         AMessage += String.Format(TFrmPetraEditUtils.StrRecordsInTable,
-                                Environment.NewLine,
-                                TableAndCount.Item2,
-                                Catalog.GetPluralString("record", "records", TableAndCount.Item2),
-                                NiceTableName);
+                            Environment.NewLine,
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("record", "records", TableAndCount.Item2),
+                            NiceTableName);
                     }
 
                     AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
                 }
             }
-            
+
             return allChangesCount;
         }
 
@@ -958,7 +960,7 @@ namespace Ict.Petra.Client.CommonForms
                         {
                             SaveQuestion += String.Format(TFrmPetraEditUtils.StrPluralRecordsToSave, changedRecordCount);
                         }
-                        
+
                         SaveQuestion += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, "  ");
                     }
                     else

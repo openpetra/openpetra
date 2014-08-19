@@ -845,7 +845,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-            tbbAddNewAccount.Enabled = ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false));
+            tbbAddNewAccount.Enabled =
+                ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false));
             tbbDeleteAccount.Enabled = ((FCurrentAccount != null) && (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false));
 
             FPetraUtilsObject.HasChanges = hasChanges;
