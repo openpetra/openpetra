@@ -57,6 +57,24 @@ namespace Ict.Petra.Client.CommonForms
 
 // TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
 
+        /// 
+        protected static readonly string StrSingleRecordToSave = Catalog.GetString("There is 1 record that needs to be saved.");
+
+        /// 
+        protected static readonly string StrPluralRecordsToSave = Catalog.GetString("There are {0} records that need to be saved.");
+
+        /// 
+        protected static readonly string StrConsequenceIfNotSaved = Catalog.GetString("{0}If you close this window without saving, you will lose all the changes that you have made.");
+
+        /// 
+        protected static readonly string StrSingleTableToSave = Catalog.GetString("The following table has data that needs to be saved:");
+
+        /// 
+        protected static readonly string StrPluralTablesToSave = Catalog.GetString("The following tables have data that needs to be saved:");
+
+        /// 
+        protected static readonly string StrRecordsInTable = Catalog.GetString("{0}   {1} {2} in the '{3}' table.");
+
         #endregion
 
         /// Tells which mode the screen should be opened in
@@ -535,6 +553,95 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
+        /// This is the default method for counting the number of changed records and specifying a message that can be displayed
+        ///   as part of the 'Do you want to save changes' dialog.
+        /// </summary>
+        /// <param name="ADataSet">The DataSet that is to be examined for changes</param>
+        /// <param name="AMessage">The message that will be displayed</param>
+        /// <returns>The total number of changed records in all tables of the DataSet</returns>
+        public int GetChangedRecordCount(DataSet ADataSet, out string AMessage)
+        {
+            List<Tuple<string, int>> TableAndCountList = new List<Tuple<string, int>>();
+            int allChangesCount = 0;
+
+            foreach (DataTable dt in ADataSet.Tables)
+            {
+                if (dt != null)
+                {
+                    int tableChangesCount = 0;
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        if (dr.RowState != DataRowState.Unchanged)
+                        {
+                            tableChangesCount++;
+                            allChangesCount++;
+                        }
+                    }
+
+                    if (tableChangesCount > 0)
+                    {
+                        TableAndCountList.Add(new Tuple<string, int>(dt.TableName, tableChangesCount));
+                    }
+                }
+            }
+
+            AMessage = String.Empty;
+
+            if (TableAndCountList.Count > 0)
+            {
+                if (ADataSet.Tables.Count == 1)
+                {
+                    // single table DataSet so we are only interested in the count
+                    Tuple<string, int> TableAndCount = TableAndCountList[0];
+                    if (TableAndCount.Item2 > 0)
+                    {
+                        if (TableAndCount.Item2 == 1)
+                        {
+                            AMessage = TFrmPetraEditUtils.StrSingleRecordToSave;
+                        }
+                        else
+                        {
+                            AMessage = String.Format(
+                                TFrmPetraEditUtils.StrPluralRecordsToSave,
+                                TableAndCount.Item2);
+                        }
+
+                        AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, "  ");
+                    }
+                }
+                else
+                {
+                    // multi-table DataSet
+                    if (TableAndCountList.Count == 1)
+                    {
+                        AMessage = TFrmPetraEditUtils.StrSingleTableToSave;
+                    }
+                    else
+                    {
+                        AMessage = TFrmPetraEditUtils.StrPluralTablesToSave;
+                    }
+
+                    foreach (Tuple<string, int> TableAndCount in TableAndCountList)
+                    {
+                        string NiceTableName = StringHelper.ReverseUpperCamelCase(TableAndCount.Item1);
+                        NiceTableName = NiceTableName.Substring(NiceTableName.IndexOf(' ') + 1);
+
+                        AMessage += String.Format(TFrmPetraEditUtils.StrRecordsInTable,
+                                Environment.NewLine,
+                                TableAndCount.Item2,
+                                Catalog.GetPluralString("record", "records", TableAndCount.Item2),
+                                NiceTableName);
+                    }
+
+                    AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
+                }
+            }
+            
+            return allChangesCount;
+        }
+
+        /// <summary>
         /// Recursively clears the content of all the controls in the specified container
         /// </summary>
         /// <param name="AParentControl">The container control whose controls are to be cleared (often this will be pnlDetails)</param>
@@ -832,9 +939,40 @@ namespace Ict.Petra.Client.CommonForms
                 }
 
                 // still unsaved data in the DataSet
-                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(MCommonResourcestrings.StrFormHasUnsavedChanges +
-                    Environment.NewLine + Environment.NewLine +
-                    MCommonResourcestrings.StrFormHasUnsavedChangesQuestion,
+                string SaveQuestion = MCommonResourcestrings.StrFormHasUnsavedChanges + Environment.NewLine + Environment.NewLine;
+                string alternativeMessage;
+
+                // Do we know how many rows have been changed?
+                int changedRecordCount = ((IFrmPetraEdit)FTheForm).GetChangedRecordCount(out alternativeMessage);
+
+                if (changedRecordCount > 0)
+                {
+                    if (alternativeMessage == String.Empty)
+                    {
+                        // Construct a default message
+                        if (changedRecordCount == 1)
+                        {
+                            SaveQuestion += TFrmPetraEditUtils.StrSingleRecordToSave;
+                        }
+                        else
+                        {
+                            SaveQuestion += String.Format(TFrmPetraEditUtils.StrPluralRecordsToSave, changedRecordCount);
+                        }
+                        
+                        SaveQuestion += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, "  ");
+                    }
+                    else
+                    {
+                        // Use the alternative message supplied
+                        SaveQuestion += alternativeMessage;
+                    }
+
+                    SaveQuestion += Environment.NewLine + Environment.NewLine;
+                }
+
+                SaveQuestion += MCommonResourcestrings.StrFormHasUnsavedChangesQuestion;
+
+                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(SaveQuestion,
                     MCommonResourcestrings.StrGenericWarning,
                     MessageBoxButtons.YesNoCancel,
                     MessageBoxIcon.Warning,
@@ -990,7 +1128,16 @@ namespace Ict.Petra.Client.CommonForms
 
 // TODO?        void EnableDataChangedEvent();
 
-        /// <summary>Save the changes</summary>
+        /// <summary>
+        /// Save the changes
+        /// </summary>
         bool SaveChanges();
+
+        /// <summary>
+        /// Get the number of changed records and specify a message to incorporate into the 'Do you want to save?' message box
+        /// </summary>
+        /// <param name="AMessage">An optional message to display.  If the parameter is an empty string a default message will be used</param>
+        /// <returns>The number of changed records.  Return -1 to imply 'unknown'.</returns>
+        int GetChangedRecordCount(out string AMessage);
     }
 }
