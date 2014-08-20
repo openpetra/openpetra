@@ -789,7 +789,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;
+            if (cmbPartnerClass.Text != "FAMILY") 
+            {
+                FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;    
+            }
 
             if (!FPartnerClassUpdateIsAutomatic)
             {
