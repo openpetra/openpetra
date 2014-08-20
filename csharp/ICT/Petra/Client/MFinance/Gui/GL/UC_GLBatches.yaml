@@ -102,6 +102,7 @@ RootNode:
             mniImportFromClipboard:
             mniExportBatches:
     Toolbar:
+        tbbPostBatch:
         tbbReverseBatch:
         tbbImportBatches:
         tbbImportFromClipboard:

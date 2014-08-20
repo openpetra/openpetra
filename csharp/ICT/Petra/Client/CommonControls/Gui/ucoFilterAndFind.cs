@@ -691,6 +691,29 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /// <summary>
+        /// Returns true if there is a visible vertical scroll bar associated with the active filter or find panel
+        /// </summary>
+        public bool IsVScrollVisible
+        {
+            get
+            {
+                if ((Width == 0) || !Visible)
+                {
+                    return false;
+                }
+
+                if (IsFindTabActive)
+                {
+                    return FTbpFind.VerticalScroll.Visible;
+                }
+                else
+                {
+                    return FTbpFilter.VerticalScroll.Visible;
+                }
+            }
+        }
+
         #endregion
 
         #region Events
@@ -1544,7 +1567,7 @@ namespace Ict.Petra.Client.CommonControls
             grpFindDirection.Controls.Add(rbtFindDirUp);
             grpFindDirection.Controls.Add(rbtFindDirDown);
 
-            pnlFindOptions.Name = "FPnlFindControls";
+            pnlFindOptions.Name = "pnlFindOptions";
             pnlFindOptions.Left = 0;
             pnlFindOptions.Width = FTabFilterAndFind.Width;
             pnlFindOptions.Height = 72;
@@ -1592,6 +1615,8 @@ namespace Ict.Petra.Client.CommonControls
             FTbpFilter.TabIndex = 0;
             FTbpFilter.Text = "Filter";
             FTbpFilter.ToolTipText = Catalog.GetString("Filter the rows shown in the list");
+            FTbpFilter.AutoScroll = true;
+            FTbpFilter.SetAutoScrollMargin(3, 3);
 
             LayoutManagerFilterTab = new TSingleLineFlow(FTbpFilter, 4, 3);
             LayoutManagerFilterTab.SpacerDistance = 5;
@@ -1617,6 +1642,8 @@ namespace Ict.Petra.Client.CommonControls
             FTbpFind.TabIndex = 0;
             FTbpFind.Text = "Find";
             FTbpFind.ToolTipText = Catalog.GetString("Find within the rows shown in the list");
+            FTbpFind.AutoScroll = true;
+            FTbpFind.SetAutoScrollMargin(3, 3);
 
             LayoutManagerFindTab = new TSingleLineFlow(FTbpFind, 4, 3);
             LayoutManagerFindTab.SpacerDistance = 5;
@@ -1645,17 +1672,17 @@ namespace Ict.Petra.Client.CommonControls
                 }
             }
 
-            FTabFilterAndFind.ResumeLayout();
-            FPnlFindControls.ResumeLayout();
-            pnlFindOptions.ResumeLayout();
-            grpFindDirection.ResumeLayout();
-            this.ResumeLayout();
-
             btnFindNext.Width = FInitialWidth - 31;
             grpFindDirection.Width = FInitialWidth - 34;
 
             // Ensure that pnlFindOptions is always the bottommost of the Controls in the Panel
             FPnlFindControls.Controls.SetChildIndex(pnlFindOptions, FPnlFindControls.Controls.Count);
+
+            FTabFilterAndFind.ResumeLayout();
+            FPnlFindControls.ResumeLayout();
+            pnlFindOptions.ResumeLayout();
+            grpFindDirection.ResumeLayout();
+            this.ResumeLayout();
         }
 
         // set the panel colours

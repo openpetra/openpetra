@@ -231,7 +231,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FMainDS == null)
             {
                 FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS();
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, -1, -1));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, -1, -1));
             }
 
             Int32 ALedgerNumber = 0;

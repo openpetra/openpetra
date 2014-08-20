@@ -214,8 +214,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 {
                                     if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
                                         && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
-                                        && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= DateTime.Today))
-                                        && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= DateTime.Today))
+                                        && ((recGiftDetail.StartDonations == null) || (AEffectiveDate >= recGiftDetail.StartDonations))
+                                        && ((recGiftDetail.EndDonations == null) || (AEffectiveDate <= recGiftDetail.EndDonations))
                                         )
                                     {
                                         foundDetail = true;
@@ -265,8 +265,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                     if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
                                         && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
-                                        && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= DateTime.Today))
-                                        && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= DateTime.Today))
+                                        && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= AEffectiveDate))
+                                        && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= AEffectiveDate))
                                         )
                                     {
                                         AGiftDetailRow detail = GMainDS.AGiftDetail.NewRowTyped();
@@ -452,14 +452,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// also get the ledger for the base currency etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AFilterBatchStatus"></param>
         /// <param name="AYear">if -1, the year will be ignored</param>
         /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
         /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used.
         /// Period = -2 means all periods in current year</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus, Int32 AYear, Int32 APeriod)
+        public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, Int32 AYear, Int32 APeriod)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -468,7 +467,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             string FilterByPeriod = string.Empty;
 
-            if (AYear != -1)
+            if (AYear > -1)
             {
                 FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
                     AGiftBatchTable.GetTableDBName(),
@@ -477,24 +476,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
                 {
+                    //Return current and forwarding periods
                     FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
                         AGiftBatchTable.GetTableDBName(),
                         AGiftBatchTable.GetBatchPeriodDBName(),
                         MainDS.ALedger[0].CurrentPeriod);
                 }
-                else if ((APeriod == -2) || (APeriod == -1))
+                else if (APeriod > 0)
                 {
-                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} <> {2}",
-                        AGiftBatchTable.GetTableDBName(),
-                        AGiftBatchTable.GetBatchPeriodDBName(),
-                        APeriod);
-                }
-                else if (APeriod != -1)
-                {
+                    //Return only specified period
                     FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
                         AGiftBatchTable.GetTableDBName(),
                         AGiftBatchTable.GetBatchPeriodDBName(),
                         APeriod);
+                }
+                else
+                {
+                    //Nothing to add, returns all periods
                 }
             }
 
@@ -504,24 +502,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AGiftBatchTable.GetLedgerNumberDBName(),
                     ALedgerNumber);
 
-            string FilterByBatchStatus = string.Empty;
-
-            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
-            {
-                FilterByBatchStatus =
-                    string.Format(" AND {0} <> '{1}'",
-                        AGiftBatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED);
-            }
-            else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
-            {
-                FilterByBatchStatus =
-                    string.Format(" AND {0} = '{1}'",
-                        AGiftBatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED);
-            }
-
-            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus + FilterByPeriod,
+            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
                 MainDS.AGiftBatch.TableName, Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
@@ -2147,7 +2128,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool NewTransaction = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                IsolationLevel.ReadCommitted,
+                IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -2441,7 +2422,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-                        NewTransaction = false;
                     }
 
                     return true;
@@ -2749,6 +2729,37 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Check if Key Ministry exists
+        /// </summary>
+        /// <param name="AKeyMinPartnerKey">Partner Key </param>
+        /// <returns>return true if AKeyMinPartnerKey identifies an active Key Ministry</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean KeyMinistryIsActive(Int64 AKeyMinPartnerKey)
+        {
+            Boolean KeyMinistryIsActive = false;
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(AKeyMinPartnerKey, Transaction);
+                PPartnerRow PartnerRow = PartnerTable[0];
+
+                KeyMinistryIsActive = (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE);
+            }
+            finally
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return KeyMinistryIsActive;
+        }
+
+        /// <summary>
         /// Load key Ministry
         /// </summary>
         /// <param name="partnerKey">Partner Key </param>
@@ -2822,6 +2833,58 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DBAccess.GDBAccessObj.SelectDT(UnitTable, sqlLoadKeyMinistriesOfField, ATransaction, new OdbcParameter[0], 0, 0);
 
             return UnitTable;
+        }
+
+        /// <summary>
+        /// Load Inactive Key Ministries Found In Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AInactiveKMsTable"></param>
+        /// <returns>Return true if inactive ones found</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool InactiveKeyMinistriesFoundInBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out DataTable AInactiveKMsTable)
+        {
+            TDBTransaction Transaction = null;
+            bool NewTransaction = false;
+
+            AInactiveKMsTable = new DataTable();
+            AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetGiftTransactionNumberDBName(), typeof(Int32)));
+            AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetDetailNumberDBName(), typeof(Int32)));
+            AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetRecipientKeyDBName(), typeof(Int64)));
+            AInactiveKMsTable.Columns.Add(new DataColumn(PUnitTable.GetUnitNameDBName(), typeof(String)));
+
+            string SQLLoadInactiveKeyMinistriesInBatch = string.Empty;
+
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
+                SQLLoadInactiveKeyMinistriesInBatch =
+                    "SELECT gd.a_gift_transaction_number_i, a_detail_number_i, p_recipient_key_n, unit.p_unit_name_c" +
+                    " FROM a_gift_detail gd, um_unit_structure us, p_unit unit, p_partner partner" +
+                    " WHERE gd.p_recipient_key_n = partner.p_partner_key_n" +
+                    "   AND gd.a_ledger_number_i = " + ALedgerNumber.ToString() +
+                    "   AND gd.a_batch_number_i = " + ABatchNumber.ToString() +
+                    "   AND gd.a_gift_transaction_amount_n > 0" +
+                    "   AND partner.p_partner_key_n = unit.p_partner_key_n" +
+                    "   AND partner.p_status_code_c = '" + MPartnerConstants.PARTNERSTATUS_INACTIVE + "'" +
+                    "   AND unit.p_partner_key_n = us.um_child_unit_key_n" +
+                    "   AND unit.u_unit_type_code_c = '" + MPartnerConstants.UNIT_TYPE_KEYMIN + "';";
+
+                TLogging.Log(SQLLoadInactiveKeyMinistriesInBatch);
+
+                DBAccess.GDBAccessObj.SelectDT(AInactiveKMsTable, SQLLoadInactiveKeyMinistriesInBatch, Transaction, new OdbcParameter[0], 0, 0);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return AInactiveKMsTable.Rows.Count > 0;
         }
 
         #region Data Validation

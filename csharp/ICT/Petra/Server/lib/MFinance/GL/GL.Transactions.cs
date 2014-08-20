@@ -94,12 +94,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// also get the ledger for the base currency etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AFilterBatchStatus"></param>
         /// <param name="AYear">if -1, the year will be ignored</param>
         /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
         /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus, int AYear, int APeriod)
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int AYear, int APeriod)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -108,7 +107,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             string FilterByPeriod = string.Empty;
 
-            if (AYear != -1)
+            if (AYear > -1)
             {
                 FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
                     ABatchTable.GetTableDBName(),
@@ -117,24 +116,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
                 {
+                    //Return current and forwarding periods
                     FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
                         ABatchTable.GetTableDBName(),
                         ABatchTable.GetBatchPeriodDBName(),
                         MainDS.ALedger[0].CurrentPeriod);
                 }
-                else if ((APeriod == -2) || (APeriod == -1))
+                else if (APeriod > 0)
                 {
-                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} <> {2}",
-                        ABatchTable.GetTableDBName(),
-                        ABatchTable.GetBatchPeriodDBName(),
-                        APeriod);
-                }
-                else if (APeriod != -1)
-                {
+                    //Return only specified period
                     FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
                         ABatchTable.GetTableDBName(),
                         ABatchTable.GetBatchPeriodDBName(),
                         APeriod);
+                }
+                else
+                {
+                    //Nothing to add, returns all periods
                 }
             }
 
@@ -144,24 +142,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ABatchTable.GetLedgerNumberDBName(),
                     ALedgerNumber);
 
-            string FilterByBatchStatus = string.Empty;
-
-            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
-            {
-                FilterByBatchStatus =
-                    string.Format(" AND {0} <> '{1}'",
-                        ABatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED);
-            }
-            else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
-            {
-                FilterByBatchStatus =
-                    string.Format(" AND {0} = '{1}'",
-                        ABatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED);
-            }
-
-            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus + FilterByPeriod,
+            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
                 MainDS.ABatch.TableName, Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();

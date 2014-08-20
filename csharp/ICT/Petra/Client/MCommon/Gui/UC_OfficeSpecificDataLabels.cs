@@ -980,6 +980,9 @@ namespace Ict.Petra.Client.MCommon.Gui
             FLocalDataLabelValuesGrid.Columns[1].AutoSizeMode = (SourceGrid.AutoSizeMode.MinimumSize | SourceGrid.AutoSizeMode.Default);
             FLocalDataLabelValuesGrid.Columns[2].AutoSizeMode = (SourceGrid.AutoSizeMode.MinimumSize | SourceGrid.AutoSizeMode.Default);
 
+            // This grid does not work the same way as our 'normal' grids, so we need to modify the keyboard handling
+            FLocalDataLabelValuesGrid.SpecialKeys = FLocalDataLabelValuesGrid.SpecialKeys | GridSpecialKeys.SimplifiedTabEnter;
+
             // FLocalDataLabelValuesGrid.AutoSize;
             FLocalDataLabelValuesGrid.AutoStretchColumnsToFitWidth = true;
             FLocalDataLabelValuesGrid.Columns.StretchToFit();

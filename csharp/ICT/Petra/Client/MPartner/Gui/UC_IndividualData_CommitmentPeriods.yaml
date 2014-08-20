@@ -13,9 +13,18 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlDetailGrid, pnlDetails]
+            Controls: [sptCommitments]
+        sptCommitments:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDetailGrid
+            Panel2: pnlDetails
         pnlDetailGrid:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
             Dock: Bottom
@@ -37,7 +46,8 @@ RootNode:
             SortOrder: StatusCode ASC
             
         pnlDetails:
-            Dock: Bottom
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls:
                 Row0: [txtReceivingField]
                 Row1: [dtpStartDate]

@@ -291,6 +291,7 @@ namespace Ict.Petra.Client.CommonForms
 
             // Show Filter and Find Panels initially collapsed or expanded
             FPnlFilterFind.Width = 0;
+            FPnlFilterFind.Resize += FPnlFilterFind_Resize;
 
             // Ensure that the Filter and Find Panel 'pushes' the Grid away instead of overlaying the Grid
             FGrid.BringToFront();
@@ -533,6 +534,7 @@ namespace Ict.Petra.Client.CommonForms
                         FucoFilterAndFind_ArgumentCtrlValueChanged);
                     FucoFilterAndFind.FindNextClicked += new EventHandler <TUcoFilterAndFind.TContextEventExtSearchDirectionArgs>(
                         FucoFilterAndFind_FindNextClicked);
+                    FucoFilterAndFind.TabSwitched += FucoFilterAndFind_TabSwitched;
 
                     SetStatusBarText();
                 }
@@ -700,7 +702,33 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TContextEventExtControlArgs e)
+        /// <summary>
+        /// Notification that the tab has been switched.  We may need to check if the scrollbar is visible
+        /// </summary>
+        private void FucoFilterAndFind_TabSwitched(object sender, TUcoFilterAndFind.TContextEventArgs e)
+        {
+            FPnlFilterFind_Resize(sender, null);
+        }
+
+        /// <summary>
+        /// When the outer panel is resized we may need to change the width if the scrollbar visibilty has changed
+        /// </summary>
+        private void FPnlFilterFind_Resize(object sender, EventArgs e)
+        {
+            if ((FucoFilterAndFind != null) && (FucoFilterAndFind.Width > 0))
+            {
+                if (FucoFilterAndFind.IsVScrollVisible)
+                {
+                    FPnlFilterFind.Width = FFilterAndFindParameters.FindAndFilterInitialWidth + 10;
+                }
+                else
+                {
+                    FPnlFilterFind.Width = FFilterAndFindParameters.FindAndFilterInitialWidth;
+                }
+            }
+        }
+
+        private void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TContextEventExtControlArgs e)
         {
             if (FCallerFormOrControl.DoValidation(true, true))
             {

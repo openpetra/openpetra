@@ -52,11 +52,11 @@ RootNode:
         pnlTransAnalysisAttributes:
             Dock: Right
             Controls: [lblAnalAttributes, grdAnalAttributes]
-            Width: 240
+            Width: 290
 
         grdAnalAttributes:
             TableName: ATransAnalAttrib
-            Width: 220
+            Width: 270
             Height: 110
             Columns: [AnalysisTypeCode]
             CustomColumns:
