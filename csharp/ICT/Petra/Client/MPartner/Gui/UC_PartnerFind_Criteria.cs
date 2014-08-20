@@ -865,6 +865,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     txtPersonalName.Enabled = true;
                 }
+                
+                if (FWorkerFamOnly == true)
+                {                
+                    FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = true;
+                }
             }
             else if (txtPersonalName.Enabled == true)
             {
