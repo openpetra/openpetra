@@ -11,6 +11,7 @@ RootNode:
     Controls:
         pnlDetails:
             Controls: [grpField, grpPlacement]
+            AutoScroll: true
             Dock: Fill
         grpField: {NoLabel=true}
             Controls: 

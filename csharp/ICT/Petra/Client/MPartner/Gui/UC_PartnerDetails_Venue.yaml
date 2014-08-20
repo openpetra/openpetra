@@ -12,7 +12,7 @@ RootNode:
             Controls: [grpNames, grpMisc]
             Dock: Fill
 
-        grpNames: {Dock=Top}
+        grpNames:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
@@ -23,7 +23,7 @@ RootNode:
         txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
             Stretch: horizontally
          
-        grpMisc: {Label=Miscellaneous, Dock=Top}
+        grpMisc: {Label=Miscellaneous}
             Controls: 
                 Row0: [txtVenueCode]
                 Row1: [cmbCurrencyCode]

@@ -596,7 +596,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 Object Cell = SelectedGridRow[0]["ApDocumentId"];
 
-                if (Cell.GetType() == typeof(Int64))
+                if (Cell.GetType() == typeof(Int32))
                 {
                     ApDocumentId = Convert.ToInt32(Cell);
                 }

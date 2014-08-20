@@ -11,6 +11,7 @@ RootNode:
     Controls:
         pnlDetails:
             Controls: [grpArrivalInfo, grpDepartureInfo]
+            AutoScroll: true
             Dock: Fill
         grpArrivalInfo: {Label=Arrival Details}
             Controls: 

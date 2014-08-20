@@ -363,6 +363,15 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
+        /// TODO
+        /// </summary>
+        public int GetChangedRecordCount(out string AMessage)
+        {
+            AMessage = String.Empty;
+            return -1;
+        }
+
+        /// <summary>
         /// Calls the internal SaveChanges Method.
         /// </summary>
         /// <returns></returns>

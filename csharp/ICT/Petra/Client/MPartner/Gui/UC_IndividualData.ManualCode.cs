@@ -1088,6 +1088,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
             }
 
+            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
+
             return ReturnValue;
         }
 

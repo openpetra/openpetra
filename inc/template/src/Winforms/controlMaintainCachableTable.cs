@@ -1037,6 +1037,13 @@ namespace {#NAMESPACE}
         return ValidateAllData(false, true);
     }
 
+    /// auto generated
+	public int GetChangedRecordCount(out string AMessage)
+	{
+	    // Optionally return GetChangedRecordCountManual(out string AMessage)
+	    {#GETCHANGEDRECORDCOUNT}
+	}
+
     /// <summary>
     /// save the changes on the screen
     /// </summary>

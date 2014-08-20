@@ -949,6 +949,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+
+                FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
             }
         }
 

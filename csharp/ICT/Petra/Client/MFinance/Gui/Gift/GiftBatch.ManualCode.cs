@@ -473,6 +473,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ABatchRow"></param>
         /// <param name="AIsTransactionInIntlCurrency"></param>
+        /// <param name="AAlwaysReportError"></param>
         /// <returns></returns>
         public decimal InternationalCurrencyExchangeRate(AGiftBatchRow ABatchRow,
             out bool AIsTransactionInIntlCurrency, bool AAlwaysReportError = false)
