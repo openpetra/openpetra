@@ -14,6 +14,7 @@
         <Table sqltable="a_transaction">
             <CustomField name="DateEntered" type="DateTime"/>
             <CustomField name="AnalysisAttributes" type="string"/>
+            <CustomField name="Percentage" type="decimal"/>
         </Table>
         <Table sqltable="a_trans_anal_attrib" />	
 
@@ -135,15 +136,5 @@
                 childTable="ASuspenseAccount" childFields="LedgerNumber,SuspenseAccountCode"
                 parentTable="AAccount" parentFields="LedgerNumber,AccountCode"
                 createConstraints="false"/>
-    </DataSet>
-
-    <DataSet name="AllocationJournalTDS">
-        <CustomTable name="Allocations">
-            <CustomField name="Percentage" type="decimal"/>
-            <CustomField name="Amount" type="decimal"/>
-            <Field sqltable="a_cost_centre" sqlfield="a_cost_centre_code_c"/>
-            <Field sqltable="a_account" sqlfield="a_account_code_c"/>
-            <PrimaryKey thisFields="CostCentreCode,AccountCode"/>
-        </CustomTable>
     </DataSet>
 </PetraDataSets>

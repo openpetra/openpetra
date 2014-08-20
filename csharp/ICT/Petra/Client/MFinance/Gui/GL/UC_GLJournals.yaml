@@ -79,9 +79,9 @@ RootNode:
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
         # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual
-        cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList}
+        cmbDetailTransactionTypeCode: {Label=Transaction Type, List=UserDefinedList, OnChange=TransactionTypeCodeChanged}
         cmbDetailTransactionCurrency: {Label=Currency, List=CurrencyCodeList}
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
         txtDetailExchangeRateToBase: {Label=Exchange Rate to Base, Validation=true, Format=Decimal(10), Width=130}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}
-        btnAddAllocation: {Action=actAddAllocation}
+        btnAddAllocation: {Action=actAddAllocation, Visible=false}

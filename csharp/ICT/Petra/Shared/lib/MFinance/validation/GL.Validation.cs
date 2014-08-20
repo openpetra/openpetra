@@ -433,7 +433,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// display data that is about to be validated.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateAllocationJournalDialog(object AContext,
-            AllocationJournalTDSAllocationsRow ARow,
+            GLBatchTDSATransactionRow ARow,
             bool AAmountEnabled,
             decimal? ATotalAmount,
             ref TVerificationResultCollection AVerificationResultCollection,
@@ -450,16 +450,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnAmountId];
+            ValidationColumn = ARow.Table.Columns[GLBatchTDSATransactionTable.ColumnTransactionAmountId];
                 
             // an individual amount cannot be great than total amount
-            if (AAmountEnabled && (ARow.Amount > ATotalAmount))
+            if (AAmountEnabled && (ARow.TransactionAmount > ATotalAmount))
             {
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     VerificationResult = new TScreenVerificationResult(
                         new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
-                                PetraErrorCodes.ERR_AMOUNT_TOO_LARGE, new string[] { ARow.Amount.ToString() })),
+                                PetraErrorCodes.ERR_AMOUNT_TOO_LARGE, new string[] { ARow.TransactionAmount.ToString() })),
                         ValidationColumn, ValidationControlsData.ValidationControl);
                 }
             }
@@ -471,7 +471,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
             
             VerificationResult = null;
-            ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnPercentageId];
+            ValidationColumn = ARow.Table.Columns[GLBatchTDSATransactionTable.ColumnPercentageId];
 
             // a percentage cannot be greater than 100%
             if (!AAmountEnabled && (ARow.Percentage > 100))
@@ -491,65 +491,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             return VerifResultCollAddedCount == 0;
-        }
-    }
-
-    /// Detailed information for each debit and credit in a general ledger journal.
-    public class AllocationsValidation
-    {
-        /// <summary>
-        /// Validates a row in the ATransaction DataTable.
-        /// </summary>
-        /// <param name="AContext">Context that describes where the data validation failed.</param>
-        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
-        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
-        /// data validation errors occur.</param>
-        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
-        /// display data that is about to be validated.</param>
-        public static void Validate(object AContext, AllocationJournalTDSAllocationsRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
-        {
-            DataColumn ValidationColumn;
-            TValidationControlsData ValidationControlsData;
-            TVerificationResult VerificationResult;
-
-            // Don't validate deleted DataRows
-            if (ARow.RowState == DataRowState.Deleted)
-            {
-                return;
-            }
-
-            if (!ARow.IsAccountCodeNull())
-            {
-                // 'AccountCode' must have a value (NOT NULL constraint)
-                ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnAccountCodeId];
-
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-                {
-                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.AccountCode,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                    // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-                }
-            }
-
-            if (!ARow.IsCostCentreCodeNull())
-            {
-                // 'CostCentreCode' must have a value (NOT NULL constraint)
-                ValidationColumn = ARow.Table.Columns[AllocationJournalTDSAllocationsTable.ColumnCostCentreCodeId];
-
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
-                {
-                    VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.CostCentreCode,
-                        ValidationControlsData.ValidationControlLabel,
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
-                    // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-                }
-            }
         }
     }
 }

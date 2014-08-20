@@ -626,15 +626,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
         
+        private void TransactionTypeCodeChanged(Object sender, EventArgs e)
+        {
+        	if (cmbDetailTransactionTypeCode.GetSelectedString() == "ALLOC")
+        	{
+        		btnAddAllocation.Visible = true;
+        	}
+        	else
+        	{
+        		btnAddAllocation.Visible = false;
+        	}
+        }
+        
         private void AddAllocation(Object sender, EventArgs e)
         {
         	TFrmAllocationJournalDialog AddAllocationJournal = new TFrmAllocationJournalDialog(this.FindForm());
-        	AddAllocationJournal.LedgerNumber = FLedgerNumber;
-        	AddAllocationJournal.BatchNumber = FBatchNumber;
-        	//AllocationJournalTDS test = AddAllocationJournal.MainDS;
+        	AddAllocationJournal.Journal = this.GetSelectedDetailRow();
         	
         	// open as a modal form
-        	DialogResult Result = AddAllocationJournal.ShowDialog();
+        	if (AddAllocationJournal.ShowDialog() == DialogResult.OK)
+        	{
+        		FMainDS.Merge(AddAllocationJournal.MainDS);
+        	}
         }
     }
 }
