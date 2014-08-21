@@ -247,10 +247,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public void SetSelectedCostCentre(CostCentreNodeDetails AnewSelection)
         {
             FCurrentCostCentre = AnewSelection;
-            strOldDetailCostCentreCode = FCurrentCostCentre.CostCentreRow.CostCentreCode;
 
             ucoCostCentreList.SelectedCostCentre = AnewSelection;
             ucoCostCentreTree.SelectedCostCentre = AnewSelection;
+
+            pnlDetails.Enabled = (AnewSelection != null);
+
+            if (pnlDetails.Enabled)
+            {
+                strOldDetailCostCentreCode = FCurrentCostCentre.CostCentreRow.CostCentreCode;
+                Console.WriteLine("Current account code is {0}", FCurrentCostCentre.CostCentreRow.CostCentreCode);
+            }
         }
 
         /// <summary>
@@ -368,9 +375,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 txtDetailCostCentreCode.Text = "";
                 txtDetailCostCentreName.Text = "";
+
+                pnlDetails.Enabled = false;
             }
             else
             {
+                pnlDetails.Enabled = true;
+
                 // I allow the user to attempt to change the primary key,
                 // but if the selected record is not new, AND they have made any other changes,
                 // the txtDetailCostCentreCode_TextChanged method will disallow any change.
@@ -736,12 +747,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             bool hasChanges = FPetraUtilsObject.HasChanges;
 
             FIAmUpdating++;
-            ShowDetails(FCurrentCostCentre.CostCentreRow);
+            FPetraUtilsObject.SuppressChangeDetection = true;
+
+            if (FCurrentCostCentre == null)
+            {
+                ShowDetails(null);
+            }
+            else
+            {
+                ShowDetails(FCurrentCostCentre.CostCentreRow);
+            }
+
+            FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-            FCurrentCostCentre.GetAttrributes();
-            tbbAddNewCostCentre.Enabled = (FCurrentCostCentre.CanHaveChildren.Value);
-            tbbDeleteCostCentre.Enabled = (FCurrentCostCentre.CanDelete.Value);
+            //FCurrentCostCentre.GetAttrributes();
+            tbbAddNewCostCentre.Enabled = ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanHaveChildren.Value));
+            tbbDeleteCostCentre.Enabled = ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanDelete.Value));
 
             FPetraUtilsObject.HasChanges = hasChanges;
         }
@@ -837,11 +859,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (ucoCostCentreTree.Visible)
             {
+                ucoCostCentreList.CollapseFilterFind();
+
                 ucoCostCentreTree.Focus();
                 ucoCostCentreTree.RefreshSelectedCostCentre();
             }
             else
             {
+                ucoCostCentreList.UpdateRecordNumberDisplay();
                 ucoCostCentreList.Focus();
             }
         }
