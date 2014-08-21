@@ -1095,6 +1095,13 @@ namespace {#NAMESPACE}
     }
 
     /// auto generated
+	public int GetChangedRecordCount(out string AMessage)
+	{
+	    // Optionally return GetChangedRecordCountManual(out string AMessage)
+	    {#GETCHANGEDRECORDCOUNT}
+	}
+
+    /// auto generated
     public void FileSave(object sender, EventArgs e)
     {
         SaveChanges();

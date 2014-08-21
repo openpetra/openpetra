@@ -745,5 +745,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // method needs to be provided here for interface but will never be called
             return false;
         }
+
+        /// <summary>
+        /// Get the number of changed records and specify a message to incorporate into the 'Do you want to save?' message box
+        /// </summary>
+        /// <param name="AMessage">An optional message to display.  If the parameter is an empty string a default message will be used</param>
+        /// <returns>The number of changed records.  Return -1 to imply 'unknown'.</returns>
+        public int GetChangedRecordCount(out string AMessage)
+        {
+            AMessage = String.Empty;
+            return -1;
+        }
     }
 }

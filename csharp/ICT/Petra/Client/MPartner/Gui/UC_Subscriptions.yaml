@@ -13,10 +13,19 @@ RootNode:
         actCancelAllSubscriptions: {Label=&Cancel All Subscriptions, ActionClick=CancelAllSubscriptions}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [sptSubscriptions]
             Dock: Fill
+        sptSubscriptions:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlGrid
+            Panel2: pnlDetails
         pnlGrid:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlButtons,grdDetails]
         pnlButtons:
             Dock: Bottom
@@ -33,8 +42,9 @@ RootNode:
             Columns: [PSubscription.PublicationCode, PSubscription.SubscriptionStatus, PSubscription.GratisSubscription]
             ActionFocusRow: FocusedRowChanged
         pnlDetails: 
-            Dock: Bottom
-            Height: 300
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+            #Height: 300
             Controls: [ucoDetails]
         ucoDetails:
             Dock: Fill

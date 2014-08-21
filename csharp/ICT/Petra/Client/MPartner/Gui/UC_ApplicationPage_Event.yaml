@@ -11,6 +11,7 @@ RootNode:
     Controls:
         pnlDetails:
             Controls: [grpEventInfo, grpMiscellaneous]
+            AutoScroll: true
             Dock: Fill
         grpEventInfo: {NoLabel=true}
             Controls: 

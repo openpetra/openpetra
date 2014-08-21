@@ -38,7 +38,7 @@ RootNode:
             Controls: [grdDetails]
         
         grdDetails:
-            Height: 82
+            Height: 65
             Width: 540
             TableName: JobAssignmentStaffDataCombined
             Columns: [FieldKey, FieldName, Position, FromDate, ToDate]

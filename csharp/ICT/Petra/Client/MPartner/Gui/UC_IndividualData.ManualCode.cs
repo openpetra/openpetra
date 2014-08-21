@@ -610,6 +610,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
         {
+            bool JobAndStaffDataGridNeedsRefresh = false;
+            
             //
             // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_t of modififed Rows is held correctly in IndividualDataTDS, too!
             //
@@ -633,13 +635,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Now perform the Merge operation
             FMainDS.Merge(FPartnerEditTDS);
 
+            if ((FMainDS.PmJobAssignment.GetChangesTyped() != null)
+                || (FMainDS.PmStaffData.GetChangesTyped() != null))
+            {
+				JobAndStaffDataGridNeedsRefresh = true;
+            }
+            
             // Call AcceptChanges on IndividualDataTDS so that we don't have any changed data anymore (this is done to PartnerEditTDS, too, after this Method returns)!
             FMainDS.AcceptChanges();
 
             // Let the 'Overview' UserControl determine whether it needs to refresh the data it displays.
-            if (AAddressesOrRelationsChanged)
+            if (AAddressesOrRelationsChanged || JobAndStaffDataGridNeedsRefresh)
             {
-                ucoSummaryData.CheckForRefreshOfDisplayedData();
+                ucoSummaryData.CheckForRefreshOfDisplayedData(JobAndStaffDataGridNeedsRefresh);
             }
         }
 
@@ -1087,6 +1095,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ReturnValue = ucoLocalPersonnelData;
                     break;
             }
+
+            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
 
             return ReturnValue;
         }

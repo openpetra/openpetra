@@ -139,30 +139,67 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RunOnceOnParentActivationManual()
         {
-            // We have to do these because the filter/find panel is displayed when the screen is loaded, so they don not get populated
-            TCmbAutoComplete ffInstance = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
-
-            ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
-            ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
-            ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
-
-            ffInstance = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
-            ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
-            ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
-            ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
-
-            ffInstance = (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
-            ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
-            ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
-            ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
-
-            ffInstance = (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
-            ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
-            ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
-            ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
+            // We have to do these because the filter/find panel is displayed when the screen is loaded, so they do not get populated
+            InitFilterFindComboBox(cmbDetailBankCostCentre,
+                (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(cmbDetailBankCostCentre.Name),
+                TCacheableFinanceTablesEnum.CostCentreList);
+            InitFilterFindComboBox(cmbDetailBankAccountCode,
+                (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(cmbDetailBankAccountCode.Name),
+                TCacheableFinanceTablesEnum.AccountList);
+            InitFilterFindComboBox(cmbDetailBankCostCentre,
+                (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName(cmbDetailBankCostCentre.Name),
+                TCacheableFinanceTablesEnum.CostCentreList);
+            InitFilterFindComboBox(cmbDetailBankAccountCode,
+                (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName(cmbDetailBankAccountCode.Name),
+                TCacheableFinanceTablesEnum.AccountList);
 
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+        }
+
+        /// <summary>
+        /// Helper method that we can call to initialise each of the filter/find comboBoxes
+        /// </summary>
+        private void InitFilterFindComboBox(TCmbAutoPopulated AClonedFromComboBox,
+            TCmbAutoComplete AFFInstance,
+            TCacheableFinanceTablesEnum AListTableEnum)
+        {
+            AFFInstance.DisplayMember = AClonedFromComboBox.DisplayMember;
+            AFFInstance.ValueMember = AClonedFromComboBox.ValueMember;
+
+            AFFInstance.DataSource = TDataCache.TMFinance.GetCacheableFinanceTable(AListTableEnum, FLedgerNumber).DefaultView;
+            AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
+            AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
+        }
+
+        /// <summary>
+        /// This method is called when the system wants to draw a comboBox item in the list.
+        /// We choose the colour and weight for the font, showing inactive codes in bold red text
+        /// </summary>
+        private void DrawComboBoxItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+
+            TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
+            DataRowView drv = (DataRowView)cmb.Items[e.Index];
+            string content = drv[1].ToString();
+            Brush brush;
+
+            if (cmb.Name.StartsWith("cmbDetailBankCostCentre"))
+            {
+                brush = CostCentreIsActive(content) ? Brushes.Black : Brushes.Red;
+            }
+            else if (cmb.Name.StartsWith("cmbDetailBankAccount"))
+            {
+                brush = AccountIsActive(content) ? Brushes.Black : Brushes.Red;
+            }
+            else
+            {
+                throw new ArgumentException("Unexpected caller of DrawComboBoxItem event");
+            }
+
+            Font font = new Font(((Control)sender).Font, (brush == Brushes.Red) ? FontStyle.Bold : FontStyle.Regular);
+            e.Graphics.DrawString(content, font, brush, new PointF(e.Bounds.X, e.Bounds.Y));
         }
 
         /// <summary>

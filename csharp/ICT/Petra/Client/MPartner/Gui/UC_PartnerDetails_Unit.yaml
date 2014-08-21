@@ -9,10 +9,10 @@ RootNode:
     MasterTable: PUnit
     Controls:
         pnlContent:
-            Controls: [grpNames, grpMisc, grpOutreachInfo]
+            Controls: [grpOutreachInfo, grpNames, grpMisc]
             Dock: Fill
 
-        grpNames: {Dock=Top}
+        grpNames:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
@@ -23,7 +23,7 @@ RootNode:
         txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
             Stretch: horizontally
          
-        grpMisc: {Label=Miscellaneous, Dock=Top}
+        grpMisc: {Label=Miscellaneous}
             Controls: 
                 Row0: [cmbCountryCode]
                 Row1: [cmbUnitTypeCode]
@@ -54,7 +54,7 @@ RootNode:
             ActionClick: OpenUnitHierarchy
             Label: Position in Unit Hierarchy...
 
-        grpOutreachInfo: {Label=Outreach Information, Dock=Top}
+        grpOutreachInfo: {Label=Outreach Information}
             Controls: 
                 Row0: [txtOutreachCode]
                 Row1: [txtOutreachCost, cmbOutreachCostCurrencyCode]
