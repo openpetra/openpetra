@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
-                
+
                 ReportTypeChanged(this, null);
             }
         }
