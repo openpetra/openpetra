@@ -492,5 +492,78 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             return VerifResultCollAddedCount == 0;
         }
+
+        /// <summary>
+        /// Validates the ReallocationJournal Dialog.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AAmountEnabled">True if txtDetailAmount is enabled (rather than txtDetailPercentage).</param>
+        /// <param name="ATotalAmount">The total amount for the allocation.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        public static bool ValidateReallocationJournalDialog(object AContext,
+            GLBatchTDSATransactionRow ARow,
+            bool AAmountEnabled,
+            decimal? ATotalAmount,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult = null;
+            int VerifResultCollAddedCount = 0;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return true;
+            }
+
+            ValidationColumn = ARow.Table.Columns[GLBatchTDSATransactionTable.ColumnTransactionAmountId];
+                
+            // an individual amount cannot be great than total amount
+            if (AAmountEnabled && (ARow.TransactionAmount > ATotalAmount))
+            {
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = new TScreenVerificationResult(
+                        new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_AMOUNT_TOO_LARGE, new string[] { ARow.TransactionAmount.ToString() })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+            }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+            {
+            	VerifResultCollAddedCount++;
+            }
+            
+            VerificationResult = null;
+            ValidationColumn = ARow.Table.Columns[GLBatchTDSATransactionTable.ColumnPercentageId];
+
+            // a percentage cannot be greater than 100%
+            if (!AAmountEnabled && (ARow.Percentage > 100))
+            {
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = new TScreenVerificationResult(
+                        new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PERCENTAGE_TOO_LARGE)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+            }
+
+            // Handle addition to/removal from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+            {
+            	VerifResultCollAddedCount++;
+            }
+
+            return VerifResultCollAddedCount == 0;
+        }
     }
 }

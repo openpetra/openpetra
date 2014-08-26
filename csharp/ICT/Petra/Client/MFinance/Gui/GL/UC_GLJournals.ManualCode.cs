@@ -636,6 +636,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         	{
         		btnAddAllocation.Visible = false;
         	}
+        	
+        	if (cmbDetailTransactionTypeCode.GetSelectedString() == "REALLOC")
+        	{
+        		btnAddReallocation.Visible = true;
+        	}
+        	else
+        	{
+        		btnAddReallocation.Visible = false;
+        	}
         }
         
         private void AddAllocation(Object sender, EventArgs e)
@@ -647,6 +656,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         	if (AddAllocationJournal.ShowDialog() == DialogResult.OK)
         	{
         		FMainDS.Merge(AddAllocationJournal.MainDS);
+        		
+        		// manually enable save button (otherwise this doesn't happen)
+        		FPetraUtilsObject.SetChangedFlag();
+        	}
+        }
+        
+        private void AddReallocation(Object sender, EventArgs e)
+        {
+        	TFrmReallocationJournalDialog AddReallocationJournal = new TFrmReallocationJournalDialog(this.FindForm());
+        	AddReallocationJournal.Journal = this.GetSelectedDetailRow();
+        	
+        	// open as a modal form
+        	if (AddReallocationJournal.ShowDialog() == DialogResult.OK)
+        	{
+        		FMainDS.Merge(AddReallocationJournal.MainDS);
+        		
+        		// manually enable save button (otherwise this doesn't happen)
+        		FPetraUtilsObject.SetChangedFlag();
         	}
         }
     }
