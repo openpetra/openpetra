@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/10/2014 14:28:07" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="08/26/2014 10:47:45" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -81,6 +81,7 @@ namespace FastReport
     <Parameter Name="param_intl_currency_symbol" DataType="System.String"/>
     <Parameter Name="param_current_period" DataType="System.Int32"/>
     <Parameter Name="param_current_financial_year" DataType="System.Boolean"/>
+    <Parameter Name="param_design_template" DataType="System.Boolean"/>
     <Total Name="AllActualDebitBase" Expression="[Accounts.ActualDebitBase]" Evaluator="Transaction" PrintOn="GroupFooter1" ResetOnReprint="true"/>
     <Total Name="AllActualCreditBase" Expression="[Accounts.ActualCreditBase]" Evaluator="Transaction" PrintOn="GroupFooter1" ResetOnReprint="true"/>
     <Total Name="AllActualDebitIntl" Expression="[Accounts.ActualDebitIntl]" Evaluator="Transaction" PrintOn="GroupFooter1" ResetOnReprint="true"/>
@@ -107,16 +108,17 @@ namespace FastReport
       <TextObject Name="Text12" Left="491.4" Width="113.4" Height="18.9" Text="[param_intl_currency] Debits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text14" Left="604.8" Width="113.4" Height="18.9" Text="[param_intl_currency] Credits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text5" Left="264.6" Width="113.4" Height="18.9" Text="[param_base_currency] Debits" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
+      <TextObject Name="Text63" Width="66.15" Height="18.9" Text="Account" Font="Arial, 10pt, style=Bold, Italic"/>
     </PageHeaderBand>
     <GroupHeaderBand Name="GroupHeader1" Top="93.05" Width="718.2" Condition="[AllActualDebitBase]">
       <GroupHeaderBand Name="GroupHeader2" Top="97.05" Width="718.2" Condition="[Accounts.a_account_code_c]">
         <DataBand Name="Transaction" Top="101.05" Width="718.2" Height="18.9" CanGrow="true" KeepChild="true" DataSource="Accounts" KeepDetail="true">
           <TextObject Name="Text2" Width="66.15" Height="18.9" Text="[Accounts.a_account_code_c]"/>
           <TextObject Name="Text3" Left="66.15" Width="198.45" Height="18.9" CanGrow="true" Text="[Accounts.a_account_code_short_desc_c]"/>
-          <TextObject Name="Text4" Left="264.6" Width="113.4" Height="18.9" Text="[IIf([Accounts.DebitCreditIndicator],[Accounts.ActualDebitBase],null)]" NullValue=" " Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
-          <TextObject Name="Text6" Left="378" Width="113.4" Height="18.9" Text="[IIf([Accounts.DebitCreditIndicator],null,[Accounts.ActualCreditBase])]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
-          <TextObject Name="Text11" Left="491.4" Width="113.4" Height="18.9" Text="[IIf([Accounts.DebitCreditIndicator],[Accounts.ActualDebitIntl],null)]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
-          <TextObject Name="Text13" Left="604.8" Width="113.4" Height="18.9" Text="[IIf([Accounts.DebitCreditIndicator],null,[Accounts.ActualCreditIntl])]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text4" Left="264.6" Width="113.4" Height="18.9" Text="[IIf([Accounts.DebitCreditIndicator],[Accounts.ActualDebitBase],null)]" NullValue=" " Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text6" Left="378" Width="113.4" Height="18.9" Text="[IIf([Accounts.DebitCreditIndicator],null,[Accounts.ActualCreditBase])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text11" Left="491.4" Width="113.4" Height="18.9" Text="[IIf([Accounts.DebitCreditIndicator],[Accounts.ActualDebitIntl],null)]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
+          <TextObject Name="Text13" Left="604.8" Width="113.4" Height="18.9" Text="[IIf([Accounts.DebitCreditIndicator],null,[Accounts.ActualCreditIntl])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
         </DataBand>
         <GroupFooterBand Name="GroupFooter2" Top="123.95" Width="718.2"/>
       </GroupHeaderBand>

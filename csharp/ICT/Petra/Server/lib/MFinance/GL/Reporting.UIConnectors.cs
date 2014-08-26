@@ -1839,16 +1839,25 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 foreach (AAccountHierarchyDetailRow Row in AccountHierarchyDetailTable.Rows)
                 {
-                    if (!AAccountList.Contains(Row.AccountCodeToReportTo) && (Row.AccountHierarchyCode == AHierarchyCode))
+                    if (Row.AccountHierarchyCode == AHierarchyCode)
                     {
-                        AAccountRow AccountRow =
-                            (AAccountRow)AAccountAccess.LoadByPrimaryKey(ALedgerNumber, Row.ReportingAccountCode, ATransaction).Rows[0];
-
-                        if ((AccountRow != null) && AccountRow.PostingStatus)
+                    	// check if Row.ReportingAccountCode has any posting accounts reporting to it
+                    	string Query = "SELECT PUB_a_account.* FROM PUB_a_account, PUB_a_account_hierarchy_detail " +
+                    		"WHERE PUB_a_account_hierarchy_detail.a_ledger_number_i = " + ALedgerNumber +
+                    		" AND PUB_a_account_hierarchy_detail.a_account_hierarchy_code_c = '" + AHierarchyCode + "'" +
+                    		" AND PUB_a_account_hierarchy_detail.a_account_code_to_report_to_c = '" + Row.ReportingAccountCode + "'" +
+                    		" AND PUB_a_account.a_ledger_number_i = " + ALedgerNumber +
+                    		" AND PUB_a_account.a_account_code_c = PUB_a_account_hierarchy_detail.a_reporting_account_code_c" +
+                    		" AND PUB_a_account.a_posting_status_l";
+                    	
+                    	DataTable NewTable = DBAccess.GDBAccessObj.SelectDT(Query, "NewTable", ATransaction);
+	
+                    	// if posting accounts found
+                        if (NewTable.Rows.Count > 0)
                         {
-                            AAccountList.Add(Row.AccountCodeToReportTo);
+                        	AAccountList.Add(Row.ReportingAccountCode);
                         }
-                        else if (AccountRow != null)
+                        else
                         {
                             ScanHierarchy(ref AAccountList, ALedgerNumber, Row.ReportingAccountCode, AHierarchyCode, ATransaction);
                         }
