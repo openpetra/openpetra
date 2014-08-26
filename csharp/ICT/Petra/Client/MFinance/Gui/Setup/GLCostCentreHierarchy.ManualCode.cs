@@ -756,12 +756,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 ShowDetails(FCurrentCostCentre.CostCentreRow);
+                FCurrentCostCentre.GetAttrributes();
             }
 
             FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-            //FCurrentCostCentre.GetAttrributes();
             tbbAddNewCostCentre.Enabled = ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanHaveChildren.Value));
             tbbDeleteCostCentre.Enabled = ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanDelete.Value));
 

@@ -19,7 +19,7 @@ RootNode:
             FindControls: [pnlAccountsFind]
             Panels:
                 pnlAccountsFilter:
-                    Controls: [txtAccountCode, cmbAccountType, txtDescrEnglish, txtDescrLocal, chkBankAccount, chkActive, chkSummary, chkPostable, chkForeign]
+                    Controls: [txtAccountCode, cmbAccountType, txtDescrEnglish, txtDescrLocal, chkBankAccount, chkActive, chkSummary, chkForeign]
 
                     txtAccountCode:
                     cmbAccountType:
@@ -32,7 +32,7 @@ RootNode:
                     chkPostable:
                     chkForeign:
                 pnlAccountsFind:
-                    Controls: [txtAccountCode, cmbAccountType, txtDescrEnglish, txtDescrLocal, chkBankAccount, chkActive, chkSummary, chkPostable, chkForeign]
+                    Controls: [txtAccountCode, cmbAccountType, txtDescrEnglish, txtDescrLocal, chkBankAccount, chkActive, chkSummary, chkForeign]
 
                     txtAccountCode:
                     cmbAccountType:

@@ -59,6 +59,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private CheckBox FFilterChkSummary = null;
         private CheckBox FFilterChkForeign = null;
 
+        private TextBox FFindTxtAccountCode = null;
+        private TCmbAutoComplete FFindCmbAccountType = null;
+        private TextBox FFindTxtDescrEnglish = null;
+        private TextBox FFindTxtDescrLocal = null;
+        private CheckBox FFindChkBankAccount = null;
+        private CheckBox FFindChkActive = null;
+        private CheckBox FFindChkSummary = null;
+        private CheckBox FFindChkForeign = null;
+
         private TSgrdDataGridPaged grdDetails = null;
         private int FPrevRowChangedRow = -1;
         private DataRow FPreviouslySelectedDetailRow = null;
@@ -203,6 +212,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FFilterChkSummary = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkSummary");
                 FFilterChkForeign = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkForeign");
 
+                FFindTxtAccountCode = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtAccountCode");
+                FFindCmbAccountType = (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbAccountType");
+                FFindTxtDescrEnglish = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtDescrEnglish");
+                FFindTxtDescrLocal = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtDescrLocal");
+                FFindChkBankAccount = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkBankAccount");
+                FFindChkActive = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkActive");
+                FFindChkSummary = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkSummary");
+                FFindChkForeign = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkForeign");
+
                 FIsFilterPanelInitialised = true;
             }
         }
@@ -213,42 +231,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FFilterTxtAccountCode.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("(a_account_code_c LIKE '%{0}%')", FFilterTxtAccountCode.Text));
+                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", MainDS.AAccount.ColumnAccountCode, FFilterTxtAccountCode.Text));
             }
 
             if (FFilterCmbAccountType.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("(a_account_type_c LIKE '{0}')", FFilterCmbAccountType.Text));
+                JoinAndAppend(ref filter, String.Format("({0} LIKE '{1}')", MainDS.AAccount.ColumnAccountType, FFilterCmbAccountType.Text));
             }
 
             if (FFilterTxtDescrEnglish.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("(a_eng_account_code_long_desc_c LIKE '%{0}%')", FFilterTxtDescrEnglish.Text));
+                JoinAndAppend(ref filter,
+                    String.Format("({0} LIKE '%{1}%')", MainDS.AAccount.ColumnEngAccountCodeLongDesc, FFilterTxtDescrEnglish.Text));
             }
 
             if (FFilterTxtDescrLocal.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("(a_account_code_long_desc_c LIKE '%{0}%')", FFilterTxtDescrLocal.Text));
+                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", MainDS.AAccount.ColumnAccountCodeLongDesc, FFilterTxtDescrLocal.Text));
             }
 
             if (FFilterChkBankAccount.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("(a_system_account_flag_l={0})", FFilterChkBankAccount.Checked ? 0 : 1));
+                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.AAccount.ColumnBankAccountFlag, FFilterChkBankAccount.Checked ? 1 : 0));
             }
 
             if (FFilterChkActive.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("(a_account_active_flag_l={0})", FFilterChkActive.Checked ? 1 : 0));
+                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.AAccount.ColumnAccountActiveFlag, FFilterChkActive.Checked ? 1 : 0));
             }
 
             if (FFilterChkSummary.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("(a_posting_status_l={0})", FFilterChkSummary.Checked ? 0 : 1));
+                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.AAccount.ColumnPostingStatus, FFilterChkSummary.Checked ? 0 : 1));
             }
 
             if (FFilterChkForeign.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("(a_posting_status_l={0})", FFilterChkForeign.Checked ? 0 : 1));
+                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.AAccount.ColumnForeignCurrencyFlag, FFilterChkForeign.Checked ? 1 : 0));
             }
 
             AFilterString = filter;
@@ -266,7 +285,82 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool IsMatchingRowManual(DataRow ARow)
         {
-            return false;
+            string strAccountCode = FFindTxtAccountCode.Text.ToLower();
+            string strAccountType = FFindCmbAccountType.Text.ToLower();
+            string strAccountDescrEnglish = FFindTxtDescrEnglish.Text.ToLower();
+            string strAccountDescrLocal = FFindTxtDescrLocal.Text.ToLower();
+            bool isBankAccount = FFindChkBankAccount.Checked;
+            bool isActive = FFindChkActive.Checked;
+            bool isSummary = FFindChkSummary.Checked;
+            bool isForeign = FFindChkForeign.Checked;
+
+            GLSetupTDSAAccountRow accountRow = (GLSetupTDSAAccountRow)ARow;
+
+            if (strAccountCode != String.Empty)
+            {
+                if (!accountRow.AccountCode.ToLower().Contains(strAccountCode))
+                {
+                    return false;
+                }
+            }
+
+            if (strAccountType != String.Empty)
+            {
+                if (!accountRow.AccountType.ToLower().Contains(strAccountType))
+                {
+                    return false;
+                }
+            }
+
+            if (strAccountDescrEnglish != String.Empty)
+            {
+                if (!accountRow.EngAccountCodeLongDesc.ToLower().Contains(strAccountDescrEnglish))
+                {
+                    return false;
+                }
+            }
+
+            if (strAccountDescrLocal != String.Empty)
+            {
+                if (!accountRow.AccountCodeLongDesc.ToLower().Contains(strAccountDescrLocal))
+                {
+                    return false;
+                }
+            }
+
+            if (FFindChkBankAccount.CheckState != CheckState.Indeterminate)
+            {
+                if (accountRow.BankAccountFlag != isBankAccount)
+                {
+                    return false;
+                }
+            }
+
+            if (FFindChkActive.CheckState != CheckState.Indeterminate)
+            {
+                if (accountRow.AccountActiveFlag != isActive)
+                {
+                    return false;
+                }
+            }
+
+            if (FFindChkSummary.CheckState != CheckState.Indeterminate)
+            {
+                if (accountRow.PostingStatus == isSummary)
+                {
+                    return false;
+                }
+            }
+
+            if (FFindChkForeign.CheckState != CheckState.Indeterminate)
+            {
+                if (accountRow.ForeignCurrencyFlag != isActive)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

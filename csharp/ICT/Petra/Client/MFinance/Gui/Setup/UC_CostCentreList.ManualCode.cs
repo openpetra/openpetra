@@ -56,6 +56,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TextBox FFilterTxtCostCentreName = null;
         private CheckBox FFilterChkActive = null;
 
+        private TextBox FFindTxtCostCentreCode = null;
+        private TCmbAutoComplete FFindCmbCostCentreType = null;
+        private TextBox FFindTxtCostCentreName = null;
+        private CheckBox FFindChkActive = null;
+
         private TSgrdDataGridPaged grdDetails = null;
         private int FPrevRowChangedRow = -1;
         private DataRow FPreviouslySelectedDetailRow = null;
@@ -158,7 +163,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdCostCentres.DataSource = new DevAge.ComponentModel.BoundDataView(FDataView);
             grdCostCentres.Columns.Clear();
             grdCostCentres.AddTextColumn("Code", MainDS.ACostCentre.ColumnCostCentreCode);
-            grdCostCentres.AddTextColumn("Descr", MainDS.ACostCentre.ColumnCostCentreName);
+            grdCostCentres.AddTextColumn("Name", MainDS.ACostCentre.ColumnCostCentreName);
         }
 
         /// <summary>
@@ -190,6 +195,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FFilterTxtCostCentreName = (TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtCostCentreName");
                 FFilterChkActive = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
 
+                FFindTxtCostCentreCode = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtCostCentreCode");
+                FFindCmbCostCentreType = (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbCostCentreType");
+                FFindTxtCostCentreName = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtCostCentreName");
+                FFindChkActive = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkActive");
+
                 FIsFilterPanelInitialised = true;
             }
         }
@@ -200,22 +210,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FFilterTxtCostCentreCode.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("(a_cost_centre_code_c LIKE '%{0}%')", FFilterTxtCostCentreCode.Text));
+                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", MainDS.ACostCentre.ColumnCostCentreCode, FFilterTxtCostCentreCode.Text));
             }
 
             if (FFilterCmbCostCentreType.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("(a_cost_centre_type_c LIKE '{0}')", FFilterCmbCostCentreType.Text));
+                JoinAndAppend(ref filter, String.Format("({0} LIKE '{1}')", MainDS.ACostCentre.ColumnCostCentreType, FFilterCmbCostCentreType.Text));
             }
 
             if (FFilterTxtCostCentreName.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("(a_cost_centre_name_c LIKE '%{0}%')", FFilterTxtCostCentreName.Text));
+                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", MainDS.ACostCentre.ColumnCostCentreName, FFilterTxtCostCentreName.Text));
             }
 
             if (FFilterChkActive.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("(a_cost_centre_active_flag_l={0})", FFilterChkActive.Checked ? 1 : 0));
+                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.ACostCentre.ColumnCostCentreActiveFlag, FFilterChkActive.Checked ? 1 : 0));
             }
 
             AFilterString = filter;
@@ -233,7 +243,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool IsMatchingRowManual(DataRow ARow)
         {
-            return false;
+            string strCostCentreCode = FFindTxtCostCentreCode.Text.ToLower();
+            string strCostCentreType = FFindCmbCostCentreType.Text.ToLower();
+            string strCostCentreName = FFindTxtCostCentreName.Text.ToLower();
+            bool isActive = FFindChkActive.Checked;
+
+            ACostCentreRow costCentreRow = (ACostCentreRow)ARow;
+
+            if (strCostCentreCode != String.Empty)
+            {
+                if (!costCentreRow.CostCentreCode.ToLower().Contains(strCostCentreCode))
+                {
+                    return false;
+                }
+            }
+
+            if (strCostCentreType != String.Empty)
+            {
+                if (!costCentreRow.CostCentreType.ToLower().Contains(strCostCentreType))
+                {
+                    return false;
+                }
+            }
+
+            if (strCostCentreName != String.Empty)
+            {
+                if (!costCentreRow.CostCentreName.ToLower().Contains(strCostCentreName))
+                {
+                    return false;
+                }
+            }
+
+            if (FFindChkActive.CheckState != CheckState.Indeterminate)
+            {
+                if (costCentreRow.CostCentreActiveFlag != isActive)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
