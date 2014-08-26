@@ -146,49 +146,57 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// in the Partner Edit screen and which just got saved.
         /// </summary>
         /// <returns>void</returns>
-        public void CheckForRefreshOfDisplayedData()
+        public void CheckForRefreshOfDisplayedData(bool AJobAndStaffDataGridNeedsRefresh)
         {
             bool RefreshNecessary = false;
             string PhoneOfPerson;
             string EmailOfPerson;
 
-            Int64[] SupportingChurchesPartnerKeys = new long[0];
-
-            if (FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()] != null)
+            if (!AJobAndStaffDataGridNeedsRefresh) 
             {
-                // Check for change of 'Best Address' and it's Phone Number and Email Address
-                DetermineAddressComponents(out PhoneOfPerson, out EmailOfPerson);
-
-                if (PhoneOfPerson != null)
+                Int64[] SupportingChurchesPartnerKeys = new long[0];
+    
+                if (FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()] != null)
                 {
-                    if ((PhoneOfPerson != FPhoneOfPerson)
-                        || (EmailOfPerson != FEmailOfPerson))
+                    // Check for change of 'Best Address' and it's Phone Number and Email Address
+                    DetermineAddressComponents(out PhoneOfPerson, out EmailOfPerson);
+    
+                    if (PhoneOfPerson != null)
                     {
-                        RefreshNecessary = true;
-                    }
-                }
-            }
-
-            if (FMainDS.Tables[PPartnerRelationshipTable.GetTableName()] != null)
-            {
-                // Check for change in supporting Church/es relationship(s)
-                DetermineChurchRelationships(out SupportingChurchesPartnerKeys);
-
-                if ((FSupportingChurchesPartnerKeys == null)
-                    || (FSupportingChurchesPartnerKeys.Length != SupportingChurchesPartnerKeys.Length))
-                {
-                    RefreshNecessary = true;
-                }
-                else
-                {
-                    for (int Counter = 0; Counter < SupportingChurchesPartnerKeys.Length; Counter++)
-                    {
-                        if (SupportingChurchesPartnerKeys[Counter] != FSupportingChurchesPartnerKeys[Counter])
+                        if ((PhoneOfPerson != FPhoneOfPerson)
+                            || (EmailOfPerson != FEmailOfPerson))
                         {
                             RefreshNecessary = true;
                         }
                     }
                 }
+    
+                if (FMainDS.Tables[PPartnerRelationshipTable.GetTableName()] != null)
+                {
+                    // Check for change in supporting Church/es relationship(s)
+                    DetermineChurchRelationships(out SupportingChurchesPartnerKeys);
+    
+                    if ((FSupportingChurchesPartnerKeys == null)
+                        || (FSupportingChurchesPartnerKeys.Length != SupportingChurchesPartnerKeys.Length))
+                    {
+                        RefreshNecessary = true;
+                    }
+                    else
+                    {
+                        for (int Counter = 0; Counter < SupportingChurchesPartnerKeys.Length; Counter++)
+                        {
+                            if (SupportingChurchesPartnerKeys[Counter] != FSupportingChurchesPartnerKeys[Counter])
+                            {
+                                RefreshNecessary = true;
+                            }
+                        }
+                    }
+                }
+                
+            }
+            else
+            {
+                RefreshNecessary = true;
             }
 
             if (RefreshNecessary)
@@ -201,6 +209,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FMainDS.SummaryData.Rows.Clear();
                 FMainDS.Merge(FillDS.SummaryData);
+                FMainDS.JobAssignmentStaffDataCombined.Rows.Clear();
+                FMainDS.Merge(FillDS.JobAssignmentStaffDataCombined);
 
                 // Refresh the displayed data
                 SpecialShowData();
@@ -310,10 +320,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 lblMultipleRecordsInfo.Text = MultipleRecordsInfoText;
                 lblMultipleRecordsInfo.Visible = true;
                 lblMultipleRecordsInfo.ForeColor = System.Drawing.Color.SaddleBrown;
+                
+                pnlChurchInfoData.Height = 162;
+                grpChurchInfo.Height = 181;
+                grpJobCommitment.Top = 372;
             }
             else
             {
                 lblMultipleRecordsInfo.Visible = false;
+                
+                // 'Shrink' Church Info section and move Job/Commitment section up as lblMultipleRecordsInfo isn't taking up space... 
+                pnlChurchInfoData.Height = 162 - 25;
+                grpChurchInfo.Height = 181 - 25;
+                grpJobCommitment.Top = 372 - 25;
             }
         }
 
