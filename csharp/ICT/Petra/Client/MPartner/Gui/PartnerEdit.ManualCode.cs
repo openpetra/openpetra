@@ -851,7 +851,57 @@ namespace Ict.Petra.Client.MPartner.Gui
         public int GetChangedRecordCount(out string AMessage)
         {
             GetDataFromControls();
-            return FPetraUtilsObject.GetChangedRecordCount(FMainDS, out AMessage);
+
+            // On Partner Edit we will only ever have one record changed but we could have changes on multiple tables
+            // So we will find out which tables have changes
+            List<string> TableList = new List<string>();
+
+            foreach (DataTable dt in FMainDS.Tables)
+            {
+                if (dt != null)
+                {
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        if (dr.RowState != DataRowState.Unchanged)
+                        {
+                            TableList.Add(dt.TableName);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            AMessage = String.Empty;
+
+            if (TableList.Count > 0)
+            {
+                if (TableList.Count == 1)
+                {
+                    AMessage = Catalog.GetString("You have made changes to the data in the following area:");
+                }
+                else
+                {
+                    AMessage = Catalog.GetString("You have made changes to the data in the following areas:");
+                }
+
+                foreach (string TableName in TableList)
+                {
+                    if (TableName.Equals(PartnerEditTDSPPartnerLocationTable.GetTableName()))
+                    {
+                        AMessage += (Environment.NewLine + "   General Information");
+                    }
+                    else
+                    {
+                        string NiceTableName = StringHelper.ReverseUpperCamelCase(TableName);
+                        NiceTableName = NiceTableName.Substring(NiceTableName.IndexOf(' ') + 1);
+                        AMessage += (Environment.NewLine + "   " + NiceTableName);
+                    }
+                }
+
+                AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
+            }
+
+            return TableList.Count;
         }
 
         /// <summary>

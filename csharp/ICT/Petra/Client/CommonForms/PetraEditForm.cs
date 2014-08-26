@@ -58,23 +58,23 @@ namespace Ict.Petra.Client.CommonForms
 // TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
 
         ///
-        protected static readonly string StrSingleRecordToSave = Catalog.GetString("There is 1 record that needs to be saved.");
+        public static readonly string StrSingleRecordToSave = Catalog.GetString("There is 1 record that needs to be saved.");
 
         ///
-        protected static readonly string StrPluralRecordsToSave = Catalog.GetString("There are {0} records that need to be saved.");
+        public static readonly string StrPluralRecordsToSave = Catalog.GetString("There are {0} records that need to be saved.");
 
         ///
-        protected static readonly string StrConsequenceIfNotSaved = Catalog.GetString(
+        public static readonly string StrConsequenceIfNotSaved = Catalog.GetString(
             "{0}If you close this window without saving, you will lose all the changes that you have made.");
 
         ///
-        protected static readonly string StrSingleTableToSave = Catalog.GetString("The following table has data that needs to be saved:");
+        public static readonly string StrSingleTableToSave = Catalog.GetString("The following table has data that needs to be saved:");
 
         ///
-        protected static readonly string StrPluralTablesToSave = Catalog.GetString("The following tables have data that needs to be saved:");
+        public static readonly string StrPluralTablesToSave = Catalog.GetString("The following tables have data that needs to be saved:");
 
         ///
-        protected static readonly string StrRecordsInTable = Catalog.GetString("{0}   {1} {2} in the '{3}' table.");
+        public static readonly string StrRecordsInTable = Catalog.GetString("{0}   {1} {2} in the '{3}' table.");
 
         #endregion
 
