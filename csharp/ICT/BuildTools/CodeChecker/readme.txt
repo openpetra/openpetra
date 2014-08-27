@@ -18,11 +18,12 @@ The set of Regular Expressions is coded up in Method 'DeclareRegExpressions'. So
 CodeChecker uses TLogging.Log for any reporting of problems so the output is seen on the Console as well
 as in its logfile, CodeChecker.log (in the \log\ folder). That log file gets at present always appended to!
 
-There are plans for returning a result value to the Console (0 if no RegEx matches were found, otherwise the number
-of RegEx matches) to allow meaningful integration into the Build Server Jobs for monitoring code issues.
+CodeChecker returns a result value to the Console (-1 if Exceptions were encounteredn, 0 if no RegEx matches were found, 
+otherwise the number of RegEx matches). That allows for meaningful integration into the Build Server Jobs for monitoring 
+code issues!
 
 
-The CodeChecker Utility is at present in its very early stages.
+The CodeChecker Utility is at present in its early stages.
 
 _______________________
 ChristianK, August 2014
