@@ -100,6 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // disallow negative numbers
             txtFromTransactionAmount.NegativeValueAllowed = false;
             txtDetailTransactionAmount.NegativeValueAllowed = false;
+            txtFromPercentage.NegativeValueAllowed = false;
             txtDetailPercentage.NegativeValueAllowed = false;
             
             // ok button disabled until at least one Reallocation is added

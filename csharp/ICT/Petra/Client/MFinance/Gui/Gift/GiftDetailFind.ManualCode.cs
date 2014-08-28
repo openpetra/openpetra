@@ -248,7 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception exp)
             {
-                MessageBox.Show("Exception occured in SetupResultDataGrid: " + exp.Message + exp.StackTrace);
+                MessageBox.Show("Exception occured in SetupGrid: " + exp.Message + exp.StackTrace);
             }
         }
 

@@ -2093,8 +2093,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         if ((ApDocumentRow.DateIssued.AddDays(ApDocumentRow.CreditTerms) >= NextPeriodStartDate)
                             && (ApDocumentRow.DateIssued.AddDays(ApDocumentRow.CreditTerms) <= NextPeriodEndDate)
-                            && (ApDocumentRow.DocumentStatus != MFinanceConstants.BATCH_UNPOSTED)
-                            && (ApDocumentRow.DocumentStatus != MFinanceConstants.BATCH_CANCELLED))
+                            && (!ApDocumentRow.DocumentStatus.Equals(MFinanceConstants.BATCH_UNPOSTED, StringComparison.InvariantCultureIgnoreCase))
+                            && (!ApDocumentRow.DocumentStatus.Equals(MFinanceConstants.BATCH_CANCELLED, StringComparison.InvariantCultureIgnoreCase)))
                         {
                             ResultRow["PaymentsDueThisMonth"] = Convert.ToDecimal(ResultRow["PaymentsDueThisMonth"]) + ApDocumentRow.TotalAmount;
                         }

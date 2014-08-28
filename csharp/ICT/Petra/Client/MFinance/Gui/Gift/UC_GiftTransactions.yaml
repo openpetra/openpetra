@@ -120,6 +120,9 @@ RootNode:
                 Row7: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row8: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
                 Row9: [txtDetailRecipientKeyMinistry]
+                Row10: [txtTaxDeductibleAccount, txtDeductiblePercentage]
+                Row11: [txtTaxDeductibleAmount, txtNonDeductibleAmount]
+                Row12: [lblAccounts]
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged, Validation=true}
@@ -160,6 +163,13 @@ RootNode:
             OnLeave: DetailCommentTypeChanged
         tbrTabPage:
         mnuTabPage:
+
+        txtDeductiblePercentage: {Visible=false, Label=Tax Deductible %, Format=PercentDecimal(2), Width=80}
+        txtTaxDeductibleAmount: {Visible=false, Label=Tax-Deductible, Format=Currency, Enabled=false}
+        txtNonDeductibleAmount: {Visible=false, Label=Non-Deductible, Format=Currency, Enabled=false}
+        txtTaxDeductibleAccount: {Visible=false, Label=Tax-Deductible, Enabled=false}
+        lblAccounts: {Visible=false}
+
     Menu:
         mniTransactions:
             Label: &Gift Transaction
