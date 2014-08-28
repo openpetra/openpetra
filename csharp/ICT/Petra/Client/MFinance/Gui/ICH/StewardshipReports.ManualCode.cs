@@ -315,13 +315,16 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                 if (msg.Length == 0)
                 {
+                    msg = Catalog.GetString("Stewardship Calculations haven't been run or no transactions to process.");
+/*
                     msg = String.Format(Catalog.GetString("No Cost Centres to process in Ledger {0} for report period: {1} and ICH No.: {2}."),
                         FLedgerNumber,
                         SelectedReportPeriod,
                         SelectedICHNumber);
+*/
                 }
 
-                MessageBox.Show(msg, Catalog.GetString("Generate HOSA Files"));
+                MessageBox.Show(msg, Catalog.GetString("Generate Reports"));
 
                 btnCancel.Text = "Close";
             }
