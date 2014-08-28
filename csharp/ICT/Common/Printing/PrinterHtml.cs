@@ -817,6 +817,29 @@ namespace Ict.Common.Printing
                         Catalog.SetCulture(OrigCulture);
                     }
 
+                    if (TXMLParser.HasAttribute(curNode, "style"))
+                    {
+                        CultureInfo OrigCulture = Catalog.SetCulture(CultureInfo.InvariantCulture);
+
+                        string style = TXMLParser.GetAttribute(curNode, "style");
+                        string[] styles = style.Split(';');
+
+                        foreach (string values in styles)
+                        {
+                            if (values.Length > 0)
+                            {
+                                string[] namevaluepair = values.Split(':');
+
+                                if ((namevaluepair[0] == "line-height") && namevaluepair[1].EndsWith("%"))
+                                {
+                                    FPrinter.CurrentLineHeight = (float)Convert.ToDouble(namevaluepair[1].Replace("%", "")) / 100.0f;
+                                }
+                            }
+                        }
+
+                        Catalog.SetCulture(OrigCulture);
+                    }
+
                     if (TXMLParser.HasAttribute(curNode, "face"))
                     {
                         foreach (eFont MyFont in Enum.GetValues(typeof(eFont)))
