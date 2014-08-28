@@ -2427,12 +2427,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             //
+            // If there's an 8500X account, that also needs to be re-tweaked:
+            AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500X", Transaction);
+
+            if (AccountTbl.Rows.Count > 0)
+            {
+                IchAccountRow = AccountTbl[0];
+                IchAccountRow.AccountType = "Asset";
+                IchAccountRow.DebitCreditIndicator = true;
+                AAccountAccess.SubmitChanges(AccountTbl, Transaction);
+            }
+
+            //
             // The Summary account also needs to be re-tweaked:
             AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500S", Transaction);
 
             if (AccountTbl.Rows.Count > 0)
             {
-                IchAccountRow = AccountTbl[0]; // If there's no row 0, something very bad has happened!
+                IchAccountRow = AccountTbl[0];
                 IchAccountRow.AccountType = "Asset";
                 IchAccountRow.DebitCreditIndicator = true;
                 AAccountAccess.SubmitChanges(AccountTbl, Transaction);

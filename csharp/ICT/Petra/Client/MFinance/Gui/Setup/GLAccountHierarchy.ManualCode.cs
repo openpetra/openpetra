@@ -485,13 +485,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     AAccountHierarchyDetailTable.GetReportingAccountCodeDBName(), ARow.AccountCode);
                 String txtReportingOrder = "";
 
-                if ((!ARow.PostingStatus) && (FMainDS.AAccountHierarchyDetail.DefaultView.Count > 0))
+                if (FMainDS.AAccountHierarchyDetail.DefaultView.Count > 0)
                 {
                     txtReportingOrder = ((AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[0].Row).ReportOrder.ToString();
                 }
 
                 txtRptOrder.Text = txtReportingOrder;
-                txtRptOrder.Enabled = !ARow.PostingStatus && !ARow.SystemAccountFlag;
+                txtRptOrder.Enabled = !ARow.SystemAccountFlag;
 
                 if (!ARow.ForeignCurrencyFlag)
                 {

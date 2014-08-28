@@ -209,6 +209,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             int Idx;
             AccountNodeDetails ChildTag = (AccountNodeDetails)Child.Tag;
 
+/*
+ * Apparently it is best to always use the Reporting Order, for both Summary and Posting accounts.
+ * 
             if (ChildTag.AccountRow.PostingStatus) // Posting accounts are sorted alphabetically:
             {
                 for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
@@ -220,6 +223,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
             else // For summary accounts I need to use the ReportOrder, then alphabetic:
+ */
             {
                 String ChildDescr = ChildTag.DetailRow.ReportOrder.ToString("000") + Child.Text;
 

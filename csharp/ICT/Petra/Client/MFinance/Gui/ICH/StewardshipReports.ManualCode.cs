@@ -76,6 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /// Field to store the relevant Ledger number
         /// </summary>
         public Int32 FLedgerNumber = 0;
+        ALedgerRow FLedgerRow = null;
 
         /// <summary>
         /// Gets or sets the ICH reporting period selection mode
@@ -111,7 +112,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 FLedgerNumber = value;
 
-                ALedgerRow Ledger =
+                FLedgerRow =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
 
                 TFinanceControls.InitialiseAvailableFinancialYearsListHOSA(
@@ -142,9 +143,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 chkStewardshipFile.Checked = false;
             }
-
-            txtBrowseStewardshipFile.Enabled = IsEnabled;
-            btnBrowse.Enabled = IsEnabled;
         }
 
         private void RefreshReportPeriodList(object sender, EventArgs e)
@@ -155,7 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     ref cmbReportPeriod,
                     FLedgerNumber,
                     cmbYearEnding.GetSelectedInt32(),
-                    0,
+                    FLedgerRow.CurrentPeriod,
                     false);
             }
         }

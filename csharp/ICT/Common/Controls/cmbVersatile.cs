@@ -329,16 +329,19 @@ namespace Ict.Common.Controls
         /// </returns>
         private int Get_ColumnNumber(string ColumnName)
         {
-            DataTable mDataTable = ((DataView)DataSource).Table;
+            if (ColumnName == null || ColumnName == "")
+            {
+                return -1;
+            }
 
+            DataTable mDataTable = ((DataView)DataSource).Table;
             try
             {
                 return mDataTable.Columns[ColumnName].Ordinal;
             }
             catch (Exception)
             {
-                string mLogLine = "The column number could not be retrieved for column: " + ColumnName + '!';
-                throw new ArgumentException(mLogLine);
+                throw new ArgumentException("The column number could not be retrieved for column: " + ColumnName + '!');
             }
         }
 

@@ -78,8 +78,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         }
 
         /// <summary>
-        /// For Development only, templates are also kept in a disc file.
+        /// For Development only, templates are also kept in disc files.
         /// This means that Bazaar will do the internal update management for us.
+        /// 
+        /// For the backup to work, the XmlReports\FastReportsBackup.sql file must be present,
+        /// but it doesn't need to contain anything specifically.
         /// </summary>
         private static void SaveTemplatesToBackupFile(SReportTemplateRow Row)
         {
@@ -87,12 +90,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             if (File.Exists(Path.GetDirectoryName(BackupFilename) + "\\FastReportsBackup.sql"))
             {
-                String Query = "SELECT * FROM s_report_template WHERE s_template_id_i=" + Row.TemplateId;
-
-                TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-                DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "Templates", ReadTrans);
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
                 String FinalQuery = "DELETE FROM s_report_template WHERE s_template_id_i=" + Row.TemplateId + ";\r\n";
 
                 FinalQuery +=
