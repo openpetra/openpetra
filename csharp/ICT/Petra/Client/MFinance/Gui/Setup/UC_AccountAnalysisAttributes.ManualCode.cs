@@ -256,7 +256,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
         {
-            if (!FIamUpdating && (FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
+            if (FIamUpdating || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Detached)
+             || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
+
+            if (FPreviouslySelectedDetailRow != null)
             {
 /*
  *              // This code in comments addresses a strange problem where
