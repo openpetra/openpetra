@@ -89,11 +89,11 @@ RootNode:
                 Row0: [grpDetailsForDonor]
                 Row1: [grpDetailsForEachGift]
         grpDetailsForDonor: {Width:930, Height:125}
-            Controls: 
-                Row0: [chkDetailActive]
-                Row1: [txtDetailDonorKey, cmbDetailMethodOfGivingCode]
-                Row2: [txtGiftTotal, cmbDetailMethodOfPaymentCode]
-                Row3: [txtDetailReference, cmbDetailReceiptLetterCode]
+            Controls:
+                Row0: [txtDetailDonorKey, txtGiftReceipting]
+                Row1: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
+                Row2: [txtDetailReference, cmbDetailReceiptLetterCode]
+                Row3: [chkDetailActive, txtGiftTotal]
         grpDetailsForEachGift: {Width:930, Height:265}
             Controls: 
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
@@ -110,6 +110,7 @@ RootNode:
         dtpStartDonations: {Label=Don. Period From}
         dtpEndDonations: {Label=To}
         chkDetailActive: {Label=Active Gift}
+        txtGiftReceipting: {NoLabel=true, ReadOnly=true, Stretch=horizontally}
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged, Validation=true}
         txtDetailReference: {Label=Reference, Width=170}

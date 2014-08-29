@@ -668,6 +668,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FShowingDetails || (APartnerKey == 0))
             {
                 mniDonorHistory.Enabled = false;
+            	txtGiftReceipting.Text = "";
                 return;
             }
             else
@@ -3155,6 +3156,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         	
         	/* add extra column to grid */
         	//grdDetails.AddTextColumn(Catalog.GetString("Tax Deductibility %"), FMainDS.);
+        	
+        	/* fix tab order */
+        	int STARTINGINDEX = txtDetailGiftTransactionAmount.TabIndex + 20;
+        	txtDeductiblePercentage.TabIndex = STARTINGINDEX;
+        	txtTaxDeductibleAmount.TabIndex = STARTINGINDEX += 20;
+        	txtNonDeductibleAmount.TabIndex = STARTINGINDEX += 20;
+        	cmbDetailMotivationGroupCode.TabIndex = STARTINGINDEX += 20;
+        	cmbDetailMotivationDetailCode.TabIndex = STARTINGINDEX += 20;
+        	cmbDetailMailingCode.TabIndex = STARTINGINDEX += 20;
+        	txtDetailCostCentreCode.TabIndex = STARTINGINDEX += 20;
+        	txtTaxDeductibleAccount.TabIndex = STARTINGINDEX += 20;
+        	txtDetailAccountCode.TabIndex = STARTINGINDEX += 20;
+        	txtDetailGiftCommentOne.TabIndex = STARTINGINDEX += 20;
+        	cmbDetailCommentOneType.TabIndex = STARTINGINDEX += 20;
+        	txtDetailGiftCommentTwo.TabIndex = STARTINGINDEX += 20;
+        	cmbDetailCommentTwoType.TabIndex = STARTINGINDEX += 20;
+        	txtDetailGiftCommentThree.TabIndex = STARTINGINDEX += 20;
+        	cmbDetailCommentThreeType.TabIndex = STARTINGINDEX += 20;
         }
         
         private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)

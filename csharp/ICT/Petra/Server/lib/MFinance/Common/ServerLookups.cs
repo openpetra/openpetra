@@ -138,5 +138,25 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// return ledger's base currency
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string GetLedgerBaseCurrency(Int32 ALedgerNumber)
+        {
+            string ReturnValue = "";
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                	ReturnValue = ((ALedgerRow) ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction).Rows[0]).BaseCurrency;
+                });
+
+            return ReturnValue;
+        }
     }
 }
