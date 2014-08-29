@@ -327,6 +327,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void DesignReport(TRptCalculator ACalc)
         {
             ACalc.GetParameters().Add("param_design_template", true);
+            
+            // add parameters for the report's heading
+            ACalc.GetParameters().Add("param_requested_by", UserInfo.GUserInfo.UserID);
+            Version ClientVersion = Assembly.GetAssembly(typeof(FastReportsWrapper)).GetName().Version;
+            ACalc.GetParameters().Add("param_version", ClientVersion.Major.ToString() + "." +
+                ClientVersion.Minor.ToString() + "." +
+                ClientVersion.Build.ToString() + "." +
+                ClientVersion.Revision.ToString());
 
             if (FSelectedTemplate != null)
             {
@@ -470,6 +478,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void GenerateReport(TRptCalculator ACalc)
         {
             ACalc.GetParameters().Add("param_design_template", false);
+            
+            // add parameters for the report's heading
+            ACalc.GetParameters().Add("param_requested_by", UserInfo.GUserInfo.UserID);
+            Version ClientVersion = Assembly.GetAssembly(typeof(FastReportsWrapper)).GetName().Version;
+            ACalc.GetParameters().Add("param_version", ClientVersion.Major.ToString() + "." +
+                ClientVersion.Minor.ToString() + "." +
+                ClientVersion.Build.ToString() + "." +
+                ClientVersion.Revision.ToString());
 
             if (FSelectedTemplate != null)
             {

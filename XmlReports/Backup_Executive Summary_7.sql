@@ -1,5 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/10/2014 13:57:40" ReportInfo.CreatorVersion="2014.2.1.0">
+DELETE FROM s_report_template WHERE s_template_id_i=7;
+INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
+VALUES(7,'Executive Summary','Executive Summary template','System',True,False,False,False,
+'﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="08/29/2014 14:47:24" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -114,34 +117,43 @@ namespace FastReport
     <Parameter Name="param_intl_currency_symbol" DataType="System.String"/>
     <Parameter Name="param_current_period" DataType="System.Int32"/>
     <Parameter Name="param_current_financial_year" DataType="System.Boolean"/>
+    <Parameter Name="param_design_template" DataType="System.Boolean"/>
+    <Parameter Name="param_requested_by" DataType="System.String"/>
+    <Parameter Name="param_version" DataType="System.String"/>
   </Dictionary>
   <ReportPage Name="Page1">
-    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="66.15">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="103.95">
       <TextObject Name="Text1" Left="226.8" Width="245.7" Height="28.35" Text="Executive Summary" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
-      <TextObject Name="Text9" Left="453.6" Width="122.85" Height="18.9" Text="Printed :" HorzAlign="Right"/>
-      <TextObject Name="Text8" Left="576.45" Width="141.75" Height="18.9" Text="[OmDate([Date])]"/>
-      <TextObject Name="Text20" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
-      <TextObject Name="Text10" Left="75.6" Width="170.1" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
-      <TextObject Name="Text22" Top="18.9" Width="75.6" Height="18.9" Text="At Period:" HorzAlign="Right"/>
-      <TextObject Name="Text19" Left="75.6" Top="18.9" Width="198.45" Height="18.9" Text="[ToString([param_end_period_i])][IIf([param_current_financial_year],IIf([param_current_period]&gt;[param_end_period_i],&quot; (CLOSED)&quot;,IIf([param_current_period]&lt;[param_end_period_i],&quot; (FWD PERIOD)&quot;,&quot; (CURRENT)&quot;)),&quot; (CLOSED)&quot;)]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
-      <TextObject Name="Text42" Left="245.7" Top="18.9" Width="207.9" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
-      <TextObject Name="Text43" Left="274.05" Top="37.8" Width="179.55" Height="18.9"/>
-      <LineObject Name="Line1" Left="718.2" Top="56.7" Width="-718.2" Border.Width="2"/>
-      <TextObject Name="Text56" Left="75.6" Top="37.8" Width="198.45" Height="18.9" Text="[OmDate([param_end_date])]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
-      <TextObject Name="Text61" Left="453.6" Top="37.8" Width="122.85" Height="18.9" Text="[IIf([param_current_financial_year],&quot;Current Period :&quot;,&quot;&quot;)]" HorzAlign="Right"/>
-      <TextObject Name="Text18" Left="576.45" Top="37.8" Width="94.5" Height="18.9" Text="[IIf([param_current_financial_year],[param_current_period],&quot;&quot;)]"/>
-      <TextObject Name="Text54" Left="576.45" Top="18.9" Width="94.5" Height="18.9" Text="[param_base_currency]"/>
-      <TextObject Name="Text89" Left="453.6" Top="18.9" Width="122.85" Height="18.9" Text="Currency :" HorzAlign="Right"/>
+      <TextObject Name="Text9" Left="491.4" Width="122.85" Height="18.9" Text="Printed :" HorzAlign="Right"/>
+      <TextObject Name="Text8" Left="614.25" Width="141.75" Height="18.9" Text="[OmDate([Date])]"/>
+      <TextObject Name="Text20" Top="56.7" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
+      <TextObject Name="Text10" Left="75.6" Top="56.7" Width="170.1" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
+      <TextObject Name="Text22" Left="311.85" Top="56.7" Width="113.4" Height="18.9" Text="At Period ([ToString([param_end_period_i])]) :" HorzAlign="Right"/>
+      <TextObject Name="Text19" Left="425.25" Top="56.7" Width="292.95" Height="18.9" Text="[OmDate([param_start_date])] to [OmDate([param_end_date])][IIf([param_current_financial_year],IIf([param_current_period]&gt;[param_end_period_i],&quot; (CLOSED)&quot;,IIf([param_current_period]&lt;[param_end_period_i],&quot; (FWD PERIOD)&quot;,&quot; (CURRENT)&quot;)),&quot; (CLOSED)&quot;)]" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text42" Left="245.7" Top="28.35" Width="207.9" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
+      <LineObject Name="Line1" Left="718.2" Top="94.5" Width="-718.2" Border.Width="2"/>
+      <TextObject Name="Text61" Left="302.4" Top="75.6" Width="122.85" Height="18.9" Text="[IIf([param_current_financial_year],&quot;Current Period :&quot;,&quot;&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text18" Left="425.25" Top="75.6" Width="94.5" Height="18.9" Text="[IIf([param_current_financial_year],[param_current_period],&quot;&quot;)]"/>
+      <TextObject Name="Text54" Left="75.6" Top="75.6" Width="151.2" Height="18.9" Text="[param_currency_name]"/>
+      <TextObject Name="Text89" Left="-47.25" Top="75.6" Width="122.85" Height="18.9" Text="Currency :" HorzAlign="Right"/>
+      <TextObject Name="Text90" Left="-9308.25" Top="-9450" Width="103.95" Height="18.9" Text="[param_requested_by]"/>
+      <TextObject Name="Text91" Left="-8873.55" Top="-9450" Width="94.5" Height="18.9" Text="[param_version]"/>
+      <TextObject Name="Text92" Left="-9450" Top="-9450" Width="141.75" Height="18.9" Text="Report requested by :" HorzAlign="Right"/>
+      <TextObject Name="Text93" Left="-8996.4" Top="-9450" Width="122.85" Height="18.9" Text="Version :" HorzAlign="Right"/>
+      <TextObject Name="Text94" Left="141.75" Top="18.9" Width="113.4" Height="18.9" Text="[param_requested_by]"/>
+      <TextObject Name="Text95" Left="614.25" Top="18.9" Width="94.5" Height="18.9" Text="[param_version]"/>
+      <TextObject Name="Text96" Top="18.9" Width="141.75" Height="18.9" Text="Report requested by :" HorzAlign="Right"/>
+      <TextObject Name="Text97" Left="491.4" Top="18.9" Width="122.85" Height="18.9" Text="Version :" HorzAlign="Right"/>
     </ReportTitleBand>
-    <PageHeaderBand Name="PageHeader1" Top="70.15" Width="718.2" Height="18.9">
+    <PageHeaderBand Name="PageHeader1" Top="107.95" Width="718.2" Height="18.9">
       <TextObject Name="Text7" Left="378" Width="113.4" Height="18.9" Text="Actual YTD" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text12" Left="491.4" Width="113.4" Height="18.9" Text="Budget YTD" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text14" Left="604.8" Width="113.4" Height="18.9" Text="Prior YTD" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text5" Left="264.6" Width="113.4" Height="18.9" Text="This Month" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
     </PageHeaderBand>
-    <GroupHeaderBand Name="GroupHeader1" Top="93.05" Width="718.2" Condition="[Executive Summary.IncomeThisMonth]">
-      <GroupHeaderBand Name="GroupHeader2" Top="97.05" Width="718.2" Condition="[Executive Summary.IncomeThisMonth]">
-        <DataBand Name="Transaction" Top="101.05" Width="718.2" Height="349.65" CanGrow="true" KeepChild="true" DataSource="Accounts" KeepDetail="true">
+    <GroupHeaderBand Name="GroupHeader1" Top="130.85" Width="718.2" Condition="[Executive Summary.IncomeThisMonth]">
+      <GroupHeaderBand Name="GroupHeader2" Top="134.85" Width="718.2" Condition="[Executive Summary.IncomeThisMonth]">
+        <DataBand Name="Transaction" Top="138.85" Width="718.2" Height="349.65" CanGrow="true" KeepChild="true" DataSource="Accounts" KeepDetail="true">
           <TextObject Name="Text2" Width="264.6" Height="18.9" Text="Total Income :"/>
           <TextObject Name="Text4" Left="264.6" Width="113.4" Height="18.9" Text="[Executive Summary.IncomeThisMonth]" NullValue=" " Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
           <TextObject Name="Text6" Left="378" Width="113.4" Height="18.9" Text="[Executive Summary.IncomeActualYTD]" Format="Number" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>
@@ -241,11 +253,11 @@ namespace FastReport
           <TextObject Name="Text52" Left="378" Top="321.3" Width="113.4" Height="18.9" Text="[Executive Summary.PersonnelOtherFieldsActualYTD]" HorzAlign="Right"/>
           <TextObject Name="Text53" Left="604.8" Top="321.3" Width="113.4" Height="18.9" Text="[Executive Summary.PersonnelOtherFieldsPriorYTD]" HorzAlign="Right"/>
         </DataBand>
-        <GroupFooterBand Name="GroupFooter2" Top="454.7" Width="718.2"/>
+        <GroupFooterBand Name="GroupFooter2" Top="492.5" Width="718.2"/>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter1" Top="458.7" Width="718.2"/>
+      <GroupFooterBand Name="GroupFooter1" Top="496.5" Width="718.2"/>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter1" Top="462.7" Width="718.2" Height="18.9">
+    <PageFooterBand Name="PageFooter1" Top="500.5" Width="718.2" Height="18.9">
       <TextObject Name="Text44" Width="9.45" Height="18.9"/>
       <TextObject Name="Text45" Left="9.45" Width="9.45" Height="18.9"/>
       <TextObject Name="Text46" Left="18.9" Width="9.45" Height="18.9"/>
@@ -256,3 +268,6 @@ namespace FastReport
     </PageFooterBand>
   </ReportPage>
 </Report>
+');
+
+SELECT TRUE;

@@ -123,6 +123,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             int Year = 0;
             DateTime EndDate = DateTime.Now;
+            DateTime StartDate = DateTime.Now;
 
             // TODO
             int DiffPeriod = 0;             //(System.Int32)CbB_YearEndsOn.SelectedItem;
@@ -134,10 +135,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
 
-            String CurrencySelection = this.cmbCurrency.GetSelectedString();
-            ACalculator.AddParameter("param_currency", CurrencySelection);
+            String CurrencyName;
+            
+            if (cmbCurrency.Visible)
+            {
+            	String CurrencySelection = this.cmbCurrency.GetSelectedString();
+            	ACalculator.AddParameter("param_currency", CurrencySelection);
+				CurrencyName = (CurrencySelection == "Base") ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
+            }
+            else
+            {
+            	CurrencyName = FLedgerRow.BaseCurrency;
+            }
 
-            String CurrencyName = (CurrencySelection == "Base") ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
             ACalculator.AddParameter("param_currency_name", CurrencyName);
 
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
@@ -181,6 +191,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
                 ACalculator.AddParameter("param_end_period_i", EndPeriod);
+                StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
+                ACalculator.AddParameter("param_start_date", StartDate);
                 EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
                 ACalculator.AddParameter("param_end_date", EndDate);
 
@@ -425,8 +437,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <param name="items"></param>
         public void CurrencyOptions(object[] items)
         {
+        	string DefaultCurrencySelection = cmbCurrency.GetSelectedString();
             this.cmbCurrency.Items.Clear();
             this.cmbCurrency.Items.AddRange(items);
+            
+            // reselect default value
+            cmbCurrency.SetSelectedString(DefaultCurrencySelection);
         }
 
         /// <summary>
