@@ -84,6 +84,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// open screen to create "Partner by Relationship" Extract
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void PartnerByRelationshipExtract(Form AParentForm)
+        {
+            TFrmPartnerByRelationship frm = new TFrmPartnerByRelationship(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
         /// prompt user for name of a new manual extract, create it and open screen for it
         /// </summary>
         /// <param name="AParentForm"></param>

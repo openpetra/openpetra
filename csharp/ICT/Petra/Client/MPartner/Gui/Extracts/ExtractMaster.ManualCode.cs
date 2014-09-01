@@ -628,6 +628,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Create Partner By Relationship Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerByRelationshipExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.PartnerByRelationshipExtract(FindForm());
+        }
+        
+        /// <summary>
         /// Create Partner By Special Type Extract
         /// </summary>
         /// <param name="sender"></param>

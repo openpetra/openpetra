@@ -25,6 +25,7 @@ RootNode:
         actCreatePartnerByCityExtract: {ActionClick=CreatePartnerByCityExtract}     
         actCreatePartnerBySubscriptionExtract: {ActionClick=CreatePartnerBySubscriptionExtract}     
         actCreatePartnerBySpecialTypeExtract: {ActionClick=CreatePartnerBySpecialTypeExtract}     
+        actCreatePartnerByRelationshipExtract: {ActionClick=CreatePartnerByRelationshipExtract}     
         actCreateFamilyMembersExtract: {ActionClick=CreateFamilyMembersExtract}     
         actCreateFamilyExtractForPersons: {ActionClick=CreateFamilyExtractForPersons}     
         actCreatePartnerByEventExtract: {ActionClick=CreatePartnerByEventExtract}     
@@ -66,6 +67,7 @@ RootNode:
             mniCreatePartnerByCityExtract: {Label=Partner by City, Action=actCreatePartnerByCityExtract}
             mniCreatePartnerBySubscriptionExtract: {Label=Partner by Subscription, Action=actCreatePartnerBySubscriptionExtract}
             mniCreatePartnerBySpecialTypeExtract: {Label=Partner by Special Type, Action=actCreatePartnerBySpecialTypeExtract}
+            mniCreatePartnerByRelationshipExtract: {Label=Partner by Relationship, Action=actCreatePartnerByRelationshipExtract}
             mniSeparator:
             mniCreateFamilyMembersExtract: {Label=Family Members Extract, Action=actCreateFamilyMembersExtract}
             mniCreateFamilyExtractForPersons: {Label=Family Extract for Persons, Action=actCreateFamilyExtractForPersons}
