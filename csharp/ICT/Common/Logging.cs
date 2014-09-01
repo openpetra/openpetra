@@ -149,7 +149,7 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AFileName">File to which the output should be written if logging to
         /// the logfile is requested.</param>
-        public TLogging(String AFileName)
+        public TLogging(String AFileName, bool ASuppressDateAndTime = false)
         {
             if (Path.GetFullPath(AFileName) == TLogWriter.GetLogFileName())
             {
@@ -157,10 +157,11 @@ namespace Ict.Common
             }
 
             TLogging.Context = "";
-
+            
             if (ULogWriter == null)
             {
                 ULogWriter = new TLogWriter(AFileName);
+                ULogWriter.SuppressDateAndTime = ASuppressDateAndTime;
                 ULogFileName = AFileName;
             }
             else

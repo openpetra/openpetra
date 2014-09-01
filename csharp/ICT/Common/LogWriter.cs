@@ -36,6 +36,7 @@ namespace Ict.Common
     {
         private static string ULogFileName = "";
         private static string ULogtextPrefix = "";
+        private static bool USuppressDateAndTime = false;
         private String FLogFileErrorMsg;
         private bool FCanWriteLogFile;
 
@@ -70,6 +71,18 @@ namespace Ict.Common
             }
         }
 
+        public bool SuppressDateAndTime
+        {
+            get
+            {
+                return USuppressDateAndTime;
+            }
+            
+            set
+            {
+                USuppressDateAndTime = value;
+            }
+        }
 
         #region TLogWriter
 
@@ -147,13 +160,15 @@ namespace Ict.Common
 
                 if (TLogging.DebugLevel > 0)
                 {
-                    SWriter.WriteLine(Environment.NewLine + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") + "  " + ULogtextPrefix + " : " +
+                    SWriter.WriteLine(Environment.NewLine + (!USuppressDateAndTime ? DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty) + "  " + ULogtextPrefix + 
+                                      (!(USuppressDateAndTime && ULogtextPrefix.Length == 0) ? " : " : String.Empty) +
                         strMessage);
                 }
                 else
                 {
                     SWriter.WriteLine(
-                        Environment.NewLine + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss") + ULogtextPrefix + " : " +
+                        Environment.NewLine + (!USuppressDateAndTime ? DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty)+ ULogtextPrefix + 
+                        (!(USuppressDateAndTime && ULogtextPrefix.Length == 0) ? " : " : String.Empty) +
                         strMessage);
                 }
 
