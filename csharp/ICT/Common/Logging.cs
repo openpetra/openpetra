@@ -157,7 +157,7 @@ namespace Ict.Common
             }
 
             TLogging.Context = "";
-            
+
             if (ULogWriter == null)
             {
                 ULogWriter = new TLogWriter(AFileName);

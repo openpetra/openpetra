@@ -789,9 +789,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            if (cmbPartnerClass.Text != "FAMILY") 
+            if (cmbPartnerClass.Text != "FAMILY")
             {
-                FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;    
+                FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;
             }
 
             if (!FPartnerClassUpdateIsAutomatic)
@@ -865,9 +865,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     txtPersonalName.Enabled = true;
                 }
-                
+
                 if (FWorkerFamOnly == true)
-                {                
+                {
                     FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = true;
                 }
             }
