@@ -70,11 +70,11 @@ namespace Ict.Tools.CodeChecker
             {    
                 if (Directory.Exists(TAppSettingsManager.GetValue("OpenPetra.PathLog")))
                 {
-                    new TLogging(TAppSettingsManager.GetValue("OpenPetra.PathLog") + "/" + LogFile);
+                    new TLogging(TAppSettingsManager.GetValue("OpenPetra.PathLog") + "/" + LogFile, true);
                 }
                 else
                 {
-                    new TLogging(LogFile);
+                    new TLogging(LogFile, true);
                 }                
             } 
             catch (Exception Exc) 
@@ -84,7 +84,7 @@ namespace Ict.Tools.CodeChecker
                 // We return -1 to the operating system, indicating an error.
                 return -1;
             }
-            
+                        
             try
             {               
                 // 'Discovery rules' set-up
@@ -92,7 +92,7 @@ namespace Ict.Tools.CodeChecker
                 DeclareFalsePositives(out FalsePositivesFullMatch, out FalsePositivesEndMatch);
     
                 // Log that we have started a run
-                TLogging.Log("'CODECHECKER' run started." + Environment.NewLine + 
+                TLogging.Log("'CODECHECKER' run started at " + DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") + Environment.NewLine + 
                              "  (" + RegExPatterns.Count.ToString() +
                              " Regular Expression Patterns to search for, " + (FalsePositivesFullMatch.Count + FalsePositivesEndMatch.Count).ToString() +
                              " 'False Positives' excluded from search)");
@@ -233,11 +233,13 @@ namespace Ict.Tools.CodeChecker
             var ReturnValue = new Dictionary<string, string>();
             
             // All kinds of *Access.Load* Methods
-            ReturnValue.Add("*Access.Load.*", @"Access\.Load.*(\,[\s]*null\))");       // Matches for example: Access.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null)    in file \Server\lib\MFinance\Gift\Gift.Transactions.cs
+            ReturnValue.Add("*Access.Load.* (no Argument after DB Transaction)", @"Access\.Load.*[\s]*\((([^;]*)[\s]*null\))");       // Matches for example: Access.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null)    in file \Server\lib\MFinance\Gift\Gift.Transactions.cs
+            ReturnValue.Add("*Access.Load.* (n Arguments after DB Transaction [unsharp!])", @"Access\.Load.*[\s]*\((([^;]*)[\s]*null,[\s]*([^;]*)[\s]*,[\s]*([^;]*)[\s]*,[\s]*([^;]*)[\s]*\))");        // Matches for example: Access.LoadByPrimaryKey(partnerKey,\r\n                    StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), null, null, 0, 0)    in file ../../csharp/ICT\Petra\Server\lib\MFinance\Gift\Gift.Exporting.cs
+    
 
             // DBAccess.GDBAccessObj.Select Methods and DBAccess.GDBAccessObj.SelectDT Methods
-            ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT (no Argument after DB Transaction)", @"DBAccess\.GDBAccessObj\.Select(|DT)\(([^;]*)[\s]*null\)");    // Matches for example: 'DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", null)'    in file \Server\lib\MFinance\GL\Reporting.UIConnectors.cs
-            ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT (1 to 3 Arguments after DB Transaction)", @"DBAccess\.GDBAccessObj\.Select(|DT)\(([^;]*)[\s]*null,[\s]*([^;]*)\)");     // Matches for example: 'DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, null, new OdbcParameter[] {' (continued on further lines!)    in file \Server\lib\MPartner\web\Partner.cs
+            ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT (no Argument after DB Transaction)", @"DBAccess\.GDBAccessObj\.Select(|DT)[\s]*\(([^;]*)[\s]*null\)");    // Matches for example: 'DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", null)'    in file \Server\lib\MFinance\GL\Reporting.UIConnectors.cs
+            ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT (1 to 3 Arguments after DB Transaction)", @"DBAccess\.GDBAccessObj\.Select(|DT)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");     // Matches for example: 'DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, null, new OdbcParameter[] {' (continued on further lines!)    in file \Server\lib\MPartner\web\Partner.cs
             
             return ReturnValue;
         }
@@ -271,21 +273,45 @@ namespace Ict.Tools.CodeChecker
             
             AFalsePositivesFullMatch.Add("DBAccess.GDBAccessObj.SelectDT(gifts, sql, Transaction, null, 0, 0)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Tools\FinanceGDPdUExport\participants.cs)");
+
             AFalsePositivesFullMatch.Add("DBAccess.GDBAccessObj.SelectDT(batches, sql, Transaction, null, 0, 0)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Tools\FinanceGDPdUExport\participants.cs)");
+
             AFalsePositivesFullMatch.Add("DBAccess.GDBAccessObj.SelectDT(persons, sql, Transaction, null, 0, 0)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Tools\FinanceGDPdUExport\participants.cs)");
-            
 
+            
             AFalsePositivesFullMatch.Add("DBAccess.GDBAccessObj.SelectDT(TransAnalAttrib, sql, Transaction, null, 0, 0)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Tools\FinanceGDPdUExport\transactions.cs)");
+
             AFalsePositivesFullMatch.Add("DBAccess.GDBAccessObj.SelectDT(allTransactionsInJournal, sql, Transaction, null, 0, 0)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Tools\FinanceGDPdUExport\transactions.cs)");
+
             AFalsePositivesFullMatch.Add("DBAccess.GDBAccessObj.SelectDT(giftbatches, sql, Transaction, null, 0, 0)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Tools\FinanceGDPdUExport\transactions.cs)");
+
             AFalsePositivesFullMatch.Add("DBAccess.GDBAccessObj.SelectDT(accounts, sql, Transaction, null, 0, 0)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Tools\FinanceGDPdUExport\transactions.cs)");
 
+            
+            AFalsePositivesFullMatch.Add("Access.LoadUsingTemplate(TemplateRow, null, null, ReadTransaction,\r\n                        null, 0, 0)",
+                @"Other Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Server\lib\MConference\ConferenceOptions.cs)");
+
+            AFalsePositivesFullMatch.Add("Access.LoadViaPPartner(LastGiftDS, APartnerKey, null, ReadTransaction,\r\n                        StringHelper.InitStrArr(new String[] { \"ORDER BY\", AGiftTable.GetDateEnteredDBName() + \" DESC\" }), 0, 1)",
+                @"AFieldList Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Server\lib\MFinance\Gift\Gift.cs)");
+
+            AFalsePositivesFullMatch.Add("Access.LoadUsingTemplate(TemplateRow0,\r\n                    Operators0,\r\n                    null,\r\n                    DBTransaction,\r\n                    OrderList0,\r\n                    0,\r\n                    0)",
+                @"AFieldList  Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Server\lib\MFinance\ICH\StewardshipCalculation.cs)");
+
+            AFalsePositivesFullMatch.Add("Access.LoadUsingTemplate(TemplateRow1,\r\n                                Operators1,\r\n                                null,\r\n                                DBTransaction,\r\n                                OrderList1,\r\n                                0,\r\n                                0)",
+                @"AFieldList  Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Server\lib\MFinance\ICH\StewardshipCalculation.cs)");
+
+            AFalsePositivesFullMatch.Add("Access.LoadUsingTemplate(TemplateRow, null, null,\r\n                ASituation.GetDatabaseConnection().Transaction, OrderList, 0, 0)",
+                @"AFieldList Argument mistaken for AReadTransaction Argument (in files ../../csharp/ICT\Petra\Server\lib\MReporting\MConference\AccommodationReportCalculation.cs AND ../../csharp/ICT\Petra\Server\lib\MReporting\MConference\ConferenceFieldCalculation.cs)");
+
+            AFalsePositivesFullMatch.Add("Access.LoadViaSUser(AUserName, null, ReadTransaction,\r\n                                StringHelper.InitStrArr(new string[] { \"ORDER BY\", SUserDefaultsTable.GetDefaultCodeDBName() }), 0, 0)",
+                @"AFieldList Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Server\lib\MSysMan\UserDefaults.cs)");
+            
             
             // 'String-ending-with' matches
             AFalsePositivesEndMatch.Add("\" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords)",
