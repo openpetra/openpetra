@@ -854,7 +854,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // On Partner Edit we will only ever have one record changed but we could have changes on multiple tables
             // So we will find out which tables have changes
-            List<string> TableList = new List<string>();
+            List <string>TableList = new List <string>();
 
             foreach (DataTable dt in FMainDS.Tables)
             {

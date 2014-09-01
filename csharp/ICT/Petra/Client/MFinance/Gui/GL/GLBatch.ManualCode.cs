@@ -380,7 +380,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private int GetChangedRecordCountManual(out string AMessage)
         {
             // For GL Batch we will get some mix of batches, journals and transactions
-            List<Tuple<string, int>> TableAndCountList = new List<Tuple<string, int>>();
+            List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
             int allChangesCount = 0;
 
             // Work out how many changes in each table
@@ -401,7 +401,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (tableChangesCount > 0)
                     {
-                        TableAndCountList.Add(new Tuple<string, int>(dt.TableName, tableChangesCount));
+                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
                     }
                 }
             }
@@ -415,7 +415,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 int nJournals = 0;
                 int nTransactions = 0;
 
-                foreach (Tuple<string, int> TableAndCount in TableAndCountList)
+                foreach (Tuple <string, int>TableAndCount in TableAndCountList)
                 {
                     if (TableAndCount.Item1.Equals(ABatchTable.GetTableName()))
                     {
@@ -455,7 +455,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     strTransactions = String.Format("{0} {1}",
                         nTransactions,
                         Catalog.GetPluralString("transaction", "transactions", nTransactions));
-
                 }
 
                 bool bGotAll = (nBatches > 0) && (nJournals > 0) && (nTransactions > 0);
@@ -481,7 +480,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (nTransactions > 0)
                 {
-                    if (nBatches > 0 || nJournals > 0)
+                    if ((nBatches > 0) || (nJournals > 0))
                     {
                         AMessage += " and ";
                     }
