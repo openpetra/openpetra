@@ -71,6 +71,9 @@ namespace Ict.Common
             }
         }
 
+        /// <summary>
+        /// Set to true to suppress the logging of date and time in log files (default= false).
+        /// </summary>
         public bool SuppressDateAndTime
         {
             get
