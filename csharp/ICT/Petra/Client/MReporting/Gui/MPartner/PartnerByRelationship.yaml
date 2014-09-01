@@ -21,27 +21,18 @@
         tpgReportSorting:
             Label: Sorting
             Controls: [ucoReportSorting]
-        grpPartnerKeys:
-            Controls:
-                Row0: [lblFrom]
-                Row1: [txtPartner]
-        lblFrom: {Label=Partner to be merged from (this partner will no longer be used)}
-        txtPartner:
-            Label: Partner Key
-            Type: PartnerKey
-            NoLabel: true
-            Stretch: horizontally
-            OnChange: PartnerChanged
+        ucoPartnerSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
+            Height: 160
         tpgGeneralSettings:
             Label: General Settings
             Controls: 
-                Row0: [grpPartnerKeys]
+                Row0: [ucoPartnerSelection]
                 Row1: [lblIncludeRelationships]
                 Row2: [clbIncludeRelationships]
-                Row3: [pnlSpecialTypeOptionsBottom]
-
+                Row3: [pnlRelationshipOptionsBottom]
             Order: AlwaysFirst
-        pnlSpecialTypeOptionsBottom:
+        pnlRelationshipOptionsBottom:
             Controls: 
                 Row0: [ucoChkFilter]
         lblIncludeRelationships: 
