@@ -434,7 +434,7 @@ OpenPetra:
                     LapsedDonorReport: {ActionOpenScreen=TFrmLapsedDonorReport}
                     SYBUNTReport: {ActionOpenScreen=TFrmSYBUNTReport}
                     NewDonorReport: {ActionOpenScreen=TFrmNewDonorReport}
-                        TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
+                    TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=settings.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main: {SkipThisLevel=true}
                 Preferences: {DontShowNestedTasksAsLinks=true}
@@ -477,5 +477,6 @@ OpenPetra:
                     #Sites
                     #Purging
                     General:
+                        InstalledSites: {Label=Maintain Sites, Description=Maintain Installed Sites, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmInstalledSitesSetup}
                         LanguageSpecifics: {Label=Language Specifics, Description=Maintain Month Names for Different Languages, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmLanguageSpecificSetup}
                 
