@@ -48,25 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TUC_AccountsList
     {
         private TFrmGLAccountHierarchy FParentForm = null;
-
-        private bool FIsFilterPanelInitialised = false;
-        private TextBox FFilterTxtAccountCode = null;
-        private TCmbAutoComplete FFilterCmbAccountType = null;
-        private TextBox FFilterTxtDescrEnglish = null;
-        private TextBox FFilterTxtDescrLocal = null;
-        private CheckBox FFilterChkBankAccount = null;
-        private CheckBox FFilterChkActive = null;
-        private CheckBox FFilterChkSummary = null;
-        private CheckBox FFilterChkForeign = null;
-
-        private TextBox FFindTxtAccountCode = null;
-        private TCmbAutoComplete FFindCmbAccountType = null;
-        private TextBox FFindTxtDescrEnglish = null;
-        private TextBox FFindTxtDescrLocal = null;
-        private CheckBox FFindChkBankAccount = null;
-        private CheckBox FFindChkActive = null;
-        private CheckBox FFindChkSummary = null;
-        private CheckBox FFindChkForeign = null;
+        private TUC_AccountsListFilterFind FFilterFindLogicObject = null;
 
         private TSgrdDataGridPaged grdDetails = null;
         private int FPrevRowChangedRow = -1;
@@ -196,171 +178,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void FilterToggledManual(bool AFilterPanelIsCollapsed)
         {
-            if (FIsFilterPanelInitialised)
+            if ((FFilterFindLogicObject == null) && !AFilterPanelIsCollapsed)
             {
-                return;
-            }
-
-            if (!AFilterPanelIsCollapsed)
-            {
-                FFilterTxtAccountCode = (TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtAccountCode");
-                FFilterCmbAccountType = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbAccountType");
-                FFilterTxtDescrEnglish = (TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtDescrEnglish");
-                FFilterTxtDescrLocal = (TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtDescrLocal");
-                FFilterChkBankAccount = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkBankAccount");
-                FFilterChkActive = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
-                FFilterChkSummary = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkSummary");
-                FFilterChkForeign = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkForeign");
-
-                FFindTxtAccountCode = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtAccountCode");
-                FFindCmbAccountType = (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbAccountType");
-                FFindTxtDescrEnglish = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtDescrEnglish");
-                FFindTxtDescrLocal = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtDescrLocal");
-                FFindChkBankAccount = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkBankAccount");
-                FFindChkActive = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkActive");
-                FFindChkSummary = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkSummary");
-                FFindChkForeign = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkForeign");
-
-                FIsFilterPanelInitialised = true;
+                FFilterFindLogicObject = new TUC_AccountsListFilterFind(FFilterAndFindObject);
             }
         }
 
         private void ApplyFilterManual(ref string AFilterString)
         {
-            string filter = String.Empty;
-
-            if (FFilterTxtAccountCode.Text != String.Empty)
-            {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", MainDS.AAccount.ColumnAccountCode, FFilterTxtAccountCode.Text));
-            }
-
-            if (FFilterCmbAccountType.Text != String.Empty)
-            {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '{1}')", MainDS.AAccount.ColumnAccountType, FFilterCmbAccountType.Text));
-            }
-
-            if (FFilterTxtDescrEnglish.Text != String.Empty)
-            {
-                JoinAndAppend(ref filter,
-                    String.Format("({0} LIKE '%{1}%')", MainDS.AAccount.ColumnEngAccountCodeLongDesc, FFilterTxtDescrEnglish.Text));
-            }
-
-            if (FFilterTxtDescrLocal.Text != String.Empty)
-            {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", MainDS.AAccount.ColumnAccountCodeLongDesc, FFilterTxtDescrLocal.Text));
-            }
-
-            if (FFilterChkBankAccount.CheckState != CheckState.Indeterminate)
-            {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.AAccount.ColumnBankAccountFlag, FFilterChkBankAccount.Checked ? 1 : 0));
-            }
-
-            if (FFilterChkActive.CheckState != CheckState.Indeterminate)
-            {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.AAccount.ColumnAccountActiveFlag, FFilterChkActive.Checked ? 1 : 0));
-            }
-
-            if (FFilterChkSummary.CheckState != CheckState.Indeterminate)
-            {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.AAccount.ColumnPostingStatus, FFilterChkSummary.Checked ? 0 : 1));
-            }
-
-            if (FFilterChkForeign.CheckState != CheckState.Indeterminate)
-            {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.AAccount.ColumnForeignCurrencyFlag, FFilterChkForeign.Checked ? 1 : 0));
-            }
-
-            AFilterString = filter;
-        }
-
-        private void JoinAndAppend(ref string AStringToExtend, string AStringToAppend)
-        {
-            if (AStringToExtend.Length > 0)
-            {
-                AStringToExtend += " AND ";
-            }
-
-            AStringToExtend += AStringToAppend;
+            FFilterFindLogicObject.ApplyFilterManual(ref AFilterString, MainDS.AAccount);
         }
 
         private bool IsMatchingRowManual(DataRow ARow)
         {
-            string strAccountCode = FFindTxtAccountCode.Text.ToLower();
-            string strAccountType = FFindCmbAccountType.Text.ToLower();
-            string strAccountDescrEnglish = FFindTxtDescrEnglish.Text.ToLower();
-            string strAccountDescrLocal = FFindTxtDescrLocal.Text.ToLower();
-            bool isBankAccount = FFindChkBankAccount.Checked;
-            bool isActive = FFindChkActive.Checked;
-            bool isSummary = FFindChkSummary.Checked;
-            bool isForeign = FFindChkForeign.Checked;
-
-            GLSetupTDSAAccountRow accountRow = (GLSetupTDSAAccountRow)ARow;
-
-            if (strAccountCode != String.Empty)
-            {
-                if (!accountRow.AccountCode.ToLower().Contains(strAccountCode))
-                {
-                    return false;
-                }
-            }
-
-            if (strAccountType != String.Empty)
-            {
-                if (!accountRow.AccountType.ToLower().Contains(strAccountType))
-                {
-                    return false;
-                }
-            }
-
-            if (strAccountDescrEnglish != String.Empty)
-            {
-                if (!accountRow.EngAccountCodeLongDesc.ToLower().Contains(strAccountDescrEnglish))
-                {
-                    return false;
-                }
-            }
-
-            if (strAccountDescrLocal != String.Empty)
-            {
-                if (!accountRow.AccountCodeLongDesc.ToLower().Contains(strAccountDescrLocal))
-                {
-                    return false;
-                }
-            }
-
-            if (FFindChkBankAccount.CheckState != CheckState.Indeterminate)
-            {
-                if (accountRow.BankAccountFlag != isBankAccount)
-                {
-                    return false;
-                }
-            }
-
-            if (FFindChkActive.CheckState != CheckState.Indeterminate)
-            {
-                if (accountRow.AccountActiveFlag != isActive)
-                {
-                    return false;
-                }
-            }
-
-            if (FFindChkSummary.CheckState != CheckState.Indeterminate)
-            {
-                if (accountRow.PostingStatus == isSummary)
-                {
-                    return false;
-                }
-            }
-
-            if (FFindChkForeign.CheckState != CheckState.Indeterminate)
-            {
-                if (accountRow.ForeignCurrencyFlag != isActive)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return FFilterFindLogicObject.IsMatchingRowManual(ARow);
         }
 
         /// <summary>

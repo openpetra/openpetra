@@ -49,17 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TUC_CostCentreList
     {
         private TFrmGLCostCentreHierarchy FParentForm = null;
-
-        private bool FIsFilterPanelInitialised = false;
-        private TextBox FFilterTxtCostCentreCode = null;
-        private TCmbAutoComplete FFilterCmbCostCentreType = null;
-        private TextBox FFilterTxtCostCentreName = null;
-        private CheckBox FFilterChkActive = null;
-
-        private TextBox FFindTxtCostCentreCode = null;
-        private TCmbAutoComplete FFindCmbCostCentreType = null;
-        private TextBox FFindTxtCostCentreName = null;
-        private CheckBox FFindChkActive = null;
+        private TUC_CostCentreListFilterFind FFilterFindLogicObject = null;
 
         private TSgrdDataGridPaged grdDetails = null;
         private int FPrevRowChangedRow = -1;
@@ -183,106 +173,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void FilterToggledManual(bool AFilterPanelIsCollapsed)
         {
-            if (FIsFilterPanelInitialised)
+            if ((FFilterFindLogicObject == null) && !AFilterPanelIsCollapsed)
             {
-                return;
-            }
-
-            if (!AFilterPanelIsCollapsed)
-            {
-                FFilterTxtCostCentreCode = (TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtCostCentreCode");
-                FFilterCmbCostCentreType = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbCostCentreType");
-                FFilterTxtCostCentreName = (TextBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("txtCostCentreName");
-                FFilterChkActive = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
-
-                FFindTxtCostCentreCode = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtCostCentreCode");
-                FFindCmbCostCentreType = (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbCostCentreType");
-                FFindTxtCostCentreName = (TextBox)FFilterAndFindObject.FindPanelControls.FindControlByName("txtCostCentreName");
-                FFindChkActive = (CheckBox)FFilterAndFindObject.FindPanelControls.FindControlByName("chkActive");
-
-                FIsFilterPanelInitialised = true;
+                FFilterFindLogicObject = new TUC_CostCentreListFilterFind(FFilterAndFindObject);
             }
         }
 
         private void ApplyFilterManual(ref string AFilterString)
         {
-            string filter = String.Empty;
-
-            if (FFilterTxtCostCentreCode.Text != String.Empty)
-            {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", MainDS.ACostCentre.ColumnCostCentreCode, FFilterTxtCostCentreCode.Text));
-            }
-
-            if (FFilterCmbCostCentreType.Text != String.Empty)
-            {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '{1}')", MainDS.ACostCentre.ColumnCostCentreType, FFilterCmbCostCentreType.Text));
-            }
-
-            if (FFilterTxtCostCentreName.Text != String.Empty)
-            {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", MainDS.ACostCentre.ColumnCostCentreName, FFilterTxtCostCentreName.Text));
-            }
-
-            if (FFilterChkActive.CheckState != CheckState.Indeterminate)
-            {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", MainDS.ACostCentre.ColumnCostCentreActiveFlag, FFilterChkActive.Checked ? 1 : 0));
-            }
-
-            AFilterString = filter;
-        }
-
-        private void JoinAndAppend(ref string AStringToExtend, string AStringToAppend)
-        {
-            if (AStringToExtend.Length > 0)
-            {
-                AStringToExtend += " AND ";
-            }
-
-            AStringToExtend += AStringToAppend;
+            FFilterFindLogicObject.ApplyFilterManual(ref AFilterString, MainDS);
         }
 
         private bool IsMatchingRowManual(DataRow ARow)
         {
-            string strCostCentreCode = FFindTxtCostCentreCode.Text.ToLower();
-            string strCostCentreType = FFindCmbCostCentreType.Text.ToLower();
-            string strCostCentreName = FFindTxtCostCentreName.Text.ToLower();
-            bool isActive = FFindChkActive.Checked;
-
-            ACostCentreRow costCentreRow = (ACostCentreRow)ARow;
-
-            if (strCostCentreCode != String.Empty)
-            {
-                if (!costCentreRow.CostCentreCode.ToLower().Contains(strCostCentreCode))
-                {
-                    return false;
-                }
-            }
-
-            if (strCostCentreType != String.Empty)
-            {
-                if (!costCentreRow.CostCentreType.ToLower().Contains(strCostCentreType))
-                {
-                    return false;
-                }
-            }
-
-            if (strCostCentreName != String.Empty)
-            {
-                if (!costCentreRow.CostCentreName.ToLower().Contains(strCostCentreName))
-                {
-                    return false;
-                }
-            }
-
-            if (FFindChkActive.CheckState != CheckState.Indeterminate)
-            {
-                if (costCentreRow.CostCentreActiveFlag != isActive)
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            return FFilterFindLogicObject.IsMatchingRowManual(ARow);
         }
 
         /// <summary>
