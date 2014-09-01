@@ -143,7 +143,6 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                             SitesRow[SiteShortName] = tempSiteRow[SiteShortName];
                             SitesTable.Rows.Add(SitesRow);
                         }
-
                     }
                     catch (Exception e)
                     {
@@ -159,7 +158,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("SYSMAN")]
-        public static bool SaveSiteKeys(List<Int64> ASiteKeysSetUpForUse, List<Int64> ASiteKeysToRemove)
+        public static bool SaveSiteKeys(List <Int64>ASiteKeysSetUpForUse, List <Int64>ASiteKeysToRemove)
         {
             TDBTransaction Transaction = null;
             bool SubmissionOK = true;
@@ -185,7 +184,8 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                                 // calculate last partner id, from older uses of this ledger number
                                 object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
                                     String.Format("SELECT MAX(" + PPartnerTable.GetPartnerKeyDBName() + ") FROM " + PPartnerTable.GetTableDBName() +
-                                        " WHERE " + PPartnerTable.GetPartnerKeyDBName() + " > {0} AND " + PPartnerTable.GetPartnerKeyDBName() + " < {1}",
+                                        " WHERE " + PPartnerTable.GetPartnerKeyDBName() + " > {0} AND " + PPartnerTable.GetPartnerKeyDBName() +
+                                        " < {1}",
                                         SiteKey,
                                         SiteKey + 500000), Transaction);
 
@@ -216,7 +216,6 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                     {
                         TLogging.Log(e.ToString());
                     }
-
                 });
 
             return SubmissionOK;

@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
 {
     public partial class TFrmInstalledSitesSetup
     {
-        List<Int64> OriginallyCheckedSites;
+        List <Int64>OriginallyCheckedSites;
         DataTable AvailableSitesTable;
         DataTable CmbDataTable;
         string CmbDisplayMember = "Display";
@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
         {
             SaveChanges();
         }
-        
+
         /// <summary>
         /// save the changes
         /// </summary>
@@ -63,14 +63,16 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
         {
             Boolean Result = false;
             String CheckedStringList = clbSites.GetCheckedStringList();
+
             String[] SiteKeyArray = CheckedStringList.Split(',');
             Int32 Counter = 0;
-            List<Int64> AddedSiteKeyList = new List<Int64>();
-            List<Int64> RemovedSiteKeyList = new List<Int64>();
+            List <Int64>AddedSiteKeyList = new List <Int64>();
+            List <Int64>RemovedSiteKeyList = new List <Int64>();
             Int64 RemovedSiteKey;
             String RemovedSiteName;
             Boolean AnySiteRemoved = false;
-            String UserMessage = Catalog.GetString("Are you sure you want to remove access to following sites? You will not be able to create Partner Keys for them any longer! \r\n");
+            String UserMessage = Catalog.GetString(
+                "Are you sure you want to remove access to following sites? You will not be able to create Partner Keys for them any longer! \r\n");
 
             TVerificationResultCollection VerificationResultCollection = new TVerificationResultCollection();
             TVerificationResult VerificationResult = TStringChecks.StringMustNotBeEmpty(cmbDefaultSite.Text,
@@ -97,6 +99,7 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
                 {
                     // check if previously checked site is now no longer checked
                     RemovedSiteKey = Convert.ToInt64(SiteRow[PUnitTable.GetPartnerKeyDBName()]);
+
                     if (OriginallyCheckedSites.Contains(RemovedSiteKey))
                     {
                         AnySiteRemoved = true;
@@ -109,12 +112,12 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
 
             if (AnySiteRemoved)
             {
-                if (MessageBox.Show(UserMessage, Catalog.GetString("Remove access to Sites"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                if (MessageBox.Show(UserMessage, Catalog.GetString("Remove access to Sites"), MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning) == DialogResult.No)
                 {
                     return false;
                 }
             }
-
 
             // save default site key
             if (cmbDefaultSite.SelectedValue != null)
@@ -193,8 +196,9 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
             clbSites.DataBindGrid(AvailableSitesTable, "", CheckedMember, SiteKey, false, true, false);
 
             // create list of site keys that have been checked when screen opens
-            OriginallyCheckedSites = new List<Int64>();
+            OriginallyCheckedSites = new List <Int64>();
             OriginallyCheckedSites.Clear();
+
             foreach (DataRow SiteRow in AvailableSitesTable.Rows)
             {
                 if (Convert.ToBoolean(SiteRow[SharedConstants.SYSMAN_AVAILABLE_SITES_COLUMN_IS_PARTNER_LEDGER]))
@@ -224,16 +228,18 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
 
             String[] SiteKeyArray = SelectedSites.Split(',');
             Int32 Counter = 0;
-            List<Int64> SiteKeyList = new List<Int64>();
+            List <Int64>SiteKeyList = new List <Int64>();
 
             // initialize data table for combobox
             CmbDataTable.Clear();
+
             for (Counter = 0; Counter < SiteKeyArray.Length; Counter++)
             {
                 if (SiteKeyArray[Counter] != "")
                 {
                     // find site name for given key ("Find" does not work on DataTable as it does not have primary key)
                     SiteName = "";
+
                     foreach (DataRow SiteRow in AvailableSitesTable.Rows)
                     {
                         if (Convert.ToInt64(SiteRow[PUnitTable.GetPartnerKeyDBName()]) == Convert.ToInt64(SiteKeyArray[Counter]))
@@ -242,7 +248,9 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
                             break;
                         }
                     }
-                    CmbDataTable.Rows.Add(string.Format("{0:0000000000}", Convert.ToInt64(SiteKeyArray[Counter])) + " - " + SiteName, Convert.ToInt64(SiteKeyArray[Counter]));
+
+                    CmbDataTable.Rows.Add(string.Format("{0:0000000000}",
+                            Convert.ToInt64(SiteKeyArray[Counter])) + " - " + SiteName, Convert.ToInt64(SiteKeyArray[Counter]));
                 }
             }
 
@@ -251,8 +259,6 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
             {
                 cmbDefaultSite.SelectedValue = SelectedDefaultSite;
             }
-
         }
-
     }
 }
