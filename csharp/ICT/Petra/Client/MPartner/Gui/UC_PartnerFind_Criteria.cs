@@ -789,7 +789,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;
+            if (cmbPartnerClass.Text != "FAMILY") 
+            {
+                FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;    
+            }
 
             if (!FPartnerClassUpdateIsAutomatic)
             {
@@ -861,6 +864,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (txtPersonalName.Enabled == false)
                 {
                     txtPersonalName.Enabled = true;
+                }
+                
+                if (FWorkerFamOnly == true)
+                {                
+                    FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = true;
                 }
             }
             else if (txtPersonalName.Enabled == true)

@@ -127,13 +127,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// The number of values in the grid for the current Type
+        /// The number of values in the grid for the current Type.  This may not be the full number if the grid is filtered.
+        /// </summary>
+        public int GridCount
+        {
+            get
+            {
+                return grdDetails.Rows.Count - 1;
+            }
+        }
+
+        /// <summary>
+        /// The unfiltered number of values for the current Type.
         /// </summary>
         public int Count
         {
             get
             {
-                return grdDetails.Rows.Count - 1;
+                // Need to create our own view because the grid may be filtered
+                string rowFilter = String.Format("{0}={1} AND {2}='{3}'",
+                    AFreeformAnalysisTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                    FTypeCode);
+                DataView dv = new DataView(FMainDS.AFreeformAnalysis, rowFilter, "", DataViewRowState.CurrentRows);
+                return dv.Count;
             }
         }
     }

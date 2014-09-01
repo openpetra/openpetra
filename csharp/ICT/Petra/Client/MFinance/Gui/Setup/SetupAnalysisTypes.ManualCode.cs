@@ -132,6 +132,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitTDS, out AVerificationResult);
         }
 
+        private void DeleteRecord(object sender, EventArgs e)
+        {
+            if (ucoValues.Count > 0)
+            {
+                string msg = string.Empty;
+
+                if (ucoValues.GridCount == 0)
+                {
+                    // The grid must be filtered because it has no rows!
+                    msg += Catalog.GetString(
+                        "The selected Analysis Type has Analysis Values associated with it, but they are being filtered out of the display.");
+                    msg += "  ";
+                }
+
+                msg += Catalog.GetString("You must delete all the Analysis Values for the selected Analysis Type before you can delete this record.");
+                MessageBox.Show(msg, MCommon.MCommonResourcestrings.StrRecordDeletionTitle);
+                return;
+            }
+
+            DeleteAAnalysisType();
+        }
+
         /// <summary>
         /// Performs checks to determine whether a deletion of the current row is permissable
         /// </summary>
