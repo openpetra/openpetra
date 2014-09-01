@@ -371,17 +371,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ShowDetailsManual(ACostCentreRow ARow)
         {
-            if (ARow == null)
+            if (ARow != null)
             {
-                txtDetailCostCentreCode.Text = "";
-                txtDetailCostCentreName.Text = "";
-
-                pnlDetails.Enabled = false;
-            }
-            else
-            {
-                pnlDetails.Enabled = true;
-
                 // I allow the user to attempt to change the primary key,
                 // but if the selected record is not new, AND they have made any other changes,
                 // the txtDetailCostCentreCode_TextChanged method will disallow any change.

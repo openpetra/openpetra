@@ -450,20 +450,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ShowDetailsManual(GLSetupTDSAAccountRow ARow)
         {
-            if (ARow == null)
+            if (ARow != null)
             {
-                txtDetailAccountCode.Text = "";
-                txtDetailAccountCodeLongDesc.Text = "";
-                txtDetailAccountCodeShortDesc.Text = "";
-                txtDetailEngAccountCodeLongDesc.Text = "";
-                txtDetailEngAccountCodeShortDesc.Text = "";
-
-                pnlDetails.Enabled = false;
-            }
-            else
-            {
-                pnlDetails.Enabled = true;
-
                 strOldDetailAccountCode = txtDetailAccountCode.Text;
 
                 ucoAccountAnalysisAttributes.Enabled = ARow.PostingStatus;
