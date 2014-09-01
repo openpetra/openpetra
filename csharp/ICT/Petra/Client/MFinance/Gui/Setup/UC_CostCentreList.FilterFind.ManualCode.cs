@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// Implementation of the logic for setting the filter string for the accounts list screen
         /// </summary>
         /// <param name="AFilterString">The desired filter string</param>
-        /// <param name="AAccountTable">The table instance that is being used for the data</param>
+        /// <param name="AMainDataSet">The data set</param>
         public void ApplyFilterManual(ref string AFilterString, GLSetupTDS AMainDataSet)
         {
             string filter = String.Empty;
