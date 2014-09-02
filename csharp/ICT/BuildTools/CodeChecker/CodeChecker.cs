@@ -236,65 +236,69 @@ namespace Ict.Tools.CodeChecker
             ReturnValue.Add("*Access.Load.* (no Argument after DB Transaction)", @"Access\.Load.*[\s]*\((([^;]*)[\s]*null\))");       // Matches for example: Access.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null)    in file
                                                                                                                                       // \Server\lib\MFinance\Gift\Gift.Transactions.cs
             ReturnValue.Add("*Access.Load.* (n Arguments after DB Transaction [unsharp!])",
-                @"Access\.Load.*[\s]*\((([^;]*)[\s]*null,[\s]*([^;]*)[\s]*,[\s]*([^;]*)[\s]*,[\s]*([^;]*)[\s]*\))");                                                                                    // Matches for example:
-                                                                                                                                                                                                        // Access.LoadByPrimaryKey(partnerKey,\r\n
-                                                                                                                                                                                                        //                    StringHelper.InitStrArr(new
-                                                                                                                                                                                                        // String[] {
-                                                                                                                                                                                                        // PPartnerTable.GetPartnerShortNameDBName() }),
-                                                                                                                                                                                                        // null, null, 0, 0)    in file
-                                                                                                                                                                                                        // ../../csharp/ICT\Petra\Server\lib\MFinance\Gift\Gift.Exporting.cs
+                @"Access\.Load.*[\s]*\((([^;]*)[\s]*null,[\s]*([^;]*)[\s]*,[\s]*([^;]*)[\s]*,[\s]*([^;]*)[\s]*\))");                  // Matches for example:
+                                                                                                                                      // Access.LoadByPrimaryKey(partnerKey,\r\n
+                                                                                                                                      //                    StringHelper.InitStrArr(new String[] {
+                                                                                                                                      // PPartnerTable.GetPartnerShortNameDBName() }), null, null, 0, 0)    
+                                                                                                                                      // in file ../../csharp/ICT\Petra\Server\lib\MFinance\Gift\Gift.Exporting.cs
 
 
-            ReturnValue.Add("*Access.CountAll", @"Access\.CountAll[\s]*\((null\))");       // would match for example (*if* the DB Transaction would be null): Access.ALedgerAccess.CountAll(Transaction)    in file
-                                                                                           // \Testing\lib\MFinance\server\Gift\test.cs
+            ReturnValue.Add("*Access.CountAll", @"Access\.CountAll[\s]*\((null\))");    // would match for example (*if* the DB Transaction would be null): Access.ALedgerAccess.CountAll(Transaction)    
+                                                                                        // in file \Testing\lib\MFinance\server\Gift\test.cs
 
-            ReturnValue.Add("*Access.Exists", @"Access\.Exists[\s]*\((([^;]*)[\s]*null\))");       // would match for example (*if* the DB Transaction would be null): SLoginAccess.Exists(NewLoginRow.UserId, NewLoginRow.LoginDate,
-                                                                                                   // NewLoginRow.LoginTime, WriteTransaction)    in file \Server\app\Core\LoginLog.cs
+            ReturnValue.Add("*Access.Exists / ExistsUniqueKey", @"Access\.Exists(|UniqueKey)[\s]*\((([^;]*)[\s]*null\))");    // would match for example (*if* the DB Transaction would be null): SLoginAccess.Exists(NewLoginRow.UserId, NewLoginRow.LoginDate, 
+                                                                                                                              // NewLoginRow.LoginTime, WriteTransaction)    in file \Server\app\Core\LoginLog.cs
+                        
+            ReturnValue.Add("*Access.CountUsingTemplate", @"Access\.CountUsingTemplate[\s]*\((([^;]*)[\s]*null\))");         // would match for example (*if* the DB Transaction would be null): PDataLabelUseAccess.CountUsingTemplate(TemplateRow, null,
+                                                                                                                             // AReadTransaction)    in file \Server\lib\MCommon\OfficeSpecificDataLabels.cs
 
-            ReturnValue.Add("*Access.CountUsingTemplate", @"Access\.CountUsingTemplate[\s]*\((([^;]*)[\s]*null\))");       // would match for example (*if* the DB Transaction would be null): PDataLabelUseAccess.CountUsingTemplate(TemplateRow, null,
-                                                                                                                           // AReadTransaction)    in file \Server\lib\MCommon\OfficeSpecificDataLabels.cs
+            ReturnValue.Add("*Access.DeleteByPrimaryKey", @"Access\.DeleteByPrimaryKey[\s]*\((([^;]*)[\s]*null\))");         // would match for example (*if* the DB Transaction would be null):
+                                                                                                                             // PPartnerRelationshipAccess.DeleteByPrimaryKey(AOldFamilyKey, "FAMILY", APersonKey, Transaction)   
+                                                                                                                             // in file \Server\lib\MPartner\Common\Partner.cs
 
-            ReturnValue.Add("*Access.DeleteByPrimaryKey", @"Access\.DeleteByPrimaryKey[\s]*\((([^;]*)[\s]*null\))");       // would match for example (*if* the DB Transaction would be null):
-                                                                                                                           // PPartnerRelationshipAccess.DeleteByPrimaryKey(AOldFamilyKey, "FAMILY", APersonKey, Transaction)    in file
-                                                                                                                           // \Server\lib\MPartner\Common\Partner.cs
+            ReturnValue.Add("*Access.DeleteUsingTemplate", @"Access\.DeleteUsingTemplate[\s]*\((([^;]*)[\s]*null\))");      // would match for example (*if* the DB Transaction would be null): PPartnerLocationAccess.DeleteUsingTemplate(TemplateRow,
+                                                                                                                            // null, ATransaction)    in file \Server\lib\MPartner\Common\DataAggregates.PPartnerAddress.cs
 
-            ReturnValue.Add("*Access.DeleteUsingTemplate", @"Access\.DeleteUsingTemplate[\s]*\((([^;]*)[\s]*null\))");       // would match for example (*if* the DB Transaction would be null): PPartnerLocationAccess.DeleteUsingTemplate(TemplateRow,
-                                                                                                                             // null, ATransaction)    in file \Server\lib\MPartner\Common\DataAggregates.PPartnerAddress.cs
-
-            ReturnValue.Add("*Access.AddOrModifyRecord", @"Access\.AddOrModifyRecord[\s]*\((([^;]*)[\s]*null\))");       // would match for example (*if* the DB Transaction would be null): PBankAccess.AddOrModifyRecord(BankRow.PartnerKey,
-                                                                                                                         // FMainDS.PBank, BankRow, FDoNotOverwrite, ATransaction);    in file \Server\lib\MPartner\web\ImportExt.cs
+            ReturnValue.Add("*Access.AddOrModifyRecord", @"Access\.AddOrModifyRecord[\s]*\((([^;]*)[\s]*null\))");          // would match for example (*if* the DB Transaction would be null): PBankAccess.AddOrModifyRecord(BankRow.PartnerKey,
+                                                                                                                            // FMainDS.PBank, BankRow, FDoNotOverwrite, ATransaction);    in file \Server\lib\MPartner\web\ImportExt.cs
 
 
-            ReturnValue.Add("*Cascading.DeleteByPrimaryKey (1 Argument after DB Transaction)",
-                @"Cascading\.DeleteByPrimaryKey[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                    // would match for example (*if* the DB Transaction would be null):
-                                                                                                                                                                            // MExtractMasterCascading.DeleteByPrimaryKey(ExtractId,
-                                                                                                                                                                            // SubmitChangesTransaction, true)    in file
-                                                                                                                                                                            // \Server\lib\MPartner\web\ExtractMaster.cs
+            ReturnValue.Add("*Cascading.DeleteByPrimaryKey (1 Argument after DB Transaction)",                               
+                @"Cascading\.DeleteByPrimaryKey[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                    // would match for example (*if* the DB Transaction would be null):
+                                                                                                                            // MExtractMasterCascading.DeleteByPrimaryKey(ExtractId,
+                                                                                                                            // SubmitChangesTransaction, true)    
+                                                                                                                            // in file \Server\lib\MPartner\web\ExtractMaster.cs
             ReturnValue.Add("*Cascading.DeleteUsingTemplate (1 Argument after DB Transaction)",
-                @"Cascading\.DeleteUsingTemplate[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                     // theoretic possibility, such call is not in use at all at the time of
-                                                                                                                                                                              // writing (Sept. 2014)
+                @"Cascading\.DeleteUsingTemplate[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                   // theoretic possibility, such call is not in use at all at the time of
+                                                                                                                            // writing (Sept. 2014)
 
             ReturnValue.Add("*Cascading.CountByPrimaryKey (n Arguments after DB Transaction)",
-                @"Cascading\.CountByPrimaryKey[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                    // would match for example (*if* the DB Transaction would be null):
-                                                                                                                                                                           // AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, 50,
-                                                                                                                                                                           // Transaction, false, out ReferenceResults)    in file
-                                                                                                                                                                           // \Server\lib\MFinance\setup\GL.Setup.cs
+                @"Cascading\.CountByPrimaryKey[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                     // would match for example (*if* the DB Transaction would be null):
+                                                                                                                            // AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, 50,
+                                                                                                                            // Transaction, false, out ReferenceResults)    
+                                                                                                                            // in file \Server\lib\MFinance\setup\GL.Setup.cs
             ReturnValue.Add("*Cascading.CountUsingTemplate (n Arguments after DB Transaction)",
-                @"Cascading\.CountUsingTemplate[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                     // theoretic possibility, such call is not in use at all at the time of
-                                                                                                                                                                             // writing (Sept. 2014)
+                @"Cascading\.CountUsingTemplate[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                    // theoretic possibility, such call is not in use at all at the time of writing (Sept. 2014)
 
 
-            // DBAccess.GDBAccessObj.Select Methods and DBAccess.GDBAccessObj.SelectDT Methods
-            ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT (no Argument after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.Select(|DT)[\s]*\(([^;]*)[\s]*null\)");                                                                                              // Matches for example: 'DBAccess.GDBAccessObj.SelectDT(strSql,
-                                                                                                                                                                               // "GetLedgerName_TempTable", null)'    in file
-                                                                                                                                                                               // \Server\lib\MFinance\GL\Reporting.UIConnectors.cs
-            ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT (1 to 3 Arguments after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.Select(|DT)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                                    // Matches for example:
-                                                                                                                                                                                                  // 'DBAccess.GDBAccessObj.SelectDT(bank,
-                                                                                                                                                                                                  // sqlFindBankBySortCode, null, new OdbcParameter[] {'
-                                                                                                                                                                                                  // (continued on further lines!)    in file
-                                                                                                                                                                                                  // \Server\lib\MPartner\web\Partner.cs
+            // DBAccess.GDBAccessObj.Select Methods and DBAccess.GDBAccessObj.SelectDT / SelectDA Methods
+            ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT / SelectDA (no Argument after DB Transaction)", @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null\)");    // Matches for example: 'DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", null)'    in file \Server\lib\MFinance\GL\Reporting.UIConnectors.cs
+            ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT / SelectDA (1 to 3 Arguments after DB Transaction)", @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");     // Matches for example: 'DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, null, new OdbcParameter[] {' (continued on further lines!)    in file \Server\lib\MPartner\web\Partner.cs
+            
+            // DBAccess.GDBAccessObj.SelectToTempTable Method 
+            ReturnValue.Add("DBAccess.GDBAccessObj.SelectToTempTable (n Arguments after DB Transaction)", @"DBAccess\.GDBAccessObj\.SelectToTempTable[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");    // would match for example (*if* the DB Transaction would be null): DBAccess.GDBAccessObj.SelectToTempTable(MainDS, sqlStmt, tempTableName, Transaction, parameters.ToArray(), 0, 0)    in file \Server\lib\MFinance\Gift\Gift.Transactions.cs
+
+            // DBAccess.GDBAccessObj Sequence handling Methods
+            ReturnValue.Add("DBAccess.GDBAccessObj.GetNextSequenceValue / GetCurrentSequenceValue ", @"DBAccess\.GDBAccessObj\.Get(Current|Next)SequenceValue[\s]*\((([^;]*)[\s]*null\))");       // would match for example (*if* the DB Transaction would be null): DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(), Transaction)    in file \csharp\ICT\Petra\Server\lib\MCommon\Sequences.cs 
+            ReturnValue.Add("DBAccess.GDBAccessObj.RestartSequence (n Arguments after DB Transaction)", @"DBAccess\.GDBAccessObj\.RestartSequence[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");    // would match for example (*if* the DB Transaction would be null): DBAccess.GDBAccessObj.RestartSequence("seq_statement_number", t, CurrentSequence)    in file \Testing\lib\Common\DB\test.cs
+            
+            // DBAccess.GDBAccessObj.ExecuteScalar Method
+            ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteScalar (no Argument after DB Transaction)", @"DBAccess\.GDBAccessObj\.ExecuteScalar[\s]*\(([^;]*)[\s]*null\)");    // would match for example (*if* the DB Transaction would be null): DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, transaction))    in file \Server\lib\MFinance\GL\GL.PeriodEnd.Month.cs
+            ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteScalar (n Arguments after DB Transaction)", @"DBAccess\.GDBAccessObj\.ExecuteScalar[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");    // would match for example (*if* the DB Transaction would be null): DBAccess.GDBAccessObj.ExecuteScalar(\r\n                            "SELECT COUNT(*) " +\r\n                            "FROM PUB_" + PPersonTable.GetTableDBName() +\r\n                            " INNER JOIN " + "PUB_" + PPartnerTable.GetTableDBName() +\r\n                            " ON " + "PUB_" + PPersonTable.GetTableDBName() + '.' +\r\n                            PPartnerTable.GetPartnerKeyDBName() + " = " +\r\n                            "PUB_" + PPartnerTable.GetTableDBName() + '.' +\r\n                            PPartnerTable.GetPartnerKeyDBName() + ' ' +\r\n                            "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +\r\n                            "AND " + PPartnerTable.GetStatusCodeDBName() + " <> '" +\r\n                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + "'", ReadTransaction,\r\n                            ParametersArray)) in file \Server\lib\MPartner\connect\Partner.PartnerEdit.cs
+
+            // DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch Method
+            ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch (no Argument after DB Transaction)", @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null\)");    // would match for example (*if* the DB Transaction would be null): DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM pub_" + table, Transaction);    in file \Server\lib\MSysMan\ImportExport.cs 
+            ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch (n Arguments after DB Transaction)", @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");    // would match for example (*if* the DB Transaction would be null): DBAccess.GDBAccessObj.ExecuteNonQuery(\r\nstrSQL, transaction, ParametersArray)    in file \Server\lib\MFinance\Common\Common.PeriodEnd.cs 
 
             return ReturnValue;
         }
@@ -388,6 +392,14 @@ namespace Ict.Tools.CodeChecker
             AFalsePositivesFullMatch.Add(
                 "Access.Exists(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey,\r\n                                    SubmittedLocationPK.LocationKey, ASubmitChangesTransaction))\r\n                            {\r\n                                /*\r\n                                 * PartnerLocation records for family members are added to APartnerLocationTable for easier data handling and\r\n                                 * will be removed again after SubmitChanges of whole dataset but before returning to client as otherwise\r\n                                 * they would confusingly show up on client side.\r\n                                 */\r\n\r\n                                // Make sure record is not added more than once to APartnerLocationTable (in case it is not yet in database).\r\n                                if (APartnerLocationTable.Rows.Find(new System.Object[] { ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey,\r\n                                                                                          SubmittedLocationPK.LocationKey }) == null)",
                 @"null accidentally found that isn't an Argurment of the searched-for Method call anymore [multi-line continuation situation] (in file ../../csharp/ICT\Petra\Server\lib\MPartner\Common\DataAggregates.PPartnerAddress.cs)");
+                        
+            AFalsePositivesFullMatch.Add(
+                "DBAccess.GDBAccessObj.SelectDA(Query, Trans, null)",
+                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Server\lib\MCommon\Main.cs)");                        
+
+            AFalsePositivesFullMatch.Add(
+                "DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction, null, IsNewTransaction)",
+                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Testing\lib\MFinance\ExchangeRates\DailyDataSet.cs)");            
 
 
             // 'String-ending-with' matches
