@@ -1993,7 +1993,7 @@ namespace Ict.Common.DB
         /// (including parameter Value).</param>
         /// <returns>Single result as object.</returns>
         public object ExecuteScalar(String ASqlStatement,
-            TDBTransaction ATransaction = null,
+            TDBTransaction ATransaction,
             DbParameter[] AParametersArray = null,
             bool ACommitTransaction = false)
         {
