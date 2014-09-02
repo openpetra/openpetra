@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         // The routine ChangeAccountCodeValue() needs the old value of
         // txtDetailAccountCode and the new actual value.
         // This string is used to store the old value.
-        private string strOldDetailAccountCode;
+        private string strOldDetailAccountCode = "";
 
         AccountNodeDetails FCurrentAccount = null;
 
@@ -165,15 +165,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public void SetSelectedAccount(AccountNodeDetails AnewSelection)
         {
-            FCurrentAccount = AnewSelection;
-            ucoAccountsList.SelectedAccount = AnewSelection;
-            ucoAccountsTree.SelectedAccount = AnewSelection;
-
-            pnlDetails.Enabled = (AnewSelection != null);
-
-            if (pnlDetails.Enabled)
+            if (FCurrentAccount != AnewSelection)
             {
-                Console.WriteLine("Current account code is {0}", FCurrentAccount.AccountRow.AccountCode);
+                FCurrentAccount = AnewSelection;
+                ucoAccountsList.SelectedAccount = AnewSelection;
+                ucoAccountsTree.SelectedAccount = AnewSelection;
+
+                pnlDetails.Enabled = (AnewSelection != null);
+/*
+                String Msg = "null";
+                if (FCurrentAccount != null)
+                {
+                    Msg = FCurrentAccount.AccountRow.AccountCode;
+                }
+                ShowStatus("SetSelectedAccount: " + Msg);
+ */
             }
         }
 

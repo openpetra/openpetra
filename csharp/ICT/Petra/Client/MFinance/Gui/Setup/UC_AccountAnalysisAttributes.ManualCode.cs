@@ -182,18 +182,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     out ServerMessage);
                 btnDelete.Enabled = CanBeChanged;
                 cmbDetailAnalTypeCode.Enabled = CanBeChanged;
-
-/*
- * This doesn't seem to be a good idea now...
-
-                if (!CanBeChanged)
-                {
-                    if (ShowStatus != null)
-                    {
-                        ShowStatus(ServerMessage);
-                    }
-                }
-*/
                 FIamUpdating = false;
             }
         }

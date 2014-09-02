@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TreeNode HighlightedDropTarget = null;
         // The account selected in the parent form
         AccountNodeDetails FSelectedAccount;
-        Boolean FDuringInitialisation;
+        Boolean FDuringInitialisation = false;
 
         /// <summary>
         /// I don't want this, but the auto-generated code references it:
@@ -68,10 +68,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public void RefreshSelectedAccount()
         {
+            trvAccounts.Focus(); // {NET Bug!} The control doesn't show the selection if it's not visible and in focus.
             if (FSelectedAccount != null)
             {
-                trvAccounts.Focus(); // {NET Bug!} The control doesn't show the selection if it's not visible and in focus.
                 trvAccounts.SelectedNode = FSelectedAccount.linkedTreeNode;
+            }
+            else
+            {
+                trvAccounts.SelectedNode = null;
             }
         }
 
@@ -94,8 +98,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            FDragNode = (TreeNode)e.Item;
-            trvAccounts.DoDragDrop(FDragNode, DragDropEffects.All);
+            if (FParentForm.CheckControlsValidateOk())
+            {
+                FDragNode = (TreeNode)e.Item;
+                trvAccounts.DoDragDrop(FDragNode, DragDropEffects.All);
+            }
         }
 
         /// <summary>
@@ -271,10 +278,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return;
                 }
 
+                FParentForm.SetSelectedAccount(null);
                 String PrevParent = AChild.Parent.Text;
+                AccountNodeDetails DraggedAccount = (AccountNodeDetails)AChild.Tag;
                 String NewParentAccountCode = ((AccountNodeDetails)ANewParent.Tag).AccountRow.AccountCode;
-                TreeNode NewNode = (TreeNode)AChild.Clone();
-                ((AccountNodeDetails)NewNode.Tag).DetailRow.AccountCodeToReportTo = NewParentAccountCode;
+
+                TreeNode NewNode = (TreeNode)AChild.Clone(); // A new TreeNode is made (and the previous will be deleted), 
+                                                             // but the actual DataRows are only tweaked to show the new parent.
+
+                DraggedAccount.linkedTreeNode = NewNode;
+                DraggedAccount.DetailRow.AccountCodeToReportTo = NewParentAccountCode;
                 InsertInOrder(ANewParent, NewNode);
                 NewNode.Expand();
                 ANewParent.Expand();
@@ -283,9 +296,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FParentForm.ShowStatus(String.Format(Catalog.GetString("{0} was moved from {1} to {2}."),
                         AChild.Text, PrevParent, ANewParent.Text));
 
-                //Remove Original Node
                 AChild.Remove();
                 FPetraUtilsObject.SetChangedFlag();
+                FParentForm.SetSelectedAccount(DraggedAccount);
+//              SetSelectionUsingTimer(DraggedAccount); // Calling SetSelectedAccount directly doesn't work 
+                                                        // because Remove(), above, has left a selection "in the queue".
             }
         }
 
@@ -470,7 +485,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             catch (System.Data.ConstraintException)
             {
                 treeViewCancelEventArgs.Cancel = true;
-                // System.Console.WriteLine("TreeViewSelect is Canceled");
+
+                FParentForm.ShowStatus(Catalog.GetString("Validation error caused cancellation of selection."));
+                FParentForm.SetSelectedAccount(null);
             }
         }
 
