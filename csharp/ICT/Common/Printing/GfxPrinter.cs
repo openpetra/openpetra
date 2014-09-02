@@ -307,7 +307,7 @@ namespace Ict.Common.Printing
 
             RectangleF rect;
 
-            rect = new RectangleF(FLeftMargin, CurrentYPos, FWidth, GetFont(AFont).GetHeight(FEv.Graphics));
+            rect = new RectangleF(FLeftMargin, CurrentYPos, FWidth, GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
@@ -352,7 +352,7 @@ namespace Ict.Common.Printing
 
             UpdateBiggestLastUsedFont(AFont);
 
-            RectangleF rect = new RectangleF(AXPos, CurrentYPos, AWidth, GetFont(AFont).GetHeight(FEv.Graphics));
+            RectangleF rect = new RectangleF(AXPos, CurrentYPos, AWidth, GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight);
 
             if (PrintingMode == ePrintingMode.eDoPrint)
             {
@@ -651,7 +651,7 @@ namespace Ict.Common.Printing
 
             if (ALinePosition == eLinePosition.eBelow)
             {
-                YPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics);
+                YPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight;
             }
             else if (ALinePosition == eLinePosition.eAbove)
             {
@@ -794,7 +794,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics);
+            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight;
             return CurrentYPos;
         }
 
@@ -809,7 +809,7 @@ namespace Ict.Common.Printing
                 FBiggestLastUsedFont = GetFont(eFont.eDefaultFont);
             }
 
-            CurrentYPos = CurrentYPos + FBiggestLastUsedFont.GetHeight(FEv.Graphics);
+            CurrentYPos = CurrentYPos + FBiggestLastUsedFont.GetHeight(FEv.Graphics) * CurrentLineHeight;
 
             // reset the biggest last used font
             FBiggestLastUsedFont = null;
@@ -823,7 +823,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineSpaceFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) / 2;
+            CurrentYPos = CurrentYPos + GetFont(AFont).GetHeight(FEv.Graphics) / 2 * CurrentLineHeight;
             return CurrentYPos;
         }
 
@@ -834,7 +834,7 @@ namespace Ict.Common.Printing
         /// </returns>
         public override float LineUnFeed(eFont AFont)
         {
-            CurrentYPos = CurrentYPos - GetFont(AFont).GetHeight(FEv.Graphics);
+            CurrentYPos = CurrentYPos - GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight;
             return CurrentYPos;
         }
 
@@ -849,8 +849,8 @@ namespace Ict.Common.Printing
             // half a line for the drawn line, to separate the report body from the footer
             if (ANumberOfLines != 0)
             {
-                FPageFooterSpace = ((float)Convert.ToDouble(ANumberOfLines) + 0.5f) * GetFont(AFont).GetHeight(FEv.Graphics) + FDefaultFont.GetHeight(
-                    FEv.Graphics);
+                FPageFooterSpace = ((float)Convert.ToDouble(ANumberOfLines) + 0.5f) * GetFont(AFont).GetHeight(FEv.Graphics) * CurrentLineHeight +
+                                   FDefaultFont.GetHeight(FEv.Graphics);
             }
         }
 
@@ -862,7 +862,7 @@ namespace Ict.Common.Printing
         /// <returns>void</returns>
         public override float LineFeedToPageFooter()
         {
-            CurrentYPos = FTopMargin + FHeight - FPageFooterSpace + FDefaultFont.GetHeight(FEv.Graphics);
+            CurrentYPos = FTopMargin + FHeight - FPageFooterSpace + FDefaultFont.GetHeight(FEv.Graphics) * CurrentLineHeight;
             return CurrentYPos;
         }
 
@@ -1177,7 +1177,7 @@ namespace Ict.Common.Printing
                 FBlackPen = new Pen(Color.Black, Cm(0.05f));
 
                 // Calculate the number of lines per page.
-                FLinesPerPage = (float)FHeight / (float)FDefaultFont.GetHeight(FEv.Graphics);
+                FLinesPerPage = (float)FHeight / (float)FDefaultFont.GetHeight(FEv.Graphics) * CurrentLineHeight;
 
                 if (FNumberOfPages == 0)
                 {

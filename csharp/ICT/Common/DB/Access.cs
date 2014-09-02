@@ -1993,7 +1993,7 @@ namespace Ict.Common.DB
         /// (including parameter Value).</param>
         /// <returns>Single result as object.</returns>
         public object ExecuteScalar(String ASqlStatement,
-            TDBTransaction ATransaction = null,
+            TDBTransaction ATransaction,
             DbParameter[] AParametersArray = null,
             bool ACommitTransaction = false)
         {
@@ -2973,9 +2973,9 @@ namespace Ict.Common.DB
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoTransaction(ref TDBTransaction ATransaction,
-            bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+            ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
-            BeginAutoTransaction(-1, ref ATransaction, ASubmissionOK, AEncapsulatedDBAccessCode);
+            BeginAutoTransaction(-1, ref ATransaction, ref ASubmissionOK, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
@@ -2994,7 +2994,7 @@ namespace Ict.Common.DB
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
-            bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+            ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
             bool ExceptionThrown = true;
 
