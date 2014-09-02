@@ -239,7 +239,6 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
 
             String[] SiteKeyArray = SelectedSites.Split(',');
             Int32 Counter = 0;
-            List <Int64>SiteKeyList = new List <Int64>();
 
             // initialize data table for combobox
             CmbDataTable.Clear();
