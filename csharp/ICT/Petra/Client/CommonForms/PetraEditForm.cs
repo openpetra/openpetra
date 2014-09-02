@@ -583,7 +583,7 @@ namespace Ict.Petra.Client.CommonForms
 
                     if (tableChangesCount > 0)
                     {
-                        TableAndCountList.Add(new Tuple<string, int>(((TTypedDataTable)dt).TableDBLabel, tableChangesCount));
+                        TableAndCountList.Add(new Tuple <string, int>(((TTypedDataTable)dt).TableDBLabel, tableChangesCount));
                     }
                 }
             }
