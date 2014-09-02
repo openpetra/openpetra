@@ -91,6 +91,11 @@ namespace Ict.Common.Data
         /// <summary>
         /// abstract method to be implemented by generated code
         /// </summary>
+        public abstract string TableDBLabel {get;}
+
+        /// <summary>
+        /// abstract method to be implemented by generated code
+        /// </summary>
         public abstract OdbcParameter CreateOdbcParameter(Int32 AColNumber);
 
         /// <summary>

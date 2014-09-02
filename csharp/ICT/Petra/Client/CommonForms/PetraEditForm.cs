@@ -37,6 +37,7 @@ using SourceGrid;
 using Owf.Controls;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Gui;
@@ -582,7 +583,7 @@ namespace Ict.Petra.Client.CommonForms
 
                     if (tableChangesCount > 0)
                     {
-                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                        TableAndCountList.Add(new Tuple<string, int>(((TTypedDataTable)dt).TableDBLabel, tableChangesCount));
                     }
                 }
             }
@@ -626,14 +627,11 @@ namespace Ict.Petra.Client.CommonForms
 
                     foreach (Tuple <string, int>TableAndCount in TableAndCountList)
                     {
-                        string NiceTableName = StringHelper.ReverseUpperCamelCase(TableAndCount.Item1);
-                        NiceTableName = NiceTableName.Substring(NiceTableName.IndexOf(' ') + 1);
-
                         AMessage += String.Format(TFrmPetraEditUtils.StrRecordsInTable,
                             Environment.NewLine,
                             TableAndCount.Item2,
                             Catalog.GetPluralString("record", "records", TableAndCount.Item2),
-                            NiceTableName);
+                            TableAndCount.Item1);
                     }
 
                     AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);

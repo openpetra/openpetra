@@ -136,10 +136,19 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
         return "{#DBTABLENAME}";
     }
 
-    /// return the 'Label' of the table as it is used in the database (the 'Label' is usually a short description of what the db table is about)
+    /// static method to return the 'Label' of the table as it is used in the database (the 'Label' is usually a short description of what the db table is about)
     public static {#NEW}string GetTableDBLabel()
     {
-        return "{#DBTABLELABEL}";
+        return Catalog.GetString("{#DBTABLELABEL}");
+    }
+
+    /// instance property to get the 'Label' of the table as it is used in the database (the 'Label' is usually a short description of what the db table is about)
+    public override string TableDBLabel
+    {
+		get
+		{
+			return {#TABLENAME}Table.GetTableDBLabel();
+		}
     }
     
     /// get an odbc parameter for the given column
