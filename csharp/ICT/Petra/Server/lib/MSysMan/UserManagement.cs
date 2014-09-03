@@ -188,8 +188,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             }
 
             // Check whether the user that we are asked to create already exists
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
             delegate
             {            
                 if (SUserAccess.Exists(newUser.UserId, null))
