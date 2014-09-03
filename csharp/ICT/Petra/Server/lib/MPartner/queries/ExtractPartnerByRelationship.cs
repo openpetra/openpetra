@@ -92,21 +92,36 @@ namespace Ict.Petra.Server.MPartner.queries
 
             string paramName;
             if (AParameters.Get("param_extract").ToString().Length > 0)
+            {
                 paramName = "param_extract";
+                ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.VarChar)
+                {
+                    Value = AParameters.Get(paramName).ToString()
+                });
+                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_relationships", OdbcType.VarChar, param_relationships));
+                ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.VarChar)
+                {
+                    Value = AParameters.Get(paramName)
+                });
+                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_reciprocal_relationships", OdbcType.VarChar, param_reciprocal_relationships));
+
+            }
             else
+            {
                 paramName = "param_partnerkey";
+                ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.Int)
+                {
+                    Value = AParameters.Get(paramName).ToInt32()
+                });
+                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_relationships", OdbcType.VarChar, param_relationships));
+                ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.Int)
+                {
+                    Value = AParameters.Get(paramName).ToInt32()
+                });
+                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_reciprocal_relationships", OdbcType.VarChar, param_reciprocal_relationships));
 
-            ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.Int)
-            {
-                Value = AParameters.Get(paramName).ToInt32()
-            });
-            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_relationships", OdbcType.VarChar, param_relationships));
-            ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.Int)
-            {
-                Value = AParameters.Get(paramName).ToInt32()
-            });
-            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_reciprocal_relationships", OdbcType.VarChar, param_reciprocal_relationships));
-
+            }
+            
 
             //ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
             //{

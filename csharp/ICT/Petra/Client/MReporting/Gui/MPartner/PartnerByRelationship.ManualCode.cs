@@ -71,6 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbIncludeRelationships.AddTextColumn(Catalog.GetString("Relation Name"), relationshipTable.Columns[ValueMember], 100);
             clbIncludeRelationships.AddTextColumn(Catalog.GetString("Description"), relationshipTable.Columns[DisplayMember], 320);
             clbIncludeRelationships.DataBindGrid(relationshipTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            clbIncludeRelationships.SetCheckedStringList("");
 
             // Reciprocal Relationship selection
             clbIncludeReciprocalRelationships.SpecialKeys = (SourceGrid.GridSpecialKeys)(
@@ -85,6 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbIncludeReciprocalRelationships.AddTextColumn(Catalog.GetString("Relation Name"), relationshipTable.Columns[ValueMember], 100);
             clbIncludeReciprocalRelationships.AddTextColumn(Catalog.GetString("Reciprocal Description"), relationshipTable.Columns[ReciprocalDisplayMember], 320);
             clbIncludeReciprocalRelationships.DataBindGrid(relationshipTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            clbIncludeReciprocalRelationships.SetCheckedStringList("");
 
             // Hide unwanted controls
             ucoChkFilter.ShowFamiliesOnly(false);
