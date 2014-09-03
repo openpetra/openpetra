@@ -22,35 +22,43 @@
 //
 
 using System;
+using System.Data;
+// generateNamespaceMap-Link-Extra-DLL System.Data.DataSetExtensions;
+using System.Linq;
 using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
 using Owf.Controls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
-using System.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Common;
+using Ict.Petra.Client.MReporting.Logic;
+using Ict.Common.Verification;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
     public partial class TFrmPartnerByRelationship
     {
+        private DataTable relationshipTable;
+        private string CheckedMember = "CHECKED";
+        private string DisplayMember = PRelationTable.GetRelationDescriptionDBName();
+        private string ReciprocalDisplayMember = PRelationTable.GetReciprocalDescriptionDBName();
+        private string RelationshipCategory = PRelationTable.GetRelationCategoryDBName();
+        private string ValueMember = PRelationTable.GetRelationNameDBName();
+        
         private void InitializeManualCode()
         {
-            string CheckedMember = "CHECKED";
-            string DisplayMember = "p_relation_description_c";//PTypeTable.GetTypeDescriptionDBName();
-            string ValueMember = "p_relation_name_c";//PTypeTable.GetTypeCodeDBName();
-
             DataTable table = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationList);
             DataView view = new DataView(table);
 
             view.Sort = ValueMember;
 
-            var newTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
-            newTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+            relationshipTable = view.ToTable(true, new string[] { ValueMember, ReciprocalDisplayMember, DisplayMember, RelationshipCategory });
+            relationshipTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
             
+            // Relationship selection
             clbIncludeRelationships.SpecialKeys = (SourceGrid.GridSpecialKeys)(
                 SourceGrid.GridSpecialKeys.Arrows |
                 SourceGrid.GridSpecialKeys.PageDownUp |
@@ -59,10 +67,74 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 SourceGrid.GridSpecialKeys.Control | 
                 SourceGrid.GridSpecialKeys.Shift);
             clbIncludeRelationships.Columns.Clear();
-            clbIncludeRelationships.AddCheckBoxColumn("", newTable.Columns[CheckedMember], 17, false);
-            clbIncludeRelationships.AddTextColumn(Catalog.GetString("Type Code"), newTable.Columns[ValueMember], 100);
-            clbIncludeRelationships.AddTextColumn(Catalog.GetString("Type Description"), newTable.Columns[DisplayMember], 320);
-            clbIncludeRelationships.DataBindGrid(newTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            clbIncludeRelationships.AddCheckBoxColumn("", relationshipTable.Columns[CheckedMember], 17, false);
+            clbIncludeRelationships.AddTextColumn(Catalog.GetString("Relation Name"), relationshipTable.Columns[ValueMember], 100);
+            clbIncludeRelationships.AddTextColumn(Catalog.GetString("Description"), relationshipTable.Columns[DisplayMember], 320);
+            clbIncludeRelationships.DataBindGrid(relationshipTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+
+            // Reciprocal Relationship selection
+            clbIncludeReciprocalRelationships.SpecialKeys = (SourceGrid.GridSpecialKeys)(
+                SourceGrid.GridSpecialKeys.Arrows |
+                SourceGrid.GridSpecialKeys.PageDownUp |
+                SourceGrid.GridSpecialKeys.Enter |
+                SourceGrid.GridSpecialKeys.Escape |
+                SourceGrid.GridSpecialKeys.Control |
+                SourceGrid.GridSpecialKeys.Shift);
+            clbIncludeReciprocalRelationships.Columns.Clear();
+            clbIncludeReciprocalRelationships.AddCheckBoxColumn("", relationshipTable.Columns[CheckedMember], 17, false);
+            clbIncludeReciprocalRelationships.AddTextColumn(Catalog.GetString("Relation Name"), relationshipTable.Columns[ValueMember], 100);
+            clbIncludeReciprocalRelationships.AddTextColumn(Catalog.GetString("Reciprocal Description"), relationshipTable.Columns[ReciprocalDisplayMember], 320);
+            clbIncludeReciprocalRelationships.DataBindGrid(relationshipTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+
+            // Hide unwanted controls
+            ucoChkFilter.ShowFamiliesOnly(false);
+            ucoPartnerSelection.ShowAllStaffOption(false);
+            ucoPartnerSelection.ShowCurrentStaffOption(false);
+        }
+
+        private void OnRelationshipFilterChanged(object sender, EventArgs e)
+        {
+            
+            if (relationshipTable != null)
+            {
+                var newTable = relationshipTable.AsEnumerable()
+                    .Where(r => r[PRelationTable.GetRelationCategoryDBName()].ToString() == cmbRelationshipType.GetSelectedString());
+                if (newTable.Any())
+                {
+                    clbIncludeRelationships.DataBindGrid(newTable.CopyToDataTable(), ValueMember, CheckedMember, ValueMember, false, true, false);
+                    clbIncludeReciprocalRelationships.DataBindGrid(newTable.CopyToDataTable(), ValueMember, CheckedMember, ValueMember, false, true, false);
+                }
+                else // if the filter would produce 0 results, show everything instead
+                { 
+                    clbIncludeRelationships.DataBindGrid(relationshipTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+                    clbIncludeReciprocalRelationships.DataBindGrid(relationshipTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// only run this code once during activation
+        /// </summary>
+        private void RunOnceOnActivationManual()
+        {
+            // enable autofind in list for first character (so the user can press character to find list entry)
+            this.clbIncludeRelationships.AutoFindColumn = ((Int16)(1));
+            this.clbIncludeRelationships.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            this.clbIncludeReciprocalRelationships.AutoFindColumn = ((Int16)(1));
+            this.clbIncludeReciprocalRelationships.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+        }
+
+        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            if (clbIncludeRelationships.GetCheckedStringList().Length == 0 && clbIncludeReciprocalRelationships.GetCheckedStringList().Length == 0)
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("Select at least one relationship type"),
+                    Catalog.GetString("Please select at least one relationship type."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
         }
 
     }

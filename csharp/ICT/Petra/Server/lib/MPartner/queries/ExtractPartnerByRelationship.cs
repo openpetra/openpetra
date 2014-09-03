@@ -49,8 +49,12 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <returns></returns>
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
-            string SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerRelationship.sql");
-
+            string SqlStmt = "";
+            if (AParameters.Get("param_extract").ToString().Length > 0)
+                SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractFromExtractByPartnerRelationship.sql");
+            else if (AParameters.Get("param_partnerkey").ToString() != "0")
+                SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerRelationship.sql");
+            else throw new ArgumentException("Must supply an extract or partner key.");
             // create a new object of this class and control extract calculation from base class
             QueryPartnerByRelationship ExtractQuery = new QueryPartnerByRelationship();
 
@@ -65,27 +69,53 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <param name="ASQLParameterList"></param>S
         protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List<OdbcParameter> ASQLParameterList)
         {
-            ICollection<String> param_explicit_relationships;
-            param_explicit_relationships = AParameters.Get("param_explicit_relationships").ToString().Split(new Char[] { ',', });
+            //ICollection<String> param_explicit_relationships;
+            //ICollection<String> param_reciprocal_relationships;
+            //param_explicit_relationships = AParameters.Get("param_explicit_relationships").ToString().Split(new Char[] { ',', });
+            //param_reciprocal_relationships = AParameters.Get("param_reciprocal_relationships").ToString().Split(new Char[] { ',', });
 
-            if (param_explicit_relationships.Count == 0)
+            List<String> param_relationships = new List<String>();
+            List<String> param_reciprocal_relationships = new List<String>();
+            foreach (var choice in AParameters.Get("param_explicit_relationships").ToString().Split(','))
+            {
+                param_relationships.Add(choice);
+            }
+            foreach (var choice in AParameters.Get("param_reciprocal_relationships").ToString().Split(','))
+            {
+                param_reciprocal_relationships.Add(choice);
+            }
+
+            if (param_relationships.Count == 0 && param_reciprocal_relationships.Count == 0)
             {
                 throw new NoNullAllowedException("At least one option must be checked.");
             }
 
-            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("relationship", OdbcType.VarChar, param_explicit_relationships));
-            ASQLParameterList.Add(new OdbcParameter("country", OdbcType.VarChar)
+            string paramName;
+            if (AParameters.Get("param_extract").ToString().Length > 0)
+                paramName = "param_extract";
+            else
+                paramName = "param_partnerkey";
+
+            ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.Int)
             {
-                Value = AParameters.Get("param_country").ToString()
+                Value = AParameters.Get(paramName).ToInt32()
             });
-            ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
+            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_relationships", OdbcType.VarChar, param_relationships));
+            ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.Int)
             {
-                Value = AParameters.Get("param_today").ToDate()
+                Value = AParameters.Get(paramName).ToInt32()
             });
-            ASQLParameterList.Add(new OdbcParameter("Date", OdbcType.Date)
-            {
-                Value = AParameters.Get("param_today").ToDate()
-            });
+            ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_reciprocal_relationships", OdbcType.VarChar, param_reciprocal_relationships));
+
+
+            //ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
+            //{
+            //    Value = AParameters.Get("param_active").ToBool()
+            //});
+            //ASQLParameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
+            //{
+            //    Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+            //});
         }
     }
 }

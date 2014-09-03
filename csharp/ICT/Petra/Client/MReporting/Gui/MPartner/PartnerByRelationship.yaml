@@ -28,20 +28,30 @@
             Label: General Settings
             Controls: 
                 Row0: [ucoPartnerSelection]
-                Row1: [lblIncludeRelationships]
-                Row2: [clbIncludeRelationships]
-                Row3: [pnlRelationshipOptionsBottom]
+                Row1: [cmbRelationshipType]
+                Row2: [lblIncludeRelationships]
+                Row3: [pnlRelationshipSelection]
+                Row4: [pnlRelationshipOptionsBottom]
             Order: AlwaysFirst
         pnlRelationshipOptionsBottom:
             Controls: 
                 Row0: [ucoChkFilter]
+        pnlRelationshipSelection:
+            Controls:
+                Row0: [clbIncludeRelationships, clbIncludeReciprocalRelationships]
         lblIncludeRelationships: 
             Label: Report on all partners that have one of these types of relationships
         clbIncludeRelationships:
             NoLabel: true 
             ParameterName: param_explicit_relationships
-            Width: 500
+            Width: 350
             Height: 200
+        clbIncludeReciprocalRelationships:
+            NoLabel: true 
+            ParameterName: param_reciprocal_relationships
+            Width: 350
+            Height: 200
+        cmbRelationshipType: {List=RelationCategoryList, OnChange=OnRelationshipFilterChanged, ClearIfSettingEmpty=true, ParameterName=param_relation_category}
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
             Width: 300
