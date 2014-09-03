@@ -46,14 +46,19 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
     public class TPartnerSetupWebConnector
     {
         /// <summary>
-        /// returns all motivation groups and details for this ledger
+        /// Loads all available Partner Types.
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
         public static PartnerSetupTDS LoadPartnerTypes()
         {
+            TDBTransaction ReadTransaction = null;            
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
-
-            PTypeAccess.LoadAll(MainDS, null);
+            
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            delegate
+            {
+                PTypeAccess.LoadAll(MainDS, null);
+            });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
