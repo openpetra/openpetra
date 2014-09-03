@@ -245,6 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if ((AChild != null) && (ANewParent != null))
             {
                 CostCentreNodeDetails DraggedCostCentre = (CostCentreNodeDetails)AChild.Tag;
+
                 if (DraggedCostCentre.CostCentreRow.SystemCostCentreFlag)
                 {
                     MessageBox.Show(String.Format(Catalog.GetString("{0} is a System Cost Centre and cannot be moved."),

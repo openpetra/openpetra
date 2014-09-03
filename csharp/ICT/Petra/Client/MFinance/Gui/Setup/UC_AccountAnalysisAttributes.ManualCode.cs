@@ -248,8 +248,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 return;
             }
+
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Detached)
-             || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
+                || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
             {
                 FPreviouslySelectedDetailRow = null;
             }

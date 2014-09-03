@@ -426,6 +426,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void CurrencyOptions(object[] items)
         {
             String CurrencySelection = cmbCurrency.GetSelectedString();
+
             this.cmbCurrency.Items.Clear();
             cmbCurrency.Items.AddRange(items);
             cmbCurrency.SetSelectedString(CurrencySelection); // Potentially might not work, but probably will!

@@ -172,13 +172,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountsTree.SelectedAccount = AnewSelection;
 
                 pnlDetails.Enabled = (AnewSelection != null);
+
 /*
-                String Msg = "null";
-                if (FCurrentAccount != null)
-                {
-                    Msg = FCurrentAccount.AccountRow.AccountCode;
-                }
-                ShowStatus("SetSelectedAccount: " + Msg);
+ *              String Msg = "null";
+ *              if (FCurrentAccount != null)
+ *              {
+ *                  Msg = FCurrentAccount.AccountRow.AccountCode;
+ *              }
+ *              ShowStatus("SetSelectedAccount: " + Msg);
  */
             }
         }

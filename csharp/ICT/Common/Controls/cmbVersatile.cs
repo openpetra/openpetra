@@ -329,7 +329,7 @@ namespace Ict.Common.Controls
         /// </returns>
         private int Get_ColumnNumber(string ColumnName)
         {
-            if (ColumnName == null || ColumnName == "")
+            if ((ColumnName == null) || (ColumnName == ""))
             {
                 return -1;
             }

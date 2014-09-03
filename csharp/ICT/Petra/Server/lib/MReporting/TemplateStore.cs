@@ -80,7 +80,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// <summary>
         /// For Development only, templates are also kept in disc files.
         /// This means that Bazaar will do the internal update management for us.
-        /// 
+        ///
         /// For the backup to work, the XmlReports\FastReportsBackup.sql file must be present,
         /// but it doesn't need to contain anything specifically.
         /// </summary>

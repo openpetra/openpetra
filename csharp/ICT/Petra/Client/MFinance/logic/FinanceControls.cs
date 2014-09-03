@@ -982,6 +982,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding);
 
             AControl.InitialiseUserControl(periods, "value", "display", "descr", null, null);
+
             if (AShowCurrentAndForwarding)
             {
                 AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);

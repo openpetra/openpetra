@@ -69,6 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public void RefreshSelectedAccount()
         {
             trvAccounts.Focus(); // {NET Bug!} The control doesn't show the selection if it's not visible and in focus.
+
             if (FSelectedAccount != null)
             {
                 trvAccounts.SelectedNode = FSelectedAccount.linkedTreeNode;
@@ -218,18 +219,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
 /*
  * Apparently it is best to always use the Reporting Order, for both Summary and Posting accounts.
- * 
-            if (ChildTag.AccountRow.PostingStatus) // Posting accounts are sorted alphabetically:
-            {
-                for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
-                {
-                    if (Parent.Nodes[Idx].Text.CompareTo(Child.Text) > 0)
-                    {
-                        break;
-                    }
-                }
-            }
-            else // For summary accounts I need to use the ReportOrder, then alphabetic:
+ *
+ *          if (ChildTag.AccountRow.PostingStatus) // Posting accounts are sorted alphabetically:
+ *          {
+ *              for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
+ *              {
+ *                  if (Parent.Nodes[Idx].Text.CompareTo(Child.Text) > 0)
+ *                  {
+ *                      break;
+ *                  }
+ *              }
+ *          }
+ *          else // For summary accounts I need to use the ReportOrder, then alphabetic:
  */
             {
                 String ChildDescr = ChildTag.DetailRow.ReportOrder.ToString("000") + Child.Text;
@@ -283,7 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 AccountNodeDetails DraggedAccount = (AccountNodeDetails)AChild.Tag;
                 String NewParentAccountCode = ((AccountNodeDetails)ANewParent.Tag).AccountRow.AccountCode;
 
-                TreeNode NewNode = (TreeNode)AChild.Clone(); // A new TreeNode is made (and the previous will be deleted), 
+                TreeNode NewNode = (TreeNode)AChild.Clone(); // A new TreeNode is made (and the previous will be deleted),
                                                              // but the actual DataRows are only tweaked to show the new parent.
 
                 DraggedAccount.linkedTreeNode = NewNode;
@@ -299,8 +300,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 AChild.Remove();
                 FPetraUtilsObject.SetChangedFlag();
                 FParentForm.SetSelectedAccount(DraggedAccount);
-//              SetSelectionUsingTimer(DraggedAccount); // Calling SetSelectedAccount directly doesn't work 
-                                                        // because Remove(), above, has left a selection "in the queue".
+//              SetSelectionUsingTimer(DraggedAccount); // Calling SetSelectedAccount directly doesn't work
+                // because Remove(), above, has left a selection "in the queue".
             }
         }
 
