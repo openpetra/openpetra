@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
             delegate
             {
-                PTypeAccess.LoadAll(MainDS, null);
+                PTypeAccess.LoadAll(MainDS, ReadTransaction);
             });
 
             // Accept row changes here so that the Client gets 'unmodified' rows

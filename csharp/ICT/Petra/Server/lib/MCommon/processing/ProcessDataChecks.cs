@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MCommon.Processing
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
             delegate
             {            
-                userrow = SUserAccess.LoadByPrimaryKey(AUserId, null)[0];
+                userrow = SUserAccess.LoadByPrimaryKey(AUserId, ReadTransaction)[0];
             });
 
             string excelfile = TAppSettingsManager.GetValue("DataChecks.TempPath") + "/errors" + AUserId + ".xlsx";
