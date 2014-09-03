@@ -494,8 +494,11 @@ namespace Ict.Tools.CodeChecker
             AFalsePositivesFullMatch.Add(
                 "DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction, null, IsNewTransaction)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Testing\lib\MFinance\ExchangeRates\DailyDataSet.cs)");
-
-
+            AFalsePositivesFullMatch.Add(
+                "DBAccess.GDBAccessObj.SelectDT(applicationTable, stmt, Transaction, null, 0, 0)",
+                @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Server\lib\MConference\ConferenceApplications.cs)");
+            
+            
             // 'String-ending-with' matches
             AFalsePositivesEndMatch.Add(
                 "\" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords)",
