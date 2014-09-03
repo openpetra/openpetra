@@ -76,6 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /// Field to store the relevant Ledger number
         /// </summary>
         public Int32 FLedgerNumber = 0;
+        ALedgerRow FLedgerRow = null;
 
         /// <summary>
         /// Gets or sets the ICH reporting period selection mode
@@ -111,7 +112,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 FLedgerNumber = value;
 
-                ALedgerRow Ledger =
+                FLedgerRow =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
 
                 TFinanceControls.InitialiseAvailableFinancialYearsListHOSA(
@@ -142,9 +143,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 chkStewardshipFile.Checked = false;
             }
-
-            txtBrowseStewardshipFile.Enabled = IsEnabled;
-            btnBrowse.Enabled = IsEnabled;
         }
 
         private void RefreshReportPeriodList(object sender, EventArgs e)
@@ -155,7 +153,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     ref cmbReportPeriod,
                     FLedgerNumber,
                     cmbYearEnding.GetSelectedInt32(),
-                    0,
+                    FLedgerRow.CurrentPeriod,
                     false);
             }
         }
@@ -317,13 +315,17 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                 if (msg.Length == 0)
                 {
-                    msg = String.Format(Catalog.GetString("No Cost Centres to process in Ledger {0} for report period: {1} and ICH No.: {2}."),
-                        FLedgerNumber,
-                        SelectedReportPeriod,
-                        SelectedICHNumber);
+                    msg = Catalog.GetString("Stewardship Calculations haven't been run or no transactions to process.");
+
+/*
+ *                  msg = String.Format(Catalog.GetString("No Cost Centres to process in Ledger {0} for report period: {1} and ICH No.: {2}."),
+ *                      FLedgerNumber,
+ *                      SelectedReportPeriod,
+ *                      SelectedICHNumber);
+ */
                 }
 
-                MessageBox.Show(msg, Catalog.GetString("Generate HOSA Files"));
+                MessageBox.Show(msg, Catalog.GetString("Generate Reports"));
 
                 btnCancel.Text = "Close";
             }

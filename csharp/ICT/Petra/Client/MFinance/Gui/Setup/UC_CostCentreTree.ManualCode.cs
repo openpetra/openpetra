@@ -244,7 +244,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if ((AChild != null) && (ANewParent != null))
             {
-                if (((CostCentreNodeDetails)AChild.Tag).CostCentreRow.SystemCostCentreFlag)
+                CostCentreNodeDetails DraggedCostCentre = (CostCentreNodeDetails)AChild.Tag;
+
+                if (DraggedCostCentre.CostCentreRow.SystemCostCentreFlag)
                 {
                     MessageBox.Show(String.Format(Catalog.GetString("{0} is a System Cost Centre and cannot be moved."),
                             ((CostCentreNodeDetails)AChild.Tag).CostCentreRow.CostCentreCode),
@@ -256,7 +258,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 String PrevParent = AChild.Parent.Text;
                 String NewParentCostCentreCode = ((CostCentreNodeDetails)ANewParent.Tag).CostCentreRow.CostCentreCode;
                 TreeNode NewNode = (TreeNode)AChild.Clone();
-                ((CostCentreNodeDetails)NewNode.Tag).CostCentreRow.CostCentreToReportTo = NewParentCostCentreCode;
+                DraggedCostCentre.CostCentreRow.CostCentreToReportTo = NewParentCostCentreCode;
+                DraggedCostCentre.linkedTreeNode = NewNode;
                 InsertInOrder(ANewParent, NewNode);
                 NewNode.Expand();
                 ANewParent.Expand();

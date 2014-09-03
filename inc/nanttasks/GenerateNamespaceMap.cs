@@ -363,6 +363,7 @@ namespace Ict.Tools.NAntTasks
                         }
 
                         Namespace = Namespace.Trim(new char[] { ' ', '\t', '\n', '\r', ';' });
+
 //Console.WriteLine("Encountered 'generateNamespaceMap-Link-Extra-DLL ': Namespace = " +Namespace);
                         if ((Namespace != string.Empty) && !Namespace.Contains(" "))
                         {
@@ -370,12 +371,12 @@ namespace Ict.Tools.NAntTasks
                             {
                                 NamespaceMap.Add(Namespace, Namespace + ".dll");
                             }
-                            
+
                             if (!DetailsOfDll.UsedNamespaces.Contains(Namespace))
                             {
-//Console.WriteLine("Added 'Extra DLL': " + Namespace);                                
+//Console.WriteLine("Added 'Extra DLL': " + Namespace);
                                 DetailsOfDll.UsedNamespaces.Add(Namespace);
-                            }                            
+                            }
                         }
                     }
                     else if (line.Contains("static void Main(") || line.Contains("static int Main("))

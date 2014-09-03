@@ -425,8 +425,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <param name="items"></param>
         public void CurrencyOptions(object[] items)
         {
+            String CurrencySelection = cmbCurrency.GetSelectedString();
+
             this.cmbCurrency.Items.Clear();
-            this.cmbCurrency.Items.AddRange(items);
+            cmbCurrency.Items.AddRange(items);
+            cmbCurrency.SetSelectedString(CurrencySelection); // Potentially might not work, but probably will!
         }
 
         /// <summary>
