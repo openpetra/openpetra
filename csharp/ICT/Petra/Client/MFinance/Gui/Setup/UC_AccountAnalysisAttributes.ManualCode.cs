@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FAccountCode);
                 FMainDS.AAnalysisAttribute.DefaultView.Sort = AAnalysisAttributeTable.GetAnalysisTypeCodeDBName();
 
-                grdDetails.SelectRowInGrid(1);
+                grdDetails.SelectRowWithoutFocus(1);
                 UpdateRecordNumberDisplay();
             }
         }
