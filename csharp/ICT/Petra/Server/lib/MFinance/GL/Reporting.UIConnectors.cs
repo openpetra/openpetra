@@ -298,14 +298,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static string GetLedgerName(int ledgernumber)
         {
             String ReturnValue = "";
-            String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
-                            StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-            DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", null);
+            TDBTransaction ReadTransaction = null;
 
-            if (tab.Rows.Count > 0)
-            {
-                ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
-            }
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+                delegate
+                {
+
+                    String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
+                                    StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
+                    DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
+
+                    if (tab.Rows.Count > 0)
+                    {
+                        ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
+                    }
+                });
 
             return ReturnValue;
         }
@@ -340,8 +347,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     AStartPeriod -= 1; // I want the closing balance of the previous period.
                 }
 
+                TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
                 String Query = "SELECT * FROM a_ledger WHERE " + ALedgerFilter;
-                DataTable LedgerTable = DBAccess.GDBAccessObj.SelectDT(Query, "Ledger", null);
+                DataTable LedgerTable = DBAccess.GDBAccessObj.SelectDT(Query, "Ledger", ReadTrans);
                 Int32 FiancialYear = Convert.ToInt32(LedgerTable.Rows[0]["a_current_financial_year_i"]);
 
                 String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
@@ -360,7 +368,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " AND glmp.a_period_number_i <= " + AEndPeriod +
                         " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i";
 
-                TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
                 DataTable GlmTbl = DbAdapter.RunQuery(Query, "balances", ReadTrans);
                 Results.Columns.Add(new DataColumn("a_cost_centre_code_c", typeof(string)));
