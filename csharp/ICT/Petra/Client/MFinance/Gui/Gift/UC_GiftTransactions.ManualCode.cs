@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Threading;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -173,6 +174,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             	// set up Tax Deductibility Percentage (specifically for OM Switzerland)
             	SetupTaxDeductibilityControls();
             }
+            
+            chkDetailChargeFlag.Enabled = UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3);
         }
 
         private void SetupTextBoxMenuItems()
@@ -621,12 +624,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                if (!FInKeyMinistryChanging)
-                {
-                    GetRecipientData(APartnerKey);
-                    ValidateGiftDestination();
-                }
-
                 if (APartnerKey > 0)
                 {
                     RetrieveRecipientCostCentreCode(APartnerKey);
@@ -638,6 +635,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     RetrieveMotivationDetailCostCentreCode();
                     mniRecipientHistory.Enabled = false;
                 }
+
+                if (!FInKeyMinistryChanging)
+                {
+                    GetRecipientData(APartnerKey);
+                    FPartnerShortName = APartnerShortName;
+                    
+                    //Thread only invokes ValidateGiftDestination once Partner Short Name has been updated.
+        			// Otherwise the Gift Destination screen is displayed and then the screen focus moves to this screen again
+        			// when the Partner Short Name is updated.
+                    new Thread(ValidateGiftDestinationThread).Start();
+                }
             }
             finally
             {
@@ -645,6 +653,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ReconcileKeyMinistryFromCombo();
                 FPetraUtilsObject.SuppressChangeDetection = false;
             }
+        }
+
+        // used for ValidateGiftDestinationThread
+        private string FPartnerShortName = "";
+        private delegate void SimpleDelegate();
+
+        private void ValidateGiftDestinationThread()
+        {
+            // Check whether this thread should still execute
+            while (txtDetailRecipientKey.LabelText != FPartnerShortName)
+            {
+                // Wait and see if anything has changed
+                Thread.Sleep(10);
+            }
+            
+            Invoke(new SimpleDelegate(ValidateGiftDestination));
         }
 
         private void UpdateRecipientKeyText(Int64 APartnerKey)
@@ -2356,6 +2380,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateGiftDestination()
         {
+        	while (txtDetailRecipientKey.LabelText != FPartnerShortName)
+            {
+            	System.Threading.Thread.Sleep(10);
+            }
+        	
             // if no gift destination exists for parter then give the user the option to open Gift Destination maintenance screen
             if ((Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) && (FPreviouslySelectedDetailRow.RecipientKey != 0)
                 && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)
