@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       AlanP
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -112,22 +112,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FFilterChkBankAccount.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", AAccountTable.ColumnBankAccountFlag, FFilterChkBankAccount.Checked ? 1 : 0));
+                if (FFilterChkBankAccount.Checked)
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=1)", AAccountTable.ColumnBankAccountFlag));
+                }
+                else
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnBankAccountFlag));
+                }
             }
 
             if (FFilterChkActive.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", AAccountTable.ColumnAccountActiveFlag, FFilterChkActive.Checked ? 1 : 0));
+                if (FFilterChkActive.Checked)
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=1)", AAccountTable.ColumnAccountActiveFlag));
+                }
+                else
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnAccountActiveFlag));
+                }
             }
 
             if (FFilterChkSummary.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", AAccountTable.ColumnPostingStatus, FFilterChkSummary.Checked ? 0 : 1));
+                if (!FFilterChkSummary.Checked)
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=1)", AAccountTable.ColumnPostingStatus));
+                }
+                else
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnPostingStatus));
+                }
             }
 
             if (FFilterChkForeign.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter, String.Format("({0}={1})", AAccountTable.ColumnForeignCurrencyFlag, FFilterChkForeign.Checked ? 1 : 0));
+                if (FFilterChkForeign.Checked)
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=1)", AAccountTable.ColumnForeignCurrencyFlag));
+                }
+                else
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnForeignCurrencyFlag));
+                }
             }
 
             AFilterString = filter;

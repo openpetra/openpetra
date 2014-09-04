@@ -94,8 +94,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FFilterChkActive.CheckState != CheckState.Indeterminate)
             {
-                JoinAndAppend(ref filter,
-                    String.Format("({0}={1})", AMainDataSet.ACostCentre.ColumnCostCentreActiveFlag, FFilterChkActive.Checked ? 1 : 0));
+                if (FFilterChkActive.Checked)
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=1)", AMainDataSet.ACostCentre.ColumnCostCentreActiveFlag));
+                }
+                else
+                {
+                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AMainDataSet.ACostCentre.ColumnCostCentreActiveFlag));
+                }
             }
 
             AFilterString = filter;
