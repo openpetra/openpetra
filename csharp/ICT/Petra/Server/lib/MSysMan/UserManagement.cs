@@ -166,6 +166,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static bool CreateUser(string AUsername, string APassword, string AFirstName, string AFamilyName, string AModulePermissions)
         {
+            TDBTransaction ReadTransaction = null;
+            TDBTransaction SubmitChangesTransaction = null;
+            bool UserExists = false;
+            bool SubmissionOK = false;
+            
             // TODO: check permissions. is the current user allowed to create other users?
             SUserTable userTable = new SUserTable();
             SUserRow newUser = userTable.NewRowTyped();
@@ -182,12 +187,23 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                  Replace("_", string.Empty).ToUpper();
             }
 
-            if (SUserAccess.Exists(newUser.UserId, null))
+            // Check whether the user that we are asked to create already exists
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            delegate
+            {            
+                if (SUserAccess.Exists(newUser.UserId, ReadTransaction))
+                {
+                    TLogging.Log("Cannot create new user as a user with User Name '" + newUser.UserId + "' already exists!");
+                    UserExists = true;
+                }
+            });
+            
+            if (UserExists) 
             {
-                TLogging.Log("A user with userid " + newUser.UserId + " already exists");
                 return false;
             }
-
+            
+            
             userTable.Rows.Add(newUser);
 
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
@@ -221,11 +237,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             if (newUser != null)
             {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-                try
-                {
-                    SUserAccess.SubmitChanges(userTable, Transaction);
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, ref SubmissionOK,
+                delegate
+                {                
+                    SUserAccess.SubmitChanges(userTable, SubmitChangesTransaction);
 
                     List <string>modules = new List <string>();
 
@@ -234,7 +249,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         modules.Add("PTNRUSER");
                         modules.Add("FINANCE-1");
 
-                        ALedgerTable theLedgers = ALedgerAccess.LoadAll(Transaction);
+                        ALedgerTable theLedgers = ALedgerAccess.LoadAll(SubmitChangesTransaction);
 
                         foreach (ALedgerRow ledger in theLedgers.Rows)
                         {
@@ -265,7 +280,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
                     }
 
-                    SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction);
+                    SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, SubmitChangesTransaction);
 
                     // TODO: table permissions should be set by the module list
                     string[] tables = new string[] {
@@ -273,6 +288,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         "p_organisation", "p_partner", "p_partner_location",
                         "p_partner_type", "p_person", "p_unit", "p_venue"
                     };
+                    
                     SUserTableAccessPermissionTable tableAccessPermissionTable = new SUserTableAccessPermissionTable();
 
                     foreach (string table in tables)
@@ -283,18 +299,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         tableAccessPermissionTable.Rows.Add(tableAccessPermissionRow);
                     }
 
-                    SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, Transaction);
-
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("An Exception occured while creating a User:" + Environment.NewLine + Exc.ToString());
-
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    throw;
-                }
+                    SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, SubmitChangesTransaction);
+                    
+                    SubmissionOK = true;
+                });
 
                 return true;
             }

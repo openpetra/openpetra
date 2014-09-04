@@ -22,7 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Security.Principal;
+
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.DB.Exceptions;
@@ -234,7 +236,13 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         public void PostAppDomainSetupInitialisation()
         {
-            StringHelper.CurrencyFormatTable = ACurrencyAccess.LoadAll(null);
+            TDBTransaction ReadTransaction = null;
+            
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            delegate
+            {                        
+                StringHelper.CurrencyFormatTable = ACurrencyAccess.LoadAll(ReadTransaction);
+            });
         }
     }
 }

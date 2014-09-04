@@ -659,11 +659,11 @@ namespace Ict.Petra.Server.MReporting.MPartner
             // If there was no result and the partner given is a family, I can see about the field for the family member with id=0.
             if (FieldName == "")
             {
-                PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, null);
+                PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
 
                 if ((tbl.Rows.Count > 0) && (tbl[0].PartnerClass == TPartnerClass.FAMILY.ToString()))
                 {
-                    PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, null);
+                    PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, situation.GetDatabaseConnection().Transaction);
                     familyMembers.DefaultView.RowFilter = "p_family_id_i = 0";
 
                     if (familyMembers.DefaultView.Count > 0)
