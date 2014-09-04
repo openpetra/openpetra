@@ -70,9 +70,15 @@ namespace Ict.Common.Data.Testing
         [Test]
         public void UpdateRecord()
         {
+            TDBTransaction ReadTransaction = null;
             GiftBatchTDS MainDS = new GiftBatchTDS();
-
-            ALedgerAccess.LoadAll(MainDS, null);
+            
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            delegate
+            {            
+                ALedgerAccess.LoadAll(MainDS, ReadTransaction);
+            });
 
             MainDS.ALedger[0].LastGiftBatchNumber++;
 
@@ -112,38 +118,46 @@ namespace Ict.Common.Data.Testing
         [Test, Explicit]
         public void SpeedTestLoadIntoTypedTable()
         {
-            string sql = "SELECT PUB_a_gift_detail.*, false AS AlreadyMatched, PUB_a_gift_batch.a_batch_status_c AS BatchStatus " +
-                         "FROM PUB_a_gift_batch, PUB_a_gift_detail " +
-                         "WHERE PUB_a_gift_detail.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i";
-
+            TDBTransaction ReadTransaction = null;
             DateTime before = DateTime.Now;
-            DataTable untyped = DBAccess.GDBAccessObj.SelectDT(sql, "test", null);
             DateTime after = DateTime.Now;
-
-            TLogging.Log(String.Format("loading all {0} gift details into an untyped table took {1} milliseconds",
-                    untyped.Rows.Count,
-                    (after.Subtract(before)).TotalMilliseconds));
-
-            BankImportTDSAGiftDetailTable typed = new BankImportTDSAGiftDetailTable();
-            before = DateTime.Now;
-            DBAccess.GDBAccessObj.SelectDT(typed, sql, null, new OdbcParameter[0], 0, 0);
-            after = DateTime.Now;
-
-            TLogging.Log(String.Format("loading all {0} gift details into a typed table took {1} milliseconds",
-                    typed.Rows.Count,
-                    (after.Subtract(before)).TotalMilliseconds));
-
-            BankImportTDS ds = new BankImportTDS();
-
-            ACostCentreAccess.LoadAll(ds, null);
-            TLogging.Log(ds.ACostCentre.Rows.Count.ToString() + " cost centres loaded ");
-
-            AMotivationDetailAccess.LoadAll(ds, null);
-
-            before = DateTime.Now;
-            DBAccess.GDBAccessObj.Select(ds, sql, ds.AGiftDetail.TableName, null);
-            after = DateTime.Now;
-
+            BankImportTDS ds = new BankImportTDS(); 
+            
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            delegate
+            {                
+                string sql = "SELECT PUB_a_gift_detail.*, false AS AlreadyMatched, PUB_a_gift_batch.a_batch_status_c AS BatchStatus " +
+                             "FROM PUB_a_gift_batch, PUB_a_gift_detail " +
+                             "WHERE PUB_a_gift_detail.a_ledger_number_i = PUB_a_gift_batch.a_ledger_number_i AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i";
+    
+                before = DateTime.Now;
+                DataTable untyped = DBAccess.GDBAccessObj.SelectDT(sql, "test", ReadTransaction);
+                after = DateTime.Now;
+    
+                TLogging.Log(String.Format("loading all {0} gift details into an untyped table took {1} milliseconds",
+                        untyped.Rows.Count,
+                        (after.Subtract(before)).TotalMilliseconds));
+    
+                BankImportTDSAGiftDetailTable typed = new BankImportTDSAGiftDetailTable();
+                before = DateTime.Now;
+                DBAccess.GDBAccessObj.SelectDT(typed, sql, ReadTransaction, new OdbcParameter[0], 0, 0);
+                after = DateTime.Now;
+    
+                TLogging.Log(String.Format("loading all {0} gift details into a typed table took {1} milliseconds",
+                        typed.Rows.Count,
+                        (after.Subtract(before)).TotalMilliseconds));
+    
+                ACostCentreAccess.LoadAll(ds, ReadTransaction);
+                TLogging.Log(ds.ACostCentre.Rows.Count.ToString() + " cost centres loaded ");
+    
+                AMotivationDetailAccess.LoadAll(ds, ReadTransaction);
+    
+                before = DateTime.Now;
+                DBAccess.GDBAccessObj.Select(ds, sql, ds.AGiftDetail.TableName, ReadTransaction);
+                after = DateTime.Now;
+            });
+            
             TLogging.Log(String.Format("loading all {0} gift details into a typed dataset took {1} milliseconds",
                     ds.AGiftDetail.Rows.Count,
                     (after.Subtract(before)).TotalMilliseconds));
