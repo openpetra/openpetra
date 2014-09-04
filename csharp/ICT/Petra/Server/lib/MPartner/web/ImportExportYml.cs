@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     {
         static Int64 NewPartnerKey = -1;
 
-        private static void ParsePartners(ref PartnerImportExportTDS AMainDS, XmlNode ACurNode, ref TVerificationResultCollection AVerificationResult)
+        private static void ParsePartners(ref PartnerImportExportTDS AMainDS, XmlNode ACurNode, TDBTransaction ATransaction, ref TVerificationResultCollection AVerificationResult)
         {
             XmlNode LocalNode = ACurNode;
 
@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 if (LocalNode.Name.StartsWith("PartnerGroup"))
                 {
-                    ParsePartners(ref AMainDS, LocalNode.FirstChild, ref AVerificationResult);
+                    ParsePartners(ref AMainDS, LocalNode.FirstChild, ATransaction, ref AVerificationResult);
                 }
                 else if (LocalNode.Name.StartsWith("Partner"))
                 {
@@ -80,9 +80,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     {
                         PartnerRow.PartnerKey = Convert.ToInt64(TYml2Xml.GetAttribute(LocalNode, "PartnerKey"));
 
-                        if (PPartnerAccess.Exists(PartnerRow.PartnerKey, null))
+                        if (PPartnerAccess.Exists(PartnerRow.PartnerKey, ATransaction))
                         {
-                            AMainDS.Merge(PPartnerAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
+                            AMainDS.Merge(PPartnerAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, ATransaction));
 
                             AMainDS.PPartner.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 PPartnerTable.GetPartnerKeyDBName(),
@@ -122,7 +122,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (IsExistingPartner)
                         {
-                            AMainDS.Merge(PFamilyAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
+                            AMainDS.Merge(PFamilyAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, ATransaction));
 
                             AMainDS.PFamily.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 PFamilyTable.GetPartnerKeyDBName(),
@@ -158,7 +158,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (IsExistingPartner)
                         {
-                            AMainDS.Merge(PPersonAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
+                            AMainDS.Merge(PPersonAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, ATransaction));
 
                             AMainDS.PPerson.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 PPersonTable.GetPartnerKeyDBName(),
@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (IsExistingPartner)
                         {
-                            AMainDS.Merge(POrganisationAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
+                            AMainDS.Merge(POrganisationAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, ATransaction));
 
                             AMainDS.POrganisation.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 POrganisationTable.GetPartnerKeyDBName(),
@@ -215,7 +215,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (IsExistingPartner)
                         {
-                            AMainDS.Merge(PUnitAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
+                            AMainDS.Merge(PUnitAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, ATransaction));
 
                             AMainDS.PUnit.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 PUnitTable.GetPartnerKeyDBName(),
@@ -260,7 +260,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (IsExistingPartner)
                         {
-                            AMainDS.Merge(UmUnitStructureAccess.LoadViaPUnitChildUnitKey(PartnerRow.PartnerKey, null));
+                            AMainDS.Merge(UmUnitStructureAccess.LoadViaPUnitChildUnitKey(PartnerRow.PartnerKey, ATransaction));
 
                             AMainDS.UmUnitStructure.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 UmUnitStructureTable.GetChildUnitKeyDBName(),
@@ -293,7 +293,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                         if (IsExistingPartner)
                         {
-                            AMainDS.Merge(PBankAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, null));
+                            AMainDS.Merge(PBankAccess.LoadByPrimaryKey(PartnerRow.PartnerKey, ATransaction));
 
                             AMainDS.PBank.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                                 PBankTable.GetPartnerKeyDBName(),
@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     if (IsExistingPartner)
                     {
-                        PPartnerTypeAccess.LoadViaPPartner(AMainDS, PartnerRow.PartnerKey, null);
+                        PPartnerTypeAccess.LoadViaPPartner(AMainDS, PartnerRow.PartnerKey, ATransaction);
                     }
 
                     foreach (string SpecialType in SpecialTypes)
@@ -360,7 +360,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
 
                         // Check Partner type exists, or create it
-                        bool TypeIsKnown = PTypeAccess.Exists(PartnerTypeRow.TypeCode, null);
+                        bool TypeIsKnown = PTypeAccess.Exists(PartnerTypeRow.TypeCode, ATransaction);
 
                         if (!TypeIsKnown)
                         {
@@ -441,14 +441,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     // import finance details (bank account number)
                     XmlNode financialDetailsNode = TYml2Xml.GetChild(LocalNode, "FinancialDetails");
 
-                    ParseFinancialDetails(AMainDS, financialDetailsNode, PartnerRow.PartnerKey);
+                    ParseFinancialDetails(AMainDS, financialDetailsNode, PartnerRow.PartnerKey, ATransaction);
                 }
 
                 LocalNode = LocalNode.NextSibling;
             }
         }
 
-        private static void ParseFinancialDetails(PartnerImportExportTDS AMainDS, XmlNode AFinancialDetailsNode, Int64 APartnerKey)
+        private static void ParseFinancialDetails(PartnerImportExportTDS AMainDS, XmlNode AFinancialDetailsNode, Int64 APartnerKey, TDBTransaction ATransaction)
         {
             if (AFinancialDetailsNode != null)
             {
@@ -476,7 +476,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     OdbcParameter param = new OdbcParameter("branchcode", OdbcType.VarChar);
                     param.Value = BankSortCode;
                     PBankTable bank = new PBankTable();
-                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, null, new OdbcParameter[] {
+                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, ATransaction, new OdbcParameter[] {
                             param
                         }, -1, -1);
 
@@ -520,7 +520,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <returns></returns>
         public static PartnerImportExportTDS ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = new TVerificationResultCollection();
+            TDBTransaction ReadTransaction = null;
+            bool SubmissionOK = false;
+            TVerificationResultCollection VerificationResult;
+
+            VerificationResult = new TVerificationResultCollection();
 
             PartnerImportExportTDS MainDS = new PartnerImportExportTDS();
 
@@ -534,7 +538,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // advantage: can inherit some common attributes, eg. partner class, etc
 
             TImportExportYml.NewPartnerKey = -1;
-            ParsePartners(ref MainDS, root, ref AVerificationResult);
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction, ref SubmissionOK,
+                delegate
+                {
+                    ParsePartners(ref MainDS, root, ReadTransaction, ref VerificationResult);
+                });
+
+            AVerificationResult = VerificationResult;
 
             return MainDS;
         }

@@ -178,9 +178,17 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.AreEqual(1, MainDS.PPartnerLocation.Rows.Count, "the partner should only have one location in the dataset");
 
             // get all addresses of the partner
-            PPartnerLocationTable testPartnerLocations = PPartnerLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, null);
-            Assert.AreEqual(1, testPartnerLocations.Rows.Count, "the partner should only have one location");
-            Assert.Greater(testPartnerLocations[0].LocationKey, 0, "TPartnerEditUIConnector SubmitChanges returns valid location key");
+            TDBTransaction ReadTransaction = null;
+            bool SubmissionOK = false;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction, ref SubmissionOK,
+                delegate
+                {
+                    PPartnerLocationTable testPartnerLocations = PPartnerLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, ReadTransaction);
+                    Assert.AreEqual(1, testPartnerLocations.Rows.Count, "the partner should only have one location");
+                    Assert.Greater(testPartnerLocations[0].LocationKey, 0, "TPartnerEditUIConnector SubmitChanges returns valid location key");
+                });
+
         }
 
         /// <summary>
@@ -227,10 +235,17 @@ namespace Tests.MPartner.Server.PartnerEdit
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
 
-            PPartnerTable PartnerAtAddress = PPartnerAccess.LoadViaPLocation(
-                DomainManager.GSiteKey, LocationKey, null);
+            TDBTransaction ReadTransaction = null;
+            bool SubmissionOK = false;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction, ref SubmissionOK,
+                delegate
+                {
+                    PPartnerTable PartnerAtAddress = PPartnerAccess.LoadViaPLocation(
+                        DomainManager.GSiteKey, LocationKey, ReadTransaction);
+                    Assert.AreEqual(2, PartnerAtAddress.Rows.Count, "there should be two partners at this location");
+                });
 
-            Assert.AreEqual(2, PartnerAtAddress.Rows.Count, "there should be two partners at this location");
         }
 
         /// <summary>

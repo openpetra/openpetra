@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=0;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(0,'Income Expense Statement','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="07/15/2014 15:56:55" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="08/28/2014 16:12:43" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -287,7 +287,7 @@ namespace FastReport
     <GroupHeaderBand Name="CostCentreGroup" Top="113.95" Width="1047.06" Height="18.9" BeforePrintEvent="CostCentreGroup_BeforePrint" StartNewPage="true" Condition="CostCentreGroupCondition()" SortOrder="None">
       <TextObject Name="CostCentreHeader" Width="245.7" Height="18.9" Border.Lines="Bottom" Border.Color="DarkBlue" Text="[IncomeExpense.costcentrecode] - [IncomeExpense.costcentrename]" Font="Arial, 10pt, style=Bold" TextFill.Color="DarkBlue"/>
       <GroupHeaderBand Name="AccountTypeGroup" Top="136.18" Width="1047.06" KeepChild="true" KeepWithData="true" Condition="[IncomeExpense.accounttype]" SortOrder="None">
-        <DataBand Name="TransactionBand" Top="139.52" Width="1047.06" Height="18.9" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="IncomeExpense">
+        <DataBand Name="TransactionBand" Top="139.52" Width="1047.06" Height="18.9" CanGrow="true" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="IncomeExpense">
           <TextObject Name="ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[IncomeExpense.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
           <TextObject Name="BudgetField" Left="368.55" Width="94.5" Height="18.9" Text="[IncomeExpense.budget]" HideZeros="true" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
           <TextObject Name="ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[IncomeExpense.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
@@ -296,7 +296,7 @@ namespace FastReport
           <TextObject Name="VarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actualytd],[IncomeExpense.budgetytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
           <TextObject Name="YearBudgetField" Left="756" Width="94.5" Height="18.9" Text="[IncomeExpense.wholeyearbudget]" HideZeros="true" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
           <TextObject Name="AccountCodeField" Left="45.36" Width="56.7" Height="18.9" Text="[IIf([param_cost_centre_breakdown],[IncomeExpense.costcentrecode],[IncomeExpense.accountcode])]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt"/>
-          <TextObject Name="AccountNameField" Left="102.06" Width="170.1" Height="18.9" Text="[IIf([param_cost_centre_breakdown],[IncomeExpense.costcentrename],[IncomeExpense.accountname])]" Padding="0, 0, 2, 0" Font="Arial, 9pt"/>
+          <TextObject Name="AccountNameField" Left="102.06" Width="170.1" Height="18.9" CanGrow="true" Text="[IIf([param_cost_centre_breakdown],[IncomeExpense.costcentrename],[IncomeExpense.accountname])]" Padding="0, 0, 2, 0" Font="Arial, 9pt"/>
           <ChildBand Name="HeaderBand" Top="161.75" Width="1047.06" Height="18.9" Visible="false">
             <TextObject Name="HeaderAccountNameField" Left="30.24" Width="217.35" Height="18.9" Text="[IncomeExpense.accountname]:" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
             <ChildBand Name="FooterBand" Top="183.98" Width="1047.06" Height="18.9" Visible="false">
