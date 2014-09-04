@@ -69,33 +69,27 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AMessage"></param>
         public static void SetMessageForHomeOfficeReps(string AMessage)
         {
-            SLogonMessageTable table = SLogonMessageAccess.LoadByPrimaryKey("HU", null);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
 
-            if (table.Rows.Count == 0)
-            {
-                SLogonMessageRow row = table.NewRowTyped(true);
-                row.LanguageCode = "HU";
-                table.Rows.Add(row);
-            }
+            DBAccess.GDBAccessObj.BeginAutoTransaction(ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    SLogonMessageTable table = SLogonMessageAccess.LoadByPrimaryKey("HU", Transaction);
 
-            table[0].LogonMessage = AMessage;
+                    if (table.Rows.Count == 0)
+                    {
+                        SLogonMessageRow row = table.NewRowTyped(true);
+                        row.LanguageCode = "HU";
+                        table.Rows.Add(row);
+                    }
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                    table[0].LogonMessage = AMessage;
 
-            try
-            {
-                SLogonMessageAccess.SubmitChanges(table, Transaction);
+                    SLogonMessageAccess.SubmitChanges(table, Transaction);
 
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured while setting the message for Home Office Reps:" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw;
-            }
+                    SubmissionOK = true;
+                });
         }
 
         /// <summary>
@@ -103,9 +97,17 @@ namespace Ict.Petra.Server.MConference.Applications
         /// </summary>
         public static string GetMessageForHomeOfficeReps()
         {
-            SLogonMessageTable table = SLogonMessageAccess.LoadByPrimaryKey("HU", null);
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = false;
+            SLogonMessageTable table = null;
 
-            if (table.Rows.Count > 0)
+            DBAccess.GDBAccessObj.BeginAutoTransaction(ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    table = SLogonMessageAccess.LoadByPrimaryKey("HU", Transaction);
+                });
+
+            if ((table != null) && (table.Rows.Count > 0))
             {
                 return table[0].LogonMessage;
             }
@@ -118,7 +120,16 @@ namespace Ict.Petra.Server.MConference.Applications
         /// </summary>
         public static PContactAttributeDetailTable GetSessions()
         {
-            return PContactAttributeDetailAccess.LoadViaPContactAttribute(SESSION_CONTACT_ATTRIBUTE, null);
+            PContactAttributeDetailTable ReturnValue = null;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    ReturnValue = PContactAttributeDetailAccess.LoadViaPContactAttribute(SESSION_CONTACT_ATTRIBUTE, Transaction);
+                });
+
+            return ReturnValue;
         }
 
         /// <summary>
