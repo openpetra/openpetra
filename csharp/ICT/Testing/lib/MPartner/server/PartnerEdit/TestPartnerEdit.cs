@@ -179,9 +179,8 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // get all addresses of the partner
             TDBTransaction ReadTransaction = null;
-            bool SubmissionOK = false;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
                     PPartnerLocationTable testPartnerLocations = PPartnerLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, ReadTransaction);
@@ -236,9 +235,8 @@ namespace Tests.MPartner.Server.PartnerEdit
                 "There was a critical error when saving:");
 
             TDBTransaction ReadTransaction = null;
-            bool SubmissionOK = false;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
                     PPartnerTable PartnerAtAddress = PPartnerAccess.LoadViaPLocation(

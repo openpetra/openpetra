@@ -521,7 +521,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         public static PartnerImportExportTDS ImportPartners(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
         {
             TDBTransaction ReadTransaction = null;
-            bool SubmissionOK = false;
             TVerificationResultCollection VerificationResult;
 
             VerificationResult = new TVerificationResultCollection();
@@ -539,8 +538,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             TImportExportYml.NewPartnerKey = -1;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
                     ParsePartners(ref MainDS, root, ReadTransaction, ref VerificationResult);
