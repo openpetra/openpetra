@@ -167,16 +167,16 @@ namespace Ict.Petra.Server.MCommon.Processing
         }
 
         private static void SendEmailForUser(string AUserId, DataTable AErrors)
-        {           
+        {
             TDBTransaction ReadTransaction = null;
             SUserRow userrow = null;
-            
+
             // get the email address of the user
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-            delegate
-            {            
-                userrow = SUserAccess.LoadByPrimaryKey(AUserId, ReadTransaction)[0];
-            });
+                delegate
+                {
+                    userrow = SUserAccess.LoadByPrimaryKey(AUserId, ReadTransaction)[0];
+                });
 
             string excelfile = TAppSettingsManager.GetValue("DataChecks.TempPath") + "/errors" + AUserId + ".xlsx";
 

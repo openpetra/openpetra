@@ -130,14 +130,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             param.Value = ABranchCode;
             PBankTable bank = new PBankTable();
-            
+
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-            delegate
-            {                        
-                DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, ReadTransaction, new OdbcParameter[] {
-                        param
-                    }, -1, -1);
-            });
+                delegate
+                {
+                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, ReadTransaction, new OdbcParameter[] {
+                            param
+                        }, -1, -1);
+                });
 
             if (bank.Count > 0)
             {

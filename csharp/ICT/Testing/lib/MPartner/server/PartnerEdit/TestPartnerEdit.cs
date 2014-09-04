@@ -188,7 +188,6 @@ namespace Tests.MPartner.Server.PartnerEdit
                     Assert.AreEqual(1, testPartnerLocations.Rows.Count, "the partner should only have one location");
                     Assert.Greater(testPartnerLocations[0].LocationKey, 0, "TPartnerEditUIConnector SubmitChanges returns valid location key");
                 });
-
         }
 
         /// <summary>
@@ -245,7 +244,6 @@ namespace Tests.MPartner.Server.PartnerEdit
                         DomainManager.GSiteKey, LocationKey, ReadTransaction);
                     Assert.AreEqual(2, PartnerAtAddress.Rows.Count, "there should be two partners at this location");
                 });
-
         }
 
         /// <summary>

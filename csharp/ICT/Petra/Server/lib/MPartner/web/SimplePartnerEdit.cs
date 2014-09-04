@@ -128,16 +128,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             TDBTransaction ReadTransaction = null;
             TDBTransaction SubmitChangesTransaction = null;
-            bool SubmissionOK = false;            
+            bool SubmissionOK = false;
             bool ImportDefaultAcquCodeExists = false;
-            
+
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-            delegate
-            {    
-                ImportDefaultAcquCodeExists = PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT, 
-                    ReadTransaction);
-            });
-            
+                delegate
+                {
+                    ImportDefaultAcquCodeExists = PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT,
+                        ReadTransaction);
+                });
+
             if (!ImportDefaultAcquCodeExists)
             {
                 PAcquisitionTable AcqTable = new PAcquisitionTable();
@@ -147,12 +147,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 AcqTable.Rows.Add(row);
 
                 DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, ref SubmissionOK,
-                delegate
-                {                
-                    PAcquisitionAccess.SubmitChanges(AcqTable, SubmitChangesTransaction);
-                    
-                    SubmissionOK = true;
-                });
+                    delegate
+                    {
+                        PAcquisitionAccess.SubmitChanges(AcqTable, SubmitChangesTransaction);
+
+                        SubmissionOK = true;
+                    });
             }
 
             PartnerEditTDSAccess.SubmitChanges(AMainDS);

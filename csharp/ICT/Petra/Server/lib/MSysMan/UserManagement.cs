@@ -170,7 +170,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TDBTransaction SubmitChangesTransaction = null;
             bool UserExists = false;
             bool SubmissionOK = false;
-            
+
             // TODO: check permissions. is the current user allowed to create other users?
             SUserTable userTable = new SUserTable();
             SUserRow newUser = userTable.NewRowTyped();
@@ -189,21 +189,20 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             // Check whether the user that we are asked to create already exists
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-            delegate
-            {            
-                if (SUserAccess.Exists(newUser.UserId, ReadTransaction))
+                delegate
                 {
-                    TLogging.Log("Cannot create new user as a user with User Name '" + newUser.UserId + "' already exists!");
-                    UserExists = true;
-                }
-            });
-            
-            if (UserExists) 
+                    if (SUserAccess.Exists(newUser.UserId, ReadTransaction))
+                    {
+                        TLogging.Log("Cannot create new user as a user with User Name '" + newUser.UserId + "' already exists!");
+                        UserExists = true;
+                    }
+                });
+
+            if (UserExists)
             {
                 return false;
             }
-            
-            
+
             userTable.Rows.Add(newUser);
 
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
@@ -238,71 +237,71 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             if (newUser != null)
             {
                 DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, ref SubmissionOK,
-                delegate
-                {                
-                    SUserAccess.SubmitChanges(userTable, SubmitChangesTransaction);
-
-                    List <string>modules = new List <string>();
-
-                    if (AModulePermissions == DEMOMODULEPERMISSIONS)
+                    delegate
                     {
-                        modules.Add("PTNRUSER");
-                        modules.Add("FINANCE-1");
+                        SUserAccess.SubmitChanges(userTable, SubmitChangesTransaction);
 
-                        ALedgerTable theLedgers = ALedgerAccess.LoadAll(SubmitChangesTransaction);
+                        List <string>modules = new List <string>();
 
-                        foreach (ALedgerRow ledger in theLedgers.Rows)
+                        if (AModulePermissions == DEMOMODULEPERMISSIONS)
                         {
-                            modules.Add("LEDGER" + ledger.LedgerNumber.ToString("0000"));
-                        }
-                    }
-                    else
-                    {
-                        string[] modulePermissions = AModulePermissions.Split(new char[] { ',' });
+                            modules.Add("PTNRUSER");
+                            modules.Add("FINANCE-1");
 
-                        foreach (string s in modulePermissions)
-                        {
-                            if (s.Trim().Length > 0)
+                            ALedgerTable theLedgers = ALedgerAccess.LoadAll(SubmitChangesTransaction);
+
+                            foreach (ALedgerRow ledger in theLedgers.Rows)
                             {
-                                modules.Add(s.Trim());
+                                modules.Add("LEDGER" + ledger.LedgerNumber.ToString("0000"));
                             }
                         }
-                    }
+                        else
+                        {
+                            string[] modulePermissions = AModulePermissions.Split(new char[] { ',' });
 
-                    SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
+                            foreach (string s in modulePermissions)
+                            {
+                                if (s.Trim().Length > 0)
+                                {
+                                    modules.Add(s.Trim());
+                                }
+                            }
+                        }
 
-                    foreach (string module in modules)
-                    {
-                        SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
-                        moduleAccessPermissionRow.UserId = newUser.UserId;
-                        moduleAccessPermissionRow.ModuleId = module;
-                        moduleAccessPermissionRow.CanAccess = true;
-                        moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
-                    }
+                        SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
 
-                    SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, SubmitChangesTransaction);
+                        foreach (string module in modules)
+                        {
+                            SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
+                            moduleAccessPermissionRow.UserId = newUser.UserId;
+                            moduleAccessPermissionRow.ModuleId = module;
+                            moduleAccessPermissionRow.CanAccess = true;
+                            moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
+                        }
 
-                    // TODO: table permissions should be set by the module list
-                    string[] tables = new string[] {
-                        "p_bank", "p_church", "p_family", "p_location",
-                        "p_organisation", "p_partner", "p_partner_location",
-                        "p_partner_type", "p_person", "p_unit", "p_venue"
-                    };
-                    
-                    SUserTableAccessPermissionTable tableAccessPermissionTable = new SUserTableAccessPermissionTable();
+                        SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, SubmitChangesTransaction);
 
-                    foreach (string table in tables)
-                    {
-                        SUserTableAccessPermissionRow tableAccessPermissionRow = tableAccessPermissionTable.NewRowTyped();
-                        tableAccessPermissionRow.UserId = newUser.UserId;
-                        tableAccessPermissionRow.TableName = table;
-                        tableAccessPermissionTable.Rows.Add(tableAccessPermissionRow);
-                    }
+                        // TODO: table permissions should be set by the module list
+                        string[] tables = new string[] {
+                            "p_bank", "p_church", "p_family", "p_location",
+                            "p_organisation", "p_partner", "p_partner_location",
+                            "p_partner_type", "p_person", "p_unit", "p_venue"
+                        };
 
-                    SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, SubmitChangesTransaction);
-                    
-                    SubmissionOK = true;
-                });
+                        SUserTableAccessPermissionTable tableAccessPermissionTable = new SUserTableAccessPermissionTable();
+
+                        foreach (string table in tables)
+                        {
+                            SUserTableAccessPermissionRow tableAccessPermissionRow = tableAccessPermissionTable.NewRowTyped();
+                            tableAccessPermissionRow.UserId = newUser.UserId;
+                            tableAccessPermissionRow.TableName = table;
+                            tableAccessPermissionTable.Rows.Add(tableAccessPermissionRow);
+                        }
+
+                        SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, SubmitChangesTransaction);
+
+                        SubmissionOK = true;
+                    });
 
                 return true;
             }

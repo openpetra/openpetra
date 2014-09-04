@@ -1669,7 +1669,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     ExtractPartners = MExtractAccess.LoadViaMExtractMaster(AExtractId, ReadTransaction);
                 });
 
-
             foreach (MExtractRow ExtractPartner in ExtractPartners.Rows)
             {
                 if (ExtractPartner.PartnerKey != 0)

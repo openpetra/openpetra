@@ -91,7 +91,9 @@ namespace Ict.Common.Data
         /// <summary>
         /// abstract method to be implemented by generated code
         /// </summary>
-        public abstract string TableDBLabel {get;}
+        public abstract string TableDBLabel {
+            get;
+        }
 
         /// <summary>
         /// abstract method to be implemented by generated code
