@@ -26,6 +26,7 @@ using System.Text;
 using System.Data;
 using System.Windows.Forms;
 
+using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -91,34 +92,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FFilterTxtAccountCode.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", AAccountTable.ColumnAccountCode, FFilterTxtAccountCode.Text));
+                StringHelper.JoinAndAppend(ref filter,
+                    String.Format("({0} LIKE '%{1}%')", AAccountTable.ColumnAccountCode, FFilterTxtAccountCode.Text),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
 
             if (FFilterCmbAccountType.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '{1}')", AAccountTable.ColumnAccountType, FFilterCmbAccountType.Text));
+                StringHelper.JoinAndAppend(ref filter,
+                    String.Format("({0} LIKE '{1}')", AAccountTable.ColumnAccountType, FFilterCmbAccountType.Text),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
 
             if (FFilterTxtDescrEnglish.Text != String.Empty)
             {
-                JoinAndAppend(ref filter,
-                    String.Format("({0} LIKE '%{1}%')", AAccountTable.ColumnEngAccountCodeLongDesc, FFilterTxtDescrEnglish.Text));
+                StringHelper.JoinAndAppend(ref filter,
+                    String.Format("({0} LIKE '%{1}%')", AAccountTable.ColumnEngAccountCodeLongDesc, FFilterTxtDescrEnglish.Text),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
 
             if (FFilterTxtDescrLocal.Text != String.Empty)
             {
-                JoinAndAppend(ref filter, String.Format("({0} LIKE '%{1}%')", AAccountTable.ColumnAccountCodeLongDesc, FFilterTxtDescrLocal.Text));
+                StringHelper.JoinAndAppend(ref filter,
+                    String.Format("({0} LIKE '%{1}%')", AAccountTable.ColumnAccountCodeLongDesc, FFilterTxtDescrLocal.Text),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
 
             if (FFilterChkBankAccount.CheckState != CheckState.Indeterminate)
             {
                 if (FFilterChkBankAccount.Checked)
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=1)", AAccountTable.ColumnBankAccountFlag));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=1)", AAccountTable.ColumnBankAccountFlag),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
                 else
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnBankAccountFlag));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnBankAccountFlag),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
             }
 
@@ -126,11 +138,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (FFilterChkActive.Checked)
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=1)", AAccountTable.ColumnAccountActiveFlag));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=1)", AAccountTable.ColumnAccountActiveFlag),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
                 else
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnAccountActiveFlag));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnAccountActiveFlag),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
             }
 
@@ -138,11 +154,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (!FFilterChkSummary.Checked)
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=1)", AAccountTable.ColumnPostingStatus));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=1)", AAccountTable.ColumnPostingStatus),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
                 else
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnPostingStatus));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnPostingStatus),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
             }
 
@@ -150,25 +170,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (FFilterChkForeign.Checked)
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=1)", AAccountTable.ColumnForeignCurrencyFlag));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=1)", AAccountTable.ColumnForeignCurrencyFlag),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
                 else
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnForeignCurrencyFlag));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=0 OR {0} IS NULL)", AAccountTable.ColumnForeignCurrencyFlag),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
             }
 
             AFilterString = filter;
-        }
-
-        private void JoinAndAppend(ref string AStringToExtend, string AStringToAppend)
-        {
-            if (AStringToExtend.Length > 0)
-            {
-                AStringToExtend += " AND ";
-            }
-
-            AStringToExtend += AStringToAppend;
         }
 
         /// <summary>

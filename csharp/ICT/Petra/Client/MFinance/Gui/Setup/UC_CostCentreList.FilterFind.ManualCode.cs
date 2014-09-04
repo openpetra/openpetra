@@ -26,6 +26,7 @@ using System.Text;
 using System.Data;
 using System.Windows.Forms;
 
+using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -76,45 +77,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (FFilterTxtCostCentreCode.Text != String.Empty)
             {
-                JoinAndAppend(ref filter,
-                    String.Format("({0} LIKE '%{1}%')", AMainDataSet.ACostCentre.ColumnCostCentreCode, FFilterTxtCostCentreCode.Text));
+                StringHelper.JoinAndAppend(ref filter,
+                    String.Format("({0} LIKE '%{1}%')", AMainDataSet.ACostCentre.ColumnCostCentreCode, FFilterTxtCostCentreCode.Text),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
 
             if (FFilterCmbCostCentreType.Text != String.Empty)
             {
-                JoinAndAppend(ref filter,
-                    String.Format("({0} LIKE '{1}')", AMainDataSet.ACostCentre.ColumnCostCentreType, FFilterCmbCostCentreType.Text));
+                StringHelper.JoinAndAppend(ref filter,
+                    String.Format("({0} LIKE '{1}')", AMainDataSet.ACostCentre.ColumnCostCentreType, FFilterCmbCostCentreType.Text),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
 
             if (FFilterTxtCostCentreName.Text != String.Empty)
             {
-                JoinAndAppend(ref filter,
-                    String.Format("({0} LIKE '%{1}%')", AMainDataSet.ACostCentre.ColumnCostCentreName, FFilterTxtCostCentreName.Text));
+                StringHelper.JoinAndAppend(ref filter,
+                    String.Format("({0} LIKE '%{1}%')", AMainDataSet.ACostCentre.ColumnCostCentreName, FFilterTxtCostCentreName.Text),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
 
             if (FFilterChkActive.CheckState != CheckState.Indeterminate)
             {
                 if (FFilterChkActive.Checked)
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=1)", AMainDataSet.ACostCentre.ColumnCostCentreActiveFlag));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=1)", AMainDataSet.ACostCentre.ColumnCostCentreActiveFlag),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
                 else
                 {
-                    JoinAndAppend(ref filter, String.Format("({0}=0 OR {0} IS NULL)", AMainDataSet.ACostCentre.ColumnCostCentreActiveFlag));
+                    StringHelper.JoinAndAppend(ref filter,
+                        String.Format("({0}=0 OR {0} IS NULL)", AMainDataSet.ACostCentre.ColumnCostCentreActiveFlag),
+                        CommonJoinString.JOIN_STRING_SQL_AND);
                 }
             }
 
             AFilterString = filter;
-        }
-
-        private void JoinAndAppend(ref string AStringToExtend, string AStringToAppend)
-        {
-            if (AStringToExtend.Length > 0)
-            {
-                AStringToExtend += " AND ";
-            }
-
-            AStringToExtend += AStringToAppend;
         }
 
         /// <summary>
