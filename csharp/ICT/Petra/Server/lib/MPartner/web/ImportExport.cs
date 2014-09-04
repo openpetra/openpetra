@@ -1656,14 +1656,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static String ExportExtractPartnersExt(int AExtractId, Boolean AIncludeFamilyMembers)
         {
             TDBTransaction ReadTransaction = null;
-            bool SubmissionOK = false;
             String ExtText = GetExtFileHeader();
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS MainDS;
             MExtractTable ExtractPartners = new MExtractTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
                     ExtractPartners = MExtractAccess.LoadViaMExtractMaster(AExtractId, ReadTransaction);
@@ -1690,14 +1689,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static String ExportAllPartnersExt()
         {
             TDBTransaction ReadTransaction = null;
-            bool SubmissionOK = false;
             String ExtText = GetExtFileHeader();
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS MainDS;
             PPartnerTable Partners = new PPartnerTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
                     Partners = PPartnerAccess.LoadAll(ReadTransaction);
