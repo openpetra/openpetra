@@ -83,7 +83,6 @@ namespace Ict.Petra.Server.CallForwarding
             TSharedValidationHelper.SharedGetDataDelegate = @TCommonDataReader.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TPartnerServerLookups.VerifyPartner;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TFinanceServerLookups.GetCurrentPostingRangeDates;
-            TIntranetExportWebConnector.GetLocationRowDelegate = @ServerCalculations.DetermineBestAddress;
             TMonthEnd.StewardshipCalculationDelegate = @TStewardshipCalculationWebConnector.PerformStewardshipCalculation;
 
             // Set up Delegates for retrieval of cacheable tables when called from Shared directories on server side

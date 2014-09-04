@@ -29,6 +29,7 @@ using System.IO;
 using System.Data;
 using System.Collections.Generic;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Common.DB;
 using Ict.Common.IO;
@@ -43,7 +44,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Common;
 using System.Net.Mail;
 
-namespace Ict.Petra.Server.MCommon.WebConnectors
+namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 {
     /// <summary>
     ///
@@ -56,7 +57,6 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         private static string FExportTrace;
         private static String FExportFilePath;
         private static List <String>FZipFileNames = new List <String>();
-        private static String FIntranetEmailRecipient;
 
         private class PartnerDetails
         {
@@ -98,6 +98,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
 
         private static List <BatchKey>GiftBatches = new List <BatchKey>();
 
+/*
         // I need to call MPartner.ServerCalculations.DetermineBestAddress through a delegate,
         // since I can't refer to it directly from here. The delegate will have been set up
         // to point to the correct function by a previous call to TCallForwarding().
@@ -127,7 +128,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 FGetLocationRowDelegate = value;
             }
         }
-
+*/
         private static String PutDate(object DateField)
         {
             String ret = "";
@@ -189,7 +190,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 }
 
                 PPartnerLocationRow PartnerLocationRow;
-                TLocationPK LocationKey = GetLocationRowDelegate(APartnerKey, out PartnerLocationRow);
+                TLocationPK LocationKey = ServerCalculations.DetermineBestAddress(APartnerKey, out PartnerLocationRow);
 
                 if (LocationKey.LocationKey != -1)
                 {
@@ -254,7 +255,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
                 }
 
                 PPartnerLocationRow LocationRow;
-                TLocationPK LocationKey = GetLocationRowDelegate(APartnerKey, out LocationRow);
+                TLocationPK LocationKey = ServerCalculations.DetermineBestAddress(APartnerKey, out LocationRow);
 
                 if (LocationKey.LocationKey != -1)
                 {
@@ -719,6 +720,8 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             sw.WriteLine("options," + AOptionalMetadata);
             sw.WriteLine("password,\"" + APassword + "\"");
             sw.Close();
+
+//          SetSystemDefault("LastCalebExportPersonnel", DateTime.Now.ToString(ExportDateFormat));
             return true;
         }
 
@@ -748,7 +751,7 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
 
         private static bool EncryptUsingPublicKey(
             String AFileName,
-            String AEncryptedFileName
+            String AEmailRecipient
             )
         {
             //
@@ -756,10 +759,10 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
             // gpg -r tim.ingham@om.org -e data.zip
             //
 
-            File.Delete(FExportFilePath + "data.zip.gpg");
+            File.Delete(FExportFilePath + AFileName + ".gpg");
             System.Diagnostics.Process ShellProcess = new System.Diagnostics.Process();
             ShellProcess.EnableRaisingEvents = false;
-            ShellProcess.StartInfo.Arguments = "-r " + FIntranetEmailRecipient + " -e " + FExportFilePath + "data.zip";
+            ShellProcess.StartInfo.Arguments = "-r " + AEmailRecipient + " -e " + FExportFilePath + AFileName;
             ShellProcess.StartInfo.FileName = "GPG.EXE";
             bool ExecOK = ShellProcess.Start();
 
@@ -804,20 +807,21 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         /// <param name="AExportDonationData"></param>
         /// <param name="AExportFieldData"></param>
         /// <param name="AExportPersonData"></param>
+        /// <param name="AServerEmailAddress"></param>
         /// <param name="APswd"></param>
         /// <param name="ADaySpan"></param>
         /// <param name="AOptionalMetadata"></param>
         /// <param name="ReplyToEmail"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static String ExportToFile(Boolean AExportDonationData, Boolean AExportFieldData, Boolean AExportPersonData,
-            String APswd, Int32 ADaySpan, String AOptionalMetadata, String ReplyToEmail)
+        public static String ExportToIntranet(Boolean AExportDonationData, Boolean AExportFieldData, Boolean AExportPersonData,
+            String AServerEmailAddress, String APswd, Int32 ADaySpan, String AOptionalMetadata, String ReplyToEmail)
         {
             try
             {
                 FZipFileNames.Clear();
-                FExportTrace = "Exporting\r\n";
                 FExportFilePath = TAppSettingsManager.GetValue("OpenPetra.PathTemp") + @"\";
+                FExportTrace = "Exporting (Temporary path: " + FExportFilePath + ")\r\n";
                 FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
                 if (AExportDonationData)
@@ -849,16 +853,15 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
 
                 MemoryStream ZippedStream = TFileHelper.Streams.Compression.DeflateFilesIntoMemoryStream(FZipFileNames.ToArray(), false, "");
                 TFileHelper.Streams.FileHandling.SaveStreamToFile(ZippedStream, FExportFilePath + "data.zip");
-                FExportTrace += "Files compressed to data.zip.";
-                FIntranetEmailRecipient = TAppSettingsManager.GetValue("IntranetServerEmail");
+                FExportTrace += "Files compressed to " + FExportFilePath + "data.zip.";
 
-                if (EncryptUsingPublicKey("data.zip", "data.zip.gpg"))
+                if (EncryptUsingPublicKey("data.zip", AServerEmailAddress))
                 {
                     TSmtpSender SendMail = new TSmtpSender();
                     String SenderAddress = ReplyToEmail;
 
                     MailMessage msg = new MailMessage(SenderAddress,
-                        FIntranetEmailRecipient,
+                        AServerEmailAddress,
                         "Data from OpenPetra",
                         "Here is the latest data from my field.");
 

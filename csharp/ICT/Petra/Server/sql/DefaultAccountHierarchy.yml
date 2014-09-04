@@ -49,6 +49,7 @@
                 CRS CTRL:{shortdesc=Creditor's Control}
                 8500S:{validcc=Local, shortdesc=International Clearing House}
                     8500:
+                    8500X: {shortdesc=Non-ICH Clearing}
                 9100S:{shortdesc=Accounts Payable, longdesc=Accounts Payable within one year}
                     9100:{validcc=Local}
                 9200S:{shortdesc=Accounts Payable Funds, longdesc=Accounts Payable to other Funds within one year}

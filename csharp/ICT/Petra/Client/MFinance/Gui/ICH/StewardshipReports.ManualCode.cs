@@ -135,8 +135,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void EnableStewardshipFileOptions(object sender, EventArgs e)
         {
-            bool IsEnabled = (chkStewardshipFile.Checked || chkEmailStewardshipFileAndReport.Checked);
-
             chkStewardshipFile.Enabled = !chkEmailStewardshipFileAndReport.Checked;
 
             if ((chkStewardshipFile.Checked && chkEmailStewardshipFileAndReport.Checked))
