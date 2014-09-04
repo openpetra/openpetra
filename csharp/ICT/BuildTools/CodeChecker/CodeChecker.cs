@@ -309,12 +309,14 @@ namespace Ict.Tools.CodeChecker
             ReturnValue.Add("DBAccess.GDBAccessObj.GetNextSequenceValue / GetCurrentSequenceValue ",
                 @"DBAccess\.GDBAccessObj\.Get(Current|Next)SequenceValue[\s]*\((([^;]*)[\s]*null\))");                                                                                            // would match for example (*if* the DB Transaction
                                                                                                                                                                                                   // would be null):
+                                                                                                                                                                                                  //
                                                                                                                                                                                                   // DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(),
                                                                                                                                                                                                   // Transaction)    in file
                                                                                                                                                                                                   // \csharp\ICT\Petra\Server\lib\MCommon\Sequences.cs
             ReturnValue.Add("DBAccess.GDBAccessObj.RestartSequence (n Arguments after DB Transaction)",
                 @"DBAccess\.GDBAccessObj\.RestartSequence[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                            // would match for example (*if* the DB Transaction would be
                                                                                                                                                                                               // null):
+                                                                                                                                                                                              //
                                                                                                                                                                                               // DBAccess.GDBAccessObj.RestartSequence("seq_statement_number",
                                                                                                                                                                                               // t, CurrentSequence)    in file
                                                                                                                                                                                               // \Testing\lib\Common\DB\test.cs
@@ -371,6 +373,7 @@ namespace Ict.Tools.CodeChecker
                                                                                                                                                                                           //
                                                                                                                                                                                           //
                                                                                                                                                                                           //
+                                                                                                                                                                                          //
                                                                                                                                                                                           // SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED)
                                                                                                                                                                                           // + "'", ReadTransaction,\r\n
                                                                                                                                                                                           //                            ParametersArray)) in file
@@ -380,6 +383,7 @@ namespace Ict.Tools.CodeChecker
             ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch (no Argument after DB Transaction)",
                 @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null\)");                                                                                                                   // would match for example (*if* the DB
                                                                                                                                                                                                                 // Transaction would be null):
+                                                                                                                                                                                                                //
                                                                                                                                                                                                                 // DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE
                                                                                                                                                                                                                 // FROM pub_" + table, Transaction);    in
                                                                                                                                                                                                                 // file
@@ -388,10 +392,12 @@ namespace Ict.Tools.CodeChecker
                 @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                                                   // would match for example
                                                                                                                                                                                                                              // (*if* the DB Transaction
                                                                                                                                                                                                                              // would be null):
+                                                                                                                                                                                                                             //
                                                                                                                                                                                                                              // DBAccess.GDBAccessObj.ExecuteNonQuery(\r\nstrSQL,
                                                                                                                                                                                                                              // transaction,
                                                                                                                                                                                                                              // ParametersArray)    in
                                                                                                                                                                                                                              // file
+                                                                                                                                                                                                                             //
                                                                                                                                                                                                                              // \Server\lib\MFinance\Common\Common.PeriodEnd.cs
 
             return ReturnValue;
@@ -497,8 +503,8 @@ namespace Ict.Tools.CodeChecker
             AFalsePositivesFullMatch.Add(
                 "DBAccess.GDBAccessObj.SelectDT(applicationTable, stmt, Transaction, null, 0, 0)",
                 @"AParametersArrary Argument mistaken for AReadTransaction Argument (in file ../../csharp/ICT\Petra\Server\lib\MConference\ConferenceApplications.cs)");
-            
-            
+
+
             // 'String-ending-with' matches
             AFalsePositivesEndMatch.Add(
                 "\" + GenerateOrderByClause(AOrderBy), ATransaction, null, AStartRecord, AMaxRecords)",

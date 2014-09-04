@@ -51,14 +51,14 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static PartnerSetupTDS LoadPartnerTypes()
         {
-            TDBTransaction ReadTransaction = null;            
+            TDBTransaction ReadTransaction = null;
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
-            
+
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-            delegate
-            {
-                PTypeAccess.LoadAll(MainDS, ReadTransaction);
-            });
+                delegate
+                {
+                    PTypeAccess.LoadAll(MainDS, ReadTransaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();

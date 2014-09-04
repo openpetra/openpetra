@@ -177,13 +177,13 @@ namespace Ict.Testing.NUnitTools
         {
             TDBTransaction ReadTransaction = null;
             ALedgerTable ledgers = null;
-            
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
-            delegate
-            {            
-                ledgers = ALedgerAccess.LoadAll(ReadTransaction);
-            });
+                delegate
+                {
+                    ledgers = ALedgerAccess.LoadAll(ReadTransaction);
+                });
 
             ledgers.DefaultView.Sort = ALedgerTable.GetLedgerNumberDBName() + " DESC";
             int newLedgerNumber = ((ALedgerRow)ledgers.DefaultView[0].Row).LedgerNumber + 1;

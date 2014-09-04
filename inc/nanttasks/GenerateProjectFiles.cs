@@ -824,11 +824,32 @@ namespace Ict.Tools.NAntTasks
                 }
                 else
                 {
-                    temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
-                    temp.Replace("${filename}", ContainedFile);
-                    temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
-                    temp.Replace("${relative-filename}", relativeFilename);
-                    temp.Replace("${justfilename}", Path.GetFileName(ContainedFile));
+                    // Check if the filename is an extra manual class file with a format: BaseName.ExtraName.ManualCode.cs
+                    string[] parts = ContainedFile.Split('.');
+                    bool isExtraManualClass = (ContainedFile.EndsWith(".ManualCode.cs")) && (parts.Length == 4);
+
+                    if (isExtraManualClass)
+                    {
+                        // Extra manual file
+                        string OtherFile = parts[0] + "-generated.cs";
+
+                        temp = GetTemplateFile(ATemplateDir + "template.csproj.compile.DependentUpon");
+                        temp.Replace("${filename}", ContainedFile);
+                        temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
+                        temp.Replace("${relative-filename}", relativeFilename);
+                        temp.Replace("${DependentUpon}", OtherFile);
+                        temp.Replace("${relative-DependentUpon}", Path.GetFileName(OtherFile));
+                    }
+                    else
+                    {
+                        // A main, top-level file.  This may have an associated .Manual.cs, a Designer.cs, a YAML file and/or resx file
+                        temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
+                        temp.Replace("${filename}", ContainedFile);
+                        temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
+                        temp.Replace("${relative-filename}", relativeFilename);
+                        temp.Replace("${justfilename}", Path.GetFileName(ContainedFile));
+                    }
+
                     CompileFile.Append(temp.ToString());
 
                     if (ContainsFiles.Contains(ContainedFile.Replace(".cs", ".Designer.cs")))

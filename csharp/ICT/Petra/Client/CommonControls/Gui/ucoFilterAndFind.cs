@@ -2110,11 +2110,11 @@ namespace Ict.Petra.Client.CommonControls
                     // the selected row if the first index has, say no matching rows, then the highlight will move to the top - and then
                     // an index of -1 will match all rows, but by then the highlight will have changed.
                     // DO NOT REMOVE ONE OF THE SELECTEDINDEX = -1 ROWS FOR THIS REASON
+                    ControlToClearAsAutoComplete.Text = String.Empty;
                     FIgnoreValueChangedEvent = (ControlToClearAsAutoComplete.SelectedIndex > 0);
                     ControlToClearAsAutoComplete.SelectedIndex = -1;
                     FIgnoreValueChangedEvent = false;
                     ControlToClearAsAutoComplete.SelectedIndex = -1;
-                    ControlToClearAsAutoComplete.Text = String.Empty;
 
                     OnClearArgumentCtrlButtonClicked(sender, ControlToClearAsAutoComplete);
 

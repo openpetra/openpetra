@@ -237,12 +237,12 @@ namespace Ict.Petra.Server.App.Core
         public void PostAppDomainSetupInitialisation()
         {
             TDBTransaction ReadTransaction = null;
-            
+
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
-            delegate
-            {                        
-                StringHelper.CurrencyFormatTable = ACurrencyAccess.LoadAll(ReadTransaction);
-            });
+                delegate
+                {
+                    StringHelper.CurrencyFormatTable = ACurrencyAccess.LoadAll(ReadTransaction);
+                });
         }
     }
 }

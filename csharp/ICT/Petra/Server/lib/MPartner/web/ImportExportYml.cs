@@ -50,7 +50,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
     {
         static Int64 NewPartnerKey = -1;
 
-        private static void ParsePartners(ref PartnerImportExportTDS AMainDS, XmlNode ACurNode, TDBTransaction ATransaction, ref TVerificationResultCollection AVerificationResult)
+        private static void ParsePartners(ref PartnerImportExportTDS AMainDS,
+            XmlNode ACurNode,
+            TDBTransaction ATransaction,
+            ref TVerificationResultCollection AVerificationResult)
         {
             XmlNode LocalNode = ACurNode;
 
@@ -448,7 +451,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void ParseFinancialDetails(PartnerImportExportTDS AMainDS, XmlNode AFinancialDetailsNode, Int64 APartnerKey, TDBTransaction ATransaction)
+        private static void ParseFinancialDetails(PartnerImportExportTDS AMainDS,
+            XmlNode AFinancialDetailsNode,
+            Int64 APartnerKey,
+            TDBTransaction ATransaction)
         {
             if (AFinancialDetailsNode != null)
             {
