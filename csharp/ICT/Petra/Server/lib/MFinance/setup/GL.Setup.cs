@@ -3441,8 +3441,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
-
-                for (Int32 Idx = TempAnalAttrTbl.Rows.Count - 1; Idx >= 0; Idx--)
+                Int32 OriginalAttribCount = TempAnalAttrTbl.Rows.Count;
+                for (Int32 Idx = OriginalAttribCount - 1; Idx >= 0; Idx--)
                 {
                     AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
                     // "a_analysis_attribute"  is the referrent in foreign keys, so I can't just go changing it - I need to make a copy?
@@ -3450,23 +3450,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     DataUtilities.CopyAllColumnValues(OldAnalAttribRow, NewAnalAttribRow);
                     NewAnalAttribRow.AccountCode = ANewCode;
                     TempAnalAttrTbl.Rows.Add(NewAnalAttribRow);
-
-                    AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
-
-                    TempAnalAttrTbl.AcceptChanges();
-
-                    UpdateAccountField("a_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_recurring_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-
-                    OldAnalAttribRow.Delete();
-
-                    AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
                 }
+                AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
+                TempAnalAttrTbl.AcceptChanges();
+
+                UpdateAccountField("a_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+
+                for (Int32 Idx = OriginalAttribCount - 1; Idx >= 0; Idx--)
+                {
+                    AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
+                    OldAnalAttribRow.Delete();
+                }
+                AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
+                TempAnalAttrTbl.AcceptChanges();
 
                 UpdateAccountField("a_suspense_account",
                     "a_suspense_account_code_c",
