@@ -50,9 +50,9 @@ namespace Ict.Petra.Server.MPartner.queries
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
             string SqlStmt = "";
-            if (AParameters.Get("param_extract").ToString().Length > 0)
+            if (AParameters.Get("param_selection").ToString() == "an extract")
                 SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractFromExtractByPartnerRelationship.sql");
-            else if (AParameters.Get("param_partnerkey").ToString() != "0")
+            else if (AParameters.Get("param_selection").ToString() == "one partner")
                 SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerRelationship.sql");
             else throw new ArgumentException("Must supply an extract or partner key.");
             // create a new object of this class and control extract calculation from base class
@@ -95,7 +95,7 @@ namespace Ict.Petra.Server.MPartner.queries
             });
 
             string paramName;
-            if (AParameters.Get("param_extract").ToString().Length > 0)
+            if (AParameters.Get("param_selection").ToString() == "an extract")
             {
                 paramName = "param_extract";
                 ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.VarChar)

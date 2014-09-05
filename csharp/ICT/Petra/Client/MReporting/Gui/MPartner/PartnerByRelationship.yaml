@@ -6,7 +6,6 @@
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByRelationship.CalculateExtract
         ISOLATIONLEVEL: serializable
-        XMLFILES: [Partner\\\\partnerbyrelationship.xml]
         REPORTNAME: Partner By Relationship
         CURRENTREPORT: Partner By Relationship
         CONTROLSUSPENDLAYOUT: BLANK
@@ -14,7 +13,6 @@
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
         SETCONTROLSLOCALVARS: BLANK
-        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
@@ -59,77 +57,3 @@
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
-    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-        Para1:
-            Name: Address Type
-            Parameter: 2.5
-        Para2:
-            Name: Alternate Telephone
-            Parameter: 3.3
-        Para3:
-            Name: Address valid from
-            Parameter: 1.8
-        Para4:
-            Name: Address valid to
-            Parameter: 1.8
-        Para5:
-            Name: City
-            Parameter: 3.0
-        Para6:
-            Name: Country
-            Parameter: 1.5
-        Para7:
-            Name: County
-            Parameter: 2.0
-        Para8:
-            Name: E-Mail Address
-            Parameter: 4.0
-        Para9:
-            Name: Fax
-            Parameter: 3.0
-        Para10:
-            Name: Field
-            Parameter: 2.0
-        Para11:
-            Name: First Address Line
-            Parameter: 3.0
-        Para12:
-            Name: Location Key
-            Parameter: 2.0
-        Para13:
-            Name: Mobile
-            Parameter: 3.0
-        Para14:
-            Name: Partner Class
-            Parameter: 1.0
-        Para15:
-            Name: Partner Key
-            Parameter: 2.0
-        Para16a:
-            Name: Partner Name
-            Parameter: 4.0
-        #Para16:
-         #   Name: Short Name
-         #   Parameter: 4.0
-        Para17:
-            Name: Post Code
-            Parameter: 2.0
-        Para18:
-            Name: Send Mail
-            Parameter: 2.0
-        Para19:
-            Name: SiteKey
-            Parameter: 2.0
-        Para20:
-            Name: Street Name
-            Parameter: 3.0
-        Para21:
-            Name: Telephone
-            Parameter: 3.3
-        Para22:
-            Name: Third Address Line
-            Parameter: 3.0
-        Para23:
-            Name: URL
-            Parameter: 3.0
-            
