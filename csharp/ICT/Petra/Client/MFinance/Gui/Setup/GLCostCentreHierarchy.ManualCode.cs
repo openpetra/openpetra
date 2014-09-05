@@ -536,6 +536,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return TSubmitChangesResult.scrInfoNeeded;
             }
 
+            ucoCostCentreTree.MarkAllNodesCommitted();
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
         }
 

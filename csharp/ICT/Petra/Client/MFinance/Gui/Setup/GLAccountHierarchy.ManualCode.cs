@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public Boolean? CanDelete;
 
-        /// <summary>If an account is new (created in this session) I can change it without consulting the server:</summary>
+        /// <summary>If an account is new (created in this session and not yet committed) I can change it without consulting the server:</summary>
         public Boolean IsNew;
 
         /// <summary>A Message will be returned from the server if actions on this account are restricted.</summary>
@@ -698,6 +698,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
 
+            ucoAccountsTree.MarkAllNodesCommitted();
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
         }
 
