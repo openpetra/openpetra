@@ -95,32 +95,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             String EmptyTypesWarning = "";
 
-            foreach (AAnalysisTypeRow TypeRow in ASubmitTDS.AAnalysisType.Rows)
+            //
+            // If the user has added a new type, I want to show her a warning if she didn't also add at least one value for the new type.
+
+            if (ASubmitTDS.AAnalysisType != null)
             {
-                if (TypeRow.RowState == DataRowState.Deleted)
+                foreach (AAnalysisTypeRow TypeRow in ASubmitTDS.AAnalysisType.Rows)
                 {
-                    continue;
-                }
-
-                Boolean NoValuesProvided = true;
-
-                if (ASubmitTDS.AFreeformAnalysis != null)
-                {
-                    ASubmitTDS.AFreeformAnalysis.DefaultView.RowFilter =
-                        String.Format("a_analysis_type_code_c='{0}'", TypeRow["a_analysis_type_code_c"]);
-                    NoValuesProvided = ASubmitTDS.AFreeformAnalysis.DefaultView.Count == 0;
-                }
-
-                if (NoValuesProvided)
-                {
-                    if (EmptyTypesWarning != "")
+                    if (TypeRow.RowState == DataRowState.Deleted)
                     {
-                        EmptyTypesWarning += "\r\n";
+                        continue;
                     }
 
-                    EmptyTypesWarning +=
-                        String.Format(Catalog.GetString("Type {0} has no values, and therefore it cannot yet be applied to any account."),
-                            TypeRow["a_analysis_type_code_c"]);
+                    Boolean NoValuesProvided = true;
+
+                    if (ASubmitTDS.AFreeformAnalysis != null)
+                    {
+                        ASubmitTDS.AFreeformAnalysis.DefaultView.RowFilter =
+                            String.Format("a_analysis_type_code_c='{0}'", TypeRow["a_analysis_type_code_c"]);
+                        NoValuesProvided = ASubmitTDS.AFreeformAnalysis.DefaultView.Count == 0;
+                    }
+
+                    if (NoValuesProvided)
+                    {
+                        if (EmptyTypesWarning != "")
+                        {
+                            EmptyTypesWarning += "\r\n";
+                        }
+
+                        EmptyTypesWarning +=
+                            String.Format(Catalog.GetString("Type {0} has no values, and therefore it cannot yet be applied to any account."),
+                                TypeRow["a_analysis_type_code_c"]);
+                    }
                 }
             }
 

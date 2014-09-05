@@ -175,7 +175,15 @@ namespace Ict.Testing.NUnitTools
         /// <returns>ledgernumber of new ledger</returns>
         public static int CreateNewLedger(DateTime? AStartDate = null)
         {
-            ALedgerTable ledgers = ALedgerAccess.LoadAll(null);
+            TDBTransaction ReadTransaction = null;
+            ALedgerTable ledgers = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
+                {
+                    ledgers = ALedgerAccess.LoadAll(ReadTransaction);
+                });
 
             ledgers.DefaultView.Sort = ALedgerTable.GetLedgerNumberDBName() + " DESC";
             int newLedgerNumber = ((ALedgerRow)ledgers.DefaultView[0].Row).LedgerNumber + 1;

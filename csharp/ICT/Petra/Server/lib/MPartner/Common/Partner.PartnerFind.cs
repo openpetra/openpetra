@@ -653,18 +653,18 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 && (CriteriaRow["PartnerClass"].ToString().StartsWith("FAMILY")))
             {
                 // A custom subquery seems to only speedy way of doing this!
-                if (CriteriaRow["PartnerClass"].ToString() == "FAMILY") 
+                if (CriteriaRow["PartnerClass"].ToString() == "FAMILY")
                 {
                     CustomWhereCriteria = String.Format(
                         "{0} AND EXISTS (select * FROM PUB.p_partner_type WHERE (PUB.p_partner_type.p_type_code_c LIKE 'WORKER%' OR PUB.p_partner_type.p_type_code_c LIKE 'EX-WORKER%') AND PUB.p_partner.p_partner_key_n = PUB.p_partner_type.p_partner_key_n)",
-                        CustomWhereCriteria);                                        
+                        CustomWhereCriteria);
                 }
                 else
                 {
                     CustomWhereCriteria = String.Format(
                         "{0} AND (PUB.p_partner.p_partner_class_c = 'UNIT' OR EXISTS (select * FROM PUB.p_partner_type WHERE (PUB.p_partner_type.p_type_code_c LIKE 'WORKER%' OR PUB.p_partner_type.p_type_code_c LIKE 'EX-WORKER%') AND PUB.p_partner.p_partner_key_n = PUB.p_partner_type.p_partner_key_n))",
-                        CustomWhereCriteria);                                        
-                }                                    
+                        CustomWhereCriteria);
+                }
             }
 
             if (CriteriaRow["LocationKey"].ToString().Length > 0)

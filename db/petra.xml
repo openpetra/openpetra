@@ -5652,7 +5652,7 @@
   <table name="p_merge_form"
          descr="Master record for Mail Merge output creation"
          area="Petra Data"
-         label="P_Merge_Form"
+         label="Merge Form"
          dumpname="p_mrgfrm"
          group="mailroom">
     <tablefield name="p_merge_form_name_c"
@@ -5676,7 +5676,7 @@
   <table name="p_merge_field"
          descr="Fields within a Mail Merge Form"
          area="Petra Data"
-         label="P_Merge_Field"
+         label="Merge Field"
          dumpname="p_mrgfld"
          group="mailroom">
     <tablefield name="p_merge_form_name_c"
@@ -13267,7 +13267,7 @@
   <table name="a_ar_article_price"
          descr="assign a price to an article, which can be updated by time"
          area="Petra Data"
-         label="ArticlePrice"
+         label="Article Price"
          dumpname="ar_price"
          group="ar">
     <tablefield name="a_ar_article_code_c"
@@ -19975,7 +19975,7 @@
   <table name="ph_room_booking"
          descr="Links room allocations and a booking"
          area="Petra Data"
-         label="RoomBooking"
+         label="Room Booking"
          dumpname="pc_rmbk"
          group="hospitality">
     <tablefield name="ph_booking_key_i"

@@ -126,7 +126,19 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static void SavePartner(PartnerEditTDS AMainDS)
         {
-            if (!PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT, null))
+            TDBTransaction ReadTransaction = null;
+            TDBTransaction SubmitChangesTransaction = null;
+            bool SubmissionOK = false;
+            bool ImportDefaultAcquCodeExists = false;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    ImportDefaultAcquCodeExists = PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT,
+                        ReadTransaction);
+                });
+
+            if (!ImportDefaultAcquCodeExists)
             {
                 PAcquisitionTable AcqTable = new PAcquisitionTable();
                 PAcquisitionRow row = AcqTable.NewRowTyped();
@@ -134,22 +146,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 row.AcquisitionDescription = Catalog.GetString("Imported Data");
                 AcqTable.Rows.Add(row);
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, ref SubmissionOK,
+                    delegate
+                    {
+                        PAcquisitionAccess.SubmitChanges(AcqTable, SubmitChangesTransaction);
 
-                try
-                {
-                    PAcquisitionAccess.SubmitChanges(AcqTable, Transaction);
-
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("An Exception occured during the saving of a Partner's Acquisition:" + Environment.NewLine + Exc.ToString());
-
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-
-                    throw;
-                }
+                        SubmissionOK = true;
+                    });
             }
 
             PartnerEditTDSAccess.SubmitChanges(AMainDS);

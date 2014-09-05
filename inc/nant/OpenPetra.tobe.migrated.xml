@@ -126,7 +126,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <!-- set platform specific variables -->
 <if test="${'win32'==platform::get-name()}" >
   <echo>Running on MS Windows</echo>
-  <property name="PostgreSQL.Version" value="9.0" overwrite="false"/>
+  <property name="PostgreSQL.Version" value="9.3" overwrite="false"/>
   <property name="MySQL.Version" value="5.1" overwrite="false"/>
   <property name="Dia.exe" value="${OP::GetFileInProgramDirectory('\Dia\bin\dia.exe')}" overwrite="false"/> 
   <property name="sql2dia" value="${dir.3rdParty}/sql2dia/sql2dia.exe" overwrite="false"/>

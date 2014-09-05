@@ -198,12 +198,20 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
-        if (ARow != null)
+		FPetraUtilsObject.DisableDataChangedEvent();
+
+        if (ARow == null)
         {
-            FPetraUtilsObject.DisableDataChangedEvent();
-            {#SHOWDETAILS}
-		    FPetraUtilsObject.EnableDataChangedEvent();
+            pnlDetails.Enabled = false;
+            {#CLEARDETAILS}
         }
+        else
+        {
+            pnlDetails.Enabled = true;
+            {#SHOWDETAILS}
+        }
+
+		FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;

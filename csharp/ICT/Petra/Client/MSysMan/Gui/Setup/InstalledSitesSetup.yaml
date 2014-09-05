@@ -1,0 +1,40 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Installed Sites
+    Namespace: Ict.Petra.Client.MSysMan.Gui.Setup
+    FormType: edit
+    Template: window
+    Actions:
+     
+#p_partner_ledger
+#s_system_parameter.s_site_key_n
+    
+    Controls:
+        pnlContent:
+            Controls: [pnlSiteKey, pnlSites]
+            Dock: Fill
+
+        pnlSiteKey:
+            Dock: Top
+            Controls: 
+                Row0: [cmbDefaultSite]
+
+        pnlSites:
+            Dock: Fill
+            Controls:
+                Row0: [lblSites]
+                Row1: [clbSites]
+               
+        cmbDefaultSite:
+            Width: 400
+            Validation: true
+
+        lblSites:
+            Dock: Top
+            Label: Select Sites in list to be set up for use
+
+        clbSites:
+            Dock: Fill
+            NoLabel: true
+            OnChange: ClbSites_ValueChanged 
+

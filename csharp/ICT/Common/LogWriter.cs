@@ -80,7 +80,7 @@ namespace Ict.Common
             {
                 return USuppressDateAndTime;
             }
-            
+
             set
             {
                 USuppressDateAndTime = value;
@@ -163,14 +163,16 @@ namespace Ict.Common
 
                 if (TLogging.DebugLevel > 0)
                 {
-                    SWriter.WriteLine(Environment.NewLine + (!USuppressDateAndTime ? DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty) + "  " + ULogtextPrefix + 
-                                      (!(USuppressDateAndTime && ULogtextPrefix.Length == 0) ? " : " : String.Empty) +
+                    SWriter.WriteLine(Environment.NewLine +
+                        (!USuppressDateAndTime ? DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty) + "  " + ULogtextPrefix +
+                        (!(USuppressDateAndTime && ULogtextPrefix.Length == 0) ? " : " : String.Empty) +
                         strMessage);
                 }
                 else
                 {
                     SWriter.WriteLine(
-                        Environment.NewLine + (!USuppressDateAndTime ? DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty)+ ULogtextPrefix + 
+                        Environment.NewLine + (!USuppressDateAndTime ? DateTime.Now.ToString(
+                                                   "dddd, dd-MMM-yyyy, HH:mm:ss.ff") : String.Empty) + ULogtextPrefix +
                         (!(USuppressDateAndTime && ULogtextPrefix.Length == 0) ? " : " : String.Empty) +
                         strMessage);
                 }

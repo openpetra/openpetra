@@ -37,6 +37,7 @@ using SourceGrid;
 using Owf.Controls;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Gui;
@@ -58,23 +59,23 @@ namespace Ict.Petra.Client.CommonForms
 // TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
 
         ///
-        protected static readonly string StrSingleRecordToSave = Catalog.GetString("There is 1 record that needs to be saved.");
+        public static readonly string StrSingleRecordToSave = Catalog.GetString("There is 1 record that needs to be saved.");
 
         ///
-        protected static readonly string StrPluralRecordsToSave = Catalog.GetString("There are {0} records that need to be saved.");
+        public static readonly string StrPluralRecordsToSave = Catalog.GetString("There are {0} records that need to be saved.");
 
         ///
-        protected static readonly string StrConsequenceIfNotSaved = Catalog.GetString(
+        public static readonly string StrConsequenceIfNotSaved = Catalog.GetString(
             "{0}If you close this window without saving, you will lose all the changes that you have made.");
 
         ///
-        protected static readonly string StrSingleTableToSave = Catalog.GetString("The following table has data that needs to be saved:");
+        public static readonly string StrSingleTableToSave = Catalog.GetString("The following table has data that needs to be saved:");
 
         ///
-        protected static readonly string StrPluralTablesToSave = Catalog.GetString("The following tables have data that needs to be saved:");
+        public static readonly string StrPluralTablesToSave = Catalog.GetString("The following tables have data that needs to be saved:");
 
         ///
-        protected static readonly string StrRecordsInTable = Catalog.GetString("{0}   {1} {2} in the '{3}' table.");
+        public static readonly string StrRecordsInTable = Catalog.GetString("{0}   {1} {2} in the '{3}' table.");
 
         #endregion
 
@@ -582,7 +583,7 @@ namespace Ict.Petra.Client.CommonForms
 
                     if (tableChangesCount > 0)
                     {
-                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                        TableAndCountList.Add(new Tuple <string, int>(((TTypedDataTable)dt).TableDBLabel, tableChangesCount));
                     }
                 }
             }
@@ -626,14 +627,11 @@ namespace Ict.Petra.Client.CommonForms
 
                     foreach (Tuple <string, int>TableAndCount in TableAndCountList)
                     {
-                        string NiceTableName = StringHelper.ReverseUpperCamelCase(TableAndCount.Item1);
-                        NiceTableName = NiceTableName.Substring(NiceTableName.IndexOf(' ') + 1);
-
                         AMessage += String.Format(TFrmPetraEditUtils.StrRecordsInTable,
                             Environment.NewLine,
                             TableAndCount.Item2,
                             Catalog.GetPluralString("record", "records", TableAndCount.Item2),
-                            NiceTableName);
+                            TableAndCount.Item1);
                     }
 
                     AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
