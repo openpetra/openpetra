@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FAccountCode);
                 FMainDS.AAnalysisAttribute.DefaultView.Sort = AAnalysisAttributeTable.GetAnalysisTypeCodeDBName();
 
-                grdDetails.SelectRowInGrid(1);
+                grdDetails.SelectRowWithoutFocus(1);
                 UpdateRecordNumberDisplay();
             }
         }
@@ -182,15 +182,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     out ServerMessage);
                 btnDelete.Enabled = CanBeChanged;
                 cmbDetailAnalTypeCode.Enabled = CanBeChanged;
-
-                if (!CanBeChanged)
-                {
-                    if (ShowStatus != null)
-                    {
-                        ShowStatus(ServerMessage);
-                    }
-                }
-
                 FIamUpdating = false;
             }
         }
@@ -253,7 +244,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
         {
-            if (!FIamUpdating && (FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
+            if (FIamUpdating || (FPreviouslySelectedDetailRow == null))
+            {
+                return;
+            }
+
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Detached)
+                || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
+
+            if (FPreviouslySelectedDetailRow != null)
             {
 /*
  *              // This code in comments addresses a strange problem where

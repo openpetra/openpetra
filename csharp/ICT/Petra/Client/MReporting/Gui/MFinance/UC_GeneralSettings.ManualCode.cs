@@ -437,12 +437,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <param name="items"></param>
         public void CurrencyOptions(object[] items)
         {
-        	string DefaultCurrencySelection = cmbCurrency.GetSelectedString();
+			String CurrencySelection = cmbCurrency.GetSelectedString();
+
             this.cmbCurrency.Items.Clear();
-            this.cmbCurrency.Items.AddRange(items);
-            
-            // reselect default value
-            cmbCurrency.SetSelectedString(DefaultCurrencySelection);
+            cmbCurrency.Items.AddRange(items);
+            cmbCurrency.SetSelectedString(CurrencySelection); // Potentially might not work, but probably will!
         }
 
         /// <summary>

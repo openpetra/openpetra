@@ -126,9 +126,20 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
 
                 FInitState = TInitState.InitSystem;
+
+
                 FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
                 FFastReportType = FfastReportInstance.GetType();
                 FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
+
+                //
+                // I want to set the Utils.Config.EmailSettings
+                // to our SMTP server settings.
+                //
+                object EmailSettings = FastReportsDll.GetType("FastReport.Utils.Config").GetProperty("EmailSettings").GetValue(null, null);
+
+                Type EmailSettingsType = EmailSettings.GetType();
+                EmailSettingsType.GetProperty("Host").SetValue(EmailSettings, "TimHost.com", null);
             }
             catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
             {

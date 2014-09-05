@@ -147,9 +147,9 @@ namespace Ict.Common
         /// <summary>
         /// Creates a logger that can log both to Console or file.
         /// </summary>
-        /// <param name="AFileName">File to which the output should be written if logging to
-        /// the logfile is requested.</param>
-        public TLogging(String AFileName)
+        /// <param name="AFileName">File to which the output should be written if logging to the logfile is requested.</param>
+        /// <param name="ASuppressDateAndTime">Set to true to suppress the logging of date and time in log files (default= false).</param>
+        public TLogging(String AFileName, bool ASuppressDateAndTime = false)
         {
             if (Path.GetFullPath(AFileName) == TLogWriter.GetLogFileName())
             {
@@ -161,6 +161,7 @@ namespace Ict.Common
             if (ULogWriter == null)
             {
                 ULogWriter = new TLogWriter(AFileName);
+                ULogWriter.SuppressDateAndTime = ASuppressDateAndTime;
                 ULogFileName = AFileName;
             }
             else

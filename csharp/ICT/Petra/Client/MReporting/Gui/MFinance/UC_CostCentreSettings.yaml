@@ -10,7 +10,7 @@ RootNode:
             ActionClick: UnselectAll
     Controls:
         pnlContent:
-            Controls: [grpSelection, grpCostCentreOptions]
+            Controls: [grpCostCentreSelection, grpCostCentreOptions]
             Dock: Fill
         grpCostCentreSelection:
             Width: 650

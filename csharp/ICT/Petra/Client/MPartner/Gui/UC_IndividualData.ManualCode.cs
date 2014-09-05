@@ -611,7 +611,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
         {
             bool JobAndStaffDataGridNeedsRefresh = false;
-            
+
             //
             // Need to merge Tables from PartnerEditTDS into IndividualDataTDS so the updated s_modification_id_t of modififed Rows is held correctly in IndividualDataTDS, too!
             //
@@ -638,9 +638,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             if ((FMainDS.PmJobAssignment.GetChangesTyped() != null)
                 || (FMainDS.PmStaffData.GetChangesTyped() != null))
             {
-				JobAndStaffDataGridNeedsRefresh = true;
+                JobAndStaffDataGridNeedsRefresh = true;
             }
-            
+
             // Call AcceptChanges on IndividualDataTDS so that we don't have any changed data anymore (this is done to PartnerEditTDS, too, after this Method returns)!
             FMainDS.AcceptChanges();
 

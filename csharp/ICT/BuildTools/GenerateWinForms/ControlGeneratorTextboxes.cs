@@ -245,7 +245,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (TYml2Xml.HasAttribute(ctrl.xmlNode, "MinimumSize"))
                 {
-                    writer.SetControlProperty(ctrl, "MinimumSize", "new System.Drawing.Size(" + TYml2Xml.GetAttribute(ctrl.xmlNode, "MinimumSize") + ")");
+                    writer.SetControlProperty(ctrl, "MinimumSize", "new System.Drawing.Size(" + TYml2Xml.GetAttribute(ctrl.xmlNode,
+                            "MinimumSize") + ")");
                 }
             }
 

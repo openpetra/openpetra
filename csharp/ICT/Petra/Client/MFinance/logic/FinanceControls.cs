@@ -981,14 +981,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding);
 
+            AControl.InitialiseUserControl(periods, "value", "display", "descr", null, null);
+
             if (AShowCurrentAndForwarding)
             {
-                AControl.InitialiseUserControl(periods, "value", "display", null, null);
                 AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
             }
             else
             {
-                AControl.InitialiseUserControl(periods, "value", "display", null);
                 AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
             }
 
@@ -1015,15 +1015,18 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             string DisplayMember = "display";
             string ValueMember = "value";
+            string DescrMember = "descr";
             DataTable periods = new DataTable();
             periods.Columns.Add(new DataColumn(ValueMember, typeof(Int32)));
             periods.Columns.Add(new DataColumn(DisplayMember, typeof(string)));
+            periods.Columns.Add(new DataColumn(DescrMember, typeof(string)));
 
             DataRow period;
 
             period = periods.NewRow();
             period[ValueMember] = -2;
-            period[DisplayMember] = Catalog.GetString("(All periods)");
+            period[DisplayMember] = "All";
+            period[DescrMember] = Catalog.GetString("(All periods)");
             periods.Rows.Add(period);
 
             if (Ledger.CurrentFinancialYear == AYear)
@@ -1032,7 +1035,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = 0;
-                    period[DisplayMember] = Catalog.GetString("(Current and forwarding periods)");
+                    period[DisplayMember] = "Current";
+                    period[DescrMember] = Catalog.GetString("(Current and forwarding periods)");
                     periods.Rows.Add(period);
                 }
 
@@ -1040,8 +1044,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = periodCounter;
-                    period[DisplayMember] = "(" + periodCounter.ToString("00") + ") " +
-                                            ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    period[DisplayMember] = periodCounter.ToString("00");
+                    period[DescrMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
                     periods.Rows.Add(period);
                 }
             }
@@ -1051,8 +1055,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = periodCounter;
-                    period[DisplayMember] = "(" + periodCounter.ToString("00") + ") " +
-                                            ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    period[DisplayMember] = "(" + periodCounter.ToString("00") + ") ";
+                    period[DescrMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
                     periods.Rows.Add(period);
                 }
             }

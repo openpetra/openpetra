@@ -2427,12 +2427,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             //
+            // If there's an 8500X account, that also needs to be re-tweaked:
+            AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500X", Transaction);
+
+            if (AccountTbl.Rows.Count > 0)
+            {
+                IchAccountRow = AccountTbl[0];
+                IchAccountRow.AccountType = "Asset";
+                IchAccountRow.DebitCreditIndicator = true;
+                AAccountAccess.SubmitChanges(AccountTbl, Transaction);
+            }
+
+            //
             // The Summary account also needs to be re-tweaked:
             AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500S", Transaction);
 
             if (AccountTbl.Rows.Count > 0)
             {
-                IchAccountRow = AccountTbl[0]; // If there's no row 0, something very bad has happened!
+                IchAccountRow = AccountTbl[0];
                 IchAccountRow.AccountType = "Asset";
                 IchAccountRow.DebitCreditIndicator = true;
                 AAccountAccess.SubmitChanges(AccountTbl, Transaction);
@@ -2612,30 +2624,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     unitRow.PartnerKey = PartnerKey;
                     unitRow.UnitName = ALedgerName;
                     MainDS.PUnit.Rows.Add(unitRow);
-                }
-
-                if (!PPartnerLedgerAccess.Exists(PartnerKey, Transaction))
-                {
-                    PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
-                    partnerLedgerRow.PartnerKey = PartnerKey;
-
-                    // calculate last partner id, from older uses of this ledger number
-                    object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
-                        String.Format("SELECT MAX(p_partner_key_n) FROM PUB_p_partner " +
-                            "WHERE p_partner_key_n > {0} AND p_partner_key_n < {1}",
-                            PartnerKey,
-                            PartnerKey + 500000), Transaction);
-
-                    if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
-                    {
-                        partnerLedgerRow.LastPartnerId = Convert.ToInt32(Convert.ToInt64(MaxExistingPartnerKeyObj) - PartnerKey);
-                    }
-                    else
-                    {
-                        partnerLedgerRow.LastPartnerId = 5000;
-                    }
-
-                    MainDS.PPartnerLedger.Rows.Add(partnerLedgerRow);
                 }
 
                 String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
@@ -3022,13 +3010,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
 
                 ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
-
-                // remove from the list of sites when creating new partners
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format("DELETE FROM PUB_{0} WHERE p_partner_key_n = {1}",
-                        PPartnerLedgerTable.GetTableDBName(),
-                        Convert.ToInt64(ALedgerNumber) * 1000000),
-                    Transaction);
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {

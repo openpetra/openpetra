@@ -49,6 +49,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Client.MPersonnel.Gui.Setup;
 

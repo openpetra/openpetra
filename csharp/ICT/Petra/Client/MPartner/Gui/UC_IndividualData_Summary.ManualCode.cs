@@ -152,15 +152,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             string PhoneOfPerson;
             string EmailOfPerson;
 
-            if (!AJobAndStaffDataGridNeedsRefresh) 
+            if (!AJobAndStaffDataGridNeedsRefresh)
             {
                 Int64[] SupportingChurchesPartnerKeys = new long[0];
-    
+
                 if (FMainDS.Tables[PartnerEditTDSPPartnerLocationTable.GetTableName()] != null)
                 {
                     // Check for change of 'Best Address' and it's Phone Number and Email Address
                     DetermineAddressComponents(out PhoneOfPerson, out EmailOfPerson);
-    
+
                     if (PhoneOfPerson != null)
                     {
                         if ((PhoneOfPerson != FPhoneOfPerson)
@@ -170,12 +170,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
-    
+
                 if (FMainDS.Tables[PPartnerRelationshipTable.GetTableName()] != null)
                 {
                     // Check for change in supporting Church/es relationship(s)
                     DetermineChurchRelationships(out SupportingChurchesPartnerKeys);
-    
+
                     if ((FSupportingChurchesPartnerKeys == null)
                         || (FSupportingChurchesPartnerKeys.Length != SupportingChurchesPartnerKeys.Length))
                     {
@@ -192,7 +192,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
-                
             }
             else
             {
@@ -320,7 +319,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 lblMultipleRecordsInfo.Text = MultipleRecordsInfoText;
                 lblMultipleRecordsInfo.Visible = true;
                 lblMultipleRecordsInfo.ForeColor = System.Drawing.Color.SaddleBrown;
-                
+
                 pnlChurchInfoData.Height = 162;
                 grpChurchInfo.Height = 181;
                 grpJobCommitment.Top = 372;
@@ -328,8 +327,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 lblMultipleRecordsInfo.Visible = false;
-                
-                // 'Shrink' Church Info section and move Job/Commitment section up as lblMultipleRecordsInfo isn't taking up space... 
+
+                // 'Shrink' Church Info section and move Job/Commitment section up as lblMultipleRecordsInfo isn't taking up space...
                 pnlChurchInfoData.Height = 162 - 25;
                 grpChurchInfo.Height = 181 - 25;
                 grpJobCommitment.Top = 372 - 25;

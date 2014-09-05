@@ -211,6 +211,8 @@ namespace Ict.Petra.Shared
         /// <summary>Value for Comment fields, etc. for System Generated Rows in Tables</summary>
         public const String ROW_IS_SYSTEM_GENERATED = "System Generated";
 
+        /// <summary>temporary column name for info if available site is listed in PPartnerLedger</summary>
+        public const String SYSMAN_AVAILABLE_SITES_COLUMN_IS_PARTNER_LEDGER = "IsPartnerLedger";
 
         #region readonly Fields   (Used for 'constants' whose value can be translated so that they are meaningful to the users in their language)
 
