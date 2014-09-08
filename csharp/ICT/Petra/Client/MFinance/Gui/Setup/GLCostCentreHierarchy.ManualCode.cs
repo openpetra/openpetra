@@ -439,6 +439,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.ACostCentre.Rows.Add(newCostCentreRow);
 
                 FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
+
+                FIAmUpdating++;
+                ShowDetails(newCostCentreRow);
+                FIAmUpdating--;
+
                 ucoCostCentreTree.AddNewCostCentre(newCostCentreRow);
                 txtDetailCostCentreCode.Focus();
                 txtDetailCostCentreCode.SelectAll();
@@ -494,6 +499,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             foreach (ACostCentreRow CheckRow in FMainDS.ACostCentre.Rows)
             {
+                if (CheckRow.RowState == DataRowState.Deleted)
+                {
+                    continue;
+                }
+
                 if (CheckRow.CostCentreCode == "")
                 {
                     MessageBox.Show(

@@ -579,7 +579,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             AAccountRow parentAccount = FCurrentAccount.AccountRow;
 
-            AAccountRow newAccountRow = FMainDS.AAccount.NewRowTyped();
+            GLSetupTDSAAccountRow newAccountRow = FMainDS.AAccount.NewRowTyped();
             newAccountRow.AccountCode = newName;
             newAccountRow.LedgerNumber = FLedgerNumber;
             newAccountRow.AccountActiveFlag = true;
@@ -600,7 +600,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             hierarchyDetailRow.ReportOrder = ucoAccountsTree.GetLastChildReportingOrder() + 1;
             FMainDS.AAccountHierarchyDetail.Rows.Add(hierarchyDetailRow);
-
+            FIAmUpdating++;
+            ShowDetails(newAccountRow);
+            FIAmUpdating--;
             ucoAccountsTree.AddNewAccount(newAccountRow, hierarchyDetailRow);
 
             txtDetailAccountCode.Focus();
