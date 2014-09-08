@@ -120,6 +120,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Int64 GetBankBySortCode(string ABranchCode)
         {
+            TDBTransaction ReadTransaction = null;
             string sqlFindBankBySortCode =
                 String.Format("SELECT * FROM PUB_{0} WHERE {1}=?",
                     PBankTable.GetTableDBName(),
@@ -129,9 +130,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             param.Value = ABranchCode;
             PBankTable bank = new PBankTable();
-            DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, null, new OdbcParameter[] {
-                    param
-                }, -1, -1);
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.SelectDT(bank, sqlFindBankBySortCode, ReadTransaction, new OdbcParameter[] {
+                            param
+                        }, -1, -1);
+                });
 
             if (bank.Count > 0)
             {

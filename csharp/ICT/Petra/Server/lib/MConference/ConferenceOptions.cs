@@ -25,12 +25,9 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections.Specialized;
-using GNU.Gettext;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Data;
-using Ict.Common.Verification;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
@@ -327,35 +324,24 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             String ConferenceCodePrefix = "";
             PUnitTable UnitTable = new PUnitTable();
             PUnitRow TemplateRow = UnitTable.NewRowTyped(false);
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions called!");
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
-            try
-            {
-                /* Load data */
-                UnitTable = PUnitAccess.LoadByPrimaryKey(AUnitKey, ReadTransaction);
+            TDBTransaction Transaction = null;
 
-                if (UnitTable.Rows.Count > 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
                 {
-                    ConferenceCodePrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode.Substring(0, 5);
+                    /* Load data */
+                    UnitTable = PUnitAccess.LoadByPrimaryKey(AUnitKey, Transaction);
 
-                    UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, null, null, ReadTransaction,
-                        null, 0, 0);
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions: committed own transaction.");
-                }
-            }
+                    if (UnitTable.Rows.Count > 0)
+                    {
+                        ConferenceCodePrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode.Substring(0, 5);
+
+                        UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, null, null, Transaction);
+                    }
+                });
 
             foreach (PUnitRow UnitRow in UnitTable.Rows)
             {

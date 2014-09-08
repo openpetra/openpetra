@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -31,6 +33,7 @@ using Ict.Common.Remoting.Client;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.CommonForms;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -372,6 +375,124 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return IntlToBaseCurrencyExchRate;
+        }
+
+        private int GetChangedRecordCountManual(out string AMessage)
+        {
+            // For GL Batch we will get some mix of batches, journals and transactions
+            List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
+            int allChangesCount = 0;
+
+            // Work out how many changes in each table
+            foreach (DataTable dt in FMainDS.Tables)
+            {
+                if (dt != null)
+                {
+                    int tableChangesCount = 0;
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        if (dr.RowState != DataRowState.Unchanged)
+                        {
+                            tableChangesCount++;
+                            allChangesCount++;
+                        }
+                    }
+
+                    if (tableChangesCount > 0)
+                    {
+                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                    }
+                }
+            }
+
+            // Now build up a sensible message
+            AMessage = String.Empty;
+
+            if (TableAndCountList.Count > 0)
+            {
+                int nBatches = 0;
+                int nJournals = 0;
+                int nTransactions = 0;
+
+                foreach (Tuple <string, int>TableAndCount in TableAndCountList)
+                {
+                    if (TableAndCount.Item1.Equals(ABatchTable.GetTableName()))
+                    {
+                        nBatches = TableAndCount.Item2;
+                    }
+                    else if (TableAndCount.Item1.Equals(AJournalTable.GetTableName()))
+                    {
+                        nJournals = TableAndCount.Item2;
+                    }
+                    else if (TableAndCount.Item2 > nTransactions)
+                    {
+                        nTransactions = TableAndCount.Item2;
+                    }
+                }
+
+                AMessage = Catalog.GetString("    You have made changes to ");
+                string strBatches = String.Empty;
+                string strJournals = String.Empty;
+                string strTransactions = String.Empty;
+
+                if (nBatches > 0)
+                {
+                    strBatches = String.Format("{0} {1}",
+                        nBatches,
+                        Catalog.GetPluralString("batch", "batches", nBatches));
+                }
+
+                if (nJournals > 0)
+                {
+                    strJournals = String.Format("{0} {1}",
+                        nJournals,
+                        Catalog.GetPluralString("journal", "journals", nJournals));
+                }
+
+                if (nTransactions > 0)
+                {
+                    strTransactions = String.Format("{0} {1}",
+                        nTransactions,
+                        Catalog.GetPluralString("transaction", "transactions", nTransactions));
+                }
+
+                bool bGotAll = (nBatches > 0) && (nJournals > 0) && (nTransactions > 0);
+
+                if (nBatches > 0)
+                {
+                    AMessage += strBatches;
+                }
+
+                if (nJournals > 0)
+                {
+                    if (bGotAll)
+                    {
+                        AMessage += ", ";
+                    }
+                    else if (nBatches > 0)
+                    {
+                        AMessage += " and ";
+                    }
+
+                    AMessage += strJournals;
+                }
+
+                if (nTransactions > 0)
+                {
+                    if ((nBatches > 0) || (nJournals > 0))
+                    {
+                        AMessage += " and ";
+                    }
+
+                    AMessage += strTransactions;
+                }
+
+                AMessage += Environment.NewLine;
+                AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
+            }
+
+            return allChangesCount;
         }
 
         #region Menu and command key handlers for our user controls

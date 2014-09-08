@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MPartner.Partner.Cacheable.WebConnectors;
 
 
 namespace Ict.Petra.Server.MSysMan.WebConnectors
@@ -171,52 +172,48 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    try
+                    // create new records in p_partner_ledger if not there yet
+                    foreach (Int64 SiteKey in ASiteKeysSetUpForUse)
                     {
-                        // create new records in p_partner_ledger if not there yet
-                        foreach (Int64 SiteKey in ASiteKeysSetUpForUse)
+                        if (PPartnerLedgerAccess.CountViaPUnit(SiteKey, Transaction) == 0)
                         {
-                            if (PPartnerLedgerAccess.CountViaPUnit(SiteKey, Transaction) == 0)
+                            PartnerLedgerRow = PartnerLedgerTable.NewRowTyped();
+                            PartnerLedgerRow.PartnerKey = SiteKey;
+
+                            // calculate last partner id, from older uses of this ledger number
+                            object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
+                                String.Format("SELECT MAX(" + PPartnerTable.GetPartnerKeyDBName() + ") FROM " + PPartnerTable.GetTableDBName() +
+                                    " WHERE " + PPartnerTable.GetPartnerKeyDBName() + " > {0} AND " + PPartnerTable.GetPartnerKeyDBName() +
+                                    " < {1}",
+                                    SiteKey,
+                                    SiteKey + 500000), Transaction);
+
+                            if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
                             {
-                                PartnerLedgerRow = PartnerLedgerTable.NewRowTyped();
-                                PartnerLedgerRow.PartnerKey = SiteKey;
-
-                                // calculate last partner id, from older uses of this ledger number
-                                object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
-                                    String.Format("SELECT MAX(" + PPartnerTable.GetPartnerKeyDBName() + ") FROM " + PPartnerTable.GetTableDBName() +
-                                        " WHERE " + PPartnerTable.GetPartnerKeyDBName() + " > {0} AND " + PPartnerTable.GetPartnerKeyDBName() +
-                                        " < {1}",
-                                        SiteKey,
-                                        SiteKey + 500000), Transaction);
-
-                                if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
-                                {
-                                    // found a partner key for this site already: set it to last used value
-                                    PartnerLedgerRow.LastPartnerId = Convert.ToInt32(Convert.ToInt64(MaxExistingPartnerKeyObj) - SiteKey);
-                                }
-                                else
-                                {
-                                    // in this case there was no partner key for this site yet
-                                    PartnerLedgerRow.LastPartnerId = 0;
-                                }
-
-                                PartnerLedgerTable.Rows.Add(PartnerLedgerRow);
+                                // found a partner key for this site already: set it to last used value
+                                PartnerLedgerRow.LastPartnerId = Convert.ToInt32(Convert.ToInt64(MaxExistingPartnerKeyObj) - SiteKey);
                             }
-                        }
+                            else
+                            {
+                                // in this case there was no partner key for this site yet
+                                PartnerLedgerRow.LastPartnerId = 0;
+                            }
 
-                        // delete records from p_partner_ledger that are no longer needed
-                        foreach (Int64 SiteKey in ASiteKeysToRemove)
-                        {
-                            PPartnerLedgerAccess.DeleteByPrimaryKey(SiteKey, Transaction);
+                            PartnerLedgerTable.Rows.Add(PartnerLedgerRow);
                         }
-
-                        PPartnerLedgerAccess.SubmitChanges(PartnerLedgerTable, Transaction);
                     }
-                    catch (Exception e)
+
+                    // delete records from p_partner_ledger that are no longer needed
+                    foreach (Int64 SiteKey in ASiteKeysToRemove)
                     {
-                        TLogging.Log(e.ToString());
+                        PPartnerLedgerAccess.DeleteByPrimaryKey(SiteKey, Transaction);
                     }
+
+                    PPartnerLedgerAccess.SubmitChanges(PartnerLedgerTable, Transaction);
                 });
+
+            // make sure SitesList will be refreshed when called next time
+            TPartnerCacheableWebConnector.RefreshCacheableTable(TCacheablePartnerTablesEnum.InstalledSitesList);
 
             return SubmissionOK;
         }
