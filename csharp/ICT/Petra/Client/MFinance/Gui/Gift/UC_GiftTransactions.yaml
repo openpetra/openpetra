@@ -125,13 +125,13 @@ RootNode:
                 Row12: [lblAccounts]
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged, Validation=true}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         txtGiftReceipting: {NoLabel=true, ReadOnly=true, Stretch=horizontally}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient, OnChange=RecipientKeyChanged, Validation=true}
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}

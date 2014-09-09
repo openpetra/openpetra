@@ -296,7 +296,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 	Message = Catalog.GetString(string.Format(
                                 "This Person's Family has an existing Gift Destination record to the field {0} that is active during the period {1} to {2}."
                                 +
-                                "{3}Would you like to end this Gift Destination and make this new Commitment to " +
+                                "{3}Would you like to shorten or deactivate this Gift Destination and make this new Commitment to " +
                                 "the field '{4}' the active Gift Destination for this period?",
                                 ActiveGiftDestinations, AEligibleCommitmentRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
                                 "\n\n", UnitName));
@@ -306,7 +306,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 	Message = Catalog.GetString(string.Format(
                                 "This Person's Family has existing Gift Destination records to the fields {0} that are active during the period {1} to {2}."
                                 +
-                                "{3}Would you like to end these Gift Destinations and make this new Commitment to " +
+                                "{3}Would you like to shorten or deactivate these Gift Destinations and make this new Commitment to " +
                                 "the field '{4}' the active Gift Destination for this period?",
                                 ActiveGiftDestinations, AEligibleCommitmentRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
                                 "\n\n", UnitName));
@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     	if (Row.DateEffective >= AEligibleCommitmentRow.StartOfCommitment)
                     	{
                     		// deactivate future gift destinations
-                    		Row.DateExpires = Row.DateEffective;
+                			Row.DateExpires = Row.DateEffective;
                     	}
                     	else
                     	{
