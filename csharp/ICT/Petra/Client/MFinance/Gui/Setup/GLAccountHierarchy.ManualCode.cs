@@ -363,7 +363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void chkDetailIsSummary_CheckedChanged(object sender, EventArgs e)
         {
-            if ((FCurrentAccount != null) && (FIAmUpdating == 0)) // Only look into this is the user has changed it...
+            if ((FCurrentAccount != null) && (FIAmUpdating == 0)) // Only look into this if the user has changed it...
             {
                 FCurrentAccount.GetAttrributes();
 
@@ -468,6 +468,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
                 chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
+                chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag;
                 cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
 
                 chkDetailIsSummary.Checked = !ARow.PostingStatus;
