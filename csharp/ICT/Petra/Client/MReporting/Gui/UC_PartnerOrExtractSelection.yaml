@@ -1,0 +1,19 @@
+RootNode:
+    BaseClass: UserControl
+    Namespace: Ict.Petra.Client.MReporting.Gui
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
+    UtilObjectClass: TFrmPetraReportingUtils
+    FormType: edit
+    Template: usercontrolUnbound
+    Controls:
+        pnlContent:
+            Controls: [grpSelection]
+        grpSelection:
+            Label: Selection
+            Controls:
+                Row0: [rbtPartner, txtPartnerKey]
+                Row1: [rbtExtract, txtExtract]
+        rbtPartner: {Label=Partner, OnChange=rbtSelectionChange}
+        txtPartnerKey: {NoLabel=true, Type=PartnerKey}
+        rbtExtract: {Label=Extract, OnChange=rbtSelectionChange}
+        txtExtract: {NoLabel=true, Type=Extract}
