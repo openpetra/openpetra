@@ -4,11 +4,11 @@
     FormTitle: Partner By Relationship
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
-        XMLFILES: [Partner\\\\relationshipreport.xml,Personnel\\\\personnel.xml]
+        XMLFILES: [Partner\\\\relationshipreport.xml,Partner\\\\printpartner.xml]
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByRelationship.CalculateExtract
         ISOLATIONLEVEL: serializable
-        REPORTNAME: Relationship Report
-        CURRENTREPORT: Relationship Report
+        REPORTNAME: Partner By Relationship
+        CURRENTREPORT: Partner By Relationship
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
@@ -132,9 +132,9 @@
         Para20:
             Name: Partner 1 Contact Partner Key
             Parameter: 3.0
-        Para21:
-            Name: Partner 1 Worker Field
-            Parameter: 3.0
+#        Para21:
+#            Name: Partner 1 Worker Field
+#            Parameter: 3.0
             
         Para22:
             Name: Relationship
@@ -200,6 +200,6 @@
         Para42:
             Name: Partner 2 Contact Partner Key
             Parameter: 3.0
-        Para43:
-            Name: Partner 2 Worker Field
-            Parameter: 3.0
+#        Para43:
+#            Name: Partner 2 Worker Field
+#            Parameter: 3.0

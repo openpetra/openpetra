@@ -326,7 +326,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// <param name="ARelationshipTypeList">A comma separated list with the relationship types which will be selected</param>
         private void SelectRelationshipTypes(String ARelationshipTypeList)
         {
-            DataTable UsedTable;
+            if(!(FDirectRelationshipTable == null && FReciprocalRelationshipTable == null))
+            {
+                DataTable UsedTable;
 
             if (rbtDirectRelationship.Checked)
             {
@@ -345,6 +347,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 String CurrentType = Row[PRelationTable.GetRelationNameDBName()] + ",";
 
                 Row["Selection"] = ARelationshipTypeList.Contains(CurrentType);
+            }
             }
         }
 
