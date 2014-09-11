@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, andreww
 //
 // Copyright 2004-2010 by OM International
 //
@@ -28,6 +28,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
+using System.Linq;
 using GNU.Gettext;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
@@ -42,73 +43,23 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
-namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
+namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
-    /// <summary>
-    /// manual code for TFrmRelationshipReport class
-    /// </summary>
-    public partial class TFrmRelationshipReport
+
+    public partial class TFrmPartnerByRelationship
     {
         private DataTable FDirectRelationshipTable;
         private DataTable FReciprocalRelationshipTable;
 
         private void InitializeManualCode()
         {
-            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+            //ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
         }
 
-        private void InitUserControlsManually()
+        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            InitRelationshipList();
-            this.cmbRelationCategory.SelectedIndexChanged += new System.EventHandler(this.CmbRelationCategorySelectedIndexChanged);
-            grdReciprocalRelationship.Visible = false;
-            lblSelectReciprocalRelationship.Visible = false;
-            rbtDirectRelationship.Checked = true;
-            chkCategoryFilter.Checked = false;
-            cmbRelationCategory.Enabled = false;
-        }
-
-        private void grdDirectRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-        {
-//            // Get list of documents
-//            FDocumentTypeTable = (PmDocumentTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
-//                TCacheablePersonTablesEnum.DocumentTypeList);
-//
-//            grdDocuments.Columns.Clear();
-//
-//            grdDocuments.AddTextColumn("Document Type", FDocumentTypeTable.Columns[PmDocumentTypeTable.GetDocCodeDBName()]);
-//            grdDocuments.AddTextColumn("Description", FDocumentTypeTable.Columns[PmDocumentTypeTable.GetDescriptionDBName()]);
-//
-//            FDocumentTypeTable.DefaultView.AllowNew = false;
-//            FDocumentTypeTable.DefaultView.AllowDelete = false;
-//
-//            grdDocuments.DataSource = new DevAge.ComponentModel.BoundDataView(FDocumentTypeTable.DefaultView);
-//            grdDocuments.AutoSizeCells();
-//            grdDocuments.Selection.EnableMultiSelection = true;
-//
-//            UseDatesChanged(null, null);
-        }
-
-        private void grdReciprocalRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
-        {
-        }
-
-        private void grdDirectRelationship_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
-            if (rbtReciprocalRelationship.Checked)
-            {
-                ACalc.AddParameter("param_use_reciprocal_relationship", "true");
-            }
-            else
-            {
-                ACalc.AddParameter("param_use_reciprocal_relationship", "false");
-            }
-
-            String RelationshipTypeList = GetSelectedRelationshipsAsCsv();
-            ACalc.AddParameter("param_relationship_types", RelationshipTypeList);
-
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && (RelationshipTypeList.Length == 0))
+            if (!FDirectRelationshipTable.Select(FDirectRelationshipTable.DefaultView.RowFilter).Any(r => (bool)r["Selection"])
+                && !FReciprocalRelationshipTable.Select(FReciprocalRelationshipTable.DefaultView.RowFilter).Any(r => (bool)r["Selection"]))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
                     Catalog.GetString("Select at least one Relationship Type to run the report."),
@@ -118,8 +69,73 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
         }
 
+        private void RunOnceOnActivationManual()
+        {
+            InitRelationshipList();
+            this.cmbRelationCategory.SelectedIndexChanged += new System.EventHandler(this.CmbRelationCategorySelectedIndexChanged);
+            grdReciprocalRelationship.Visible = false;
+            lblSelectReciprocalRelationship.Visible = false;
+            if (CalledFromExtracts)
+            {
+                rbtDirectRelationship.Visible = false;
+                rbtReciprocalRelationship.Visible = false;
+                grdReciprocalRelationship.Visible = true;
+                lblSelectReciprocalRelationship.Visible = true;
+
+                tabReportSettings.Controls.Remove(tpgColumns);
+                tabReportSettings.Controls.Remove(tpgReportSorting);
+            }
+            else
+            {
+                grdReciprocalRelationship.Visible = false;
+                lblSelectReciprocalRelationship.Visible = false;
+
+            }
+            rbtDirectRelationship.Checked = true;
+            rbtDirectRelationship.Enabled = true;
+            chkCategoryFilter.Checked = false;
+            cmbRelationCategory.Enabled = false;
+
+
+            ucoChkFilter.ShowFamiliesOnly(false);
+        }
+
+        private void grdDirectRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        {
+        }
+
+        private void grdReciprocalRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
+        {
+        }
+
         private void grdReciprocalRelationship_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+        }
+
+        private void grdReciprocalRelationship_SetControls(TParameterList AParameters)
+        {
+        }
+
+        private void grdDirectRelationship_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            if (!CalledFromExtracts)
+            {
+                if (rbtReciprocalRelationship.Checked)
+                {
+                    ACalc.AddParameter("param_use_reciprocal_relationship", "true");
+                }
+                else
+                {
+                    ACalc.AddParameter("param_use_reciprocal_relationship", "false");
+                }
+                String RelationshipTypeList = GetSelectedRelationshipsAsCsv();
+                ACalc.AddParameter("param_relationship_types", RelationshipTypeList);
+            }
+            else
+            {
+                ACalc.AddParameter("param_explicit_relationships", GetSelectedRelationshipsAsCsv(true));
+                ACalc.AddParameter("param_reciprocal_relationships", GetSelectedRelationshipsAsCsv(false));
+            }
         }
 
         private void grdDirectRelationship_SetControls(TParameterList AParameters)
@@ -137,9 +153,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             SelectRelationshipTypes(SelectedRelationshipTypes);
         }
 
-        private void grdReciprocalRelationship_SetControls(TParameterList AParameters)
-        {
-        }
+
 
         #region EventHandling
         private void FilterRelationCategoryChanged(System.Object sender, EventArgs e)
@@ -159,10 +173,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         private void rbtRelationshipDirectionChanged(System.Object sender, EventArgs e)
         {
-            grdReciprocalRelationship.Visible = rbtReciprocalRelationship.Checked;
-            lblSelectReciprocalRelationship.Visible = rbtReciprocalRelationship.Checked;
-            grdDirectRelationship.Visible = rbtDirectRelationship.Checked;
-            lblSelectDirectRelationship.Visible = rbtDirectRelationship.Checked;
+            if (!CalledFromExtracts)
+            {
+                grdReciprocalRelationship.Visible = rbtReciprocalRelationship.Checked;
+                lblSelectReciprocalRelationship.Visible = rbtReciprocalRelationship.Checked;
+                grdDirectRelationship.Visible = rbtDirectRelationship.Checked;
+                lblSelectDirectRelationship.Visible = rbtDirectRelationship.Checked;
+            }
         }
 
         private void CmbRelationCategorySelectedIndexChanged(object sender, EventArgs e)
@@ -197,13 +214,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             if (grdDirectRelationship.Columns.Count == 0)
             {
-                grdDirectRelationship.AddCheckBoxColumn("", FDirectRelationshipTable.Columns["Selection"]);
+                grdDirectRelationship.AddCheckBoxColumn("", FDirectRelationshipTable.Columns["Selection"], 17, false);
                 grdDirectRelationship.AddTextColumn(Catalog.GetString("Relationship"),
                     FDirectRelationshipTable.Columns[PRelationTable.GetRelationNameDBName()]);
                 grdDirectRelationship.AddTextColumn(Catalog.GetString("Description"),
                     FDirectRelationshipTable.Columns[PRelationTable.GetRelationDescriptionDBName()]);
 
-                grdReciprocalRelationship.AddCheckBoxColumn("", FReciprocalRelationshipTable.Columns["Selection"]);
+                grdReciprocalRelationship.AddCheckBoxColumn("", FReciprocalRelationshipTable.Columns["Selection"], 17, false);
                 grdReciprocalRelationship.AddTextColumn(Catalog.GetString("Relationship"),
                     FReciprocalRelationshipTable.Columns[PRelationTable.GetRelationNameDBName()]);
                 grdReciprocalRelationship.AddTextColumn(Catalog.GetString("Description"),
@@ -265,13 +282,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         /// Returns the visible and selected Relationship types from the visible relationship type grid
         /// </summary>
         /// <returns></returns>
-        private string GetSelectedRelationshipsAsCsv()
+        private string GetSelectedRelationshipsAsCsv(bool directRelationship = false)
         {
             String RelationshipTypeList = "";
 
             DataTable UsedTable;
 
-            if (rbtDirectRelationship.Checked)
+            if ((rbtDirectRelationship.Checked && !CalledFromExtracts) || directRelationship)
             {
                 UsedTable = FDirectRelationshipTable;
             }
@@ -309,7 +326,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         /// <param name="ARelationshipTypeList">A comma separated list with the relationship types which will be selected</param>
         private void SelectRelationshipTypes(String ARelationshipTypeList)
         {
-            DataTable UsedTable;
+            if(!(FDirectRelationshipTable == null && FReciprocalRelationshipTable == null))
+            {
+                DataTable UsedTable;
 
             if (rbtDirectRelationship.Checked)
             {
@@ -328,6 +347,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 String CurrentType = Row[PRelationTable.GetRelationNameDBName()] + ",";
 
                 Row["Selection"] = ARelationshipTypeList.Contains(CurrentType);
+            }
             }
         }
 

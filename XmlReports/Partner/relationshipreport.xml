@@ -12,9 +12,9 @@
 		<reportparameter name="param_extract_name"></reportparameter>
 		<reportparameter name="param_extract_description"></reportparameter>
 		<reportparameter name="param_relationship_types"></reportparameter>
-		<reportparameter name="param_chkActivePartners"></reportparameter>
-		<reportparameter name="param_chkExcludeNoSolicitations"></reportparameter>
-		<reportparameter name="param_chkMailingAddressesOnly"></reportparameter>
+		<reportparameter name="param_active"></reportparameter>
+		<reportparameter name="param_exclude_no_solicitations"></reportparameter>
+		<reportparameter name="param_mailing_addresses_only"></reportparameter>
 		<reportparameter name="param_use_reciprocal_relationship"></reportparameter>
 	</reportparameters>
 		
@@ -97,13 +97,13 @@
 				</value>
 			</queryDetail>
 			
-			<queryDetail condition="eq({param_chkActivePartners}, true)">
+			<queryDetail condition="eq({param_active}, true)">
 				<value>
 					AND  Rel2.p_status_code_c = 'ACTIVE' 
 				</value>
 			</queryDetail>
 			
-			<queryDetail condition="eq({param_chkExcludeNoSolicitations}, true)">
+			<queryDetail condition="eq({param_exclude_no_solicitations}, true)">
 				<value>
 					AND Rel2.p_no_solicitations_l = 0
 				</value>
@@ -173,12 +173,12 @@
 							OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
 				</value>
 			</queryDetail>
-			<queryDetail condition="eq({param_chkActivePartners}, true)">
+			<queryDetail condition="eq({param_active}, true)">
 				<value>
 					AND  Rel1.p_status_code_c = 'ACTIVE' 
 				</value>
 			</queryDetail>
-			<queryDetail condition="eq({param_chkExcludeNoSolicitations}, true)">
+			<queryDetail condition="eq({param_exclude_no_solicitations}, true)">
 				<value>
 					AND Rel1.p_no_solicitations_l = 0
 				</value>
@@ -399,23 +399,23 @@
 				<value function="assign(Rel1StreetName, {StreetName})"/>
 				
 				<!-- Hide rows when "mailing address only" is checked and we don't have a mailing address -->
-				<value function ="ConditionRow(not(and(and(eq({param_chkMailingAddressesOnly}, true), not({SendMail})), eq({param_use_reciprocal_relationship}, false)))"/>
+				<value function ="ConditionRow(not(and(and(eq({param_mailing_addresses_only}, true), not({SendMail})), eq({param_use_reciprocal_relationship}, false)))"/>
 				
 				<!-- Get best address of partner 2 -->
 				<value function="GetPartnerBestAddress({Rel2PartnerKey})"/>
 				<value function="assign(Telephone, concatenate({TelephoneNumber},{Extension}))"/>
 				
 				<!-- Hide rows when "mailing address only" is checked and we don't have a mailing address -->
-				<value function ="ConditionRow(not(and(and(eq({param_chkMailingAddressesOnly}, true), not({SendMail})), eq({param_use_reciprocal_relationship}, true))))"/>
+				<value function ="ConditionRow(not(and(and(eq({param_mailing_addresses_only}, true), not({SendMail})), eq({param_use_reciprocal_relationship}, true))))"/>
 			</queryDetail>
 			<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
 			<!-- Get the OM er field if partner is a person or family -->
-			<queryDetail condition="or(eq({Rel1PartnerClass}, PERSON), eq({Rel1PartnerClass}, FAMILY))">
+<!-- 			<queryDetail condition="or(eq({Rel1PartnerClass}, PERSON), eq({Rel1PartnerClass}, FAMILY))">
 				<value function="assign(Rel1OMField, GetFieldOfPartner({Rel1PartnerKey}))"/>
 			</queryDetail>
 			<queryDetail condition="or(eq({Rel2PartnerClass}, PERSON), eq({Rel2PartnerClass}, FAMILY))">
 				<value function="assign(Rel2WorkerField, GetFieldOfPartner({Rel2PartnerKey}))"/>
-			</queryDetail>
+			</queryDetail> -->
 			
 			<!-- Assign specific values depending on the partner type -->
 			<queryDetail condition="eq({Rel1PartnerClass}, PERSON)" >
@@ -790,14 +790,14 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 1 Worker Field" returns="text" returnsFormat="text">
+<!-- 	<calculation align="left" id="Partner 1 Worker Field" returns="text" returnsFormat="text">
 		<caption><value text="P1 Worker Field"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="Rel1WorkerField"></value>
 			</queryDetail>
 		</query>
-	</calculation>
+	</calculation> -->
 	<!-- End of specific values Partner 1 -->
 	
 	<!-- Specific values for different partner classes  Partner 2-->
@@ -882,14 +882,14 @@
 		</query>
 	</calculation>
 	
-	<calculation align="left" id="Partner 2 Worker Field" returns="text" returnsFormat="text">
+<!-- 	<calculation align="left" id="Partner 2 Worker Field" returns="text" returnsFormat="text">
 		<caption><value text="P2 Worker Field"></value></caption>
 		<query>
 			<queryDetail>
 				<value variable="Rel2WorkerField"></value>
 			</queryDetail>
 		</query>
-	</calculation>
+	</calculation> -->
 	<!-- End of specific values Partner 2 -->
 	
     </calculations>
