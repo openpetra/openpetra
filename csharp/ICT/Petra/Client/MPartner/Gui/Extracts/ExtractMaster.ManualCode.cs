@@ -636,7 +636,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             TPartnerExtractsMain.PartnerByRelationshipExtract(FindForm());
         }
-        
+
         /// <summary>
         /// Create Partner By Special Type Extract
         /// </summary>

@@ -50,11 +50,20 @@ namespace Ict.Petra.Server.MPartner.queries
         public static bool CalculateExtract(TParameterList AParameters, TResultList AResults)
         {
             string SqlStmt = "";
+
             if (AParameters.Get("param_selection").ToString() == "an extract")
+            {
                 SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractFromExtractByPartnerRelationship.sql");
+            }
             else if (AParameters.Get("param_selection").ToString() == "one partner")
+            {
                 SqlStmt = TDataBase.ReadSqlFile("Partner.Queries.ExtractByPartnerRelationship.sql");
-            else throw new ArgumentException("Must supply an extract or partner key.");
+            }
+            else
+            {
+                throw new ArgumentException("Must supply an extract or partner key.");
+            }
+
             // create a new object of this class and control extract calculation from base class
             QueryPartnerByRelationship ExtractQuery = new QueryPartnerByRelationship();
 
@@ -67,74 +76,76 @@ namespace Ict.Petra.Server.MPartner.queries
         /// <param name="AParameters"></param>
         /// <param name="ASqlStmt"></param>
         /// <param name="ASQLParameterList"></param>S
-        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List<OdbcParameter> ASQLParameterList)
+        protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
-            List<String> param_relationships = new List<String>();
-            List<String> param_reciprocal_relationships = new List<String>();
+            List <String>param_relationships = new List <String>();
+            List <String>param_reciprocal_relationships = new List <String>();
+
             foreach (var choice in AParameters.Get("param_explicit_relationships").ToString().Split(','))
             {
                 param_relationships.Add(choice);
             }
+
             foreach (var choice in AParameters.Get("param_reciprocal_relationships").ToString().Split(','))
             {
                 param_reciprocal_relationships.Add(choice);
             }
 
-            if (param_relationships.Count == 0 && param_reciprocal_relationships.Count == 0)
+            if ((param_relationships.Count == 0) && (param_reciprocal_relationships.Count == 0))
             {
                 throw new NoNullAllowedException("At least one option must be checked.");
             }
 
             ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_active").ToBool()
-            });
+                {
+                    Value = AParameters.Get("param_active").ToBool()
+                });
             ASQLParameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
-            });
+                {
+                    Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+                });
 
             string paramName;
+
             if (AParameters.Get("param_selection").ToString() == "an extract")
             {
                 paramName = "param_extract";
                 ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.VarChar)
-                {
-                    Value = AParameters.Get(paramName).ToString()
-                });
+                    {
+                        Value = AParameters.Get(paramName).ToString()
+                    });
                 ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_relationships", OdbcType.VarChar, param_relationships));
                 ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.VarChar)
-                {
-                    Value = AParameters.Get(paramName)
-                });
-                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_reciprocal_relationships", OdbcType.VarChar, param_reciprocal_relationships));
-
+                    {
+                        Value = AParameters.Get(paramName)
+                    });
+                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_reciprocal_relationships", OdbcType.VarChar,
+                        param_reciprocal_relationships));
             }
             else
             {
                 paramName = "param_partnerkey";
                 ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.Int)
-                {
-                    Value = AParameters.Get(paramName).ToInt32()
-                });
+                    {
+                        Value = AParameters.Get(paramName).ToInt32()
+                    });
                 ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_relationships", OdbcType.VarChar, param_relationships));
                 ASQLParameterList.Add(new OdbcParameter(paramName, OdbcType.Int)
-                {
-                    Value = AParameters.Get(paramName).ToInt32()
-                });
-                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_reciprocal_relationships", OdbcType.VarChar, param_reciprocal_relationships));
-
+                    {
+                        Value = AParameters.Get(paramName).ToInt32()
+                    });
+                ASQLParameterList.Add(TDbListParameterValue.OdbcListParameterValue("param_reciprocal_relationships", OdbcType.VarChar,
+                        param_reciprocal_relationships));
             }
 
-
             ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_active").ToBool()
-            });
+                {
+                    Value = AParameters.Get("param_active").ToBool()
+                });
             ASQLParameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
-            {
-                Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
-            });
+                {
+                    Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
+                });
         }
     }
 }

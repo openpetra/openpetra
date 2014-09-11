@@ -45,7 +45,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
-
     public partial class TFrmPartnerByRelationship
     {
         private DataTable FDirectRelationshipTable;
@@ -75,6 +74,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             this.cmbRelationCategory.SelectedIndexChanged += new System.EventHandler(this.CmbRelationCategorySelectedIndexChanged);
             grdReciprocalRelationship.Visible = false;
             lblSelectReciprocalRelationship.Visible = false;
+
             if (CalledFromExtracts)
             {
                 rbtDirectRelationship.Visible = false;
@@ -89,8 +89,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             {
                 grdReciprocalRelationship.Visible = false;
                 lblSelectReciprocalRelationship.Visible = false;
-
             }
+
             rbtDirectRelationship.Checked = true;
             rbtDirectRelationship.Enabled = true;
             chkCategoryFilter.Checked = false;
@@ -128,6 +128,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 {
                     ACalc.AddParameter("param_use_reciprocal_relationship", "false");
                 }
+
                 String RelationshipTypeList = GetSelectedRelationshipsAsCsv();
                 ACalc.AddParameter("param_relationship_types", RelationshipTypeList);
             }
@@ -152,8 +153,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             String SelectedRelationshipTypes = AParameters.Get("param_relationship_types").ToString();
             SelectRelationshipTypes(SelectedRelationshipTypes);
         }
-
-
 
         #region EventHandling
         private void FilterRelationCategoryChanged(System.Object sender, EventArgs e)
@@ -326,28 +325,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// <param name="ARelationshipTypeList">A comma separated list with the relationship types which will be selected</param>
         private void SelectRelationshipTypes(String ARelationshipTypeList)
         {
-            if(!(FDirectRelationshipTable == null && FReciprocalRelationshipTable == null))
+            if (!((FDirectRelationshipTable == null) && (FReciprocalRelationshipTable == null)))
             {
                 DataTable UsedTable;
 
-            if (rbtDirectRelationship.Checked)
-            {
-                UsedTable = FDirectRelationshipTable;
-            }
-            else
-            {
-                UsedTable = FReciprocalRelationshipTable;
-            }
+                if (rbtDirectRelationship.Checked)
+                {
+                    UsedTable = FDirectRelationshipTable;
+                }
+                else
+                {
+                    UsedTable = FReciprocalRelationshipTable;
+                }
 
-            ARelationshipTypeList = ARelationshipTypeList + ",";
-            ARelationshipTypeList = ARelationshipTypeList.Replace("''", "'");
+                ARelationshipTypeList = ARelationshipTypeList + ",";
+                ARelationshipTypeList = ARelationshipTypeList.Replace("''", "'");
 
-            foreach (DataRow Row in UsedTable.Rows)
-            {
-                String CurrentType = Row[PRelationTable.GetRelationNameDBName()] + ",";
+                foreach (DataRow Row in UsedTable.Rows)
+                {
+                    String CurrentType = Row[PRelationTable.GetRelationNameDBName()] + ",";
 
-                Row["Selection"] = ARelationshipTypeList.Contains(CurrentType);
-            }
+                    Row["Selection"] = ARelationshipTypeList.Contains(CurrentType);
+                }
             }
         }
 
