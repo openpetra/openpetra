@@ -4,11 +4,11 @@
     FormTitle: Partner By Relationship
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     TemplateParameters:
-        XMLFILES: [Partner\\\\relationshipreport.xml,Partner\\\\printpartner.xml]
-        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByRelationship.CalculateExtract
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByRelationship.CalculateExtract  
         ISOLATIONLEVEL: serializable
+        XMLFILES: [Partner\\\\relationshipreport.xml,Partner\\\\printpartner.xml]
         REPORTNAME: Partner By Relationship
-        CURRENTREPORT: Partner By Relationship
+        CURRENTREPORT: Relationship Report
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION: BLANK
