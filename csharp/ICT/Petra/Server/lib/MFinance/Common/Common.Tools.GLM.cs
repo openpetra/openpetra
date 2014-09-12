@@ -196,7 +196,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 if (iPtr >= FGLMTbl.Rows.Count)
                     return 0;
 
-                return FGLMTbl[iPtr].YtdActualBase;
+                return FGLMTbl[iPtr].IsYtdActualBaseNull() ? 0 : FGLMTbl[iPtr].YtdActualBase;
             }
         }
 
@@ -210,7 +210,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 if (iPtr >= FGLMTbl.Rows.Count)
                     return 0;
 
-                return FGLMTbl[iPtr].YtdActualForeign;
+                return FGLMTbl[iPtr].IsYtdActualForeignNull() ? 0 : FGLMTbl[iPtr].YtdActualForeign;
             }
         }
 
@@ -336,7 +336,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// ...
+        /// For some reason, this method is not protected against row is null, or empty field...
         /// </summary>
         public decimal YtdActualBase
         {
@@ -347,7 +347,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// ...
+        /// For some reason, this method is not protected against row is null, or empty field...
         /// </summary>
         public decimal ClosingPeriodActualBase
         {

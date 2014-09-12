@@ -289,7 +289,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            TDBTransaction SubmitChangesTransaction = null;
+            bool IsMyOwnTransaction = false; // If I create a transaction here, then I need to commit it when I'm done.
             AVerificationResult = new TVerificationResultCollection();
             TVerificationResultCollection LocalVerificationResults = new TVerificationResultCollection();
             TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
@@ -298,99 +298,107 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                              (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
-            AccountsPayableTDS LocalDsReference = AInspectDS;
-            DBAccess.GDBAccessObj.BeginAutoTransaction(ref SubmitChangesTransaction, ref SubmitChangesResult,
-                delegate
+            if ((AInspectDS.AApDocument != null) && (AInspectDS.AApDocument.Rows.Count > 0))
+            {
+                // I want to check that the Invoice numbers are not blank,
+                // and that none of the documents already exist in the database.
+
+                foreach (AApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
                 {
-
-                    if ((LocalDsReference.AApDocument != null) && (LocalDsReference.AApDocument.Rows.Count > 0))
+                    if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        // I want to check that the Invoice numbers are not blank,
-                        // and that none of the documents already exist in the database.
-
-                        foreach (AApDocumentRow NewDocRow in LocalDsReference.AApDocument.Rows)
-                        {
-                            if (NewDocRow.DocumentCode.Length == 0)
-                            {
-                                LocalVerificationResults.Add(new TVerificationResult(Catalog.GetString("Save Document"),
-                                        Catalog.GetString("The Document has no Document number."),
-                                        TResultSeverity.Resv_Noncritical));
-                                SubmitChangesResult = TSubmitChangesResult.scrInfoNeeded;
-                                return;
-                            }
-
-                            AApDocumentRow DocTemplateRow = LocalDsReference.AApDocument.NewRowTyped(false);
-                            DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
-                            DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
-                            DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
-                            AApDocumentTable MatchingRecords = AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, SubmitChangesTransaction);
-
-                            foreach (AApDocumentRow MatchingRow in MatchingRecords.Rows) // Generally I expect this table is empty..
-                            {
-                                if (MatchingRow.ApDocumentId != NewDocRow.ApDocumentId) // This Document Code is in use, and not by me!
-                                {
-                                    LocalVerificationResults.Add(new TVerificationResult(Catalog.GetString("Save Document"),
-                                            String.Format(Catalog.GetString("Document Code {0} already exists."), NewDocRow.DocumentCode),
-                                            TResultSeverity.Resv_Noncritical));
-                                    SubmitChangesResult = TSubmitChangesResult.scrInfoNeeded;
-                                    return;
-                                }
-                            }
-                        } // foreach (document)
-
-                    } // if {there's actually a document}
-
-                    try
-                    {
-                        if (LocalDsReference.AApDocument != null)
-                        {
-                            foreach (AccountsPayableTDSAApDocumentRow NewDocRow in LocalDsReference.AApDocument.Rows)
-                            {
-                                // Set AP Number if it has not been set yet.
-                                if (NewDocRow.ApNumber < 0)
-                                {
-                                    NewDocRow.ApNumber = NextApDocumentNumber(NewDocRow.LedgerNumber, SubmitChangesTransaction);
-                                }
-
-                                SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, LocalDsReference.AApDocumentPayment);
-                            }
-
-                            AApDocumentAccess.SubmitChanges(LocalDsReference.AApDocument, SubmitChangesTransaction);
-                        }
-
-                        if (LocalDsReference.AApDocumentDetail != null) // Document detail lines
-                        {
-                            ValidateApDocumentDetail(ref LocalVerificationResults, LocalDsReference.AApDocumentDetail);
-                            ValidateApDocumentDetailManual(ref LocalVerificationResults, LocalDsReference.AApDocumentDetail);
-
-                            if (TVerificationHelper.IsNullOrOnlyNonCritical(LocalVerificationResults))
-                            {
-                                AApDocumentDetailAccess.SubmitChanges(LocalDsReference.AApDocumentDetail, SubmitChangesTransaction);
-                            }
-                        }
-
-                        if (LocalDsReference.AApAnalAttrib != null) // Analysis attributes
-                        {
-                            AApAnalAttribAccess.SubmitChanges(LocalDsReference.AApAnalAttrib, SubmitChangesTransaction);
-                        }
-
-                        SubmitChangesResult = TSubmitChangesResult.scrOK;
+                        LocalVerificationResults.Add(new TVerificationResult(Catalog.GetString("Save Document"),
+                                Catalog.GetString("The Document has no Document number."),
+                                TResultSeverity.Resv_Noncritical));
+                        return TSubmitChangesResult.scrInfoNeeded;
                     }
-                    catch (Exception Exc)
-                    {
-                        TLogging.Log("An Exception occured while saving an AP Document:" + Environment.NewLine + Exc.ToString());
 
-                        if (LocalVerificationResults == null) // This shouldn't be possible?
+                    AApDocumentRow DocTemplateRow = AInspectDS.AApDocument.NewRowTyped(false);
+                    DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
+                    DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
+                    DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
+                    AApDocumentTable MatchingRecords = AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, SubmitChangesTransaction);
+
+                    foreach (AApDocumentRow MatchingRow in MatchingRecords.Rows) // Generally I expect this table is empty..
+                    {
+                        if (MatchingRow.ApDocumentId != NewDocRow.ApDocumentId) // This Document Code is in use, and not by me!
                         {
-                            LocalVerificationResults = new TVerificationResultCollection();
+                            LocalVerificationResults.Add(new TVerificationResult(Catalog.GetString("Save Document"),
+                                    String.Format(Catalog.GetString("Document Code {0} already exists."), NewDocRow.DocumentCode),
+                                    TResultSeverity.Resv_Noncritical));
+                            return TSubmitChangesResult.scrInfoNeeded;
+                        }
+                    }
+                } // foreach (document)
+
+            } // if {there's actually a document}
+
+            try
+            {
+                if (AInspectDS.AApDocument != null)
+                {
+                    foreach (AccountsPayableTDSAApDocumentRow NewDocRow in AInspectDS.AApDocument.Rows)
+                    {
+                        // Set AP Number if it has not been set yet.
+                        if (NewDocRow.ApNumber < 0)
+                        {
+                            NewDocRow.ApNumber = NextApDocumentNumber(NewDocRow.LedgerNumber, SubmitChangesTransaction);
                         }
 
-                        LocalVerificationResults.Add(new TVerificationResult("Save AP Document", Exc.Message,
-                                TResultSeverity.Resv_Critical));
-                        throw;
+                        SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
                     }
-                });  // End of BeginAutoTransaction call
+
+                    AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction);
+                }
+
+                if (AInspectDS.AApDocumentDetail != null) // Document detail lines
+                {
+                    ValidateApDocumentDetail(ref LocalVerificationResults, AInspectDS.AApDocumentDetail);
+                    ValidateApDocumentDetailManual(ref LocalVerificationResults, AInspectDS.AApDocumentDetail);
+
+                    if (TVerificationHelper.IsNullOrOnlyNonCritical(LocalVerificationResults))
+                    {
+                        AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction);
+                    }
+                }
+
+                if (AInspectDS.AApAnalAttrib != null) // Analysis attributes
+                {
+                    AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction);
+                }
+
+                SubmitChangesResult = TSubmitChangesResult.scrOK;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured while saving an AP Document:" + Environment.NewLine + Exc.ToString());
+
+                if (LocalVerificationResults == null) // This shouldn't be possible?
+                {
+                    LocalVerificationResults = new TVerificationResultCollection();
+                }
+
+                LocalVerificationResults.Add(new TVerificationResult("Save AP Document", Exc.Message,
+                        TResultSeverity.Resv_Critical));
+                throw;
+            }
+            finally
+            {
+                if (IsMyOwnTransaction)
+                {
+                    if (SubmitChangesResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+            }
 
             if ((LocalVerificationResults != null) && (LocalVerificationResults.Count > 0))
             {
