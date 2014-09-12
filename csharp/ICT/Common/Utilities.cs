@@ -166,7 +166,7 @@ EndFragment:<<<<<<<4
 StartSelection:<<<<<<<3
 EndSelection:<<<<<<<4
 SourceURL:OpenPetra
-"                                                                                                                                                                                                   );
+"                                                                                                                                                                                                            );
             int startHTML = sb.Length;
             int fragmentEnd;
             int fragmentStart = HtmlString.ToLower().IndexOf("<body>");

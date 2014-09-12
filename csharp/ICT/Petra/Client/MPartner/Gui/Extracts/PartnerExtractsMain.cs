@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, andreww
 //
 // Copyright 2004-2012 by OM International
 //
@@ -78,6 +78,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public static void PartnerBySpecialTypeExtract(Form AParentForm)
         {
             TFrmPartnerBySpecialType frm = new TFrmPartnerBySpecialType(AParentForm);
+
+            frm.CalledFromExtracts = true;
+            frm.Show();
+        }
+
+        /// <summary>
+        /// open screen to create "Partner by Relationship" Extract
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void PartnerByRelationshipExtract(Form AParentForm)
+        {
+            TFrmPartnerByRelationship frm = new TFrmPartnerByRelationship(AParentForm);
 
             frm.CalledFromExtracts = true;
             frm.Show();
