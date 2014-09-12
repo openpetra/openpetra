@@ -1,0 +1,44 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Partner.Validation,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PPartnerContact
+    FormType: edit
+    Template: controlMaintainTable   
+    Controls:
+        pnlContent:
+            Controls: [sptInterests]
+            Dock: Fill
+        sptInterests:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlGrid
+            Panel2: pnlDetails
+        pnlGrid:
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew,btnDelete]
+            ControlsOrientation: horizontal
+        btnNew: {Width=80}
+            Action: actNew
+        btnDelete: {Width=80}
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            TableName: PPartnerContact
+            Columns: [ContactDate, ContactCode, Contactor, ContactComment, MailingCode]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Controls:
+                Row0: [ucoContact]
+        ucoContact:
+            Dock: Fill
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_Contact

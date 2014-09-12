@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, andreww
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -201,6 +201,45 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return contacts;
         }
 
+
+
+        [RequireModulePermission("PTNRUSER")]
+        public static PPartnerContactTable FindContactsForPartner(long partnerKey)
+        {
+            Boolean NewTransaction;
+            PPartnerContactTable contacts = new PPartnerContactTable();
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                PPartnerContactTable TempTable = new PPartnerContactTable();
+                PPartnerContactRow TemplateRow = TempTable.NewRowTyped(false);
+
+                if (partnerKey > 0)
+                {
+                    TemplateRow.PartnerKey = partnerKey;
+                }
+
+                contacts = PPartnerContactAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
+
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return contacts;
+        }
+
+        
         /// <summary>
         /// delete all contacts that have been marked for deletion.
         /// this should help when something went wrong and needs to be corrected
