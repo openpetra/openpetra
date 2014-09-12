@@ -82,14 +82,14 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// Standard routine to execute the period end of each AbstractPeriodEndOperation correctly
         /// </summary>
-        /// <param name="Apeo"></param>
+        /// <param name="AOperation"></param>
         /// <param name="AOperationName"></param>
-        protected void RunPeriodEndSequence(AbstractPeriodEndOperation Apeo, string AOperationName)
+        protected void RunPeriodEndSequence(AbstractPeriodEndOperation AOperation, string AOperationName)
         {
-            Apeo.IsInInfoMode = FInfoMode;
-            Apeo.VerificationResultCollection = verificationResults;
+            AOperation.IsInInfoMode = FInfoMode;
+            AOperation.VerificationResultCollection = verificationResults;
 
-            if (Apeo.JobSize == 0)
+            if (AOperation.GetJobSize() == 0)
             {
                 // Non Critical Problem but the user shall be informed ...
                 String strTitle = Catalog.GetString("Periodic end routine hint");
@@ -104,19 +104,23 @@ namespace Ict.Petra.Server.MFinance.Common
             else if (FInfoMode == false)
             {
                 // now we actually run the operation
-                Apeo.RunEndOfPeriodOperation();
-                AbstractPeriodEndOperation newApeo = Apeo.GetActualizedClone();
-                newApeo.IsInInfoMode = true;
-                newApeo.VerificationResultCollection = verificationResults;
+                AOperation.RunEndOfPeriodOperation();
 
-                if (newApeo.JobSize != 0)
+                //
+                // Now I want to verify whether the job has been finished correctly...
+
+                AbstractPeriodEndOperation VerifyOperation = AOperation.GetActualizedClone();
+                VerifyOperation.IsInInfoMode = true;
+                VerifyOperation.VerificationResultCollection = verificationResults;
+
+                if (VerifyOperation.GetJobSize() != 0)
                 {
                     // Critical Problem because there should be nothing left to do.
                     String strTitle = Catalog.GetString("Problem occurs in module [{0}]");
                     strTitle = String.Format(strTitle, AOperationName);
                     String strMessage = Catalog.GetString(
-                        "The operation has left {0} elements which are not transformed!");
-                    strMessage = String.Format(strMessage, newApeo.JobSize.ToString());
+                        "The operation has left {0} elements that are not transformed!");
+                    strMessage = String.Format(strMessage, VerifyOperation.GetJobSize().ToString());
                     TVerificationResult tvt =
                         new TVerificationResult(strTitle, strMessage, "",
                             TPeriodEndErrorAndStatusCodes.PEEC_02.ToString(),
@@ -125,19 +129,11 @@ namespace Ict.Petra.Server.MFinance.Common
                     FHasCriticalErrors = true;
                 }
 
-                if (newApeo.HasCriticalErrors)
-                {
-                    FHasCriticalErrors = true;
-                }
-            }
-
-            if (Apeo.HasCriticalErrors)
-            {
-                FHasCriticalErrors = true;
+                FHasCriticalErrors |= AOperation.HasCriticalErrors;
+                FHasCriticalErrors |= VerifyOperation.HasCriticalErrors;
             }
         }
     }
-
 
     /// <summary>
     /// The period end classes inherit and complete this abstract class. The constructor of the
@@ -165,17 +161,15 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         ///
         /// </summary>
-        protected int intCountJobs;
+        protected int FCountJobs;
 
         /// <summary>
-        /// JobSize returns the number of database records which are affected in this operation. Be sure
+        /// GetJobSize returns the number of database records which are affected in this operation. Be sure
         /// not only to find the databases which are to be changed but also not to find the records which
         /// are already changed.
         /// Or: Be sure that JobSize is zero after RunEndOfPeriodOperation has been done sucessfully.
         /// </summary>
-        public abstract int JobSize {
-            get;
-        }
+        public abstract int GetJobSize();
 
         /// <summary>
         /// The specific operation is done. Be sure to handle blnIsInInfoMode and blnCriticalErrors correctly
@@ -190,8 +184,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
 
         /// <summary>
-        /// Summarizes the values of blnCriticalErrors and blnIsInInfoMode to the decision if an
-        /// executable code shall be done or not.
+        /// !(FHasCriticalErrors | FInfoMode)
         /// </summary>
         public bool DoExecuteableCode
         {
@@ -235,7 +228,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 return FHasCriticalErrors;
             }
         }
-    }
+    }  // AbstractPeriodEndOperation
 
     /// <summary>
     /// ENum-List of the accounting stati of a ledger
@@ -253,7 +246,7 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TCarryForward
     {
-        TLedgerInfo ledgerInfo;
+        TLedgerInfo FledgerInfo;
 
         /// <summary>
         /// The routine requires a TLedgerInfo object ...
@@ -261,7 +254,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerInfo"></param>
         public TCarryForward(TLedgerInfo ALedgerInfo)
         {
-            ledgerInfo = ALedgerInfo;
+            FledgerInfo = ALedgerInfo;
         }
 
         /// <summary>
@@ -269,17 +262,17 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public void SetNextPeriod()
         {
-            if (ledgerInfo.ProvisionalYearEndFlag)
+            if (FledgerInfo.ProvisionalYearEndFlag)
             {
                 // Set to the first month of the "next year".
                 SetProvisionalYearEndFlag(false);
                 SetNewFwdPeriodValue(1);
-                ledgerInfo.CurrentFinancialYear = ledgerInfo.CurrentFinancialYear + 1;
-                TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
+                FledgerInfo.CurrentFinancialYear = FledgerInfo.CurrentFinancialYear + 1;
+                TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(FledgerInfo.LedgerNumber);
                 accountPeriod.IsInInfoMode = false;
                 accountPeriod.RunEndOfPeriodOperation();
             }
-            else if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
+            else if (FledgerInfo.CurrentPeriod == FledgerInfo.NumberOfAccountingPeriods)
             {
                 // Set the YearEndFlag to "Switch between the months ...
                 SetProvisionalYearEndFlag(true);
@@ -287,10 +280,10 @@ namespace Ict.Petra.Server.MFinance.Common
             else
             {
                 // Conventional Month->Month Switch ...
-                SetNewFwdPeriodValue(ledgerInfo.CurrentPeriod + 1);
+                SetNewFwdPeriodValue(FledgerInfo.CurrentPeriod + 1);
             }
 
-            new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
+            new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
                 TLedgerInitFlagEnum.Revaluation).Flag = false;
         }
 
@@ -301,7 +294,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                if (ledgerInfo.ProvisionalYearEndFlag)
+                if (FledgerInfo.ProvisionalYearEndFlag)
                 {
                     return TCarryForwardENum.Year;
                 }
@@ -321,7 +314,7 @@ namespace Ict.Petra.Server.MFinance.Common
             ParametersArray[1] = new OdbcParameter("", OdbcType.Bit);
             ParametersArray[1].Value = AFlagValue;
             ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = ledgerInfo.LedgerNumber;
+            ParametersArray[2].Value = FledgerInfo.LedgerNumber;
 
             bool NewTransaction;
             TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
@@ -346,7 +339,7 @@ namespace Ict.Petra.Server.MFinance.Common
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[0].Value = ANewPeriodNum;
             ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = ledgerInfo.LedgerNumber;
+            ParametersArray[1].Value = FledgerInfo.LedgerNumber;
 
             bool NewTransaction;
             TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
@@ -361,7 +354,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
         }
-    }
+    } // TCarryForward
+
     /// <summary>
     /// This object handles the transformation of the accounting interval parameters into the
     /// next year
@@ -392,11 +386,9 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// not implemented
         /// </summary>
-        public override int JobSize {
-            get
-            {
-                return 0;
-            }
+        public override int GetJobSize() 
+        {
+            return 0;
         }
 
         /// <summary>
@@ -444,10 +436,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (DoExecuteableCode)
             {
-                for (int i = 0; i < FaccountingPeriodTable.Rows.Count; ++i)
+                foreach (AAccountingPeriodRow accountingPeriodRow in FaccountingPeriodTable.Rows)
                 {
-                    AAccountingPeriodRow accountingPeriodRow = FaccountingPeriodTable[i];
-
                     accountingPeriodRow.PeriodStartDate =
                         accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
                     accountingPeriodRow.PeriodEndDate =
@@ -477,8 +467,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     throw;
                 }
             }
-        }
-    }
+        }  // RunEndOfPeriodOperation
+    } // TAccountPeriodToNewYear
 
     /// <summary>
     /// This Object read all glm year end records of the actual year
@@ -486,12 +476,12 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TGlmNewYearInit : AbstractPeriodEndOperation
     {
-        GLPostingTDS PostingFromDS = null;
-        GLPostingTDS PostingToDS = null;
+        GLPostingTDS FPostingFromDS = null;
+        GLPostingTDS FPostingToDS = null;
 
-        int intThisYear;
-        int intNextYear;
-        int intLedgerNumber;
+        int FCurrentYear;
+        int FNextYear;
+        int FLedgerNumber;
         int intEntryCount;
 
 
@@ -502,9 +492,9 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AYear"></param>
         public TGlmNewYearInit(int ALedgerNumber, int AYear)
         {
-            intThisYear = AYear;
-            intNextYear = intThisYear + 1;
-            intLedgerNumber = ALedgerNumber;
+            FCurrentYear = AYear;
+            FNextYear = FCurrentYear + 1;
+            FLedgerNumber = ALedgerNumber;
 
             bool NewTransaction;
             TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -513,19 +503,17 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                PostingFromDS = LoadTable(ALedgerNumber, AYear, transaction);
-                PostingToDS = LoadTable(ALedgerNumber, ++AYear, transaction);
-                ALedgerAccess.LoadByPrimaryKey(PostingFromDS, ALedgerNumber, transaction);
+                FPostingFromDS = LoadTable(ALedgerNumber, FCurrentYear, transaction);
+                FPostingToDS = LoadTable(ALedgerNumber, FNextYear, transaction);
+                ALedgerAccess.LoadByPrimaryKey(FPostingFromDS, ALedgerNumber, transaction);
 
+            }
+            finally
+            {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-            }
-            catch (Exception)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
             }
         }
 
@@ -534,21 +522,19 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            return new TGlmNewYearInit(intLedgerNumber, intThisYear);
+            return new TGlmNewYearInit(FLedgerNumber, FCurrentYear);
         }
 
         /// <summary>
         ///
         /// </summary>
-        public override int JobSize {
-            get
-            {
-                bool blnOldInfoMode = FInfoMode;
-                FInfoMode = true;
-                RunEndOfPeriodOperation();
-                FInfoMode = blnOldInfoMode;
-                return intEntryCount;
-            }
+        public override int GetJobSize()
+        {
+            bool blnOldInfoMode = FInfoMode;
+            FInfoMode = true;
+            RunEndOfPeriodOperation();
+            FInfoMode = blnOldInfoMode;
+            return intEntryCount;
         }
 
         private GLPostingTDS LoadTable(int ALedgerNumber, int AYear, TDBTransaction ATransaction)
@@ -577,80 +563,76 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public override void RunEndOfPeriodOperation()
         {
-            AGeneralLedgerMasterRow generalLedgerMasterRowFrom = null;
-            AGeneralLedgerMasterRow generalLedgerMasterRowTo = null;
-            AGeneralLedgerMasterPeriodRow glmPeriodRow = null;
             Int32 TempGLMSequence = -1;
-            ALedgerRow Ledger = PostingFromDS.ALedger[0];
+            ALedgerRow LedgerRow = FPostingFromDS.ALedger[0];
 
             intEntryCount = 0;
 
             if (!FInfoMode)
             {
-                TCarryForward carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+                TCarryForward carryForward = new TCarryForward(new TLedgerInfo(FLedgerNumber));
                 carryForward.SetNextPeriod();
             }
 
-            if (PostingFromDS.AGeneralLedgerMaster.Rows.Count > 0)
+            FPostingToDS.AGeneralLedgerMaster.DefaultView.Sort = 
+                AGeneralLedgerMasterTable.GetAccountCodeDBName() +
+                "," +
+                AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
+
+            foreach (AGeneralLedgerMasterRow generalLedgerMasterRowFrom in FPostingFromDS.AGeneralLedgerMaster.Rows)
             {
-                for (int i = 0; i < PostingFromDS.AGeneralLedgerMaster.Rows.Count; ++i)
+                AGeneralLedgerMasterRow generalLedgerMasterRowTo = null;
+                //
+                // If there's not already a row for this Account / Cost Centre,
+                // I need to create one now...
+                Int32 RowIdx = FPostingToDS.AGeneralLedgerMaster.DefaultView.Find(
+                    new Object[] { generalLedgerMasterRowFrom.AccountCode, generalLedgerMasterRowFrom.CostCentreCode }
+                    );
+
+                if (RowIdx >= 0)
                 {
-                    generalLedgerMasterRowFrom =
-                        (AGeneralLedgerMasterRow)PostingFromDS.AGeneralLedgerMaster[i];
-                    generalLedgerMasterRowTo = null;
-
-                    for (int j = 0; j < PostingToDS.AGeneralLedgerMaster.Rows.Count; ++j)
-                    {
-                        generalLedgerMasterRowTo =
-                            (AGeneralLedgerMasterRow)PostingToDS.AGeneralLedgerMaster[j];
-
-                        if ((generalLedgerMasterRowFrom.AccountCode == generalLedgerMasterRowTo.AccountCode)
-                            && (generalLedgerMasterRowFrom.CostCentreCode == generalLedgerMasterRowTo.CostCentreCode))
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            generalLedgerMasterRowTo = null;
-                        }
-                    }
-
-                    if (generalLedgerMasterRowTo == null)
-                    {
-                        if (!FInfoMode)
-                        {
-                            generalLedgerMasterRowTo =
-                                (AGeneralLedgerMasterRow)PostingToDS.AGeneralLedgerMaster.NewRowTyped(true);
-                            generalLedgerMasterRowTo.GlmSequence = TempGLMSequence;
-                            TempGLMSequence--;
-                            PostingToDS.AGeneralLedgerMaster.Rows.Add(generalLedgerMasterRowTo);
-                        }
-
-                        ++intEntryCount;
-                    }
-
+                    generalLedgerMasterRowTo = (AGeneralLedgerMasterRow) FPostingToDS.AGeneralLedgerMaster.DefaultView[RowIdx].Row;
+                }
+                else        // GLM record Not present - I'll make one now...
+                {
                     if (!FInfoMode)
                     {
-                        generalLedgerMasterRowTo.LedgerNumber = generalLedgerMasterRowFrom.LedgerNumber;
-                        generalLedgerMasterRowTo.Year = intNextYear;
+                        generalLedgerMasterRowTo =
+                            (AGeneralLedgerMasterRow)FPostingToDS.AGeneralLedgerMaster.NewRowTyped(true);
+                        generalLedgerMasterRowTo.GlmSequence = TempGLMSequence;
+                        TempGLMSequence--;
+                        generalLedgerMasterRowTo.LedgerNumber = LedgerRow.LedgerNumber;
                         generalLedgerMasterRowTo.AccountCode = generalLedgerMasterRowFrom.AccountCode;
                         generalLedgerMasterRowTo.CostCentreCode = generalLedgerMasterRowFrom.CostCentreCode;
-                        generalLedgerMasterRowTo.YtdActualBase = generalLedgerMasterRowFrom.YtdActualBase;
 
-                        if (!generalLedgerMasterRowFrom.IsYtdActualForeignNull())
-                        {
-                            generalLedgerMasterRowTo.YtdActualForeign = generalLedgerMasterRowFrom.YtdActualForeign;
-                        }
+                        FPostingToDS.AGeneralLedgerMaster.Rows.Add(generalLedgerMasterRowTo);
+                    }
+                    ++intEntryCount;
+                }
 
-                        for (int PeriodCount = 1; PeriodCount < Ledger.NumberOfAccountingPeriods + Ledger.NumberFwdPostingPeriods + 1; PeriodCount++)
+                if (!FInfoMode)
+                {
+                    generalLedgerMasterRowTo.Year = FNextYear;
+                    generalLedgerMasterRowTo.YtdActualBase = generalLedgerMasterRowFrom.YtdActualBase; // What if there was already a balance here?
+
+                    Boolean IncludeForeign = !generalLedgerMasterRowFrom.IsYtdActualForeignNull();
+
+                    if (IncludeForeign)
+                    {
+                        generalLedgerMasterRowTo.YtdActualForeign = generalLedgerMasterRowFrom.YtdActualForeign;
+                    }
+
+                    if (RowIdx < 0) // If I created a new generalLedgerMasterRowTo, I need to also create a clutch of matching GLMP records:
+                    {
+                        for (int PeriodCount = 1; PeriodCount < LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods + 1; PeriodCount++)
                         {
-                            glmPeriodRow = PostingToDS.AGeneralLedgerMasterPeriod.NewRowTyped(true);
+                            AGeneralLedgerMasterPeriodRow glmPeriodRow = FPostingToDS.AGeneralLedgerMasterPeriod.NewRowTyped(true);
                             glmPeriodRow.GlmSequence = generalLedgerMasterRowTo.GlmSequence;
                             glmPeriodRow.PeriodNumber = PeriodCount;
-                            PostingToDS.AGeneralLedgerMasterPeriod.Rows.Add(glmPeriodRow);
+                            FPostingToDS.AGeneralLedgerMasterPeriod.Rows.Add(glmPeriodRow);
                             glmPeriodRow.ActualBase = generalLedgerMasterRowTo.YtdActualBase;
 
-                            if (!generalLedgerMasterRowFrom.IsYtdActualForeignNull())
+                            if (IncludeForeign)
                             {
                                 glmPeriodRow.ActualForeign = generalLedgerMasterRowTo.YtdActualForeign;
                             }
@@ -661,11 +643,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (DoExecuteableCode)
             {
-                PostingToDS.ThrowAwayAfterSubmitChanges = true;
-                GLPostingTDSAccess.SubmitChanges(PostingToDS);
+                FPostingToDS.ThrowAwayAfterSubmitChanges = true;
+                GLPostingTDSAccess.SubmitChanges(FPostingToDS);
             }
-        }
-    }
+        } // RunEndOfPeriodOperation
+    } // TGlmNewYearInit
 
     /// <summary>
     /// This is the list of status values of a_ledger.a_year_end_process_status_i which has been
@@ -704,12 +686,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// (something like the calculation of the admin fees) this error is shown to indicate
         /// tha no database records were affected.
         /// </summary>
-        PEEC_01,
+            PEEC_01,
 
         /// <summary>
         /// Afte a specific period end operation has been done, the programm calculates again the
-        /// number of database records which shall be changed. If this value is non zero, this
-        /// error is shown.
+        /// number of database records which shall be changed. If this value is non zero,
+        /// there's a problem.
         /// Type: Critical.
         /// </summary>
             PEEC_02,

@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public const int GET_ALL_LEVELS = -1;
 
         private const string STANDARD = "STANDARD";
-        AAccountHierarchyDetailTable accountTable;
+        AAccountHierarchyDetailTable FAccountTable;
         AAccountHierarchyDetailRow accountRow = null;
         TLedgerInfo ledgerInfo;
 
@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                accountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
+                FAccountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
                     ledgerInfo.LedgerNumber, transaction);
             }
             finally
@@ -111,13 +111,13 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void GetChildrenIntern(IList <String>help, string AAccountCode, int AChildLevel)
         {
-            if (accountTable.Rows.Count > 0)
+            if (FAccountTable.Rows.Count > 0)
             {
-                accountTable.DefaultView.Sort =
+                FAccountTable.DefaultView.Sort =
                     AAccountHierarchyDetailTable.GetReportOrderDBName() + ", " +
                     AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
 
-                foreach (DataRowView rv in accountTable.DefaultView)
+                foreach (DataRowView rv in FAccountTable.DefaultView)
                 {
                     accountRow = (AAccountHierarchyDetailRow)rv.Row;
 
@@ -145,11 +145,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public bool HasNoChildren(string AAccountCode)
         {
-            if (accountTable.Rows.Count > 0)
+            if (FAccountTable.Rows.Count > 0)
             {
-                for (int i = 0; i < accountTable.Rows.Count; ++i)
+                for (int i = 0; i < FAccountTable.Rows.Count; ++i)
                 {
-                    accountRow = (AAccountHierarchyDetailRow)accountTable.Rows[i];
+                    accountRow = (AAccountHierarchyDetailRow)FAccountTable.Rows[i];
 
                     if (accountRow.AccountCodeToReportTo.Equals(AAccountCode))
                     {
@@ -171,11 +171,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public string GetParentAccount(string AAccountCode)
         {
-            if (accountTable.Rows.Count > 0)
+            if (FAccountTable.Rows.Count > 0)
             {
-                for (int i = 0; i < accountTable.Rows.Count; ++i)
+                for (int i = 0; i < FAccountTable.Rows.Count; ++i)
                 {
-                    accountRow = (AAccountHierarchyDetailRow)accountTable.Rows[i];
+                    accountRow = (AAccountHierarchyDetailRow)FAccountTable.Rows[i];
 
                     if (accountRow.ReportingAccountCode.Equals(AAccountCode))
                     {
@@ -454,12 +454,12 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TAccountInfo
     {
-        AAccountTable accountTable;
-        AAccountRow accountRow = null;
-        TLedgerInfo ledgerInfo;
+        AAccountTable FAccountTable;
+        AAccountRow FAccountRow = null;
+        TLedgerInfo FLedgerInfo;
         THandleAccountPropertyInfo tAccountPropertyHandler = null;
 
-        int iPtr;
+        int FRowIdx;
 
         /// <summary>
         /// This mininmal constructor defines the result collection for the error messages and
@@ -468,7 +468,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerInfo"></param>
         public TAccountInfo(TLedgerInfo ALedgerInfo)
         {
-            ledgerInfo = ALedgerInfo;
+            FLedgerInfo = ALedgerInfo;
             LoadData();
         }
 
@@ -479,33 +479,30 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AAccountCode"></param>
         public TAccountInfo(TLedgerInfo ALedgerInfo, string AAccountCode)
         {
-            ledgerInfo = ALedgerInfo;
+            FLedgerInfo = ALedgerInfo;
             LoadData();
             AccountCode = AAccountCode;
         }
 
         private void LoadData()
         {
+            bool NewTransaction = false;
             try
             {
-                bool NewTransaction;
                 TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
-                accountTable = AAccountAccess.LoadViaALedger(
-                    ledgerInfo.LedgerNumber, transaction);
-
+                FAccountTable = AAccountAccess.LoadViaALedger(
+                    FLedgerInfo.LedgerNumber, transaction);
+            }
+            finally
+            {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-            }
-            catch (Exception)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
-            accountRow = null;
+           }
+           FAccountRow = null;
         }
 
         /// <summary>
@@ -515,11 +512,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AENum"></param>
         public void SetSpecialAccountCode(TAccountPropertyEnum AENum)
         {
-            accountRow = null;
+            FAccountRow = null;
 
             if (tAccountPropertyHandler == null)
             {
-                tAccountPropertyHandler = new THandleAccountPropertyInfo(ledgerInfo);
+                tAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerInfo);
             }
 
             string account = tAccountPropertyHandler.GetAccountCode(AENum);
@@ -536,11 +533,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public string SetCarryForwardAccount()
         {
-            accountRow = null;
+            FAccountRow = null;
 
             if (tAccountPropertyHandler == null)
             {
-                tAccountPropertyHandler = new THandleAccountPropertyInfo(ledgerInfo);
+                tAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerInfo);
             }
 
             string result = tAccountPropertyHandler.GetAccountCode("CARRYFORWARDCC");
@@ -562,49 +559,40 @@ namespace Ict.Petra.Server.MFinance.Common
         /// which was selected before. <br />
         /// The Account can be written and this will change the selected row without any
         /// database request. The result may be invalid.
+        /// 
+        /// After this is set, the FRowIdx is invalid.
         /// </summary>
         public string AccountCode
         {
             get
             {
-                if (accountRow == null)
+                if (FAccountRow == null)
                 {
                     return String.Empty;
                 }
                 else
                 {
-                    return accountRow.AccountCode;
+                    return FAccountRow.AccountCode;
                 }
             }
             set
             {
-                if (value.Equals(String.Empty))
+                Reset();
+                if (value != "")
                 {
-                    accountRow = null;
-                }
-                else
-                {
-                    accountRow = null;
-
-                    for (int i = 0; i < accountTable.Rows.Count; ++i)
-                    {
-                        if (value.Equals(((AAccountRow)accountTable[i]).AccountCode))
-                        {
-                            accountRow = (AAccountRow)accountTable[i];
-                        }
-                    }
+                    FAccountRow = (AAccountRow) FAccountTable.Rows.Find (new Object[] {FLedgerInfo.LedgerNumber,value});
                 }
             }
         }
 
         /// <summary>
-        /// ...
+        /// If there's no current row, this will raise an exception.
         /// </summary>
         public string AccountType
         {
             get
             {
-                return accountRow.AccountType;
+                return FAccountRow.AccountType;
             }
         }
 
@@ -613,7 +601,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public void Reset()
         {
-            iPtr = -1;
+            FRowIdx = -1;
+            FAccountRow = null;
         }
 
         /// <summary>
@@ -622,16 +611,16 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public bool MoveNext()
         {
-            ++iPtr;
+            ++FRowIdx;
 
-            if (iPtr < accountTable.Rows.Count)
+            if (FRowIdx < FAccountTable.Rows.Count)
             {
-                accountRow = (AAccountRow)accountTable[iPtr];
+                FAccountRow = (AAccountRow)FAccountTable[FRowIdx];
                 return true;
             }
             else
             {
-                accountRow = null;
+                FAccountRow = null;
                 return false;
             }
         }
@@ -644,51 +633,51 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return !(accountRow == null);
+                return !(FAccountRow == null);
             }
         }
 
         /// <summary>
-        /// Standard property of an AAccountRow
+        /// If there's no current row, this will raise an exception.
         /// </summary>
         public bool ForeignCurrencyFlag
         {
             get
             {
-                return accountRow.ForeignCurrencyFlag;
+                return FAccountRow.ForeignCurrencyFlag;
             }
         }
 
         /// <summary>
-        /// Standard property of an AAccountRow
+        /// If there's no current row, this will raise an exception.
         /// </summary>
         public string ForeignCurrencyCode
         {
             get
             {
-                return accountRow.ForeignCurrencyCode;
+                return FAccountRow.ForeignCurrencyCode;
             }
         }
 
         /// <summary>
-        ///
+        /// If there's no current row, this will raise an exception.
         /// </summary>
         public bool PostingStatus
         {
             get
             {
-                return accountRow.PostingStatus;
+                return FAccountRow.PostingStatus;
             }
         }
 
         /// <summary>
-        ///
+        /// If there's no current row, this will raise an exception.
         /// </summary>
         public bool DebitCreditIndicator
         {
             get
             {
-                return accountRow.DebitCreditIndicator;
+                return FAccountRow.DebitCreditIndicator;
             }
         }
     }
