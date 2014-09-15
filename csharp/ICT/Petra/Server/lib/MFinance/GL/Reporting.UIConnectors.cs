@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String ReturnValue = "";
             TDBTransaction ReadTransaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
 

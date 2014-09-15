@@ -55,7 +55,6 @@ namespace Tests.MFinance.Server.Reporting
     [TestFixture]
     public class TIncExpStatementTest
     {
-        Int32 FLedgerNumber = -1;
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -85,7 +84,7 @@ namespace Tests.MFinance.Server.Reporting
 /*
  * Don't run this test - it's not valid in the FastReports world.
             // create a new ledger
-            FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
+            Int32 FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
 
             string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.xml";
 
@@ -98,7 +97,7 @@ namespace Tests.MFinance.Server.Reporting
             TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
 
             TReportTestingTools.TestResult(testFile, FLedgerNumber);
- */
+*/
         }
     }
 }
