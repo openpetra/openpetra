@@ -49,7 +49,7 @@ RootNode:
             Label: Copies
         cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList, Width=400}
             Label: Reason Given
-        cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList, Width=400}
+        cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList, AllowDbNull=true, Width=400}
             Label: Reason Ended
         txtPSubscriptionGiftFromKey:
             Label: Gift Given By
