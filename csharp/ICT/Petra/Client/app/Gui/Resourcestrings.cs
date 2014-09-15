@@ -33,6 +33,12 @@ namespace Ict.Petra.Client.App.Gui
     /// </summary>
     public class ApplWideResourcestrings
     {
+        #region General
+        /// <summary>todoComment</summary>
+        public static readonly string StrUndefined = Catalog.GetString("Undefined");
+
+        #endregion
+
         #region Partner
         /// <summary>todoComment</summary>
         public static readonly string StrPartner = Catalog.GetString("Partner");

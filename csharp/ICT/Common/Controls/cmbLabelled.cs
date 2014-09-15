@@ -100,6 +100,12 @@ namespace Ict.Common.Controls
         protected String FLabelDisplaysColumn;
 
         /// <summary>
+        /// Flag that, if true, still displays the description label even if the value is an empty string.
+        ///   (used by TcmbAutoPopulated with AllowDbNull = true)
+        /// </summary>
+        protected Boolean FIncludeDescriptionForEmptyValue = false;
+
+        /// <summary>
         /// Denotes what this Control regards as the identifier string of inactive combobox items.
         /// </summary>
         public static string InactiveIdentifier
@@ -902,7 +908,7 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected void TCmbLabelled_Leave(System.Object sender, System.EventArgs e)
         {
-            if (this.cmbCombobox.Text == "")
+            if ((this.cmbCombobox.Text == "") && !this.FIncludeDescriptionForEmptyValue)
             {
                 this.lblDescription.Text = "";
                 this.lblDescription.Refresh();
