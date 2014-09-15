@@ -33,6 +33,7 @@ using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Printing;
 using Ict.Common.Verification;
@@ -89,7 +90,7 @@ namespace Ict.Petra.Server.MConference.Applications
                         AllowedRegistrationOffices.Add(RegistrationOffice);
                     }
                 }
-                catch (EvaluateException)
+                catch (ESecurityModuleAccessDeniedException)
                 {
                     // no permissions for this registration office
                 }

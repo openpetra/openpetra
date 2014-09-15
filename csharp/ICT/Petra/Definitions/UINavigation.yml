@@ -61,6 +61,7 @@ OpenPetra:
                         PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by City, ActionClick=TPartnerExtractsMain.PartnerByCityExtract}
                         PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Subscription, ActionClick=TPartnerExtractsMain.PartnerBySubscriptionExtract}
                         PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Special Type, ActionClick=TPartnerExtractsMain.PartnerBySpecialTypeExtract}
+                        PartnerByRelationship: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner By Relationship, ActionClick=TPartnerExtractsMain.PartnerByRelationshipExtract}
                         FamilyMembersExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Members Extract, ActionClick=TPartnerExtractsMain.FamilyMembersExtract}
                         FamilyExtractForPersons: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Extract for Persons, ActionClick=TPartnerExtractsMain.FamilyExtractForPersons}
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extract}
@@ -78,6 +79,7 @@ OpenPetra:
                     PartnerReports:
                         PrintPartner: {ActionOpenScreen=TFrmPrintPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                        RelationshipReport: {ActionOpenScreen=TFrmPartnerByRelationship}
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
                         PartnerBySubscription: {ActionOpenScreen=TFrmPartnerBySubscription}
                         PartnerAddress: {Label=Brief Address Report, ActionOpenScreen=TFrmBriefAddressReport}
@@ -338,7 +340,6 @@ OpenPetra:
                         OutreachOptions: {ActionOpenScreen=TFrmOutreachOptions}
                         UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
                         LocalPersonnelData: {ActionOpenScreen=TFrmLocalPersonnelDataReport}
-                        RelationshipReport: {ActionOpenScreen=TFrmRelationshipReport}
                     ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
                         FurtherShortTermerReports: {Namespace=Ict.Petra.Client.MPersonnel.Gui, ActionClick=TPersonnelMain.ShortTermerReports}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
