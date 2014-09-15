@@ -418,9 +418,11 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesError"></param>
         public static void MsgSecurityException(ESecurityGroupAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
+            string Context = DetermineExceptionContext(AException, ATypeWhichRaisesError);
+            
             MessageBox.Show(AException.Message +
                 BuildMessageFooter(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSGROUP,
-                    ATypeWhichRaisesError.Name), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
+                    Context), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
 
@@ -431,12 +433,14 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesError"></param>
         public static void MsgSecurityException(ESecurityAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
+            string Context = DetermineExceptionContext(AException, ATypeWhichRaisesError);            
+            
             MessageBox.Show(AException.Message +
                 BuildMessageFooter(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSMODULE,
-                    ATypeWhichRaisesError.Name), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
+                    Context), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
-
+        
         /// <summary>
         /// todoComment
         /// </summary>
@@ -445,10 +449,11 @@ namespace Ict.Petra.Client.App.Gui
         public static void MsgSecurityException(ESecurityDBTableAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
             String TableLabelName = StringHelper.UpperCamelCase(AException.DBTable);
+            string Context = DetermineExceptionContext(AException, ATypeWhichRaisesError);
 
             MessageBox.Show(String.Format(Catalog.GetString("You do not have permission to {0} {1} records."), AException.AccessRight,
                     TableLabelName) + BuildMessageFooter(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSTABLE,
-                    ATypeWhichRaisesError.Name), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
+                    Context), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
 
@@ -463,6 +468,27 @@ namespace Ict.Petra.Client.App.Gui
                 MessageBoxIcon.Information);
         }
 
+        private static string DetermineExceptionContext(ESecurityAccessDeniedException AException, System.Type ATypeWhichRaisesError)
+        {
+            if (AException == null) 
+            {
+                throw new ArgumentNullException("AException");
+            }
+            
+            if (AException.Context != String.Empty) 
+            {
+                return AException.Context;
+            }
+            else if (ATypeWhichRaisesError != null) 
+            {
+                return ATypeWhichRaisesError.Name;
+            }
+            else
+            {
+                return Catalog.GetString("Not specified");                
+            }                        
+        }
+        
         /// <summary>
         /// todoComment
         /// </summary>
