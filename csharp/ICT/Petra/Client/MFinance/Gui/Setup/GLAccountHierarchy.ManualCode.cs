@@ -487,7 +487,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
 
                 txtRptOrder.Text = txtReportingOrder;
-                txtRptOrder.Enabled = !ARow.SystemAccountFlag;
+//              txtRptOrder.Enabled = !ARow.SystemAccountFlag;
 
                 if (!ARow.ForeignCurrencyFlag)
                 {
