@@ -1,5 +1,5 @@
-43,GIFT,FIELD,?,Field Gift,200,4300,TRUE,0,FALSE,?,FALSE,0,0,0,0,0,0,FALSE,TRUE,TRUE,Field Gift,?,FALSE,TRUE,Field,?,18/04/2013,?,?,?,?
-43,GIFT,KEYMIN,?,Key Ministry Gift,400,4300,TRUE,0,FALSE,?,FALSE,0,0,0,0,0,0,FALSE,TRUE,TRUE,Key Ministry Gift,?,FALSE,TRUE,Field,?,18/04/2013,?,?,?,?
-43,GIFT,PERSONAL,?,Gift for personal use,100,4300,TRUE,0,FALSE,?,FALSE,0,0,0,0,0,0,FALSE,TRUE,TRUE,Gift for personal use,?,FALSE,TRUE,Worker,?,18/04/2013,?,?,?,?
-43,GIFT,SUPPORT,?,Support Gift,100,4300,TRUE,0,FALSE,?,FALSE,0,0,0,0,0,0,FALSE,TRUE,TRUE,Support Gift,?,FALSE,TRUE,Worker,?,18/04/2013,?,?,?,?
-43,GIFT,UNDESIG,?,Undesignated Gift,300,4300,TRUE,0,FALSE,?,FALSE,0,0,0,0,0,0,FALSE,TRUE,TRUE,Undesignated Gift,?,FALSE,TRUE,Field,?,18/04/2013,?,?,?,?
+43,GIFT,FIELD,?,Field Gift,0200,4300,true,0,false,?,false,0,0,0,0,0,0,false,true,true,Field Gift,?,false,true,Field,?,2013-4-18,?,?,?,?
+43,GIFT,KEYMIN,?,Key Ministry Gift,0400,4300,true,0,false,?,false,0,0,0,0,0,0,false,true,true,Key Ministry Gift,?,false,true,Field,?,2013-4-18,?,?,?,?
+43,GIFT,PERSONAL,?,Gift for personal use,0100,4300,true,0,false,?,false,0,0,0,0,0,0,false,true,true,Gift for personal use,?,false,true,Worker,?,2013-4-18,?,?,?,?
+43,GIFT,SUPPORT,?,Support Gift,0100,4300,true,0,false,?,false,0,0,0,0,0,0,false,true,true,Support Gift,?,false,true,Worker,?,2013-4-18,?,?,?,?
+43,GIFT,UNDESIG,?,Undesignated Gift,0300,4300,true,0,false,?,false,0,0,0,0,0,0,false,true,true,Undesignated Gift,?,false,true,Field,?,2013-4-18,?,?,?,?
