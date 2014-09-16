@@ -143,7 +143,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
             {
-                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
                 return false;
             }
             return true;
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (TemplateTable.Rows.Count == 0)
             {
-                TLogging.Log("No FastReports template for " + FReportName);
+//              TLogging.Log("No FastReports template for " + FReportName);
                 return false;
             }
 
@@ -201,7 +201,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
             {
-                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
             }
         }
 
@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
             catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
             {
-                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
             }
         }
 
