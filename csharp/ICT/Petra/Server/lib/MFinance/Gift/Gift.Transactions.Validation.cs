@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 TSharedFinanceValidation_Gift.ValidateGiftDetailManual("TTransactionWebConnector" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (AGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
+                    (GiftBatchTDSAGiftDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
                     ValidationControlsDict);
             }
         }

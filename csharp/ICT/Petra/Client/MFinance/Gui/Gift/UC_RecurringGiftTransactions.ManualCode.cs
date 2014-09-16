@@ -1066,6 +1066,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RetrieveMotivationDetailAccountCode();
                 }
+                
+                // set tax deductible checkbox
+                if (motivationDetail.TaxDeductible)
+                {
+                	chkDetailTaxDeductible.Checked = true;
+                }
+                else
+                {
+                	chkDetailTaxDeductible.Checked = false;
+                }
             }
 
             long PartnerKey = 0;

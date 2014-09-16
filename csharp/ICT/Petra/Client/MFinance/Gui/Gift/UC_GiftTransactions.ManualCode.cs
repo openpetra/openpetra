@@ -23,8 +23,8 @@
 //
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -646,6 +646,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         			// when the Partner Short Name is updated.
                     new Thread(ValidateGiftDestinationThread).Start();
                 }
+                        
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                	UpdateTaxDeductiblePct(APartnerKey, true);
+                	EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, true);
+                }
             }
             finally
             {
@@ -714,8 +720,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             FMainDS.DonorPartners.Merge(PartnerDT);
                         }
 
-                        FLastDonor = APartnerKey;
-
                         foreach (GiftBatchTDSAGiftDetailRow giftDetail in FMainDS.AGiftDetail.Rows)
                         {
                             if (giftDetail.BatchNumber.Equals(FBatchNumber)
@@ -727,10 +731,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
 
                         AutoPopulateGiftDetail(APartnerKey);
-                        ShowReceiptFrequency(APartnerKey);
 
                         mniDonorHistory.Enabled = true;
                     }
+                    
+                    ShowReceiptFrequency(APartnerKey);
+
+                    FLastDonor = APartnerKey;
                 }
                 finally
                 {
@@ -956,6 +963,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void RetrieveMotivationDetailAccountCode()
         {
             string AcctCode = string.Empty;
+            string TaxDeductibleAcctCode = string.Empty;
 
             if (FMotivationDetail.Length > 0)
             {
@@ -964,11 +972,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (motivationDetail != null)
                 {
-                    AcctCode = motivationDetail.AccountCode.ToString();
+                    AcctCode = motivationDetail.AccountCode;
+                    
+                    if (FTaxDeductiblePercentageEnabled)
+		            {
+		            	TaxDeductibleAcctCode = motivationDetail.TaxDeductibleAccount;
+		            }
                 }
             }
 
             txtDetailAccountCode.Text = AcctCode;
+            txtDeductibleAccount.Text = TaxDeductibleAcctCode;
         }
 
         private void RetrieveMotivationDetailCostCentreCode()
@@ -1148,6 +1162,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
+        	// true if motivation detail has been changed by the user (i.e. not a row change)
+        	bool ChangedByUser = !FPetraUtilsObject.SuppressChangeDetection;
+        	AMotivationDetailRow motivationDetail = null;
+        	
             if (!FBatchUnposted || !FInEditMode || txtDetailRecipientKeyMinistry.Visible)
             {
                 return;
@@ -1157,7 +1175,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMotivationDetail.Length > 0)
             {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
                     new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
 
                 cmbDetailMotivationDetailCode.RefreshLabel();
@@ -1165,6 +1183,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (motivationDetail != null)
                 {
                     RetrieveMotivationDetailAccountCode();
+                
+	                // set tax deductible checkbox
+	                if (ChangedByUser || FInRecipientKeyChanging)
+	                {
+	                	chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
+	                }
+                
+	                if (FTaxDeductiblePercentageEnabled)
+	                {
+	                	if (string.IsNullOrEmpty(motivationDetail.TaxDeductibleAccount))
+	                	{
+	                		MessageBox.Show(Catalog.GetString("This Motivation Detail does not have an associated Tax Deductible Account. " +
+	                              "This can be added in Finance / Setup / Motivation Details.\n\n" + 
+	                              "Unless this is changed it will be impossible to assign a Tax Deductible Percentage to this gift."),
+	                              Catalog.GetString("Incomplete Motivation Detail"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+	                	}
+	                	
+	                	UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
+	                	EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, ChangedByUser);
+	                }
                 }
             }
 
@@ -1223,8 +1261,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
-
-            if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            
+            if (FTaxDeductiblePercentageEnabled)
+            {
+            	// this will also call UpdateBaseAmount
+            	UpdateTaxDeductibilityAmounts(sender, e);
+            }
+            else if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 UpdateBaseAmount(true);
             }
@@ -2037,6 +2080,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ShowReceiptFrequency(Convert.ToInt64(txtDetailDonorKey.Text));
 
                 UpdateControlsProtection(ARow);
+                
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                	ShowTaxDeductibleManual(ARow);
+                }
             }
             finally
             {
@@ -2351,9 +2399,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
                 }
             }
+            
+            if (FTaxDeductiblePercentageEnabled)
+            {
+            	GetTaxDeductibleDataFromControlsManual(ref ARow);
+            }
         }
 
-        private void ValidateDataDetailsManual(AGiftDetailRow ARow)
+        private void ValidateDataDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
             if ((ARow == null) || (GetCurrentBatchRow() == null) || (GetCurrentBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
                 || (GetCurrentBatchRow().BatchNumber != ARow.BatchNumber))
@@ -2376,16 +2429,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 dtpDateEntered,
                 ref VerificationResultCollection,
                 FValidationControlsDict);
+            
+            if (FTaxDeductiblePercentageEnabled)
+            {
+            	ValidateTaxDeductiblePct(ARow, ref VerificationResultCollection);
+            }
         }
 
         private void ValidateGiftDestination()
         {
-        	while (txtDetailRecipientKey.LabelText != FPartnerShortName)
-            {
-            	System.Threading.Thread.Sleep(10);
-            }
-        	
-            // if no gift destination exists for parter then give the user the option to open Gift Destination maintenance screen
+        	// if no gift destination exists for parter then give the user the option to open Gift Destination maintenance screen
             if ((Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) && (FPreviouslySelectedDetailRow.RecipientKey != 0)
                 && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)
                 && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +
@@ -2691,6 +2744,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Update all transactions
                 RecalcTransactionsCurrencyAmounts(CurrentBatchRow, IntlToBaseCurrencyExchRate, IsTransactionInIntlCurrency);
+            }
+            
+            if (FTaxDeductiblePercentageEnabled)
+            {
+            	UpdateTaxDeductibiltyBaseAmounts(CurrentBatchRow, AUpdateCurrentRowOnly, IsTransactionInIntlCurrency, BatchExchangeRateToBase, 
+                                             IntlToBaseCurrencyExchRate, TransactionsFromCurrentBatch);
             }
         }
 
@@ -3057,6 +3116,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 GiftDestinationForm.Show();
             }
         }
+        
+        private void ToggleTaxDeductible(Object sender, EventArgs e)
+        { 
+        	if (FTaxDeductiblePercentageEnabled)
+        	{
+        		EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+        		
+        		UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
+        	}
+        }
 
         // modifies menu items depending on the Recipeint's Partner class
         private void RecipientPartnerClassChanged(TPartnerClass ? APartnerClass)
@@ -3098,148 +3167,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
         }
-        
-        #region Tax Detuctibility Percentage
-
-        /// <summary>
-        /// This is used to rearrnage the controls for when the Tax Deductibility Percentage is enabled (i.e. OM CH).
-        /// It is unfortunately highly manual and might look confusing.
-        /// But it seems to be the simpliest way to do this without writing a new screen specically for when this functionality is enabled.
-        /// </summary>
-        private void SetupTaxDeductibilityControls()
-        {
-        	const int YSPACE = 25;
-        	const int YSPACE2 = YSPACE * 2;
-        	int LABELWIDTH = lblDetailGiftCommentOne.Width;
-        	int WIDTHDIFF = lblDetailCommentOneType.Width - lblDetailGiftCommentOne.Width;
-
-        	/* move standard controls */
-        	lblDetailMailingCode.Location = new System.Drawing.Point(lblDetailCostCentreCode.Location.X - WIDTHDIFF, lblDetailMailingCode.Location.Y + (YSPACE * 3));
-        	cmbDetailMailingCode.Location = new System.Drawing.Point(txtDetailCostCentreCode.Location.X, cmbDetailMailingCode.Location.Y + (YSPACE * 3));
-
-        	lblDetailMotivationGroupCode.Location = new System.Drawing.Point(lblDetailMotivationGroupCode.Location.X, lblDetailMotivationGroupCode.Location.Y + YSPACE);
-        	cmbDetailMotivationGroupCode.Location = new System.Drawing.Point(cmbDetailMotivationGroupCode.Location.X, cmbDetailMotivationGroupCode.Location.Y + YSPACE);
-        	lblDetailMotivationDetailCode.Location = new System.Drawing.Point(lblDetailMotivationDetailCode.Location.X, lblDetailMotivationDetailCode.Location.Y + YSPACE);
-        	cmbDetailMotivationDetailCode.Location = new System.Drawing.Point(cmbDetailMotivationDetailCode.Location.X, cmbDetailMotivationDetailCode.Location.Y + YSPACE);
-
-        	lblDetailCostCentreCode.Location = new System.Drawing.Point(lblDetailMotivationDetailCode.Location.X + WIDTHDIFF, lblDetailCostCentreCode.Location.Y + YSPACE);
-        	txtDetailCostCentreCode.Location = new System.Drawing.Point(cmbDetailMotivationDetailCode.Location.X, txtDetailCostCentreCode.Location.Y + YSPACE);
-        	lblDetailAccountCode.Location = new System.Drawing.Point(lblDetailAccountCode.Location.X, lblDetailAccountCode.Location.Y + YSPACE2);
-        	lblDetailAccountCode.Text = Catalog.GetString("Non-Deductible: ");
-        	txtDetailAccountCode.Location = new System.Drawing.Point(txtDetailAccountCode.Location.X, txtDetailAccountCode.Location.Y + YSPACE2);
-        	txtDetailAccountCode.Width = 80;
-
-        	lblDetailGiftCommentOne.Location = new System.Drawing.Point(lblDetailGiftCommentOne.Location.X, lblDetailGiftCommentOne.Location.Y + YSPACE2);
-        	txtDetailGiftCommentOne.Location = new System.Drawing.Point(txtDetailGiftCommentOne.Location.X, txtDetailGiftCommentOne.Location.Y + YSPACE2);
-        	lblDetailCommentOneType.Location = new System.Drawing.Point(lblDetailCommentOneType.Location.X, lblDetailCommentOneType.Location.Y + YSPACE2);
-        	cmbDetailCommentOneType.Location = new System.Drawing.Point(cmbDetailCommentOneType.Location.X, cmbDetailCommentOneType.Location.Y + YSPACE2);
-        	lblDetailGiftCommentTwo.Location = new System.Drawing.Point(lblDetailGiftCommentTwo.Location.X, lblDetailGiftCommentTwo.Location.Y + YSPACE2);
-        	txtDetailGiftCommentTwo.Location = new System.Drawing.Point(txtDetailGiftCommentTwo.Location.X, txtDetailGiftCommentTwo.Location.Y + YSPACE2);
-        	lblDetailCommentTwoType.Location = new System.Drawing.Point(lblDetailCommentTwoType.Location.X, lblDetailCommentTwoType.Location.Y + YSPACE2);
-        	cmbDetailCommentTwoType.Location = new System.Drawing.Point(cmbDetailCommentTwoType.Location.X, cmbDetailCommentTwoType.Location.Y + YSPACE2);
-        	lblDetailGiftCommentThree.Location = new System.Drawing.Point(lblDetailGiftCommentThree.Location.X, lblDetailGiftCommentThree.Location.Y + YSPACE2);
-        	txtDetailGiftCommentThree.Location = new System.Drawing.Point(txtDetailGiftCommentThree.Location.X, txtDetailGiftCommentThree.Location.Y + YSPACE2);
-        	lblDetailCommentThreeType.Location = new System.Drawing.Point(lblDetailCommentThreeType.Location.X, lblDetailCommentThreeType.Location.Y + YSPACE2);
-        	cmbDetailCommentThreeType.Location = new System.Drawing.Point(cmbDetailCommentThreeType.Location.X, cmbDetailCommentThreeType.Location.Y + YSPACE2);
-        	
-        	grpDetailsForEachGift.Height += YSPACE2;
-        	
-        	// If pnlDetails is not big enough then move the splitter. Only want to move the splitter once as it's new location will be remembered.
-        	if (pnlDetails.VerticalScroll.Visible)
-        	{
-        		sptTransactions.SplitterDistance -= YSPACE2;
-        	}
-        	
-        	/* move tax deductibility controls and make them visible */
-        	lblDeductiblePercentage.Location = new System.Drawing.Point(lblDeductiblePercentage.Location.X, lblDeductiblePercentage.Location.Y - (YSPACE * 7));
-        	txtDeductiblePercentage.Location = new System.Drawing.Point(txtDeductiblePercentage.Location.X, txtDeductiblePercentage.Location.Y - (YSPACE * 7));
-        	lblDeductiblePercentage.Visible = true;
-        	txtDeductiblePercentage.Visible = true;
-        	txtDeductiblePercentage.NumberValueDecimal = 0;
-        	txtDeductiblePercentage.NegativeValueAllowed = false;
-        	lblTaxDeductibleAmount.Location = new System.Drawing.Point(lblTaxDeductibleAmount.Location.X, lblTaxDeductibleAmount.Location.Y - (YSPACE * 7));
-        	txtTaxDeductibleAmount.Location = new System.Drawing.Point(txtTaxDeductibleAmount.Location.X, txtTaxDeductibleAmount.Location.Y - (YSPACE * 7));
-        	lblTaxDeductibleAmount.Visible = true;
-        	txtTaxDeductibleAmount.Visible = true;
-        	txtTaxDeductibleAmount.CurrencyCode = FBatchRow.CurrencyCode;
-        	lblNonDeductibleAmount.Location = new System.Drawing.Point(lblNonDeductibleAmount.Location.X, lblNonDeductibleAmount.Location.Y - (YSPACE * 7));
-        	txtNonDeductibleAmount.Location = new System.Drawing.Point(txtNonDeductibleAmount.Location.X, txtNonDeductibleAmount.Location.Y - (YSPACE * 7));
-        	lblNonDeductibleAmount.Visible = true;
-        	txtNonDeductibleAmount.Visible = true;
-        	txtNonDeductibleAmount.CurrencyCode = FBatchRow.CurrencyCode;
-        	lblAccounts.Location = new System.Drawing.Point(lblAccounts.Location.X, lblAccounts.Location.Y - (YSPACE * 5));
-        	lblTaxDeductibleAccount.Location = new System.Drawing.Point(lblTaxDeductibleAccount.Location.X + LABELWIDTH + 5, lblTaxDeductibleAccount.Location.Y - (YSPACE * 3));
-        	txtTaxDeductibleAccount.Location = new System.Drawing.Point(txtTaxDeductibleAccount.Location.X + LABELWIDTH + 5, txtTaxDeductibleAccount.Location.Y - (YSPACE * 3));
-        	lblAccounts.Visible = true;
-        	lblAccounts.TextAlign = System.Drawing.ContentAlignment.TopRight;
-        	lblAccounts.Width = LABELWIDTH;
-        	lblTaxDeductibleAccount.Visible = true;
-        	txtTaxDeductibleAccount.Visible = true;
-        	txtTaxDeductibleAccount.Width = txtDetailAccountCode.Width;
-        	lblDetailAccountCode.Location = new System.Drawing.Point(txtTaxDeductibleAccount.Location.X + txtTaxDeductibleAccount.Width + 20, lblDetailAccountCode.Location.Y);
-        	txtDetailAccountCode.Location = new System.Drawing.Point(lblDetailAccountCode.Location.X + lblDetailAccountCode.Width + 5, txtDetailAccountCode.Location.Y);
-        	
-        	/* add events */
-        	txtDetailGiftTransactionAmount.TextChanged += UpdateTaxDeductibilityAmounts;
-        	txtDeductiblePercentage.TextChanged += UpdateTaxDeductibilityAmounts;
-        	
-        	/* add extra column to grid */
-        	//grdDetails.AddTextColumn(Catalog.GetString("Tax Deductibility %"), FMainDS.);
-        	
-        	/* fix tab order */
-        	int STARTINGINDEX = txtDetailGiftTransactionAmount.TabIndex + 20;
-        	txtDeductiblePercentage.TabIndex = STARTINGINDEX;
-        	txtTaxDeductibleAmount.TabIndex = STARTINGINDEX += 20;
-        	txtNonDeductibleAmount.TabIndex = STARTINGINDEX += 20;
-        	cmbDetailMotivationGroupCode.TabIndex = STARTINGINDEX += 20;
-        	cmbDetailMotivationDetailCode.TabIndex = STARTINGINDEX += 20;
-        	cmbDetailMailingCode.TabIndex = STARTINGINDEX += 20;
-        	txtDetailCostCentreCode.TabIndex = STARTINGINDEX += 20;
-        	txtTaxDeductibleAccount.TabIndex = STARTINGINDEX += 20;
-        	txtDetailAccountCode.TabIndex = STARTINGINDEX += 20;
-        	txtDetailGiftCommentOne.TabIndex = STARTINGINDEX += 20;
-        	cmbDetailCommentOneType.TabIndex = STARTINGINDEX += 20;
-        	txtDetailGiftCommentTwo.TabIndex = STARTINGINDEX += 20;
-        	cmbDetailCommentTwoType.TabIndex = STARTINGINDEX += 20;
-        	txtDetailGiftCommentThree.TabIndex = STARTINGINDEX += 20;
-        	cmbDetailCommentThreeType.TabIndex = STARTINGINDEX += 20;
-        }
-        
-        private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
-        {
-        	txtTaxDeductibleAmount.NumberValueDecimal = 
-        		txtDetailGiftTransactionAmount.NumberValueDecimal * (txtDeductiblePercentage.NumberValueDecimal / 100);
-        	txtNonDeductibleAmount.NumberValueDecimal = 
-        		txtDetailGiftTransactionAmount.NumberValueDecimal * (1 - (txtDeductiblePercentage.NumberValueDecimal / 100));
-        	
-        	// correct rounding errors
-        	while (txtTaxDeductibleAmount.NumberValueDecimal + txtNonDeductibleAmount.NumberValueDecimal 
-        	       < txtDetailGiftTransactionAmount.NumberValueDecimal)
-        	{
-        		if (txtDeductiblePercentage.NumberValueDecimal >= 50)
-        		{
-        			txtTaxDeductibleAmount.NumberValueDecimal += (decimal) 0.01;
-        		}
-        		else
-        		{
-        			txtNonDeductibleAmount.NumberValueDecimal += (decimal) 0.01;
-        		}
-        	}
-        	
-        	while (txtTaxDeductibleAmount.NumberValueDecimal + txtNonDeductibleAmount.NumberValueDecimal 
-        	       > txtDetailGiftTransactionAmount.NumberValueDecimal)
-        	{
-        		if (txtDeductiblePercentage.NumberValueDecimal >= 50)
-        		{
-        			txtTaxDeductibleAmount.NumberValueDecimal -= (decimal) 0.01;
-        		}
-        		else
-        		{
-        			txtNonDeductibleAmount.NumberValueDecimal -= (decimal) 0.01;
-        		}
-        	}
-        }
-
-        #endregion
     }
 }

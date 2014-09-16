@@ -23,22 +23,17 @@
 //
 using System;
 using System.Data;
+using System.Reflection;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Xml;
 using System.Collections.Specialized;
-using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
-using Ict.Common.IO;
-using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.MReporting.Gui;
@@ -50,6 +45,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
     {
         private Int32 FLedgerNumber;
         private string FDescription;
+        private bool FTaxDeductiblePercentageEnabled = false;
+        
+        private TCmbAutoPopulated cmbDeductibleAccountCode;
 
         /// <summary>
         /// maintain motivation details for this ledger
@@ -90,6 +88,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
+
+	            // should Tax Deductibility Percentage be enabled? (specifically for OM Switzerland)
+	            FTaxDeductiblePercentageEnabled = Convert.ToBoolean(
+	            	TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+	            
+	            if (FTaxDeductiblePercentageEnabled)
+	            {
+	            	SetupTaxDeductibilityControls();
+	            }
             }
         }
 
@@ -228,6 +235,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             clbDetailFeesReceivable.CheckedColumn = "CHECKED";
             clbDetailFeesPayable.SetCheckedStringList(FeesPayable);
             clbDetailFeesReceivable.SetCheckedStringList(FeesReceivable);
+            
+            if (FTaxDeductiblePercentageEnabled)
+            {
+            	if (ARow.IsTaxDeductibleAccountNull())
+            	{
+            		cmbDeductibleAccountCode.SelectedIndex = 0;
+            	}
+            	else
+            	{
+            		cmbDeductibleAccountCode.SetSelectedString(ARow.TaxDeductibleAccount);
+            	}
+            }
         }
 
         private void GetDetailDataFromControlsManual(AMotivationDetailRow ARow)
@@ -274,6 +293,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                     NewRow.FeeCode = fee;
                     FMainDS.AMotivationDetailFee.Rows.Add(NewRow);
                 }
+            }
+            
+            if (FTaxDeductiblePercentageEnabled)
+            {
+            	ARow.TaxDeductibleAccount = cmbDeductibleAccountCode.GetSelectedString();
             }
         }
 
@@ -343,9 +367,78 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             }
 
             TSharedFinanceValidation_Gift.ValidateGiftMotivationSetupManual(this,
-                ARow,
+                ARow, FTaxDeductiblePercentageEnabled,
                 ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
+        
+        #region Tax Deductibility Percentage
+        
+        private void SetupTaxDeductibilityControls()
+        {
+        	// increase the width of the screen from the default width (760)
+        	if (ClientSize.Width == 760)
+        	{
+        		ClientSize = new System.Drawing.Size(920, ClientSize.Height);
+        	}
+        	
+        	// new label
+        	Label lblAccounts = new Label();
+            lblAccounts.Name = "lblAccounts";
+            lblAccounts.Location = lblDetailAccountCode.Location;
+            lblAccounts.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+            lblAccounts.Size = lblDetailAccountCode.Size;
+            lblAccounts.Text = "Accounts:";
+            lblAccounts.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            pnlDetails.Controls.Add(lblAccounts);
+            
+            // changes to DetailAccountCode control
+            lblDetailAccountCode.Location = new System.Drawing.Point(lblDetailAccountCode.Location.X + 90, lblDetailAccountCode.Location.Y);
+            lblDetailAccountCode.Text = "Non-Deductible:";
+            lblDetailAccountCode.Size = new System.Drawing.Size(102, 17);
+            cmbDetailAccountCode.Location = new System.Drawing.Point(cmbDetailAccountCode.Location.X + 105, cmbDetailAccountCode.Location.Y);
+            
+            // create new label and combobox for the Tax-Deductible Account Code
+            Label lblDeductibleAccountCode = new Label();
+            lblDeductibleAccountCode.Name = "lblDeductibleAccountCode";
+            lblDeductibleAccountCode.Location = new System.Drawing.Point(cmbDetailAccountCode.Location.X + 310, lblDetailAccountCode.Location.Y);
+            lblDeductibleAccountCode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+            lblDeductibleAccountCode.Size = new System.Drawing.Size(102, 17);
+            lblDeductibleAccountCode.Text = "Tax-Deductible:";
+            lblDeductibleAccountCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            pnlDetails.Controls.Add(lblDeductibleAccountCode);
+            
+        	cmbDeductibleAccountCode = new TCmbAutoPopulated();
+            cmbDeductibleAccountCode.Name = "cmbDeductibleAccountCode";
+            cmbDeductibleAccountCode.Location = new System.Drawing.Point(cmbDetailAccountCode.Location.X + 415,cmbDetailAccountCode.Location.Y);
+            cmbDeductibleAccountCode.Size = new System.Drawing.Size(300, 22);
+            cmbDeductibleAccountCode.ListTable = TCmbAutoPopulated.TListTableEnum.UserDefinedList;
+            cmbDeductibleAccountCode.TabIndex = cmbDetailAccountCode.TabIndex + 1;
+            cmbDeductibleAccountCode.Validated += ControlValidatedHandler;
+            pnlDetails.Controls.Add(cmbDeductibleAccountCode);
+            
+            TFinanceControls.InitialiseAccountList(ref cmbDeductibleAccountCode, FLedgerNumber, true, false, false, false);
+            
+            if (FMainDS.AMotivationDetail != null)
+            {
+                FPetraUtilsObject.ValidationControlsDict.Add(FMainDS.AMotivationDetail.Columns[(short)FMainDS.AMotivationDetail.GetType().GetField("ColumnTaxDeductibleAccountId", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy).GetValue(FMainDS.AMotivationDetail.GetType())],
+                    new TValidationControlsData(cmbDeductibleAccountCode, Catalog.GetString("Tax Deductible Account")));
+            }
+            
+            // add new column to grid (TaxDeductibleAccount)
+	        grdDetails.Columns.Clear();
+			grdDetails.AddTextColumn(Catalog.GetString("Group"), FMainDS.AMotivationDetail.ColumnMotivationGroupCode);
+			grdDetails.AddTextColumn(Catalog.GetString("Motivation Detail"), FMainDS.AMotivationDetail.ColumnMotivationDetailCode);
+			grdDetails.AddTextColumn(Catalog.GetString("Description"), FMainDS.AMotivationDetail.ColumnMotivationDetailDesc);
+			grdDetails.AddTextColumn(Catalog.GetString("Non-Deductible Account"), FMainDS.AMotivationDetail.ColumnAccountCode);
+			grdDetails.AddTextColumn(Catalog.GetString("Tax-Deductible Account"), FMainDS.AMotivationDetail.ColumnTaxDeductibleAccount);
+			grdDetails.AddTextColumn(Catalog.GetString("Cost Centre Code"), FMainDS.AMotivationDetail.ColumnCostCentreCode);
+			grdDetails.AddCheckBoxColumn(Catalog.GetString("Active"), FMainDS.AMotivationDetail.ColumnMotivationStatus);
+			grdDetails.AddCheckBoxColumn(Catalog.GetString("Print Receipt"), FMainDS.AMotivationDetail.ColumnReceipt);
+      		
+			SelectRowInGrid(1);
+        }
+        
+        #endregion
     }
 }

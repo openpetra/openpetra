@@ -747,7 +747,6 @@ namespace Ict.Petra.Server.MReporting.MConference
             String ATargetFieldList)
         {
             PPersonTable PersonTable;
-            PFamilyTable FamilyTable;
             bool ReturnValue = false;
             PmStaffDataTable StaffDataTable = new PmStaffDataTable();
             PmStaffDataRow TemplateRow = (PmStaffDataRow)StaffDataTable.NewRow();
@@ -772,34 +771,28 @@ namespace Ict.Petra.Server.MReporting.MConference
                 }
             }
 
-            // 2. check the person field key
+            // 2. check the person gift destination
             PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ASituation.GetDatabaseConnection().Transaction);
 
             if ((ReturnValue == false)
                 && (PersonTable.Rows.Count > 0))
             {
                 PPersonRow PersonRow = (PPersonRow)PersonTable.Rows[0];
-
-                if (!PersonRow.IsFieldKeyNull()
-                    && ATargetFieldList.Contains(PersonRow.FieldKey.ToString()))
+                
+                PPartnerGiftDestinationTable GiftDestinationTable = 
+                	PPartnerGiftDestinationAccess.LoadViaPPartner(PersonRow.FamilyKey, ASituation.GetDatabaseConnection().Transaction);
+                
+                if (GiftDestinationTable.Rows.Count > 0)
                 {
-                    ReturnValue = true;
-                }
-                else if (PersonRow.IsFieldKeyNull())
-                {
-                    // 3. check the family field key
-                    FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, ASituation.GetDatabaseConnection().Transaction);
-
-                    if (FamilyTable.Rows.Count > 0)
-                    {
-                        PFamilyRow FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
-
-                        if ((!FamilyRow.IsFieldKeyNull())
-                            && (ATargetFieldList.Contains(FamilyRow.FieldKey.ToString())))
-                        {
-                            ReturnValue = true;
-                        }
-                    }
+	                foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
+	                {
+	                	// check if the gift destination is currently active
+	                	if (Row.DateEffective <= DateTime.Today
+	                	    && (Row.IsDateExpiresNull() || (Row.DateExpires >= DateTime.Today && Row.DateExpires != Row.DateEffective)))
+	                	{
+	                		ReturnValue = true;
+	                	}
+	                }
                 }
             }
 
