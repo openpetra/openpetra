@@ -301,12 +301,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FnameForNewCostCentre = Catalog.GetString("NEWCOSTCENTRE");
 
             txtDetailCostCentreCode.TextChanged += new EventHandler(txtDetailCostCentreCode_TextChanged);
+            txtDetailCostCentreCode.Leave += txtDetailCostCentreCode_Leave;
             FPetraUtilsObject.DataSaved += OnHierarchySaved;
             FormClosing += TFrmGLCostCentreHierarchy_FormClosing;
 
             mniFilePrint.Click += FilePrint;
             mniFilePrint.Enabled = true;
 
+            chkDetailSummaryFlag.CheckedChanged += chkDetailSummaryFlag_CheckedChanged;
             if (TAppSettingsManager.GetBoolean("OmBuild", false)) // In OM, no-one needs to see the import or export functions:
             {
                 tbrMain.Items.Remove(tbbImportHierarchy);
@@ -317,6 +319,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                  * mnuMain.Items.Remove(mniExportHierarchy);
                  */
             }
+        }
+
+        void txtDetailCostCentreCode_Leave(object sender, EventArgs e)
+        {
+            CheckCostCentreValueChanged();
         }
 
         private void OnHierarchySaved(System.Object sender, TDataSavedEventArgs e)
@@ -378,6 +385,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // the txtDetailCostCentreCode_TextChanged method will disallow any change.
                 SetPrimaryKeyReadOnly(false);
                 btnRename.Visible = false;
+                chkDetailSummaryFlag.Checked = !ARow.PostingCostCentreFlag;
+                chkDetailSummaryFlag.Enabled = !ARow.SystemCostCentreFlag;
             }
         }
 
@@ -728,6 +737,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 ACostCentreRow SelectedRow = GetSelectedDetailRowManual();
                 GetDetailsFromControls(SelectedRow);
+                FCurrentCostCentre.CostCentreRow.PostingCostCentreFlag = !chkDetailSummaryFlag.Checked;
+            }
+        }
+
+        void chkDetailSummaryFlag_CheckedChanged(object sender, EventArgs e)
+        {
+            if ((FCurrentCostCentre != null) && (FIAmUpdating == 0)) // Only look into this if the user has changed it...
+            {
+                FCurrentCostCentre.GetAttrributes();
+
+                if (chkDetailSummaryFlag.Checked) // I can't allow this to be made a summary if it has transactions posted:
+                {
+                    if (!FCurrentCostCentre.CanHaveChildren.Value)
+                    {
+                        MessageBox.Show(String.Format("Cost Centre {0} cannot be made summary because it has tranactions posted to it.",
+                                FCurrentCostCentre.CostCentreRow.CostCentreCode), "Summary Cost Centre");
+                        chkDetailSummaryFlag.Checked = false;
+                    }
+                }
+                else // I can't allow this Cost Centre to be a posting Cost Centre if it has children:
+                {
+                    if (FCurrentCostCentre.linkedTreeNode.Nodes.Count > 0)
+                    {
+                        MessageBox.Show(String.Format("Cost Centre {0} cannot be made postable while it has children.",
+                                FCurrentCostCentre.CostCentreRow.CostCentreCode), "Summary Cost Centre");
+                        chkDetailSummaryFlag.Checked = true;
+                    }
+                }
             }
         }
 
