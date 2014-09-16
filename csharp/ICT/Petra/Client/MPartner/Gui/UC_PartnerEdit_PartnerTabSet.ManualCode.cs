@@ -1082,7 +1082,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-                    CountAll = 0;//FMainDS.MiscellaneousData[0].ItemsCountContacts;
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountContacts;
                 }
 
                 if ((CountAll == 0) || (CountAll > 1))

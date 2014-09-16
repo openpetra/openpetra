@@ -673,7 +673,7 @@ namespace Ict.Petra.Shared.MPartner
         /// </summary>
         /// <param name="ATable">table with contacts</param>
         /// <param name="ATotalContacts">returns the total number of contacts</param>
-        public static void CalculateTabCountsContacts(Ict.Petra.Shared.MPartner.Mailroom.Data.PPartnerContactTable ATable, out Int32 ATotalContacts)
+        public static void CalculateTabCountsContacts(PPartnerContactTable ATable, out Int32 ATotalContacts)
         {
             // Inspect only CurrentRows (this excludes Deleted DataRows)
             ATotalContacts = new DataView(ATable, "", "", DataViewRowState.CurrentRows).Count;

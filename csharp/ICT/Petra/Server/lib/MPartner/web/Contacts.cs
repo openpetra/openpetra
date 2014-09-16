@@ -49,6 +49,45 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     /// </summary>
     public class TContactsWebConnector
     {
+        [RequireModulePermission("PTNRUSER")]
+        public static void AddContactAttributeToContacts(int contactId, List<Int64> APartnerKeys, List<int> attributeCode, List<int> attributeDetailCode)
+        {
+            Boolean NewTransaction;
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            
+            try
+            {
+                PPartnerContactAttributeTable attributes = new PPartnerContactAttributeTable();
+
+                for (int i = 0; i < APartnerKeys.Count; i++)
+                {
+                    PPartnerContactAttributeRow row = attributes.NewRowTyped();
+                    row.ContactId = contactId;
+                    
+                }
+
+                PPartnerContactAttributeAccess.SubmitChanges(attributes, WriteTransaction);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured while associating a Contact with a ContactAttribute:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
+                throw;
+            }
+        }
+        
         /// <summary>
         /// this is useful when applying contact details to a group of people at the same time
         /// </summary>
@@ -200,8 +239,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return contacts;
         }
-
-
 
         [RequireModulePermission("PTNRUSER")]
         public static PPartnerContactTable FindContactsForPartner(long partnerKey)

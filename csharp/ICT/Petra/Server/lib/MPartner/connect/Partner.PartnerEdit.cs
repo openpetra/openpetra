@@ -500,6 +500,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountPartnerInterests = 0;
             Int32 ItemsCountInterests = 0;
             Int32 ItemsCountPartnerBankingDetails = 0;
+            Int32 ItemsCountContacts = 0;
             Int64 FoundationOwner1Key = 0;
             Int64 FoundationOwner2Key = 0;
             bool HasEXWORKERPartnerType = false;
@@ -569,6 +570,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         // Empty Tables again, we don't want to transfer the data contained in them
                         FPartnerEditScreenDS.PSubscription.Rows.Clear();
+                    }
+
+                    // Contacts
+                    FPartnerEditScreenDS.Merge(GetContactsInternal(out ItemsCountContacts, out LastContactDate));
+                    if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpContacts))
+                    {
+                        // Only count Contacts
+                        Calculations.CalculateTabCountsContacts(FPartnerEditScreenDS.PPartnerContact,
+                            out ItemsCountContacts);
+
+                        // Empty Tables again, we don't want to transfer the data contained in them
+                        FPartnerEditScreenDS.PPartnerContact.Rows.Clear();
                     }
 
                     // Partner Relationships
@@ -914,6 +927,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     MiscellaneousDataDR.ItemsCountAddressesActive = ItemsCountAddressesActive;
                     MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
                     MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
+                    MiscellaneousDataDR.ItemsCountContacts = ItemsCountContacts;
                     MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
                     MiscellaneousDataDR.ItemsCountPartnerRelationships = ItemsCountPartnerRelationships;
                     MiscellaneousDataDR.ItemsCountFamilyMembers = ItemsCountFamilyMembers;
@@ -966,6 +980,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // are not needed at the Client side.
             FPartnerEditScreenDS.RemoveEmptyTables();
         }
+
+
 
         private void LoadData(Boolean ADelayedDataLoading)
         {
@@ -1026,6 +1042,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PLocationTable SiteLocationDT;
             StringCollection SiteLocationRequiredColumns;
             DateTime CreationDate;
+            
             String CreationUserID;
             String GiftReceiptingDefaults;
             String ReceiptLetterFrequency;
@@ -1044,6 +1061,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Int32 ItemsCountPartnerRelationships = 0;
             Int32 ItemsCountFamilyMembers = 0;
             Int32 ItemsCountInterests = 0;
+            Int32 ItemsCountContacts = 0;
+            DateTime LastContactDate = DateTime.Now;
             Int64 FoundationOwner1Key = 0;
             Int64 FoundationOwner2Key = 0;
             bool HasEXWORKERPartnerType = false;
@@ -1430,6 +1449,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 MiscellaneousDataDR.FoundationOwner1Key = FoundationOwner1Key;
                 MiscellaneousDataDR.FoundationOwner2Key = FoundationOwner2Key;
                 MiscellaneousDataDR.HasEXWORKERPartnerType = HasEXWORKERPartnerType;
+                MiscellaneousDataDR.ItemsCountContacts = ItemsCountContacts;
+                MiscellaneousDataDR.LastContactDate = LastContactDate;
                 MiscellaneousDataDT.Rows.Add(MiscellaneousDataDR);
                 MiscellaneousDataDT.AcceptChanges();
             }
@@ -2845,6 +2866,46 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
             return SubscriptionDT;
+        }
+
+        private DataTable GetContactsInternal(out int ACount, out DateTime ALastContact)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PPartnerContactTable ContactDT;
+            ALastContact = DateTime.MinValue;
+            ContactDT = new PPartnerContactTable();
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                try
+                {
+                    ContactDT = PPartnerContactAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
+                        
+                    foreach (PPartnerContactRow row in ContactDT.Rows)
+                    {
+                        ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+                ACount = ContactDT.Rows.Count;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetSubscriptionsInternal: committed own transaction.");
+                }
+            }
+
+            return ContactDT;
         }
 
         private PSubscriptionTable GetSubscriptionsInternal(out Int32 ACount)
