@@ -302,11 +302,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnFamilyIDHelp.Visible = false;
 
                 /* Set up Family Partner Information */
-                FDelegateGetPartnerShortName = @GetPartnerShortName;
                 txtFamilyPartnerKey.Text = String.Format("{0:0000000000}", FMainDS.PPerson[0].FamilyKey);
             }
 
             // initialize variables
+            FDelegateGetPartnerShortName = @GetPartnerShortName;
             FDeadlineEditMode = false;
 
             // react to actions on grid

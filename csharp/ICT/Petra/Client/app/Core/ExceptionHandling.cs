@@ -28,6 +28,7 @@ using System.IO;
 using Ict.Common;
 using GNU.Gettext;
 using System.Windows.Forms;
+using Ict.Common.Exceptions;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -35,7 +36,7 @@ namespace Ict.Petra.Client.App.Core
     /// todoComment
     /// </summary>
     public delegate void TApplicationShutdownCallback();
-
+    
     /// <summary>
     /// contains procedures for structured Exception handling. They are
     /// intended to be used as 'last resort' in case an Exception that was thrown
@@ -46,6 +47,11 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>This is set by method "PetraClientMain.StartUp" in the PetraClient.exe Assembly.</summary>
         public static TApplicationShutdownCallback GApplicationShutdownCallback;
 
+        /// <summary>
+        /// Handler for Exceptions of Type <see cref="ESecurityAccessDeniedException" />. 
+        /// </summary>
+        public static Action<ESecurityAccessDeniedException, Type> ProcessSecurityAccessDeniedException;
+        
         /// <summary>
         /// log file name (should really be set in the config file)
         /// </summary>
@@ -81,17 +87,42 @@ namespace Ict.Petra.Client.App.Core
         {
             TUnhandledExceptionForm UEDialogue;
 
-            //      MessageBox.Show("UnhandledExceptionHandler  Unhandled Exception: \r\n\r\n" +
-            //                      ((Exception)(AEventArgs.ExceptionObject)).ToString() + "\r\n\r\n"+
-            //      "IsTerminating: " + AEventArgs.IsTerminating.ToString());
-
-            LogException((Exception)AEventArgs.ExceptionObject,
-                "Reported by UnhandledExceptionHandler: (Application is terminating: " + AEventArgs.IsTerminating.ToString() + ')');
-            UEDialogue = new TUnhandledExceptionForm();
-
-            UEDialogue.NonRecoverable = AEventArgs.IsTerminating;
-            UEDialogue.TheException = (Exception)AEventArgs.ExceptionObject;
-            UEDialogue.ShowDialog();
+            if (((Exception)AEventArgs.ExceptionObject is NotImplementedException))
+            {
+                TLogging.Log(Catalog.GetString("This functionality is not yet implemented in OpenPetra."));
+                TLogging.Log(((Exception)AEventArgs.ExceptionObject).StackTrace);
+                MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra."),
+                    Catalog.GetString("Not Implemented"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else if (((Exception)AEventArgs.ExceptionObject is ESecurityAccessDeniedException))
+            {
+                if (ProcessSecurityAccessDeniedException != null) 
+                {
+                    ProcessSecurityAccessDeniedException((ESecurityAccessDeniedException)AEventArgs.ExceptionObject, ASender.GetType());
+                }
+                else
+                {
+                    MessageBox.Show("Unhandled Thread Exception Handler: encountered ESecurityAccessDeniedException, but Delegate " +
+                        "'ProcessSecurityAccessDeniedException' isn't set up - which is a mistake that needs to be corrected." + Environment.NewLine + 
+                        "Message of the ProcessSecurityAccessDeniedException instance:" + Environment.NewLine + 
+                        ProcessSecurityAccessDeniedException.ToString());
+                }
+            }
+            else
+            {            
+                //      MessageBox.Show("UnhandledExceptionHandler  Unhandled Exception: \r\n\r\n" +
+                //                      ((Exception)(AEventArgs.ExceptionObject)).ToString() + "\r\n\r\n"+
+                //      "IsTerminating: " + AEventArgs.IsTerminating.ToString());
+    
+                LogException((Exception)AEventArgs.ExceptionObject,
+                    "Reported by UnhandledExceptionHandler: (Application is terminating: " + AEventArgs.IsTerminating.ToString() + ')');
+                UEDialogue = new TUnhandledExceptionForm();
+    
+                UEDialogue.NonRecoverable = AEventArgs.IsTerminating;
+                UEDialogue.TheException = (Exception)AEventArgs.ExceptionObject;
+                UEDialogue.ShowDialog();
+            }
         }
     }
 
@@ -100,6 +131,11 @@ namespace Ict.Petra.Client.App.Core
     /// </summary>
     public class TUnhandledThreadExceptionHandler : object
     {
+        /// <summary>
+        /// Handler for Exceptions of Type <see cref="ESecurityAccessDeniedException" />. 
+        /// </summary>
+        public static Action<ESecurityAccessDeniedException, Type> ProcessSecurityAccessDeniedException;
+        
         #region TUnhandledThreadExceptionHandler
 
         /// <summary>
@@ -110,8 +146,30 @@ namespace Ict.Petra.Client.App.Core
         public void OnThreadException(object ASender, ThreadExceptionEventArgs AEventArgs)
         {
             TUnhandledExceptionForm UEDialogue;
-
-            if (!(AEventArgs.Exception is NotImplementedException))
+            
+            if ((AEventArgs.Exception is NotImplementedException))
+            {
+                TLogging.Log(Catalog.GetString("This functionality is not yet implemented in OpenPetra."));
+                TLogging.Log(AEventArgs.Exception.StackTrace);
+                MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra."),
+                    Catalog.GetString("Not Implemented"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else if ((AEventArgs.Exception is ESecurityAccessDeniedException))
+            {
+                if (ProcessSecurityAccessDeniedException != null) 
+                {
+                    ProcessSecurityAccessDeniedException((ESecurityAccessDeniedException)AEventArgs.Exception, ASender.GetType());
+                }
+                else
+                {
+                    MessageBox.Show("Unhandled Thread Exception Handler: encountered ESecurityAccessDeniedException, but Delegate " +
+                        "'ProcessSecurityAccessDeniedException' isn't set up - which is a mistake that needs to be corrected." + Environment.NewLine + 
+                        "Message of the ProcessSecurityAccessDeniedException instance:" + Environment.NewLine + 
+                        ProcessSecurityAccessDeniedException.ToString());
+                }
+            }
+            else
             {
 //                MessageBox.Show(
 //                    "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());
@@ -122,14 +180,6 @@ namespace Ict.Petra.Client.App.Core
                 UEDialogue.NonRecoverable = false;
                 UEDialogue.TheException = AEventArgs.Exception;
                 UEDialogue.ShowDialog();
-            }
-            else
-            {
-                TLogging.Log(Catalog.GetString("This functionality is not yet implemented in OpenPetra."));
-                TLogging.Log(AEventArgs.Exception.StackTrace);
-                MessageBox.Show(Catalog.GetString("This functionality is not yet implemented in OpenPetra."),
-                    Catalog.GetString("Not Implemented"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
