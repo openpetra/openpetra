@@ -170,7 +170,9 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("pub_", "");
             ReturnValue = ReturnValue.Replace("pub.", "");
             ReturnValue = ReturnValue.Replace("public.", "");
-            ReturnValue = ReturnValue.Replace("\"", "'");
+//          ReturnValue = ReturnValue.Replace("\"", "'");   // I guess this was intended to ensure that single quotes are used for literals,
+            //  but it also changes quotes within strings!  (Tim Ingham, March 2014)
+
 
             ReturnValue = ReturnValue.Replace("NOW()", "datetime('now')");
 
@@ -187,6 +189,12 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");
             ReturnValue = ReturnValue.Replace("TRUE AS ", "1 AS ");
             ReturnValue = ReturnValue.Replace("FALSE AS ", "0 AS ");
+            ReturnValue = ReturnValue.Replace(",True", ",1");
+            ReturnValue = ReturnValue.Replace(",False", ",0");
+            ReturnValue = ReturnValue.Replace("True,", "1,");
+            ReturnValue = ReturnValue.Replace("False,", "0,");
+            ReturnValue = ReturnValue.Replace("TRUE;", "1;");
+            ReturnValue = ReturnValue.Replace("FALSE;", "0;");
 
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
