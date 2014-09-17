@@ -404,7 +404,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
             {
-                EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
+                LoadGiftDataForBatch(ALedgerNumber, ABatchNumber);
             }
 
             //Check if need to update batch period in each gift
@@ -439,24 +439,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns>If transactions exist</returns>
-        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        private bool LoadGiftDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            DataView TransDV = new DataView(FMainDS.AGiftDetail);
+            bool RetVal = ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
 
-            TransDV.RowFilter = String.Format("{0}={1}",
-                AGiftDetailTable.GetBatchNumberDBName(),
-                ABatchNumber);
+            UpdateAllRecipientDescriptions(ABatchNumber);
 
-            if (TransDV.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
+            ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
 
-                UpdateAllRecipientDescriptions(ABatchNumber);
-
-                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-            }
-
-            return TransDV.Count > 0;
+            return RetVal;
         }
 
         private void UpdateAllRecipientDescriptions(Int32 ABatchNumber)
@@ -1398,6 +1389,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Backup the Dataset for reversion purposes
             GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
+            FTempDS.Merge(FMainDS);
 
             int selectedDetailNumber = ARowToDelete.DetailNumber;
             int giftToDeleteTransNo = 0;
@@ -1556,7 +1548,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxIcon.Error);
 
                 //Revert to previous state
-                FMainDS = (GiftBatchTDS)FTempDS.Copy();
+                FMainDS.Merge(FTempDS);
             }
             finally
             {
@@ -1627,10 +1619,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Copy and backup the current dataset
             GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
+            TempDS.Merge(FMainDS);
+
             GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.Copy();
+            BackupDS.Merge(FMainDS);
 
             try
             {
+                this.Cursor = Cursors.WaitCursor;
+
                 //Remove current batch gift data
                 DataView giftDetailView = new DataView(TempDS.AGiftDetail);
 
@@ -1680,10 +1677,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
-                FMainDS = BackupDS;
+                FMainDS.Merge(BackupDS);
 
                 string errMsg = Catalog.GetString("Error trying to clear current Batch data: /n/r/n/r" + ex.Message);
                 MessageBox.Show(errMsg, "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
 
             return RetVal;
@@ -2604,7 +2605,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             IntlToBaseCurrencyExchRate = ((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(CurrentBatchRow,
                 out IsTransactionInIntlCurrency);
 
-            if (!EnsureGiftDataPresent(LedgerNumber, CurrentBatchNumber))
+            if (!LoadGiftDataForBatch(LedgerNumber, CurrentBatchNumber))
             {
                 //No transactions exist to process or corporate exchange rate not found
                 return;
@@ -2666,7 +2667,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int BatchNumber = ABatchRow.BatchNumber;
             decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
 
-            EnsureGiftDataPresent(LedgerNumber, BatchNumber);
+            LoadGiftDataForBatch(LedgerNumber, BatchNumber);
 
             DataView transDV = new DataView(FMainDS.AGiftDetail);
             transDV.RowFilter = String.Format("{0}={1}",

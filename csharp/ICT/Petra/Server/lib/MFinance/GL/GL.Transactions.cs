@@ -901,7 +901,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
             bool recurrTransTableInDataSet = (AInspectDS.ARecurringTransaction != null);
 
-            bool newTransaction = false;
+            bool  newTransaction = false;
             TDBTransaction Transaction = null;
 
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
@@ -1025,8 +1025,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                         if (TestAccountsAndCostCentres.AAccount.Count == 0)
                         {
-                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
-                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
+                            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                                TEnforceIsolationLevel.eilMinimum,
+                                out newTransaction);
+
+                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+
+                            if (newTransaction)
+                            {
+                                newTransaction = false;
+                                DBAccess.GDBAccessObj.RollbackTransaction();
+                            }
                         }
 
                         // TODO could check for active accounts and cost centres?
