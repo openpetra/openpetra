@@ -901,14 +901,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
             bool recurrTransTableInDataSet = (AInspectDS.ARecurringTransaction != null);
 
-            bool  newTransaction = false;
+            bool newTransaction = false;
             TDBTransaction Transaction = null;
+
+            GLBatchTDS InspectDS = AInspectDS;
+            bool SubmissionOK = false;
 
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
 
             // check added and modified and deleted rows: are they related to a posted or cancelled batch? we must not save adjusted posted batches!
-            List <Int32>BatchNumbersInvolved = new List <int>();
+            List<Int32> BatchNumbersInvolved = new List<int>();
             Int32 LedgerNumber = -1;
 
             //Check if saving recurring tables
@@ -925,55 +928,67 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return SaveRecurringGLBatchTDS(ref AInspectDS);
             }
 
-            if (batchTableInDataSet)
-            {
-                LedgerNumber = ((ABatchRow)AInspectDS.ABatch.Rows[0]).LedgerNumber;
-
-                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out newTransaction);
-
-                foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
+            //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            //    TEnforceIsolationLevel.eilMinimum,
+            //    ref Transaction,
+            //    ref SubmissionOK,
+            //delegate
+            //{
+                if (batchTableInDataSet)
                 {
-                    if (batch.RowState != DataRowState.Added)
+                    LedgerNumber = ((ABatchRow)InspectDS.ABatch.Rows[0]).LedgerNumber;
+
+                    Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        out newTransaction);
+                    foreach (ABatchRow batch in InspectDS.ABatch.Rows)
                     {
-                        Int32 BatchNumber;
+                        TLogging.Log("Batch row status = " + batch.RowState.ToString());
+                        Console.WriteLine("Batch row status = " + batch.RowState.ToString());
+                        if (batch.RowState != DataRowState.Added)
+                        {
+                            Int32 BatchNumber;
 
-                        try
-                        {
-                            BatchNumber = batch.BatchNumber;
-                        }
-                        catch (Exception)
-                        {
-                            // for deleted batches
-                            BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+                            try
+                            {
+                                BatchNumber = batch.BatchNumber;
+                            }
+                            catch (Exception)
+                            {
+                                // for deleted batches
+                                TLogging.Log("Batch row status = Deleted");
+                                Console.WriteLine("Batch row status = Deleted");
+                                BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+                            }
+
+                            if (!BatchNumbersInvolved.Contains(BatchNumber))
+                            {
+                                BatchNumbersInvolved.Add(BatchNumber);
+                            }
                         }
 
-                        if (!BatchNumbersInvolved.Contains(BatchNumber))
+                        int PeriodNumber, YearNr;
+
+                        if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
+                                batch.DateEffective,
+                                out PeriodNumber,
+                                out YearNr,
+                                Transaction))
                         {
-                            BatchNumbersInvolved.Add(BatchNumber);
+                            TLogging.Log(String.Format("Set BatchYear {0} and Period {1} for BatchNumber {2}", YearNr, PeriodNumber, batch.BatchNumber));
+                            Console.WriteLine(String.Format("Set BatchYear {0} and Period {1} for BatchNumber {2}", YearNr, PeriodNumber, batch.BatchNumber));
+                            batch.BatchYear = YearNr;
+                            batch.BatchPeriod = PeriodNumber;
                         }
                     }
 
-                    int PeriodNumber, YearNr;
-
-                    if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
-                            batch.DateEffective,
-                            out PeriodNumber,
-                            out YearNr,
-                            Transaction))
+                    if (newTransaction)
                     {
-                        batch.BatchYear = YearNr;
-                        batch.BatchPeriod = PeriodNumber;
+                        newTransaction = false;
+                        DBAccess.GDBAccessObj.RollbackTransaction();
                     }
                 }
-
-                if (newTransaction)
-                {
-                    newTransaction = false;
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+            //});
 
             if (journalTableInDataSet)
             {
@@ -1029,14 +1044,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 TEnforceIsolationLevel.eilMinimum,
                                 out newTransaction);
 
-                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
-                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                            //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                            //    TEnforceIsolationLevel.eilMinimum,
+                            //    ref Transaction,
+                            //    ref SubmissionOK,
+                            //delegate
+                            //{
+                                AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                                ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
 
-                            if (newTransaction)
-                            {
-                                newTransaction = false;
-                                DBAccess.GDBAccessObj.RollbackTransaction();
-                            }
+                                if (newTransaction)
+                                {
+                                    newTransaction = false;
+                                    DBAccess.GDBAccessObj.RollbackTransaction();
+                                }
+                            //});
                         }
 
                         // TODO could check for active accounts and cost centres?
@@ -1125,18 +1147,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                                   (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out newTransaction);
 
-                try
-                {
-                    DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
-                }
-                finally
-                {
-                    if (newTransaction)
+                //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                //    TEnforceIsolationLevel.eilMinimum,
+                //    ref Transaction,
+                //    ref SubmissionOK,
+                //delegate
+                //{
+                    try
                     {
-                        newTransaction = false;
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
                     }
-                }
+                    finally
+                    {
+                        if (newTransaction)
+                        {
+                            newTransaction = false;
+                            DBAccess.GDBAccessObj.RollbackTransaction();
+                        }
+                    }
+                //});
 
                 foreach (ABatchRow batch in BatchDS.ABatch.Rows)
                 {

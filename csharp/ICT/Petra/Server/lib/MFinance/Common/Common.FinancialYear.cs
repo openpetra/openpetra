@@ -56,6 +56,8 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction ATransaction,
             bool ADoFixDate)
         {
+            bool RetVal = false;
+            
             AFinancialPeriod = -1;
             AFinancialYear = -1;
             AAccountingPeriodRow currentPeriodRow = null;
@@ -64,73 +66,83 @@ namespace Ict.Petra.Server.MFinance.Common
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ATransaction);
 
-            if (LedgerTable.Count < 1)
+            try
             {
-                throw new Exception("Ledger " + ALedgerNumber + " not found");
-            }
-
-            int ACurrentPeriod = LedgerTable[0].CurrentPeriod;
-            int AAllowedForwardPeriod = ACurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods;
-
-            foreach (AAccountingPeriodRow row in table.Rows)
-            {
-                if (row.AccountingPeriodNumber == ACurrentPeriod)
+                if (LedgerTable.Count < 1)
                 {
-                    currentPeriodRow = row;
+                    throw new Exception("Ledger " + ALedgerNumber + " not found");
                 }
 
-                if (row.AccountingPeriodNumber == AAllowedForwardPeriod)
-                {
-                    lastAllowedPeriodRow = row;
-                }
+                int ACurrentPeriod = LedgerTable[0].CurrentPeriod;
+                int AAllowedForwardPeriod = ACurrentPeriod + LedgerTable[0].NumberFwdPostingPeriods;
 
-                if ((row.PeriodStartDate <= ADateToTest) && (ADateToTest <= row.PeriodEndDate))
+                foreach (AAccountingPeriodRow row in table.Rows)
                 {
-                    // check if this period is either the current period or one of the forward posting periods
-                    if (LedgerTable.Count == 1)
+                    if (row.AccountingPeriodNumber == ACurrentPeriod)
                     {
-                        AFinancialPeriod = row.AccountingPeriodNumber;
+                        currentPeriodRow = row;
+                    }
 
-                        //This is the number of the period to which the "DateToTest" belongs
-                        //This can be
-                        // 1.) before the current period or in the last financial year
-                        //   =>  FIX Date to be the first day of the current period
-                        // 2.) greater oder eqal  currentperiod but within AllowedForwardperiod = no FIX required
-                        // 3.) after the allowed Forward period or even in a future financial year: = FIX Date to be the last day of the last allowed forward period
-                        if ((AFinancialPeriod >= ACurrentPeriod) && (AFinancialPeriod <= AAllowedForwardPeriod))
+                    if (row.AccountingPeriodNumber == AAllowedForwardPeriod)
+                    {
+                        lastAllowedPeriodRow = row;
+                    }
+
+                    if ((row.PeriodStartDate <= ADateToTest) && (ADateToTest <= row.PeriodEndDate))
+                    {
+                        // check if this period is either the current period or one of the forward posting periods
+                        if (LedgerTable.Count == 1)
                         {
+                            AFinancialPeriod = row.AccountingPeriodNumber;
+
+                            //This is the number of the period to which the "DateToTest" belongs
+                            //This can be
+                            // 1.) before the current period or in the last financial year
+                            //   =>  FIX Date to be the first day of the current period
+                            // 2.) greater oder eqal  currentperiod but within AllowedForwardperiod = no FIX required
+                            // 3.) after the allowed Forward period or even in a future financial year: = FIX Date to be the last day of the last allowed forward period
+                            if ((AFinancialPeriod >= ACurrentPeriod) && (AFinancialPeriod <= AAllowedForwardPeriod))
+                            {
+                                AFinancialYear = LedgerTable[0].CurrentFinancialYear;
+                                RetVal = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (ADoFixDate && !RetVal)
+                {
+                    if (ADateToTest < currentPeriodRow.PeriodStartDate)
+                    {
+                        ADateToTest = currentPeriodRow.PeriodStartDate;
+                        AFinancialYear = LedgerTable[0].CurrentFinancialYear;
+                        AFinancialPeriod = currentPeriodRow.AccountingPeriodNumber;
+                    }
+                    else
+                    {
+                        if (lastAllowedPeriodRow == null)
+                        {
+                            lastAllowedPeriodRow = table[table.Rows.Count - 1];
+                        }
+
+                        if (ADateToTest > lastAllowedPeriodRow.PeriodEndDate)
+                        {
+                            ADateToTest = lastAllowedPeriodRow.PeriodEndDate;
                             AFinancialYear = LedgerTable[0].CurrentFinancialYear;
-                            return true;
+                            AFinancialPeriod = lastAllowedPeriodRow.AccountingPeriodNumber;
                         }
                     }
                 }
             }
-
-            if (ADoFixDate)
+            catch (Exception Ex)
             {
-                if (ADateToTest < currentPeriodRow.PeriodStartDate)
-                {
-                    ADateToTest = currentPeriodRow.PeriodStartDate;
-                    AFinancialYear = LedgerTable[0].CurrentFinancialYear;
-                    AFinancialPeriod = currentPeriodRow.AccountingPeriodNumber;
-                }
-                else
-                {
-                    if (lastAllowedPeriodRow == null)
-                    {
-                        lastAllowedPeriodRow = table[table.Rows.Count - 1];
-                    }
-
-                    if (ADateToTest > lastAllowedPeriodRow.PeriodEndDate)
-                    {
-                        ADateToTest = lastAllowedPeriodRow.PeriodEndDate;
-                        AFinancialYear = LedgerTable[0].CurrentFinancialYear;
-                        AFinancialPeriod = lastAllowedPeriodRow.AccountingPeriodNumber;
-                    }
-                }
+                TLogging.Log("GetLedgerDatePostingPeriod: " + Ex.Message);
+                Console.WriteLine("GetLedgerDatePostingPeriod: " + Ex.Message);
+                throw;
             }
 
-            return false;
+            return RetVal;
         }
 
         /// <summary>
