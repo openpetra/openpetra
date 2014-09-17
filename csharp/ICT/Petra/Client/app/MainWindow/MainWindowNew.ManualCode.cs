@@ -914,10 +914,12 @@ namespace Ict.Petra.Client.App.PetraClient
             while (ANode != null)
             {
                 EnableDisableChildOption(ATaskList, AOptionName, AIsAllowed, ANode.FirstChild);
+
                 if (ANode.Name == AOptionName)
                 {
                     ATaskList.EnableDisableTaskItem(ANode, AIsAllowed);
                 }
+
                 ANode = ANode.NextSibling;
             }
         }
@@ -925,7 +927,7 @@ namespace Ict.Petra.Client.App.PetraClient
         private void UpdateSubsystemLinkStatus(int ALedgerNumber, TTaskList ATaskList, XmlNode ATaskListNode)
         {
             if ((ATaskListNode != null) && (ATaskListNode.ParentNode != null)
-                && ATaskListNode.ParentNode.Name == "Finance")
+                && (ATaskListNode.ParentNode.Name == "Finance"))
             {
                 ALedgerRow ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
@@ -949,8 +951,8 @@ namespace Ict.Petra.Client.App.PetraClient
                 } // while
 
                 EnableDisableChildOption(ATaskList, "SuspenseAccounts", ledger.SuspenseAccountFlag, ATaskListNode.ParentNode);
-
             } // if
+
         }
 
         private void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible)

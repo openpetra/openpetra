@@ -352,7 +352,6 @@ namespace Ict.Petra.Shared.Security
             return (FModuleAccess != null) && (System.Array.BinarySearch(FModuleAccess, "LEDGER" + ALedgerNumber.ToString("0000")) >= 0);
         }
 
-
         /// <summary>
         /// diagnostic string to show which modules a user has been given access to (separated by newlines)
         /// </summary>

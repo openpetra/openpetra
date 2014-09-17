@@ -576,8 +576,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void MarkNodeCommitted(TreeNode ParentNode)
         {
             ((AccountNodeDetails)ParentNode.Tag).IsNew = false;
+
             foreach (TreeNode ChildNode in ParentNode.Nodes)
+            {
                 MarkNodeCommitted(ChildNode);
+            }
         }
 
         /// <summary>
@@ -588,6 +591,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             MarkNodeCommitted(trvAccounts.Nodes[0]);
         }
-
     }
 }

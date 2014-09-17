@@ -546,7 +546,7 @@ namespace Ict.Common.Controls
             {
                 if (TaskRegex.IsMatch(TaskNode.Name))
                 {
-                    if (IncludeHiddenElements || (TaskNode.Attributes["Hidden"] == null) || !(AttributeTrue(TaskNode,"Hidden")))
+                    if (IncludeHiddenElements || (TaskNode.Attributes["Hidden"] == null) || !(AttributeTrue(TaskNode, "Hidden")))
                     {
                         counter++;
                     }
@@ -697,6 +697,7 @@ namespace Ict.Common.Controls
                     return false;
                 }
             }
+
             return string.Equals(node.Attributes[attr].Value, "true", StringComparison.CurrentCultureIgnoreCase);
         }
 
@@ -712,6 +713,7 @@ namespace Ict.Common.Controls
             {
                 return false;
             }
+
             return string.Equals(node.Attributes[attr].Value, "false", StringComparison.CurrentCultureIgnoreCase);
         }
 

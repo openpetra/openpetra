@@ -55,7 +55,6 @@ namespace Tests.MFinance.Server.Reporting
     [TestFixture]
     public class TIncExpStatementTest
     {
-
         /// <summary>
         /// open database connection or prepare other things for this test
         /// </summary>
@@ -83,21 +82,21 @@ namespace Tests.MFinance.Server.Reporting
         {
 /*
  * Don't run this test - it's not valid in the FastReports world.
-            // create a new ledger
-            Int32 FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
-
-            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.xml";
-
-            TParameterList SpecificParameters = new TParameterList();
-            SpecificParameters.Add("param_start_period_i", 1);
-            SpecificParameters.Add("param_end_period_i", 1);
-            SpecificParameters.Add("param_costcentreoptions", "SelectedCostCentres");
-            string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(FLedgerNumber);
-            SpecificParameters.Add("param_cost_centre_codes", StandardCostCentre);
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
-
-            TReportTestingTools.TestResult(testFile, FLedgerNumber);
-*/
+ *          // create a new ledger
+ *          Int32 FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
+ *
+ *          string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.xml";
+ *
+ *          TParameterList SpecificParameters = new TParameterList();
+ *          SpecificParameters.Add("param_start_period_i", 1);
+ *          SpecificParameters.Add("param_end_period_i", 1);
+ *          SpecificParameters.Add("param_costcentreoptions", "SelectedCostCentres");
+ *          string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(FLedgerNumber);
+ *          SpecificParameters.Add("param_cost_centre_codes", StandardCostCentre);
+ *          TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
+ *
+ *          TReportTestingTools.TestResult(testFile, FLedgerNumber);
+ */
         }
     }
 }

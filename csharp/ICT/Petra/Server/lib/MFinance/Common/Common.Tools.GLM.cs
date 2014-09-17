@@ -179,7 +179,6 @@ namespace Ict.Petra.Server.MFinance.Common
             GLMTemplateRow.CostCentreCode = ACostCentreCode;
             FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
 
-
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -194,7 +193,9 @@ namespace Ict.Petra.Server.MFinance.Common
             get
             {
                 if (iPtr >= FGLMTbl.Rows.Count)
+                {
                     return 0;
+                }
 
                 return FGLMTbl[iPtr].IsYtdActualBaseNull() ? 0 : FGLMTbl[iPtr].YtdActualBase;
             }
@@ -208,7 +209,9 @@ namespace Ict.Petra.Server.MFinance.Common
             get
             {
                 if (iPtr >= FGLMTbl.Rows.Count)
+                {
                     return 0;
+                }
 
                 return FGLMTbl[iPtr].IsYtdActualForeignNull() ? 0 : FGLMTbl[iPtr].YtdActualForeign;
             }
@@ -254,7 +257,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AAccountCode"></param>
         public TGlmInfo(int ALedgerNumber, int ACurrentFinancialYear, string AAccountCode)
         {
-
             bool NewTransaction = false;
 
             try

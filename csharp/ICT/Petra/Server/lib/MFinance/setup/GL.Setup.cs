@@ -3442,6 +3442,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
                 Int32 OriginalAttribCount = TempAnalAttrTbl.Rows.Count;
+
                 for (Int32 Idx = OriginalAttribCount - 1; Idx >= 0; Idx--)
                 {
                     AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
@@ -3451,11 +3452,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     NewAnalAttribRow.AccountCode = ANewCode;
                     TempAnalAttrTbl.Rows.Add(NewAnalAttribRow);
                 }
+
                 AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
                 TempAnalAttrTbl.AcceptChanges();
 
                 UpdateAccountField("a_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                UpdateAccountField("a_recurring_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_trans_anal_attrib",
+                    "a_account_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
                 UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 for (Int32 Idx = OriginalAttribCount - 1; Idx >= 0; Idx--)
@@ -3463,6 +3471,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
                     OldAnalAttribRow.Delete();
                 }
+
                 AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
                 TempAnalAttrTbl.AcceptChanges();
 

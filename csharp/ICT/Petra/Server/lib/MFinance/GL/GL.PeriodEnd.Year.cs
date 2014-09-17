@@ -252,6 +252,7 @@ namespace Ict.Petra.Server.MFinance.GL
         public override int GetJobSize()
         {
             bool blnHelp = FInfoMode;
+
             FInfoMode = true;
             FCountJobs = 0;
             RunEndOfPeriodOperation();
@@ -276,6 +277,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 CalculateAccountList();
             }
+
             TCommonAccountingTool YearEndBatch = null;
 
             if (DoExecuteableCode)
@@ -309,6 +311,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     if (currentCostCentre.PostingCostCentreFlag)
                     {
                         TGlmpInfo glmpInfo = new TGlmpInfo(-1, -1, FglmInfo.GlmSequence, FledgerInfo.NumberOfAccountingPeriods);
+
                         if ((glmpInfo.ActualBase != 0) && (FglmInfo.YtdActualBase != 0))
                         {
                             ReallocationLoop(YearEndBatch, strAccountCode, FglmInfo.CostCentreCode);
@@ -374,7 +377,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (DoExecuteableCode)
             {
                 YearEndBatch.AddBaseCurrencyTransaction(
-                    AAccountCode, ACostCentreCode, 
+                    AAccountCode, ACostCentreCode,
                     String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode),
                     strYearEnd, !blnDebitCredit, Math.Abs(FglmInfo.YtdActualBase));
             }

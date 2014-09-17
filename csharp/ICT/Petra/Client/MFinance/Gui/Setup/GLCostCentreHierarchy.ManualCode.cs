@@ -309,6 +309,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             mniFilePrint.Enabled = true;
 
             chkDetailSummaryFlag.CheckedChanged += chkDetailSummaryFlag_CheckedChanged;
+
             if (TAppSettingsManager.GetBoolean("OmBuild", false)) // In OM, no-one needs to see the import or export functions:
             {
                 tbrMain.Items.Remove(tbbImportHierarchy);

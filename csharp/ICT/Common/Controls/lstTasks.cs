@@ -101,7 +101,7 @@ namespace Ict.Common.Controls
                     TaskGroup.GroupTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
                     TaskGroup.Name = TaskGroupNode.Name;
                     TIconCache.TIconSize IconSize = ATaskAppearance ==
-                            TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16;
+                                                    TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16;
 
                     Groups.Add(TaskGroup.Name, TaskGroup);
 
@@ -229,8 +229,9 @@ namespace Ict.Common.Controls
             if (TYml2Xml.HasAttribute(TaskNode, "Icon"))
             {
                 return FResourceDirectory + System.IO.Path.DirectorySeparatorChar +
-                          TaskNode.Attributes["Icon"].Value;
+                       TaskNode.Attributes["Icon"].Value;
             }
+
             if (TaskNode.ParentNode != null)
             {
                 return DetermineIconForTask(TaskNode.ParentNode);

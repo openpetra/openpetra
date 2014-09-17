@@ -214,9 +214,8 @@ namespace Ict.Testing.ControlTestBench
 
             if (temp != null)
             {
-                this.taskList1.ShowHideTaskItem(temp,!TTaskList.IsVisible(temp));
+                this.taskList1.ShowHideTaskItem(temp, !TTaskList.IsVisible(temp));
             }
-
         }
     }
 }

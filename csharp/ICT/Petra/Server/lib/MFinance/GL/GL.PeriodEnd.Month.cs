@@ -390,7 +390,6 @@ namespace Ict.Petra.Server.MFinance.GL
                             get_GLM_Info.Sequence,
                             FledgerInfo.CurrentPeriod);
 
-
                         if (get_GLMp_Info.RowExists)
                         {
                             TVerificationResult tvr = new TVerificationResult(
@@ -440,14 +439,14 @@ namespace Ict.Petra.Server.MFinance.GL
         DataTable FDataTable;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public Boolean HasRows
         {
             get
             {
-                return (FDataTable.Rows.Count > 0);
+                return FDataTable.Rows.Count > 0;
             }
         }
 

@@ -386,7 +386,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// not implemented
         /// </summary>
-        public override int GetJobSize() 
+        public override int GetJobSize()
         {
             return 0;
         }
@@ -506,7 +506,6 @@ namespace Ict.Petra.Server.MFinance.Common
                 FPostingFromDS = LoadTable(ALedgerNumber, FCurrentYear, transaction);
                 FPostingToDS = LoadTable(ALedgerNumber, FNextYear, transaction);
                 ALedgerAccess.LoadByPrimaryKey(FPostingFromDS, ALedgerNumber, transaction);
-
             }
             finally
             {
@@ -531,6 +530,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public override int GetJobSize()
         {
             bool blnOldInfoMode = FInfoMode;
+
             FInfoMode = true;
             RunEndOfPeriodOperation();
             FInfoMode = blnOldInfoMode;
@@ -574,7 +574,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 carryForward.SetNextPeriod();
             }
 
-            FPostingToDS.AGeneralLedgerMaster.DefaultView.Sort = 
+            FPostingToDS.AGeneralLedgerMaster.DefaultView.Sort =
                 AGeneralLedgerMasterTable.GetAccountCodeDBName() +
                 "," +
                 AGeneralLedgerMasterTable.GetCostCentreCodeDBName();
@@ -591,7 +591,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if (RowIdx >= 0)
                 {
-                    generalLedgerMasterRowTo = (AGeneralLedgerMasterRow) FPostingToDS.AGeneralLedgerMaster.DefaultView[RowIdx].Row;
+                    generalLedgerMasterRowTo = (AGeneralLedgerMasterRow)FPostingToDS.AGeneralLedgerMaster.DefaultView[RowIdx].Row;
                 }
                 else        // GLM record Not present - I'll make one now...
                 {
@@ -607,6 +607,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         FPostingToDS.AGeneralLedgerMaster.Rows.Add(generalLedgerMasterRowTo);
                     }
+
                     ++intEntryCount;
                 }
 
@@ -624,7 +625,9 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     if (RowIdx < 0) // If I created a new generalLedgerMasterRowTo, I need to also create a clutch of matching GLMP records:
                     {
-                        for (int PeriodCount = 1; PeriodCount < LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods + 1; PeriodCount++)
+                        for (int PeriodCount = 1;
+                             PeriodCount < LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods + 1;
+                             PeriodCount++)
                         {
                             AGeneralLedgerMasterPeriodRow glmPeriodRow = FPostingToDS.AGeneralLedgerMasterPeriod.NewRowTyped(true);
                             glmPeriodRow.GlmSequence = generalLedgerMasterRowTo.GlmSequence;
@@ -686,7 +689,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// (something like the calculation of the admin fees) this error is shown to indicate
         /// tha no database records were affected.
         /// </summary>
-            PEEC_01,
+        PEEC_01,
 
         /// <summary>
         /// Afte a specific period end operation has been done, the programm calculates again the

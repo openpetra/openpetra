@@ -101,36 +101,36 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         private static List <BatchKey>GiftBatches = new List <BatchKey>();
 
 /*
-        // I need to call MPartner.ServerCalculations.DetermineBestAddress through a delegate,
-        // since I can't refer to it directly from here. The delegate will have been set up
-        // to point to the correct function by a previous call to TCallForwarding().
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="APartnerKey"></param>
-        /// <param name="LocationRow"></param>
-        /// <returns></returns>
-        [NoRemoting]
-        public delegate TLocationPK GetLocationRow(Int64 APartnerKey, out PPartnerLocationRow LocationRow);
-        private static GetLocationRow FGetLocationRowDelegate;
-
-        /// <summary>
-        ///
-        /// </summary>
-        [NoRemoting]
-        public static GetLocationRow GetLocationRowDelegate
-        {
-            get
-            {
-                return FGetLocationRowDelegate;
-            }
-            set
-            {
-                FGetLocationRowDelegate = value;
-            }
-        }
-*/
+ *      // I need to call MPartner.ServerCalculations.DetermineBestAddress through a delegate,
+ *      // since I can't refer to it directly from here. The delegate will have been set up
+ *      // to point to the correct function by a previous call to TCallForwarding().
+ *
+ *      /// <summary>
+ *      ///
+ *      /// </summary>
+ *      /// <param name="APartnerKey"></param>
+ *      /// <param name="LocationRow"></param>
+ *      /// <returns></returns>
+ *      [NoRemoting]
+ *      public delegate TLocationPK GetLocationRow(Int64 APartnerKey, out PPartnerLocationRow LocationRow);
+ *      private static GetLocationRow FGetLocationRowDelegate;
+ *
+ *      /// <summary>
+ *      ///
+ *      /// </summary>
+ *      [NoRemoting]
+ *      public static GetLocationRow GetLocationRowDelegate
+ *      {
+ *          get
+ *          {
+ *              return FGetLocationRowDelegate;
+ *          }
+ *          set
+ *          {
+ *              FGetLocationRowDelegate = value;
+ *          }
+ *      }
+ */
         private static String PutDate(object DateField)
         {
             String ret = "";
@@ -605,9 +605,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                                   "PUB_p_partner_location.p_email_address_c AS cEmailAddress," +
                                   "PUB_p_partner_location.p_location_type_c AS cLocationType " +
 
-                                  "FROM PUB_pm_staff_data LEFT JOIN PUB_p_person ON PUB_pm_staff_data.p_partner_key_n = PUB_p_person.p_partner_key_n " +
-                                  "LEFT JOIN PUB_p_partner_location ON (PUB_pm_staff_data.p_partner_key_n = PUB_p_partner_location.p_partner_key_n) " +
-                                  "WHERE (PUB_p_partner_location.p_date_good_until_d IS NULL OR PUB_p_partner_location.p_date_good_until_d > NOW()) " +
+                                  "FROM PUB_pm_staff_data LEFT JOIN PUB_p_person ON PUB_pm_staff_data.p_partner_key_n = PUB_p_person.p_partner_key_n "
+                                  +
+                                  "LEFT JOIN PUB_p_partner_location ON (PUB_pm_staff_data.p_partner_key_n = PUB_p_partner_location.p_partner_key_n) "
+                                  +
+                                  "WHERE (PUB_p_partner_location.p_date_good_until_d IS NULL OR PUB_p_partner_location.p_date_good_until_d > NOW()) "
+                                  +
                                   "AND PUB_pm_staff_data.pm_end_of_commitment_d IS NULL OR PUB_pm_staff_data.pm_end_of_commitment_d > NOW();";
 
                 DataSet StaffPersonDS = DBAccess.GDBAccessObj.Select(SqlQuery, "StaffPersonTbl", FTransaction);

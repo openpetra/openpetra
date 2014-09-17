@@ -303,7 +303,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
-
                     String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
                                     StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
                     DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
@@ -377,8 +376,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 String CostCentre = "";
                 String AccountCode = "";
-                Decimal OpeningBalance = 0;
-                Decimal ClosingBalance = 0;
                 Int32 MaxPeriod = -1;
                 Int32 MinPeriod = 99;
                 DataRow NewRow = null;
@@ -413,14 +410,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     if (ThisPeriod < MinPeriod)
                     {
                         MinPeriod = ThisPeriod;
-                        OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
+                        Decimal OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
                         NewRow["OpeningBalance"] = OpeningBalance;
                     }
 
                     if (ThisPeriod > MaxPeriod)
                     {
                         MaxPeriod = ThisPeriod;
-                        ClosingBalance = Convert.ToDecimal(row["balance"]);
+                        Decimal ClosingBalance = Convert.ToDecimal(row["balance"]);
                         NewRow["ClosingBalance"] = ClosingBalance;
                     }
                 }

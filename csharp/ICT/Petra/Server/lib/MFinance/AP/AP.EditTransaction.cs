@@ -290,6 +290,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool IsMyOwnTransaction = false; // If I create a transaction here, then I need to commit it when I'm done.
+
             AVerificationResult = new TVerificationResultCollection();
             TVerificationResultCollection LocalVerificationResults = new TVerificationResultCollection();
             TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
@@ -298,8 +299,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             {
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
+
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                              (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                                                          (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             if ((AInspectDS.AApDocument != null) && (AInspectDS.AApDocument.Rows.Count > 0))
             {

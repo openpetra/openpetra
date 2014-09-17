@@ -81,19 +81,19 @@ namespace Tests.MFinance.Server.Reporting
         public void TestBalanceSheet()
         {
 /*
-* Don't run this test - it's not valid in the FastReports world.
-            // create a new ledger
-            Int32 FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
-
-            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/BalanceSheetDetail.xml";
-
-            TParameterList SpecificParameters = new TParameterList();
-            SpecificParameters.Add("param_start_period_i", 1);
-            SpecificParameters.Add("param_end_period_i", 1);
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
-
-            TReportTestingTools.TestResult(testFile, FLedgerNumber);
-*/
+ * Don't run this test - it's not valid in the FastReports world.
+ *          // create a new ledger
+ *          Int32 FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
+ *
+ *          string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/BalanceSheetDetail.xml";
+ *
+ *          TParameterList SpecificParameters = new TParameterList();
+ *          SpecificParameters.Add("param_start_period_i", 1);
+ *          SpecificParameters.Add("param_end_period_i", 1);
+ *          TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
+ *
+ *          TReportTestingTools.TestResult(testFile, FLedgerNumber);
+ */
         }
     }
 }

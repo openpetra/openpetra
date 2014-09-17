@@ -133,8 +133,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
             try
             {
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        out NewTransaction);
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
 
                 if (tbl.Rows.Count > 0) // I already have this. (I expect this is the case usually!)

@@ -351,7 +351,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
                 delegate
                 {
-
                     AApDocumentPaymentTable PreviousPayments =
                         AApDocumentPaymentAccess.LoadViaAApDocument(ApDocumentId, ReadTransaction);
 

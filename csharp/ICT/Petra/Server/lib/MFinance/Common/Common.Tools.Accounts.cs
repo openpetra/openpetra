@@ -487,6 +487,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private void LoadData()
         {
             bool NewTransaction = false;
+
             try
             {
                 TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -501,8 +502,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-           }
-           FAccountRow = null;
+            }
+            FAccountRow = null;
         }
 
         /// <summary>
@@ -559,7 +560,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// which was selected before. <br />
         /// The Account can be written and this will change the selected row without any
         /// database request. The result may be invalid.
-        /// 
+        ///
         /// After this is set, the FRowIdx is invalid.
         /// </summary>
         public string AccountCode
@@ -578,9 +579,10 @@ namespace Ict.Petra.Server.MFinance.Common
             set
             {
                 Reset();
+
                 if (value != "")
                 {
-                    FAccountRow = (AAccountRow) FAccountTable.Rows.Find (new Object[] {FLedgerInfo.LedgerNumber,value});
+                    FAccountRow = (AAccountRow)FAccountTable.Rows.Find(new Object[] { FLedgerInfo.LedgerNumber, value });
                 }
             }
         }

@@ -86,6 +86,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 //
                 // I need to establish whether the user is allowed to see this Ledger.
                 Int32 LedgerNumber = Convert.ToInt32(Row["LedgerNumber"]);
+
                 if (UserInfo.GUserInfo.IsInLedger(LedgerNumber))
                 {
                     String LedgerDescr = String.Format("{0}: {1}", LedgerNumber, Row["LedgerName"]);
