@@ -665,7 +665,7 @@ namespace Ict.Petra.Client.App.PetraClient
             // Set up Delegates for forwarding of calls for security-related Exceptions
             ExceptionHandling.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
             TUnhandledThreadExceptionHandler.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
-            
+
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenPartnerFindByBankDetailsScreen = @TPartnerFindScreenManager.OpenModalForm;

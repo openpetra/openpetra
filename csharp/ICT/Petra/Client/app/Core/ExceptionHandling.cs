@@ -36,7 +36,7 @@ namespace Ict.Petra.Client.App.Core
     /// todoComment
     /// </summary>
     public delegate void TApplicationShutdownCallback();
-    
+
     /// <summary>
     /// contains procedures for structured Exception handling. They are
     /// intended to be used as 'last resort' in case an Exception that was thrown
@@ -48,10 +48,10 @@ namespace Ict.Petra.Client.App.Core
         public static TApplicationShutdownCallback GApplicationShutdownCallback;
 
         /// <summary>
-        /// Handler for Exceptions of Type <see cref="ESecurityAccessDeniedException" />. 
+        /// Handler for Exceptions of Type <see cref="ESecurityAccessDeniedException" />.
         /// </summary>
-        public static Action<ESecurityAccessDeniedException, Type> ProcessSecurityAccessDeniedException;
-        
+        public static Action <ESecurityAccessDeniedException, Type>ProcessSecurityAccessDeniedException;
+
         /// <summary>
         /// log file name (should really be set in the config file)
         /// </summary>
@@ -97,28 +97,30 @@ namespace Ict.Petra.Client.App.Core
             }
             else if (((Exception)AEventArgs.ExceptionObject is ESecurityAccessDeniedException))
             {
-                if (ProcessSecurityAccessDeniedException != null) 
+                if (ProcessSecurityAccessDeniedException != null)
                 {
                     ProcessSecurityAccessDeniedException((ESecurityAccessDeniedException)AEventArgs.ExceptionObject, ASender.GetType());
                 }
                 else
                 {
-                    MessageBox.Show("Unhandled Thread Exception Handler: encountered ESecurityAccessDeniedException, but Delegate " +
-                        "'ProcessSecurityAccessDeniedException' isn't set up - which is a mistake that needs to be corrected." + Environment.NewLine + 
-                        "Message of the ProcessSecurityAccessDeniedException instance:" + Environment.NewLine + 
+                    MessageBox.Show(
+                        "Unhandled Thread Exception Handler: encountered ESecurityAccessDeniedException, but Delegate " +
+                        "'ProcessSecurityAccessDeniedException' isn't set up - which is a mistake that needs to be corrected." +
+                        Environment.NewLine +
+                        "Message of the ProcessSecurityAccessDeniedException instance:" + Environment.NewLine +
                         ProcessSecurityAccessDeniedException.ToString());
                 }
             }
             else
-            {            
+            {
                 //      MessageBox.Show("UnhandledExceptionHandler  Unhandled Exception: \r\n\r\n" +
                 //                      ((Exception)(AEventArgs.ExceptionObject)).ToString() + "\r\n\r\n"+
                 //      "IsTerminating: " + AEventArgs.IsTerminating.ToString());
-    
+
                 LogException((Exception)AEventArgs.ExceptionObject,
                     "Reported by UnhandledExceptionHandler: (Application is terminating: " + AEventArgs.IsTerminating.ToString() + ')');
                 UEDialogue = new TUnhandledExceptionForm();
-    
+
                 UEDialogue.NonRecoverable = AEventArgs.IsTerminating;
                 UEDialogue.TheException = (Exception)AEventArgs.ExceptionObject;
                 UEDialogue.ShowDialog();
@@ -132,10 +134,10 @@ namespace Ict.Petra.Client.App.Core
     public class TUnhandledThreadExceptionHandler : object
     {
         /// <summary>
-        /// Handler for Exceptions of Type <see cref="ESecurityAccessDeniedException" />. 
+        /// Handler for Exceptions of Type <see cref="ESecurityAccessDeniedException" />.
         /// </summary>
-        public static Action<ESecurityAccessDeniedException, Type> ProcessSecurityAccessDeniedException;
-        
+        public static Action <ESecurityAccessDeniedException, Type>ProcessSecurityAccessDeniedException;
+
         #region TUnhandledThreadExceptionHandler
 
         /// <summary>
@@ -146,7 +148,7 @@ namespace Ict.Petra.Client.App.Core
         public void OnThreadException(object ASender, ThreadExceptionEventArgs AEventArgs)
         {
             TUnhandledExceptionForm UEDialogue;
-            
+
             if ((AEventArgs.Exception is NotImplementedException))
             {
                 TLogging.Log(Catalog.GetString("This functionality is not yet implemented in OpenPetra."));
@@ -157,15 +159,17 @@ namespace Ict.Petra.Client.App.Core
             }
             else if ((AEventArgs.Exception is ESecurityAccessDeniedException))
             {
-                if (ProcessSecurityAccessDeniedException != null) 
+                if (ProcessSecurityAccessDeniedException != null)
                 {
                     ProcessSecurityAccessDeniedException((ESecurityAccessDeniedException)AEventArgs.Exception, ASender.GetType());
                 }
                 else
                 {
-                    MessageBox.Show("Unhandled Thread Exception Handler: encountered ESecurityAccessDeniedException, but Delegate " +
-                        "'ProcessSecurityAccessDeniedException' isn't set up - which is a mistake that needs to be corrected." + Environment.NewLine + 
-                        "Message of the ProcessSecurityAccessDeniedException instance:" + Environment.NewLine + 
+                    MessageBox.Show(
+                        "Unhandled Thread Exception Handler: encountered ESecurityAccessDeniedException, but Delegate " +
+                        "'ProcessSecurityAccessDeniedException' isn't set up - which is a mistake that needs to be corrected." +
+                        Environment.NewLine +
+                        "Message of the ProcessSecurityAccessDeniedException instance:" + Environment.NewLine +
                         ProcessSecurityAccessDeniedException.ToString());
                 }
             }
