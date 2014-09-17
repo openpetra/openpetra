@@ -906,41 +906,51 @@ namespace Ict.Petra.Client.App.PetraClient
             lstFolders.FireSelectedLinkEventIfFolderSelected("Finance");
         }
 
-        private void UpdateSubsystemLinkStatus(int ALedgerNr, TTaskList ATaskList, XmlNode ATaskListNode)
+        /// <summary>
+        /// Show or Hide this option in the given menu
+        /// </summary>
+        private void EnableDisableChildOption(TTaskList ATaskList, String AOptionName, Boolean AIsAllowed, XmlNode ANode)
         {
-            if ((ATaskListNode.ParentNode != null)
-                && (ATaskListNode.ParentNode.Name == "Finance"))
+            while (ANode != null)
             {
+                EnableDisableChildOption(ATaskList, AOptionName, AIsAllowed, ANode.FirstChild);
+                if (ANode.Name == AOptionName)
+                {
+                    ATaskList.EnableDisableTaskItem(ANode, AIsAllowed);
+                }
+                ANode = ANode.NextSibling;
+            }
+        }
+
+        private void UpdateSubsystemLinkStatus(int ALedgerNumber, TTaskList ATaskList, XmlNode ATaskListNode)
+        {
+            if ((ATaskListNode != null) && (ATaskListNode.ParentNode != null)
+                && ATaskListNode.ParentNode.Name == "Finance")
+            {
+                ALedgerRow ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                         TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
                 XmlNode TempNode = ATaskListNode.ParentNode.FirstChild;
 
                 while (TempNode != null)
                 {
                     if (TempNode.Name == "GiftProcessing")
                     {
-                        if (TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(ALedgerNr))
-                        {
-                            ATaskList.EnableTaskItem(TempNode);
-                        }
-                        else
-                        {
-                            ATaskList.DisableTaskItem(TempNode);
-                        }
+                        ATaskList.EnableDisableTaskItem(TempNode,
+                            TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(ALedgerNumber));
                     }
                     else if (TempNode.Name == "AccountsPayable")
                     {
-                        if (TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(ALedgerNr))
-                        {
-                            ATaskList.EnableTaskItem(TempNode);
-                        }
-                        else
-                        {
-                            ATaskList.DisableTaskItem(TempNode);
-                        }
+                        ATaskList.EnableDisableTaskItem(TempNode,
+                            TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(ALedgerNumber));
                     }
 
                     TempNode = TempNode.NextSibling;
-                }
-            }
+                } // while
+
+                EnableDisableChildOption(ATaskList, "SuspenseAccounts", ledger.SuspenseAccountFlag, ATaskListNode.ParentNode);
+
+            } // if
         }
 
         private void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible)

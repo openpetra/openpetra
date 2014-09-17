@@ -50,6 +50,8 @@ namespace Ict.Common.Controls
         private bool FSingleClickExecution = false;
         private int FMaxTaskWidth;
         private TExtStatusBarHelp FStatusbar = null;
+        private string FResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
+
 
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
         static private Form FLastOpenedScreen = null;
@@ -98,6 +100,8 @@ namespace Ict.Common.Controls
                     TUcoTaskGroup TaskGroup = new TUcoTaskGroup();
                     TaskGroup.GroupTitle = TLstFolderNavigation.GetLabel(TaskGroupNode);
                     TaskGroup.Name = TaskGroupNode.Name;
+                    TIconCache.TIconSize IconSize = ATaskAppearance ==
+                            TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16;
 
                     Groups.Add(TaskGroup.Name, TaskGroup);
 
@@ -114,9 +118,7 @@ namespace Ict.Common.Controls
                         SingleTask.TaskAppearance = ATaskAppearance;
                         SingleTask.TaskImagePath = DetermineIconForTask(TaskGroupNode);
                         SingleTask.TaskImage = TIconCache.IconCache.AddOrGetExistingIcon(
-                            SingleTask.TaskImagePath,
-                            ATaskAppearance ==
-                            TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16);
+                            SingleTask.TaskImagePath, IconSize);
                         SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
 
                         if (!FHasAccessPermission(TaskGroupNode, FUserId, false))
@@ -142,12 +144,10 @@ namespace Ict.Common.Controls
                             SingleTask.TaskAppearance = ATaskAppearance;
                             SingleTask.TaskImagePath = DetermineIconForTask(TaskNode);
                             SingleTask.TaskImage = TIconCache.IconCache.AddOrGetExistingIcon(
-                                SingleTask.TaskImagePath,
-                                ATaskAppearance ==
-                                TaskAppearance.staLargeTile ? TIconCache.TIconSize.is32by32 : TIconCache.TIconSize.is16by16);
+                                SingleTask.TaskImagePath, IconSize);
                             SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
 
-                            if (!FHasAccessPermission(TaskNode, FUserId, false))
+                            if (TTaskList.IsDisabled(TaskNode) || !FHasAccessPermission(TaskNode, FUserId, false))
                             {
                                 SingleTask.Enabled = false;
                             }
@@ -222,34 +222,21 @@ namespace Ict.Common.Controls
             return TIconCache.IconCache.AddOrGetExistingIcon(ATaskImagePath, AIconSize);
         }
 
+        //
+        // Get the Icon for this task. If none was supplied, I'll return my parent's icon.
         private string DetermineIconForTask(XmlNode TaskNode)
         {
-            string ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
-            string PathStr = null;
-
-            // Determine Icon path, starting at the Task level and going up the Navigation hierarchy
             if (TYml2Xml.HasAttribute(TaskNode, "Icon"))
             {
-                PathStr = ResourceDirectory + System.IO.Path.DirectorySeparatorChar +
-                          TYml2Xml.GetAttribute(TaskNode, "Icon");
+                return FResourceDirectory + System.IO.Path.DirectorySeparatorChar +
+                          TaskNode.Attributes["Icon"].Value;
             }
-            else if (TYml2Xml.HasAttribute(TaskNode.ParentNode.ParentNode, "Icon"))
+            if (TaskNode.ParentNode != null)
             {
-                PathStr = ResourceDirectory + System.IO.Path.DirectorySeparatorChar +
-                          TYml2Xml.GetAttribute(TaskNode.ParentNode.ParentNode, "Icon");
-            }
-            else if (TYml2Xml.HasAttribute(TaskNode.ParentNode.ParentNode.ParentNode, "Icon"))
-            {
-                PathStr = ResourceDirectory + System.IO.Path.DirectorySeparatorChar +
-                          TYml2Xml.GetAttribute(TaskNode.ParentNode.ParentNode.ParentNode, "Icon");
-            }
-            else if (TYml2Xml.HasAttribute(TaskNode.ParentNode.ParentNode.ParentNode.ParentNode, "Icon"))
-            {
-                PathStr = ResourceDirectory + System.IO.Path.DirectorySeparatorChar +
-                          TYml2Xml.GetAttribute(TaskNode.ParentNode.ParentNode.ParentNode.ParentNode, "Icon");
+                return DetermineIconForTask(TaskNode.ParentNode);
             }
 
-            return PathStr;
+            return null;
         }
 
         #endregion

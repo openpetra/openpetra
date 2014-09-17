@@ -141,7 +141,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 Type EmailSettingsType = EmailSettings.GetType();
                 EmailSettingsType.GetProperty("Host").SetValue(EmailSettings, "TimHost.com", null);
             }
-            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
             {
 //              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
                 return false;
@@ -199,7 +199,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FInitState = TInitState.LoadedOK;
                 LoadedOK = true;
             }
-            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
             {
 //              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
             }
@@ -230,7 +230,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 LoadedOK = true;
             }
-            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
             {
 //              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
             }

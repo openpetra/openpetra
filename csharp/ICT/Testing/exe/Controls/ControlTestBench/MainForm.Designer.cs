@@ -204,14 +204,7 @@ namespace Ict.Testing.ControlTestBench
 
             if (temp != null)
             {
-                if (this.taskList1.IsDisabled(temp))
-                {
-                    this.taskList1.EnableTaskItem(temp);
-                }
-                else
-                {
-                    this.taskList1.DisableTaskItem(temp);
-                }
+                this.taskList1.EnableDisableTaskItem(temp, !TTaskList.IsDisabled(temp));
             }
         }
 
@@ -221,20 +214,9 @@ namespace Ict.Testing.ControlTestBench
 
             if (temp != null)
             {
-                if (!this.taskList1.IsVisible(temp))
-                {
-                    this.taskList1.ShowTaskItem(temp);
-                }
-                else
-                {
-                    this.taskList1.HideTaskItem(temp);
-                }
+                this.taskList1.ShowHideTaskItem(temp,!TTaskList.IsVisible(temp));
             }
 
-//			temp = this.taskList1.GetTaskByNumber("3");
-//			if(temp != null){
-//				this.taskList1.ShowTaskItem(temp);
-//			}
         }
     }
 }
