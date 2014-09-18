@@ -38,19 +38,24 @@ namespace Ict.Petra.Client.CommonDialogs
         private bool FConfirmedClosing = false;
         private bool FShowCancellationConfirmationQuestion = false;
         private bool FCancelled = false;
+        private string FMessage, FCaption;
+        private int FTotal, FCurrentProgress = 0;
+        private bool FFinished = false;
+        private bool FQueryServerForProgress = true;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="AWorkerThread">The Thread that performs the work that the progress dialog shows the progress of.</param>
         /// <param name="AShowCancellationConfirmationQuestion">In case the user requests a cancellation: should
+        /// <param name="AQueryServerForProgress">does this track a process on the server</param>
         /// a Yes/No MessageBox for the confirmation of the cancellation be shown, or not? NOTE: If that
         /// MessageBox should be shown then the consequence of doing this is that the Thread will still be continuing
         /// the work it is performing until the user chooses 'Yes', which can result in the work being finished
         /// before the user had a chance to read the message of the MessageBox and press 'Yes' - and that might
         /// well not be what the user wants!!! So, in general this Argument should be set to true only for
         /// Threads that are running a substantial amount of time. (Default=false).</param>
-        public TProgressDialog(Thread AWorkerThread, bool AShowCancellationConfirmationQuestion = false) : base()
+        public TProgressDialog(Thread AWorkerThread, bool AShowCancellationConfirmationQuestion = false, bool AQueryServerForProgress = true) : base()
         {
             //
             // Required for Windows Form Designer support
@@ -67,6 +72,9 @@ namespace Ict.Petra.Client.CommonDialogs
 
             TRemote.MCommon.WebConnectors.Reset();
             AWorkerThread.Start();
+
+            FQueryServerForProgress = AQueryServerForProgress;
+
             timer1.Start();
         }
 
@@ -102,8 +110,73 @@ namespace Ict.Petra.Client.CommonDialogs
 
             if (CancelConfirmationResult == DialogResult.Yes)
             {
-                TRemote.MCommon.WebConnectors.CancelJob();
+                if (FQueryServerForProgress)
+                {
+                    try
+                    {
+                        TRemote.MCommon.WebConnectors.CancelJob();
+                    }
+                    catch (Exception Exc)
+                    {
+                        TLogging.Log("While cancelling a job from a Progress Dialog we got the following Exception:\r\n" + Exc.ToString());
+                    }
+                }
+
                 FCancelled = true;
+            }
+        }
+
+        /// the message to be displayed
+        public string Message
+        {
+            set
+            {
+                FMessage = value;
+            }
+        }
+
+        /// the caption to be displayed
+        public string Caption
+        {
+            set
+            {
+                FCaption = value;
+            }
+        }
+
+        /// the total amount
+        public int Total
+        {
+            set
+            {
+                FTotal = value;
+            }
+        }
+
+        /// the current Progress
+        public int CurrentProgress
+        {
+            set
+            {
+                FCurrentProgress = value;
+            }
+        }
+
+        /// has the job finished successfully
+        public bool Finished
+        {
+            set
+            {
+                FFinished = value;
+            }
+        }
+
+        /// has the job been cancelled
+        public bool Cancelled
+        {
+            get
+            {
+                return FCancelled;
             }
         }
 
@@ -114,16 +187,36 @@ namespace Ict.Petra.Client.CommonDialogs
             int percentage;
             bool finished;
 
-            if (TRemote.MCommon.WebConnectors.GetCurrentState(out caption,
-                    out message,
-                    out percentage,
-                    out finished))
+            if (FQueryServerForProgress)
             {
-                this.Text = caption;
-                this.lblMessage.Text = message;
-                this.progressBar.Value = percentage;
+                if (TRemote.MCommon.WebConnectors.GetCurrentState(out caption,
+                        out message,
+                        out percentage,
+                        out finished))
+                {
+                    this.Text = caption;
+                    this.lblMessage.Text = message;
+                    this.progressBar.Value = percentage;
 
-                if (finished)
+                    if (finished)
+                    {
+                        this.DialogResult = FCancelled?DialogResult.Cancel:DialogResult.OK;
+                        FConfirmedClosing = true;
+                        Close();
+                    }
+                }
+            }
+            else
+            {
+                this.Text = FCaption;
+                this.lblMessage.Text = FMessage;
+
+                if (FTotal > 0)
+                {
+                    this.progressBar.Value = Convert.ToInt32((100.0m * FCurrentProgress) / FTotal);
+                }
+
+                if (FFinished)
                 {
                     this.DialogResult = FCancelled ? DialogResult.Cancel : DialogResult.OK;
                     FConfirmedClosing = true;
