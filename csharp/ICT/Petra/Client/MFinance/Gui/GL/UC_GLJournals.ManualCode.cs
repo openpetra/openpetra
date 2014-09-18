@@ -628,53 +628,56 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         
         private void TransactionTypeCodeChanged(Object sender, EventArgs e)
         {
-        	if (cmbDetailTransactionTypeCode.GetSelectedString() == "ALLOC")
+        	if (cmbDetailTransactionTypeCode.GetSelectedString() == CommonAccountingTransactionTypesEnum.ALLOC.ToString())
         	{
-        		btnAddAllocation.Visible = true;
+        		btnAddAllocations.Visible = true;
+        		btnAddAllocations.Text = Catalog.GetString("Add Allocation");
+        	}
+        	else if (cmbDetailTransactionTypeCode.GetSelectedString() == CommonAccountingTransactionTypesEnum.REALLOC.ToString())
+        	{
+        		btnAddAllocations.Visible = true;
+        		btnAddAllocations.Text = Catalog.GetString("Add Reallocation");
         	}
         	else
         	{
-        		btnAddAllocation.Visible = false;
-        	}
-        	
-        	if (cmbDetailTransactionTypeCode.GetSelectedString() == "REALLOC")
-        	{
-        		btnAddReallocation.Visible = true;
-        	}
-        	else
-        	{
-        		btnAddReallocation.Visible = false;
+        		btnAddAllocations.Visible = false;
         	}
         }
         
-        private void AddAllocation(Object sender, EventArgs e)
+        private void AddAllocations(Object sender, EventArgs e)
         {
-        	TFrmAllocationJournalDialog AddAllocationJournal = new TFrmAllocationJournalDialog(this.FindForm());
-        	AddAllocationJournal.Journal = this.GetSelectedDetailRow();
+        	Cursor = Cursors.WaitCursor;
         	
-        	// open as a modal form
-        	if (AddAllocationJournal.ShowDialog() == DialogResult.OK)
+        	if (cmbDetailTransactionTypeCode.GetSelectedString() == CommonAccountingTransactionTypesEnum.ALLOC.ToString())
         	{
-        		FMainDS.Merge(AddAllocationJournal.MainDS);
-        		
-        		// manually enable save button (otherwise this doesn't happen)
-        		FPetraUtilsObject.SetChangedFlag();
+        		TFrmAllocationJournalDialog AddAllocationJournal = new TFrmAllocationJournalDialog(this.FindForm());
+	        	AddAllocationJournal.Journal = this.GetSelectedDetailRow();
+	        	
+	        	// open as a modal form
+	        	if (AddAllocationJournal.ShowDialog() == DialogResult.OK)
+	        	{
+	        		FMainDS.Merge(AddAllocationJournal.MainDS);
+	        		
+	        		// manually enable save button (otherwise this doesn't happen)
+	        		FPetraUtilsObject.SetChangedFlag();
+	        	}
         	}
-        }
-        
-        private void AddReallocation(Object sender, EventArgs e)
-        {
-        	TFrmReallocationJournalDialog AddReallocationJournal = new TFrmReallocationJournalDialog(this.FindForm());
-        	AddReallocationJournal.Journal = this.GetSelectedDetailRow();
+        	else if (cmbDetailTransactionTypeCode.GetSelectedString() == CommonAccountingTransactionTypesEnum.REALLOC.ToString())
+        	{
+        		TFrmReallocationJournalDialog AddReallocationJournal = new TFrmReallocationJournalDialog(this.FindForm());
+	        	AddReallocationJournal.Journal = this.GetSelectedDetailRow();
+	        	
+	        	// open as a modal form
+	        	if (AddReallocationJournal.ShowDialog() == DialogResult.OK)
+	        	{
+	        		FMainDS.Merge(AddReallocationJournal.MainDS);
+	        		
+	        		// manually enable save button (otherwise this doesn't happen)
+	        		FPetraUtilsObject.SetChangedFlag();
+	        	}
+        	}
         	
-        	// open as a modal form
-        	if (AddReallocationJournal.ShowDialog() == DialogResult.OK)
-        	{
-        		FMainDS.Merge(AddReallocationJournal.MainDS);
-        		
-        		// manually enable save button (otherwise this doesn't happen)
-        		FPetraUtilsObject.SetChangedFlag();
-        	}
+        	Cursor = Cursors.Default;
         }
     }
 }

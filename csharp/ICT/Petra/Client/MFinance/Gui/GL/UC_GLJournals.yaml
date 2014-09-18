@@ -10,8 +10,7 @@ RootNode:
     Actions:
         actNew: {Label=&Add Journal, ActionClick=NewRow}
         actCancel: {Label=&Cancel Journal, ActionClick=CancelRow, Image=Delete_Record.ico}
-        actAddAllocation: {ActionClick=AddAllocation}
-        actAddReallocation: {ActionClick=AddReallocation}
+        actAddAllocations: {ActionClick=AddAllocations}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, pnlDetailGrid, pnlDetails]
@@ -72,7 +71,7 @@ RootNode:
             Controls: 
                 Row0: [txtDetailJournalDescription]
                 Row1: [cmbDetailSubSystemCode]
-                Row2: [cmbDetailTransactionTypeCode, btnAddAllocation, btnAddReallocation]
+                Row2: [cmbDetailTransactionTypeCode, btnAddAllocations]
                 Row3: [cmbDetailTransactionCurrency]
                 Row4: [dtpDetailDateEffective]
                 Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
@@ -85,5 +84,4 @@ RootNode:
         dtpDetailDateEffective: {Label=Effective Date, ReadOnly=true}
         txtDetailExchangeRateToBase: {Label=Exchange Rate to Base, Validation=true, Format=Decimal(10), Width=130}
         btnGetSetExchangeRate: {Label= Get/Set Exchange Rate}
-        btnAddAllocation: {Action=actAddAllocation, Visible=false}
-        btnAddReallocation: {Action=actAddReallocation, Visible=false}
+        btnAddAllocations: {Action=actAddAllocations, Visible=false, Width=120}
