@@ -419,7 +419,7 @@ namespace Ict.Petra.Client.App.Gui
         public static void MsgSecurityException(ESecurityGroupAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
             string Context = DetermineExceptionContext(AException, ATypeWhichRaisesError);
-            
+
             MessageBox.Show(AException.Message +
                 BuildMessageFooter(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSGROUP,
                     Context), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
@@ -433,14 +433,14 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesError"></param>
         public static void MsgSecurityException(ESecurityAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
-            string Context = DetermineExceptionContext(AException, ATypeWhichRaisesError);            
-            
+            string Context = DetermineExceptionContext(AException, ATypeWhichRaisesError);
+
             MessageBox.Show(AException.Message +
                 BuildMessageFooter(PetraErrorCodes.ERR_NOPERMISSIONTOACCESSMODULE,
                     Context), Catalog.GetString("Security Violation"), MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -470,25 +470,25 @@ namespace Ict.Petra.Client.App.Gui
 
         private static string DetermineExceptionContext(ESecurityAccessDeniedException AException, System.Type ATypeWhichRaisesError)
         {
-            if (AException == null) 
+            if (AException == null)
             {
                 throw new ArgumentNullException("AException");
             }
-            
-            if (AException.Context != String.Empty) 
+
+            if (AException.Context != String.Empty)
             {
                 return AException.Context;
             }
-            else if (ATypeWhichRaisesError != null) 
+            else if (ATypeWhichRaisesError != null)
             {
                 return ATypeWhichRaisesError.Name;
             }
             else
             {
-                return Catalog.GetString("Not specified");                
-            }                        
+                return Catalog.GetString("Not specified");
+            }
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
