@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -103,10 +103,7 @@ namespace Ict.Petra.Client.CommonDialogs
             {
                 TRemote.MCommon.WebConnectors.CancelJob();
 
-                this.DialogResult = DialogResult.Cancel;
-
                 FConfirmedClosing = true;
-                Close();
             }
         }
 
@@ -128,7 +125,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 if (finished)
                 {
-                    this.DialogResult = DialogResult.OK;
+                    this.DialogResult = FCancelled?DialogResult.Cancel:DialogResult.OK;
                     FConfirmedClosing = true;
                     Close();
                 }
