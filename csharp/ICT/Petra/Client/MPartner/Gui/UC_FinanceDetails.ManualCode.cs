@@ -136,6 +136,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 grpOther.Location = new System.Drawing.Point(grpOther.Location.X, grpOther.Location.Y + 27);
 
                 dtpTaxDeductibleValidFrom.AllowEmpty = false;
+                
+                // default is 100%
+                txtTaxDeductiblePercentage.NumberValueDecimal = 100;
             }
             else
             {

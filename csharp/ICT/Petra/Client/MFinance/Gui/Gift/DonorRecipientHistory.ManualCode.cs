@@ -270,7 +270,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Browse: (Re)LoadTableContents, called after injection of parameters or manual via button
         /// </summary>
-        public void Search(bool ALoading)
+        public void Search()
         {
             TVerificationResultCollection AMessages;
             Hashtable requestParams = new Hashtable();
@@ -357,21 +357,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (FMainDS != null)
                 {
-                    if (ALoading)
-                    {
-                        if (FMainDS.Tables[TEMP_TABLE_NAME].Rows.Count > 0)
-                        {
-                            //If this form is loaded from elsewhere, set DateFrom to be lowest date in returned Table
-                            DataRow gdr = (DataRow)FMainDS.Tables[TEMP_TABLE_NAME].Rows[FMainDS.Tables[TEMP_TABLE_NAME].Rows.Count - 1];
-                            dtpDateFrom.Date = Convert.ToDateTime(gdr["DateEntered"]);
-                        }
-                        else
-                        {
-                            dtpDateFrom.Date = null;
-                            dtpDateTo.Date = null;
-                        }
-                    }
-
                     if (grdDetails.Columns.Count < 1)
                     {
                         SetupGrid();
@@ -585,7 +570,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void BtnSearchClick(object sender, EventArgs e)
         {
             this.ActiveControl = btnSearch;
-            Search(false);
+            Search();
         }
 
         private void BtnClearClick(object sender, EventArgs e)
@@ -704,7 +689,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 frmDRH.EnableLedgerDropdown();
-                frmDRH.Search(true);
+                frmDRH.Search();
                 frmDRH.Show();
             }
             finally
