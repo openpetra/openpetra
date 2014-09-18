@@ -905,7 +905,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TDBTransaction Transaction = null;
 
             GLBatchTDS InspectDS = AInspectDS;
-            bool SubmissionOK = false;
+            //bool SubmissionOK = false;
 
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
@@ -943,8 +943,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         out newTransaction);
                     foreach (ABatchRow batch in InspectDS.ABatch.Rows)
                     {
-                        TLogging.Log("Batch row status = " + batch.RowState.ToString());
-                        Console.WriteLine("Batch row status = " + batch.RowState.ToString());
                         if (batch.RowState != DataRowState.Added)
                         {
                             Int32 BatchNumber;
@@ -956,8 +954,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             catch (Exception)
                             {
                                 // for deleted batches
-                                TLogging.Log("Batch row status = Deleted");
-                                Console.WriteLine("Batch row status = Deleted");
                                 BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
                             }
 
@@ -975,8 +971,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 out YearNr,
                                 Transaction))
                         {
-                            TLogging.Log(String.Format("Set BatchYear {0} and Period {1} for BatchNumber {2}", YearNr, PeriodNumber, batch.BatchNumber));
-                            Console.WriteLine(String.Format("Set BatchYear {0} and Period {1} for BatchNumber {2}", YearNr, PeriodNumber, batch.BatchNumber));
                             batch.BatchYear = YearNr;
                             batch.BatchPeriod = PeriodNumber;
                         }
