@@ -37,6 +37,7 @@ namespace Ict.Petra.Client.CommonDialogs
     {
         private bool FConfirmedClosing = false;
         private bool FShowCancellationConfirmationQuestion = false;
+        private bool FCancelled = false;
 
         /// <summary>
         /// Constructor
@@ -102,8 +103,7 @@ namespace Ict.Petra.Client.CommonDialogs
             if (CancelConfirmationResult == DialogResult.Yes)
             {
                 TRemote.MCommon.WebConnectors.CancelJob();
-
-                FConfirmedClosing = true;
+                FCancelled = true;
             }
         }
 
@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 if (finished)
                 {
-                    this.DialogResult = FCancelled?DialogResult.Cancel:DialogResult.OK;
+                    this.DialogResult = FCancelled ? DialogResult.Cancel : DialogResult.OK;
                     FConfirmedClosing = true;
                     Close();
                 }

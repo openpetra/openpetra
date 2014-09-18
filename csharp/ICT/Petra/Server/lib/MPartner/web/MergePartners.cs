@@ -428,6 +428,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     throw new Exception("Partner merge was cancelled by the user");
                 }

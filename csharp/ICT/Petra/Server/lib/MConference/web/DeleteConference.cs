@@ -96,6 +96,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     throw new Exception("Deletion of Conference was cancelled by the user");
                 }
 
