@@ -911,7 +911,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
 
             // check added and modified and deleted rows: are they related to a posted or cancelled batch? we must not save adjusted posted batches!
-            List<Int32> BatchNumbersInvolved = new List<int>();
+            List <Int32>BatchNumbersInvolved = new List <int>();
             Int32 LedgerNumber = -1;
 
             //Check if saving recurring tables
@@ -934,54 +934,56 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             //    ref SubmissionOK,
             //delegate
             //{
-                if (batchTableInDataSet)
+            if (batchTableInDataSet)
+            {
+                LedgerNumber = ((ABatchRow)InspectDS.ABatch.Rows[0]).LedgerNumber;
+
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out newTransaction);
+
+                foreach (ABatchRow batch in InspectDS.ABatch.Rows)
                 {
-                    LedgerNumber = ((ABatchRow)InspectDS.ABatch.Rows[0]).LedgerNumber;
-
-                    Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        out newTransaction);
-                    foreach (ABatchRow batch in InspectDS.ABatch.Rows)
+                    if (batch.RowState != DataRowState.Added)
                     {
-                        if (batch.RowState != DataRowState.Added)
+                        Int32 BatchNumber;
+
+                        try
                         {
-                            Int32 BatchNumber;
-
-                            try
-                            {
-                                BatchNumber = batch.BatchNumber;
-                            }
-                            catch (Exception)
-                            {
-                                // for deleted batches
-                                BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
-                            }
-
-                            if (!BatchNumbersInvolved.Contains(BatchNumber))
-                            {
-                                BatchNumbersInvolved.Add(BatchNumber);
-                            }
+                            BatchNumber = batch.BatchNumber;
+                        }
+                        catch (Exception)
+                        {
+                            // for deleted batches
+                            BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
                         }
 
-                        int PeriodNumber, YearNr;
-
-                        if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
-                                batch.DateEffective,
-                                out PeriodNumber,
-                                out YearNr,
-                                Transaction))
+                        if (!BatchNumbersInvolved.Contains(BatchNumber))
                         {
-                            batch.BatchYear = YearNr;
-                            batch.BatchPeriod = PeriodNumber;
+                            BatchNumbersInvolved.Add(BatchNumber);
                         }
                     }
 
-                    if (newTransaction)
+                    int PeriodNumber, YearNr;
+
+                    if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
+                            batch.DateEffective,
+                            out PeriodNumber,
+                            out YearNr,
+                            Transaction))
                     {
-                        newTransaction = false;
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        batch.BatchYear = YearNr;
+                        batch.BatchPeriod = PeriodNumber;
                     }
                 }
+
+                if (newTransaction)
+                {
+                    newTransaction = false;
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
             //});
 
             if (journalTableInDataSet)
@@ -1044,14 +1046,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             //    ref SubmissionOK,
                             //delegate
                             //{
-                                AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
-                                ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
 
-                                if (newTransaction)
-                                {
-                                    newTransaction = false;
-                                    DBAccess.GDBAccessObj.RollbackTransaction();
-                                }
+                            if (newTransaction)
+                            {
+                                newTransaction = false;
+                                DBAccess.GDBAccessObj.RollbackTransaction();
+                            }
+
                             //});
                         }
 
@@ -1147,18 +1150,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 //    ref SubmissionOK,
                 //delegate
                 //{
-                    try
+                try
+                {
+                    DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
+                }
+                finally
+                {
+                    if (newTransaction)
                     {
-                        DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
+                        newTransaction = false;
+                        DBAccess.GDBAccessObj.RollbackTransaction();
                     }
-                    finally
-                    {
-                        if (newTransaction)
-                        {
-                            newTransaction = false;
-                            DBAccess.GDBAccessObj.RollbackTransaction();
-                        }
-                    }
+                }
                 //});
 
                 foreach (ABatchRow batch in BatchDS.ABatch.Rows)

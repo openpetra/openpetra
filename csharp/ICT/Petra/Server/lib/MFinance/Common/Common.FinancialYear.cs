@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MFinance.Common
             bool ADoFixDate)
         {
             bool RetVal = false;
-            
+
             AFinancialPeriod = -1;
             AFinancialYear = -1;
             AAccountingPeriodRow currentPeriodRow = null;

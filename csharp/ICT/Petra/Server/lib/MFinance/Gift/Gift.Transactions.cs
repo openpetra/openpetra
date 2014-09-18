@@ -1516,7 +1516,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 getDonorSQL = getDonorSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
             }
 
-            List<OdbcParameter> parameters = new List<OdbcParameter>();
+            List <OdbcParameter>parameters = new List <OdbcParameter>();
             OdbcParameter param = new OdbcParameter("ledger", OdbcType.Int);
             param.Value = ALedgerNumber;
             parameters.Add(param);
@@ -2354,7 +2354,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
-                    List<Int32> GLBatchNumbers = new List<int>();
+                    List <Int32>GLBatchNumbers = new List <int>();
 
                     try
                     {

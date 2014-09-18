@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (e.Success && (FGiftDetailTable != null) && FNewDonorWarning)
             {
                 // this list contains a list of all new donors that were entered onto form
-                List<Int64> NewDonorsList = ucoTransactions.NewDonorsList;
+                List <Int64>NewDonorsList = ucoTransactions.NewDonorsList;
 
                 foreach (GiftBatchTDSAGiftDetailRow Row in FGiftDetailTable.Rows)
                 {

@@ -202,7 +202,10 @@ namespace Ict.Petra.Server.MFinance.Common
             AAccountAccess.LoadViaALedger(APostingDS, ALedgerNumber, Transaction);
 
             // TODO: use cached table?
-            AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(APostingDS, ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, Transaction);
+            AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(APostingDS,
+                ALedgerNumber,
+                MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD,
+                Transaction);
 
             // TODO: use cached table?
             ACostCentreAccess.LoadViaALedger(APostingDS, ALedgerNumber, Transaction);

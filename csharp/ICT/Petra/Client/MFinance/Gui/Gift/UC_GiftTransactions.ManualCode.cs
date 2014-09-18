@@ -1619,6 +1619,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Copy and backup the current dataset
             GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
+
             TempDS.Merge(FMainDS);
 
             GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.Copy();
