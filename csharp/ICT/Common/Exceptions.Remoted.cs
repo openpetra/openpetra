@@ -790,8 +790,8 @@ namespace Ict.Common.Exceptions
     {
         /// <summary>Context in which the access was denied.</summary>
         private String FContext = String.Empty;
-        
-        /// <summary>Context in which the access was denied.</summary>       
+
+        /// <summary>Context in which the access was denied.</summary>
         public String Context
         {
             get
@@ -803,8 +803,8 @@ namespace Ict.Common.Exceptions
             {
                 FContext = value;
             }
-        }        
-        
+        }
+
         /// <summary>
         /// Initializes a new instance of this Exception Class.
         /// </summary>
@@ -828,17 +828,16 @@ namespace Ict.Common.Exceptions
         public ESecurityAccessDeniedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message, OpenPetra Module and OpenPetra User.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
-        /// <param name="AContext">Context in which the access was denied.</param>         
+        /// <param name="AContext">Context in which the access was denied.</param>
         public ESecurityAccessDeniedException(String AMessage, String AContext) : base(AMessage)
         {
             FContext = AContext;
         }
-        
 
         #region Remoting and serialization
 
@@ -852,7 +851,7 @@ namespace Ict.Common.Exceptions
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public ESecurityAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
-            FContext = AInfo.GetString("Context");            
+            FContext = AInfo.GetString("Context");
         }
 
         /// <summary>
@@ -871,7 +870,7 @@ namespace Ict.Common.Exceptions
             }
 
             AInfo.AddValue("Context", Context);
-            
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
@@ -1100,7 +1099,7 @@ namespace Ict.Common.Exceptions
             }
         }
 
-        /// <summary>OpenPetra User.</summary>       
+        /// <summary>OpenPetra User.</summary>
         public String UserName
         {
             get
@@ -1143,13 +1142,13 @@ namespace Ict.Common.Exceptions
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AUserName">OpenPetra User.</param>
-        /// <param name="AModule">OpenPetra Module that cannot be accessed.</param>        
+        /// <param name="AModule">OpenPetra Module that cannot be accessed.</param>
         public ESecurityModuleAccessDeniedException(String AMessage, String AUserName, String AModule) : base(AMessage)
         {
             FModule = AModule;
             FUserName = AUserName;
         }
-        
+
         #region Remoting and serialization
 
         /// <summary>
@@ -1163,7 +1162,7 @@ namespace Ict.Common.Exceptions
         public ESecurityModuleAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
             FModule = AInfo.GetString("Module");
-            FUserName = AInfo.GetString("UserName"); 
+            FUserName = AInfo.GetString("UserName");
         }
 
         /// <summary>
@@ -1182,7 +1181,7 @@ namespace Ict.Common.Exceptions
             }
 
             AInfo.AddValue("Module", FModule);
-            AInfo.AddValue("UserName", FUserName);            
+            AInfo.AddValue("UserName", FUserName);
 
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);

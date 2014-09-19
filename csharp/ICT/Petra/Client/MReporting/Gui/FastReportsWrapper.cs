@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 TLogging.Log("FastReports Wrapper Not Loaded / Problem Loading FastReports Library: " + e.Message);
                 return false;
             }
-            
+
             return true;
         }
 

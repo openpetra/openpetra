@@ -70,6 +70,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     return;
                 }
 

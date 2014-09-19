@@ -260,6 +260,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     return false;
                 }
@@ -296,6 +297,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     return false;
                 }
@@ -324,6 +326,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                     if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                     {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                         DBAccess.GDBAccessObj.RollbackTransaction();
                         return false;
                     }

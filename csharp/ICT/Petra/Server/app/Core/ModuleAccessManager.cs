@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.App.Core.Security
     public class TModuleAccessManager
     {
         private const string LEDGER_MODULESTRING = "LEDGER";
-        
+
         /// <summary>
         /// load the modules available to the given user
         /// </summary>
@@ -153,8 +153,8 @@ namespace Ict.Petra.Server.App.Core.Security
                         {
                             throw new ESecurityModuleAccessDeniedException(String.Format(
                                     Catalog.GetString("No access for user {0} to module {1}."),
-                                        UserInfo.GUserInfo.UserID, module), 
-                                    UserInfo.GUserInfo.UserID, module);
+                                    UserInfo.GUserInfo.UserID, module),
+                                UserInfo.GUserInfo.UserID, module);
                         }
                     }
                     else
@@ -167,8 +167,8 @@ namespace Ict.Petra.Server.App.Core.Security
                 {
                     throw new ESecurityModuleAccessDeniedException(String.Format(
                             Catalog.GetString("No access for user {0} to either of the modules {1}."),
-                                UserInfo.GUserInfo.UserID, modulesList),
-                            UserInfo.GUserInfo.UserID, modulesList);
+                            UserInfo.GUserInfo.UserID, modulesList),
+                        UserInfo.GUserInfo.UserID, modulesList);
                 }
 
                 return true;
@@ -196,7 +196,7 @@ namespace Ict.Petra.Server.App.Core.Security
                     throw new ESecurityModuleAccessDeniedException(String.Format(
                             Catalog.GetString("No access for user {0} to {1}."),
                             UserInfo.GUserInfo.UserID, GetModuleOrLedger(ModuleName)),
-                            UserInfo.GUserInfo.UserID, ModuleName);
+                        UserInfo.GUserInfo.UserID, ModuleName);
                 }
 
                 return true;
@@ -204,21 +204,21 @@ namespace Ict.Petra.Server.App.Core.Security
         }
 
         static private string GetModuleOrLedger(string AModuleName)
-        {            
+        {
             if (AModuleName.StartsWith(LEDGER_MODULESTRING))
             {
                 // Get pure ledger number without the LEDGER_MODULESTRING prefix, e.g. '0043' instead of 'LEDGER0043'
                 string ALedgerNumberWithoutLeadingZeroes = AModuleName.Substring(LEDGER_MODULESTRING.Length);
-                
+
                 // Determine ledger number without leading zeroes
                 for (int Counter = 0; Counter < ALedgerNumberWithoutLeadingZeroes.Length; Counter++)
                 {
-                    if (ALedgerNumberWithoutLeadingZeroes[Counter] != '0') 
+                    if (ALedgerNumberWithoutLeadingZeroes[Counter] != '0')
                     {
                         ALedgerNumberWithoutLeadingZeroes = ALedgerNumberWithoutLeadingZeroes.Substring(Counter);
                     }
                 }
-                
+
                 return Catalog.GetString("Ledger") + " " + ALedgerNumberWithoutLeadingZeroes;
             }
             else
@@ -226,7 +226,7 @@ namespace Ict.Petra.Server.App.Core.Security
                 return Catalog.GetString("Module") + " " + AModuleName;
             }
         }
-        
+
         /// throws an exception if the current user does not have enough permission to access the method;
         /// this uses a custom attribute associated with the method of the connector
         static public bool CheckUserPermissionsForMethod(System.Type AConnectorType, string AMethodName, string AParameterTypes)
@@ -310,12 +310,13 @@ namespace Ict.Petra.Server.App.Core.Security
                     catch (ESecurityModuleAccessDeniedException Exc)
                     {
                         string msg =
-                            String.Format(Catalog.GetString("Module access permission was violated for method '{0}' in Connector class '{1}':  Required Module access permission: {2}, UserName: {3}"),
+                            String.Format(Catalog.GetString(
+                                    "Module access permission was violated for method '{0}' in Connector class '{1}':  Required Module access permission: {2}, UserName: {3}"),
                                 AMethodName, AConnectorType, Exc.Module, Exc.UserName);
                         TLogging.Log(msg);
-                        
+
                         Exc.Context = AMethodName + " [raised by ModuleAccessManager]";
-                        
+
                         throw;
                     }
                     catch (ArgumentException argException)
