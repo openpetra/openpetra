@@ -27,6 +27,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Collections.Generic;
 using System.Threading;
+using System.Net.Security;
 using Ict.Common;
 
 namespace Ict.Common.IO
@@ -74,6 +75,17 @@ namespace Ict.Common.IO
                 FSmtpClient.UseDefaultCredentials = false;
                 FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
                 FSmtpClient.EnableSsl = AEnableSsl;
+
+                if (TAppSettingsManager.GetValue("IgnoreServerCertificateValidation", "false", false) == "true")
+                {
+                    // when checking the validity of a SSL certificate, always pass
+                    // this is needed for smtp.outlook365.com, since I cannot find a place to get the public key for the ssl certificate
+                    ServicePointManager.ServerCertificateValidationCallback =
+                        new RemoteCertificateValidationCallback(
+                            delegate
+                            { return true; }
+                            );
+                }
             }
 
             FailedRecipients = new List <TsmtpFailedRecipient>();

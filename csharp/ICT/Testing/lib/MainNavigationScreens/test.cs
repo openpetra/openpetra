@@ -463,7 +463,8 @@ namespace Tests.MainNavigationScreens
 
                 // The server should have rejected us
                 Assert.AreNotEqual(String.Empty, errorResult, "Demo was able to open the screen!");
-                Assert.IsTrue(errorResult.Contains("LoadUsersAndModulePermissions"), "Expected the fail reason to be module access permission");
+                Assert.IsTrue(errorResult.Equals(
+                        "No access for user DEMO to Module SYSMAN."), "Expected the fail reason to be module access permission");
             }
         }
     }

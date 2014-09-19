@@ -80,11 +80,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// International To Base Exchange Rate
-        /// </summary>
-        public decimal FInternationalToBaseExchangeRate;
-
-        /// <summary>
         /// use this ledger
         /// </summary>
         public Int32 LedgerNumber
@@ -140,56 +135,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void InitializeManualCode()
-        {
-            tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-            this.tpgTransactions.Enabled = false;
-
-            // get user default
-            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
-            mniNewDonorWarning.Checked = FNewDonorWarning;
-
-            // only add this event if the user want a new donor warning (this will still work without the condition)
-            if (FNewDonorWarning)
-            {
-                FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
-            }
-        }
-
-        /// <summary>
-        /// Handles the click event for filter/find.
-        /// </summary>
-        /// <param name="sender">Pass this on to the user control.</param>
-        /// <param name="e">Not evaluated.</param>
-        public void MniFilterFind_Click(object sender, System.EventArgs e)
-        {
-            switch (tabGiftBatch.SelectedIndex)
-            {
-                case (int)eGiftTabs.Batches:
-                    ucoBatches.MniFilterFind_Click(sender, e);
-                    break;
-
-                case (int)eGiftTabs.Transactions:
-                    ucoTransactions.ReconcileKeyMinistryFromCombo();
-                    ucoTransactions.MniFilterFind_Click(sender, e);
-                    break;
-            }
-        }
-
-        private void TFrmGiftBatch_Load(object sender, EventArgs e)
-        {
-            FPetraUtilsObject.TFrmPetra_Load(sender, e);
-
-            tabGiftBatch.SelectedIndex = standardTabIndex;
-            TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-
-            this.Shown += delegate
-            {
-                // This will ensure the grid gets the focus when the screen is shown for the first time
-                ucoBatches.SetInitialFocus();
-            };
-        }
-
         private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning()
         {
             if (FNewDonorWarning)
@@ -241,6 +186,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ucoTransactions.NewDonorsList.Clear();
             }
+        }
+
+        private void InitializeManualCode()
+        {
+            tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            this.tpgTransactions.Enabled = false;
+
+            // get user default
+            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
+            mniNewDonorWarning.Checked = FNewDonorWarning;
+
+            // only add this event if the user want a new donor warning (this will still work without the condition)
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
+            }
+        }
+
+        /// <summary>
+        /// Handles the click event for filter/find.
+        /// </summary>
+        /// <param name="sender">Pass this on to the user control.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void MniFilterFind_Click(object sender, System.EventArgs e)
+        {
+            switch (tabGiftBatch.SelectedIndex)
+            {
+                case (int)eGiftTabs.Batches:
+                    ucoBatches.MniFilterFind_Click(sender, e);
+                    break;
+
+                case (int)eGiftTabs.Transactions:
+                    ucoTransactions.ReconcileKeyMinistryFromCombo();
+                    ucoTransactions.MniFilterFind_Click(sender, e);
+                    break;
+            }
+        }
+
+        private void TFrmGiftBatch_Load(object sender, EventArgs e)
+        {
+            FPetraUtilsObject.TFrmPetra_Load(sender, e);
+
+            tabGiftBatch.SelectedIndex = standardTabIndex;
+            TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+
+            this.Shown += delegate
+            {
+                // This will ensure the grid gets the focus when the screen is shown for the first time
+                ucoBatches.SetInitialFocus();
+            };
         }
 
         private void RunOnceOnActivationManual()
@@ -452,6 +447,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FMainDS.Tables.Remove("AUpdateErrors");
             }
+        }
+
+        /// <summary>
+        /// Ensure the data is loaded for the specified batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns>If transactions exist</returns>
+        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            DataView TransDV = new DataView(FMainDS.AGiftDetail);
+
+            TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                AGiftDetailTable.GetLedgerNumberDBName(),
+                ALedgerNumber,
+                AGiftDetailTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            if (TransDV.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
+            }
+
+            return TransDV.Count > 0;
         }
 
         /// <summary>
