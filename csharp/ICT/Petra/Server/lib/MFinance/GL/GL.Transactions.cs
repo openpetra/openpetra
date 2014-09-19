@@ -904,6 +904,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool newTransaction = false;
             TDBTransaction Transaction = null;
 
+            GLBatchTDS InspectDS = AInspectDS;
+            //bool SubmissionOK = false;
+
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
 
@@ -925,15 +928,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return SaveRecurringGLBatchTDS(ref AInspectDS);
             }
 
+            //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            //    TEnforceIsolationLevel.eilMinimum,
+            //    ref Transaction,
+            //    ref SubmissionOK,
+            //delegate
+            //{
             if (batchTableInDataSet)
             {
-                LedgerNumber = ((ABatchRow)AInspectDS.ABatch.Rows[0]).LedgerNumber;
+                LedgerNumber = ((ABatchRow)InspectDS.ABatch.Rows[0]).LedgerNumber;
 
                 Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out newTransaction);
 
-                foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
+                foreach (ABatchRow batch in InspectDS.ABatch.Rows)
                 {
                     if (batch.RowState != DataRowState.Added)
                     {
@@ -974,6 +983,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
+
+            //});
 
             if (journalTableInDataSet)
             {
@@ -1025,8 +1036,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                         if (TestAccountsAndCostCentres.AAccount.Count == 0)
                         {
-                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
-                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
+                            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                                TEnforceIsolationLevel.eilMinimum,
+                                out newTransaction);
+
+                            //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                            //    TEnforceIsolationLevel.eilMinimum,
+                            //    ref Transaction,
+                            //    ref SubmissionOK,
+                            //delegate
+                            //{
+                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+
+                            if (newTransaction)
+                            {
+                                newTransaction = false;
+                                DBAccess.GDBAccessObj.RollbackTransaction();
+                            }
+
+                            //});
                         }
 
                         // TODO could check for active accounts and cost centres?
@@ -1115,6 +1144,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                                   (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out newTransaction);
 
+                //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                //    TEnforceIsolationLevel.eilMinimum,
+                //    ref Transaction,
+                //    ref SubmissionOK,
+                //delegate
+                //{
                 try
                 {
                     DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
@@ -1127,6 +1162,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
                 }
+                //});
 
                 foreach (ABatchRow batch in BatchDS.ABatch.Rows)
                 {
