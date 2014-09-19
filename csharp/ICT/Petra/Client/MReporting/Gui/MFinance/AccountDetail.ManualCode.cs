@@ -105,17 +105,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 String Filter = "'" + parameters.Get("param_account_codes") + "'";
                 Filter = Filter.Replace(",", "','");
-                AccountCodeFilter = " AND a_account_code_c in (" + Filter + ")";
+                AccountCodeFilter = "a_account_code_c in (" + Filter + ")";
                 TranctAccountCodeFilter = " AND a_transaction.a_account_code_c in (" + Filter + ")";
             }
 
             if (parameters.Get("param_rgrAccounts").ToString() == "AccountRange")
             {
-                AccountCodeFilter = " AND a_account_code_c>='" + parameters.Get("param_account_code_start") + "' AND a_account_code_c<='" +
-                                    parameters.Get(
-                    "param_account_code_end") + "'";
-                TranctAccountCodeFilter = " AND a_transaction.a_account_code_c>='" + parameters.Get("param_account_code_start") +
-                                          "' AND a_transaction.a_account_code_c<='" + parameters.Get("param_account_code_end") + "'";
+                AccountCodeFilter = "a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
+                                    parameters.Get("param_account_code_end") + "'";
+                TranctAccountCodeFilter = " AND a_transaction.a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") +
+                                          "' AND '" + parameters.Get("param_account_code_end") + "'";
             }
 
             String CostCentreFilter = ""; // Cost Centre Filter, as range or list:
@@ -131,15 +130,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (parameters.Get("param_rgrCostCentres").ToString() == "CostCentreRange")
             {
-                CostCentreFilter = " AND a_cost_centre_code_c>='" + parameters.Get("param_cost_centre_code_start") +
-                                   "' AND a_cost_centre_code_c<='" + parameters.Get(
-                    "param_cost_centre_code_end") + "'";
-                TranctCostCentreFilter = " AND a_transaction.a_cost_centre_code_c>='" + parameters.Get("param_cost_centre_code_start") +
-                                         "' AND a_transaction.a_cost_centre_code_c<='" + parameters.Get("param_cost_centre_code_end") + "'";
+                CostCentreFilter = " AND a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
+                                   "' AND  '" + parameters.Get("param_cost_centre_code_end") + "'";
+                TranctCostCentreFilter = " AND a_transaction.a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
+                                         "' AND '" + parameters.Get("param_cost_centre_code_end") + "'";
             }
 
-            String TranctDateFilter = "a_transaction_date_d>='" + parameters.Get("param_start_date").DateToString("yyyy-MM-dd") +
-                                      "' AND a_transaction_date_d<='" + parameters.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
+            String TranctDateFilter = "a_transaction_date_d BETWEEN '" + parameters.Get("param_start_date").DateToString("yyyy-MM-dd") +
+                                      "' AND '" + parameters.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
 
             String ReferenceFilter = "";
             String AnalysisTypeFilter = "";
@@ -192,7 +190,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Csv = StringHelper.AddCSV(Csv, "ALedger/SELECT * FROM a_ledger WHERE " + LedgerFilter);
             Csv = StringHelper.AddCSV(
                 Csv,
-                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + AccountCodeFilter +
+                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + " AND " + AccountCodeFilter +
                 " AND a_posting_status_l=true AND a_account_active_flag_l=true");
             Csv = StringHelper.AddCSV(
                 Csv,
@@ -239,10 +237,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // I want to include opening and closing balances for each Cost Centre / Account, in the selected currency:
             if (parameters.Get("param_period_checked").ToBool() || parameters.Get("param_quarter_checked").ToBool())
             {
+                Int32 Year = parameters.Get("param_year_i").ToInt32();
                 Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
                     LedgerFilter,
                     AccountCodeFilter,
                     CostCentreFilter,
+                    Year,
                     parameters.Get("param_start_period_i").ToInt32(),
                     parameters.Get("param_end_period_i").ToInt32(),
                     parameters.Get("param_currency").ToString().StartsWith("Int")
