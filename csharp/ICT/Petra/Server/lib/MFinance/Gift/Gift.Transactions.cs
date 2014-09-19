@@ -1802,12 +1802,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (motivationDetail != null)
                             {
                                 giftDetail.AccountCode = motivationDetail.AccountCode;
-                    			giftDetail.TaxDeductibleAccountCode = motivationDetail.TaxDeductibleAccount;
+                                giftDetail.TaxDeductibleAccountCode = motivationDetail.TaxDeductibleAccount;
                             }
                             else
                             {
                                 giftDetail.SetAccountCodeNull();
-                    			giftDetail.SetTaxDeductibleAccountCodeNull();
+                                giftDetail.SetTaxDeductibleAccountCodeNull();
                             }
 
                             giftDetail.DateEntered = giftRow.DateEntered;
@@ -1822,7 +1822,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         TLogging.Log("Error in LoadGiftBatchData: " + e.Message);
                     }
                 });
->>>>>>> MERGE-SOURCE
 
             return MainDS;
         }

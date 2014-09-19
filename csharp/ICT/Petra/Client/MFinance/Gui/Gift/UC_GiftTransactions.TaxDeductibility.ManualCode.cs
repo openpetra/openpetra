@@ -308,7 +308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int BatchNumber = ABatchRow.BatchNumber;
             decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
 
-            EnsureGiftDataPresent(LedgerNumber, BatchNumber);
+            LoadGiftDataForBatch(LedgerNumber, BatchNumber);
 
             DataView transDV = new DataView(FMainDS.AGiftDetail);
             transDV.RowFilter = String.Format("{0}={1}",
