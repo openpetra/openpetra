@@ -394,6 +394,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
 
                     MakeItDebit = (Convert.ToBoolean(row["Debit"])) ? -1 : 1;
+
                     if ((row["a_cost_centre_code_c"].ToString() != CostCentre) || (row["a_account_code_c"].ToString() != AccountCode)) // a new CC/AC combination
                     {
                         NewRow = Results.NewRow();
@@ -426,6 +427,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         NewRow["ClosingBalance"] = MakeItDebit * ClosingBalance;
                     }
                 } // foreach
+
             }
             catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
             {
