@@ -68,9 +68,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FLedgerNumber = value;
                     FCurrency = TRemote.MFinance.Common.ServerLookups.WebConnectors.GetLedgerBaseCurrency(FLedgerNumber);
-        
+
                     cmbLedger.SetSelectedInt32(FLedgerNumber);
-     
+
                     SetupMotivationComboboxes();
                 }
             }
@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
             TEnsureKeepAlive.Register(FGiftDetailFindObject);
-            
+
             // remove from the combobox all ledger numbers which the user does not have permission to access
             DataView cmbLedgerDataView = (DataView)cmbLedger.cmbCombobox.DataSource;
 
@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     i--;
                 }
             }
-            
+
             // add event to combobox (this is the best moment to do this)
             cmbLedger.SelectedValueChanged += new System.EventHandler(this.OnCmbLedgerChange);
 

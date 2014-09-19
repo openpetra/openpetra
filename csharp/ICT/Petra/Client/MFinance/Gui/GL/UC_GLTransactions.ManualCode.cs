@@ -200,8 +200,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     grdAnalAttributes.Columns[0].Width = 99;
                 }
-            
-            	FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FBatchNumber, FJournalNumber);
+
+                FAnalysisAttributesLogic = new TAnalysisAttributes(FLedgerNumber, FBatchNumber, FJournalNumber);
 
                 FAnalysisAttributesLogic.SetTransAnalAttributeDefaultView(FMainDS, FActiveOnly);
                 FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
@@ -477,7 +477,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if ((TAnalysisAttributes.GetSelectedAttributeRow(grdAnalAttributes) == null) || (FPSAttributesRow == TAnalysisAttributes.GetSelectedAttributeRow(grdAnalAttributes)))
+            if ((TAnalysisAttributes.GetSelectedAttributeRow(grdAnalAttributes) == null)
+                || (FPSAttributesRow == TAnalysisAttributes.GetSelectedAttributeRow(grdAnalAttributes)))
             {
                 return;
             }
@@ -882,7 +883,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 DataRowView row2 = (DataRowView)itemRow2;
                 string analysisCode = row2[ATransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-                return !FAnalysisAttributesLogic.AnalysisCodeIsActive(cmbDetailAccountCode.GetSelectedString(), FCacheDS.AAnalysisAttribute, analysisCode);
+                return !FAnalysisAttributesLogic.AnalysisCodeIsActive(
+                    cmbDetailAccountCode.GetSelectedString(), FCacheDS.AAnalysisAttribute, analysisCode);
             };
 
             // Create a condition, apply the view when true, and assign a delegate to handle it
@@ -894,7 +896,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     DataRowView row2 = (DataRowView)itemRow2;
                     string analysisCode = row2[ATransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
                     string analysisAttributeValue = row2[ATransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
-                    return !TAnalysisAttributes.AnalysisAttributeValueIsActive(ref FcmbAnalAttribValues, FCacheDS.AFreeformAnalysis, analysisCode, analysisAttributeValue);
+                    return !TAnalysisAttributes.AnalysisAttributeValueIsActive(ref FcmbAnalAttribValues,
+                        FCacheDS.AFreeformAnalysis,
+                        analysisCode,
+                        analysisAttributeValue);
                 }
                 else
                 {
@@ -1446,7 +1451,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if ((FPreviouslySelectedDetailRow.TransactionNumber == FTransactionNumber) && (FTransactionNumber != -1))
             {
-            	FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, cmbDetailAccountCode.GetSelectedString(), FTransactionNumber);
+                FAnalysisAttributesLogic.ReconcileTransAnalysisAttributes(ref FMainDS, cmbDetailAccountCode.GetSelectedString(), FTransactionNumber);
                 RefreshAnalysisAttributesGrid();
             }
 
@@ -1514,8 +1519,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,
                 FValidationControlsDict);
 
-            if (FPreviouslySelectedDetailRow != null && !FAnalysisAttributesLogic.AccountAnalysisAttributeCountIsCorrect(
-            	FPreviouslySelectedDetailRow.TransactionNumber, FPreviouslySelectedDetailRow.AccountCode, FMainDS, FIsUnposted))
+            if ((FPreviouslySelectedDetailRow != null) && !FAnalysisAttributesLogic.AccountAnalysisAttributeCountIsCorrect(
+                    FPreviouslySelectedDetailRow.TransactionNumber, FPreviouslySelectedDetailRow.AccountCode, FMainDS, FIsUnposted))
             {
                 DataColumn ValidationColumn;
                 TVerificationResult VerificationResult = null;
@@ -1541,8 +1546,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             String ValueRequiredForType;
 
-            if (FPreviouslySelectedDetailRow != null && !FAnalysisAttributesLogic.AccountAnalysisAttributesValuesExist(
-            	FPreviouslySelectedDetailRow.TransactionNumber, FPreviouslySelectedDetailRow.AccountCode, FMainDS, out ValueRequiredForType, FIsUnposted))
+            if ((FPreviouslySelectedDetailRow != null) && !FAnalysisAttributesLogic.AccountAnalysisAttributesValuesExist(
+                    FPreviouslySelectedDetailRow.TransactionNumber, FPreviouslySelectedDetailRow.AccountCode, FMainDS, out ValueRequiredForType,
+                    FIsUnposted))
             {
                 DataColumn ValidationColumn;
                 TVerificationResult VerificationResult = null;

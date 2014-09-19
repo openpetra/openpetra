@@ -1321,14 +1321,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Cursor = Cursors.AppStarting;
                 FKeepUpSearchFinishedCheck = true;
                 EnableDisableUI(false);
-                
+
                 // DoEvents() should not be run if search has been initiated by pressing the enter key
                 KeyEventArgs eTemp = e as KeyEventArgs;
-                
-                if (eTemp == null || eTemp.KeyCode != Keys.Enter)
+
+                if ((eTemp == null) || (eTemp.KeyCode != Keys.Enter))
                 {
-                	Application.DoEvents();
+                    Application.DoEvents();
                 }
+
 /*
  *              // If ctrl held down, show the dataset
  *              if (System.Windows.Forms.Form.ModifierKeys == Keys.Control)

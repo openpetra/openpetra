@@ -112,7 +112,7 @@ namespace Ict.Petra.Shared.MPartner
 
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// check if the partner has a valid Gift Destination in the past but not a currently active Gift Destination
         /// </summary>
@@ -120,31 +120,31 @@ namespace Ict.Petra.Shared.MPartner
         /// <returns></returns>
         public static bool PartnerIsExWorker(PPartnerGiftDestinationTable AGiftDestinationTable)
         {
-        	if (AGiftDestinationTable == null || AGiftDestinationTable.Rows.Count == 0)
-        	{
-        		return false;
-        	}
-        	
-        	bool ReturnValue = false;
-        	
-        	foreach (PPartnerGiftDestinationRow Row in AGiftDestinationTable.Rows)
-        	{
-        		// if currently active
-        		if (Row.DateEffective <= DateTime.Today &&
-        		   (Row.IsDateExpiresNull() || Row.DateExpires >= DateTime.Today) &&
-        		   Row.DateEffective != Row.DateExpires)
-        		{
-        			return false;
-        		}
-        		
-        		// if a previous gift destination exists
-        		if (Row.DateEffective < DateTime.Today && Row.DateEffective != Row.DateExpires)
-        		{
-        			ReturnValue = true;
-        		}
-        	}
-        	
-        	return ReturnValue;
+            if ((AGiftDestinationTable == null) || (AGiftDestinationTable.Rows.Count == 0))
+            {
+                return false;
+            }
+
+            bool ReturnValue = false;
+
+            foreach (PPartnerGiftDestinationRow Row in AGiftDestinationTable.Rows)
+            {
+                // if currently active
+                if ((Row.DateEffective <= DateTime.Today)
+                    && (Row.IsDateExpiresNull() || (Row.DateExpires >= DateTime.Today))
+                    && (Row.DateEffective != Row.DateExpires))
+                {
+                    return false;
+                }
+
+                // if a previous gift destination exists
+                if ((Row.DateEffective < DateTime.Today) && (Row.DateEffective != Row.DateExpires))
+                {
+                    ReturnValue = true;
+                }
+            }
+
+            return ReturnValue;
         }
     }
 }

@@ -451,7 +451,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             ValidationColumn = ARow.Table.Columns[GLBatchTDSATransactionTable.ColumnTransactionAmountId];
-                
+
             // an individual amount cannot be great than total amount
             if (AAmountEnabled && (ARow.TransactionAmount > ATotalAmount))
             {
@@ -467,9 +467,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Handle addition to/removal from TVerificationResultCollection
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
             {
-            	VerifResultCollAddedCount++;
+                VerifResultCollAddedCount++;
             }
-            
+
             VerificationResult = null;
             ValidationColumn = ARow.Table.Columns[GLBatchTDSATransactionTable.ColumnPercentageId];
 
@@ -487,7 +487,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Handle addition to/removal from TVerificationResultCollection
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
             {
-            	VerifResultCollAddedCount++;
+                VerifResultCollAddedCount++;
             }
 
             return VerifResultCollAddedCount == 0;
@@ -524,7 +524,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             ValidationColumn = ARow.Table.Columns[GLBatchTDSATransactionTable.ColumnTransactionAmountId];
-                
+
             // an individual amount cannot be great than total amount
             if (AAmountEnabled && (ARow.TransactionAmount > ATotalAmount))
             {
@@ -540,9 +540,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Handle addition to/removal from TVerificationResultCollection
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
             {
-            	VerifResultCollAddedCount++;
+                VerifResultCollAddedCount++;
             }
-            
+
             VerificationResult = null;
             ValidationColumn = ARow.Table.Columns[GLBatchTDSATransactionTable.ColumnPercentageId];
 
@@ -560,7 +560,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Handle addition to/removal from TVerificationResultCollection
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
             {
-            	VerifResultCollAddedCount++;
+                VerifResultCollAddedCount++;
             }
 
             return VerifResultCollAddedCount == 0;

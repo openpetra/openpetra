@@ -2505,16 +2505,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static PPartnerTaxDeductiblePctTable LoadPartnerTaxDeductiblePct(long PartnerKey)
         {
-        	TDBTransaction Transaction = null;
-        	PPartnerTaxDeductiblePctTable ReturnValue = null;
-        	
-        	DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
-               delegate
-               {
-               		ReturnValue = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(PartnerKey, Transaction);
-               });
-        	
-        	return ReturnValue;
+            TDBTransaction Transaction = null;
+            PPartnerTaxDeductiblePctTable ReturnValue = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    ReturnValue = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(PartnerKey, Transaction);
+                });
+
+            return ReturnValue;
         }
 
         /// <summary>

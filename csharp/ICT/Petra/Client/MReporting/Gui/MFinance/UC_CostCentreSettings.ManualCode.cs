@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             FCostCenterCodesDuringLoad = "";
-            
+
             // otherwise rbtSelectedCostCentres slightly obscures clbCostCentres
             rbtSelectedCostCentres.SendToBack();
         }

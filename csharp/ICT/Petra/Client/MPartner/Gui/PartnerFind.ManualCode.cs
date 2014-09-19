@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     && !ucoFindByBankDetails.PartnerFindCriteria.ComboboxDroppedDown())
                 {
                     FCurrentlySelectedTab.BtnSearch_Click(sender, e);
-                    
+
                     e.Handled = true;
                     e.SuppressKeyPress = true;
                 }

@@ -778,21 +778,21 @@ namespace Ict.Petra.Server.MReporting.MConference
                 && (PersonTable.Rows.Count > 0))
             {
                 PPersonRow PersonRow = (PPersonRow)PersonTable.Rows[0];
-                
-                PPartnerGiftDestinationTable GiftDestinationTable = 
-                	PPartnerGiftDestinationAccess.LoadViaPPartner(PersonRow.FamilyKey, ASituation.GetDatabaseConnection().Transaction);
-                
+
+                PPartnerGiftDestinationTable GiftDestinationTable =
+                    PPartnerGiftDestinationAccess.LoadViaPPartner(PersonRow.FamilyKey, ASituation.GetDatabaseConnection().Transaction);
+
                 if (GiftDestinationTable.Rows.Count > 0)
                 {
-	                foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
-	                {
-	                	// check if the gift destination is currently active
-	                	if (Row.DateEffective <= DateTime.Today
-	                	    && (Row.IsDateExpiresNull() || (Row.DateExpires >= DateTime.Today && Row.DateExpires != Row.DateEffective)))
-	                	{
-	                		ReturnValue = true;
-	                	}
-	                }
+                    foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
+                    {
+                        // check if the gift destination is currently active
+                        if ((Row.DateEffective <= DateTime.Today)
+                            && (Row.IsDateExpiresNull() || ((Row.DateExpires >= DateTime.Today) && (Row.DateExpires != Row.DateEffective))))
+                        {
+                            ReturnValue = true;
+                        }
+                    }
                 }
             }
 

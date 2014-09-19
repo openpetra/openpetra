@@ -652,11 +652,11 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             if (((Boolean)(CriteriaRow["WorkerFamOnly"]) == true)
                 && (CriteriaRow["PartnerClass"].ToString().StartsWith("FAMILY")))
             {
-            	string temp =
-            		"EXISTS (select * FROM PUB.p_partner_gift_destination " + 
-            		"WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_partner_key_n " +
-            		"AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL OR PUB.p_partner_gift_destination.p_date_effective_d <> PUB.p_partner_gift_destination.p_date_expires_d))";
-            	
+                string temp =
+                    "EXISTS (select * FROM PUB.p_partner_gift_destination " +
+                    "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_partner_key_n " +
+                    "AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL OR PUB.p_partner_gift_destination.p_date_effective_d <> PUB.p_partner_gift_destination.p_date_expires_d))";
+
                 // A custom subquery seems to only speedy way of doing this!
                 if (CriteriaRow["PartnerClass"].ToString() == "FAMILY")
                 {
@@ -933,9 +933,9 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             {
                 // A custom subquery seems to only speedy way of doing this!
                 CustomWhereCriteria = String.Format(
-                    "{0} AND EXISTS (select * FROM PUB.p_partner_gift_destination " + 
-            		"WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_partner_key_n " +
-            		"AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL OR PUB.p_partner_gift_destination.p_date_effective_d <> PUB.p_partner_gift_destination.p_date_expires_d))",
+                    "{0} AND EXISTS (select * FROM PUB.p_partner_gift_destination " +
+                    "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_partner_key_n " +
+                    "AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL OR PUB.p_partner_gift_destination.p_date_effective_d <> PUB.p_partner_gift_destination.p_date_expires_d))",
                     CustomWhereCriteria);
             }
 

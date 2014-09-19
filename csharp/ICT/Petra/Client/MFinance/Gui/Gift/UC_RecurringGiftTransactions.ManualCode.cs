@@ -596,7 +596,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FShowingDetails || (APartnerKey == 0))
             {
                 mniDonorHistory.Enabled = false;
-            	txtGiftReceipting.Text = "";
+                txtGiftReceipting.Text = "";
                 return;
             }
             else
@@ -626,7 +626,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 giftDetail.DonorName = APartnerShortName;
                             }
                         }
-        
+
                         ShowReceiptFrequency(APartnerKey);
 
                         mniDonorHistory.Enabled = true;
@@ -1066,15 +1066,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RetrieveMotivationDetailAccountCode();
                 }
-                
+
                 // set tax deductible checkbox
                 if (motivationDetail.TaxDeductible)
                 {
-                	chkDetailTaxDeductible.Checked = true;
+                    chkDetailTaxDeductible.Checked = true;
                 }
                 else
                 {
-                	chkDetailTaxDeductible.Checked = false;
+                    chkDetailTaxDeductible.Checked = false;
                 }
             }
 

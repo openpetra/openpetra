@@ -34,21 +34,21 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
-	/// <summary>
-	/// Class for updating Gift Destinations based on changes to Commitment records
-	/// </summary>
+    /// <summary>
+    /// Class for updating Gift Destinations based on changes to Commitment records
+    /// </summary>
     public class TGiftDestination
     {
-    	// Dataset containing all data from PartnerEdit screen
-    	private PartnerEditTDS FInspectDS;
-    	
-    	// Datatable containing original commitment records (i.e. what they looked like before editing)
-    	private PmStaffDataTable FOriginalCommitments;
-    	
-    	private IndividualDataTDS FIndividualDataDS;
-    	
-    	// new Gift Destination records that have been created as a result of changes to Commitments
-    	private int FNewRecords = 0;
+        // Dataset containing all data from PartnerEdit screen
+        private PartnerEditTDS FInspectDS;
+
+        // Datatable containing original commitment records (i.e. what they looked like before editing)
+        private PmStaffDataTable FOriginalCommitments;
+
+        private IndividualDataTDS FIndividualDataDS;
+
+        // new Gift Destination records that have been created as a result of changes to Commitments
+        private int FNewRecords = 0;
 
         /// <summary>
         /// Gives the user the option to update Gift Destination records if commitments have been added
@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public bool UpdateGiftDestination(ref PartnerEditTDS AInspectDS)
         {
             PmStaffDataTable EligibleCommitments = new PmStaffDataTable();
+
             FIndividualDataDS = new IndividualDataTDS();
             FInspectDS = AInspectDS;
 
@@ -73,25 +74,25 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!GetEligibleRowsForUpdatingGiftDestination(ref EligibleCommitments))
             {
-            	// no eligible records
-            	return false;
+                // no eligible records
+                return false;
             }
 
             // iterate through each eligible row
             foreach (PmStaffDataRow EligibleCommitmentRow in EligibleCommitments.Rows)
             {
-            	UpdateGiftDestinationForSingleCommitment(EligibleCommitmentRow);
+                UpdateGiftDestinationForSingleCommitment(EligibleCommitmentRow);
             }
-            
+
             return true;
         }
-        
+
         /// Determine which (if any) new or modified rows are eligible to update the gift destination
         private bool GetEligibleRowsForUpdatingGiftDestination(ref PmStaffDataTable AEligibleCommitments)
         {
             PmStaffDataRow OriginalCommitmentRow = null;
-      
-        	foreach (PmStaffDataRow Row in FIndividualDataDS.PmStaffData.Rows)
+
+            foreach (PmStaffDataRow Row in FIndividualDataDS.PmStaffData.Rows)
             {
                 // Commitments only trigger changes to Gift Destination if they are new and apply to future dates.
                 if (Row.RowState == DataRowState.Deleted)
@@ -108,15 +109,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-            		OriginalCommitmentRow = (PmStaffDataRow)FOriginalCommitments.Rows.Find(
-                            new object[] { Row.SiteKey, Row.Key });
-                
-                	if ((Row.RowState != DataRowState.Unchanged) && (Row.IsEndOfCommitmentNull() || Row.EndOfCommitment >= DateTime.Today
-                         || (OriginalCommitmentRow != null && 
-                             (OriginalCommitmentRow.IsEndOfCommitmentNull() || OriginalCommitmentRow.EndOfCommitment >= DateTime.Today))))
-	                {
-	                    AEligibleCommitments.LoadDataRow(Row.ItemArray, true);
-	                }
+                    OriginalCommitmentRow = (PmStaffDataRow)FOriginalCommitments.Rows.Find(
+                        new object[] { Row.SiteKey, Row.Key });
+
+                    if ((Row.RowState != DataRowState.Unchanged) && (Row.IsEndOfCommitmentNull() || (Row.EndOfCommitment >= DateTime.Today)
+                                                                     || ((OriginalCommitmentRow != null)
+                                                                         && (OriginalCommitmentRow.IsEndOfCommitmentNull()
+                                                                             || (OriginalCommitmentRow.EndOfCommitment >= DateTime.Today)))))
+                    {
+                        AEligibleCommitments.LoadDataRow(Row.ItemArray, true);
+                    }
                 }
             }
 
@@ -124,17 +126,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return false;
             }
-            
+
             return true;
         }
-        
+
         private void UpdateGiftDestinationForSingleCommitment(PmStaffDataRow AEligibleCommitmentRow)
         {
-        	List<PPartnerGiftDestinationRow> ActiveGiftDestinationsWhichCanBeEnded = new List<PPartnerGiftDestinationRow>();
+            List <PPartnerGiftDestinationRow>ActiveGiftDestinationsWhichCanBeEnded = new List <PPartnerGiftDestinationRow>();
             PPartnerGiftDestinationRow GiftDestinationWhichCanBeModified = null;
             PPartnerGiftDestinationRow GiftDestinationWhichCanBeDeactivated = null;
             DataRowState RowState = DataRowState.Unchanged;
-        	PmStaffDataRow OriginalCommitmentRow = null;
+            PmStaffDataRow OriginalCommitmentRow = null;
 
             // get the rowstate of EligibleCommitmentRow
             DataRow TempRow = FIndividualDataDS.PmStaffData.Rows.Find(new object[] { AEligibleCommitmentRow.SiteKey, AEligibleCommitmentRow.Key });
@@ -147,45 +149,48 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 RowState = DataRowState.Deleted;
             }
-                
+
             // If gift destination records already exist for this partner's family...
             if ((FInspectDS.PPartnerGiftDestination != null) && (FInspectDS.PPartnerGiftDestination.Rows.Count > 0))
             {
-	        	// Get the original record (before it was edited)
-	            if ((RowState == DataRowState.Modified) || (RowState == DataRowState.Deleted))
-	            {
-	                OriginalCommitmentRow = (PmStaffDataRow)FOriginalCommitments.Rows.Find(
-	                    new object[] { AEligibleCommitmentRow.SiteKey, AEligibleCommitmentRow.Key });
-	            }
-	            
-	            CompareCommitmentToGiftDestinations(RowState, AEligibleCommitmentRow, OriginalCommitmentRow,
+                // Get the original record (before it was edited)
+                if ((RowState == DataRowState.Modified) || (RowState == DataRowState.Deleted))
+                {
+                    OriginalCommitmentRow = (PmStaffDataRow)FOriginalCommitments.Rows.Find(
+                        new object[] { AEligibleCommitmentRow.SiteKey, AEligibleCommitmentRow.Key });
+                }
+
+                CompareCommitmentToGiftDestinations(RowState, AEligibleCommitmentRow, OriginalCommitmentRow,
                     ref GiftDestinationWhichCanBeModified, ref GiftDestinationWhichCanBeDeactivated, ref ActiveGiftDestinationsWhichCanBeEnded);
             }
-            
-           DealWithPotentialGiftDestinationUpdates(RowState, AEligibleCommitmentRow, GiftDestinationWhichCanBeModified,
-            	GiftDestinationWhichCanBeDeactivated, ActiveGiftDestinationsWhichCanBeEnded);
+
+            DealWithPotentialGiftDestinationUpdates(RowState, AEligibleCommitmentRow, GiftDestinationWhichCanBeModified,
+                GiftDestinationWhichCanBeDeactivated, ActiveGiftDestinationsWhichCanBeEnded);
         }
-        
+
         /// Iterate through each gift destination and compare with commitment record.
         /// Determine if gift destination can be updated and how.
-        private void CompareCommitmentToGiftDestinations(DataRowState ARowState, PmStaffDataRow AEligibleCommitmentRow,
-             PmStaffDataRow AOriginalCommitmentRow, ref PPartnerGiftDestinationRow AGiftDestinationWhichCanBeModified, 
-             ref PPartnerGiftDestinationRow AGiftDestinationWhichCanBeDeactivated, ref List<PPartnerGiftDestinationRow> AActiveGiftDestinationsWhichCanBeEnded)
+        private void CompareCommitmentToGiftDestinations(DataRowState ARowState,
+            PmStaffDataRow AEligibleCommitmentRow,
+            PmStaffDataRow AOriginalCommitmentRow,
+            ref PPartnerGiftDestinationRow AGiftDestinationWhichCanBeModified,
+            ref PPartnerGiftDestinationRow AGiftDestinationWhichCanBeDeactivated,
+            ref List <PPartnerGiftDestinationRow>AActiveGiftDestinationsWhichCanBeEnded)
         {
             // only changes to recieving field, start data and end date can update the Gift Destination
-            if (ARowState == DataRowState.Modified
-                && AOriginalCommitmentRow.ReceivingField == AEligibleCommitmentRow.ReceivingField
-                && AOriginalCommitmentRow.StartOfCommitment == AEligibleCommitmentRow.StartOfCommitment
-                && AOriginalCommitmentRow.EndOfCommitment == AEligibleCommitmentRow.EndOfCommitment)
+            if ((ARowState == DataRowState.Modified)
+                && (AOriginalCommitmentRow.ReceivingField == AEligibleCommitmentRow.ReceivingField)
+                && (AOriginalCommitmentRow.StartOfCommitment == AEligibleCommitmentRow.StartOfCommitment)
+                && (AOriginalCommitmentRow.EndOfCommitment == AEligibleCommitmentRow.EndOfCommitment))
             {
-            	return;
+                return;
             }
-            
+
             bool Repeat = true;
-            
+
             while (Repeat)
             {
-            	Repeat = false;
+                Repeat = false;
 
                 foreach (PPartnerGiftDestinationRow CurrentRow in FInspectDS.PPartnerGiftDestination.Rows)
                 {
@@ -212,32 +217,34 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else if (ARowState == DataRowState.Deleted)
                     {
-                    	continue;
+                        continue;
                     }
                     else if (CurrentRow.DateEffective == CurrentRow.DateExpires)
                     {
-                    	// ignore inactive Gift Destination
-                    	continue;
+                        // ignore inactive Gift Destination
+                        continue;
                     }
-                    
-                    if ((AEligibleCommitmentRow.IsEndOfCommitmentNull() && 
-                         	(CurrentRow.IsDateExpiresNull() || CurrentRow.DateExpires >= AEligibleCommitmentRow.StartOfCommitment))
-                         || !AEligibleCommitmentRow.IsEndOfCommitmentNull() &&
-                         	((CurrentRow.IsDateExpiresNull() && CurrentRow.DateEffective <= AEligibleCommitmentRow.EndOfCommitment)
-                          	|| (!CurrentRow.IsDateExpiresNull() && 
-                              ((CurrentRow.DateEffective >= AEligibleCommitmentRow.StartOfCommitment && CurrentRow.DateEffective <= AEligibleCommitmentRow.EndOfCommitment) 
-                               || CurrentRow.DateExpires >= AEligibleCommitmentRow.StartOfCommitment && CurrentRow.DateExpires <= AEligibleCommitmentRow.EndOfCommitment))))
+
+                    if ((AEligibleCommitmentRow.IsEndOfCommitmentNull()
+                         && (CurrentRow.IsDateExpiresNull() || (CurrentRow.DateExpires >= AEligibleCommitmentRow.StartOfCommitment)))
+                        || !AEligibleCommitmentRow.IsEndOfCommitmentNull()
+                        && ((CurrentRow.IsDateExpiresNull() && (CurrentRow.DateEffective <= AEligibleCommitmentRow.EndOfCommitment))
+                            || (!CurrentRow.IsDateExpiresNull()
+                                && (((CurrentRow.DateEffective >= AEligibleCommitmentRow.StartOfCommitment)
+                                     && (CurrentRow.DateEffective <= AEligibleCommitmentRow.EndOfCommitment))
+                                    || (CurrentRow.DateExpires >= AEligibleCommitmentRow.StartOfCommitment)
+                                    && (CurrentRow.DateExpires <= AEligibleCommitmentRow.EndOfCommitment)))))
                     {
-                    	AActiveGiftDestinationsWhichCanBeEnded.Add(CurrentRow);
+                        AActiveGiftDestinationsWhichCanBeEnded.Add(CurrentRow);
                     }
                 }
             }
         }
-        
+
         /// Ask the user if they want to update the Gift Destination and then make the changes
         private void DealWithPotentialGiftDestinationUpdates(DataRowState ARowState, PmStaffDataRow AEligibleCommitmentRow,
-             PPartnerGiftDestinationRow AGiftDestinationWhichCanBeModified, 
-             PPartnerGiftDestinationRow AGiftDestinationWhichCanBeDeactivated, List<PPartnerGiftDestinationRow> AActiveGiftDestinationsWhichCanBeEnded)
+            PPartnerGiftDestinationRow AGiftDestinationWhichCanBeModified,
+            PPartnerGiftDestinationRow AGiftDestinationWhichCanBeDeactivated, List <PPartnerGiftDestinationRow>AActiveGiftDestinationsWhichCanBeEnded)
         {
             string UnitName = "";
             string ActiveGiftDestinations = "";
@@ -260,56 +267,56 @@ namespace Ict.Petra.Client.MPartner.Gui
                 out UnitName,
                 out PartnerClass);
             UnitName = UnitName + " (" + AEligibleCommitmentRow.ReceivingField + ")";
-                
-        	// if existing active Gift Destination/s can be ended in order to add a Gift Destination for new commitment
+
+            // if existing active Gift Destination/s can be ended in order to add a Gift Destination for new commitment
             if (AActiveGiftDestinationsWhichCanBeEnded.Count > 0)
             {
-            	string Message = "";
- 
+                string Message = "";
+
                 // get gift destination field's short name
                 foreach (PPartnerGiftDestinationRow Row in AActiveGiftDestinationsWhichCanBeEnded)
                 {
-                	string ActiveGiftDestinationName = "";
-       
-                	TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
-                    	Row.FieldKey, out ActiveGiftDestinationName, out PartnerClass);
-                	
-                	// add conjunctions
-                	if (AActiveGiftDestinationsWhichCanBeEnded.Count > 1)
-                	{
-                		if (AActiveGiftDestinationsWhichCanBeEnded.IndexOf(Row) == AActiveGiftDestinationsWhichCanBeEnded.Count - 1)
-	                	{
-	                		ActiveGiftDestinations += " and ";
-	                	}
-	                	else if (AActiveGiftDestinationsWhichCanBeEnded.IndexOf(Row) < AActiveGiftDestinationsWhichCanBeEnded.Count - 1)
-	                	{
-	                		ActiveGiftDestinations += ", ";
-	                	}
-                	}
-                	
-                	ActiveGiftDestinations += "'" + ActiveGiftDestinationName + "' (" + Row.FieldKey + ")";
+                    string ActiveGiftDestinationName = "";
+
+                    TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
+                        Row.FieldKey, out ActiveGiftDestinationName, out PartnerClass);
+
+                    // add conjunctions
+                    if (AActiveGiftDestinationsWhichCanBeEnded.Count > 1)
+                    {
+                        if (AActiveGiftDestinationsWhichCanBeEnded.IndexOf(Row) == AActiveGiftDestinationsWhichCanBeEnded.Count - 1)
+                        {
+                            ActiveGiftDestinations += " and ";
+                        }
+                        else if (AActiveGiftDestinationsWhichCanBeEnded.IndexOf(Row) < AActiveGiftDestinationsWhichCanBeEnded.Count - 1)
+                        {
+                            ActiveGiftDestinations += ", ";
+                        }
+                    }
+
+                    ActiveGiftDestinations += "'" + ActiveGiftDestinationName + "' (" + Row.FieldKey + ")";
                 }
-                
+
                 // two different messages depending on number of gift destinations that need to be closed
                 if (AActiveGiftDestinationsWhichCanBeEnded.Count == 1)
                 {
-                	Message = Catalog.GetString(string.Format(
-                                "This Person's Family has an existing Gift Destination record to the field {0} that is active during the period {1} to {2}."
-                                +
-                                "{3}Would you like to shorten or deactivate this Gift Destination and make this new Commitment to " +
-                                "the field '{4}' the active Gift Destination for this period?",
-                                ActiveGiftDestinations, AEligibleCommitmentRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
-                                "\n\n", UnitName));
+                    Message = Catalog.GetString(string.Format(
+                            "This Person's Family has an existing Gift Destination record to the field {0} that is active during the period {1} to {2}."
+                            +
+                            "{3}Would you like to shorten or deactivate this Gift Destination and make this new Commitment to " +
+                            "the field '{4}' the active Gift Destination for this period?",
+                            ActiveGiftDestinations, AEligibleCommitmentRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
+                            "\n\n", UnitName));
                 }
                 else
                 {
-                	Message = Catalog.GetString(string.Format(
-                                "This Person's Family has existing Gift Destination records to the fields {0} that are active during the period {1} to {2}."
-                                +
-                                "{3}Would you like to shorten or deactivate these Gift Destinations and make this new Commitment to " +
-                                "the field '{4}' the active Gift Destination for this period?",
-                                ActiveGiftDestinations, AEligibleCommitmentRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
-                                "\n\n", UnitName));
+                    Message = Catalog.GetString(string.Format(
+                            "This Person's Family has existing Gift Destination records to the fields {0} that are active during the period {1} to {2}."
+                            +
+                            "{3}Would you like to shorten or deactivate these Gift Destinations and make this new Commitment to " +
+                            "the field '{4}' the active Gift Destination for this period?",
+                            ActiveGiftDestinations, AEligibleCommitmentRow.StartOfCommitment.ToShortDateString(), EndOfCommitment,
+                            "\n\n", UnitName));
                 }
 
                 // offer to end Gift Destination/s and use new commitment instead
@@ -319,26 +326,26 @@ namespace Ict.Petra.Client.MPartner.Gui
                         MessageBoxIcon.Information) == DialogResult.Yes)
                 {
                     CreateNewGiftDestination = true;
-                    
+
                     foreach (PPartnerGiftDestinationRow Row in AActiveGiftDestinationsWhichCanBeEnded)
                     {
-                    	if (Row.DateEffective >= AEligibleCommitmentRow.StartOfCommitment)
-                    	{
-                    		// deactivate future gift destinations
-                			Row.DateExpires = Row.DateEffective;
-                    	}
-                    	else
-                    	{
-                    		// shorten older gift destinations
-                    		if (Row.DateEffective != AEligibleCommitmentRow.StartOfCommitment)
-		                    {
-		                        Row.DateExpires = AEligibleCommitmentRow.StartOfCommitment.AddDays(-1);
-		                    }
-		                    else
-		                    {
-		                        Row.DateExpires = AEligibleCommitmentRow.StartOfCommitment;
-		                    }
-                    	}
+                        if (Row.DateEffective >= AEligibleCommitmentRow.StartOfCommitment)
+                        {
+                            // deactivate future gift destinations
+                            Row.DateExpires = Row.DateEffective;
+                        }
+                        else
+                        {
+                            // shorten older gift destinations
+                            if (Row.DateEffective != AEligibleCommitmentRow.StartOfCommitment)
+                            {
+                                Row.DateExpires = AEligibleCommitmentRow.StartOfCommitment.AddDays(-1);
+                            }
+                            else
+                            {
+                                Row.DateExpires = AEligibleCommitmentRow.StartOfCommitment;
+                            }
+                        }
                     }
                 }
             }

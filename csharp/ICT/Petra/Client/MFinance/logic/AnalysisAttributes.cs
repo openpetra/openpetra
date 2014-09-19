@@ -39,29 +39,29 @@ namespace Ict.Petra.Client.MFinance.Logic
     /// </summary>
     public class TAnalysisAttributes
     {
-    	private readonly int FLedgerNumber;
-    	private readonly int FBatchNumber;
-    	private readonly int FJournalNumber;
+        private readonly int FLedgerNumber;
+        private readonly int FBatchNumber;
+        private readonly int FJournalNumber;
 
-    	/// <summary>
-    	/// contructor
-    	/// </summary>
-    	/// <param name="ALedgerNumber"></param>
-    	/// <param name="ABatchNumber"></param>
-    	/// <param name="AJournalNumber"></param>
-    	public TAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber)
-    	{
-    		FLedgerNumber = ALedgerNumber;
-    		FBatchNumber = ABatchNumber;
-    		FJournalNumber = AJournalNumber;
-    	}
-    	
-    	/// <summary>
-    	/// 
-    	/// </summary>
-    	/// <param name="AStringCollection"></param>
-    	/// <param name="AWrapString"></param>
-    	/// <returns></returns>
+        /// <summary>
+        /// contructor
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        public TAnalysisAttributes(int ALedgerNumber, int ABatchNumber, int AJournalNumber)
+        {
+            FLedgerNumber = ALedgerNumber;
+            FBatchNumber = ABatchNumber;
+            FJournalNumber = AJournalNumber;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AStringCollection"></param>
+        /// <param name="AWrapString"></param>
+        /// <returns></returns>
         public static string ConvertStringCollectionToCSV(StringCollection AStringCollection, string AWrapString = "")
         {
             string csvRetVal = string.Empty;
@@ -97,13 +97,16 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AGLBatchDS"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ATransactionNumber"></param>
         /// <param name="AAnalysisCodeFilterValues"></param>
-        public void SetTransAnalAttributeDefaultView(GLBatchTDS AGLBatchDS, bool AActiveOnly, Int32 ATransactionNumber = 0, String AAnalysisCodeFilterValues = "")
+        public void SetTransAnalAttributeDefaultView(GLBatchTDS AGLBatchDS,
+            bool AActiveOnly,
+            Int32 ATransactionNumber = 0,
+            String AAnalysisCodeFilterValues = "")
         {
             if (FBatchNumber != -1)
             {
@@ -149,7 +152,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AAccountCode"></param>
         /// <param name="AAnalysisAttribute"></param>
@@ -181,15 +184,15 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AGridCombo"></param>
         /// <param name="AAnalysisAttribute"></param>
         /// <param name="AAnalysisCode"></param>
         /// <param name="AAnalysisAttributeValue"></param>
         /// <returns></returns>
-        public static bool AnalysisAttributeValueIsActive(ref SourceGrid.Cells.Editors.ComboBox AGridCombo, AFreeformAnalysisTable AAnalysisAttribute, 
-                                                    String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        public static bool AnalysisAttributeValueIsActive(ref SourceGrid.Cells.Editors.ComboBox AGridCombo, AFreeformAnalysisTable AAnalysisAttribute,
+            String AAnalysisCode = "", String AAnalysisAttributeValue = "")
         {
             bool retVal = true;
 
@@ -233,9 +236,9 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                 AAccountCode, true);
-            
-        	SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber, 
-        		                                                          TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
+
+            SetTransAnalAttributeDefaultView(AGLBatchDS, true, ATransactionNumber,
+                TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
 
             // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
             bool existingListIsOk = (RequiredAnalAttrCodes.Count == AGLBatchDS.ATransAnalAttrib.DefaultView.Count);
@@ -288,7 +291,10 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AGLBatchDS"></param>
         /// <param name="AIsUnposted"></param>
         /// <returns></returns>
-        public bool AccountAnalysisAttributeCountIsCorrect(int ATransactionNumber, string AAccountCode, GLBatchTDS AGLBatchDS, bool AIsUnposted = true)
+        public bool AccountAnalysisAttributeCountIsCorrect(int ATransactionNumber,
+            string AAccountCode,
+            GLBatchTDS AGLBatchDS,
+            bool AIsUnposted = true)
         {
             bool RetVal = true;
 
@@ -332,8 +338,8 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ValueRequiredForType"></param>
         /// <param name="AIsUnposted"></param>
         /// <returns></returns>
-        public bool AccountAnalysisAttributesValuesExist(int ATransactionNumber, string AAccountCode, GLBatchTDS AGLBatchDS, 
-                                                         out String ValueRequiredForType, bool AIsUnposted = true)
+        public bool AccountAnalysisAttributesValuesExist(int ATransactionNumber, string AAccountCode, GLBatchTDS AGLBatchDS,
+            out String ValueRequiredForType, bool AIsUnposted = true)
         {
             ValueRequiredForType = "";
 

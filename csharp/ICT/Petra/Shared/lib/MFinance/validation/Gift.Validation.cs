@@ -379,7 +379,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 return true;
             }
-            	
 
             // Detail comments type 2 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnTaxDeductiblePctId];
@@ -391,8 +390,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 // it should be impossible for this to ever happen
-	            if (ARow.TaxDeductiblePct != 0)
-	            {
+                if (ARow.TaxDeductiblePct != 0)
+                {
                     VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.TaxDeductibleAccountCode,
                         "Tax-Deductible Account " + ValidationContext,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
@@ -402,7 +401,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     {
                         VerifResultCollAddedCount++;
                     }
-	            }
+                }
             }
 
             return VerifResultCollAddedCount == 0;
@@ -864,7 +863,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
+
             if (ATaxDeductiblePercentageEnabled)
             {
                 // 'TaxDeductibleAccount' must have a value (NOT NULL constraint)

@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
                     if (finished)
                     {
-                        this.DialogResult = FCancelled?DialogResult.Cancel:DialogResult.OK;
+                        this.DialogResult = FCancelled ? DialogResult.Cancel : DialogResult.OK;
                         FConfirmedClosing = true;
                         Close();
                     }

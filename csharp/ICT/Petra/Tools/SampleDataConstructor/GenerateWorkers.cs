@@ -374,7 +374,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             int FieldID =
                 Convert.ToInt32(TXMLParser.GetAttribute(ACurrentNode, "fieldCommitment")) % AFieldKeys.Rows.Count;
             long FieldPartnerKey = Convert.ToInt64(AFieldKeys.Rows[FieldID].ItemArray[0]);
-            
+
             PPartnerGiftDestinationRow giftDestination = AMainDS.PPartnerGiftDestination.NewRowTyped();
             giftDestination.Key = TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination();
             giftDestination.FieldKey = FieldPartnerKey;
@@ -421,14 +421,14 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             }
 
             APersonnelDS.PmStaffData.Rows.Add(staffData);
-            
+
             giftDestination.DateExpires = staffData.EndOfCommitment;
-            
+
             if (AMainDS.PPartnerGiftDestination == null)
             {
-            	AMainDS.PPartnerGiftDestination.Merge(new PPartnerGiftDestinationTable());
+                AMainDS.PPartnerGiftDestination.Merge(new PPartnerGiftDestinationTable());
             }
-            
+
             AMainDS.PPartnerGiftDestination.Rows.Add(giftDestination);
 
             // TODO depending on start and end date of commitment, set EX-WORKER or no special type yet at all

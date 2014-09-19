@@ -1037,11 +1037,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // If changes have been made to pm_staff_data (commitments) then update the partner's family's Gift Destination records
                     TGiftDestination GiftDestination = new TGiftDestination();
-                    
+
                     if (GiftDestination.UpdateGiftDestination(ref AInspectDS))
                     {
-                    	// set the gift destination on this screen and all other open partner edit screens for the same family
-		            	SetGiftDestinationAllScreens();
+                        // set the gift destination on this screen and all other open partner edit screens for the same family
+                        SetGiftDestinationAllScreens();
                     }
 
                     SubmitDS = AInspectDS.GetChangesTyped(true);
@@ -2595,34 +2595,34 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
-        
+
         /// <summary>
         /// set the gift destination on this screen and all other open partner edit screens for the same family
         /// </summary>
         private void SetGiftDestinationAllScreens()
         {
-        	if ((FMainDS.PPartnerGiftDestination != null) && (FMainDS.PPartnerGiftDestination.Rows.Count > 0))
+            if ((FMainDS.PPartnerGiftDestination != null) && (FMainDS.PPartnerGiftDestination.Rows.Count > 0))
             {
-            	// Broadcast message to update partners' Partner Edit screen if open
+                // Broadcast message to update partners' Partner Edit screen if open
                 TFormsMessage BroadcastMessage;
 
                 BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGiftDestinationChanged);
 
                 if (FMainDS.PPartner[0].PartnerClass == TPartnerClass.FAMILY.ToString())
                 {
-	                BroadcastMessage.SetMessageDataGiftDestination(
-	                    FPartnerKey,
-	                    FMainDS.PPartnerGiftDestination);
+                    BroadcastMessage.SetMessageDataGiftDestination(
+                        FPartnerKey,
+                        FMainDS.PPartnerGiftDestination);
                 }
                 else
                 {
-                	BroadcastMessage.SetMessageDataGiftDestination(
-                		FMainDS.PPerson[0].FamilyKey,
-	                    FMainDS.PPartnerGiftDestination);
+                    BroadcastMessage.SetMessageDataGiftDestination(
+                        FMainDS.PPerson[0].FamilyKey,
+                        FMainDS.PPartnerGiftDestination);
                 }
 
                 TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
-        	}
+            }
         }
 
         private void SetGiftDestination()

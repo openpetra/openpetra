@@ -838,20 +838,20 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
                     FamilyKey = PersonRow.FamilyKey;
                 }
-                
+
                 GiftDestinationTable = PPartnerGiftDestinationAccess.LoadViaPPartner(FamilyKey, ReadTransaction);
-                
+
                 if (GiftDestinationTable.Rows.Count > 0)
                 {
-	                foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
-	                {
-	                	// check if the gift destination is currently active
-	                	if (Row.DateEffective <= DateTime.Today
-	                	    && (Row.IsDateExpiresNull() || (Row.DateExpires >= DateTime.Today && Row.DateExpires != Row.DateEffective)))
-	                	{
-	                		AddFieldToTable(Row.FieldKey, ref AFieldsTable, ref ReadTransaction);
-	                	}
-	                }
+                    foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
+                    {
+                        // check if the gift destination is currently active
+                        if ((Row.DateEffective <= DateTime.Today)
+                            && (Row.IsDateExpiresNull() || ((Row.DateExpires >= DateTime.Today) && (Row.DateExpires != Row.DateEffective))))
+                        {
+                            AddFieldToTable(Row.FieldKey, ref AFieldsTable, ref ReadTransaction);
+                        }
+                    }
                 }
             }
             finally

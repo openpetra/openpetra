@@ -153,7 +153,7 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
-                	ReturnValue = ((ALedgerRow) ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction).Rows[0]).BaseCurrency;
+                    ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction).Rows[0]).BaseCurrency;
                 });
 
             return ReturnValue;

@@ -2437,7 +2437,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
         }
-        
+
         /// <summary>
         /// Get current accounts and their current balances for use in the Reallocation Journal dialog
         /// </summary>
@@ -2449,42 +2449,42 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             TDBTransaction Transaction = null;
             DataTable NewTable = new DataTable("NewTable");
-            
-        	DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,  ref Transaction,
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
                 delegate
                 {
-        			string Query =
-	                    "SELECT PUB_a_general_ledger_master.a_cost_centre_code_c, PUB_a_general_ledger_master.a_account_code_c, " +
-        				"PUB_a_general_ledger_master_period.a_actual_base_n, " +
-        				"PUB_a_account.a_account_code_short_desc_c, PUB_a_account.a_debit_credit_indicator_l, " +
-        				"PUB_a_cost_centre.a_cost_centre_name_c " +
+                    string Query =
+                        "SELECT PUB_a_general_ledger_master.a_cost_centre_code_c, PUB_a_general_ledger_master.a_account_code_c, " +
+                        "PUB_a_general_ledger_master_period.a_actual_base_n, " +
+                        "PUB_a_account.a_account_code_short_desc_c, PUB_a_account.a_debit_credit_indicator_l, " +
+                        "PUB_a_cost_centre.a_cost_centre_name_c " +
 
-        				"FROM PUB_a_general_ledger_master, PUB_a_general_ledger_master_period, PUB_a_account, PUB_a_cost_centre " +
+                        "FROM PUB_a_general_ledger_master, PUB_a_general_ledger_master_period, PUB_a_account, PUB_a_cost_centre " +
 
-        				"WHERE PUB_a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber + " AND " +
-        				
-        				"PUB_a_account.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c AND " +
-        				"PUB_a_account.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i AND " +
-        				"PUB_a_account.a_posting_status_l = 1 AND " +
-        				"PUB_a_account.a_account_active_flag_l = 1 AND " +
-        				
-        				"PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c AND " +
-        				"PUB_a_cost_centre.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i AND " +
-        				"PUB_a_cost_centre.a_posting_cost_centre_flag_l = 1 AND " +
-        				"PUB_a_cost_centre.a_cost_centre_active_flag_l = 1 AND " +
-        				
-        				"PUB_a_general_ledger_master_period.a_glm_sequence_i = PUB_a_general_ledger_master.a_glm_sequence_i AND " +
-        				"PUB_a_general_ledger_master_period.a_period_number_i = " + APeriodNumber;
-	
-        			NewTable = DBAccess.GDBAccessObj.SelectDT(Query, "NewTable", Transaction);
+                        "WHERE PUB_a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber + " AND " +
+
+                        "PUB_a_account.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c AND " +
+                        "PUB_a_account.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i AND " +
+                        "PUB_a_account.a_posting_status_l = 1 AND " +
+                        "PUB_a_account.a_account_active_flag_l = 1 AND " +
+
+                        "PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c AND " +
+                        "PUB_a_cost_centre.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i AND " +
+                        "PUB_a_cost_centre.a_posting_cost_centre_flag_l = 1 AND " +
+                        "PUB_a_cost_centre.a_cost_centre_active_flag_l = 1 AND " +
+
+                        "PUB_a_general_ledger_master_period.a_glm_sequence_i = PUB_a_general_ledger_master.a_glm_sequence_i AND " +
+                        "PUB_a_general_ledger_master_period.a_period_number_i = " + APeriodNumber;
+
+                    NewTable = DBAccess.GDBAccessObj.SelectDT(Query, "NewTable", Transaction);
                 });
-            
+
             // create a new description
             foreach (DataRow Row in NewTable.Rows)
             {
-            	Row["a_account_code_short_desc_c"] += ", " + Row["a_cost_centre_name_c"];
+                Row["a_account_code_short_desc_c"] += ", " + Row["a_cost_centre_name_c"];
             }
-                
+
             return NewTable;
         }
     }

@@ -664,8 +664,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             FPartnerEditScreenDS.PPerson[0].FamilyKey,
                             ReadTransaction);
 
-		                    // Determine whether the Partner has a 'EX-WORKER*' Partner Type
-		                    HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
+                            // Determine whether the Partner has a 'EX-WORKER*' Partner Type
+                            HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
 
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                             {
@@ -687,8 +687,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // Gift Destination
                             PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
 
-		                    // Determine whether the Partner has a 'EX-WORKER*' Partner Type
-		                    HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
+                            // Determine whether the Partner has a 'EX-WORKER*' Partner Type
+                            HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
 
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                             {

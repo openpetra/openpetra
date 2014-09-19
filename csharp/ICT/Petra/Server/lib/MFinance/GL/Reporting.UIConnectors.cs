@@ -1841,21 +1841,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 {
                     if (Row.AccountHierarchyCode == AHierarchyCode)
                     {
-                    	// check if Row.ReportingAccountCode has any posting accounts reporting to it
-                    	string Query = "SELECT PUB_a_account.* FROM PUB_a_account, PUB_a_account_hierarchy_detail " +
-                    		"WHERE PUB_a_account_hierarchy_detail.a_ledger_number_i = " + ALedgerNumber +
-                    		" AND PUB_a_account_hierarchy_detail.a_account_hierarchy_code_c = '" + AHierarchyCode + "'" +
-                    		" AND PUB_a_account_hierarchy_detail.a_account_code_to_report_to_c = '" + Row.ReportingAccountCode + "'" +
-                    		" AND PUB_a_account.a_ledger_number_i = " + ALedgerNumber +
-                    		" AND PUB_a_account.a_account_code_c = PUB_a_account_hierarchy_detail.a_reporting_account_code_c" +
-                    		" AND PUB_a_account.a_posting_status_l";
-                    	
-                    	DataTable NewTable = DBAccess.GDBAccessObj.SelectDT(Query, "NewTable", ATransaction);
-	
-                    	// if posting accounts found
+                        // check if Row.ReportingAccountCode has any posting accounts reporting to it
+                        string Query = "SELECT PUB_a_account.* FROM PUB_a_account, PUB_a_account_hierarchy_detail " +
+                                       "WHERE PUB_a_account_hierarchy_detail.a_ledger_number_i = " + ALedgerNumber +
+                                       " AND PUB_a_account_hierarchy_detail.a_account_hierarchy_code_c = '" + AHierarchyCode + "'" +
+                                       " AND PUB_a_account_hierarchy_detail.a_account_code_to_report_to_c = '" + Row.ReportingAccountCode + "'" +
+                                       " AND PUB_a_account.a_ledger_number_i = " + ALedgerNumber +
+                                       " AND PUB_a_account.a_account_code_c = PUB_a_account_hierarchy_detail.a_reporting_account_code_c" +
+                                       " AND PUB_a_account.a_posting_status_l";
+
+                        DataTable NewTable = DBAccess.GDBAccessObj.SelectDT(Query, "NewTable", ATransaction);
+
+                        // if posting accounts found
                         if (NewTable.Rows.Count > 0)
                         {
-                        	AAccountList.Add(Row.ReportingAccountCode);
+                            AAccountList.Add(Row.ReportingAccountCode);
                         }
                         else
                         {

@@ -1750,17 +1750,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 PmJobAssignmentAccess.SubmitChanges(JobAssignmentTable, ATransaction);
             }
-            
+
             PPartnerGiftDestinationTable GiftDestinationTable = PPartnerGiftDestinationAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
-            
+
             if (GiftDestinationTable.Rows.Count > 0)
             {
-            	foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
-            	{
-            		Row.FieldKey = AToPartnerKey;
-            	}
-            	
-            	PPartnerGiftDestinationAccess.SubmitChanges(GiftDestinationTable, ATransaction);
+                foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
+                {
+                    Row.FieldKey = AToPartnerKey;
+                }
+
+                PPartnerGiftDestinationAccess.SubmitChanges(GiftDestinationTable, ATransaction);
             }
 
             PmGeneralApplicationTable GeneralApplicationTable = PmGeneralApplicationAccess.LoadViaPUnitRegistrationOffice(AFromPartnerKey,

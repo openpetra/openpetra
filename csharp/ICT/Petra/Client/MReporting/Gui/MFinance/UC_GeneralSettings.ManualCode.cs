@@ -136,16 +136,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
 
             String CurrencyName;
-            
+
             if (cmbCurrency.Visible)
             {
-            	String CurrencySelection = this.cmbCurrency.GetSelectedString();
-            	ACalculator.AddParameter("param_currency", CurrencySelection);
-				CurrencyName = (CurrencySelection == "Base") ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
+                String CurrencySelection = this.cmbCurrency.GetSelectedString();
+                ACalculator.AddParameter("param_currency", CurrencySelection);
+                CurrencyName = (CurrencySelection == "Base") ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
             }
             else
             {
-            	CurrencyName = FLedgerRow.BaseCurrency;
+                CurrencyName = FLedgerRow.BaseCurrency;
             }
 
             ACalculator.AddParameter("param_currency_name", CurrencyName);
@@ -437,7 +437,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <param name="items"></param>
         public void CurrencyOptions(object[] items)
         {
-			String CurrencySelection = cmbCurrency.GetSelectedString();
+            String CurrencySelection = cmbCurrency.GetSelectedString();
 
             this.cmbCurrency.Items.Clear();
             cmbCurrency.Items.AddRange(items);
