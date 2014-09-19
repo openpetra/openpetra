@@ -3156,12 +3156,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (Convert.ToInt64(txtDetailRecipientKey.Text) == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
             {
+                txtDetailRecipientLedgerNumber.Text = "0";
+
                 foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
                          GiftDestinationTable.Rows)
                 {
-                    // check if record is active for today
-                    if ((Row.DateEffective <= DateTime.Today)
-                        && ((Row.DateExpires >= DateTime.Today) || Row.IsDateExpiresNull())
+                    DateTime GiftDate = FPreviouslySelectedDetailRow.DateEntered;
+            		
+                    // check if record is active for the Gift Date
+                    if ((Row.DateEffective <= GiftDate)
+                        && ((Row.DateExpires >= GiftDate) || Row.IsDateExpiresNull())
                         && (Row.DateEffective != Row.DateExpires))
                     {
                         txtDetailRecipientLedgerNumber.Text = Row.FieldKey.ToString();
