@@ -53,9 +53,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <summary>
         /// This routine tests the TLedgerInitFlagHandler completely. It's the routine
         /// which writes "boolean" values to a data base table. The class TGet_GLM_Info is
-        /// tested indirect too.
+        /// tested indirectly too.
         ///
-        /// Be careful by changing this routine. The behaviour has been compared to this of
+        /// Be careful in changing this routine. The behaviour has been compared to that of
         /// petra and it has been verfied that the same database entries of the table
         /// a_transaction has been created and the same changes in glm.
         /// </summary>

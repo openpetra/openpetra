@@ -113,6 +113,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             TSubmitChangesResult Result = TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS);
 
+            if (Result == TSubmitChangesResult.scrOK)
+            {
+                MessageBox.Show(Catalog.GetString("Changes to users will take effect at next login."),
+                    Catalog.GetString("Maintain Users"));
+            }
+
             return Result;
         }
 

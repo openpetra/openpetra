@@ -164,13 +164,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TReallocation reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
             reallocation.VerificationResultCollection = verificationResult;
             reallocation.IsInInfoMode = false;
-            Assert.AreEqual(6, reallocation.JobSize, "Check the number of reallocation jobs ...");
+            Assert.AreEqual(6, reallocation.GetJobSize(), "Check the number of reallocation jobs ...");
             reallocation.RunEndOfPeriodOperation();
 
             reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
             reallocation.VerificationResultCollection = verificationResult;
             reallocation.IsInInfoMode = true;
-            Assert.AreEqual(0, reallocation.JobSize, "Check the number of reallocation jobs ...");
+            Assert.AreEqual(0, reallocation.GetJobSize(), "Check the number of reallocation jobs ...");
 
             // check amounts after reallocation
             CheckGLMEntry(intLedgerNumber, intYear, strAccountBank,
@@ -284,13 +284,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 TVerificationResultCollection verificationResult = new TVerificationResultCollection();
                 reallocation.VerificationResultCollection = verificationResult;
                 reallocation.IsInInfoMode = false;
-                Assert.AreEqual(1, reallocation.JobSize, "Check the number of reallocation jobs ...");
+                Assert.AreEqual(1, reallocation.GetJobSize(), "Check the number of reallocation jobs ...");
                 reallocation.RunEndOfPeriodOperation();
 
                 TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, countYear);
                 glmNewYearInit.VerificationResultCollection = verificationResult;
                 glmNewYearInit.IsInInfoMode = false;
-                Assert.Greater(glmNewYearInit.JobSize, 0, "Check the number of reallocation jobs ...");
+                Assert.Greater(glmNewYearInit.GetJobSize(), 0, "Check the number of reallocation jobs ...");
                 glmNewYearInit.RunEndOfPeriodOperation();
             }
 
@@ -386,7 +386,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             {
                 TLogging.Log("glmInfo.CostCentreCode: " + glmInfo.CostCentreCode);
 
-                TGlmpInfo glmpInfo = new TGlmpInfo(glmInfo.GlmSequence, APeriodNr);
+                TGlmpInfo glmpInfo = new TGlmpInfo(-1, -1, glmInfo.GlmSequence, APeriodNr);
 
                 Assert.AreEqual(true,
                     glmpInfo.RowExists,

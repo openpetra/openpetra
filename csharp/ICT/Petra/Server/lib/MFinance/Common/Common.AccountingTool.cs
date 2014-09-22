@@ -37,9 +37,9 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TCommonAccountingTool
     {
-        private GLBatchTDS aBatchTable = null;
-        private ABatchRow aBatchRow;
-        private AJournalRow journal;
+        private GLBatchTDS FBatchTDS = null;
+        private ABatchRow FBatchRow;
+        private AJournalRow FJournalRow;
 
         private TLedgerInfo TLedgerInfo;
         private TCurrencyInfo getBaseCurrencyInfo;
@@ -82,11 +82,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void TCommonAccountingTool_(string ABatchDescription)
         {
-            aBatchTable = TGLPosting.CreateABatch(TLedgerInfo.LedgerNumber);
+            FBatchTDS = TGLPosting.CreateABatch(TLedgerInfo.LedgerNumber);
             getBaseCurrencyInfo = new TCurrencyInfo(TLedgerInfo.BaseCurrency);
-            aBatchRow = aBatchTable.ABatch[0];
-            aBatchRow.BatchDescription = ABatchDescription;
-            aBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
+            FBatchRow = FBatchTDS.ABatch[0];
+            FBatchRow.BatchDescription = ABatchDescription;
+            FBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
             intJournalCount = 0;
             blnReadyForTransaction = false;
             blnInitBatchDate = true;
@@ -110,7 +110,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
 
                 blnInitBatchDate = false;
-                aBatchRow.DateEffective = value;
+                FBatchRow.DateEffective = value;
             }
         }
 
@@ -171,7 +171,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     throw terminate;
                 }
 
-                journal.JournalDescription = value;
+                FJournalRow.JournalDescription = value;
             }
         }
 
@@ -191,7 +191,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     throw terminate;
                 }
 
-                journal.TransactionTypeCode = value.ToString();
+                FJournalRow.TransactionTypeCode = value.ToString();
             }
         }
 
@@ -211,7 +211,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     throw terminate;
                 }
 
-                journal.SubSystemCode = value.ToString();
+                FJournalRow.SubSystemCode = value.ToString();
             }
         }
 
@@ -221,42 +221,42 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 TAccountPeriodInfo getAccountingPeriodInfo =
                     new TAccountPeriodInfo(TLedgerInfo.LedgerNumber, TLedgerInfo.CurrentPeriod);
-                aBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
+                FBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
                 blnInitBatchDate = false;
             }
 
             if (intJournalCount != 0)
             {
                 // The checksum of the "last journal" is used to update the checksum of the batch.
-                aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
+                FBatchRow.BatchControlTotal += FJournalRow.JournalDebitTotal - FJournalRow.JournalCreditTotal;
             }
 
             ++intJournalCount;
-            journal = aBatchTable.AJournal.NewRowTyped();
-            journal.LedgerNumber = aBatchRow.LedgerNumber;
-            journal.BatchNumber = aBatchRow.BatchNumber;
-            journal.JournalNumber = intJournalCount;
-            journal.DateEffective = aBatchRow.DateEffective;
-            journal.JournalPeriod = TLedgerInfo.CurrentPeriod;
+            FJournalRow = FBatchTDS.AJournal.NewRowTyped();
+            FJournalRow.LedgerNumber = FBatchRow.LedgerNumber;
+            FJournalRow.BatchNumber = FBatchRow.BatchNumber;
+            FJournalRow.JournalNumber = intJournalCount;
+            FJournalRow.DateEffective = FBatchRow.DateEffective;
+            FJournalRow.JournalPeriod = TLedgerInfo.CurrentPeriod;
 
             if (blnJournalIsInForeign)
             {
-                journal.TransactionCurrency = getForeignCurrencyInfo.CurrencyCode;
+                FJournalRow.TransactionCurrency = getForeignCurrencyInfo.CurrencyCode;
             }
             else
             {
-                journal.TransactionCurrency = getBaseCurrencyInfo.CurrencyCode;
+                FJournalRow.TransactionCurrency = getBaseCurrencyInfo.CurrencyCode;
             }
 
-            journal.JournalDescription = aBatchRow.BatchDescription;
-            journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
-            journal.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
-            journal.LastTransactionNumber = 0;
-            journal.DateOfEntry = DateTime.Now;
-            journal.ExchangeRateToBase = AExchangeRateToBase;
-            journal.JournalCreditTotal = 0;
-            journal.JournalDebitTotal = 0;
-            aBatchTable.AJournal.Rows.Add(journal);
+            FJournalRow.JournalDescription = FBatchRow.BatchDescription;
+            FJournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+            FJournalRow.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+            FJournalRow.LastTransactionNumber = 0;
+            FJournalRow.DateOfEntry = DateTime.Now;
+            FJournalRow.ExchangeRateToBase = AExchangeRateToBase;
+            FJournalRow.JournalCreditTotal = 0;
+            FJournalRow.JournalDebitTotal = 0;
+            FBatchTDS.AJournal.Rows.Add(FJournalRow);
             blnReadyForTransaction = true;
         }
 
@@ -369,11 +369,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
             ATransactionRow transaction = null;
 
-            transaction = aBatchTable.ATransaction.NewRowTyped();
-            transaction.LedgerNumber = journal.LedgerNumber;
-            transaction.BatchNumber = journal.BatchNumber;
-            transaction.JournalNumber = journal.JournalNumber;
-            transaction.TransactionNumber = ++journal.LastTransactionNumber;
+            transaction = FBatchTDS.ATransaction.NewRowTyped();
+            transaction.LedgerNumber = FJournalRow.LedgerNumber;
+            transaction.BatchNumber = FJournalRow.BatchNumber;
+            transaction.JournalNumber = FJournalRow.JournalNumber;
+            transaction.TransactionNumber = ++FJournalRow.LastTransactionNumber;
             transaction.AccountCode = AAccount;
             transaction.CostCentreCode = ACostCenter;
             transaction.Narrative = ANarrativeMessage;
@@ -391,16 +391,16 @@ namespace Ict.Petra.Server.MFinance.Common
                 transaction.AmountInBaseCurrency = AAmountBaseCurrency;
             }
 
-            transaction.TransactionDate = aBatchRow.DateEffective;
-            aBatchTable.ATransaction.Rows.Add(transaction);
+            transaction.TransactionDate = FBatchRow.DateEffective;
+            FBatchTDS.ATransaction.Rows.Add(transaction);
 
             if (AIsDebit)
             {
-                journal.JournalDebitTotal += AAmountBaseCurrency;
+                FJournalRow.JournalDebitTotal += AAmountBaseCurrency;
             }
             else
             {
-                journal.JournalCreditTotal += AAmountBaseCurrency;
+                FJournalRow.JournalCreditTotal += AAmountBaseCurrency;
             }
         }
 
@@ -432,19 +432,19 @@ namespace Ict.Petra.Server.MFinance.Common
             if (intJournalCount != 0)
             {
                 // The checksum of the "last journal" is used to update the checksum of the batch.
-                aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
+                FBatchRow.BatchControlTotal += FJournalRow.JournalDebitTotal - FJournalRow.JournalCreditTotal;
             }
 
-            GLBatchTDSAccess.SubmitChanges(aBatchTable);
+            GLBatchTDSAccess.SubmitChanges(FBatchTDS);
 
             TGLPosting.PostGLBatch(
-                aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications);
+                FBatchRow.LedgerNumber, FBatchRow.BatchNumber, out AVerifications);
 
-            int returnValue = aBatchRow.BatchNumber;
-            // Make shure that this object cannot be used for another posting ...
-            aBatchTable = null;
-            aBatchRow = null;
-            journal = null;
+            int returnValue = FBatchRow.BatchNumber;
+            // Make sure that this object cannot be used for another posting ...
+            FBatchTDS = null;
+            FBatchRow = null;
+            FJournalRow = null;
             return returnValue;
         }
     }

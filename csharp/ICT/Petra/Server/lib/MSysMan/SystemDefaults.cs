@@ -127,10 +127,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         [RequireModulePermission("NONE")]
         public static void SetSystemDefault(String AKey, String AValue)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            Boolean NewTransaction = false;
+            Boolean ShouldCommit = false;
 
             try
             {
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
 
                 if (tbl.Rows.Count > 0) // I already have this. (I expect this is the case usually!)
@@ -148,16 +152,27 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
                 }
 
                 SSystemDefaultsAccess.SubmitChanges(tbl, Transaction);
-
-                DBAccess.GDBAccessObj.CommitTransaction();
+                ShouldCommit = true;
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of a single System Default:" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
+                ShouldCommit = false;
                 throw;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    if (ShouldCommit)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
             }
         }
     }
