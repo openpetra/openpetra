@@ -50,6 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FLedgerNumber = -1;
         private DataTable FCriteriaDataTable;
         private IFinanceUIConnectorsGiftDetailFind FGiftDetailFindObject;
+        string FCurrency = "";
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FPagedDataTable;
@@ -66,7 +67,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (FLedgerNumber != value)
                 {
                     FLedgerNumber = value;
+                    FCurrency = TRemote.MFinance.Common.ServerLookups.WebConnectors.GetLedgerBaseCurrency(FLedgerNumber);
+
                     cmbLedger.SetSelectedInt32(FLedgerNumber);
+
                     SetupMotivationComboboxes();
                 }
             }
@@ -104,6 +108,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     i--;
                 }
             }
+
+            // add event to combobox (this is the best moment to do this)
+            cmbLedger.SelectedValueChanged += new System.EventHandler(this.OnCmbLedgerChange);
 
             // add divider line (can't currently do this in YAML)
             DevAge.Windows.Forms.Line linCriteriaDivider = new DevAge.Windows.Forms.Line();
@@ -234,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdResult.AddCheckBoxColumn(Catalog.GetString("P"), FPagedDataTable.Columns["BatchPosted"]);
                 grdResult.AddTextColumn(Catalog.GetString("Donor Name"), FPagedDataTable.Columns["DonorPartnerShortName"]);
                 grdResult.AddCheckBoxColumn(Catalog.GetString("C"), FPagedDataTable.Columns["a_confidential_gift_flag_l"]);
-                grdResult.AddCurrencyColumn(Catalog.GetString("Gift Amount"), FPagedDataTable.Columns["a_gift_amount_n"]);
+                grdResult.AddCurrencyColumn(Catalog.GetString("Gift Amount (" + FCurrency + ")"), FPagedDataTable.Columns["a_gift_amount_n"]);
                 grdResult.AddTextColumn(Catalog.GetString("Receipt"), FPagedDataTable.Columns["a_receipt_number_i"]);
                 grdResult.AddTextColumn(Catalog.GetString("Recipient Name"), FPagedDataTable.Columns["RecipientPartnerShortName"]);
                 grdResult.AddTextColumn(Catalog.GetString("Motivation Group"), FPagedDataTable.Columns["a_motivation_group_code_c"]);
@@ -249,7 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception exp)
             {
-                MessageBox.Show("Exception occured in SetupResultDataGrid: " + exp.Message + exp.StackTrace);
+                MessageBox.Show("Exception occured in SetupGrid: " + exp.Message + exp.StackTrace);
             }
         }
 

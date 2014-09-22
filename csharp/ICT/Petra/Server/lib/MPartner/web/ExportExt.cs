@@ -861,7 +861,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(FamilyRow.IsFamilyNameNull() ? "" : FamilyRow.FamilyName);
                 Write(FamilyRow.IsFirstNameNull() ? "" : FamilyRow.FirstName);
                 Write(FamilyRow.IsTitleNull() ? "" : FamilyRow.Title);
-                Write(FamilyRow.IsFieldKeyNull() ? 0 : FamilyRow.FieldKey);
                 Write(FamilyRow.IsMaritalStatusNull() ? "" : FamilyRow.MaritalStatus);
                 Write(FamilyRow.IsMaritalStatusSinceNull() ? "?" : FamilyRow.MaritalStatusSince.Value.ToString(DATEFORMAT));
                 Write(FamilyRow.IsMaritalStatusCommentNull() ? "" : FamilyRow.MaritalStatusComment);
@@ -884,7 +883,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PersonRow.IsMaritalStatusSinceNull() ? "?" : PersonRow.MaritalStatusSince.Value.ToString(DATEFORMAT));
                 Write(PersonRow.IsMaritalStatusCommentNull() ? "" : PersonRow.MaritalStatusComment);
                 Write(PersonRow.IsOccupationCodeNull() ? "" : PersonRow.OccupationCode);
-                Write(PersonRow.IsFieldKeyNull() ? 0 : PersonRow.FieldKey);
                 Write(PersonRow.IsFamilyKeyNull() ? 0 : PersonRow.FamilyKey);
                 Write(PersonRow.IsFamilyIdNull() ? 0 : PersonRow.FamilyId);
                 WriteLine();

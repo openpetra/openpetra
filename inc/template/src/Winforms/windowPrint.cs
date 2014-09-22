@@ -216,14 +216,14 @@ namespace {#NAMESPACE}
             dlg.Document = FGfxPrinter.Document;
             dlg.AllowCurrentPage = true;
             dlg.AllowSomePages = true;
-//        dlg.PrinterSettings.PrintRange = PrintRange.SomePages;
-//        dlg.PrinterSettings.FromPage = GetRowIndex(GetSelectedRow());
-//        dlg.PrinterSettings.ToPage = dlg.PrinterSettings.FromPage;
+            dlg.PrinterSettings.PrintRange = PrintRange.SomePages;
+            dlg.PrinterSettings.FromPage = ppvLetters.StartPage + 1;
+            dlg.PrinterSettings.ToPage = dlg.PrinterSettings.FromPage;
 
-//        if (dlg.ShowDialog() == DialogResult.OK)
-//          {
-//            dlg.Document.Print();
-//          }
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                dlg.Document.Print();
+            }
         }
     }
     
