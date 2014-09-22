@@ -322,6 +322,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// <param name="ALedgerFilter"></param>
         /// <param name="AAccountCodeFilter"></param>
         /// <param name="ACostCentreFilter"></param>
+        /// <param name="AFinancialYear"></param>
         /// <param name="AStartPeriod"></param>
         /// <param name="AEndPeriod"></param>
         /// <param name="AInternational"></param>
