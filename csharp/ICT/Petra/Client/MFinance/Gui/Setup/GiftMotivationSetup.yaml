@@ -55,17 +55,17 @@ RootNode:
                 Row5: [pnlMoreChecks]
                 Row7: [lblFeePayable, lblFeeReceivable]
                 Row8: [clbDetailFeesPayable, clbDetailFeesReceivable]
-            ColWidths: [1=Fixed:220, 2=Fixed:120]
         pnlMoreChecks:
             ControlsOrientation: horizontal
+            ColSpan: 2
             Controls: [chkDetailAutopopdesc, chkDetailMotivationStatus, chkDetailReceipt, chkDetailTaxDeductible, chkDetailExportToIntranet]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
-        txtDetailMotivationDetailDesc: {Label=Description, Width=210, OnChange=DescriptionTyped}
+        txtDetailMotivationDetailDesc: {Label=Description, Width=230, OnChange=DescriptionTyped}
         txtDetailShortCode: {Label=Short Code} 
-        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=210}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=400}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=400}
+        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=230}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=400, ColSpan=2}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=300, ColSpan=2}
         chkDetailAutopopdesc: {Label=Populate Gift Description}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
@@ -73,18 +73,18 @@ RootNode:
         chkDetailExportToIntranet: {Label=Export to Intranet}
         cmbReportColumn:
             OptionalValues: [Worker, =Field]
-        txtDetailRecipientKey: {Label=Key Ministry, Type=PartnerKey, PartnerClass=UNIT, Validation=true}
+        txtDetailRecipientKey: {Label=Key Ministry, Type=PartnerKey, PartnerClass=UNIT, Validation=true, ColSpan=2, Width=500}
         lblFeePayable:
         lblFeeReceivable:
         clbDetailFeesPayable:
             NoLabel: true
             List: UserDefinedList
             Height:140
-            Width:318
+            Width:350
             Tooltip:Check the Fees Payable that apply
         clbDetailFeesReceivable:
             NoLabel: true
             List: UserDefinedList
             Height:140
-            Width:318
+            Width:350
             Tooltip:Check the Fees Receivable that apply

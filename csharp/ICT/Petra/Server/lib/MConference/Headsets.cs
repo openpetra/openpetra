@@ -98,10 +98,9 @@ namespace Ict.Petra.Server.MConference.Applications
         public static string GetMessageForHomeOfficeReps()
         {
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
             SLogonMessageTable table = null;
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(ref Transaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
                     table = SLogonMessageAccess.LoadByPrimaryKey("HU", Transaction);

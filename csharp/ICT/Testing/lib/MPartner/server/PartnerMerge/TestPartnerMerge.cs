@@ -285,8 +285,6 @@ namespace Tests.MPartner.Server.PartnerMerge
             PFamilyRow TestFamilyPartnerRow = (PFamilyRow)MainDS.PFamily.Rows.Find(new object[] { ATestPartnerKey });
             Assert.That(TestFamilyPartnerRow, Is.Not.Null);
 
-            TestFamilyPartnerRow.FieldKey = AFromPartnerKey;
-
             // Submit the new records to database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
@@ -341,9 +339,6 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge two Units");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge two Units");
             Assert.AreEqual(9, ToUnitRow.Maximum, "merge two Units");
-
-            // Checking the Family
-            Assert.AreEqual(AToPartnerKey, TestFamilyPartnerRow.FieldKey, "merge two Units");
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge two Units");
