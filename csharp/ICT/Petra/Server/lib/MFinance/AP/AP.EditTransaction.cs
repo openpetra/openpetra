@@ -64,7 +64,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
         {
-            ALedgerTable Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+            ALedgerTable Tbl = null;
+            TDBTransaction ReadTransaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction);
+                });
 
             return Tbl;
         }
@@ -282,14 +289,19 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static TSubmitChangesResult SaveAApDocument(ref AccountsPayableTDS AInspectDS,
             out TVerificationResultCollection AVerificationResult)
         {
-            bool NewTransaction;
+            bool IsMyOwnTransaction = false; // If I create a transaction here, then I need to commit it when I'm done.
 
             AVerificationResult = new TVerificationResultCollection();
+            TVerificationResultCollection LocalVerificationResults = new TVerificationResultCollection();
+            TSubmitChangesResult SubmitChangesResult = TSubmitChangesResult.scrError;
 
             if (AInspectDS == null)
             {
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
+
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                                          (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             if ((AInspectDS.AApDocument != null) && (AInspectDS.AApDocument.Rows.Count > 0))
             {
@@ -300,7 +312,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Save Document"),
+                        LocalVerificationResults.Add(new TVerificationResult(Catalog.GetString("Save Document"),
                                 Catalog.GetString("The Document has no Document number."),
                                 TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
@@ -310,13 +322,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     DocTemplateRow.LedgerNumber = NewDocRow.LedgerNumber;
                     DocTemplateRow.PartnerKey = NewDocRow.PartnerKey;
                     DocTemplateRow.DocumentCode = NewDocRow.DocumentCode;
-                    AApDocumentTable MatchingRecords = AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, null);
+                    AApDocumentTable MatchingRecords = AApDocumentAccess.LoadUsingTemplate(DocTemplateRow, SubmitChangesTransaction);
 
                     foreach (AApDocumentRow MatchingRow in MatchingRecords.Rows) // Generally I expect this table is empty..
                     {
                         if (MatchingRow.ApDocumentId != NewDocRow.ApDocumentId) // This Document Code is in use, and not by me!
                         {
-                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Save Document"),
+                            LocalVerificationResults.Add(new TVerificationResult(Catalog.GetString("Save Document"),
                                     String.Format(Catalog.GetString("Document Code {0} already exists."), NewDocRow.DocumentCode),
                                     TResultSeverity.Resv_Noncritical));
                             return TSubmitChangesResult.scrInfoNeeded;
@@ -325,9 +337,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 } // foreach (document)
 
             } // if {there's actually a document}
-
-            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out NewTransaction);
 
             try
             {
@@ -349,10 +358,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 if (AInspectDS.AApDocumentDetail != null) // Document detail lines
                 {
-                    ValidateApDocumentDetail(ref AVerificationResult, AInspectDS.AApDocumentDetail);
-                    ValidateApDocumentDetailManual(ref AVerificationResult, AInspectDS.AApDocumentDetail);
+                    ValidateApDocumentDetail(ref LocalVerificationResults, AInspectDS.AApDocumentDetail);
+                    ValidateApDocumentDetailManual(ref LocalVerificationResults, AInspectDS.AApDocumentDetail);
 
-                    if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+                    if (TVerificationHelper.IsNullOrOnlyNonCritical(LocalVerificationResults))
                     {
                         AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction);
                     }
@@ -363,39 +372,45 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction);
                 }
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
+                SubmitChangesResult = TSubmitChangesResult.scrOK;
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured while saving an AP Document:" + Environment.NewLine + Exc.ToString());
 
-                if (NewTransaction)
+                if (LocalVerificationResults == null) // This shouldn't be possible?
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    LocalVerificationResults = new TVerificationResultCollection();
                 }
 
-                if (AVerificationResult == null)
-                {
-                    AVerificationResult = new TVerificationResultCollection();
-                }
-
-                AVerificationResult.Add(new TVerificationResult("Save AP Document", Exc.Message,
+                LocalVerificationResults.Add(new TVerificationResult("Save AP Document", Exc.Message,
                         TResultSeverity.Resv_Critical));
-
                 throw;
             }
+            finally
+            {
+                if (IsMyOwnTransaction)
+                {
+                    if (SubmitChangesResult == TSubmitChangesResult.scrOK)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+            }
 
-            if ((AVerificationResult != null) && (AVerificationResult.Count > 0))
+            if ((LocalVerificationResults != null) && (LocalVerificationResults.Count > 0))
             {
                 // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
                 // Serialisation (needed for .NET Remoting).
+                AVerificationResult = LocalVerificationResults;
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
             }
 
-            return TSubmitChangesResult.scrOK;
+            return SubmitChangesResult;
         }
 
         /// <summary>
@@ -879,34 +894,38 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List <String>AccountCodesCostCentres)
         {
             String ReportMsg = "";
+            TDBTransaction ReadTransaction = null;
 
-            foreach (String AccCostCentre in AccountCodesCostCentres)
-            {
-                Int32 BarPos = AccCostCentre.IndexOf("|");
-                String AccountCode = AccCostCentre.Substring(0, BarPos);
-                AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AccountCode, null);
-                String ValidCcCombo = AccountTbl[0].ValidCcCombo.ToLower();
-
-                // If this account goes with any cost centre (as is likely),
-                // there's nothing more to do.
-
-                if (ValidCcCombo != "all")
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+                delegate
                 {
-                    String CostCentre = AccCostCentre.Substring(BarPos + 1);
-                    ACostCentreTable CcTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, CostCentre, null);
-                    String CcType = CcTbl[0].CostCentreType.ToLower();
-
-                    if (ValidCcCombo != CcType)
+                    foreach (String AccCostCentre in AccountCodesCostCentres)
                     {
-                        ReportMsg +=
-                            String.Format(Catalog.GetString(
-                                    "Error: Account {0} cannot be used with cost centre {1}. Account requires a {2} cost centre."),
-                                AccountCode, CostCentre, ValidCcCombo);
-                        ReportMsg += Environment.NewLine;
-                    }
-                }
-            }
+                        Int32 BarPos = AccCostCentre.IndexOf("|");
+                        String AccountCode = AccCostCentre.Substring(0, BarPos);
+                        AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AccountCode, ReadTransaction);
+                        String ValidCcCombo = AccountTbl[0].ValidCcCombo.ToLower();
 
+                        // If this account goes with any cost centre (as is likely),
+                        // there's nothing more to do.
+
+                        if (ValidCcCombo != "all")
+                        {
+                            String CostCentre = AccCostCentre.Substring(BarPos + 1);
+                            ACostCentreTable CcTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, CostCentre, ReadTransaction);
+                            String CcType = CcTbl[0].CostCentreType.ToLower();
+
+                            if (ValidCcCombo != CcType)
+                            {
+                                ReportMsg +=
+                                    String.Format(Catalog.GetString(
+                                            "Error: Account {0} cannot be used with cost centre {1}. Account requires a {2} cost centre."),
+                                        AccountCode, CostCentre, ValidCcCombo);
+                                ReportMsg += Environment.NewLine;
+                            }
+                        }
+                    }
+                }); // End of BeginAutoReadTransaction
             return ReportMsg;
         }
 

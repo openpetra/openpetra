@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowTDS
     WindowWidth: 740
-    WindowHeight: 650
+    WindowHeight: 680
     Actions:
         actAddNewAccount: {Label=&Add Account, ActionClick=AddNewAccount}
         actDeleteAccount: {Label=&Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteAccount}
@@ -43,7 +43,7 @@ RootNode:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountsList
             Dock: Fill
         pnlDetails: {Dock=Fill}
-            Controls: [pnlDetailTop, pnlFlags, pnlSummary, pnlForeignCurrency, ucoAccountAnalysisAttributes, txtStatus]
+            Controls: [pnlDetailTop, pnlFlags, pnlSummary, pnlForeignCurrency, pnlBudget, ucoAccountAnalysisAttributes, txtStatus]
         pnlDetailTop:
             Controls: 
                 Row0: [txtDetailAccountCode, btnRename]
@@ -59,6 +59,11 @@ RootNode:
             Controls: [chkDetailIsSummary, txtRptOrder]
         pnlForeignCurrency: {ControlsOrientation = horizontal}
             Controls: [chkDetailForeignCurrencyFlag, cmbDetailForeignCurrencyCode]
+        pnlBudget:
+            Controls: [chkDetailBudgetControlFlag]
+        chkDetailBudgetControlFlag:
+            LabelWidth:130
+            Label: Budget Control
         txtDetailAccountCode: {LabelWidth=150, OnLeave=ChangeAccountCodeValue, CharacterCasing=Upper }
         btnRename:
         cmbDetailAccountType: {LabelWidth=150}

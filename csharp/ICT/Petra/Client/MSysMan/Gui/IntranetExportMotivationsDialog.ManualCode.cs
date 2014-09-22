@@ -83,8 +83,15 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             foreach (DataRow Row in LedgerTable.Rows)
             {
-                String LedgerDescr = String.Format("{0}: {1}", Row["LedgerNumber"], Row["LedgerName"]);
-                cmbLedger.Items.Add(LedgerDescr);
+                //
+                // I need to establish whether the user is allowed to see this Ledger.
+                Int32 LedgerNumber = Convert.ToInt32(Row["LedgerNumber"]);
+
+                if (UserInfo.GUserInfo.IsInLedger(LedgerNumber))
+                {
+                    String LedgerDescr = String.Format("{0}: {1}", LedgerNumber, Row["LedgerName"]);
+                    cmbLedger.Items.Add(LedgerDescr);
+                }
             }
 
             cmbLedger.SelectedIndex = 0;

@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.ICH
     FormType: dialog
     Template: window
-    WindowWidth: 650
+    WindowWidth: 570
     WindowHeight: 380
     Events:
         #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
@@ -17,7 +17,7 @@ RootNode:
             Dock: Fill
                 
         pnlDialogContentTop:
-            Dock: Fill            
+            Dock: Fill
             Controls:
                 Row0: [grpSelection, rgrCurrency]
                 Row1: [Empty1]
@@ -35,7 +35,7 @@ RootNode:
                 Row3: [cmbICHNumber]
                 Row4: [lblFullReport]
                 
-        grpHOSA: {Label:HOSA, Width:150, Height:180}
+        grpHOSA: {Label:HOSA, Width:150, Height:160}
             Controls: 
                 Row0: [chkEmailHOSAReport]
                 Row1: [chkHOSAReport]
@@ -43,13 +43,13 @@ RootNode:
                 Row3: [txtHOSAPrefix]
                 Row4: [chkEmailHOSAFile]
 
-        grpStewardship: {Label: Stewardship, Width:290, Height:180}
+        grpStewardship: {Label: Stewardship, Width:210, Height:160}
             Controls: 
                 Row0: [chkEmailStewardshipFileAndReport]
                 Row1: [chkStewardshipReport]
                 Row2: [chkStewardshipFile]
                 
-        grpOther: {NoLabel:true, Width:165, Height:180}
+        grpOther: {NoLabel:true, Width:165, Height:160}
             Controls: 
                 Row0: [lblFees]
                 Row1: [chkFeesReport]
@@ -83,7 +83,7 @@ RootNode:
         txtHOSAPrefix: {Label=Prefix, Width=70, Enabled=false}
         chkEmailStewardshipFileAndReport: {Label=Email File and Report, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
         chkStewardshipReport: {Label=Print Report, CheckBoxAttachedLabel=right}
-        chkStewardshipFile: {Label=Email Report, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
+        chkStewardshipFile: {Label=Email CSV File, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
 
         Empty1: #{Label=None, Visible=false}
         Empty2:

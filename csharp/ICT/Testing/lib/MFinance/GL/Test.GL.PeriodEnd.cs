@@ -48,11 +48,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             return new TestOperation(intCount + 1);
         }
 
-        public override int JobSize {
-            get
-            {
-                return intJobCount;
-            }
+        public override int GetJobSize()
+        {
+            return intJobCount;
         }
 
         public void SetJobSize(int ASize)

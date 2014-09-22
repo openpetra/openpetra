@@ -343,6 +343,16 @@ namespace Ict.Petra.Shared.Security
         }
 
         /// <summary>
+        /// Check if user can access this ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public Boolean IsInLedger(Int32 ALedgerNumber)
+        {
+            return (FModuleAccess != null) && (System.Array.BinarySearch(FModuleAccess, "LEDGER" + ALedgerNumber.ToString("0000")) >= 0);
+        }
+
+        /// <summary>
         /// diagnostic string to show which modules a user has been given access to (separated by newlines)
         /// </summary>
         /// <returns>
