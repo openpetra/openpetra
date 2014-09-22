@@ -29,6 +29,7 @@ using System.Threading;
 
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.DataAggregates;
@@ -114,7 +115,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_cost_centre_code_c", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_gift_comment_one_c", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_gift_comment_two_c", Environment.NewLine);
-            sb.AppendFormat("{0}{1}", "PUB.a_gift_detail.a_gift_comment_three_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.a_gift_detail.a_gift_comment_three_c", Environment.NewLine);
+            sb.AppendFormat("{0}{1}", "PUB.a_gift_batch.a_batch_status_c", Environment.NewLine);
 
             // short
             FieldList = sb.ToString();
@@ -125,6 +127,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             sb.AppendFormat("{0},{1}", "PUB.a_gift_detail", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.a_gift", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.a_gift_batch", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.p_partner DonorPartner", Environment.NewLine);
             sb.AppendFormat("{0}{1}", "PUB.p_partner RecipientPartner", Environment.NewLine);
             sbWhereClause.AppendFormat("{0}{1}",
@@ -132,7 +135,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                 "AND RecipientPartner.p_partner_key_n = PUB.a_gift_detail.p_recipient_key_n " +
                 "AND PUB.a_gift.a_ledger_number_i = PUB.a_gift_detail.a_ledger_number_i " +
                 "AND PUB.a_gift.a_batch_number_i = PUB.a_gift_detail.a_batch_number_i " +
-                "AND PUB.a_gift.a_gift_transaction_number_i = PUB.a_gift_detail.a_gift_transaction_number_i", Environment.NewLine);
+                "AND PUB.a_gift.a_gift_transaction_number_i = PUB.a_gift_detail.a_gift_transaction_number_i " +
+                "AND PUB.a_gift_batch.a_ledger_number_i = PUB.a_gift_detail.a_ledger_number_i " +
+                "AND PUB.a_gift_batch.a_batch_number_i = PUB.a_gift_detail.a_batch_number_i", Environment.NewLine);
 
             FromClause = sb.ToString();
             WhereClause = CustomWhereCriteria;
@@ -189,6 +194,23 @@ namespace Ict.Petra.Server.MFinance.Gift
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;
+            
+            if (!ReturnValue.Columns.Contains("BatchPosted"))
+            {
+            	ReturnValue.Columns.Add(new DataColumn("BatchPosted", typeof(bool)));
+            }
+            
+            foreach (DataRow Row in ReturnValue.Rows)
+            {
+            	if (Row["a_batch_status_c"].ToString() == MFinanceConstants.BATCH_POSTED)
+            	{
+            		Row["BatchPosted"] = true;
+            	}
+            	else
+            	{
+            		Row["BatchPosted"] = false;
+            	}
+            }
 
             if (ReturnValue != null)
             {

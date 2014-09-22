@@ -230,8 +230,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdResult.Columns.Clear();
                 grdResult.AddTextColumn(Catalog.GetString("Gift Batch"), FPagedDataTable.Columns["a_batch_number_i"]);
                 grdResult.AddTextColumn(Catalog.GetString("Gift"), FPagedDataTable.Columns["a_gift_transaction_number_i"]);
-                grdResult.AddTextColumn(Catalog.GetString("Donor Name"), FPagedDataTable.Columns["DonorPartnerShortName"]);
                 grdResult.AddTextColumn(Catalog.GetString("Detail"), FPagedDataTable.Columns["a_detail_number_i"]);
+                grdResult.AddCheckBoxColumn(Catalog.GetString("P"), FPagedDataTable.Columns["BatchPosted"]);
+                grdResult.AddTextColumn(Catalog.GetString("Donor Name"), FPagedDataTable.Columns["DonorPartnerShortName"]);
                 grdResult.AddCheckBoxColumn(Catalog.GetString("C"), FPagedDataTable.Columns["a_confidential_gift_flag_l"]);
                 grdResult.AddCurrencyColumn(Catalog.GetString("Gift Amount"), FPagedDataTable.Columns["a_gift_amount_n"]);
                 grdResult.AddTextColumn(Catalog.GetString("Receipt"), FPagedDataTable.Columns["a_receipt_number_i"]);
@@ -482,6 +483,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             grdResult.AddEmptyRows();
 
                             grdResult.BringToFront();
+
+                            // set tooltips
+                            grdResult.SetHeaderTooltip(3, MFinanceConstants.BATCH_POSTED);
+                            grdResult.SetHeaderTooltip(5, Catalog.GetString("Confidential"));
 
                             // Make the Grid respond on updown keys
                             grdResult.Focus();
