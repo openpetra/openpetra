@@ -42,6 +42,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -559,7 +560,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ucoCostCentreTree.MarkAllNodesCommitted();
-            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+            TSubmitChangesResult ServerResult = 
+                TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+            TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
+            return ServerResult;
         }
 
         /// <summary>
@@ -699,10 +703,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             if (Success)
                             {
-                                DataTable NewTable;
-                                TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.CostCentreList,
-                                    FLedgerNumber,
-                                    out NewTable);
+                                TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                                 strOldDetailCostCentreCode = "";
                                 FIAmUpdating++;

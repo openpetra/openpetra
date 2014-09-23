@@ -693,7 +693,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ucoAccountsTree.MarkAllNodesCommitted();
-            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+            TSubmitChangesResult ServerResult = 
+                TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+            TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            return ServerResult;
         }
 
         private void DeleteAccount(Object sender, EventArgs ev)
@@ -1021,6 +1024,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 ucoAccountsTree.SelectNodeByName(FRecentlyUpdatedDetailAccountCode);
 
                                 ShowStatus(String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode));
+                                TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
                             }
                             else
                             {
