@@ -597,7 +597,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 "\r\n" +
                 "    Record of the family member with the the lowest Family ID" +
                 "\r\n" +
-                "    of those who have a current Commitment Record." +
+                "    of those who have a current Gift Destination." +
                 "\r\n" +
                 "\r\n" +
                 " This system needs to be consistently applied to all Families, to ensure that" +
