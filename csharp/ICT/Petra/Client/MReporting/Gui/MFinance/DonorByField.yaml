@@ -46,7 +46,7 @@
                 Row2:[chkReceiptEachGiftOnly]
                 Row3:[dtpDateFrom]
                 Row4:[dtpDateTo]
-            Width: 350
+            Width: 380
         clbLedger:
             NoLabel: true 
             ParameterName: param_ledgers

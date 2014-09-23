@@ -80,8 +80,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             clbLedger.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
-            //TODO: only temporarily until settings file exists
-            clbLedger.SetCheckedStringList("");
+            // allow 'any' selection for receipt frequency
+            DataRow emptyRow = cmbReceiptLetterFrequency.Table.NewRow();
+            emptyRow[0] = string.Empty;
+            emptyRow[1] = Catalog.GetString("Any Frequency");
+            cmbReceiptLetterFrequency.Table.Rows.Add(emptyRow);
+
         }
 
         private void FilterList(System.Object sender, EventArgs e)
