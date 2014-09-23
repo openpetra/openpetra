@@ -468,7 +468,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
                 chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
-                chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag;
+                chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag
+                     && FMainDS.ALedger[0].BudgetControlFlag;
+                lblDetailBudgetControlFlag.Enabled = FMainDS.ALedger[0].BudgetControlFlag;
+
                 cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
 
                 chkDetailIsSummary.Checked = !ARow.PostingStatus;
@@ -839,14 +842,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 ShowDetails((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
+                FCurrentAccount.GetAttrributes();
             }
 
             FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-            tbbAddNewAccount.Enabled =
-                ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false));
-            tbbDeleteAccount.Enabled = ((FCurrentAccount != null) && (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false));
+
+            if ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue))
+            {
+                tbbAddNewAccount.Enabled = FCurrentAccount.CanHaveChildren.Value;
+                tbbAddNewAccount.ToolTipText = (tbbAddNewAccount.Enabled) ? "New Account" : FCurrentAccount.Msg;
+            }
+            else
+            {
+                tbbAddNewAccount.Enabled = false;
+                tbbAddNewAccount.ToolTipText = "";
+            }
+
+            if ((FCurrentAccount != null) && (FCurrentAccount.CanDelete.HasValue))
+            {
+                tbbDeleteAccount.Enabled = FCurrentAccount.CanDelete.Value;
+                tbbDeleteAccount.ToolTipText = (tbbDeleteAccount.Enabled) ? "Delete Account" : FCurrentAccount.Msg;
+            }
+            else
+            {
+                tbbDeleteAccount.Enabled = false;
+                tbbDeleteAccount.ToolTipText = "";
+            }
+            
 
             FPetraUtilsObject.HasChanges = hasChanges;
         }

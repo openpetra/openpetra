@@ -343,9 +343,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             view.RowFilter =
                 ACostCentreTable.GetCostCentreToReportToDBName() + " = '" + ADetailRow.CostCentreCode + "'";
 
-            foreach (DataRowView rowView in view)
+            if (view.Count > 0)
             {
-                InsertNodeIntoTreeView(newNode, view, (ACostCentreRow)rowView.Row);
+                // A cost centre cannot be deleted if it has children.
+                NewNodeDetails.CanDelete = false;
+                NewNodeDetails.Msg = Catalog.GetString("Child Cost Centres must be deleted first.");
+                NewNodeDetails.CanHaveChildren = true;
+
+                foreach (DataRowView rowView in view)
+                {
+                    InsertNodeIntoTreeView(newNode, view, (ACostCentreRow)rowView.Row);
+                }
             }
         }
 

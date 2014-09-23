@@ -1526,7 +1526,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (!ACanBeParent || ACanDelete)
                 {
                     List<TRowReferenceInfo> CascadingReferences;
-                    Int32 Refs = MCommon.Data.Cascading.AAccountCascading.CountByPrimaryKey(
+                    Int32 Refs = AAccountCascading.CountByPrimaryKey(
                         ALedgerNumber, AAccountCode,
                         3, Transaction, true,
                         out CascadingReferences);
@@ -1539,18 +1539,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     if (!ACanDelete)
                     {
                         AMsg = Catalog.GetString("Account has been used in Transactions.");
-                    }
-                }
-
-                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
-                {                // and do the low-level database check to see if a deletion would succeed:
-                    TVerificationResultCollection ReferenceResults;
-                    Int32 RefCount = AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, 50, Transaction, false, out ReferenceResults);
-
-                    if (RefCount > 0)
-                    {
-                        ACanDelete = false;
-                        AMsg = ReferenceResults.BuildVerificationResultString();
                     }
                 }
             }
@@ -3601,6 +3589,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         canDelete = true;
                     }
 
+                    if (canBeParent || canDelete)     // I need to check whether the Cost Centre has been linked to a partner.
+                    {                                 // If it has, the link must be deleted first.
+                        AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
+
+                        if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                        {
+                            canBeParent = false;
+                            canDelete = false;
+                            msg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
+                        }
+                    }
+
                     if (!canBeParent || canDelete)
                     {
                         List<TRowReferenceInfo> CascadingReferences;
@@ -3623,34 +3623,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         }
                     }
 
-                    if (canBeParent || canDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
-                    {                                   // If it has, the link must be deleted first.
-                        AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
-
-                        if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
-                        {
-                            canBeParent = false;
-                            canDelete = false;
-                            msg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
-                        }
-                    }
-
-                    if (canDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
-                    {                // and do the low-level database check to see if a deletion would succeed:
-                        TVerificationResultCollection ReferenceResults;
-                        Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
-                            ACostCentreCode,
-                            50,
-                            Transaction,
-                            false,
-                            out ReferenceResults);
-
-                        if (RefCount > 0)
-                        {
-                            canDelete = false;
-                            msg = ReferenceResults.BuildVerificationResultString();
-                        }
-                    }
                 }); // End of BeginAutoReadTransaction with anonymous function
 
             ACanBeParent = canBeParent;

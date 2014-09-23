@@ -802,8 +802,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-            tbbAddNewCostCentre.Enabled = ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanHaveChildren.Value));
-            tbbDeleteCostCentre.Enabled = ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanDelete.Value));
+            if ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanHaveChildren.HasValue))
+            {
+                tbbAddNewCostCentre.Enabled = FCurrentCostCentre.CanHaveChildren.Value;
+                tbbAddNewCostCentre.ToolTipText = (tbbAddNewCostCentre.Enabled) ? "New Cost Centre" : FCurrentCostCentre.Msg;
+            }
+            else
+            {
+                tbbAddNewCostCentre.Enabled = false;
+                tbbAddNewCostCentre.ToolTipText = "";
+            }
+
+            if ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanDelete.HasValue))
+            {
+                tbbDeleteCostCentre.Enabled = FCurrentCostCentre.CanDelete.Value;
+                tbbDeleteCostCentre.ToolTipText = (tbbDeleteCostCentre.Enabled) ? "Delete Cost Centre" : FCurrentCostCentre.Msg;
+            }
+            else
+            {
+                tbbDeleteCostCentre.Enabled = false;
+                tbbDeleteCostCentre.ToolTipText = "";
+            }
 
             FPetraUtilsObject.HasChanges = hasChanges;
         }
