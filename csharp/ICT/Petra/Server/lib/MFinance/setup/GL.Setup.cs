@@ -1467,30 +1467,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return ReturnValue;
         }
 
-        private static bool AccountCodeHasBeenUsed(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
-        {
-            // TODO: enhance sql statement to check for more references to a_account
-
-            String QuerySql =
-                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
-                "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                "a_account_code_c = '" + AAccountCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
-
-            if (!IsInUse)
-            {
-                QuerySql =
-                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
-                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                    "a_account_code_c = '" + AAccountCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-                IsInUse = (Convert.ToInt32(SqlResult) > 0);
-            }
-
-            return IsInUse;
-        }
-
         private static bool AccountHasChildren(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
         {
             String QuerySql =
@@ -1549,7 +1525,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (!ACanBeParent || ACanDelete)
                 {
-                    bool IsInUse = AccountCodeHasBeenUsed(ALedgerNumber, AAccountCode, Transaction);
+                    List<TRowReferenceInfo> CascadingReferences;
+                    Int32 Refs = MCommon.Data.Cascading.AAccountCascading.CountByPrimaryKey(
+                        ALedgerNumber, AAccountCode,
+                        3, Transaction, true,
+                        out CascadingReferences);
+
+                    bool IsInUse = (Refs > 0);
+
                     ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
                     ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
 
@@ -3553,32 +3536,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return Convert.ToInt32(SqlResult) > 0;
         }
 
-        private static bool CostCentreCodeHasBeenUsed(Int32 ALedgerNumber, string ACostCentreCode, TDBTransaction Transaction)
-        {
-            // TODO: enhance sql statement to check for more references to a_cost_centre
-            // TODO:? This method is *almost exactly like* the equivalent AccountCode function.
-            //        With an extra parameter the two could be combined.
-
-            String QuerySql =
-                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
-                "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
-
-            if (!IsInUse)
-            {
-                QuerySql =
-                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
-                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                    "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-                IsInUse = (Convert.ToInt32(SqlResult) > 0);
-            }
-
-            return IsInUse;
-        }
-
         /// <summary>I can add child accounts to this account if it's a summary Cost Centre,
         ///          or if there have never been transactions posted to it,
         ///          or if it's linked to a partner.
@@ -3646,7 +3603,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     if (!canBeParent || canDelete)
                     {
-                        bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
+                        List<TRowReferenceInfo> CascadingReferences;
+                        Int32 Refs = MCommon.Data.Cascading.ACostCentreCascading.CountByPrimaryKey(
+                            ALedgerNumber, ACostCentreCode,
+                            5, Transaction, true,
+                            out CascadingReferences);
+
+                        bool IsInUse = (Refs > 0);
 
                         if (IsInUse)
                         {
