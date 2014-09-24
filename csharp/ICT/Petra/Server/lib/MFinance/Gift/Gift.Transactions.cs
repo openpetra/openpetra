@@ -669,10 +669,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
                         }
 
-                        // drop all tables apart from AGift and AGiftDetail
+                        // drop all tables apart from AGift and AGiftDetail and PPartnerTaxDeductiblePct
                         foreach (DataTable table in MainDS.Tables)
                         {
-                            if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName))
+                            if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName) 
+                        	    && (table.TableName != MainDS.PPartnerTaxDeductiblePct.TableName))
                             {
                                 table.Clear();
                             }
@@ -1729,6 +1730,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
+            
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -1786,6 +1790,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 else
                                 {
                                     giftDetail.SetRecipientKeyMinistryNull();
+                                }
+                                
+                                if (TaxDeductiblePercentageEnabled)
+                                {
+                                	MainDS.PPartnerTaxDeductiblePct.Merge(
+                                		PPartnerTaxDeductiblePctAccess.LoadViaPPartner(giftDetail.RecipientKey, Transaction));
                                 }
                             }
                             else

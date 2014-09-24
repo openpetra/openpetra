@@ -97,7 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 new System.Drawing.Point(txtDeductiblePercentage.Location.X, txtDeductiblePercentage.Location.Y - (YSPACE * 7));
             lblDeductiblePercentage.Visible = true;
             txtDeductiblePercentage.Visible = true;
-            txtDeductiblePercentage.NumberValueDecimal = 0;
+            txtDeductiblePercentage.NumberValueDecimal = 100;
             txtDeductiblePercentage.NegativeValueAllowed = false;
 
             lblTaxDeductAmount.Location = new System.Drawing.Point(lblTaxDeductAmount.Location.X, lblTaxDeductAmount.Location.Y - (YSPACE * 5));
@@ -215,7 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDeductibleAccount.Text = ARow.TaxDeductibleAccountCode;
             }
 
-            EnableOrDiasbleTaxDeductibilityPct(ARow.TaxDeductible);
+            EnableOrDiasbleTaxDeductibilityPct(ARow.TaxDeductible, false);
         }
 
         // get tax deductible percentage data from controls
@@ -359,6 +359,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // Set the Tax Deductibility Percentage from a Recipient's PPartnerTaxDeductiblePct row (if it exists)
         private void UpdateTaxDeductiblePct(Int64 APartnerKey, bool ARecipientChanged)
         {
+        	if (chkDetailTaxDeductible.Checked && txtDeductiblePercentage.Enabled)
+        	{
+        		txtDeductiblePercentage.NumberValueDecimal = 100;
+        	}
+ 
             if (APartnerKey == 0)
             {
                 return;
@@ -366,16 +371,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARecipientChanged)
             {
-                FMainDS.PPartnerTaxDeductiblePct.Clear();
                 FMainDS.PPartnerTaxDeductiblePct.Merge(TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(APartnerKey));
             }
 
-            if (chkDetailTaxDeductible.Checked
+            if (chkDetailTaxDeductible.Checked && txtDeductiblePercentage.Enabled
                 && (FMainDS.PPartnerTaxDeductiblePct != null) && (FMainDS.PPartnerTaxDeductiblePct.Rows.Count > 0))
             {
-                foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
+            	foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
                 {
-                    if (Row.DateValidFrom <= DateTime.Today)
+            		if (Row.PartnerKey == APartnerKey && Row.DateValidFrom <= DateTime.Today)
                     {
                         txtDeductiblePercentage.NumberValueDecimal = Row.PercentageTaxDeductible;
                     }

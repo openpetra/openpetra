@@ -640,8 +640,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (FTaxDeductiblePercentageEnabled)
                 {
-                    UpdateTaxDeductiblePct(APartnerKey, true);
                     EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, true);
+                    UpdateTaxDeductiblePct(APartnerKey, true);
                 }
             }
             finally
@@ -1191,8 +1191,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 Catalog.GetString("Incomplete Motivation Detail"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
 
-                        UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
                         EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, ChangedByUser);
+                        UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
                     }
                 }
             }
@@ -1908,6 +1908,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 newRow.DateEntered = CurrentGiftRow.DateEntered;
+                
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                	newRow.TaxDeductiblePct = 100;
+                }
 
                 FMainDS.AGiftDetail.Rows.Add(newRow);
 
@@ -3124,7 +3129,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FTaxDeductiblePercentageEnabled)
             {
                 EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
-
                 UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
             }
         }

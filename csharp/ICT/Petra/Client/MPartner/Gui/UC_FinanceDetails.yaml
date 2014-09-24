@@ -117,6 +117,7 @@ RootNode:
         txtTaxDeductiblePercentage:
             Format: PercentDecimal(2)
             Enabled: false
+            Label: % of gifts Tax Deductible
         dtpTaxDeductibleValidFrom:
             Label: Valid From
             Enabled: false
