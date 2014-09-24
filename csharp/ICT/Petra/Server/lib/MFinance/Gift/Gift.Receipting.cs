@@ -507,20 +507,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DateEntered = "";                           // so if this gift has several details, I'll blank the subsequent lines.
 
                     string DonorComment = "";
-                    FormValues["GiftAmount"].Add(StringHelper.FormatUsingCurrencyCode(DetailRow.GiftAmount, AGiftCurrency));
+                    FormValues["GiftAmount"].Add(StringHelper.FormatUsingCurrencyCode(DetailRow.GiftTransactionAmount, AGiftCurrency));
                     FormValues["GiftCurrency"].Add(AGiftCurrency);
                     FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
-                    GiftTotal += DetailRow.GiftAmount;
+                    GiftTotal += DetailRow.GiftTransactionAmount;
 
                     if (DetailRow.TaxDeductible)
                     {
                         FormValues["GiftTxd"].Add("Y");
-                        TxdTotal += DetailRow.GiftAmount;
+                        TxdTotal += DetailRow.GiftTransactionAmount;
                     }
                     else
                     {
                         FormValues["GiftTxd"].Add(" ");
-                        NonTxdTotal += DetailRow.GiftAmount;
+                        NonTxdTotal += DetailRow.GiftTransactionAmount;
                     }
 
                     // Recipient Short Name:

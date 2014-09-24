@@ -572,5 +572,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
             }
         }
+
+        private void MarkNodeCommitted(TreeNode ParentNode)
+        {
+            ((AccountNodeDetails)ParentNode.Tag).IsNew = false;
+
+            foreach (TreeNode ChildNode in ParentNode.Nodes)
+            {
+                MarkNodeCommitted(ChildNode);
+            }
+        }
+
+        /// <summary>
+        /// After a Save operation my nodes are on the database, so I can no longer treat as 'new'.
+        /// (Any further nodes added in this session will be marked as new)
+        /// </summary>
+        public void MarkAllNodesCommitted()
+        {
+            MarkNodeCommitted(trvAccounts.Nodes[0]);
+        }
     }
 }

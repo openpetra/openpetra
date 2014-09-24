@@ -167,7 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         if (MessageBox.Show(string.Format(Catalog.GetString(
                                         "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
-                                        "(Note: this message can be disabled by selecting from the menu File then New Donor Warning.)"),
+                                        "(Note: this message can be disabled in the 'File' menu by unselecting the 'New Donor Warning' item.)"),
                                     Row.DonorName, Row.DonorKey, "\n\n"),
                                 Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                                 MessageBoxDefaultButton.Button2) == DialogResult.Yes)

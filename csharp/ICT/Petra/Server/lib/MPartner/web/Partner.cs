@@ -980,20 +980,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 return false;
             }
 
-            // cannot delete unit if it is field unit of a family
-            if (PFamilyAccess.CountViaPUnit(APartnerKey, ATransaction) > 0)
-            {
-                ADisplayMessage = Catalog.GetString("Unable to delete a family's field.");
-                return false;
-            }
-
-            // cannot delete unit if it is field unit of a person
-            if (PPersonAccess.CountViaPUnit(APartnerKey, ATransaction) > 0)
-            {
-                ADisplayMessage = Catalog.GetString("Unable to delete a person's field.");
-                return false;
-            }
-
             // cannot delete unit if it is in the list of available sites
             if (PPartnerLedgerAccess.CountViaPUnit(APartnerKey, ATransaction) > 0)
             {

@@ -242,25 +242,23 @@ namespace Ict.Petra.Server.MFinance.GL
 
     class RunMonthEndChecks : AbstractPeriodEndOperation
     {
-        TLedgerInfo ledgerInfo;
+        TLedgerInfo FledgerInfo;
 
         GetSuspenseAccountInfo getSuspenseAccountInfo = null;
 
         public RunMonthEndChecks(TLedgerInfo ALedgerInfo)
         {
-            ledgerInfo = ALedgerInfo;
+            FledgerInfo = ALedgerInfo;
         }
 
-        public override int JobSize {
-            get
-            {
-                return 0;
-            }
+        public override int GetJobSize()
+        {
+            return 0;
         }
 
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            return new RunMonthEndChecks(ledgerInfo);
+            return new RunMonthEndChecks(FledgerInfo);
         }
 
         public override void RunEndOfPeriodOperation()
@@ -278,7 +276,7 @@ namespace Ict.Petra.Server.MFinance.GL
             string testForForeignKeyAccount =
                 String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
                     AAccountTable.GetLedgerNumberDBName(),
-                    ledgerInfo.LedgerNumber,
+                    FledgerInfo.LedgerNumber,
                     AAccountTable.GetForeignCurrencyFlagDBName());
 
             bool NewTransaction;
@@ -292,7 +290,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 return;
             }
 
-            if (!(new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
+            if (!(new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
                       TLedgerInitFlagEnum.Revaluation).Flag))
             {
                 TVerificationResult tvr = new TVerificationResult(
@@ -308,7 +306,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private void CheckForUnpostedBatches()
         {
             GetBatchInfo getBatchInfo = new GetBatchInfo(
-                ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
+                FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod);
 
             if (getBatchInfo.NumberOfBatches > 0)
             {
@@ -328,7 +326,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (getSuspenseAccountInfo == null)
             {
                 getSuspenseAccountInfo =
-                    new GetSuspenseAccountInfo(ledgerInfo.LedgerNumber);
+                    new GetSuspenseAccountInfo(FledgerInfo.LedgerNumber);
             }
 
             if (getSuspenseAccountInfo.RowCount != 0)
@@ -347,11 +345,11 @@ namespace Ict.Petra.Server.MFinance.GL
         private void CheckForUnpostedGiftBatches()
         {
             TAccountPeriodInfo getAccountingPeriodInfo =
-                new TAccountPeriodInfo(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod);
+                new TAccountPeriodInfo(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod);
             GetUnpostedGiftInfo getUnpostedGiftInfo = new GetUnpostedGiftInfo(
-                ledgerInfo.LedgerNumber, getAccountingPeriodInfo.PeriodEndDate);
+                FledgerInfo.LedgerNumber, getAccountingPeriodInfo.PeriodEndDate);
 
-            if (getUnpostedGiftInfo.Rows > 0)
+            if (getUnpostedGiftInfo.HasRows)
             {
                 TVerificationResult tvr = new TVerificationResult(
                     Catalog.GetString("Unposted Gift Batches found"),
@@ -366,40 +364,38 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckForSuspenseAccountsZero()
         {
-            if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
+            if (FledgerInfo.CurrentPeriod == FledgerInfo.NumberOfAccountingPeriods)
             {
                 // This means: The last accounting period of the year is running!
 
                 if (getSuspenseAccountInfo == null)
                 {
                     getSuspenseAccountInfo =
-                        new GetSuspenseAccountInfo(ledgerInfo.LedgerNumber);
+                        new GetSuspenseAccountInfo(FledgerInfo.LedgerNumber);
                 }
 
                 if (getSuspenseAccountInfo.RowCount > 0)
                 {
                     ASuspenseAccountRow aSuspenseAccountRow;
-                    decimal decAccountTotalSum = 0;
-                    string strMessage = Catalog.GetString(
-                        "Suspense account {0} has the balance value {1}, " +
-                        "which is required to be zero.");
 
                     for (int i = 0; i < getSuspenseAccountInfo.RowCount; ++i)
                     {
                         aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
-                        TGet_GLM_Info get_GLM_Info = new TGet_GLM_Info(ledgerInfo.LedgerNumber,
+                        TGet_GLM_Info get_GLM_Info = new TGet_GLM_Info(FledgerInfo.LedgerNumber,
                             aSuspenseAccountRow.SuspenseAccountCode,
-                            ledgerInfo.CurrentFinancialYear);
+                            FledgerInfo.CurrentFinancialYear);
 
-                        TGlmpInfo get_GLMp_Info = new TGlmpInfo(get_GLM_Info.Sequence,
-                            ledgerInfo.CurrentPeriod);
-                        decAccountTotalSum += get_GLMp_Info.ActualBase;
+                        TGlmpInfo get_GLMp_Info = new TGlmpInfo(
+                            -1, -1,
+                            get_GLM_Info.Sequence,
+                            FledgerInfo.CurrentPeriod);
 
-                        if (get_GLMp_Info.ActualBase != 0)
+                        if (get_GLMp_Info.RowExists)
                         {
                             TVerificationResult tvr = new TVerificationResult(
                                 Catalog.GetString("Non Zero Suspense Account found"),
-                                String.Format(strMessage, getSuspenseAccountInfo.ToString(),
+                                String.Format(Catalog.GetString("Suspense account {0} has the balance value {1}. It is required to be zero."),
+                                    getSuspenseAccountInfo.ToString(),
                                     get_GLMp_Info.ActualBase), "",
                                 TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
                             verificationResults.Add(tvr);
@@ -418,12 +414,9 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     class RunMonthlyAdminFees : AbstractPeriodEndOperation
     {
-        public override int JobSize {
-            get
-            {
-                // TODO: Some Code
-                return 0;
-            }
+        public override int GetJobSize()
+        {
+            return 0;
         }
 
         public override AbstractPeriodEndOperation GetActualizedClone()
@@ -443,7 +436,19 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class GetUnpostedGiftInfo
     {
-        DataTable dataTable;
+        DataTable FDataTable;
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public Boolean HasRows
+        {
+            get
+            {
+                return FDataTable.Rows.Count > 0;
+            }
+        }
 
         /// <summary>
         /// Direct access to the unposted gifts
@@ -475,23 +480,12 @@ namespace Ict.Petra.Server.MFinance.GL
             strSQL += "WHERE " + AGiftBatchTable.GetLedgerNumberDBName() + " = ? ";
             strSQL += "AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= ? ";
             strSQL += "AND " + AGiftBatchTable.GetBatchStatusDBName() + " = ? ";
-            dataTable = DBAccess.GDBAccessObj.SelectDT(
+            FDataTable = DBAccess.GDBAccessObj.SelectDT(
                 strSQL, AAccountingPeriodTable.GetTableDBName(), transaction, ParametersArray);
 
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.CommitTransaction();
-            }
-        }
-
-        /// <summary>
-        /// Results the number of unposted gift batches.
-        /// </summary>
-        public int Rows
-        {
-            get
-            {
-                return dataTable.Rows.Count;
             }
         }
 
@@ -503,21 +497,18 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             string strH;
 
-            if (Rows == 0)
+            if (FDataTable.Rows.Count == 0)
             {
                 strH = "-";
             }
             else
             {
-                int ih = Convert.ToInt32(dataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()]);
+                int ih = Convert.ToInt32(FDataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()]);
                 strH = ih.ToString();
 
-                if (Rows > 1)
+                for (int i = 1; i < FDataTable.Rows.Count; ++i)
                 {
-                    for (int i = 1; i < Rows; ++i)
-                    {
-                        strH += (", " + Convert.ToString(dataTable.Rows[i][AGiftBatchTable.GetBatchNumberDBName()]));
-                    }
+                    strH += (", " + Convert.ToString(FDataTable.Rows[i][AGiftBatchTable.GetBatchNumberDBName()]));
                 }
             }
 

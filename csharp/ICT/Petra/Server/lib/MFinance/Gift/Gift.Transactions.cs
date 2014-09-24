@@ -51,6 +51,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -1801,10 +1802,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (motivationDetail != null)
                             {
                                 giftDetail.AccountCode = motivationDetail.AccountCode;
+                                giftDetail.TaxDeductibleAccountCode = motivationDetail.TaxDeductibleAccount;
                             }
                             else
                             {
                                 giftDetail.SetAccountCodeNull();
+                                giftDetail.SetTaxDeductibleAccountCodeNull();
                             }
 
                             giftDetail.DateEntered = giftRow.DateEntered;
@@ -2523,6 +2526,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Load Partner Tax Deductible Pct
+        /// </summary>
+        /// <param name="PartnerKey">Partner Key </param>
+        /// <returns>PPartnerTaxDeductiblePctTable for the partner Key</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PPartnerTaxDeductiblePctTable LoadPartnerTaxDeductiblePct(long PartnerKey)
+        {
+            TDBTransaction Transaction = null;
+            PPartnerTaxDeductiblePctTable ReturnValue = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    ReturnValue = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(PartnerKey, Transaction);
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Find the cost centre associated with the partner
         /// </summary>
         /// <returns>Cost Centre code</returns>
@@ -2623,14 +2646,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (familyRow != null)
             {
-                if (familyRow.IsFieldKeyNull())
-                {
-                    return GetGiftDestinationForRecipient(APartnerKey, AGiftDate);
-                }
-                else
-                {
-                    return familyRow.FieldKey;
-                }
+                return GetGiftDestinationForRecipient(APartnerKey, AGiftDate);
             }
 
             //Look in RecipientPerson table
@@ -2638,14 +2654,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (personRow != null)
             {
-                if (personRow.IsFieldKeyNull())
-                {
-                    return GetGiftDestinationForRecipient(APartnerKey, AGiftDate);
-                }
-                else
-                {
-                    return personRow.FieldKey;
-                }
+                return GetGiftDestinationForRecipient(personRow.FamilyKey, AGiftDate);
             }
 
             //Check that LedgerPartnertypes are already loaded

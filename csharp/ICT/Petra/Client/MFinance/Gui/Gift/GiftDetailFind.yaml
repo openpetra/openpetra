@@ -46,15 +46,15 @@ RootNode:
         grdResult:
             Dock: Fill
 
-        cmbLedger: {ReadOnly=true, List=LedgerNameList, OnChange=OnCmbLedgerChange, ColSpan=2}
+        cmbLedger: {ReadOnly=true, List=LedgerNameList, ColSpan=2}
         txtGiftBatchNumber: {Width=100, Format=Integer}
         txtGiftTransactionNumber: {Width=100, Format=Integer}
         txtReceiptNumber: {Width=100, Format=Integer}
         cmbMotivationGroup: {List=UserDefinedList, OnChange=OnCmbMotivationChange, Width=100}
         cmbMotivationDetail: {List=UserDefinedList, OnChange=OnCmbMotivationChange, Width=100}
         txtComment1: {Label=Comment 1}
-        txtDonor: {Type=PartnerKey}
-        txtRecipient: {Type=PartnerKey}
+        txtDonor: {Type=PartnerKey, Stretch=horizontally}
+        txtRecipient: {Type=PartnerKey, Stretch=horizontally}
         dtpDateFrom:
         dtpDateTo:
         txtMinimumAmount: {Format=Integer}
