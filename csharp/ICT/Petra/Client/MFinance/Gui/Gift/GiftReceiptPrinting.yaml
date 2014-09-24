@@ -16,8 +16,35 @@
             Dock: Top
             Controls:
                 Row0: [dtpStartDate, dtpEndDate]
+                Row1: [rgrDonorSelection]
+                Row2: [chkDeceasedDonorsFirst]
         dtpStartDate:
         dtpEndDate:
+        rgrDonorSelection:
+            Label: Select Donors
+            Stretch: horizontally
+            Controls: [rbtAllDonors, rbtExtract, rbtPartner]
+            ColSpan: 2
+        rbtAllDonors:
+            Label: All Donors
+        rbtExtract:
+            Label: From Extract
+            Controls: [txtExtract]
+        rbtPartner:
+            Label: One Donor
+            Controls: [txtDonor]
+        txtExtract:
+            NoLabel: true
+            Type: Extract
+        txtDonor:
+            NoLabel: true
+            Type: PartnerKey
+            Width: 500
+        chkDeceasedDonorsFirst:
+            Label: Print receipts to donors who have died first
+            CheckBoxAttachedLabel: right
+            ColSpan: 2
+            
         preLetters:
             Dock: Fill
     Menu:

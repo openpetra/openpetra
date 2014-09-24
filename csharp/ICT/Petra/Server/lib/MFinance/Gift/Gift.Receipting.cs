@@ -46,6 +46,7 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core;
@@ -66,7 +67,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// TODO images are currently locally linked
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber, DateTime AStartDate, DateTime AEndDate, string AHTMLTemplate)
+        public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber, DateTime AStartDate, DateTime AEndDate, string AHTMLTemplate, bool ADeceasedFirst = false, string AExtract = null, Int64 ADonorKey = 0)
         {
             TLanguageCulture.LoadLanguageAndCulture();
 
@@ -86,29 +87,81 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 // get the local country code
                 string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
+                DataTable donorkeys = new DataTable();
+                string SqlStmt = "";
 
-                // first get all donors in the given date range
-                string SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql");
-
-                OdbcParameter[] parameters = new OdbcParameter[3];
-                parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
-                parameters[0].Value = ALedgerNumber;
-                parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
-                parameters[1].Value = AStartDate;
-                parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
-                parameters[2].Value = AEndDate;
-
-                DataTable donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
+                if (ADonorKey != 0)
+                {
+                	TPartnerClass Class;
+                	string ShortName;
+                	TPartnerServerLookups.GetPartnerShortName(ADonorKey, out ShortName, out Class);
+                	
+                	donorkeys.Columns.Add(new DataColumn("DonorKey"));
+                	donorkeys.Columns.Add(new DataColumn("DonorName"));
+                	DataRow SingleRow = donorkeys.NewRow();
+                	SingleRow[0] = ADonorKey;
+                	SingleRow[1] = ShortName;
+                	
+                	donorkeys.Rows.Add(SingleRow);
+                }
+                else
+                {
+                	SortedList <string, string> Defines = new SortedList<string, string>();
+ 
+                	if (!string.IsNullOrEmpty(AExtract))
+                	{
+	                	Defines.Add("BYEXTRACT", string.Empty);
+                	}
+                	
+	                // first get all donors in the given date range
+	                SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql", Defines);
+	
+	                OdbcParameter[] parameters = new OdbcParameter[4];
+	                parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+	                parameters[0].Value = ALedgerNumber;
+	                parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
+	                parameters[1].Value = AStartDate;
+	                parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
+	                parameters[2].Value = AEndDate;
+	                parameters[3] = new OdbcParameter("Extract", OdbcType.VarChar);
+		            parameters[3].Value = AExtract;
+	
+	                donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
+	                
+	                // put deceased partner's at the front (still sorted alphabetically)
+	                if (ADeceasedFirst)
+	                {
+	                	// create a new datatable with same structure as donorkeys
+	                	DataTable temp = donorkeys.Clone();
+	                	temp.Clear();
+	                	
+	                	// add deceased donors to the temp table and delete from donorkeys
+	                	for (int i=0; i<donorkeys.Rows.Count; i++)
+	                	{
+	                		if (SharedTypes.StdPartnerStatusCodeStringToEnum(donorkeys.Rows[i][2].ToString()) == TStdPartnerStatusCode.spscDIED)
+	                		{
+	                			temp.Rows.Add((object[]) donorkeys.Rows[i].ItemArray.Clone());
+	                			donorkeys.Rows[i].Delete();
+	                		}
+	                	}
+	                	
+	                	// add remaining partners to temp table
+	                	donorkeys.AcceptChanges();
+	                	temp.Merge(donorkeys);
+	                	
+	                	donorkeys = temp;
+	                }
+                }
 
                 string ResultDocument = "";
+                SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonationsOfDonor.sql");
 
                 foreach (DataRow donorrow in donorkeys.Rows)
                 {
                     Int64 donorKey = Convert.ToInt64(donorrow[0]);
                     string donorName = donorrow[1].ToString();
 
-                    SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonationsOfDonor.sql");
-                    parameters = new OdbcParameter[4];
+                    OdbcParameter[] parameters = new OdbcParameter[4];
                     parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
                     parameters[0].Value = ALedgerNumber;
                     parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);

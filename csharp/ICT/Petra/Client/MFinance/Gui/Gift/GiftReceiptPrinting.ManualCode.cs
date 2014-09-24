@@ -22,15 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Windows.Forms;
-using System.IO;
-using System.Xml;
 using System.Drawing.Printing;
-using GNU.Gettext;
+using System.IO;
+using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.Printing;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -94,10 +92,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GenerateLetters(System.Object sender, EventArgs e)
         {
+        	Int64 DonorKey = 0;
+        	string Extract = null;
+        	
             if ((!dtpStartDate.Date.HasValue) || (!dtpEndDate.Date.HasValue))
             {
                 MessageBox.Show(Catalog.GetString("Please supply valid Start and End dates."));
                 return;
+            }
+            
+            if (rbtPartner.Checked)
+            {
+            	if (txtDonor.Text == "0000000000")
+            	{
+            		MessageBox.Show(Catalog.GetString("Please select a donor."));
+                	return;
+            	}
+            	else
+            	{
+            		DonorKey = Convert.ToInt64(txtDonor.Text);
+            	}
+            }
+
+            if (rbtExtract.Checked)
+            {
+            	if (txtExtract.Text == "")
+            	{
+            		MessageBox.Show(Catalog.GetString("No extract name entered!"));
+                	return;
+            	}
+            	else
+            	{
+            		Extract = txtExtract.Text;
+            	}
             }
 
             OpenFileDialog DialogOpen = new OpenFileDialog();
@@ -122,7 +149,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string AllLetters = TRemote.MFinance.Gift.WebConnectors.CreateAnnualGiftReceipts(FLedgerNumber,
                 dtpStartDate.Date.Value,
                 dtpEndDate.Date.Value,
-                htmlTemplate);
+                htmlTemplate,
+                chkDeceasedDonorsFirst.Checked,
+                Extract,
+                DonorKey);
 
             if (AllLetters.Length == 0)
             {
@@ -137,7 +167,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FNumberOfPages = FGfxPrinter.NumberOfPages;
 
-            //RefreshPagePosition();
+            RefreshPagePosition();
+            ttxCurrentPage.Text = "1";
         }
     }
 }
