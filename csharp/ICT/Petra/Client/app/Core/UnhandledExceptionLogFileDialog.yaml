@@ -10,7 +10,7 @@ RootNode:
 
     Events:
         Load: {class=System.EventHandler, method=Form_Load} 
-        
+        Shown: {class=System.EventHandler, method=Form_Shown} 
     Actions:
         actOK: {ActionClick=btnOK_Click}
         actCopyToClipboard: {ActionClick=btnCopyToClipboard_Click}
