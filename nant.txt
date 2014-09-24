@@ -1,0 +1,570 @@
+Buildfile: file:///C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/OpenPetra.build
+Target framework: Microsoft .NET Framework 4.0
+Target(s) specified: resetDatabase 
+
+     [echo] operating system=Microsoft Windows NT 6.2.9200.0
+     [echo] platform=win32
+  [include] Including file C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix\OpenPetra.build.config.
+ [property] Read-only property "DBMS.Type" cannot be overwritten.
+ [property] Read-only property "DBMS.Password" cannot be overwritten.
+     [echo] Running on MS Windows
+
+init:
+
+
+resetDatabase:
+
+     [copy] Copying 1 file to 'C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix\db\demodataGermany\a_accounting_period.csv.local'.
+     [copy] Copying 1 file to 'C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix\db\basedata\init.sql.local'.
+     [echo] True
+     [copy] Copying 1 file to 'C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix\db\demodataGermany\init.sql.local'.
+     [echo] True
+     [echo] True
+     [echo] True
+     [echo] True
+     [echo] True
+     [echo] True
+     [echo] True
+     [echo] True
+     [move] 1 file moved.
+[ExecDotNet] Reading xml file C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix/db/petra.xml...
+[ExecDotNet] 14:27:25  Connecting to sqlite database C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix/setup/petra0300/petra.db
+[ExecDotNet] 14:27:25  Loading file C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/clean.sql
+[ExecDotNet] -- Generated with nant generateORMTables
+[ExecDotNet] DELETE FROM s_group_file_info;
+[ExecDotNet] DELETE FROM s_volume_partner_group_partner;
+[ExecDotNet] DELETE FROM s_default_file_volume;
+[ExecDotNet] DELETE FROM s_volume_partner_group;
+[ExecDotNet] DELETE FROM pm_application_file;
+[ExecDotNet] DELETE FROM pm_document_file;
+[ExecDotNet] DELETE FROM p_partner_contact_file;
+[ExecDotNet] DELETE FROM pm_person_file;
+[ExecDotNet] DELETE FROM p_partner_file;
+[ExecDotNet] DELETE FROM p_partner_graphic;
+[ExecDotNet] DELETE FROM p_file_info;
+[ExecDotNet] DELETE FROM s_volume;
+[ExecDotNet] DELETE FROM s_workflow_instance_step;
+[ExecDotNet] DELETE FROM s_workflow_instance;
+[ExecDotNet] DELETE FROM s_function_relationship;
+[ExecDotNet] DELETE FROM s_workflow_step;
+[ExecDotNet] DELETE FROM s_workflow_group;
+[ExecDotNet] DELETE FROM s_workflow_user;
+[ExecDotNet] DELETE FROM s_workflow_definition;
+[ExecDotNet] DELETE FROM p_foundation_deadline;
+[ExecDotNet] DELETE FROM p_foundation_proposal_detail;
+[ExecDotNet] DELETE FROM p_foundation_proposal;
+[ExecDotNet] DELETE FROM p_foundation_proposal_status;
+[ExecDotNet] DELETE FROM p_foundation;
+[ExecDotNet] DELETE FROM p_proposal_submission_type;
+[ExecDotNet] DELETE FROM p_partner_comment;
+[ExecDotNet] DELETE FROM s_label;
+[ExecDotNet] DELETE FROM s_change_event;
+[ExecDotNet] DELETE FROM s_group_extract;
+[ExecDotNet] DELETE FROM s_group_cost_centre;
+[ExecDotNet] DELETE FROM s_group_ledger;
+[ExecDotNet] DELETE FROM s_group_data_label;
+[ExecDotNet] DELETE FROM s_group_partner_location;
+[ExecDotNet] DELETE FROM s_group_location;
+[ExecDotNet] DELETE FROM s_group_partner_reminder;
+[ExecDotNet] DELETE FROM s_group_partner_contact;
+[ExecDotNet] DELETE FROM s_group_motivation;
+[ExecDotNet] DELETE FROM s_group_gift;
+[ExecDotNet] DELETE FROM p_partner_set_partner;
+[ExecDotNet] DELETE FROM s_group_partner_set;
+[ExecDotNet] DELETE FROM p_partner_set;
+[ExecDotNet] DELETE FROM s_job_group;
+[ExecDotNet] DELETE FROM s_group_function;
+[ExecDotNet] DELETE FROM s_function;
+[ExecDotNet] DELETE FROM a_ap_anal_attrib;
+[ExecDotNet] DELETE FROM a_ap_document_detail;
+[ExecDotNet] DELETE FROM a_trans_anal_attrib;
+[ExecDotNet] DELETE FROM a_transaction;
+[ExecDotNet] DELETE FROM a_processed_fee;
+[ExecDotNet] DELETE FROM a_gift_detail;
+[ExecDotNet] DELETE FROM a_gift;
+[ExecDotNet] DELETE FROM a_gift_batch;
+[ExecDotNet] DELETE FROM a_recurring_gift_detail;
+[ExecDotNet] DELETE FROM a_recurring_gift;
+[ExecDotNet] DELETE FROM a_recurring_gift_batch;
+[ExecDotNet] DELETE FROM a_recurring_trans_anal_attrib;
+[ExecDotNet] DELETE FROM a_recurring_transaction;
+[ExecDotNet] DELETE FROM a_motivation_detail_fee;
+[ExecDotNet] DELETE FROM a_ep_transaction;
+[ExecDotNet] DELETE FROM a_ep_match;
+[ExecDotNet] DELETE FROM a_ep_account;
+[ExecDotNet] DELETE FROM a_motivation_detail;
+[ExecDotNet] DELETE FROM a_ich_stewardship;
+[ExecDotNet] DELETE FROM a_general_ledger_master_period;
+[ExecDotNet] DELETE FROM a_general_ledger_master;
+[ExecDotNet] DELETE FROM a_fees_receivable;
+[ExecDotNet] DELETE FROM a_fees_payable;
+[ExecDotNet] DELETE FROM a_analysis_attribute;
+[ExecDotNet] DELETE FROM a_budget_period;
+[ExecDotNet] DELETE FROM a_budget;
+[ExecDotNet] DELETE FROM a_valid_ledger_number;
+[ExecDotNet] DELETE FROM a_cost_centre;
+[ExecDotNet] DELETE FROM a_key_focus_area;
+[ExecDotNet] DELETE FROM p_partner_action;
+[ExecDotNet] DELETE FROM p_partner_state;
+[ExecDotNet] DELETE FROM p_partner_short_code;
+[ExecDotNet] DELETE FROM p_partner_gift_destination;
+[ExecDotNet] DELETE FROM p_partner_reminder;
+[ExecDotNet] DELETE FROM p_partner_merge;
+[ExecDotNet] DELETE FROM p_partner_interest;
+[ExecDotNet] DELETE FROM p_tax;
+[ExecDotNet] DELETE FROM ph_room_booking;
+[ExecDotNet] DELETE FROM ph_booking;
+[ExecDotNet] DELETE FROM pc_conference_venue;
+[ExecDotNet] DELETE FROM pc_room_attribute;
+[ExecDotNet] DELETE FROM pc_room_alloc;
+[ExecDotNet] DELETE FROM pc_room;
+[ExecDotNet] DELETE FROM pc_building;
+[ExecDotNet] DELETE FROM pc_supplement;
+[ExecDotNet] DELETE FROM pc_group;
+[ExecDotNet] DELETE FROM pc_early_late;
+[ExecDotNet] DELETE FROM pc_extra_cost;
+[ExecDotNet] DELETE FROM pc_conference_cost;
+[ExecDotNet] DELETE FROM pc_attendee;
+[ExecDotNet] DELETE FROM pc_discount;
+[ExecDotNet] DELETE FROM pc_conference_option;
+[ExecDotNet] DELETE FROM pc_conference;
+[ExecDotNet] DELETE FROM um_unit_evaluation;
+[ExecDotNet] DELETE FROM um_unit_cost;
+[ExecDotNet] DELETE FROM um_unit_language;
+[ExecDotNet] DELETE FROM um_unit_ability;
+[ExecDotNet] DELETE FROM pm_job_assignment;
+[ExecDotNet] DELETE FROM um_job_qualification;
+[ExecDotNet] DELETE FROM um_job_language;
+[ExecDotNet] DELETE FROM um_job_requirement;
+[ExecDotNet] DELETE FROM um_job;
+[ExecDotNet] DELETE FROM pm_person_commitment_status;
+[ExecDotNet] DELETE FROM pm_staff_data;
+[ExecDotNet] DELETE FROM pm_special_need;
+[ExecDotNet] DELETE FROM pm_person_absence;
+[ExecDotNet] DELETE FROM pm_person_evaluation;
+[ExecDotNet] DELETE FROM p_data_label_value_application;
+[ExecDotNet] DELETE FROM p_data_label_value_partner;
+[ExecDotNet] DELETE FROM pm_personal_data;
+[ExecDotNet] DELETE FROM pm_formal_education;
+[ExecDotNet] DELETE FROM pm_person_skill;
+[ExecDotNet] DELETE FROM pm_person_qualification;
+[ExecDotNet] DELETE FROM pm_person_ability;
+[ExecDotNet] DELETE FROM pm_past_experience;
+[ExecDotNet] DELETE FROM pm_person_language;
+[ExecDotNet] DELETE FROM pm_passport_details;
+[ExecDotNet] DELETE FROM pm_document;
+[ExecDotNet] DELETE FROM pm_year_program_application;
+[ExecDotNet] DELETE FROM pm_short_term_application;
+[ExecDotNet] DELETE FROM pm_application_status_history;
+[ExecDotNet] DELETE FROM pm_general_application;
+[ExecDotNet] DELETE FROM a_ar_invoice_detail_discount;
+[ExecDotNet] DELETE FROM a_ar_invoice_discount;
+[ExecDotNet] DELETE FROM a_ar_invoice_detail;
+[ExecDotNet] DELETE FROM a_ar_invoice;
+[ExecDotNet] DELETE FROM a_ep_document_payment;
+[ExecDotNet] DELETE FROM a_ep_payment;
+[ExecDotNet] DELETE FROM a_ap_document_payment;
+[ExecDotNet] DELETE FROM a_ap_payment;
+[ExecDotNet] DELETE FROM a_crdt_note_invoice_link;
+[ExecDotNet] DELETE FROM a_ap_document;
+[ExecDotNet] DELETE FROM a_ap_supplier;
+[ExecDotNet] DELETE FROM a_suspense_account;
+[ExecDotNet] DELETE FROM a_journal;
+[ExecDotNet] DELETE FROM a_recurring_journal;
+[ExecDotNet] DELETE FROM a_transaction_type;
+[ExecDotNet] DELETE FROM a_email_destination;
+[ExecDotNet] DELETE FROM a_account_hierarchy_detail;
+[ExecDotNet] DELETE FROM a_account_hierarchy;
+[ExecDotNet] DELETE FROM a_account_property;
+[ExecDotNet] DELETE FROM a_ep_statement;
+[ExecDotNet] DELETE FROM a_account;
+[ExecDotNet] DELETE FROM p_partner_contact_attribute;
+[ExecDotNet] DELETE FROM p_partner_contact;
+[ExecDotNet] DELETE FROM p_subscription;
+[ExecDotNet] DELETE FROM p_customised_greeting;
+[ExecDotNet] DELETE FROM m_extract;
+[ExecDotNet] DELETE FROM p_partner_ledger;
+[ExecDotNet] DELETE FROM p_partner_relationship;
+[ExecDotNet] DELETE FROM p_partner_type;
+[ExecDotNet] DELETE FROM p_partner_tax_deductible_pct;
+[ExecDotNet] DELETE FROM p_banking_details_usage;
+[ExecDotNet] DELETE FROM p_partner_banking_details;
+[ExecDotNet] DELETE FROM p_banking_details;
+[ExecDotNet] DELETE FROM p_venue;
+[ExecDotNet] DELETE FROM p_bank;
+[ExecDotNet] DELETE FROM p_organisation;
+[ExecDotNet] DELETE FROM p_church;
+[ExecDotNet] DELETE FROM p_person;
+[ExecDotNet] DELETE FROM p_family;
+[ExecDotNet] DELETE FROM um_unit_structure;
+[ExecDotNet] DELETE FROM p_unit;
+[ExecDotNet] DELETE FROM p_partner_attribute;
+[ExecDotNet] DELETE FROM p_partner_location;
+[ExecDotNet] DELETE FROM p_recent_partners;
+[ExecDotNet] DELETE FROM p_partner;
+[ExecDotNet] DELETE FROM p_first_contact;
+[ExecDotNet] DELETE FROM p_action;
+[ExecDotNet] DELETE FROM p_state;
+[ExecDotNet] DELETE FROM p_process;
+[ExecDotNet] DELETE FROM p_reminder_category;
+[ExecDotNet] DELETE FROM p_interest;
+[ExecDotNet] DELETE FROM p_interest_category;
+[ExecDotNet] DELETE FROM pc_room_attribute_type;
+[ExecDotNet] DELETE FROM pc_discount_criteria;
+[ExecDotNet] DELETE FROM pc_conference_option_type;
+[ExecDotNet] DELETE FROM pc_cost_type;
+[ExecDotNet] DELETE FROM pt_assignment_type;
+[ExecDotNet] DELETE FROM pt_position;
+[ExecDotNet] DELETE FROM pm_commitment_status;
+[ExecDotNet] DELETE FROM p_data_label_lookup;
+[ExecDotNet] DELETE FROM p_data_label_use;
+[ExecDotNet] DELETE FROM p_data_label;
+[ExecDotNet] DELETE FROM p_data_label_lookup_category;
+[ExecDotNet] DELETE FROM pt_skill_level;
+[ExecDotNet] DELETE FROM pt_skill_category;
+[ExecDotNet] DELETE FROM pt_qualification_level;
+[ExecDotNet] DELETE FROM pt_qualification_area;
+[ExecDotNet] DELETE FROM pt_ability_level;
+[ExecDotNet] DELETE FROM pt_ability_area;
+[ExecDotNet] DELETE FROM pt_language_level;
+[ExecDotNet] DELETE FROM pt_passport_type;
+[ExecDotNet] DELETE FROM pm_document_type;
+[ExecDotNet] DELETE FROM pm_document_category;
+[ExecDotNet] DELETE FROM pt_travel_type;
+[ExecDotNet] DELETE FROM pt_congress_code;
+[ExecDotNet] DELETE FROM pt_outreach_preference_level;
+[ExecDotNet] DELETE FROM pt_arrival_point;
+[ExecDotNet] DELETE FROM pt_leadership_rating;
+[ExecDotNet] DELETE FROM pt_special_applicant;
+[ExecDotNet] DELETE FROM pt_contact;
+[ExecDotNet] DELETE FROM pt_application_type;
+[ExecDotNet] DELETE FROM pt_applicant_status;
+[ExecDotNet] DELETE FROM a_ar_default_discount;
+[ExecDotNet] DELETE FROM a_ar_discount_per_category;
+[ExecDotNet] DELETE FROM a_ar_discount;
+[ExecDotNet] DELETE FROM a_ar_article_price;
+[ExecDotNet] DELETE FROM a_ar_article;
+[ExecDotNet] DELETE FROM a_ar_category;
+[ExecDotNet] DELETE FROM a_currency_language;
+[ExecDotNet] DELETE FROM a_system_interface;
+[ExecDotNet] DELETE FROM a_special_trans_type;
+[ExecDotNet] DELETE FROM a_batch;
+[ExecDotNet] DELETE FROM a_recurring_batch;
+[ExecDotNet] DELETE FROM a_motivation_group;
+[ExecDotNet] DELETE FROM a_method_of_payment;
+[ExecDotNet] DELETE FROM a_method_of_giving;
+[ExecDotNet] DELETE FROM a_freeform_analysis;
+[ExecDotNet] DELETE FROM a_form_element;
+[ExecDotNet] DELETE FROM a_form_element_type;
+[ExecDotNet] DELETE FROM a_form;
+[ExecDotNet] DELETE FROM p_email;
+[ExecDotNet] DELETE FROM a_daily_exchange_rate;
+[ExecDotNet] DELETE FROM a_corporate_exchange_rate;
+[ExecDotNet] DELETE FROM a_analysis_type;
+[ExecDotNet] DELETE FROM a_analysis_store_table;
+[ExecDotNet] DELETE FROM a_accounting_system_parameter;
+[ExecDotNet] DELETE FROM a_accounting_period;
+[ExecDotNet] DELETE FROM a_budget_revision;
+[ExecDotNet] DELETE FROM a_cost_centre_types;
+[ExecDotNet] DELETE FROM a_account_property_code;
+[ExecDotNet] DELETE FROM a_budget_type;
+[ExecDotNet] DELETE FROM a_ledger_init_flag;
+[ExecDotNet] DELETE FROM a_tax_table;
+[ExecDotNet] DELETE FROM a_ledger;
+[ExecDotNet] DELETE FROM a_tax_type;
+[ExecDotNet] DELETE FROM a_sub_system;
+[ExecDotNet] DELETE FROM p_method_of_contact;
+[ExecDotNet] DELETE FROM p_contact_attribute_detail;
+[ExecDotNet] DELETE FROM p_contact_attribute;
+[ExecDotNet] DELETE FROM p_reason_subscription_cancelled;
+[ExecDotNet] DELETE FROM p_reason_subscription_given;
+[ExecDotNet] DELETE FROM p_publication_cost;
+[ExecDotNet] DELETE FROM p_publication;
+[ExecDotNet] DELETE FROM p_postcode_region_range;
+[ExecDotNet] DELETE FROM p_postcode_region;
+[ExecDotNet] DELETE FROM p_postcode_range;
+[ExecDotNet] DELETE FROM p_merge_field;
+[ExecDotNet] DELETE FROM p_merge_form;
+[ExecDotNet] DELETE FROM p_label;
+[ExecDotNet] DELETE FROM p_formality;
+[ExecDotNet] DELETE FROM p_addressee_title_override;
+[ExecDotNet] DELETE FROM p_address_line;
+[ExecDotNet] DELETE FROM p_address_element;
+[ExecDotNet] DELETE FROM p_address_layout;
+[ExecDotNet] DELETE FROM p_address_layout_code;
+[ExecDotNet] DELETE FROM p_mailing;
+[ExecDotNet] DELETE FROM m_extract_parameter;
+[ExecDotNet] DELETE FROM m_extract_master;
+[ExecDotNet] DELETE FROM m_extract_type;
+[ExecDotNet] DELETE FROM p_relation;
+[ExecDotNet] DELETE FROM p_relation_category;
+[ExecDotNet] DELETE FROM p_type;
+[ExecDotNet] DELETE FROM p_type_category;
+[ExecDotNet] DELETE FROM p_banking_details_usage_type;
+[ExecDotNet] DELETE FROM p_banking_type;
+[ExecDotNet] DELETE FROM p_business;
+[ExecDotNet] DELETE FROM p_denomination;
+[ExecDotNet] DELETE FROM p_occupation;
+[ExecDotNet] DELETE FROM pt_marital_status;
+[ExecDotNet] DELETE FROM u_unit_type;
+[ExecDotNet] DELETE FROM p_partner_attribute_type;
+[ExecDotNet] DELETE FROM p_location_type;
+[ExecDotNet] DELETE FROM p_location;
+[ExecDotNet] DELETE FROM p_partner_classes;
+[ExecDotNet] DELETE FROM p_title;
+[ExecDotNet] DELETE FROM p_addressee_type;
+[ExecDotNet] DELETE FROM p_acquisition;
+[ExecDotNet] DELETE FROM p_partner_status;
+[ExecDotNet] DELETE FROM s_error_log;
+[ExecDotNet] DELETE FROM s_system_defaults;
+[ExecDotNet] DELETE FROM s_user_defaults;
+[ExecDotNet] DELETE FROM s_system_status;
+[ExecDotNet] DELETE FROM s_reports_to_archive;
+[ExecDotNet] DELETE FROM s_report_template;
+[ExecDotNet] DELETE FROM s_patch_log;
+[ExecDotNet] DELETE FROM s_logon_message;
+[ExecDotNet] DELETE FROM s_login;
+[ExecDotNet] DELETE FROM s_language_specific;
+[ExecDotNet] DELETE FROM s_user_table_access_permission;
+[ExecDotNet] DELETE FROM s_user_module_access_permission;
+[ExecDotNet] DELETE FROM s_group_table_access_permission;
+[ExecDotNet] DELETE FROM s_group_module_access_permission;
+[ExecDotNet] DELETE FROM s_valid_output_form;
+[ExecDotNet] DELETE FROM s_module;
+[ExecDotNet] DELETE FROM s_user_group;
+[ExecDotNet] DELETE FROM s_group;
+[ExecDotNet] DELETE FROM s_form;
+[ExecDotNet] DELETE FROM a_currency;
+[ExecDotNet] DELETE FROM p_country;
+[ExecDotNet] DELETE FROM p_international_postal_type;
+[ExecDotNet] DELETE FROM a_frequency;
+[ExecDotNet] DELETE FROM p_language;
+[ExecDotNet] DELETE FROM s_user;
+[ExecDotNet] Reading xml file C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix/db/petra.xml...
+[ExecDotNet] 14:28:31  Connecting to sqlite database C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix/setup/petra0300/petra.db
+[ExecDotNet] 14:28:31  Loading file C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/init.sql.local
+[ExecDotNet] -- passwords are inserted by OpenPetra.build
+[ExecDotNet] INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('SYSADMIN', '9B55D22A9DB0944A515FBBEB9B1586BD0F1C12BC', 'm5bR6DYXnEfG8kPdjiPYyAiL2D0FvyBzGJUiLA7RI+c=', false);
+[ExecDotNet] 
+[ExecDotNet] -- load base data
+[ExecDotNet] COPY p_location_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_location_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY u_unit_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/u_unit_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_international_postal_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_international_postal_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_country FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_country.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_language FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_language.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY s_logon_message FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/s_logon_message.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_addressee_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_addressee_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_currency FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/a_currency.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_acquisition FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_acquisition.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_occupation FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_occupation.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_relation_category FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_relation_category.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_relation FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_relation.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY s_module FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/s_module.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_partner_status FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_partner_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_partner_classes FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_partner_classes.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_marital_status FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_marital_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_location FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_location.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_sub_system FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/a_sub_system.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_budget_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/a_budget_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_frequency FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/a_frequency.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_business FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_business.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_banking_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_banking_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_banking_details_usage_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_banking_details_usage_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_reason_subscription_cancelled FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_reason_subscription_cancelled.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_reason_subscription_given FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_reason_subscription_given.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_leadership_rating FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_leadership_rating.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_application_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_application_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_applicant_status FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_applicant_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_congress_code FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_congress_code.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_passport_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_passport_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_language_level FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_language_level.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_ability_area FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_ability_area.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_ability_level FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_ability_level.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pm_commitment_status FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pm_commitment_status.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_travel_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_travel_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_assignment_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_assignment_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_position FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_position.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_denomination FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/p_denomination.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pc_discount_criteria FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pc_discount_criteria.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pc_cost_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pc_cost_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_skill_category FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_skill_category.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pt_skill_level FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pt_skill_level.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pm_document_category FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pm_document_category.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY pm_document_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/basedata/pm_document_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] 
+[ExecDotNet] INSERT INTO s_system_status(s_user_id_c,s_system_login_status_l) VALUES('SYSADMIN', true);
+[ExecDotNet] INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c, p_status_code_c) VALUES(0, 'INVALID PARTNER', 'INACTIVE');
+[ExecDotNet] INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('LocalisedCountyLabel', 'LocalisedCountyLabel', 'County/St&ate');
+[ExecDotNet] 
+[ExecDotNet] -- setup initial user permissions
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('SYSADMIN', 'SYSMAN', true);
+[ExecDotNet] Reading xml file C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix/db/petra.xml...
+[ExecDotNet] 14:28:42  Connecting to sqlite database C:\OpenPetra\dev_20140922_Finance_DBTransNullRefix/setup/petra0300/petra.db
+[ExecDotNet] 14:28:42  Loading file C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/init.sql.local
+[ExecDotNet] -- passwords are inserted by OpenPetra.build
+[ExecDotNet] INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('DEMO', 'ECA2D16FEA8215995316FCE1CF34DAC1DA6CE036', '7CeG4XZM2oPUbyrj8qn6xhGrekLT/qig8cUM+54YKPQ=', false);
+[ExecDotNet] INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('MEDICAL', 'ECA2D16FEA8215995316FCE1CF34DAC1DA6CE036', '7CeG4XZM2oPUbyrj8qn6xhGrekLT/qig8cUM+54YKPQ=', false);
+[ExecDotNet] INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('HEADSET', 'ECA2D16FEA8215995316FCE1CF34DAC1DA6CE036', '7CeG4XZM2oPUbyrj8qn6xhGrekLT/qig8cUM+54YKPQ=', false);
+[ExecDotNet] INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('BOUNDARIES', 'ECA2D16FEA8215995316FCE1CF34DAC1DA6CE036', '7CeG4XZM2oPUbyrj8qn6xhGrekLT/qig8cUM+54YKPQ=', false);
+[ExecDotNet] INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('ANONYMOUS', '74914F43686C93E9530022ED976D92AD0DD1B750', 'qIhSKKkC3nMA9cDmec3kbH6t1OkCQPyg0/6CPzuiz1k=', false);
+[ExecDotNet] 
+[ExecDotNet] INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('LEDGER0043', 'LEDGER0043');
+[ExecDotNet] INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('HEADSET', 'Headset Management');
+[ExecDotNet] INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('MEDICAL', 'Medical can write and read medical info');
+[ExecDotNet] INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('BOUNDARIES', 'Boundaries Team can write rebukes');
+[ExecDotNet] INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('SEMINARS', 'access for seminar registrations');
+[ExecDotNet] 
+[ExecDotNet] -- setup the sample user DEMO
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'PTNRUSER', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'CONFERENCE', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'DEVUSER', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'PERSONNEL', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'FINANCE-1', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'FINANCE-2', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'FINANCE-3', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('DEMO', 'LEDGER0043', true);
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_partner');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_partner_location');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_partner_type');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_location');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_church');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_family');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_person');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_unit');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_bank');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_venue');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('DEMO', 'p_organisation');
+[ExecDotNet] 
+[ExecDotNet] -- setup the user HEADSET for the headsets management
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('HEADSET', 'HEADSET', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('MEDICAL', 'MEDICAL', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('BOUNDARIES', 'BOUNDARIES', true);
+[ExecDotNet] insert into p_data_label(p_key_i, p_text_c, p_data_type_c, p_char_length_i, p_restricted_l) values(1, 'Rebukes', 'char', 8000, false);
+[ExecDotNet] insert into p_data_label(p_key_i, p_text_c, p_data_type_c, p_char_length_i, p_restricted_l) values(2, 'MedicalNotes', 'char', 8000, false);
+[ExecDotNet] 
+[ExecDotNet] 
+[ExecDotNet] -- setup the user ANONYMOUS for the webforms
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'PTNRUSER', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'CONFERENCE', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'DEVUSER', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'PERSONNEL', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-1', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-2', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'FINANCE-3', true);
+[ExecDotNet] INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('ANONYMOUS', 'LEDGER0043', true);
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner_location');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_partner_type');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_location');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_church');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_family');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_person');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_unit');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_bank');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_venue');
+[ExecDotNet] INSERT INTO s_user_table_access_permission(s_user_id_c,s_table_name_c) VALUES('ANONYMOUS', 'p_organisation');
+[ExecDotNet] 
+[ExecDotNet] -- setup the sample site Germany 43000000
+[ExecDotNet] INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('CurrentDatabaseVersion', 'the currently installed release number, set by installer/patchtool', '0.3.1.0');
+[ExecDotNet] INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('SiteKey', 'there has to be one site key for the database', '43000000');
+[ExecDotNet] 
+[ExecDotNet] INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(43000000, 'Germany', 'UNIT', 'ACTIVE'); 
+[ExecDotNet] INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(43000000, 'LEDGER'); 
+[ExecDotNet] INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(43000000,'Germany','F'); 
+[ExecDotNet] INSERT INTO p_location(p_site_key_n, p_location_key_i, p_street_name_c, p_country_code_c) VALUES(43000000, 0, 'No valid address on file', '99');
+[ExecDotNet] INSERT INTO p_partner_ledger(p_partner_key_n, p_last_partner_id_i) VALUES(43000000, 5000); 
+[ExecDotNet] INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(43000000, 43000000, 0);
+[ExecDotNet] 
+[ExecDotNet] INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(1000000, 'The Organisation', 'UNIT', 'ACTIVE'); 
+[ExecDotNet] INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(1000000,'The Organisation','R'); 
+[ExecDotNet] INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,1000000);
+[ExecDotNet] 
+[ExecDotNet] INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,43000000);
+[ExecDotNet] 
+[ExecDotNet] COPY um_job FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/um_job.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] 
+[ExecDotNet] -- setup special funds
+[ExecDotNet] INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(4000000, 'International Clearing House', 'UNIT', 'ACTIVE'); 
+[ExecDotNet] INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(4000000, 'LEDGER'); 
+[ExecDotNet] INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(4000000,'International Clearing House','D');
+[ExecDotNet] INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(4000000, 0, 0);
+[ExecDotNet] INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,4000000);
+[ExecDotNet] 
+[ExecDotNet] INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(95000000, 'Global Impact Fund', 'UNIT', 'ACTIVE'); 
+[ExecDotNet] INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(95000000, 'LEDGER'); 
+[ExecDotNet] INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(95000000,'Global Impact Fund','D'); 
+[ExecDotNet] INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(95000000, 0, 0);
+[ExecDotNet] INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,95000000);
+[ExecDotNet] 
+[ExecDotNet] -- setup foreign ledgers
+[ExecDotNet] INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(35000000, 'Switzerland', 'UNIT', 'ACTIVE'); 
+[ExecDotNet] INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(35000000, 'LEDGER'); 
+[ExecDotNet] INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(35000000,'Switzerland','F'); 
+[ExecDotNet] INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(35000000, 0, 0);
+[ExecDotNet] INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,35000000);
+[ExecDotNet] 
+[ExecDotNet] INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(73000000, 'Kenya', 'UNIT', 'ACTIVE'); 
+[ExecDotNet] INSERT INTO p_partner_type(p_partner_key_n, p_type_code_c) VALUES(73000000, 'LEDGER'); 
+[ExecDotNet] INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(73000000,'Kenya','F'); 
+[ExecDotNet] INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(73000000, 0, 0);
+[ExecDotNet] INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(1000000,73000000);
+[ExecDotNet] 
+[ExecDotNet] -- setup sample ledger
+[ExecDotNet] COPY a_ledger FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_ledger.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_cost_centre_types FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_cost_centre_types.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_cost_centre FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_cost_centre.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_account FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_account.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_account_property_code FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_account_property_code.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_account_property FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_account_property.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_account_hierarchy FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_account_hierarchy.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_account_hierarchy_detail FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_account_hierarchy_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_accounting_period FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_accounting_period.csv.local' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_accounting_system_parameter FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_accounting_system_parameter.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_corporate_exchange_rate FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_corporate_exchange_rate.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_system_interface FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_system_interface.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_transaction_type FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_transaction_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_valid_ledger_number FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_valid_ledger_number.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_motivation_group FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_motivation_group.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_motivation_detail FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_motivation_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_fees_payable FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_fees_payable.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_fees_receivable FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_fees_receivable.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_motivation_detail_fee FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_motivation_detail_fee.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] 
+[ExecDotNet] COPY p_publication FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/p_publication.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] 
+[ExecDotNet] -- sample partner for online registration demo
+[ExecDotNet] INSERT INTO p_partner(p_partner_key_n,p_partner_short_name_c,p_partner_class_c,p_status_code_c) VALUES(1110198, 'DemoConference', 'UNIT', 'ACTIVE');
+[ExecDotNet] INSERT INTO p_unit(p_partner_key_n,p_unit_name_c,u_unit_type_code_c) VALUES(1110198,'DemoConference','CONF'); 
+[ExecDotNet] INSERT INTO p_partner_location(p_partner_key_n, p_site_key_n, p_location_key_i) VALUES(1110198, 0, 0);
+[ExecDotNet] INSERT INTO um_unit_structure(um_parent_unit_key_n,um_child_unit_key_n) VALUES(43000000,1110198);
+[ExecDotNet] INSERT INTO pc_conference(pc_conference_key_n, pc_outreach_prefix_c, pc_start_d, pc_end_d, a_currency_code_c) values( 1110198, 'DEMO77', '2013-01-01', '2013-01-14', 'EUR');
+[ExecDotNet] 
+[ExecDotNet] -- prepare for the headset management at conferences
+[ExecDotNet] INSERT INTO p_contact_attribute(p_contact_attribute_code_c, p_contact_attribute_descr_c) VALUES('SESSION', 'a name for a session where people can use headsets');
+[ExecDotNet] INSERT INTO p_method_of_contact(p_method_of_contact_code_c, p_description_c) VALUES('HEADSET_OUT', 'handing out the headset');
+[ExecDotNet] INSERT INTO p_method_of_contact(p_method_of_contact_code_c, p_description_c) VALUES('HEADSET_RETURN', 'participant has returned the headset');
+[ExecDotNet] 
+[ExecDotNet] -- import sample partners (donor and supplier)
+[ExecDotNet] COPY p_partner FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/p_partner.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_family FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/p_family.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_organisation FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/p_organisation.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_bank FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/p_bank.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY a_ap_supplier FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/a_ap_supplier.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_location FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/p_location.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] COPY p_partner_location FROM 'C:/OpenPetra/dev_20140922_Finance_DBTransNullRefix/db/demodataGermany/p_partner_location.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+[ExecDotNet] UPDATE p_partner_ledger SET p_last_partner_id_i = 5004 WHERE p_partner_key_n = 43000000; 
+[ExecDotNet] 
+[ExecDotNet] -- add a bank account to the sample donor. same account number as in demodata\bankstatements\SampleMT940.sta
+[ExecDotNet] INSERT INTO p_banking_details(p_banking_details_key_i, p_banking_type_i, p_account_name_c, p_bank_key_n, p_bank_account_number_c) VALUES (1, 0, 'test bank account', 43005004, '310012345678');
+[ExecDotNet] INSERT INTO p_partner_banking_details(p_partner_key_n, p_banking_details_key_i) VALUES(43005001, 1);
+[ExecDotNet] INSERT INTO p_banking_details_usage(p_partner_key_n, p_banking_details_key_i, p_type_c) VALUES(43005001, 1, 'MAIN');
+[ExecDotNet] -- increase sequence
+[ExecDotNet] SELECT nextval('seq_bank_details');
+[ExecDotNet] SELECT nextval('seq_bank_details');
+[ExecDotNet] SELECT nextval('seq_location_number');
+
+BUILD SUCCEEDED - 0 non-fatal error(s), 8 warning(s)
+
+Total time: 104.6 seconds.
+

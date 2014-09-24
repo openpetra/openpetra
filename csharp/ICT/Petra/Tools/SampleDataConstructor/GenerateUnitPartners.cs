@@ -64,7 +64,16 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             PartnerImportExportTDS PartnerDS = new PartnerImportExportTDS();
             GLSetupTDS GLSetupDS = new GLSetupTDS();
 
-            PCountryTable countryTable = PCountryAccess.LoadAll(null);
+            PCountryTable CountryTable = null;
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    CountryTable = PCountryAccess.LoadAll(Transaction);
+                });
 
             while (RecordNode != null)
             {
@@ -72,7 +81,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 long id = 100 + Convert.ToInt64(TXMLParser.GetAttribute(RecordNode, "id"));
                 UnitRow.PartnerKey = id * 1000000;
                 string CountryCode = TXMLParser.GetAttribute(RecordNode, "Name");
-                UnitRow.UnitName = ((PCountryRow)countryTable.Rows.Find(CountryCode)).CountryName;
+                UnitRow.UnitName = ((PCountryRow)CountryTable.Rows.Find(CountryCode)).CountryName;
                 UnitRow.UnitTypeCode = "F";
                 PartnerDS.PUnit.Rows.Add(UnitRow);
 
@@ -139,13 +148,22 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             GLSetupTDS GLSetupDS = new GLSetupTDS();
 
-            PCountryTable countryTable = PCountryAccess.LoadAll(null);
+            PCountryTable CountryTable = null;
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    CountryTable = PCountryAccess.LoadAll(Transaction);
+                });
 
             while (RecordNode != null)
             {
                 long id = 100 + Convert.ToInt64(TXMLParser.GetAttribute(RecordNode, "id"));
                 string CountryCode = TXMLParser.GetAttribute(RecordNode, "Name");
-                string UnitName = ((PCountryRow)countryTable.Rows.Find(CountryCode)).CountryName;
+                string UnitName = ((PCountryRow)CountryTable.Rows.Find(CountryCode)).CountryName;
                 Int64 PartnerKey = id * 1000000;
 
                 // create cost centre

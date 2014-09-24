@@ -57,10 +57,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
-            AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+            delegate
+            {
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
