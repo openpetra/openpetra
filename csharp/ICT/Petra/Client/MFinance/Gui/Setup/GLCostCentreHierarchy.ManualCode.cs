@@ -605,6 +605,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
+        /// The fact that the CostCentreCode is the database primary key causes SO MUCH GRIEF all over the system!
+        /// </summary>
+        /// <param name="ACostCentreNode"></param>
+        /// <returns></returns>
+        private Boolean ProtectedChangeOfPrimaryKey(CostCentreNodeDetails ACostCentreNode)
+        {
+            String NewValue = txtDetailCostCentreCode.Text;
+            try
+            {
+                ACostCentreNode.CostCentreRow.CostCentreCode = NewValue;
+                ACostCentreNode.CostCentreRow.CostCentreToReportTo = NewValue;
+
+                return true;
+            }
+            catch (System.Data.ConstraintException)
+            {
+                txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
+
+                FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
+
+                ShowStatus(Catalog.GetString("Account Code change REJECTED!"));
+
+                MessageBox.Show(String.Format(
+                        Catalog.GetString(
+                            "Renaming Cost Centre Code '{0}' to '{1}' is not possible because a Cost Centre Code by the name of '{1}' already exists."
+                            + "\r\n\r\n--> Cost Centre Code reverted to previous value."),
+                        strOldDetailCostCentreCode, NewValue),
+                    Catalog.GetString("Renaming Not Possible - Conflicts With Existing Cost Centre Code"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                txtDetailCostCentreCode.Focus();
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Change CostCentre Value
         ///
         /// The Cost Centre code is a foreign key in loads of tables,
@@ -646,36 +682,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     this.Refresh();
 
                     FRecentlyUpdatedDetailCostCentreCode = strNewDetailCostCentreCode;
-                    try
-                    {
-                        FCurrentCostCentre.CostCentreRow.BeginEdit();
-                        FCurrentCostCentre.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
-                        FCurrentCostCentre.CostCentreRow.EndEdit();  // A constraint exception might occur here
-                        ucoCostCentreTree.SetNodeLabel(FCurrentCostCentre.CostCentreRow);
-
-                        changeAccepted = true;
-                    }
-                    catch (System.Data.ConstraintException)
-                    {
-                        txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
-                        FCurrentCostCentre.CostCentreRow.CancelEdit();
-
-                        FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
-
-                        ShowStatus(Catalog.GetString("Cost Centre Code change REJECTED!"));
-
-                        MessageBox.Show(String.Format(
-                                Catalog.GetString(
-                                    "Renaming Cost Centre Code '{0}' to '{1}' is not possible because a Cost Centre Code by the name of '{2}' already exists.\r\n\r\n--> Cost Centre Code reverted to previous value!"),
-                                strOldDetailCostCentreCode, strNewDetailCostCentreCode, strNewDetailCostCentreCode),
-                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Cost Centre Code"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        txtDetailCostCentreCode.Focus();
-                    }
+                    ProtectedChangeOfPrimaryKey(FCurrentCostCentre);
 
                     if (changeAccepted)
                     {
+                        ucoCostCentreTree.SetNodeLabel(FCurrentCostCentre.CostCentreRow);
                         if (FCurrentCostCentre.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:
@@ -731,6 +742,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return changeAccepted;
+        }
+
+        /// <summary>
+        /// I need to find out whether the specified AccountCode can be allowed.
+        /// </summary>
+        private void GetDetailsFromControlsManual(ACostCentreRow ARow)
+        {
+            //
+            // If changing the PrimaryKey to that specified causes a contraints error, 
+            // I'll catch it here, issue a warning, and return the control to the "safe" value.
+            ProtectedChangeOfPrimaryKey(FCurrentCostCentre);
         }
 
         private void GetDataFromControlsManual()

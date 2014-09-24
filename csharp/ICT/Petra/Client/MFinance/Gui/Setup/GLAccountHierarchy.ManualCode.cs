@@ -790,7 +790,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Called from ValidateAllData
+        /// I need to find out whether the specified AccountCode can be allowed.
+        /// </summary>
+        private void GetDetailsFromControlsManual(GLSetupTDSAAccountRow ARow)
+        {
+            //
+            // If changing the PrimaryKey to that specified causes a contraints error, 
+            // I'll catch it here, issue a warning, and return the control to the "safe" value.
+            ProtectedChangeOfPrimaryKey(FCurrentAccount);
+        }
+
+        /// <summary>
         /// </summary>
         private void GetDataFromControlsManual()
         {
@@ -911,6 +921,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
+        /// The fact that the AccountCode is the database primary key causes SO MUCH GRIEF all over the system!
+        /// </summary>
+        /// <param name="AAccountNode"></param>
+        /// <returns></returns>
+        private Boolean ProtectedChangeOfPrimaryKey(AccountNodeDetails AAccountNode)
+        {
+            String NewValue = txtDetailAccountCode.Text;
+            try
+            {
+                AAccountNode.AccountRow.AccountCode = NewValue;
+                AAccountNode.DetailRow.ReportingAccountCode = NewValue;
+
+                return true;
+            }
+            catch (System.Data.ConstraintException)
+            {
+                txtDetailAccountCode.Text = strOldDetailAccountCode;
+
+                FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
+
+                ShowStatus(Catalog.GetString("Account Code change REJECTED!"));
+
+                MessageBox.Show(String.Format(
+                        Catalog.GetString(
+                            "Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{1}' already exists."
+                            + "\r\n\r\n--> Account Code reverted to previous value."),
+                        strOldDetailAccountCode, NewValue),
+                    Catalog.GetString("Renaming Not Possible - Conflicts With Existing Account Code"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                txtDetailAccountCode.Focus();
+            }
+            return false;
+        }
+
+        /// <summary>
         /// ChangeAccountCodeValue is invoked when txtDetailAccountCode is left
         ///
         /// But if the user invokes an other event - i.e. FileSave the FileSave-Event runs first.
@@ -953,38 +999,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;
 
-                    try
-                    {
-                        FCurrentAccount.AccountRow.BeginEdit();
-                        FCurrentAccount.AccountRow.AccountCode = strNewDetailAccountCode;
-                        FCurrentAccount.DetailRow.ReportingAccountCode = strNewDetailAccountCode;
-                        FCurrentAccount.AccountRow.EndEdit();
-                        ucoAccountsTree.SetNodeLabel(strNewDetailAccountCode, strAccountShortDescr);
-
-                        changeAccepted = true;
-                    }
-                    catch (System.Data.ConstraintException)
-                    {
-                        txtDetailAccountCode.Text = strOldDetailAccountCode;
-                        FCurrentAccount.AccountRow.CancelEdit();
-                        FCurrentAccount.DetailRow.CancelEdit();
-
-                        FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
-
-                        ShowStatus(Catalog.GetString("Account Code change REJECTED!"));
-
-                        MessageBox.Show(String.Format(
-                                Catalog.GetString(
-                                    "Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{2}' already exists.\r\n\r\n--> Account Code reverted to previous value!"),
-                                strOldDetailAccountCode, strNewDetailAccountCode, strNewDetailAccountCode),
-                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Account Code"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        txtDetailAccountCode.Focus();
-                    }
+                    changeAccepted = ProtectedChangeOfPrimaryKey(FCurrentAccount);
 
                     if (changeAccepted)
                     {
+                        ucoAccountsTree.SetNodeLabel(strNewDetailAccountCode, strAccountShortDescr);
                         if (FCurrentAccount.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:

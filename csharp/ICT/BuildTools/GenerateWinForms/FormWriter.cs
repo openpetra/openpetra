@@ -1675,6 +1675,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.SetCodelet("VALIDATEDATAMANUAL", "true");
             }
 
+            if (FCodeStorage.ManualFileExistsAndContains("GetDetailsFromControlsManual"))
+            {
+                FTemplate.SetCodelet("GETDETAILSMANUAL", "true");
+            }
+
             if (FCodeStorage.ManualFileExistsAndContains("ValidateDataDetailsManual"))
             {
                 FTemplate.SetCodelet("VALIDATEDATADETAILSMANUAL", "true");
