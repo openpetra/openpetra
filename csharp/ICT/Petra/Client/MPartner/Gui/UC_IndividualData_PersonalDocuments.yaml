@@ -47,8 +47,6 @@ RootNode:
         pnlDetails:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control
-#            Width: 500
-#            Height: 400
             Controls:
                 Row0: [cmbDocumentCode]
                 Row1: [txtDocumentID, txtDocumentAssociatedID]
@@ -60,6 +58,8 @@ RootNode:
         cmbDocumentCode:
             Label: Document Type
             List: DocumentTypeList
+            ComboBoxWidth: 225
+            Width: 600
             DataField: PmDocument.DocCode
             ColSpan: 2
             Validation: true
