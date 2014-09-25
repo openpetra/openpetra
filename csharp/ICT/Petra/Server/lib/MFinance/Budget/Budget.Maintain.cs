@@ -79,14 +79,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
                     ABudgetPeriodAccess.LoadAll(MainDS, Transaction);
                     ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                    //            ABudgetPeriodTable BudgetPeriodTable = new ABudgetPeriodTable();
+                    //            ABudgetPeriodRow TemplateRow = (ABudgetPeriodRow)BudgetPeriodTable.NewRow(false);
+                    //
+                    //            TemplateRow.BudgetSequence;
+                    //            ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, Transaction);
                 });
-
-//            ABudgetPeriodTable BudgetPeriodTable = new ABudgetPeriodTable();
-//            ABudgetPeriodRow TemplateRow = (ABudgetPeriodRow)BudgetPeriodTable.NewRow(false);
-//
-//            TemplateRow.BudgetSequence;
-//            ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, null);
-
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
