@@ -75,12 +75,13 @@ namespace Ict.Petra.Client.App.Core
                     StreamReader TLogFileReader = new StreamReader(FLogFileLocation);
                     FLogFileContent = TLogFileReader.ReadToEnd();
                     TLogFileReader.Close();
-                    txtLogFileContent.AppendText(Catalog.GetString("The Server log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent);
+                    txtLogFileContent.AppendText(Catalog.GetString(
+                            "The Server log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent);
                 }
                 catch (Exception)
                 {
                     txtLogFileContent.AppendText(Catalog.GetString(
-                        "Problem on opening logfile. The server log can (at the moment) only be displayed in this window if you are using the standalone version or the development environment."));
+                            "Problem on opening logfile. The server log can (at the moment) only be displayed in this window if you are using the standalone version or the development environment."));
                 }
             }
             else if (FWhatToOpen.Equals("PetraClient.log"))
@@ -92,7 +93,8 @@ namespace Ict.Petra.Client.App.Core
                     StreamReader TLogFileReader = new StreamReader(FLogFileLocation);
                     FLogFileContent = TLogFileReader.ReadToEnd();
                     TLogFileReader.Close();
-                    txtLogFileContent.AppendText(Catalog.GetString("The Client log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent);
+                    txtLogFileContent.AppendText(Catalog.GetString(
+                            "The Client log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent);
                 }
                 catch (Exception)
                 {

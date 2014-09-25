@@ -85,7 +85,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             emptyRow[0] = string.Empty;
             emptyRow[1] = Catalog.GetString("Any Frequency");
             cmbReceiptLetterFrequency.Table.Rows.Add(emptyRow);
-
         }
 
         private void FilterList(System.Object sender, EventArgs e)
