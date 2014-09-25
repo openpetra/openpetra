@@ -399,7 +399,7 @@ namespace Ict.Tools.DevelopersAssistant
                         "Mantis Bug Tracker = https://tracker.openpetra.org/main_page.php ++ This links to the main project work item database known as 'Mantis'");
                     sw.WriteLine(
                         "Mantis Bug Tracker (My View) = https://tracker.openpetra.org/my_view_page.php ++ This links to the 'My View' page in the main project work item database known as 'Mantis'");
-                    sw.WriteLine("OpenPetra Wiki = http://wiki.openpetra.org/ ++ This links to the main project wiki");
+                    sw.WriteLine("OpenPetra Wiki = https://wiki.openpetra.org/ ++ This links to the main project wiki");
                     sw.WriteLine(
                         "Useful shortcuts = http://www.openpetra.org/en/shortcuts/ ++ Many useful shortcuts in one place, including many listed here");
 
