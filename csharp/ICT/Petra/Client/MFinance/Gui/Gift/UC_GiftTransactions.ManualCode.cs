@@ -3162,7 +3162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                          GiftDestinationTable.Rows)
                 {
                     DateTime GiftDate = FPreviouslySelectedDetailRow.DateEntered;
-            		
+
                     // check if record is active for the Gift Date
                     if ((Row.DateEffective <= GiftDate)
                         && ((Row.DateExpires >= GiftDate) || Row.IsDateExpiresNull())
