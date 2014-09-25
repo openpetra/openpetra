@@ -69,13 +69,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ACurrencyTable currencyTable = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", Transaction);
-            });
+                delegate
+                {
+                    currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", Transaction);
+                });
 
             if (currencyTable.Rows.Count == 0)
             {

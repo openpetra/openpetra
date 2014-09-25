@@ -279,10 +279,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref transaction,
-                delegate
-                {
-                    GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence, APeriodNumber, transaction);
-                });
+                    delegate
+                    {
+                        GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence, APeriodNumber, transaction);
+                    });
 
                 if (GeneralLedgerMasterPeriodTable.Count > 0)
                 {

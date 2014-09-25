@@ -247,13 +247,14 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             ALedgerTable LedgerTable = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
-            });
+                delegate
+                {
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
+                });
 
             AForexGainsLossesAccount = LedgerTable[0].ForexGainsLossesAccount;
 
@@ -293,10 +294,10 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
-            });
+                delegate
+                {
+                    AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                });
 
             AMainDS.AApDocument[0].DocumentCode = ADocumentCode + DateTime.Now.Ticks.ToString();
 
