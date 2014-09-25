@@ -1197,8 +1197,8 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.DocumentTypeList:
-                    this.ColumnWidthCol1 = 128;
-                    this.ColumnWidthCol2 = 200;
+                    this.ColumnWidthCol1 = 150;
+                    this.ColumnWidthCol2 = 275;
                     break;
 
                 case TListTableEnum.EventApplicationTypeList:
