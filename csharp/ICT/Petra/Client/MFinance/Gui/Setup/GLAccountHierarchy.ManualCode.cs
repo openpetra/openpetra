@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         public Boolean? CanDelete;
 
-        /// <summary>If an account is new (created in this session) I can change it without consulting the server:</summary>
+        /// <summary>If an account is new (created in this session and not yet committed) I can change it without consulting the server:</summary>
         public Boolean IsNew;
 
         /// <summary>A Message will be returned from the server if actions on this account are restricted.</summary>
@@ -363,7 +363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void chkDetailIsSummary_CheckedChanged(object sender, EventArgs e)
         {
-            if ((FCurrentAccount != null) && (FIAmUpdating == 0)) // Only look into this is the user has changed it...
+            if ((FCurrentAccount != null) && (FIAmUpdating == 0)) // Only look into this if the user has changed it...
             {
                 FCurrentAccount.GetAttrributes();
 
@@ -468,6 +468,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
                 chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
+                chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag;
                 cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
 
                 chkDetailIsSummary.Checked = !ARow.PostingStatus;
@@ -486,7 +487,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
 
                 txtRptOrder.Text = txtReportingOrder;
-                txtRptOrder.Enabled = !ARow.SystemAccountFlag;
+//              txtRptOrder.Enabled = !ARow.SystemAccountFlag;
 
                 if (!ARow.ForeignCurrencyFlag)
                 {
@@ -579,7 +580,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             AAccountRow parentAccount = FCurrentAccount.AccountRow;
 
-            AAccountRow newAccountRow = FMainDS.AAccount.NewRowTyped();
+            GLSetupTDSAAccountRow newAccountRow = FMainDS.AAccount.NewRowTyped();
             newAccountRow.AccountCode = newName;
             newAccountRow.LedgerNumber = FLedgerNumber;
             newAccountRow.AccountActiveFlag = true;
@@ -600,7 +601,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             hierarchyDetailRow.ReportOrder = ucoAccountsTree.GetLastChildReportingOrder() + 1;
             FMainDS.AAccountHierarchyDetail.Rows.Add(hierarchyDetailRow);
-
+            FIAmUpdating++;
+            ShowDetails(newAccountRow);
+            FIAmUpdating--;
             ucoAccountsTree.AddNewAccount(newAccountRow, hierarchyDetailRow);
 
             txtDetailAccountCode.Focus();
@@ -686,6 +689,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
 
+            ucoAccountsTree.MarkAllNodesCommitted();
             return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
         }
 

@@ -98,6 +98,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("IncomeExpense", paramsDictionary);
 
+            if (this.IsDisposed) // There's no cancel function as such - if the user has pressed Esc the form is closed!
+            {
+                return false;
+            }
+
             if (ReportTable == null)
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");

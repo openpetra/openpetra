@@ -141,9 +141,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                 Type EmailSettingsType = EmailSettings.GetType();
                 EmailSettingsType.GetProperty("Host").SetValue(EmailSettings, "TimHost.com", null);
             }
-            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
             {
-                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
                 return false;
             }
             return true;
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (TemplateTable.Rows.Count == 0)
             {
-                TLogging.Log("No FastReports template for " + FReportName);
+//              TLogging.Log("No FastReports template for " + FReportName);
                 return false;
             }
 
@@ -199,9 +199,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FInitState = TInitState.LoadedOK;
                 LoadedOK = true;
             }
-            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
             {
-                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
             }
         }
 
@@ -230,9 +230,9 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 LoadedOK = true;
             }
-            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
             {
-                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
             }
         }
 
@@ -338,6 +338,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void DesignReport(TRptCalculator ACalc)
         {
             ACalc.GetParameters().Add("param_design_template", true);
+
+            // add parameters for the report's heading
+            ACalc.GetParameters().Add("param_requested_by", UserInfo.GUserInfo.UserID);
+            Version ClientVersion = Assembly.GetAssembly(typeof(FastReportsWrapper)).GetName().Version;
+            ACalc.GetParameters().Add("param_version", ClientVersion.Major.ToString() + "." +
+                ClientVersion.Minor.ToString() + "." +
+                ClientVersion.Build.ToString() + "." +
+                ClientVersion.Revision.ToString());
 
             if (FSelectedTemplate != null)
             {
@@ -481,6 +489,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void GenerateReport(TRptCalculator ACalc)
         {
             ACalc.GetParameters().Add("param_design_template", false);
+
+            // add parameters for the report's heading
+            ACalc.GetParameters().Add("param_requested_by", UserInfo.GUserInfo.UserID);
+            Version ClientVersion = Assembly.GetAssembly(typeof(FastReportsWrapper)).GetName().Version;
+            ACalc.GetParameters().Add("param_version", ClientVersion.Major.ToString() + "." +
+                ClientVersion.Minor.ToString() + "." +
+                ClientVersion.Build.ToString() + "." +
+                ClientVersion.Revision.ToString());
 
             if (FSelectedTemplate != null)
             {

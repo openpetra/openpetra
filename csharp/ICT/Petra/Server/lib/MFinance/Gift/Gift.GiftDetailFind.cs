@@ -280,8 +280,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             // Searched DB Field: 'a_gift_comment_one_c'
             if (CriteriaRow["Comment1"].ToString().Length > 0)
             {
+                CriteriaRow.Table.Columns.Add(new DataColumn("Comment1Match"));
+                CriteriaRow["Comment1Match"] = "CONTAINS";
+
                 new TDynamicSearchHelper(AGiftDetailTable.TableId,
-                    AGiftDetailTable.ColumnGiftCommentOneId, CriteriaRow, "Comment1", "",
+                    AGiftDetailTable.ColumnGiftCommentOneId, CriteriaRow, "Comment1", "Comment1Match",
                     ref CustomWhereCriteria,
                     ref InternalParameters);
             }

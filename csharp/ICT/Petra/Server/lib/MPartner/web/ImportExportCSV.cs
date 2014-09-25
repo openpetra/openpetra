@@ -180,19 +180,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newFamily.MaritalStatus = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
             newFamily.Title = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE);
             newFamily.MaritalStatus = GetMaritalStatusCode(ANode);
-            String OMerField = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OMERFIELD);
-
-            if (OMerField.Length > 0)
-            {
-                try
-                {
-                    newFamily.FieldKey = long.Parse(OMerField);
-                }
-                catch (System.FormatException)
-                {
-                    AddVerificationResult("Bad number format in OMerField: " + OMerField);
-                }
-            }
 
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
             PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
@@ -261,11 +248,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPerson.Title = FamilyRow.Title;
             newPerson.Gender = GetGenderCode(ANode);
             newPerson.MaritalStatus = FamilyRow.MaritalStatus;
-
-            if (!FamilyRow.IsFieldKeyNull())
-            {
-                newPerson.FieldKey = FamilyRow.FieldKey;
-            }
 
             PPartnerLocationRow newPartnerLocation = AMainDS.PPartnerLocation.NewRowTyped();
             AMainDS.PPartnerLocation.Rows.Add(newPartnerLocation);

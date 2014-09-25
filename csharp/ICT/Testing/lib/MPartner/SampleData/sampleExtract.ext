@@ -3,7 +3,7 @@ dmy "2.2.17" 43000000
 "PARTNER"
 43001234  "FAMILY"  "TestFamily, Hans and Emma, Mr & Mrs"  "UNKNOWN"  "ACTIVE"  ""  
 "EN"  "FAMILY"  no  yes  ""
-"TestFamily"  "Hans and Emma"  "Mr & Mrs"  43000000  "U"  "?"  ""  
+"TestFamily"  "Hans and Emma"  "Mr & Mrs"  "U"  "?"  ""  
 0  ""  "My Road 78"  ""
 "MyCity"  ""  "1231"  "DE"
 "27/10/1999"  "?"  "HOME"  yes  "some.address@example.org"  ""  0  ""  0
@@ -12,7 +12,7 @@ dmy "2.2.17" 43000000
 43011231  "PERSON"  "TestFamily, Hans"  "APL"  "ACTIVE"  ""  
 "EN"  "1-Male"  no  yes  ""
 "TestFamily"  "Hans"  ""  ""
-""  "Hans"  "14/09/1909"  "Male"  "N"  "?"  ""  0  ""  "OTHER"  0  43001234  2
+""  "Hans"  "14/09/1909"  "Male"  "N"  "?"  ""  0  ""  "OTHER"  43001234  2
 0  ""  "My Road 78"  ""
 "MyCity"  ""  "1231"  "DE"
 "06/07/2002"  "?"  "HOME"  no  "some.address@example.org"  ""  0  ""  0

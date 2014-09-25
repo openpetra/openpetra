@@ -141,26 +141,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 if (!PUnitAccess.Exists(OfficeCode, ATransaction))
                 {
-                    foreach (PFamilyRow Row in FMainDS.PFamily.Rows)
-                    {
-                        if (!Row.IsFieldKeyNull() && (Row.FieldKey == OfficeCode))
-                        {
-                            AddVerificationResult("Unknown FieldKey in FamilyRow: " + OfficeCode);
-                            Row.SetFieldKeyNull();
-                        }
-                    }
-
-                    foreach (PPersonRow Row in FMainDS.PPerson.Rows)
-                    {
-                        if (!Row.IsFieldKeyNull() && (Row.FieldKey == OfficeCode))
-                        {
-                            AddVerificationResult("Unknown FieldKey in PersonRow: " + OfficeCode);
-                            Row.SetFieldKeyNull();
-                        }
-                    }
-
-/*
- *                  // I can't do this because RegistrationOffice is part of GeneralApplicationRow's primary Key
+/*                  // I can't do this because RegistrationOffice is part of GeneralApplicationRow's primary Key
  *                  // So I mustn't change it after calling AddOrModifyRecord.
  *
  *                  foreach (PmGeneralApplicationRow Row in FMainDS.PmGeneralApplication.Rows)
@@ -514,26 +495,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FamilyRow.FamilyName = ReadString();
                 FamilyRow.FirstName = ReadString();
                 FamilyRow.Title = ReadString();
-                try
-                {
-                    FamilyRow.FieldKey = ReadInt64();
-
-                    if (FamilyRow.FieldKey == 0)
-                    {
-                        FamilyRow.SetFieldKeyNull();
-                    }
-                    else
-                    {
-                        AddRequiredOffice(FamilyRow.FieldKey);
-                    }
-                }
-                catch (Exception)
-                {
-                    FamilyRow.SetFieldKeyNull();
-                }
 
                 FamilyRow.MaritalStatus = ReadString();
-
                 FamilyRow.MaritalStatusSince = ReadNullableDate();
                 FamilyRow.MaritalStatusComment = ReadString();
 
@@ -570,13 +533,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 PersonRow.OccupationCode = ReadString();
-                Int64? FieldKey = ReadNullableInt64();
-
-                if (FieldKey.HasValue && (FieldKey.Value != 0))
-                {
-                    PersonRow.FieldKey = FieldKey.Value;
-                    AddRequiredOffice(PersonRow.FieldKey);
-                }
 
                 PersonRow.FamilyKey = ReadInt64();
                 PersonRow.FamilyId = ReadInt32();

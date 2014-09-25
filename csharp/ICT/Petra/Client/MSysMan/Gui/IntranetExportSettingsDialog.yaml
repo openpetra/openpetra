@@ -5,18 +5,20 @@
     FormType: dialog
     Template: window
     WindowWidth: 350
-    WindowHeight:260
+    WindowHeight:290
 
     Controls:
         pnlDialogContent:
             Controls: [grpGeneral, grpPassword]
         grpGeneral:
-            Controls: [txtDonationDays, txtOptionalMetadata, txtReplyToEmail]
+            Controls: [txtDonationDays, txtOptionalMetadata, txtServerEmailAddress, txtReplyToEmail]
             Stretch: horizontally
         txtDonationDays:
             Width: 40
             Format: Integer
         txtOptionalMetadata:
+            Stretch: horizontally
+        txtServerEmailAddress:
             Stretch: horizontally
         txtReplyToEmail:
             Stretch: horizontally

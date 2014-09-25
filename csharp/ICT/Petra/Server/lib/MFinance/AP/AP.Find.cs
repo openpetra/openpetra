@@ -152,18 +152,6 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         }
 
         /// <summary>
-        /// Retrieve all the information for the current Ledger
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <returns>ALedgerTable</returns>
-        public ALedgerTable GetLedgerInfo(Int32 ALedgerNumber)
-        {
-            ALedgerTable Tbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
-
-            return Tbl;
-        }
-
-        /// <summary>
         /// Procedure to execute a Find query. Although the full
         /// query results are retrieved from the DB and stored internally in an object,
         /// data will be returned in 'pages' of data, each page holding a defined number
@@ -358,13 +346,19 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         {
             Decimal PaidAmount = 0m;
 
-            AApDocumentPaymentTable PreviousPayments =
-                AApDocumentPaymentAccess.LoadViaAApDocument(ApDocumentId, null);
+            TDBTransaction ReadTransaction = null;
 
-            foreach (AApDocumentPaymentRow PrevPaymentRow in PreviousPayments.Rows)
-            {
-                PaidAmount += PrevPaymentRow.Amount;
-            }
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+                delegate
+                {
+                    AApDocumentPaymentTable PreviousPayments =
+                        AApDocumentPaymentAccess.LoadViaAApDocument(ApDocumentId, ReadTransaction);
+
+                    foreach (AApDocumentPaymentRow PrevPaymentRow in PreviousPayments.Rows)
+                    {
+                        PaidAmount += PrevPaymentRow.Amount;
+                    }
+                }); // End of BeginAutoReadTransaction
 
             return PaidAmount;
         }

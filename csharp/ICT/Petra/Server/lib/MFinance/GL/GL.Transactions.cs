@@ -904,6 +904,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool newTransaction = false;
             TDBTransaction Transaction = null;
 
+            GLBatchTDS InspectDS = AInspectDS;
+            //bool SubmissionOK = false;
+
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
 
@@ -925,15 +928,21 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return SaveRecurringGLBatchTDS(ref AInspectDS);
             }
 
+            //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+            //    TEnforceIsolationLevel.eilMinimum,
+            //    ref Transaction,
+            //    ref SubmissionOK,
+            //delegate
+            //{
             if (batchTableInDataSet)
             {
-                LedgerNumber = ((ABatchRow)AInspectDS.ABatch.Rows[0]).LedgerNumber;
+                LedgerNumber = ((ABatchRow)InspectDS.ABatch.Rows[0]).LedgerNumber;
 
                 Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out newTransaction);
 
-                foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
+                foreach (ABatchRow batch in InspectDS.ABatch.Rows)
                 {
                     if (batch.RowState != DataRowState.Added)
                     {
@@ -974,6 +983,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
+
+            //});
 
             if (journalTableInDataSet)
             {
@@ -1025,8 +1036,26 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                         if (TestAccountsAndCostCentres.AAccount.Count == 0)
                         {
-                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
-                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
+                            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                                TEnforceIsolationLevel.eilMinimum,
+                                out newTransaction);
+
+                            //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                            //    TEnforceIsolationLevel.eilMinimum,
+                            //    ref Transaction,
+                            //    ref SubmissionOK,
+                            //delegate
+                            //{
+                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+
+                            if (newTransaction)
+                            {
+                                newTransaction = false;
+                                DBAccess.GDBAccessObj.RollbackTransaction();
+                            }
+
+                            //});
                         }
 
                         // TODO could check for active accounts and cost centres?
@@ -1115,6 +1144,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                                   (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out newTransaction);
 
+                //DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                //    TEnforceIsolationLevel.eilMinimum,
+                //    ref Transaction,
+                //    ref SubmissionOK,
+                //delegate
+                //{
                 try
                 {
                     DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
@@ -1127,6 +1162,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
                 }
+                //});
 
                 foreach (ABatchRow batch in BatchDS.ABatch.Rows)
                 {
@@ -2436,6 +2472,56 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ACurrentJournal.JournalCreditTotalBase += r.AmountInBaseCurrency;
                 }
             }
+        }
+
+        /// <summary>
+        /// Get current accounts and their current balances for use in the Reallocation Journal dialog
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetAccountsForReallocationJournal(int ALedgerNumber, int APeriodNumber)
+        {
+            TDBTransaction Transaction = null;
+            DataTable NewTable = new DataTable("NewTable");
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
+                delegate
+                {
+                    string Query =
+                        "SELECT PUB_a_general_ledger_master.a_cost_centre_code_c, PUB_a_general_ledger_master.a_account_code_c, " +
+                        "PUB_a_general_ledger_master_period.a_actual_base_n, " +
+                        "PUB_a_account.a_account_code_short_desc_c, PUB_a_account.a_debit_credit_indicator_l, " +
+                        "PUB_a_cost_centre.a_cost_centre_name_c " +
+
+                        "FROM PUB_a_general_ledger_master, PUB_a_general_ledger_master_period, PUB_a_account, PUB_a_cost_centre " +
+
+                        "WHERE PUB_a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber + " AND " +
+
+                        "PUB_a_account.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c AND " +
+                        "PUB_a_account.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i AND " +
+                        "PUB_a_account.a_posting_status_l = 1 AND " +
+                        "PUB_a_account.a_account_active_flag_l = 1 AND " +
+
+                        "PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c AND " +
+                        "PUB_a_cost_centre.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i AND " +
+                        "PUB_a_cost_centre.a_posting_cost_centre_flag_l = 1 AND " +
+                        "PUB_a_cost_centre.a_cost_centre_active_flag_l = 1 AND " +
+
+                        "PUB_a_general_ledger_master_period.a_glm_sequence_i = PUB_a_general_ledger_master.a_glm_sequence_i AND " +
+                        "PUB_a_general_ledger_master_period.a_period_number_i = " + APeriodNumber;
+
+                    NewTable = DBAccess.GDBAccessObj.SelectDT(Query, "NewTable", Transaction);
+                });
+
+            // create a new description
+            foreach (DataRow Row in NewTable.Rows)
+            {
+                Row["a_account_code_short_desc_c"] += ", " + Row["a_cost_centre_name_c"];
+            }
+
+            return NewTable;
         }
     }
 }

@@ -74,8 +74,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
-                    out AVerificationResult);
+                bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode, out AVerificationResult);
 
                 if (!res)
                 {
@@ -105,7 +104,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
         }
     }
-}
+} // Ict.Petra.Server.MFinance.GL.WebConnectors
 
 namespace Ict.Petra.Server.MFinance.GL
 {
@@ -114,7 +113,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class TYearEnd : TPeriodEndOperations
     {
-        TLedgerInfo ledgerInfo;
+        TLedgerInfo FledgerInfo;
 
         /// <summary>
         /// Master routine ...
@@ -127,10 +126,10 @@ namespace Ict.Petra.Server.MFinance.GL
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
-            ledgerInfo = new TLedgerInfo(ALedgerNum);
+            FledgerInfo = new TLedgerInfo(ALedgerNum);
             verificationResults = new TVerificationResultCollection();
 
-            TCarryForward carryForward = new TCarryForward(ledgerInfo);
+            TCarryForward carryForward = new TCarryForward(FledgerInfo);
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Year)
             {
@@ -143,11 +142,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 FHasCriticalErrors = true;
             }
 
-            RunPeriodEndSequence(new TReallocation(ledgerInfo),
+            RunPeriodEndSequence(new TReallocation(FledgerInfo),
                 Catalog.GetString("Reallocation of all income and expense accounts"));
 
-            RunPeriodEndSequence(new TGlmNewYearInit(ledgerInfo.LedgerNumber, ledgerInfo.CurrentFinancialYear),
-                Catalog.GetString("Initialize the glm-entries of the next year"));
+            RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo.LedgerNumber, FledgerInfo.CurrentFinancialYear),
+                Catalog.GetString("Initialize glm entries for next year"));
 
             AVRCollection = verificationResults;
             return FHasCriticalErrors;
@@ -160,15 +159,13 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class TReallocation : AbstractPeriodEndOperation
     {
-        TLedgerInfo ledgerInfo;
-        TAccountInfo accountInfo;
-        ACostCentreTable costCentres;
+        TLedgerInfo FledgerInfo;
+        TAccountInfo FaccountInfo;
+        ACostCentreTable FCostCentreTbl;
 
-        TGlmpInfo glmpInfo;
-        TGlmInfo glmInfo;
+        TGlmInfo FglmInfo;
 
-        TCommonAccountingTool tCommonAccountingTool;
-        List <String>accountList = null;
+        List <String>FAccountList = null;
 
 
         /// <summary>
@@ -176,31 +173,31 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public TReallocation(TLedgerInfo ALedgerInfo)
         {
-            ledgerInfo = ALedgerInfo;
+            FledgerInfo = ALedgerInfo;
         }
 
         private void CalculateAccountList()
         {
-            accountInfo = new TAccountInfo(ledgerInfo);
+            FaccountInfo = new TAccountInfo(FledgerInfo);
             bool blnIncomeFound = false;
             bool blnExpenseFound = false;
 
-            accountInfo.Reset();
-            accountList = new List <String>();
+            FaccountInfo.Reset();
+            FAccountList = new List <String>();
 
-            while (accountInfo.MoveNext())
+            while (FaccountInfo.MoveNext())
             {
-                if (accountInfo.PostingStatus)
+                if (FaccountInfo.PostingStatus)
                 {
-                    if (accountInfo.AccountType.Equals(TAccountTypeEnum.Income.ToString()))
+                    if (FaccountInfo.AccountType.Equals(TAccountTypeEnum.Income.ToString()))
                     {
-                        accountList.Add(accountInfo.AccountCode);
+                        FAccountList.Add(FaccountInfo.AccountCode);
                         blnIncomeFound = true;
                     }
 
-                    if (accountInfo.AccountType.Equals(TAccountTypeEnum.Expense.ToString()))
+                    if (FaccountInfo.AccountType.Equals(TAccountTypeEnum.Expense.ToString()))
                     {
-                        accountList.Add(accountInfo.AccountCode);
+                        FAccountList.Add(FaccountInfo.AccountCode);
                         blnExpenseFound = true;
                     }
                 }
@@ -228,11 +225,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 FHasCriticalErrors = true;
             }
 
-            accountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
+            FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
 
-            if (accountInfo.IsValid)
+            if (FaccountInfo.IsValid)
             {
-                accountList.Add(accountInfo.AccountCode);
+                FAccountList.Add(FaccountInfo.AccountCode);
             }
             else
             {
@@ -245,31 +242,30 @@ namespace Ict.Petra.Server.MFinance.GL
                 FHasCriticalErrors = true;
             }
 
-            costCentres = ACostCentreAccess.LoadViaALedger(ledgerInfo.LedgerNumber, null);
+            FCostCentreTbl = ACostCentreAccess.LoadViaALedger(FledgerInfo.LedgerNumber, null);
+            FCostCentreTbl.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
         }
 
         /// <summary>
         ///
         /// </summary>
-        public override int JobSize {
-            get
-            {
-                bool blnHelp = FInfoMode;
-                FInfoMode = true;
-                intCountJobs = 0;
-                RunEndOfPeriodOperation();
-                FInfoMode = blnHelp;
-                return intCountJobs;
-            }
-        }
+        public override int GetJobSize()
+        {
+            bool blnHelp = FInfoMode;
 
+            FInfoMode = true;
+            FCountJobs = 0;
+            RunEndOfPeriodOperation();
+            FInfoMode = blnHelp;
+            return FCountJobs;
+        }
 
         /// <summary>
         ///
         /// </summary>
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            return new TReallocation(ledgerInfo);
+            return new TReallocation(FledgerInfo);
         }
 
         /// <summary>
@@ -277,98 +273,79 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public override void RunEndOfPeriodOperation()
         {
-            if (accountList == null)
+            if (FAccountList == null)
             {
                 CalculateAccountList();
             }
 
+            TCommonAccountingTool YearEndBatch = null;
+
             if (DoExecuteableCode)
             {
-                tCommonAccountingTool =
-                    new TCommonAccountingTool(ledgerInfo,
+                YearEndBatch =
+                    new TCommonAccountingTool(FledgerInfo,
                         Catalog.GetString("Financial year end processing"));
             }
 
-            glmpInfo = new TGlmpInfo();
-
             if (DoExecuteableCode)
             {
-                tCommonAccountingTool.AddBaseCurrencyJournal();
-                tCommonAccountingTool.JournalDescription =
+                YearEndBatch.AddBaseCurrencyJournal();
+                YearEndBatch.JournalDescription =
                     Catalog.GetString("Period end revaluations");
-                tCommonAccountingTool.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
+                YearEndBatch.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
             }
 
             // tCommonAccountingTool.DateEffective =""; Default is "End of actual period ..."
             // Loop with all account codes
-
-            if (accountList.Count > 0)
+            foreach (string strAccountCode in FAccountList)
             {
-                string strAccountCode;
+                FglmInfo = new TGlmInfo(FledgerInfo.LedgerNumber,
+                    FledgerInfo.CurrentFinancialYear,
+                    strAccountCode);
 
-                for (int i = 0; i < accountList.Count; ++i)
+                while (FglmInfo.MoveNext())
                 {
-                    strAccountCode = accountList[i];
-                    glmInfo = new TGlmInfo(ledgerInfo.LedgerNumber,
-                        ledgerInfo.CurrentFinancialYear,
-                        strAccountCode);
+                    Int32 CostCentreRowIdx = FCostCentreTbl.DefaultView.Find(FglmInfo.CostCentreCode);
+                    ACostCentreRow currentCostCentre = (ACostCentreRow)FCostCentreTbl.DefaultView[CostCentreRowIdx].Row;
 
-                    // Loop with all cost centres
-                    glmInfo.Reset();
-
-                    ACostCentreRow currentCostCentre;
-                    costCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
-
-                    while (glmInfo.MoveNext())
+                    if (currentCostCentre.PostingCostCentreFlag)
                     {
-                        currentCostCentre = (ACostCentreRow)costCentres.DefaultView[costCentres.DefaultView.Find(glmInfo.CostCentreCode)].Row;
+                        TGlmpInfo glmpInfo = new TGlmpInfo(-1, -1, FglmInfo.GlmSequence, FledgerInfo.NumberOfAccountingPeriods);
 
-                        if (currentCostCentre.PostingCostCentreFlag)
+                        if ((glmpInfo.ActualBase != 0) && (FglmInfo.YtdActualBase != 0))
                         {
-                            if (glmpInfo.SetToRow(
-                                    glmInfo.GlmSequence,
-                                    ledgerInfo.NumberOfAccountingPeriods))
-                            {
-                                if (glmpInfo.ActualBase != 0)
-                                {
-                                    if (glmInfo.YtdActualBase != 0)
-                                    {
-                                        ReallocationLoop(strAccountCode,
-                                            glmInfo.CostCentreCode);
-                                    }
-                                }
-                            }
+                            ReallocationLoop(YearEndBatch, strAccountCode, FglmInfo.CostCentreCode);
                         }
                     }
                 }
+            }
 
-                if (DoExecuteableCode)
-                {
-                    tCommonAccountingTool.CloseSaveAndPost();
-                }
+            if (DoExecuteableCode)
+            {
+                YearEndBatch.CloseSaveAndPost();
             }
         }
 
-        private void ReallocationLoop(String AAccountCode, string ACostCentreCode)
+        private void ReallocationLoop(TCommonAccountingTool YearEndBatch, String AAccountCode, string ACostCentreCode)
         {
             bool blnDebitCredit;
 
-            accountInfo.AccountCode = glmInfo.AccountCode;
+            FaccountInfo.AccountCode = FglmInfo.AccountCode;
 
-            blnDebitCredit = accountInfo.DebitCreditIndicator;
+            blnDebitCredit = FaccountInfo.DebitCreditIndicator;
 
             string strCostCentreTo;
             string strAccountTo;
 
-            string strCCAccoutType = accountInfo.SetCarryForwardAccount();
+            string strCCAccoutType = FaccountInfo.SetCarryForwardAccount();
 
-            if (accountInfo.IsValid)
+            if (FaccountInfo.IsValid)
             {
                 strAccountTo = AAccountCode;
 
                 if (strCCAccoutType.Equals("SAMECC"))
                 {
-                    strCostCentreTo = glmInfo.CostCentreCode;
+                    strCostCentreTo = FglmInfo.CostCentreCode;
                     //blnCarryForward = true;
                 }
                 else
@@ -378,48 +355,47 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             else
             {
-                accountInfo.SetSpecialAccountCode(TAccountPropertyEnum.EARNINGS_BF_ACCT);
-                strAccountTo = accountInfo.AccountCode;
+                FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.EARNINGS_BF_ACCT);
+                strAccountTo = FaccountInfo.AccountCode;
                 strCostCentreTo = GetStandardCostCentre();
             }
 
-            if (ledgerInfo.IltAccountFlag)
+            if (FledgerInfo.IltAccountFlag)
             {
-                accountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
-                strAccountTo = accountInfo.AccountCode;
+                FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
+                strAccountTo = FaccountInfo.AccountCode;
             }
 
-            if (ledgerInfo.BranchProcessing)
+            if (FledgerInfo.BranchProcessing)
             {
                 strAccountTo = AAccountCode;
             }
 
             string strYearEnd = Catalog.GetString("YEAR-END");
             string strNarrativeMessage = Catalog.GetString("Year end re-allocation to {0}:{1}");
-            string strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
 
             if (DoExecuteableCode)
             {
-                tCommonAccountingTool.AddBaseCurrencyTransaction(
-                    AAccountCode, ACostCentreCode, strBuildNarrative,
-                    strYearEnd, !blnDebitCredit, Math.Abs(glmInfo.YtdActualBase));
+                YearEndBatch.AddBaseCurrencyTransaction(
+                    AAccountCode, ACostCentreCode,
+                    String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode),
+                    strYearEnd, !blnDebitCredit, Math.Abs(FglmInfo.YtdActualBase));
             }
-
-            strBuildNarrative = String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode);
 
             if (DoExecuteableCode)
             {
-                tCommonAccountingTool.AddBaseCurrencyTransaction(
-                    strAccountTo, strCostCentreTo, strBuildNarrative,
-                    strYearEnd, blnDebitCredit, Math.Abs(glmInfo.YtdActualBase));
+                YearEndBatch.AddBaseCurrencyTransaction(
+                    strAccountTo, strCostCentreTo,
+                    String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode),
+                    strYearEnd, blnDebitCredit, Math.Abs(FglmInfo.YtdActualBase));
             }
 
-            ++intCountJobs;
+            ++FCountJobs;
         }
 
         private string GetStandardCostCentre()
         {
-            return TLedgerInfo.GetStandardCostCentre(ledgerInfo.LedgerNumber);
+            return TLedgerInfo.GetStandardCostCentre(FledgerInfo.LedgerNumber);
         }
     }
 }

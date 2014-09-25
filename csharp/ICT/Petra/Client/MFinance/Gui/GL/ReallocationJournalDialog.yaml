@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
-    FormTitle: Enter Allocation Journal Information
+    FormTitle: Enter Reallocation Journal Information
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: ATransaction
@@ -9,13 +9,13 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: dialog
     Template: windowEdit
-    WindowWidth: 730
-    WindowHeight: 580
+    WindowWidth: 750
+    WindowHeight: 630
 
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
-        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllAllocations}
+        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllReallocations}
     Controls:
         pnlDialogContent:
             Controls: [pnlInfo, grpAllocateFrom, grpAllocateTo]
@@ -29,17 +29,23 @@ RootNode:
         grpAllocateFrom:
             Controls: [pnlAllocateFromDetails, pnlFromAnalAttributes]
             Dock: Top
-            Height: 145
+            Height: 200
         pnlAllocateFromDetails:
             Dock: Left
-            Controls:
-                Row0: [cmbFromCostCentreCode]
-                Row1: [cmbFromAccountCode]
-                Row2: [rgrDebitCredit, txtTotalAmount]
+            Width: 450
+            Controls: [pnlAccountsGrid, pnlFromDetails]
         pnlFromAnalAttributes:
             Dock: Right
             Controls: [lblFromAnalAttributes, grdFromAnalAttributes]
             Width: 290
+        pnlAccountsGrid:
+            Dock: Fill
+            Controls: [grdAccounts]
+        pnlFromDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [rbtFromAmountOption, txtFromTransactionAmount, Empty, rbtFromPercentageOption, txtFromPercentage]
+            ColWidths: [2=Fixed:29]
         grpAllocateTo:
             Controls: [pnlDetailGrid, pnlToDetails]
             Dock: Fill
@@ -63,7 +69,7 @@ RootNode:
             Width: 290
         pnlDetailButtons:
             Dock: Bottom
-            Controls: [btnNew, btnDeleteAllocation, btnDeleteAll]
+            Controls: [btnNew, btnDeleteReallocation, btnDeleteAll]
             ControlsOrientation: horizontal
 
         lblFromAnalAttributes:
@@ -81,6 +87,9 @@ RootNode:
             Height: 90
             Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
+        grdAccounts:
+            Dock: Fill
+            ActionFocusRow: AccountCodeDetailChanged
         grdDetails:
             Dock: Fill
             Columns: [DetailPercentage, DetailTransactionAmount, DetailCostCentreCode, DetailAccountCode]
@@ -102,39 +111,39 @@ RootNode:
             Tooltip: Enter a description of the transaction.
         txtFromReference:
             Tooltip: Enter a reference code.
-        cmbFromCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, ColSpan=2}
-            Tooltip: Enter a cost centre code (department or fund).
-        cmbFromAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2, OnChange=AccountCodeDetailChanged}
-            Tooltip: Enter an account code.
-        rgrDebitCredit:
-            ControlsOrientation: horizontal
-            OptionalValues: [Debit, =Credit]
-            NoLabel: true
-            BorderVisible: false
-        txtTotalAmount:
+        rbtFromAmountOption: {Label=Amount}
+        rbtFromPercentageOption: {Label=Percentage, OnChange=FromAmountPercentageChanged}
+        txtFromTransactionAmount: {NoLabel=true}
             Label: Amount
-            Width: 120
+            Width: 110
             Format: Currency
-            Padding: 0,14,0,0
-            OnChange: TotalAmountChanged
-            Tooltip: Enter the destination amount.
+            Enabled: false
+            OnChange: FromAmountChanged
+            Validation: true
+        txtFromPercentage: {NoLabel=true}
+            Width: 80
+            Format: PercentDecimal
+            OnChange: FromPercentageChanged
+            Validation: true
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, ColSpan=2}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2, OnChange=AccountCodeDetailChanged}
         rbtAmountOption: {Label=Amount}
-        rbtPercentageOption: {Label=Percentage, OnChange=AmountPercentageChanged}
+        rbtPercentageOption: {Label=Percentage, OnChange=ToAmountPercentageChanged}
         txtDetailTransactionAmount: {NoLabel=true}
             Label: Amount
             Width: 120
             Format: Currency
             Enabled: false
-            OnChange: AmountChanged
+            OnChange: ToAmountChanged
             Validation: true
         txtDetailPercentage: {NoLabel=true}
             Width: 80
             Format: PercentDecimal
-            OnChange: PercentageChanged
+            OnChange: ToPercentageChanged
             Validation: true
         
         btnNew: {Action=actNew, Width=80}
-        btnDeleteAllocation: {Action=actDelete, Width=80}
+        btnDeleteReallocation: {Action=actDelete, Width=80}
         btnDeleteAll: {Action=actDeleteAll, Width=80}
+
+        Empty:

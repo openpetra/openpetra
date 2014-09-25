@@ -127,18 +127,18 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the batch and all associated tables into the typed dataset
         /// </summary>
-        /// <param name="ADataSet"></param>
+        /// <param name="AGLBatchDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
         /// <returns>false if batch does not exist at all</returns>
-        private static bool LoadData(out GLBatchTDS ADataSet,
+        public static bool LoadGLBatchData(out GLBatchTDS AGLBatchDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             out TVerificationResultCollection AVerifications)
         {
             AVerifications = new TVerificationResultCollection();
-            ADataSet = new GLBatchTDS();
+            AGLBatchDS = new GLBatchTDS();
 
             bool NewTransaction = false;
 
@@ -161,15 +161,15 @@ namespace Ict.Petra.Server.MFinance.Common
                 return false;
             }
 
-            ALedgerAccess.LoadByPrimaryKey(ADataSet, ALedgerNumber, Transaction);
+            ALedgerAccess.LoadByPrimaryKey(AGLBatchDS, ALedgerNumber, Transaction);
 
-            ABatchAccess.LoadByPrimaryKey(ADataSet, ALedgerNumber, ABatchNumber, Transaction);
+            ABatchAccess.LoadByPrimaryKey(AGLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
 
-            AJournalAccess.LoadViaABatch(ADataSet, ALedgerNumber, ABatchNumber, Transaction);
+            AJournalAccess.LoadViaABatch(AGLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
 
-            ATransactionAccess.LoadViaABatch(ADataSet, ALedgerNumber, ABatchNumber, Transaction);
+            ATransactionAccess.LoadViaABatch(AGLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
 
-            ATransAnalAttribAccess.LoadViaABatch(ADataSet, ALedgerNumber, ABatchNumber, Transaction);
+            ATransAnalAttribAccess.LoadViaABatch(AGLBatchDS, ALedgerNumber, ABatchNumber, Transaction);
 
             if (NewTransaction)
             {
@@ -182,13 +182,13 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// load the tables that are needed for posting
         /// </summary>
-        /// <param name="ADataSet"></param>
+        /// <param name="APostingDS"></param>
         /// <param name="ALedgerNumber"></param>
         /// <returns>false if batch does not exist at all</returns>
-        private static bool LoadDataForPosting(out GLPostingTDS ADataSet,
+        private static bool LoadDataForPosting(out GLPostingTDS APostingDS,
             Int32 ALedgerNumber)
         {
-            ADataSet = new GLPostingTDS();
+            APostingDS = new GLPostingTDS();
 
             bool NewTransaction = false;
 
@@ -196,20 +196,23 @@ namespace Ict.Petra.Server.MFinance.Common
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
-            ALedgerAccess.LoadByPrimaryKey(ADataSet, ALedgerNumber, Transaction);
+            ALedgerAccess.LoadByPrimaryKey(APostingDS, ALedgerNumber, Transaction);
 
             // load all accounts of ledger, because we need them later for the account hierarchy tree for summarisation
-            AAccountAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
+            AAccountAccess.LoadViaALedger(APostingDS, ALedgerNumber, Transaction);
 
             // TODO: use cached table?
-            AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(ADataSet, ALedgerNumber, MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD, Transaction);
+            AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(APostingDS,
+                ALedgerNumber,
+                MFinanceConstants.ACCOUNT_HIERARCHY_STANDARD,
+                Transaction);
 
             // TODO: use cached table?
-            ACostCentreAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
+            ACostCentreAccess.LoadViaALedger(APostingDS, ALedgerNumber, Transaction);
 
-            AAnalysisTypeAccess.LoadAll(ADataSet, Transaction);
-            AFreeformAnalysisAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
-            AAnalysisAttributeAccess.LoadViaALedger(ADataSet, ALedgerNumber, Transaction);
+            AAnalysisTypeAccess.LoadAll(APostingDS, Transaction);
+            AFreeformAnalysisAccess.LoadViaALedger(APostingDS, ALedgerNumber, Transaction);
+            AAnalysisAttributeAccess.LoadViaALedger(APostingDS, ALedgerNumber, Transaction);
 
             if (NewTransaction)
             {
@@ -223,7 +226,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// Load all GLM and GLMPeriod records for the batch period and the following periods, since that will avoid loading them one by one during submitchanges.
         /// this is called after ValidateBatchAndTransactions, because the BatchYear and BatchPeriod are validated and recalculated there
         /// </summary>
-        private static void LoadGLMData(ref GLPostingTDS ADataSet, Int32 ALedgerNumber, ABatchRow ABatchToPost)
+        private static void LoadGLMData(ref GLPostingTDS AGLPostingDS, Int32 ALedgerNumber, ABatchRow ABatchToPost)
         {
             bool NewTransaction = false;
 
@@ -231,11 +234,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
-            AGeneralLedgerMasterRow GLMTemplateRow = ADataSet.AGeneralLedgerMaster.NewRowTyped(false);
+            AGeneralLedgerMasterRow GLMTemplateRow = AGLPostingDS.AGeneralLedgerMaster.NewRowTyped(false);
 
             GLMTemplateRow.LedgerNumber = ALedgerNumber;
             GLMTemplateRow.Year = ABatchToPost.BatchYear;
-            AGeneralLedgerMasterAccess.LoadUsingTemplate(ADataSet, GLMTemplateRow, Transaction);
+            AGeneralLedgerMasterAccess.LoadUsingTemplate(AGLPostingDS, GLMTemplateRow, Transaction);
 
             string query = "SELECT PUB_a_general_ledger_master_period.* " +
                            "FROM PUB_a_general_ledger_master, PUB_a_general_ledger_master_period " +
@@ -255,9 +258,9 @@ namespace Ict.Petra.Server.MFinance.Common
             parameter = new OdbcParameter("period", OdbcType.Int);
             parameter.Value = ABatchToPost.BatchPeriod;
             parameters.Add(parameter);
-            DBAccess.GDBAccessObj.Select(ADataSet,
+            DBAccess.GDBAccessObj.Select(AGLPostingDS,
                 query,
-                ADataSet.AGeneralLedgerMasterPeriod.TableName, Transaction, parameters.ToArray());
+                AGLPostingDS.AGeneralLedgerMasterPeriod.TableName, Transaction, parameters.ToArray());
 
             if (NewTransaction)
             {
@@ -269,7 +272,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// runs validations on batch, journals and transactions
         /// some things are even modified, eg. batch period etc from date effective
         /// </summary>
-        private static bool ValidateBatchAndTransactions(ref GLBatchTDS ADataSet,
+        private static bool ValidateBatchAndTransactions(ref GLBatchTDS AGLBatchDS,
             GLPostingTDS APostingDS,
             Int32 ALedgerNumber,
             ABatchRow ABatchToPost,
@@ -289,7 +292,7 @@ namespace Ict.Petra.Server.MFinance.Common
             // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
 
             // Calculate the credit and debit totals
-            GLRoutines.UpdateTotalsOfBatch(ref ADataSet, ABatchToPost, false);
+            GLRoutines.UpdateTotalsOfBatch(ref AGLBatchDS, ABatchToPost, false);
 
             if (ABatchToPost.BatchCreditTotal != ABatchToPost.BatchDebitTotal)
             {
@@ -299,7 +302,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
-            else if ((ABatchToPost.BatchCreditTotal == 0) && ((ADataSet.AJournal.Rows.Count == 0) || (ADataSet.ATransaction.Rows.Count == 0)))
+            else if ((ABatchToPost.BatchCreditTotal == 0) && ((AGLBatchDS.AJournal.Rows.Count == 0) || (AGLBatchDS.ATransaction.Rows.Count == 0)))
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
@@ -350,7 +353,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 out PostingPeriodEndDate,
                 Transaction);
 
-            foreach (ATransactionRow transRow in ADataSet.ATransaction.Rows)
+            foreach (ATransactionRow transRow in AGLBatchDS.ATransaction.Rows)
             {
                 if ((transRow.BatchNumber == ABatchToPost.BatchNumber)
                     && (transRow.TransactionDate < PostingPeriodStartDate) || (transRow.TransactionDate > PostingPeriodEndDate))
@@ -373,9 +376,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            DataView TransactionsOfJournalView = new DataView(ADataSet.ATransaction);
+            DataView TransactionsOfJournalView = new DataView(AGLBatchDS.ATransaction);
 
-            foreach (AJournalRow journal in ADataSet.AJournal.Rows)
+            foreach (AJournalRow journal in AGLBatchDS.AJournal.Rows)
             {
                 journal.DateEffective = ABatchToPost.DateEffective;
                 journal.JournalPeriod = ABatchToPost.BatchPeriod;
@@ -1116,7 +1119,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                                  (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
 
                 // get the data from the database into the MainDS
-                if (!LoadData(out MainDS, ALedgerNumber, ABatchNumberToReverse, out AVerifications))
+                if (!LoadGLBatchData(out MainDS, ALedgerNumber, ABatchNumberToReverse, out AVerifications))
                 {
                     return false;
                 }
@@ -1262,7 +1265,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             AVerifications = null;
 
-
             LoadDataForPosting(out PostingDS, ALedgerNumber);
 
             SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
@@ -1341,7 +1343,7 @@ namespace Ict.Petra.Server.MFinance.Common
             // get the data from the database into the MainDS
             GLBatchTDS BatchDS;
 
-            if (!LoadData(out BatchDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!LoadGLBatchData(out BatchDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 return false;
             }
@@ -1424,7 +1426,7 @@ namespace Ict.Petra.Server.MFinance.Common
             TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
             // get the data from the database into the MainDS
-            if (!LoadData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!LoadGLBatchData(out AMainDS, ALedgerNumber, ABatchNumber, out AVerifications))
             {
                 RetVal = false;
             }

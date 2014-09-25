@@ -23,6 +23,8 @@
 //
 using System.Xml;
 using System;
+using Ict.Common.Controls;
+
 namespace ControlTestBench
 {
 partial class TaskListCheck
@@ -56,7 +58,7 @@ partial class TaskListCheck
     /// </summary>
     private void InitializeComponent(XmlNode node, Ict.Common.Controls.TVisualStylesEnum Style)
     {
-        this.taskList1 = new Ict.Common.Controls.TTaskList(node, Style);
+        this.taskList1 = new TTaskList(node, Style);
         this.DisableItemButton = new System.Windows.Forms.Button();
         this.HideItemButton = new System.Windows.Forms.Button();
         //this.taskList1.VisualStyle = new Ict.Common.Controls.TVisualStyles(Ict.Common.Controls.TVisualStylesEnum.vsAccordionPanel);
@@ -118,14 +120,8 @@ partial class TaskListCheck
 
         if (temp != null)
         {
-            if (this.taskList1.IsDisabled(temp))
-            {
-                this.taskList1.DisableTaskItem(temp);
-            }
-            else
-            {
-                this.taskList1.EnableTaskItem(temp);
-            }
+            this.taskList1.EnableDisableTaskItem(temp,
+                !TTaskList.IsDisabled(temp));
         }
     }
 
@@ -135,20 +131,8 @@ partial class TaskListCheck
 
         if (temp != null)
         {
-            if (!this.taskList1.IsVisible(temp))
-            {
-                this.taskList1.ShowTaskItem(temp);
-            }
-            else
-            {
-                this.taskList1.HideTaskItem(temp);
-            }
+            this.taskList1.ShowHideTaskItem(temp, !TTaskList.IsVisible(temp));
         }
-
-//			temp = this.taskList1.GetTaskByNumber("3");
-//			if(temp != null){
-//				this.taskList1.ShowTaskItem(temp);
-//			}
     }
 
     private Ict.Common.Controls.TTaskList taskList1;

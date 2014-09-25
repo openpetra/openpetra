@@ -734,7 +734,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     long PartnerKey = (long)Row[PartnerKeyDBName];
 
-                    GetReceivingFieldFromPartnerTable(PartnerKey, ref AFieldsTable);
+                    GetReceivingFieldFromGiftDestination(PartnerKey, ref AFieldsTable);
                     GetReceivingFieldFromShortTermTable(PartnerKey, ref AFieldsTable);
                 }
             }
@@ -813,12 +813,12 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <param name="APartnerKey"></param>
         /// <param name="AFieldsTable"></param>
         /// <returns></returns>
-        private static bool GetReceivingFieldFromPartnerTable(long APartnerKey, ref DataTable AFieldsTable)
+        private static bool GetReceivingFieldFromGiftDestination(long APartnerKey, ref DataTable AFieldsTable)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-            TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldFromPartnerTable called!");
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldFromGiftDestination called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -826,8 +826,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             try
             {
-                PFamilyTable FamilyTable;
                 PPersonTable PersonTable;
+                PPartnerGiftDestinationTable GiftDestinationTable;
+                long FamilyKey = APartnerKey;
 
                 PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
@@ -835,20 +836,20 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     PPersonRow PersonRow = (PPersonRow)PersonTable[0];
 
-                    if (!PersonRow.IsFieldKeyNull())
+                    FamilyKey = PersonRow.FamilyKey;
+                }
+
+                GiftDestinationTable = PPartnerGiftDestinationAccess.LoadViaPPartner(FamilyKey, ReadTransaction);
+
+                if (GiftDestinationTable.Rows.Count > 0)
+                {
+                    foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
                     {
-                        AddFieldToTable(PersonRow.FieldKey, ref AFieldsTable, ref ReadTransaction);
-                    }
-
-                    FamilyTable = PFamilyAccess.LoadByPrimaryKey(PersonRow.FamilyKey, ReadTransaction);
-
-                    if (FamilyTable.Rows.Count > 0)
-                    {
-                        PFamilyRow FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
-
-                        if (!FamilyRow.IsFieldKeyNull())
+                        // check if the gift destination is currently active
+                        if ((Row.DateEffective <= DateTime.Today)
+                            && (Row.IsDateExpiresNull() || ((Row.DateExpires >= DateTime.Today) && (Row.DateExpires != Row.DateEffective))))
                         {
-                            AddFieldToTable(FamilyRow.FieldKey, ref AFieldsTable, ref ReadTransaction);
+                            AddFieldToTable(Row.FieldKey, ref AFieldsTable, ref ReadTransaction);
                         }
                     }
                 }
