@@ -272,10 +272,17 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (TempRow == null)
             {
-                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
-                    APeriodNumber,
-                    null);
+                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
                 AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+
+                TDBTransaction transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref transaction,
+                delegate
+                {
+                    GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence, APeriodNumber, transaction);
+                });
 
                 if (GeneralLedgerMasterPeriodTable.Count > 0)
                 {
