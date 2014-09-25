@@ -118,7 +118,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 }
 
                 //Create table for conversion to XML and export to CSV
-                AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, null);
+                AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, DBTransaction);
                 AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
                 DateTime PeriodEndDate = AccountingPeriodRow.PeriodEndDate;

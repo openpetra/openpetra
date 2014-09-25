@@ -64,53 +64,61 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool AInfoMode,
             out TVerificationResultCollection AVerificationResults)
         {
-            TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+            bool RetVal = false;
 
-            bool NewTransaction;
+            AVerificationResults = new TVerificationResultCollection();
+            TVerificationResultCollection VerificationResults = AVerificationResults;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            bool SubmissionOK = true;
+            TDBTransaction Transaction = null;
 
-            try
-            {
-                bool res = new TMonthEnd().RunMonthEnd(ALedgerNumber, AInfoMode,
-                    out AVerificationResults);
-
-                if (!res && !AInfoMode)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ledgerInfo.CurrentPeriod, null);
-
-                    if (PeriodTbl.Rows.Count > 0)
+                    try
                     {
-                        AVerificationResults.Add(
+                        TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+
+                        RetVal = new TMonthEnd().RunMonthEnd(ALedgerNumber, AInfoMode,
+                            out VerificationResults);
+
+                        if (!RetVal && !AInfoMode)
+                        {
+                            AAccountingPeriodTable PeriodTbl =
+                                AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ledgerInfo.CurrentPeriod, Transaction);
+
+                            if (PeriodTbl.Rows.Count > 0)
+                            {
+                                VerificationResults.Add(
+                                    new TVerificationResult(
+                                        Catalog.GetString("Month End"),
+                                        String.Format(Catalog.GetString("The period {0} - {1} has been closed."),
+                                            PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
+                                        TResultSeverity.Resv_Status));
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("TPeriodIntervallConnector.TPeriodMonthEnd() throws " + e.ToString());
+                        VerificationResults.Add(
                             new TVerificationResult(
                                 Catalog.GetString("Month End"),
-                                String.Format(Catalog.GetString("The period {0} - {1} has been closed."),
-                                    PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
-                                TResultSeverity.Resv_Status));
+                                Catalog.GetString("Uncaught Exception: ") + e.Message,
+                                TResultSeverity.Resv_Critical));
+
+                        SubmissionOK = false;
+
+                        RetVal = true;
                     }
-                }
+                });
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
+            AVerificationResults = VerificationResults;
 
-                return res;
-            }
-            catch (Exception e)
-            {
-                TLogging.Log("TPeriodIntervallConnector.TPeriodMonthEnd() throws " + e.ToString());
-                AVerificationResults = new TVerificationResultCollection();
-                AVerificationResults.Add(
-                    new TVerificationResult(
-                        Catalog.GetString("Month End"),
-                        Catalog.GetString("Uncaught Exception: ") + e.Message,
-                        TResultSeverity.Resv_Critical));
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                return true;
-            }
+            return RetVal;
         }
     }
 }
@@ -167,7 +175,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (AInfoMode)
             {
-                AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, FledgerInfo.CurrentPeriod, null);
+                AAccountingPeriodTable PeriodTbl = null;
+
+                TDBTransaction transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref transaction,
+                    delegate
+                    {
+                        PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, FledgerInfo.CurrentPeriod, transaction);
+                    });
 
                 if (PeriodTbl.Rows.Count > 0)
                 {
