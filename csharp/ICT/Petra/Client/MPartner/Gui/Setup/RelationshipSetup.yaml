@@ -52,7 +52,7 @@ RootNode:
                 Row3: [chkDetailDeletable]
         txtDetailRelationName: {Label=Relationship, CharacterCasing=Upper}
         txtDetailRelationDescription: {Label=Description, Width=250}
-        cmbDetailRelationCategory: {List=RelationCategoryList}
+        cmbDetailRelationCategory: {List=RelationCategoryList, AllowDbNull=true}
         txtDetailReciprocalDescription: {Width=250}
         chkDetailValidRelation: {Label=Assignable}
         chkDetailDeletable: 

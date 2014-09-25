@@ -39,11 +39,10 @@ RootNode:
             Width: 80
         grdDetails:
             Dock: Fill
-            Columns: [DetailGroup, DetailText, DetailDataType, DetailDisplayed]
+            Columns: [DetailGroup, DetailText]
             CustomColumns:
                 DetailGroup: {Label=Group Heading}            
                 DetailText: {Label=Label}            
-                DetailDisplayed: {Label=Displayed, Type=Boolean}            
             SortOrder: DetailGroup ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:

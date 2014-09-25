@@ -104,10 +104,10 @@ namespace Ict.Tools.NAntTasks
 
             if (FTestCase.Length > 0)
             {
-                process.StartInfo.Arguments += " /run=" + FTestCase;
+                process.StartInfo.Arguments += " -run=" + FTestCase;
             }
 
-            process.StartInfo.Arguments += " /labels";
+            process.StartInfo.Arguments += " -labels";
 
             System.Console.WriteLine("Testing " + FAssemblyName + " " + FTestCase);
 
@@ -117,6 +117,7 @@ namespace Ict.Tools.NAntTasks
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardError = true;
             process.EnableRaisingEvents = true;
+
             try
             {
                 if (!process.Start())

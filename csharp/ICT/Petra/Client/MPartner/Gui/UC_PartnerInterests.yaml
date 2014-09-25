@@ -48,9 +48,9 @@ RootNode:
                 Row3: [txtPPartnerInterestFieldKey]
                 Row4: [cmbPPartnerInterestLevel, txtInterestLevelExplanation]
                 Row5: [txtPPartnerInterestComment]
-        cmbPPartnerInterestInterestCategory: {ColSpan=2, Label=Interest Category, List=InterestCategoryList, OnChange=FilterInterestCombo, Validation=true}
-        cmbPPartnerInterestInterest: {ColSpan=2, Label=Interest, List=InterestList, Validation=Pair(cmbPPartnerInterestInterestCategory)}
-        cmbPPartnerInterestCountry: {ColSpan=2, Label=Country, List=CountryList, Validation=true}
+        cmbPPartnerInterestInterestCategory: {ColSpan=2, Label=Interest Category, List=InterestCategoryList, AllowDbNull=true, OnChange=FilterInterestCombo, Validation=true}
+        cmbPPartnerInterestInterest: {ColSpan=2, Label=Interest, List=InterestList, AllowDbNull=true, Validation=Pair(cmbPPartnerInterestInterestCategory)}
+        cmbPPartnerInterestCountry: {ColSpan=2, Label=Country, List=CountryList, AllowDbNull=true, Validation=true}
         txtPPartnerInterestFieldKey: {ColSpan=2, Label=Field, Type=PartnerKey, PartnerClass=UNIT}
         cmbPPartnerInterestLevel: {Label=Level, Width=50}
         txtInterestLevelExplanation:

@@ -123,6 +123,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.lblWebLinkInfo = new System.Windows.Forms.Label();
             this.lstExternalWebLinks = new System.Windows.Forms.ListBox();
             this.OptionsPage = new System.Windows.Forms.TabPage();
+            this.chkCheckForUpdatesAtStartup = new System.Windows.Forms.CheckBox();
+            this.btnCheckForUpdates = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.btnAdvancedOptions = new System.Windows.Forms.Button();
             this.btnBrowseBazaar = new System.Windows.Forms.Button();
@@ -964,6 +966,8 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // OptionsPage
             //
+            this.OptionsPage.Controls.Add(this.chkCheckForUpdatesAtStartup);
+            this.OptionsPage.Controls.Add(this.btnCheckForUpdates);
             this.OptionsPage.Controls.Add(this.groupBox4);
             this.OptionsPage.Controls.Add(this.groupBox3);
             this.OptionsPage.Controls.Add(this.lblVersion);
@@ -974,6 +978,28 @@ namespace Ict.Tools.DevelopersAssistant
             this.OptionsPage.TabIndex = 2;
             this.OptionsPage.Text = "Options";
             this.OptionsPage.UseVisualStyleBackColor = true;
+            //
+            // chkCheckForUpdatesAtStartup
+            //
+            this.chkCheckForUpdatesAtStartup.AutoSize = true;
+            this.chkCheckForUpdatesAtStartup.Checked = true;
+            this.chkCheckForUpdatesAtStartup.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkCheckForUpdatesAtStartup.Location = new System.Drawing.Point(344, 431);
+            this.chkCheckForUpdatesAtStartup.Name = "chkCheckForUpdatesAtStartup";
+            this.chkCheckForUpdatesAtStartup.Size = new System.Drawing.Size(283, 17);
+            this.chkCheckForUpdatesAtStartup.TabIndex = 5;
+            this.chkCheckForUpdatesAtStartup.Text = "Always check for updates when the Assistant starts up";
+            this.chkCheckForUpdatesAtStartup.UseVisualStyleBackColor = true;
+            //
+            // btnCheckForUpdates
+            //
+            this.btnCheckForUpdates.Location = new System.Drawing.Point(185, 427);
+            this.btnCheckForUpdates.Name = "btnCheckForUpdates";
+            this.btnCheckForUpdates.Size = new System.Drawing.Size(118, 23);
+            this.btnCheckForUpdates.TabIndex = 4;
+            this.btnCheckForUpdates.Text = "Check for Updates";
+            this.btnCheckForUpdates.UseVisualStyleBackColor = true;
+            this.btnCheckForUpdates.Click += new System.EventHandler(this.btnCheckForUpdates_Click);
             //
             // groupBox4
             //
@@ -1241,6 +1267,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.Name = "MainForm";
             this.Text = "Open Petra Developer\'s Assistant";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.tabControl.ResumeLayout(false);
             this.TaskPage.ResumeLayout(false);
             this.TaskPage.PerformLayout();
@@ -1365,5 +1392,7 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.LinkLabel linkRefreshLinks;
         private System.Windows.Forms.LinkLabel linkEditLinks;
         private System.Windows.Forms.Timer TickTimer;
+        private System.Windows.Forms.Button btnCheckForUpdates;
+        private System.Windows.Forms.CheckBox chkCheckForUpdatesAtStartup;
     }
 }
