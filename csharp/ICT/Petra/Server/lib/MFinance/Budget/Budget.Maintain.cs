@@ -67,18 +67,19 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             BudgetTDS MainDS = new BudgetTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                //TODO: need to filter on Year
-                ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
-                ABudgetPeriodAccess.LoadAll(MainDS, Transaction);
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            });
+                delegate
+                {
+                    //TODO: need to filter on Year
+                    ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
+                    ABudgetPeriodAccess.LoadAll(MainDS, Transaction);
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                });
 
 //            ABudgetPeriodTable BudgetPeriodTable = new ABudgetPeriodTable();
 //            ABudgetPeriodRow TemplateRow = (ABudgetPeriodRow)BudgetPeriodTable.NewRow(false);
@@ -311,11 +312,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         ref transaction,
-                    delegate
-                    {
-                        ABudgetAccess.LoadByUniqueKey(MainDS, ALedgerNumber, YearForBudgetRevision, BdgRevision, CostCentre, Account, transaction);
-                        //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
-                    });
+                        delegate
+                        {
+                            ABudgetAccess.LoadByUniqueKey(MainDS, ALedgerNumber, YearForBudgetRevision, BdgRevision, CostCentre, Account, transaction);
+                            //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
+                        });
 
                     //Check to see if the budget combination already exists:
                     if (MainDS.ABudget.Count > 0)
@@ -405,14 +406,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             AAccountingPeriodTable accPeriodTable = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
-            });
+                delegate
+                {
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+                });
 
             ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
             AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
@@ -441,15 +443,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             AAccountingPeriodTable accPeriodTable = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
-            });
-            
+                delegate
+                {
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+                });
+
             ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
             AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
 

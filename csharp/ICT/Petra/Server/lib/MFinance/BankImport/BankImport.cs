@@ -429,13 +429,13 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                DBAccess.GDBAccessObj.SelectDT(ResultDataset.AEpMatch,
-                    sqlLoadMatchesOfStatement,
-                    Transaction,
-                    new OdbcParameter[] { param }, -1, -1);
-            });
+                delegate
+                {
+                    DBAccess.GDBAccessObj.SelectDT(ResultDataset.AEpMatch,
+                        sqlLoadMatchesOfStatement,
+                        Transaction,
+                        new OdbcParameter[] { param }, -1, -1);
+                });
 
             // update the custom field for cost centre name for each match
             foreach (BankImportTDSAEpMatchRow row in ResultDataset.AEpMatch.Rows)

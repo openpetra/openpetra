@@ -49,12 +49,21 @@ namespace Ict.Petra.Server.MFinance.Common
         public static int GetGLMSequenceForBudget(int ALedgerNumber, string AAccountCode, string ACostCentreCode, int AYear)
         {
             int retVal;
+            AGeneralLedgerMasterTable GeneralLedgerMasterTable = null;
 
-            AGeneralLedgerMasterTable GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByUniqueKey(ALedgerNumber,
-                AYear,
-                AAccountCode,
-                ACostCentreCode,
-                null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByUniqueKey(ALedgerNumber,
+                        AYear,
+                        AAccountCode,
+                        ACostCentreCode,
+                        Transaction);
+                });
 
             if (GeneralLedgerMasterTable.Count > 0)
             {

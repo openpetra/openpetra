@@ -78,15 +78,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                AAccountingPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-            });
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AAccountingPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -112,7 +113,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ACalendarStartDate = DateTime.MinValue;
             ACurrencyChangeAllowed = false;
             ACalendarChangeAllowed = false;
-            
+
             DateTime CalendarStartDate = ACalendarStartDate;
             bool CurrencyChangeAllowed = ACurrencyChangeAllowed;
 
@@ -122,56 +123,56 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                ALedgerInitFlagAccess.LoadViaALedger(MainDS, ALedgerNumber, null, Transaction);
-
-                // retrieve calendar start date (start date of financial year)
-                AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
-
-                if (CalendarTable.Count > 0)
+                delegate
                 {
-                    CalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
-                }
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    ALedgerInitFlagAccess.LoadViaALedger(MainDS, ALedgerNumber, null, Transaction);
 
-                // now check if currency change would be allowed
-                CurrencyChangeAllowed = true;
+                    // retrieve calendar start date (start date of financial year)
+                    AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
 
-                if ((AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
-                    || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
-                {
-                    // don't allow currency change if journals or gift batches exist
-                    CurrencyChangeAllowed = false;
-                }
-
-                if (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
-                {
-                    // don't allow currency change if journals exist
-                    CurrencyChangeAllowed = false;
-                }
-
-                if (CurrencyChangeAllowed)
-                {
-                    // don't allow currency change if there are foreign currency accounts for this ledger
-                    AAccountTable TemplateTable;
-                    AAccountRow TemplateRow;
-                    StringCollection TemplateOperators;
-
-                    TemplateTable = new AAccountTable();
-                    TemplateRow = TemplateTable.NewRowTyped(false);
-                    TemplateRow.LedgerNumber = ALedgerNumber;
-                    TemplateRow.ForeignCurrencyFlag = true;
-                    TemplateOperators = new StringCollection();
-                    TemplateOperators.Add("=");
-
-                    if (AAccountAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
+                    if (CalendarTable.Count > 0)
                     {
+                        CalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
+                    }
+
+                    // now check if currency change would be allowed
+                    CurrencyChangeAllowed = true;
+
+                    if ((AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                        || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
+                    {
+                        // don't allow currency change if journals or gift batches exist
                         CurrencyChangeAllowed = false;
                     }
-                }
-            });
+
+                    if (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                    {
+                        // don't allow currency change if journals exist
+                        CurrencyChangeAllowed = false;
+                    }
+
+                    if (CurrencyChangeAllowed)
+                    {
+                        // don't allow currency change if there are foreign currency accounts for this ledger
+                        AAccountTable TemplateTable;
+                        AAccountRow TemplateRow;
+                        StringCollection TemplateOperators;
+
+                        TemplateTable = new AAccountTable();
+                        TemplateRow = TemplateTable.NewRowTyped(false);
+                        TemplateRow.LedgerNumber = ALedgerNumber;
+                        TemplateRow.ForeignCurrencyFlag = true;
+                        TemplateOperators = new StringCollection();
+                        TemplateOperators.Add("=");
+
+                        if (AAccountAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
+                        {
+                            CurrencyChangeAllowed = false;
+                        }
+                    }
+                });
 
             ACalendarStartDate = CalendarStartDate;
             ACurrencyChangeAllowed = CurrencyChangeAllowed;
@@ -681,20 +682,21 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
-                AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-            });
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
+                    AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // set Account BankAccountFlag if there exists a property
             foreach (AAccountPropertyRow accProp in MainDS.AAccountProperty.Rows)
@@ -743,15 +745,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-                ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AValidLedgerNumberAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-            });
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AValidLedgerNumberAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -775,17 +778,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                               " FROM PUB_a_cost_centre" +
                               " WHERE a_ledger_number_i = " + ALedgerNumber +
                               " AND a_cost_centre_type_c = 'Local';";
-            
+
             DataTable ParentCostCentreTbl = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", Transaction);
-            });
+                delegate
+                {
+                    ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", Transaction);
+                });
 
             return ParentCostCentreTbl;
         }
@@ -809,32 +813,33 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             DataTable PartnerCostCentreTbl = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
-
-                PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
-                AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
-
-                foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
+                delegate
                 {
-                    Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
+                    PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
-                    if (RowIdx >= 0)
+                    PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
+                    AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+
+                    foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
                     {
-                        PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
-                        ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, Transaction);
+                        Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
 
-                        if (CCTbl.Rows.Count > 0)
+                        if (RowIdx >= 0)
                         {
-                            PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                            PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
+                            ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, Transaction);
+
+                            if (CCTbl.Rows.Count > 0)
+                            {
+                                PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                            }
                         }
                     }
-                }
-            });
+                });
 
             return PartnerCostCentreTbl;
         }
@@ -865,26 +870,27 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                               " ORDER BY a_cost_centre_code_c";
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
-
-                foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                delegate
                 {
-                    TAddressTools.GetBestAddress(
-                        Convert.ToInt64(Row["PartnerKey"]),
-                        out tbl,
-                        out PartnerLocation,
-                        out CountryNameLocal,
-                        out EmailAddress,
-                        Transaction
-                        );
-                    Row["EmailAddress"] = EmailAddress;
-                }
-            });
+                    PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+
+                    foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                    {
+                        TAddressTools.GetBestAddress(
+                            Convert.ToInt64(Row["PartnerKey"]),
+                            out tbl,
+                            out PartnerLocation,
+                            out CountryNameLocal,
+                            out EmailAddress,
+                            Transaction
+                            );
+                        Row["EmailAddress"] = EmailAddress;
+                    }
+                });
 
             return PartnerCostCentreTbl;
         }
@@ -1443,10 +1449,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                                 TEnforceIsolationLevel.eilMinimum,
                                 ref transaction,
-                            delegate
-                            {
-                                AAccountPropertyAccess.LoadViaALedger(inspectDS, ALedgerNumber, transaction);
-                            });
+                                delegate
+                                {
+                                    AAccountPropertyAccess.LoadViaALedger(inspectDS, ALedgerNumber, transaction);
+                                });
                         }
 
                         AInspectDS.AAccountProperty.DefaultView.RowFilter =
@@ -1715,21 +1721,23 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-            });
+                delegate
+                {
+                    AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
             AAccountHierarchyRow accountHierarchy = (AAccountHierarchyRow)MainDS.AAccountHierarchy.Rows.Find(new object[] { ALedgerNumber,
                                                                                                                             AAccountHierarchyName });
+
             if (accountHierarchy != null)
             {
                 // find the BALSHT account that is reporting to the root account
@@ -1783,13 +1791,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-            });
+                delegate
+                {
+                    ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
@@ -1967,11 +1976,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         ref transaction,
-                    delegate
-                    {
-                        // if there are any existing posted transactions that reference this account, it can't be deleted.
-                        transTbl = ATransactionAccess.LoadViaAAccount(ALedgerNumber, accountRow.AccountCode, transaction);
-                    });
+                        delegate
+                        {
+                            // if there are any existing posted transactions that reference this account, it can't be deleted.
+                            transTbl = ATransactionAccess.LoadViaAAccount(ALedgerNumber, accountRow.AccountCode, transaction);
+                        });
 
                     if (transTbl.Rows.Count == 0) // No-one's used this account, so I can delete it.
                     {
@@ -3132,7 +3141,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             // TODO check for permissions of the current user
             ALedgerTable LedgerTable = null;
-            
+
             StringCollection Fields = new StringCollection();
 
             Fields.Add(ALedgerTable.GetLedgerNameDBName());
@@ -3144,10 +3153,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                LedgerTable = ALedgerAccess.LoadAll(Fields, Transaction, null, 0, 0);
-            });
+                delegate
+                {
+                    LedgerTable = ALedgerAccess.LoadAll(Fields, Transaction, null, 0, 0);
+                });
 
             return LedgerTable;
         }
@@ -3161,13 +3170,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             GLSetupTDS MainDS = new GLSetupTDS();
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-            });
+                delegate
+                {
+                    AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -3252,13 +3262,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             int RetVal = 0;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                RetVal = ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, Transaction);
-            });
+                delegate
+                {
+                    RetVal = ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, Transaction);
+                });
 
             return RetVal;
         }
@@ -3270,16 +3281,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static int CheckDeleteAAnalysisType(String ATypeCode)
         {
             int RetVal = 0;
-            
+
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, Transaction);
-            });
-            
+                delegate
+                {
+                    RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, Transaction);
+                });
+
             return RetVal;
         }
 
@@ -3293,13 +3305,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AAnalysisAttributeTable tbl = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, Transaction);
-            });
+                delegate
+                {
+                    tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, Transaction);
+                });
 
             foreach (AAnalysisAttributeRow Row in tbl.Rows)
             {

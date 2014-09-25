@@ -67,6 +67,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             PCountryTable CountryTable = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -151,6 +152,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             PCountryTable CountryTable = null;
 
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,

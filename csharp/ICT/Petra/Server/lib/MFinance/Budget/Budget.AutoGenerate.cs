@@ -67,19 +67,20 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         public static BudgetTDS LoadBudgetForAutoGenerate(Int32 ALedgerNumber)
         {
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-            delegate
-            {
-                //TODO: need to filter on Year
-                ABudgetAccess.LoadViaALedger(FMainDS, ALedgerNumber, Transaction);
-                ABudgetRevisionAccess.LoadViaALedger(FMainDS, ALedgerNumber, Transaction);
-                //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
-                ABudgetPeriodAccess.LoadAll(FMainDS, Transaction);
-                ALedgerAccess.LoadByPrimaryKey(FMainDS, ALedgerNumber, Transaction);
-                ABudgetTypeAccess.LoadAll(FMainDS, Transaction);
-            });
+                delegate
+                {
+                    //TODO: need to filter on Year
+                    ABudgetAccess.LoadViaALedger(FMainDS, ALedgerNumber, Transaction);
+                    ABudgetRevisionAccess.LoadViaALedger(FMainDS, ALedgerNumber, Transaction);
+                    //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
+                    ABudgetPeriodAccess.LoadAll(FMainDS, Transaction);
+                    ALedgerAccess.LoadByPrimaryKey(FMainDS, ALedgerNumber, Transaction);
+                    ABudgetTypeAccess.LoadAll(FMainDS, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             FMainDS.AcceptChanges();
