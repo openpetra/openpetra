@@ -76,7 +76,14 @@ namespace Tests.MFinance.Server.CrossLedger
 
             try
             {
-                ALedgerAccess.LoadAll(FMainDS, null);
+                TDBTransaction transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref transaction,
+                    delegate
+                    {
+                        ALedgerAccess.LoadAll(FMainDS, transaction);
+                    });
 
                 // Check that our test rows are not in the database already
                 if (!FindTestRows(FTestLedgerList))

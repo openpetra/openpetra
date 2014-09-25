@@ -52,7 +52,7 @@ namespace Ict.Petra.Server.MFinance.Common
             if (ASequence != -1)
             {
                 bool NewTransaction = false;
-                
+
                 try
                 {
                     TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -144,7 +144,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, int ACurrentFinancialYear)
         {
             bool NewTransaction = false;
-            
+
             try
             {
                 TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -179,7 +179,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGet_GLM_Info(int ALedgerNumber, string AAccountCode, string ACostCentreCode)
         {
             bool NewTransaction = false;
-            
+
             try
             {
                 TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,

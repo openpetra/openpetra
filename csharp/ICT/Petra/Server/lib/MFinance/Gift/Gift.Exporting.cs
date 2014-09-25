@@ -335,8 +335,19 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (partnerKey > 0)
             {
                 // Get Partner ShortName
-                PPartnerTable pt = PPartnerAccess.LoadByPrimaryKey(partnerKey,
-                    StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }), null, null, 0, 0);
+                PPartnerTable pt = null;
+
+                TDBTransaction Transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        pt =
+                            PPartnerAccess.LoadByPrimaryKey(partnerKey,
+                                StringHelper.InitStrArr(new String[] { PPartnerTable.GetPartnerShortNameDBName() }),
+                                Transaction, null, 0, 0);
+                    });
 
                 if (pt.Rows.Count == 1)
                 {

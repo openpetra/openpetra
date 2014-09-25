@@ -66,19 +66,26 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             BudgetTDS MainDS = new BudgetTDS();
 
-            //TODO: need to filter on Year
-            ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
-            ABudgetPeriodAccess.LoadAll(MainDS, null);
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
 
-//            ABudgetPeriodTable BudgetPeriodTable = new ABudgetPeriodTable();
-//            ABudgetPeriodRow TemplateRow = (ABudgetPeriodRow)BudgetPeriodTable.NewRow(false);
-//
-//            TemplateRow.BudgetSequence;
-//            ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, null);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    //TODO: need to filter on Year
+                    ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
+                    ABudgetPeriodAccess.LoadAll(MainDS, Transaction);
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
+                    //            ABudgetPeriodTable BudgetPeriodTable = new ABudgetPeriodTable();
+                    //            ABudgetPeriodRow TemplateRow = (ABudgetPeriodRow)BudgetPeriodTable.NewRow(false);
+                    //
+                    //            TemplateRow.BudgetSequence;
+                    //            ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -300,8 +307,15 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                     BudgetTDS MainDS = new BudgetTDS();
 
-                    ABudgetAccess.LoadByUniqueKey(MainDS, ALedgerNumber, YearForBudgetRevision, BdgRevision, CostCentre, Account, null);
-                    //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
+                    TDBTransaction transaction = null;
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        ref transaction,
+                        delegate
+                        {
+                            ABudgetAccess.LoadByUniqueKey(MainDS, ALedgerNumber, YearForBudgetRevision, BdgRevision, CostCentre, Account, transaction);
+                            //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
+                        });
 
                     //Check to see if the budget combination already exists:
                     if (MainDS.ABudget.Count > 0)
@@ -387,11 +401,21 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         private static int BudgetRevisionYearNumber(int ALedgerNumber, string ABudgetYearName)
         {
             int budgetYear = 0;
+            ALedgerTable LedgerTable = null;
+            AAccountingPeriodTable accPeriodTable = null;
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+                });
+
             ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-            AAccountingPeriodTable accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, null);
             AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
 
             if (ABudgetYearName.ToUpper() == "THIS")
@@ -414,11 +438,21 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         private static string BudgetRevisionYearName(int ALedgerNumber, int ABudgetRevisionYear)
         {
             int budgetYear = 0;
+            ALedgerTable LedgerTable = null;
+            AAccountingPeriodTable accPeriodTable = null;
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+                });
+
             ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-            AAccountingPeriodTable accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, null);
             AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
 
             DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
