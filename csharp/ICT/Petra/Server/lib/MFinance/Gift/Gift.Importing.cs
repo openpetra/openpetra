@@ -81,7 +81,16 @@ namespace Ict.Petra.Server.MFinance.Gift
                 mdRow.LedgerNumber = AgiftDetails.LedgerNumber;
                 mdRow.MotivationGroupCode = AgiftDetails.MotivationGroupCode;
                 mdRow.MotivationDetailCode = AgiftDetails.MotivationDetailCode;
-                AMotivationDetailTable tempTbl = AMotivationDetailAccess.LoadUsingTemplate(mdRow, null);
+                AMotivationDetailTable tempTbl = null;
+
+                TDBTransaction Transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        tempTbl = AMotivationDetailAccess.LoadUsingTemplate(mdRow, Transaction);
+                    });
 
                 if (tempTbl.Rows.Count > 0)
                 {

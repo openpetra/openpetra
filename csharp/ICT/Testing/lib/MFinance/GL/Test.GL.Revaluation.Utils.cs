@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.Data;
 using NUnit.Framework;
 using Ict.Testing.NUnitTools;
 using Ict.Testing.NUnitPetraServer;
@@ -65,7 +66,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// </summary>
         public void LoadTestTata()
         {
-            ACurrencyTable currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", null);
+            ACurrencyTable currencyTable = null;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    currencyTable = ACurrencyAccess.LoadByPrimaryKey("DMG", Transaction);
+                });
 
             if (currencyTable.Rows.Count == 0)
             {

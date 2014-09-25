@@ -65,26 +65,22 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void LoadInfoLine()
         {
-            bool NewTransaction = false;
+            TDBTransaction Transaction = null;
 
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, transaction);
-                row = (ALedgerRow)ledger[0];
+                    ref Transaction,
+                    delegate
+                    {
+                        ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, Transaction);
+                        row = (ALedgerRow)ledger[0];
+                    });
             }
             catch (Exception)
             {
                 throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
             }
         }
 
