@@ -242,7 +242,15 @@ namespace Ict.Petra.Server.MFinance.GL
                 FHasCriticalErrors = true;
             }
 
-            FCostCentreTbl = ACostCentreAccess.LoadViaALedger(FledgerInfo.LedgerNumber, null);
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    FCostCentreTbl = ACostCentreAccess.LoadViaALedger(FledgerInfo.LedgerNumber, Transaction);
+                });
+
             FCostCentreTbl.DefaultView.Sort = ACostCentreTable.GetCostCentreCodeDBName();
         }
 

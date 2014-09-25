@@ -107,7 +107,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         string strStatusContent = Catalog.GetString("Revaluation ...");
 
-        TVerificationResultCollection verificationCollection = new TVerificationResultCollection();
+        TVerificationResultCollection FVerificationCollection = new TVerificationResultCollection();
         TResultSeverity F_resultSeverity = TResultSeverity.Resv_Noncritical;
 
 
@@ -135,7 +135,7 @@ namespace Ict.Petra.Server.MFinance.GL
         public TVerificationResultCollection VerificationResultCollection {
             get
             {
-                return verificationCollection;
+                return FVerificationCollection;
             }
         }
 
@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             catch (EVerificationException terminate)
             {
-                verificationCollection = terminate.ResultCollection();
+                FVerificationCollection = terminate.ResultCollection();
             }
             return F_resultSeverity == TResultSeverity.Resv_Critical;
         }
@@ -225,7 +225,18 @@ namespace Ict.Petra.Server.MFinance.GL
             foreach (DataRowView RowView in GLMView)
             {
                 AGeneralLedgerMasterRow glmRow = (AGeneralLedgerMasterRow)RowView.Row;
-                ACostCentreTable tempTbl = ACostCentreAccess.LoadByPrimaryKey(F_LedgerNum, glmRow.CostCentreCode, null);
+                ACostCentreTable tempTbl = null;
+                AGeneralLedgerMasterPeriodTable glmpTbl = null;
+
+                TDBTransaction transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref transaction,
+                    delegate
+                    {
+                        tempTbl = ACostCentreAccess.LoadByPrimaryKey(F_LedgerNum, glmRow.CostCentreCode, transaction);
+                        glmpTbl = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(glmRow.GlmSequence, F_AccountingPeriod, transaction);
+                    });
 
                 if (tempTbl.Rows.Count == 0)
                 {
@@ -241,10 +252,6 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 try
                 {
-                    AGeneralLedgerMasterPeriodTable glmpTbl = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(glmRow.GlmSequence,
-                        F_AccountingPeriod,
-                        null);
-
                     if (glmpTbl.Rows.Count == 0)
                     {
                         continue; // I really don't expect this, but if it does happen, this will prevent a crash!
@@ -278,22 +285,22 @@ namespace Ict.Petra.Server.MFinance.GL
                             glmRow.AccountCode,
                             glmRow.CostCentreCode,
                             AExchangeRate);
-                        verificationCollection.Add(new TVerificationResult(
+                        FVerificationCollection.Add(new TVerificationResult(
                                 strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                     }
                 }
                 catch (EVerificationException terminate)
                 {
-                    verificationCollection = terminate.ResultCollection();
+                    FVerificationCollection = terminate.ResultCollection();
                 }
                 catch (DivideByZeroException)
                 {
-                    verificationCollection.Add(new TVerificationResult(
+                    FVerificationCollection.Add(new TVerificationResult(
                             strStatusContent, Catalog.GetString("DivideByZeroException"), TResultSeverity.Resv_Noncritical));
                 }
                 catch (OverflowException)
                 {
-                    verificationCollection.Add(new TVerificationResult(
+                    FVerificationCollection.Add(new TVerificationResult(
                             strStatusContent, Catalog.GetString("OverflowException"), TResultSeverity.Resv_Noncritical));
                 }
             }
@@ -405,7 +412,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private void AddVerificationResultMessage(
             string AResultContext, string AResultText, string ALocalCode, TResultSeverity AResultSeverity)
         {
-            verificationCollection.Add(new TVerificationResult(
+            FVerificationCollection.Add(new TVerificationResult(
                     AResultContext, AResultText, "REVAL", "REVAL:" + ALocalCode, AResultSeverity));
 
             if (AResultSeverity == TResultSeverity.Resv_Critical)
