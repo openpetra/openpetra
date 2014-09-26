@@ -100,6 +100,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>todoComment</summary>
         public event TDataSavedHandler DataSaved;
 
+        /// <summary>todoComment</summary>
+        public event TNoNoMasterDataToSaveHandler NoMasterDataToSave;
+        
         /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
         public bool SubmitChangesContinue
         {
@@ -662,6 +665,19 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
+        public void OnNoMasterDataToSave(System.Object sender, TNoMasterDataToSaveEventArgs e)
+        {
+            if (NoMasterDataToSave != null)
+            {
+                NoMasterDataToSave(this, e);
+            }
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void OnDataSavingStart(System.Object sender, System.EventArgs e)
         {
             if (DataSavingStarted != null)
@@ -734,6 +750,32 @@ namespace Ict.Petra.Client.CommonForms
             FHasChanges = false;
         }
 
+        /// <summary>
+        /// Gets the Form / UserControl to show the Default Cursor on the FORM.
+        /// </summary>
+        /// <remarks>
+        /// When called from a UserControl, the Default Cursor will be shown
+        /// on the Form, not the UserControl (different to calling this.Cursor = ... 
+        /// in a UserControl, which sets the Cursor on the UserControl, not the Form)!
+        /// </remarks>
+        public void ShowDefaultCursor()
+        {
+            GetForm().Cursor = Cursors.Default;
+        }
+
+        /// <summary>
+        /// Gets the Form / UserControl to show the Wait Cursor on the FORM.
+        /// </summary>
+        /// <remarks>
+        /// When called from a UserControl, the Wait Cursor will be shown
+        /// on the Form, not the UserControl (different to calling this.Cursor = ... 
+        /// in a UserControl, which sets the Cursor on the UserControl, not the Form)!
+        /// </remarks>
+        public void ShowWaitCursor()
+        {
+            GetForm().Cursor = Cursors.WaitCursor;
+        }
+        
         #endregion
 
         /**
