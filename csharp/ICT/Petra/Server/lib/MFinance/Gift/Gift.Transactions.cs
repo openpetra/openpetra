@@ -568,7 +568,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDSAGiftDetailTable ReturnValue = null;
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
                 delegate
                 {
                     // load all gifts from donor
@@ -643,7 +644,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction Transaction = null;
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
                 delegate
                 {
                     try
@@ -651,6 +653,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         //Load Ledger & Motivation Data to allow updating of CostCentreCode
                         AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
 
                         MainDS.Merge(LoadGiftBatchData(ALedgerNumber, ABatchNumber));
 
@@ -1612,12 +1615,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataSet tempDataSet = new DataSet();
 
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-                ref SubmissionOK,
                 delegate
                 {
                     try
@@ -1664,23 +1665,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out string ACostCentreCode)
         {
             bool CostCentreExists = false;
-
-            ACostCentreCode = string.Empty;
-
-            bool NewTransaction;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
-            //string PartnerGiftDestinationTable = "PartnerGiftDestination";
             string CostCentreCodeTable = "CostCentreCodes";
 
-            //string GetPartnerGiftDestinationSQL = String.Format(
-            //    "SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
-            //    "WHERE pgd.p_partner_key_n = {0} And ((pgd.p_date_effective_d <= '{1}' And pgd.p_date_expires_d IS NULL) Or ('{1}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
-            //    APartnerKey,
-            //    AGiftDate.ToString("yyyy-MM-dd"));
-
-            //TLogging.Log("GetPartnerGiftDestinationSQL: " + GetPartnerGiftDestinationSQL);
+            ACostCentreCode = string.Empty;
+            string CostCentreCode = ACostCentreCode;
 
             string GetCostCentreCodeSQL = String.Format(
                 "SELECT a_cost_centre_code_c FROM a_valid_ledger_number WHERE a_ledger_number_i = {0} AND p_partner_key_n = {1};",
@@ -1690,31 +1678,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DataSet tempDataSet = new DataSet();
 
-            try
-            {
-                DBAccess.GDBAccessObj.Select(tempDataSet, GetCostCentreCodeSQL, CostCentreCodeTable,
-                    Transaction,
-                    0, 0);
-
-                if (tempDataSet.Tables[CostCentreCodeTable] != null)
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    if (tempDataSet.Tables[CostCentreCodeTable].Rows.Count > 0)
+                    DBAccess.GDBAccessObj.Select(tempDataSet, GetCostCentreCodeSQL, CostCentreCodeTable,
+                        Transaction,
+                        0, 0);
+
+                    if (tempDataSet.Tables[CostCentreCodeTable] != null)
                     {
-                        DataRow row = tempDataSet.Tables[CostCentreCodeTable].Rows[0];
-                        ACostCentreCode = row[0].ToString();
-                        CostCentreExists = true;
-                    }
+                        if (tempDataSet.Tables[CostCentreCodeTable].Rows.Count > 0)
+                        {
+                            DataRow row = tempDataSet.Tables[CostCentreCodeTable].Rows[0];
+                            CostCentreCode = row[0].ToString();
+                            CostCentreExists = true;
+                        }
 
-                    tempDataSet.Clear();
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                        tempDataSet.Clear();
+                    }
+                });
+
+            ACostCentreCode = CostCentreCode;
 
             return CostCentreExists;
         }
@@ -1728,18 +1715,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
-            
+
             bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
                 TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
-            GiftBatchTDS MainDS = new GiftBatchTDS();
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-                ref SubmissionOK,
                 delegate
                 {
                     try
@@ -2521,12 +2506,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             PPartnerTable PartnerTbl = null;
 
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-                ref SubmissionOK,
                 delegate
                 {
                     PartnerTbl = PPartnerAccess.LoadByPrimaryKey(PartnerKey, Transaction);
@@ -2546,7 +2529,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction Transaction = null;
             PPartnerTaxDeductiblePctTable ReturnValue = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
                 delegate
                 {
                     ReturnValue = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(PartnerKey, Transaction);
@@ -2591,22 +2575,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Int64 GetRecipientFundNumber(Int64 APartnerKey)
         {
-            TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
-
-            ////Error handling
-            //string ErrorContext = "Create a Gift Batch";
-            //string ErrorMessage = String.Empty;
-            ////Set default type as non-critical
-            //TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
-            //TVerificationResultCollection VerificationResult = null;
+            bool DataLoaded = false;
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-                ref SubmissionOK,
                 delegate
                 {
                     try
@@ -2621,7 +2598,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         UmUnitStructureAccess.LoadAll(MainDS, Transaction);
                         MainDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
 
-                        SubmissionOK = true;
+                        DataLoaded = true;
                     }
                     catch (Exception)
                     {
@@ -2629,7 +2606,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
-            if (SubmissionOK)
+            if (DataLoaded)
             {
                 return GetRecipientFundNumberSub(MainDS, APartnerKey);
             }
@@ -2673,12 +2650,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 PPartnerTypeTable PPTTable = null;
 
                 TDBTransaction Transaction = null;
-                bool SubmissionOK = false;
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
-                    ref SubmissionOK,
                     delegate
                     {
                         PPTTable = PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction);
@@ -2742,12 +2717,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataSet tempDataSet = new DataSet();
 
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-                ref SubmissionOK,
                 delegate
                 {
                     try
@@ -2944,7 +2917,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static bool InactiveKeyMinistriesFoundInBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out DataTable AInactiveKMsTable)
         {
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
 
             AInactiveKMsTable = new DataTable();
             AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetGiftTransactionNumberDBName(), typeof(Int32)));
@@ -2956,10 +2928,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             string SQLLoadInactiveKeyMinistriesInBatch = string.Empty;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-                ref SubmissionOK,
                 delegate
                 {
                     SQLLoadInactiveKeyMinistriesInBatch =

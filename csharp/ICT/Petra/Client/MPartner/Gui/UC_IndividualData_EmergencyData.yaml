@@ -42,7 +42,7 @@ RootNode:
         cmbHairColour:
             Label: Hair Colour
             Width: 160
-            OptionalValues: [=Unknown, Black, Blond, Brown, Gray, Red]
+            OptionalValues: [=Unknown, Black, Light Blond, Blond, Brown, Dark Brown, Gray, Red, White, No Hair]
         cmbFacialHair:
             Label: Facial Hair
             Width: 160

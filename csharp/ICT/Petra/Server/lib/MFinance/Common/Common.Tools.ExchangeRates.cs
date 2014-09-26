@@ -557,7 +557,6 @@ namespace Ict.Petra.Server.MFinance.Common
             decimal ExchangeRateToFind = AExchangeRateToFind;
 
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
 
             ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
             ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
@@ -565,10 +564,9 @@ namespace Ict.Petra.Server.MFinance.Common
             templateRow.FromCurrencyCode = ACurrencyFrom;
             templateRow.ToCurrencyCode = ACurrencyTo;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
-                ref SubmissionOK,
                 delegate
                 {
                     try

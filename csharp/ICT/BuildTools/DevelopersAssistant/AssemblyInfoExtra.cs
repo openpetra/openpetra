@@ -25,4 +25,4 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyFileVersion("1.0.3.1")]
+[assembly: AssemblyFileVersion("1.0.4.0")]

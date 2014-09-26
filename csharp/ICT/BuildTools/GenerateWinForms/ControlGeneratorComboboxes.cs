@@ -110,6 +110,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.GetAttribute("List") != "UserDefinedList")
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", ctrl.controlName + ".InitialiseUserControl();" + Environment.NewLine);
+
+                if (ctrl.HasAttribute("AllowDbNull"))
+                {
+                    writer.SetControlProperty(ctrl, "AllowDbNull", ctrl.GetAttribute("AllowDbNull"));
+                }
             }
             else
             {

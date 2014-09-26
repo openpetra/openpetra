@@ -47,9 +47,19 @@ namespace Ict.Tools.DevelopersAssistant
                 return _stopServer;
             }
         }
+        /// <summary>
+        /// Returns a Startup Message if the command line contains the M: switch
+        /// </summary>
+        public string StartupMessage {
+            get
+            {
+                return _startupMessage;
+            }
+        }
 
         private bool _startServer = false;
         private bool _stopServer = false;
+        private string _startupMessage = String.Empty;
 
         /// <summary>
         /// The CommandArgs constructor
@@ -67,6 +77,11 @@ namespace Ict.Tools.DevelopersAssistant
                 if (args[i].CompareTo("/s") == 0)
                 {
                     _startServer = true;
+                }
+
+                if (args[i].StartsWith("/M:"))
+                {
+                    _startupMessage = args[i].Substring(3);
                 }
             }
         }
