@@ -28,7 +28,6 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 
 using Ict.Common;
 using Ict.Common.Exceptions;
@@ -2203,6 +2202,70 @@ namespace Ict.Common
         static public string[] SplitEmailAddresses(string AEmailAddress)
         {
             return AEmailAddress.Split(",;".ToCharArray());
+        }        
+        
+        /// <summary>
+        /// Returns the elements of a string[] as one string, optionally adding a delimter between
+        /// the elements if one is specified in Argument <paramref name="ADelimiter"/>.
+        /// </summary>
+        /// <param name="AStringArrary">String array.</param>
+        /// <param name="ADelimiter">Delimiter (optional).</param>
+        /// <returns>String array elements concatenated into a string.</returns>
+        static public string StrArrayToString(string[] AStringArrary, string ADelimiter = "")
+        {
+            string ReturnValue = String.Empty;
+            
+            if (AStringArrary == null) 
+            {
+                throw new ArgumentNullException("AStringArrary must not be null");
+            }
+            
+            for (int Counter = 0; Counter < AStringArrary.Length; Counter++) 
+            {
+                ReturnValue += AStringArrary[Counter] + ADelimiter;
+            }
+            
+            if ((ADelimiter != String.Empty)
+                && (ReturnValue != String.Empty))
+            {
+                ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - ADelimiter.Length);
+            }            
+            
+            return ReturnValue;
+        }
+        
+        /// <summary>
+        /// Returns the elements of a <see cref="StringCollection"/> as one string, optionally adding a delimter between
+        /// the elements if one is specified in Argument <paramref name="ADelimiter"/>.
+        /// </summary>
+        /// <param name="AStringColl"><see cref="StringCollection"/>.</param>
+        /// <param name="ADelimiter">Delimiter (optional).</param>
+        /// <returns><see cref="StringCollection"/> elements concatenated into string.</returns>
+        static public string StrCollToString(StringCollection AStringColl, string ADelimiter = "")
+        {
+            string ReturnValue = String.Empty;
+
+            if (AStringColl == null) 
+            {
+                throw new ArgumentNullException("AStringColl must not be null");
+            }
+            
+            for (int Counter = 0; Counter < AStringColl.Count; Counter++) 
+            {
+                ReturnValue += AStringColl[Counter] + ADelimiter;
+            }
+                        
+            if ((ADelimiter != String.Empty)
+                && (ReturnValue != String.Empty))
+            {
+                ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - ADelimiter.Length);
+            }            
+//            foreach(string ArrayEntry in AStringColl)
+//            {
+//                ReturnValue += ArrayEntry;
+//            }            
+            
+            return ReturnValue;
         }        
     }
 
