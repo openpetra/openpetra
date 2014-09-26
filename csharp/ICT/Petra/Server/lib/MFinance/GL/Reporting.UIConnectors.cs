@@ -2174,6 +2174,62 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return Results;
         }
 
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable GiftBatchDetailTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+            //AAccountTable AccountTable = new AAccountTable();
+            
+            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            int BatchNumber = AParameters["param_batch_number_i"].ToInt32();
+
+            // create new datatable
+            DataTable Results = new DataTable();
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                	DateTime CurrentDate = DateTime.Today;
+                	
+                	string Query = "SELECT DISTINCT a_gift_batch.a_batch_description_c, a_gift_batch.a_batch_status_c, a_gift_batch.a_gift_type_c, a_gift_batch.a_gl_effective_date_d, " +
+                					"a_gift_batch.a_bank_cost_centre_c, a_gift_batch.a_bank_account_code_c, a_gift_batch.a_currency_code_c, a_gift_batch.a_hash_total_n, a_gift_batch.a_batch_total_n, " +
+                		
+                					"a_gift_detail.a_gift_transaction_number_i, a_gift_detail.a_detail_number_i, a_gift_detail.a_confidential_gift_flag_l, " +
+                					"a_gift_detail.p_recipient_key_n, a_gift_detail.a_gift_amount_n, a_gift_detail.a_gift_amount_intl_n, a_gift_detail.a_gift_transaction_amount_n, " +
+                					"a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, a_gift_detail.a_recipient_ledger_number_n, " +
+                					"a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c, a_gift_detail.a_tax_deductible_pct_n, " +
+                		
+                					"a_gift.p_donor_key_n, a_gift.a_reference_c, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, " +
+                					"a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_restricted_l, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, " +
+                		
+                					"Donor.p_partner_class_c, Donor.p_partner_short_name_c, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, " +
+                					"Recipient.p_partner_class_c, Recipient.p_partner_short_name_c, " +
+                		
+                					"CASE WHEN EXISTS (SELECT p_partner_type.p_type_code_c FROM p_partner_type WHERE " +
+                					"p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
+									" AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
+									" AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
+									" AND p_partner_type.p_type_code_c LIKE 'EX-OMER%'" +
+                					") THEN True ELSE False END AS EXOMER " +
+                		
+                				    "FROM a_gift_batch, a_gift_detail, a_gift, p_partner AS Donor, p_partner AS Recipient " +
+                		
+                                    "WHERE a_gift_batch.a_ledger_number_i = " + LedgerNumber + " AND a_gift_batch.a_batch_number_i = " + BatchNumber +
+                                    " AND a_gift.a_ledger_number_i = " + LedgerNumber + " AND a_gift.a_batch_number_i = " + BatchNumber +
+                                    " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " AND a_gift_detail.a_batch_number_i = " + BatchNumber +
+                					" AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i " + 
+                                    " AND Donor.p_partner_key_n = a_gift.p_donor_key_n" +
+                					" AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n";
+
+                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
+                });
+
+            return Results;
+        }
+
         // get Actuals for this month, YTD and Prior YTD and Budget YTD
         private static Decimal[] GetActualsAndBudget(
             ALedgerRow ALedger, string AAccountCode, string ACostCentreCode, int APeriodNumber, int AYear)

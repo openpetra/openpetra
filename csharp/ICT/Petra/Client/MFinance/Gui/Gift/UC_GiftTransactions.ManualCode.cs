@@ -2113,7 +2113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // find PPartnerRow from dataset
             PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
 
-            // if PPartnerRow cannot be found load it from db
+            // if PPartnerRow cannot be found, load it from db
             if (DonorRow == null)
             {
                 DonorRow = (PPartnerRow)TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey).Rows[0];

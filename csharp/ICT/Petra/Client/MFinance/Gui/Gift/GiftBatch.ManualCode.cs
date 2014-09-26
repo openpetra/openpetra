@@ -27,17 +27,15 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Ict.Common;
-using Ict.Common.Verification;
-using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -202,6 +200,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             }
+            
+            mniPrintGiftBatchDetail.Enabled = true;
         }
 
         /// <summary>
@@ -560,6 +560,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // change user default
             TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+        }
+        
+        // open screen to print the Gift Batch Detail report
+        private void PrintGiftBatchDetail(Object sender, EventArgs e)
+        {
+        	TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
+        	Report.LedgerNumber = FLedgerNumber;
+        	Report.BatchNumber = ucoBatches.FSelectedBatchNumber;
+        	Report.Show();
         }
 
         private int GetChangedRecordCountManual(out string AMessage)

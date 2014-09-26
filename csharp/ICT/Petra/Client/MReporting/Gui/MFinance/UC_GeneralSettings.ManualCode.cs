@@ -464,6 +464,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbBreakdownYear.Visible = AValue;
             grpPeriodRange.Height = (AValue) ? 240 : 164;
         }
+        
+        /// <summary>
+        /// Hide the Period Range group
+        /// </summary>
+        /// <param name="AHide"></param>
+        public void HidePeriodRange(bool AHide = true)
+        {
+        	grpPeriodRange.Visible = !AHide;
+        }
 
         private void UnselectAll(System.Object sender, System.EventArgs e)
         {
