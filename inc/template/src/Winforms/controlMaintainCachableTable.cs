@@ -431,7 +431,8 @@ namespace {#NAMESPACE}
 
 #region Show and Undo Data
 
-    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
     {
         {#PRIMARYKEYCONTROLSREADONLY}
     }
@@ -484,7 +485,7 @@ namespace {#NAMESPACE}
     /// UserControl's ValidateAllData Method doesn't change a recorded DataValidationRun that was set from the 
     /// Form/UserControl that embeds this UserControl! (Default=true).</param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, bool ADontRecordNewDataValidationRun = true)
+    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, bool ADontRecordNewDataValidationRun = true)
     {
         bool ReturnValue = false;
         if (!ADontRecordNewDataValidationRun)
@@ -1202,7 +1203,8 @@ namespace {#NAMESPACE}
 {#ENDIF MASTERTABLE}
 {#IFNDEF MASTERTABLE}
 
-    private void GetDataFromControls()
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
@@ -1362,7 +1364,7 @@ namespace {#NAMESPACE}
     /// <summary>
     /// save the changes on the screen
     /// </summary>
-    /// <returns>True if data was saved successfully, otherwise false.</returns>    
+    /// <returns>True if data was saved successfully, otherwise false.</returns>
     public bool SaveChanges()
     {
         // Be sure to have called ValidateBeforeSave() before calling this method

@@ -364,6 +364,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return FChangeEventHandlerType;
         }
 
+		private static void AddChildUserControlExtraCalls(TFormWriter writer, TControlDef ctrl)
+		{
+			Console.WriteLine("adding to codelet: UserControl-specific extensions");
+			writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
+			writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
+			writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
+			writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
+			writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
+		}
+		
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
@@ -902,6 +912,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 //                writer.Template.AddToCodelet("DEFAULTOVERRIDE", UndoValue(ctrl, ;
 //            }
 
+//Console.WriteLine("ctrl.controlTypePrefix: " + ctrl.controlName + ": " + ctrl.controlTypePrefix);
             if (ctrl.HasAttribute("PartnerShortNameLookup"))
             {
                 LinkControlPartnerShortNameLookup(writer, ctrl);
@@ -932,14 +943,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.controlTypePrefix == "uco")
             {
-                writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION",
-                    ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
-                writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
-                writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
-                    ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
-
-                writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
-                writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
+                AddChildUserControlExtraCalls(writer, ctrl);
             }
             else if (ctrl.HasAttribute("DynamicControlType"))
             {
@@ -952,6 +956,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         3) + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine + "}" + Environment.NewLine);
             }
 
+            // Allow for adding of child-usercontrol extra calls *even* if the Template has got 'MasterTable' or 'DetailTable' attribute(s) [see above for those checks]
+            if ((ctrl.controlTypePrefix == "uco")
+                && (writer.CodeStorage.GetAttribute("DependentChildUserControl") == "true"))
+            {
+                AddChildUserControlExtraCalls(writer, ctrl);
+            }
+            
             // the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly")
                 && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true"))
