@@ -2114,7 +2114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
 
             // if PPartnerRow cannot be found, load it from db
-            if (DonorRow == null)
+            if (DonorRow == null || DonorRow[PPartnerTable.GetReceiptEachGiftDBName()] == DBNull.Value)
             {
                 DonorRow = (PPartnerRow)TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey).Rows[0];
             }

@@ -1513,7 +1513,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             // load all donor shortnames in one go
             string getDonorSQL =
-                "SELECT DISTINCT dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g " +
+                "SELECT DISTINCT dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g " + //, dp.p_receipt_each_gift_l
                 "WHERE g.a_ledger_number_i = ? AND g.a_batch_number_i = ? AND g.p_donor_key_n = dp.p_partner_key_n";
 
             if (ARecurring)
@@ -2761,40 +2761,36 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Boolean KeyMinistryExists = false;
             TDBTransaction Transaction = null;
 
-            AIsActive = false;
+            bool IsActive = false;
 
-            try
-            {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-                PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-
-                if (UnitTable.Rows.Count == 1)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    // this partner is indeed a unit
-                    PUnitRow UnitRow = UnitTable[0];
-
-                    if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
-                    {
-                        KeyMinistryExists = true;
-
-                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-                        PPartnerRow PartnerRow = PartnerTable[0];
-
-                        if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
-                        {
-                            AIsActive = true;
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                if (Transaction != null)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+		            PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+		
+		            if (UnitTable.Rows.Count == 1)
+		            {
+		                // this partner is indeed a unit
+		                PUnitRow UnitRow = UnitTable[0];
+		
+		                if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+		                {
+		                    KeyMinistryExists = true;
+		
+		                    PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+		                    PPartnerRow PartnerRow = PartnerTable[0];
+		
+		                    if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
+		                    {
+		                        IsActive = true;
+		                    }
+		                }
+		            }
+                });
+            
+            AIsActive = IsActive;
 
             return KeyMinistryExists;
         }
