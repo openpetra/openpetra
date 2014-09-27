@@ -2095,10 +2095,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        // dispalays information about the donor's receipt frequency options
+        // displays information about the donor's receipt frequency options
         private void ShowReceiptFrequency(long APartnerKey)
         {
-            txtGiftReceipting.Text = "";
+            txtGiftReceipting.Text = string.Empty;
 
             if (APartnerKey == 0)
             {

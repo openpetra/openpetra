@@ -137,18 +137,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning()
         {
-            if (FNewDonorWarning)
-            {
-                if (FMainDS.GetChangesTyped(false) == null)
-                {
-                    FGiftDetailTable = null;
-                    return;
-                }
+            //if (FNewDonorWarning)
+            //{
+            //    if (FMainDS.GetChangesTyped(false) == null)
+            //    {
+            //        FGiftDetailTable = null;
+            //        return;
+            //    }
 
-                // add changed gift records to datatable
-                GetDataFromControls();
-                FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
-            }
+            //     add changed gift records to datatable
+            //    GetDataFromControls();
+            //    FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
+            //}
         }
 
         private void FPetraUtilsObject_DataSaved_NewDonorWarning(object Sender, TDataSavedEventArgs e)
