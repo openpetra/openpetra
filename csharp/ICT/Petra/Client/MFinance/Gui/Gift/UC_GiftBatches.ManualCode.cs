@@ -1503,7 +1503,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 foreach (DataRow dr in GiftsWithInactiveKeyMinistries.Rows)
                 {
-                    listOfRow += String.Format("{0}{1} {2} {3} {4}",
+                    listOfRow += String.Format("{0}{1}-{2}-{3}-{4}",
                         Environment.NewLine,
                         dr[0],
                         dr[1],

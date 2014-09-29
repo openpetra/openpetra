@@ -2748,43 +2748,42 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Boolean KeyMinistryExists(Int64 APartnerKey, out Boolean AIsActive)
         {
-            Boolean KeyMinistryExists = false;
-            TDBTransaction Transaction = null;
+            bool KeyMinistryExists = false;
+
+            AIsActive = false;
+            bool IsActive = AIsActive;
 
             AIsActive = false;
 
-            try
-            {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-                PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-
-                if (UnitTable.Rows.Count == 1)
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    // this partner is indeed a unit
-                    PUnitRow UnitRow = UnitTable[0];
+                    PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
 
-                    if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                    if (UnitTable.Rows.Count == 1)
                     {
-                        KeyMinistryExists = true;
+                        // this partner is indeed a unit
+                        PUnitRow UnitRow = UnitTable[0];
 
-                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-                        PPartnerRow PartnerRow = PartnerTable[0];
-
-                        if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
+                        if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
                         {
-                            AIsActive = true;
+                            KeyMinistryExists = true;
+
+                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+                            PPartnerRow PartnerRow = PartnerTable[0];
+
+                            if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
+                            {
+                                IsActive = true;
+                            }
                         }
                     }
-                }
-            }
-            finally
-            {
-                if (Transaction != null)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+                });
+
+            AIsActive = IsActive;
 
             return KeyMinistryExists;
         }
@@ -2914,7 +2913,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetRecipientKeyDBName(), typeof(Int64)));
             AInactiveKMsTable.Columns.Add(new DataColumn(PUnitTable.GetUnitNameDBName(), typeof(String)));
 
-            DataTable InactiveKMsTable = AInactiveKMsTable.Clone();
+            DataTable InactiveKMsTable = AInactiveKMsTable;
 
             string SQLLoadInactiveKeyMinistriesInBatch = string.Empty;
 
@@ -2937,8 +2936,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     DBAccess.GDBAccessObj.SelectDT(InactiveKMsTable, SQLLoadInactiveKeyMinistriesInBatch, Transaction, new OdbcParameter[0], 0, 0);
                 });
-
-            AInactiveKMsTable = InactiveKMsTable.Copy();
 
             return AInactiveKMsTable.Rows.Count > 0;
         }
