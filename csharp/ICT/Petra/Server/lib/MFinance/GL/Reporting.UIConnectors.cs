@@ -32,9 +32,10 @@ using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MReporting;
@@ -48,6 +49,7 @@ using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using System.Data.Common;
 
@@ -2203,17 +2205,31 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 					"a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c, a_gift_detail.a_tax_deductible_pct_n, " +
                 		
                 					"a_gift.p_donor_key_n, a_gift.a_reference_c, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, " +
-                					"a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_restricted_l, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, " +
+                					"a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, " +
                 		
                 					"Donor.p_partner_class_c, Donor.p_partner_short_name_c, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, " +
                 					"Recipient.p_partner_class_c, Recipient.p_partner_short_name_c, " +
                 		
-                					"CASE WHEN EXISTS (SELECT p_partner_type.p_type_code_c FROM p_partner_type WHERE " +
+                					// true if donor has a valid Ex-omer special type
+                					"CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
                 					"p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
 									" AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
 									" AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
 									" AND p_partner_type.p_type_code_c LIKE 'EX-OMER%'" +
-                					") THEN True ELSE False END AS EXOMER " +
+                					") THEN True ELSE False END AS EXOMER, " +
+                		
+                					// true if the gift is restricted for the user
+                					"CASE WHEN EXISTS (SELECT s_user_group.* FROM s_user_group " +
+                					"WHERE a_gift.a_restricted_l IS true" +
+                					" AND NOT EXISTS (SELECT s_group_gift.s_read_access_l FROM s_group_gift, s_user_group " +
+            							"WHERE s_group_gift.s_read_access_l" +
+										" AND s_group_gift.a_ledger_number_i = " + LedgerNumber +
+										" AND s_group_gift.a_batch_number_i = " + BatchNumber +
+										" AND s_group_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
+										" AND s_user_group.s_user_id_c = '" + UserInfo.GUserInfo.UserID + "'" +
+										" AND s_user_group.s_group_id_c = s_group_gift.s_group_id_c" +
+										" AND s_user_group.s_unit_key_n = s_group_gift.s_group_unit_key_n)" +
+                					") THEN False ELSE True END AS ReadAccess " +
                 		
                 				    "FROM a_gift_batch, a_gift_detail, a_gift, p_partner AS Donor, p_partner AS Recipient " +
                 		
@@ -2425,5 +2441,31 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             return resultTable;
         } // TrialBalanceTable
+
+        /// <summary>
+        /// Returns the transaction currency for a Gift Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static string GetTransactionCurrency(int ALedgerNumber, int ABatchNumber)
+        {
+        	TDBTransaction Transaction = null;
+        	string ReturnValue = "";
+        	
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+		        	AGiftBatchTable GiftBatchTable = AGiftBatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
+		        	
+		        	if (GiftBatchTable != null && GiftBatchTable.Rows.Count > 0)
+		        	{
+		        		ReturnValue = GiftBatchTable[0].CurrencyCode;
+		        	}
+                });
+        	
+        	return ReturnValue;
+        }
     }
 }

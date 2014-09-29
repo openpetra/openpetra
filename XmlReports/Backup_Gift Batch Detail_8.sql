@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=8;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(8,'Gift Batch Detail','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="09/26/2014 12:28:32" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="09/29/2014 12:34:29" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -61,7 +61,6 @@ namespace FastReport
       <Column Name="a_method_of_payment_code_c" DataType="System.String"/>
       <Column Name="a_receipt_letter_code_c" DataType="System.String"/>
       <Column Name="a_date_entered_d" DataType="System.DateTime"/>
-      <Column Name="a_restricted_l" DataType="System.Boolean" BindableControl="CheckBox"/>
       <Column Name="a_first_time_gift_l" DataType="System.Boolean" BindableControl="CheckBox"/>
       <Column Name="p_partner_class_c" DataType="System.String"/>
       <Column Name="p_partner_short_name_c" DataType="System.String"/>
@@ -78,6 +77,7 @@ namespace FastReport
       <Column Name="a_gift_comment_three_c" DataType="System.String"/>
       <Column Name="a_tax_deductible_pct_n" DataType="System.Decimal"/>
       <Column Name="exomer" DataType="System.Boolean"/>
+      <Column Name="readaccess" DataType="System.Boolean" BindableControl="CheckBox"/>
     </TableDataSource>
     <Parameter Name="param_diff_period_i" DataType="System.Int32"/>
     <Parameter Name="param_start_period_i" DataType="System.Int32"/>
@@ -172,28 +172,33 @@ namespace FastReport
       <TextObject Name="Text114" Left="217.35" Width="75.6" Height="18.9" Text="Class" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text115" Left="292.95" Width="245.7" Height="18.9" Text="Name)" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text74" Left="264.6" Top="18.9" Width="103.95" Height="18.9" Text="Recipient (Key" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
-      <TextObject Name="Text75" Left="85.05" Top="18.9" Width="85.05" Height="18.9" Text="Group" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
+      <TextObject Name="Text75" Left="85.05" Top="18.9" Width="85.05" Height="18.9" Text="M. Group" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
       <TextObject Name="Text79" Left="680.4" Top="18.9" Width="94.5" Height="18.9" Text="Field" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
       <TextObject Name="Text81" Left="774.9" Top="18.9" Width="85.05" Height="18.9" Text="Date" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
       <TextObject Name="Text84" Left="878.85" Top="18.9" Width="85.05" Height="18.9" Text="Amount" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
       <TextObject Name="Text86" Left="963.9" Top="18.9" Width="56.7" Height="18.9" Text="[IIf([param_tax_deductible_pct],&quot;% Tax&quot;,&quot;&quot;)]" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
       <TextObject Name="Text87" Left="1020.6" Top="18.9" Width="28.35" Height="18.9" Text="C" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
-      <TextObject Name="Text117" Left="170.1" Top="18.9" Width="94.5" Height="18.9" Text="Detail" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
+      <TextObject Name="Text117" Left="170.1" Top="18.9" Width="94.5" Height="18.9" Text="M. Detail" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
       <TextObject Name="Text119" Left="368.55" Top="18.9" Width="75.6" Height="18.9" Text="Class" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
       <TextObject Name="Text120" Left="444.15" Top="18.9" Width="236.25" Height="18.9" Text="Name)" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
+      <TextObject Name="Text126" Left="9.45" Top="18.9" Width="75.6" Height="18.9" Text="Detail" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic" TextFill.Color="DimGray"/>
     </PageHeaderBand>
     <GroupHeaderBand Name="GroupHeader2" Top="215.9" Width="1047.06" Height="28.35" CanGrow="true" Condition="[GiftBatchDetail.a_gift_transaction_number_i]" KeepTogether="true">
       <TextObject Name="Text12" Top="9.45" Width="47.25" Height="18.9" Text="[GiftBatchDetail.a_gift_transaction_number_i]" HorzAlign="Right" Font="Arial, 10pt, style=Bold"/>
-      <TextObject Name="Text13" Left="132.3" Top="9.45" Width="85.05" Height="18.9" Text="[GiftBatchDetail.p_donor_key_n]" HorzAlign="Right"/>
-      <TextObject Name="Text14" Left="217.35" Top="9.45" Width="75.6" Height="18.9" Text="[GiftBatchDetail.p_partner_class_c]" HorzAlign="Right"/>
-      <TextObject Name="Text15" Left="292.95" Top="9.45" Width="245.7" Height="18.9" CanGrow="true" Text="[GiftBatchDetail.p_partner_short_name_c]" HorzAlign="Right"/>
+      <TextObject Name="Text13" Left="132.3" Top="9.45" Width="85.05" Height="18.9" Text="[IIf([GiftBatchDetail.readaccess],[GiftBatchDetail.p_donor_key_n],&quot;&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text14" Left="217.35" Top="9.45" Width="75.6" Height="18.9" Text="[IIf([GiftBatchDetail.readaccess],[GiftBatchDetail.p_partner_class_c],&quot;&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text15" Left="292.95" Top="9.45" Width="245.7" Height="18.9" CanGrow="true" Text="[IIf([GiftBatchDetail.readaccess],[GiftBatchDetail.p_partner_short_name_c],&quot;Confidential&quot;)]" HorzAlign="Right">
+        <Highlight>
+          <Condition Expression="[GiftBatchDetail.readaccess] == false;" Font="Arial, 9.75pt, style=Bold" ApplyFont="true"/>
+        </Highlight>
+      </TextObject>
       <TextObject Name="Text16" Left="47.25" Top="9.45" Width="85.05" Height="18.9" Text="[GiftBatchDetail.a_receipt_number_i]" HorzAlign="Right"/>
       <TextObject Name="Text19" Left="538.65" Top="9.45" Width="103.95" Height="18.9" Text="[GiftBatchDetail.a_reference_c]" HorzAlign="Right"/>
       <TextObject Name="Text22" Left="642.6" Top="9.45" Width="85.05" Height="18.9" Text="[GiftBatchDetail.a_method_of_giving_code_c]" HorzAlign="Right"/>
       <TextObject Name="Text24" Left="727.65" Top="9.45" Width="85.05" Height="18.9" Text="[GiftBatchDetail.a_method_of_payment_code_c]" HorzAlign="Right"/>
       <TextObject Name="Text25" Left="812.7" Top="9.45" Width="94.5" Height="18.9" Text="[GiftBatchDetail.a_receipt_letter_code_c]" HorzAlign="Right"/>
       <TextObject Name="Text26" Left="907.2" Top="9.45" Width="94.5" Height="18.9" Text="[GiftBatchDetail.p_receipt_letter_frequency_c]" HorzAlign="Right"/>
-      <TextObject Name="Text116" Left="1001.7" Top="9.45" Width="47.25" Height="18.9" Text="[IIf([GiftBatchDetail.p_receipt_each_gift_l],&quot;E&quot;,&quot;&quot;)] [IIf([GiftBatchDetail.a_first_time_gift_l],&quot;N&quot;,&quot;&quot;)] [IIf([GiftBatchDetail.exomer],&quot;X&quot;,&quot;&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text116" Left="1001.7" Top="9.45" Width="47.25" Height="18.9" Text="[IIf([GiftBatchDetail.p_receipt_each_gift_l],&quot;E&quot;,&quot;&quot;)] [IIf([GiftBatchDetail.readaccess],IIf([GiftBatchDetail.a_first_time_gift_l],&quot;N&quot;,&quot;&quot;),&quot;&quot;)] [IIf([GiftBatchDetail.readaccess],IIf([GiftBatchDetail.exomer],&quot;X&quot;,&quot;&quot;),&quot;&quot;)]" HorzAlign="Right"/>
       <DataBand Name="TransactionBand" Top="248.25" Width="1047.06" Height="75.6" CanGrow="true" CanShrink="true" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="GiftBatchDetail">
         <TextObject Name="Text27" Left="85.05" Width="85.05" Height="18.9" Text="[GiftBatchDetail.a_motivation_group_code_c]" HorzAlign="Right" TextFill.Color="DimGray"/>
         <TextObject Name="Text31" Left="170.1" Width="94.5" Height="18.9" Text="[GiftBatchDetail.a_motivation_detail_code_c]" HorzAlign="Right" TextFill.Color="DimGray"/>

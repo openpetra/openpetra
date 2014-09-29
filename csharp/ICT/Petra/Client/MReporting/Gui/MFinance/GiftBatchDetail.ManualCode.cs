@@ -22,7 +22,6 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -53,6 +52,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.HidePeriodRange();
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 uco_GeneralSettings.ShowAccountHierarchy(false);
+                uco_GeneralSettings.CurrencyOptions(new object[] { Catalog.GetString("Transaction") });
 
                 FPetraUtilsObject.LoadDefaultSettings();
 
@@ -127,6 +127,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
             
             ACalc.AddParameter("param_tax_deductible_pct", TaxDeductiblePercentageEnabled);
+            
+            if (ACalc.GetParameters().Exists("param_currency") && ACalc.GetParameters().Get("param_currency").ToString() == Catalog.GetString("Transaction"))
+            {
+            	ACalc.RemoveParameter("param_currency_name");
+            	ACalc.AddParameter("param_currency_name", 
+            	                   TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, Convert.ToInt32(txtBatchNumber.Text)));
+            }
 
             return true;
         }
