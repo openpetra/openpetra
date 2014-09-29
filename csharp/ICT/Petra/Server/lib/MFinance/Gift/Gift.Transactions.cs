@@ -2920,7 +2920,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetRecipientKeyDBName(), typeof(Int64)));
             AInactiveKMsTable.Columns.Add(new DataColumn(PUnitTable.GetUnitNameDBName(), typeof(String)));
 
-            DataTable InactiveKMsTable = AInactiveKMsTable.Clone();
+            DataTable InactiveKMsTable = AInactiveKMsTable;
 
             string SQLLoadInactiveKeyMinistriesInBatch = string.Empty;
 
@@ -2943,8 +2943,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     DBAccess.GDBAccessObj.SelectDT(InactiveKMsTable, SQLLoadInactiveKeyMinistriesInBatch, Transaction, new OdbcParameter[0], 0, 0);
                 });
-
-            AInactiveKMsTable = InactiveKMsTable.Copy();
 
             return AInactiveKMsTable.Rows.Count > 0;
         }
