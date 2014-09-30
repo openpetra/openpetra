@@ -57,74 +57,76 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         ///    shall be changed to KEY-MIN.
         /// 8. If p_unit.p_partner_class_c does not hold the value "KEYMIN" the routine is done.
         /// </summary>
-        /// <param name="partnerKey">Input: not used
+        /// <param name="APartnerKey">Input: not used
         ///                               Output: True if the partnerKey is a valid number of an
         ///                                       existing partner and false if not.</param>
-        /// <param name="motivationGroup">Input: Common default value for the motivation group.
+        /// <param name="AMotivationGroup">Input: Common default value for the motivation group.
         ///                               Output: Default value depending of the actual
         ///                                       values of APartnerKey. </param>
-        /// <param name="motivationDetail">Input: Common default value for the motivation detail.
+        /// <param name="AMotivationDetail">Input: Common default value for the motivation detail.
         ///                               Output: Default value depending of the actual
         ///                                       values of APartnerKey. </param>
         /// <returns>The result of is boolean and the value true tells that there exists an entry
         /// in the database which is represented by the parther key</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean GetMotivationGroupAndDetail(Int64 partnerKey,
-            ref String motivationGroup,
-            ref String motivationDetail)
+        public static Boolean GetMotivationGroupAndDetail(Int64 APartnerKey,
+            ref String AMotivationGroup,
+            ref String AMotivationDetail)
         {
-            Boolean partnerKeyIsValid;
+            Boolean PartnerKeyIsValid = false;
+            string MotivationDetail = AMotivationDetail;
 
-            if (partnerKey != 0)
+            if (APartnerKey != 0)
             {
-                Boolean newTransaction;
-                TDBTransaction readTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    IsolationLevel.RepeatableRead, out newTransaction);
-                PPartnerTable myPPartnerTable =
-                    PPartnerAccess.LoadByPrimaryKey(partnerKey, readTransaction);
+                AMotivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
 
-                if (myPPartnerTable.Rows.Count == 1)
-                {
-                    // Entry for partnerKey is valid
-                    partnerKeyIsValid = true;
-                    PPartnerRow partnerRow = (PPartnerRow)myPPartnerTable.Rows[0];
-
-                    // Change motivationDetail if ColumnPartnerClass is UNIT
-                    if (partnerRow.PartnerClass.Equals(MPartnerConstants.PARTNERCLASS_UNIT))
+                TDBTransaction readTransaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref readTransaction,
+                    delegate
                     {
-                        // AND KEY-MIN
-                        PUnitTable pUnitTable =
-                            PUnitAccess.LoadByPrimaryKey(partnerKey, readTransaction);
+                        PPartnerTable myPPartnerTable =
+                            PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
-                        if (pUnitTable.Rows.Count == 1)
+                        if (myPPartnerTable.Rows.Count == 1)
                         {
-                            PUnitRow unitRow = (PUnitRow)pUnitTable.Rows[0];
+                            // Entry for partnerKey is valid
+                            PartnerKeyIsValid = true;
+                            PPartnerRow partnerRow = (PPartnerRow)myPPartnerTable.Rows[0];
 
-                            if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                            // Change motivationDetail if ColumnPartnerClass is UNIT
+                            if (partnerRow.PartnerClass.Equals(MPartnerConstants.PARTNERCLASS_UNIT))
                             {
-                                motivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                                // AND KEY-MIN
+                                PUnitTable pUnitTable =
+                                    PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
+
+                                if (pUnitTable.Rows.Count == 1)
+                                {
+                                    PUnitRow unitRow = (PUnitRow)pUnitTable.Rows[0];
+
+                                    if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                                    {
+                                        MotivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                                    }
+                                    else
+                                    {
+                                        MotivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                MotivationDetail = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                             }
                         }
-                    }
-                }
-                else
-                {
-                    // There is no valid entry for partnerKey
-                    partnerKeyIsValid = false;
-                }
+                    });
 
-                if (newTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            else
-            {
-                // For partnerKey==0 there is no valid entry at any time
-                partnerKeyIsValid = false;
+                AMotivationDetail = MotivationDetail;
             }
 
-            return partnerKeyIsValid;
+            return PartnerKeyIsValid;
         }
     }
 }
