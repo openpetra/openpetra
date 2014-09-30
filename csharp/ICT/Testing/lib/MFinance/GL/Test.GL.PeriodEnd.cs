@@ -75,7 +75,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     {
         public void Test1(TVerificationResultCollection tvr)
         {
-            verificationResults = tvr;
+            FverificationResults = tvr;
             TestOperation testOperation = new TestOperation(1);
             testOperation.SetJobSize(12);
             testOperation.IsInInfoMode = true;
@@ -85,7 +85,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         public void Test2(TVerificationResultCollection tvr)
         {
-            verificationResults = tvr;
+            FverificationResults = tvr;
             TestOperation testOperation = new TestOperation(1);
             testOperation.SetJobSize(12);
             testOperation.IsInInfoMode = false;

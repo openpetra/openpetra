@@ -127,7 +127,8 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             FInfoMode = AInfoMode;
             FledgerInfo = new TLedgerInfo(ALedgerNum);
-            verificationResults = new TVerificationResultCollection();
+            AVRCollection = new TVerificationResultCollection();
+            FverificationResults = AVRCollection;
 
             TCarryForward carryForward = new TCarryForward(FledgerInfo);
 
@@ -138,8 +139,9 @@ namespace Ict.Petra.Server.MFinance.GL
                         Catalog.GetString("In this situation you cannot run Year End."), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_04.ToString(),
                         TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvt);
+                AVRCollection.Add(tvt);
                 FHasCriticalErrors = true;
+                return true;
             }
 
             RunPeriodEndSequence(new TReallocation(FledgerInfo),
@@ -148,7 +150,6 @@ namespace Ict.Petra.Server.MFinance.GL
             RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo.LedgerNumber, FledgerInfo.CurrentFinancialYear),
                 Catalog.GetString("Initialize glm entries for next year"));
 
-            AVRCollection = verificationResults;
             return FHasCriticalErrors;
         }
     }

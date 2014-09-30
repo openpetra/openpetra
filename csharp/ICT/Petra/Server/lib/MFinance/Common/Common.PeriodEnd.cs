@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// This is the standard VerificationResultCollection for the info and the error messages.
         /// </summary>
-        protected TVerificationResultCollection verificationResults;
+        protected TVerificationResultCollection FverificationResults;
 
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         protected void RunPeriodEndCheck(AbstractPeriodEndOperation Apeo, TVerificationResultCollection AVerificationResults)
         {
-            verificationResults = AVerificationResults;
+            FverificationResults = AVerificationResults;
             Apeo.VerificationResultCollection = AVerificationResults;
             Apeo.IsInInfoMode = FInfoMode;
             Apeo.RunEndOfPeriodOperation();
@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MFinance.Common
         protected void RunPeriodEndSequence(AbstractPeriodEndOperation AOperation, string AOperationName)
         {
             AOperation.IsInInfoMode = FInfoMode;
-            AOperation.VerificationResultCollection = verificationResults;
+            AOperation.VerificationResultCollection = FverificationResults;
 
             if (AOperation.GetJobSize() == 0)
             {
@@ -99,7 +99,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     new TVerificationResult(strTitle, strMessage, "",
                         TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
                         TResultSeverity.Resv_Noncritical);
-                verificationResults.Add(tvt);
+                FverificationResults.Add(tvt);
             }
             else if (FInfoMode == false)
             {
@@ -111,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 AbstractPeriodEndOperation VerifyOperation = AOperation.GetActualizedClone();
                 VerifyOperation.IsInInfoMode = true;
-                VerifyOperation.VerificationResultCollection = verificationResults;
+                VerifyOperation.VerificationResultCollection = FverificationResults;
 
                 if (VerifyOperation.GetJobSize() != 0)
                 {
@@ -125,7 +125,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         new TVerificationResult(strTitle, strMessage, "",
                             TPeriodEndErrorAndStatusCodes.PEEC_02.ToString(),
                             TResultSeverity.Resv_Critical);
-                    verificationResults.Add(tvt);
+                    FverificationResults.Add(tvt);
                     FHasCriticalErrors = true;
                 }
 

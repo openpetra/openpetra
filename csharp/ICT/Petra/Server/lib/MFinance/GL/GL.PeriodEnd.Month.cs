@@ -163,7 +163,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             FInfoMode = AInfoMode;
             FledgerInfo = new TLedgerInfo(ALedgerNumber);
-            verificationResults = new TVerificationResultCollection();
+            FverificationResults = new TVerificationResultCollection();
 
             if (AInfoMode)
             {
@@ -171,7 +171,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 if (PeriodTbl.Rows.Count > 0)
                 {
-                    verificationResults.Add(
+                    FverificationResults.Add(
                         new TVerificationResult(
                             Catalog.GetString("Month End"),
                             String.Format(Catalog.GetString("Current period is {0} - {1}"),
@@ -190,11 +190,11 @@ namespace Ict.Petra.Server.MFinance.GL
                         Catalog.GetString("In this situation you cannot run a month end routine"), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_03.ToString(),
                         TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvt);
+                FverificationResults.Add(tvt);
                 FHasCriticalErrors = true;
             }
 
-            RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), verificationResults);
+            RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), FverificationResults);
 
             if (!AInfoMode)
             {
@@ -207,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
 
                 // Merge VerificationResults:
-                verificationResults.AddCollection(IchVerificationReults);
+                FverificationResults.AddCollection(IchVerificationReults);
             }
 
             // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
@@ -235,7 +235,7 @@ namespace Ict.Petra.Server.MFinance.GL
             //     AFO report.
             //     Executive Summary Report.
             //
-            AVRCollection = verificationResults;
+            AVRCollection = FverificationResults;
             return FHasCriticalErrors;
         }
     }
