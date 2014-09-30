@@ -2517,6 +2517,49 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             return PartnerTbl;
         }
+        
+        /// <summary>
+        /// Load Donor Banking Details
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key </param>
+        /// <param name="ABankingDetailsKey">Banking Details Key Key </param>
+        /// <returns>Partnertable for the partner Key</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PBankingDetailsTable GetDonorBankingDetails(long APartnerKey, int ABankingDetailsKey = 0)
+        {
+            PBankingDetailsTable ReturnValue = null;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                	if (ABankingDetailsKey == 0)
+                	{
+	            		PBankingDetailsTable BankingDetailsTable = 
+	            			PBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
+	                	
+	            		// Find partner's 'main' bank account
+	                	foreach (PBankingDetailsRow Row in BankingDetailsTable.Rows)
+	                	{
+	                		if (PBankingDetailsUsageAccess.Exists(APartnerKey, Row.BankingDetailsKey, "MAIN", Transaction))
+	                		{
+                				ReturnValue = new PBankingDetailsTable();
+                				ReturnValue.Rows.Add((object[]) Row.ItemArray.Clone());
+	                			break;
+	                		}
+	                	}
+                	}
+                	else
+                	{
+                		ReturnValue = PBankingDetailsAccess.LoadByPrimaryKey(ABankingDetailsKey, Transaction);
+                	}
+                });
+
+            return ReturnValue;
+        }
 
         /// <summary>
         /// Load Partner Tax Deductible Pct

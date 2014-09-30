@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FInKeyMinistryChanging = false;
         private bool FInEditMode = false;
         private bool FShowingDetails = false;
+        private ToolTip FDonorInfoToolTip = new ToolTip();
 
         private ARecurringGiftRow FGift = null;
         private string FMotivationGroup = string.Empty;
@@ -131,8 +132,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             SetupComboTextBoxOverlayControls();
 
             //Make TextBox look like a label
-            txtGiftReceipting.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            txtGiftReceipting.Font = TAppSettingsManager.GetDefaultBoldFont();
+            txtDonorInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            txtDonorInfo.Font = TAppSettingsManager.GetDefaultBoldFont();
         }
 
         private void SetupTextBoxMenuItems()
@@ -596,7 +597,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FShowingDetails || (APartnerKey == 0))
             {
                 mniDonorHistory.Enabled = false;
-                txtGiftReceipting.Text = "";
+                txtDonorInfo.Text = "";
                 return;
             }
             else
@@ -627,7 +628,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             }
                         }
 
-                        ShowReceiptFrequency(APartnerKey);
+                        ShowDonorInfo(APartnerKey);
 
                         mniDonorHistory.Enabled = true;
                     }
@@ -1940,7 +1941,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                ShowReceiptFrequency(Convert.ToInt64(txtDetailDonorKey.Text));
+                ShowDonorInfo(Convert.ToInt64(txtDetailDonorKey.Text));
 
                 UpdateControlsProtection(ARow);
             }
@@ -1950,40 +1951,111 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 this.Cursor = Cursors.Default;
             }
         }
-
-        // dispalays information about the donor's receipt frequency options
-        private void ShowReceiptFrequency(long APartnerKey)
+        
+        /// <summary>
+        /// displays information about the donor
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        private void ShowDonorInfo(long APartnerKey)
         {
-            txtGiftReceipting.Text = "";
+            string DonorInfo = string.Empty;
 
             if (APartnerKey == 0)
             {
+            	txtDonorInfo.Text = DonorInfo;
+	            FDonorInfoToolTip.SetToolTip(txtDonorInfo, DonorInfo);
+	            FPetraUtilsObject.SetStatusBarText(txtDonorInfo, DonorInfo);
                 return;
             }
 
             // find PPartnerRow from dataset
             PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
 
-            // if PPartnerRow cannot be found load it from db
-            if (DonorRow == null)
+            // if PPartnerRow cannot be found, load it from db
+            if (DonorRow == null || DonorRow[PPartnerTable.GetReceiptEachGiftDBName()] == DBNull.Value)
             {
                 DonorRow = (PPartnerRow)TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey).Rows[0];
+            }
+            
+            // get donor's banking details
+            ARecurringGiftRow GiftRow = (ARecurringGiftRow)FMainDS.ARecurringGift.Rows.Find(
+            	new object[] { FLedgerNumber, FBatchNumber, FPreviouslySelectedDetailRow.GiftTransactionNumber });
+            PBankingDetailsTable BankingDetailsTable = TRemote.MFinance.Gift.WebConnectors.GetDonorBankingDetails(APartnerKey, GiftRow.BankingDetailsKey);
+            PBankingDetailsRow BankingDetailsRow = null;
+            
+            // set donor info text
+            if (BankingDetailsTable != null && BankingDetailsTable.Rows.Count > 0)
+            {
+            	BankingDetailsRow = BankingDetailsTable[0];
+            }
+
+            if (BankingDetailsRow != null && !string.IsNullOrEmpty(BankingDetailsRow.BankAccountNumber))
+            {
+                DonorInfo = Catalog.GetString("Bank Account: ") + BankingDetailsRow.BankAccountNumber;
             }
 
             if (DonorRow.ReceiptEachGift)
             {
-                txtGiftReceipting.Text = "*" + Catalog.GetString("Receipt Each Gift") + "*";
+                if (DonorInfo != string.Empty)
+                {
+                    DonorInfo += "; ";
+                }
+
+                DonorInfo += "*" + Catalog.GetString("Receipt Each Gift") + "*";
             }
 
             if (!string.IsNullOrEmpty(DonorRow.ReceiptLetterFrequency))
             {
-                if (DonorRow.ReceiptEachGift)
+                if (DonorInfo != string.Empty)
                 {
-                    txtGiftReceipting.Text += "; ";
+                    DonorInfo += "; ";
                 }
 
-                txtGiftReceipting.Text += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
+                DonorInfo += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
             }
+            
+            if (DonorRow.AnonymousDonor)
+            {
+            	if (DonorInfo != string.Empty)
+                {
+                    DonorInfo += "; ";
+                }
+
+                DonorInfo += Catalog.GetString("Anonymous");
+            }
+            
+            if (BankingDetailsRow != null && !string.IsNullOrEmpty(BankingDetailsRow.Comment))
+            {
+            	if (DonorInfo != string.Empty)
+                {
+                    DonorInfo += "; ";
+                }
+
+                DonorInfo += BankingDetailsRow.Comment;
+            }
+            
+            if (!string.IsNullOrEmpty(DonorRow.FinanceComment))
+            {
+            	if (DonorInfo != string.Empty)
+                {
+                    DonorInfo += "; ";
+                }
+
+                DonorInfo += DonorRow.FinanceComment;
+            }
+            
+            // shorten text if it is too long to display on screen
+            if (DonorInfo.Length >= 65)
+            {
+            	txtDonorInfo.Text = DonorInfo.Substring(0, 62) + "...";
+            }
+            else
+            {
+            	txtDonorInfo.Text = DonorInfo;
+            }
+            
+            FDonorInfoToolTip.SetToolTip(txtDonorInfo, DonorInfo);
+            FPetraUtilsObject.SetStatusBarText(txtDonorInfo, DonorInfo);
         }
 
         private void ShowDetailsForGift(ARecurringGiftRow ACurrentGiftRow)
