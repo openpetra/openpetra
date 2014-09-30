@@ -298,7 +298,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It does not balance: Debit is {0}, Credit is {1}"), ABatchToPost.BatchDebitTotal,
+                        String.Format(Catalog.GetString("It does not balance: Debit is {0:N2}, Credit is {1:N2}"), ABatchToPost.BatchDebitTotal,
                             ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
@@ -387,7 +387,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
-                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1}, Credit is {2}"),
+                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:N2}, Credit is {2:N2}"),
                                 journal.JournalNumber,
                                 journal.JournalDebitTotal, journal.JournalCreditTotal),
                             TResultSeverity.Resv_Critical));
@@ -1241,6 +1241,25 @@ namespace Ict.Petra.Server.MFinance.Common
             return false;
         }
 
+        //
+        // If the Ledger's ProvisionalYearEndFlag is set, no further batches can be posted.
+        private static Boolean CheckPostIsAllowed(Int32 ALedgerNumber, out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = null;
+            TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNumber);
+            if (LedgerInfo.ProvisionalYearEndFlag)
+            {
+                AVerifications = new TVerificationResultCollection();
+                AVerifications.Add(
+                    new TVerificationResult(
+                        Catalog.GetString("Post Batch"), 
+                        Catalog.GetString("There are no open periods in which a batch can be posted.\r\nYear End process must be run."),
+                        TResultSeverity.Resv_Critical));
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// post a GL Batch
         /// </summary>
@@ -1263,7 +1282,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLPostingTDS PostingDS;
 
-            AVerifications = null;
+            if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
+            {
+                return false;
+            }
 
             LoadDataForPosting(out PostingDS, ALedgerNumber);
 
@@ -1304,8 +1326,13 @@ namespace Ict.Petra.Server.MFinance.Common
             out GLPostingTDS APostingDS,
             ref Int32 ABatchPeriod)
         {
-            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
+            if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
+            {
+                APostingDS = null;
+                return false;
+            }
 
+            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
             LoadDataForPosting(out APostingDS, ALedgerNumber);
 
             if (PostGLBatchPrepare(ALedgerNumber, ABatchNumber, out AVerifications, APostingDS, PostingLevel, ref ABatchPeriod))
@@ -1318,8 +1345,8 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// prepare posting a GL Batch, without saving to database yet.
-        /// This is called by the actual PostGLBatch routine, but also by the routine for testing what would happen to the balances.
+        /// Prepare posting a GL Batch, without saving to database yet.
+        /// This is called by the actual PostGLBatch routine, and also by the routine for testing what would happen to the balances.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber">Batch to post</param>
@@ -1348,10 +1375,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 return false;
             }
 
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Validation...");
-            }
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Validation...");
 
             ABatchRow BatchToPost =
                 ((ABatchRow)BatchDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
