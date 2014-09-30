@@ -127,7 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(FStartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod, false, false));
-            
+
             // Get the current year/period and pass on to the filter logic object
             ALedgerRow LedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
