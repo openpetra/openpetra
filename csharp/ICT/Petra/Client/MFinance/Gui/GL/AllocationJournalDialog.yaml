@@ -2,15 +2,15 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
     FormTitle: Enter Allocation Journal Information
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
-    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.AllocationJournalTDS
-    DetailTable: Allocations
+    DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
+    DetailTable: ATransaction
     UtilObjectClass: TFrmPetraEditUtils
     InterfaceName: IFrmPetraEdit
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Validation]
+    UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: dialog
     Template: windowEdit
-    WindowWidth: 470
-    WindowHeight: 560
+    WindowWidth: 730
+    WindowHeight: 580
 
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
@@ -18,77 +18,111 @@ RootNode:
         actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllAllocations}
     Controls:
         pnlDialogContent:
-    #        Padding: 4,0,8,0
             Controls: [pnlInfo, grpAllocateFrom, grpAllocateTo]
             Dock: Fill
         pnlInfo:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchNumber]
-                Row1: [txtNarrative]
-                Row2: [txtReference]
+                Row1: [txtFromNarrative]
+                Row2: [txtFromReference]
             Dock: Top
         grpAllocateFrom:
+            Controls: [pnlAllocateFromDetails, pnlFromAnalAttributes]
+            Dock: Top
+            Height: 145
+        pnlAllocateFromDetails:
+            Dock: Left
             Controls:
                 Row0: [cmbFromCostCentreCode]
                 Row1: [cmbFromAccountCode]
-                Row2: [rgrDebitCredit, txtFromAmount]
-            Dock: Top
+                Row2: [rgrDebitCredit, txtTotalAmount]
+        pnlFromAnalAttributes:
+            Dock: Right
+            Controls: [lblFromAnalAttributes, grdFromAnalAttributes]
+            Width: 290
         grpAllocateTo:
-            Controls: [pnlDetailGrid, pnlDetails]
+            Controls: [pnlDetailGrid, pnlToDetails]
             Dock: Fill
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
-        pnlDetails:
+        pnlToDetails:
             Dock: Bottom
+            Controls: [pnlDetails, pnlToAnalAttributes]
+            Height: 125
+        pnlDetails:
+            Dock: Left
             Controls:
                Row0: [cmbDetailCostCentreCode]
                Row1: [cmbDetailAccountCode]
-               Row2: [rbtAmountOption, txtDetailAmount]
+               Row2: [rbtAmountOption, txtDetailTransactionAmount]
                Row3: [rbtPercentageOption, txtDetailPercentage]
+        pnlToAnalAttributes:
+            Dock: Right
+            Controls: [lblToAnalAttributes, grdToAnalAttributes]
+            Width: 290
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDeleteAllocation, btnDeleteAll]
             ControlsOrientation: horizontal
 
+        lblFromAnalAttributes:
+            Label: Analysis Attributes
+        grdFromAnalAttributes:
+            TableName: ATransAnalAttrib
+            Width: 270
+            Height: 90
+            Tooltip: Use cursor keys to select and edit an Analysis Attribute
+        lblToAnalAttributes:
+            Label: Analysis Attributes
+        grdToAnalAttributes:
+            TableName: ATransAnalAttrib
+            Width: 270
+            Height: 90
+            Tooltip: Use cursor keys to select and edit an Analysis Attribute
+
         grdDetails:
             Dock: Fill
-            Columns: [DetailPercentage, DetailAmount, DetailCostCentreCode, DetailAccountCode]
+            Columns: [DetailPercentage, DetailTransactionAmount, DetailCostCentreCode, DetailAccountCode]
             CustomColumns:
-                DetailPercentage: {Label=%, Type=Decimal}
-                DetailAmount: {Label=Amount, Type=Decimal}
+                DetailPercentage: {Label=%, Type=Decimal(2)}
+                DetailTransactionAmount: {Label=Amount, Type=Decimal(2)}
                 DetailCostCentreCode: {Label=Cost Centre}
                 DetailAccountCode: {Label=Account}
 
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, Width=100}
-        txtNarrative:
+        txtFromNarrative:
             Stretch: horizontally
             ColSpan: 2
-            Height: 60
+            Height: 40
             Multiline: true
             Stretch: horizontally
             ScrollBars: Vertical
-        txtReference:
+            Tooltip: Enter a description of the transaction.
+        txtFromReference:
+            Tooltip: Enter a reference code.
         cmbFromCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, ColSpan=2}
-        cmbFromAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2}
+            Tooltip: Enter a cost centre code (department or fund).
+        cmbFromAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2, OnChange=AccountCodeDetailChanged}
+            Tooltip: Enter an account code.
         rgrDebitCredit:
             ControlsOrientation: horizontal
             OptionalValues: [Debit, =Credit]
             NoLabel: true
             BorderVisible: false
-        txtFromAmount:
+        txtTotalAmount:
             Label: Amount
             Width: 120
             Format: Currency
             Padding: 0,14,0,0
-            OnChange: FromAmountChanged
-            Validation: true
+            OnChange: TotalAmountChanged
+            Tooltip: Enter the destination amount.
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, ColSpan=2}
-        cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2}
+        cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2, OnChange=AccountCodeDetailChanged}
         rbtAmountOption: {Label=Amount}
         rbtPercentageOption: {Label=Percentage, OnChange=AmountPercentageChanged}
-        txtDetailAmount: {NoLabel=true}
+        txtDetailTransactionAmount: {NoLabel=true}
             Label: Amount
             Width: 120
             Format: Currency

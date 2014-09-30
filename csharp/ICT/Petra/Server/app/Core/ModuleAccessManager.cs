@@ -42,6 +42,8 @@ namespace Ict.Petra.Server.App.Core.Security
     /// </summary>
     public class TModuleAccessManager
     {
+        private const string LEDGER_MODULESTRING = "LEDGER";
+
         /// <summary>
         /// load the modules available to the given user
         /// </summary>
@@ -149,9 +151,10 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         if (AModuleExpression.StartsWith("AND("))
                         {
-                            throw new EvaluateException(String.Format(
-                                    Catalog.GetString("No access for user {0} to module {1}"),
-                                    UserInfo.GUserInfo.UserID, module));
+                            throw new ESecurityModuleAccessDeniedException(String.Format(
+                                    Catalog.GetString("No access for user {0} to module {1}."),
+                                    UserInfo.GUserInfo.UserID, module),
+                                UserInfo.GUserInfo.UserID, module);
                         }
                     }
                     else
@@ -162,9 +165,10 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (AModuleExpression.StartsWith("OR(") && !oneTrue)
                 {
-                    throw new EvaluateException(String.Format(
-                            Catalog.GetString("No access for user {0} to either of the modules {1}"),
-                            UserInfo.GUserInfo.UserID, modulesList));
+                    throw new ESecurityModuleAccessDeniedException(String.Format(
+                            Catalog.GetString("No access for user {0} to either of the modules {1}."),
+                            UserInfo.GUserInfo.UserID, modulesList),
+                        UserInfo.GUserInfo.UserID, modulesList);
                 }
 
                 return true;
@@ -189,12 +193,37 @@ namespace Ict.Petra.Server.App.Core.Security
 
                 if (!UserInfo.GUserInfo.IsInModule(ModuleName))
                 {
-                    throw new EvaluateException(String.Format(
-                            Catalog.GetString("No access for user {0} to module {1}"),
-                            UserInfo.GUserInfo.UserID, ModuleName));
+                    throw new ESecurityModuleAccessDeniedException(String.Format(
+                            Catalog.GetString("No access for user {0} to {1}."),
+                            UserInfo.GUserInfo.UserID, GetModuleOrLedger(ModuleName)),
+                        UserInfo.GUserInfo.UserID, ModuleName);
                 }
 
                 return true;
+            }
+        }
+
+        static private string GetModuleOrLedger(string AModuleName)
+        {
+            if (AModuleName.StartsWith(LEDGER_MODULESTRING))
+            {
+                // Get pure ledger number without the LEDGER_MODULESTRING prefix, e.g. '0043' instead of 'LEDGER0043'
+                string ALedgerNumberWithoutLeadingZeroes = AModuleName.Substring(LEDGER_MODULESTRING.Length);
+
+                // Determine ledger number without leading zeroes
+                for (int Counter = 0; Counter < ALedgerNumberWithoutLeadingZeroes.Length; Counter++)
+                {
+                    if (ALedgerNumberWithoutLeadingZeroes[Counter] != '0')
+                    {
+                        ALedgerNumberWithoutLeadingZeroes = ALedgerNumberWithoutLeadingZeroes.Substring(Counter);
+                    }
+                }
+
+                return Catalog.GetString("Ledger") + " " + ALedgerNumberWithoutLeadingZeroes;
+            }
+            else
+            {
+                return Catalog.GetString("Module") + " " + AModuleName;
             }
         }
 
@@ -275,16 +304,20 @@ namespace Ict.Petra.Server.App.Core.Security
 
                         if (ALedgerNumber != -1)
                         {
-                            CheckUserModulePermissions("LEDGER" + ALedgerNumber.ToString("0000"));
+                            CheckUserModulePermissions(LEDGER_MODULESTRING + ALedgerNumber.ToString("0000"));
                         }
                     }
-                    catch (EvaluateException evException)
+                    catch (ESecurityModuleAccessDeniedException Exc)
                     {
                         string msg =
-                            String.Format(Catalog.GetString("Module access permission was violated for method {0} in Connector class {1}: {2}"),
-                                AMethodName, AConnectorType, evException.Message);
+                            String.Format(Catalog.GetString(
+                                    "Module access permission was violated for method '{0}' in Connector class '{1}':  Required Module access permission: {2}, UserName: {3}"),
+                                AMethodName, AConnectorType, Exc.Module, Exc.UserName);
                         TLogging.Log(msg);
-                        throw new EOPAppException(msg);
+
+                        Exc.Context = AMethodName + " [raised by ModuleAccessManager]";
+
+                        throw;
                     }
                     catch (ArgumentException argException)
                     {

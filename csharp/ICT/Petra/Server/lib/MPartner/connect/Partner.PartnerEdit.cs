@@ -547,11 +547,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     // Partner Types
                     FPartnerEditScreenDS.Merge(GetPartnerTypesInternal(out ItemsCountPartnerTypes, false));
 
-                    // Determine whether the Partner has a 'EX-WORKER*' Partner Type
-                    HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.HasPartnerType(MPartnerConstants.PARTNERTYPE_EX_WORKER,
-                        FPartnerEditScreenDS.PPartnerType,
-                        false);
-
                     if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpPartnerTypes))
                     {
                         // Empty Tables again, we don't want to transfer the data contained in them
@@ -682,6 +677,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             FPartnerEditScreenDS.PPerson[0].FamilyKey,
                             ReadTransaction);
 
+                            // Determine whether the Partner has a 'EX-WORKER*' Partner Type
+                            HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
+
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                             {
                                 // Load data for Family Members
@@ -701,6 +699,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                             // Gift Destination
                             PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+
+                            // Determine whether the Partner has a 'EX-WORKER*' Partner Type
+                            HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
 
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                             {
@@ -980,7 +981,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // are not needed at the Client side.
             FPartnerEditScreenDS.RemoveEmptyTables();
         }
-
 
 
         private void LoadData(Boolean ADelayedDataLoading)

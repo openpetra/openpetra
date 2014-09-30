@@ -222,6 +222,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("HOSA", paramsDictionary);
 
+            if (this.IsDisposed)
+            {
+                return false;
+            }
+
             if (ReportTable == null)
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");

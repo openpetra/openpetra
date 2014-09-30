@@ -273,7 +273,7 @@ OpenPetra:
                         #RenameCostCentre:
                         #LinkCostCentreToPartner:
                     Other:
-                        SuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}                        
+                        SuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}
                         Calendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
                         FinanceModuleSubsystems: {Description="Enable/Disable Finance Module Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
                         #ChangeNumberOfForwardingPeriods:

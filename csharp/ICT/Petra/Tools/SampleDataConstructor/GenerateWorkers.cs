@@ -33,6 +33,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPartner;
@@ -374,8 +375,10 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 Convert.ToInt32(TXMLParser.GetAttribute(ACurrentNode, "fieldCommitment")) % AFieldKeys.Rows.Count;
             long FieldPartnerKey = Convert.ToInt64(AFieldKeys.Rows[FieldID].ItemArray[0]);
 
-            AFamilyRow.FieldKey = FieldPartnerKey;
-            firstPerson.FieldKey = FieldPartnerKey;
+            PPartnerGiftDestinationRow giftDestination = AMainDS.PPartnerGiftDestination.NewRowTyped();
+            giftDestination.Key = TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination();
+            giftDestination.FieldKey = FieldPartnerKey;
+            giftDestination.DateEffective = Convert.ToDateTime(TXMLParser.GetAttribute(ACurrentNode, "startDateCommitment"));
 
             PmStaffDataRow staffData = APersonnelDS.PmStaffData.NewRowTyped();
             staffData.SiteKey = DomainManager.GSiteKey;
@@ -418,6 +421,15 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             }
 
             APersonnelDS.PmStaffData.Rows.Add(staffData);
+
+            giftDestination.DateExpires = staffData.EndOfCommitment;
+
+            if (AMainDS.PPartnerGiftDestination == null)
+            {
+                AMainDS.PPartnerGiftDestination.Merge(new PPartnerGiftDestinationTable());
+            }
+
+            AMainDS.PPartnerGiftDestination.Rows.Add(giftDestination);
 
             // TODO depending on start and end date of commitment, set EX-WORKER or no special type yet at all
             string SpecialType = MPartnerConstants.PARTNERTYPE_WORKER;

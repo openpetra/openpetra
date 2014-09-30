@@ -22,6 +22,7 @@
             Controls: [uco_CostCentreSettings]
         uco_CostCentreSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_CostCentreSettings
+            Dock: Fill
 
         tpgColumnSettings:
             Label: Column Settings

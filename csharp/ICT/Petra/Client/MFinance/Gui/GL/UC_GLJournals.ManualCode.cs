@@ -625,5 +625,59 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
+
+        private void TransactionTypeCodeChanged(Object sender, EventArgs e)
+        {
+            if (cmbDetailTransactionTypeCode.GetSelectedString() == CommonAccountingTransactionTypesEnum.ALLOC.ToString())
+            {
+                btnAddAllocations.Visible = true;
+                btnAddAllocations.Text = Catalog.GetString("Add Allocation");
+            }
+            else if (cmbDetailTransactionTypeCode.GetSelectedString() == CommonAccountingTransactionTypesEnum.REALLOC.ToString())
+            {
+                btnAddAllocations.Visible = true;
+                btnAddAllocations.Text = Catalog.GetString("Add Reallocation");
+            }
+            else
+            {
+                btnAddAllocations.Visible = false;
+            }
+        }
+
+        private void AddAllocations(Object sender, EventArgs e)
+        {
+            Cursor = Cursors.WaitCursor;
+
+            if (cmbDetailTransactionTypeCode.GetSelectedString() == CommonAccountingTransactionTypesEnum.ALLOC.ToString())
+            {
+                TFrmAllocationJournalDialog AddAllocationJournal = new TFrmAllocationJournalDialog(this.FindForm());
+                AddAllocationJournal.Journal = this.GetSelectedDetailRow();
+
+                // open as a modal form
+                if (AddAllocationJournal.ShowDialog() == DialogResult.OK)
+                {
+                    FMainDS.Merge(AddAllocationJournal.MainDS);
+
+                    // manually enable save button (otherwise this doesn't happen)
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+            }
+            else if (cmbDetailTransactionTypeCode.GetSelectedString() == CommonAccountingTransactionTypesEnum.REALLOC.ToString())
+            {
+                TFrmReallocationJournalDialog AddReallocationJournal = new TFrmReallocationJournalDialog(this.FindForm());
+                AddReallocationJournal.Journal = this.GetSelectedDetailRow();
+
+                // open as a modal form
+                if (AddReallocationJournal.ShowDialog() == DialogResult.OK)
+                {
+                    FMainDS.Merge(AddReallocationJournal.MainDS);
+
+                    // manually enable save button (otherwise this doesn't happen)
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+            }
+
+            Cursor = Cursors.Default;
+        }
     }
 }

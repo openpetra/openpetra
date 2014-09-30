@@ -265,7 +265,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void CheckBeforeSaving()
         {
-            //Add code here to run before the batch is saved
+            UpdateBatchPeriod(null, null);
         }
 
         /// <summary>
@@ -1187,6 +1187,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
+                    //TODO this can't be right. Ask Alan
                     SelectRowInGrid(newRowToSelectAfterFilter);
                 }
             }
@@ -1441,9 +1442,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                ((TFrmGiftBatch)ParentForm).LoadTransactions(FLedgerNumber,
-                    currentBatchNo,
-                    FPreviouslySelectedDetailRow.BatchStatus);
+                ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(FLedgerNumber, currentBatchNo);
 
                 if (FMainDS.AGift != null)
                 {
@@ -1458,6 +1457,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FLedgerNumber,
                         AGiftTable.GetBatchNumberDBName(),
                         currentBatchNo);
+
                     batchIsEmpty = (giftView.Count == 0);
                 }
 
@@ -1503,7 +1503,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 foreach (DataRow dr in GiftsWithInactiveKeyMinistries.Rows)
                 {
-                    listOfRow += String.Format("{0}{1} {2} {3} {4}",
+                    listOfRow += String.Format("{0}{1}-{2}-{3}-{4}",
                         Environment.NewLine,
                         dr[0],
                         dr[1],

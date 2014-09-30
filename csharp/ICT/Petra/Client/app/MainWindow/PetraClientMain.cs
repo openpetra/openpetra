@@ -45,6 +45,7 @@ using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls;
@@ -660,6 +661,10 @@ namespace Ict.Petra.Client.App.PetraClient
             TClientInfo.InitializeUnit();
             TCacheableTablesManager.InitializeUnit();
             new TIconCache();
+
+            // Set up Delegates for forwarding of calls for security-related Exceptions
+            ExceptionHandling.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
+            TUnhandledThreadExceptionHandler.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
 
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;

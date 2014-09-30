@@ -191,7 +191,7 @@ RootNode:
             ScrollBars: Vertical
             OnEnter: CheckIfRowIsShared
         lblAccountSharedWith:
-            Label: Other Partner's using this account
+            Label: Other Partners using this account
         grdAccountSharedWith:
             Stretch: fully
             ActionDoubleClick: OpenSharingPartner

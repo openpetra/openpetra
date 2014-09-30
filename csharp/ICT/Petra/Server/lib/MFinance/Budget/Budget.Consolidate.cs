@@ -69,76 +69,84 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             FBudgetTDS = new BudgetTDS();
 
-            ALedgerAccess.LoadByPrimaryKey(FBudgetTDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(FBudgetTDS, ALedgerNumber, Transaction);
 
-            string sqlLoadBudgetForThisAndNextYear =
-                string.Format("SELECT * FROM PUB_{0} WHERE {1}=? AND ({2} = ? OR {2} = ?)",
-                    ABudgetTable.GetTableDBName(),
-                    ABudgetTable.GetLedgerNumberDBName(),
-                    ABudgetTable.GetYearDBName());
+                    string sqlLoadBudgetForThisAndNextYear =
+                        string.Format("SELECT * FROM PUB_{0} WHERE {1}=? AND ({2} = ? OR {2} = ?)",
+                            ABudgetTable.GetTableDBName(),
+                            ABudgetTable.GetLedgerNumberDBName(),
+                            ABudgetTable.GetYearDBName());
 
-            List <OdbcParameter>parameters = new List <OdbcParameter>();
-            OdbcParameter param = new OdbcParameter("ledgernumber", OdbcType.Int);
-            param.Value = ALedgerNumber;
-            parameters.Add(param);
-            param = new OdbcParameter("thisyear", OdbcType.Int);
-            param.Value = FBudgetTDS.ALedger[0].CurrentFinancialYear;
-            parameters.Add(param);
-            param = new OdbcParameter("nextyear", OdbcType.Int);
-            param.Value = FBudgetTDS.ALedger[0].CurrentFinancialYear + 1;
-            parameters.Add(param);
+                    List <OdbcParameter>parameters = new List <OdbcParameter>();
+                    OdbcParameter param = new OdbcParameter("ledgernumber", OdbcType.Int);
+                    param.Value = ALedgerNumber;
+                    parameters.Add(param);
+                    param = new OdbcParameter("thisyear", OdbcType.Int);
+                    param.Value = FBudgetTDS.ALedger[0].CurrentFinancialYear;
+                    parameters.Add(param);
+                    param = new OdbcParameter("nextyear", OdbcType.Int);
+                    param.Value = FBudgetTDS.ALedger[0].CurrentFinancialYear + 1;
+                    parameters.Add(param);
 
-            DBAccess.GDBAccessObj.Select(FBudgetTDS, sqlLoadBudgetForThisAndNextYear, FBudgetTDS.ABudget.TableName, null, parameters.ToArray());
+                    DBAccess.GDBAccessObj.Select(FBudgetTDS, sqlLoadBudgetForThisAndNextYear, FBudgetTDS.ABudget.TableName, Transaction,
+                        parameters.ToArray());
 
-            string sqlLoadBudgetPeriodForThisAndNextYear =
-                string.Format("SELECT {0}.* FROM PUB_{0}, PUB_{1} WHERE {0}.a_budget_sequence_i = {1}.a_budget_sequence_i AND " +
-                    "{2}=? AND ({3} = ? OR {3} = ?)",
-                    ABudgetPeriodTable.GetTableDBName(),
-                    ABudgetTable.GetTableDBName(),
-                    ABudgetTable.GetLedgerNumberDBName(),
-                    ABudgetTable.GetYearDBName());
+                    string sqlLoadBudgetPeriodForThisAndNextYear =
+                        string.Format("SELECT {0}.* FROM PUB_{0}, PUB_{1} WHERE {0}.a_budget_sequence_i = {1}.a_budget_sequence_i AND " +
+                            "{2}=? AND ({3} = ? OR {3} = ?)",
+                            ABudgetPeriodTable.GetTableDBName(),
+                            ABudgetTable.GetTableDBName(),
+                            ABudgetTable.GetLedgerNumberDBName(),
+                            ABudgetTable.GetYearDBName());
 
-            DBAccess.GDBAccessObj.Select(FBudgetTDS,
-                sqlLoadBudgetPeriodForThisAndNextYear,
-                FBudgetTDS.ABudgetPeriod.TableName,
-                null,
-                parameters.ToArray());
+                    DBAccess.GDBAccessObj.Select(FBudgetTDS,
+                        sqlLoadBudgetPeriodForThisAndNextYear,
+                        FBudgetTDS.ABudgetPeriod.TableName,
+                        Transaction,
+                        parameters.ToArray());
 
-            // Accept row changes here so that the Client gets 'unmodified' rows
-            FBudgetTDS.AcceptChanges();
+                    // Accept row changes here so that the Client gets 'unmodified' rows
+                    FBudgetTDS.AcceptChanges();
 
-            GLPostingDS = new GLPostingTDS();
-            AAccountAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, null);
-            AAccountHierarchyDetailAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, null);
-            ACostCentreAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, null);
-            ALedgerAccess.LoadByPrimaryKey(GLPostingDS, ALedgerNumber, null);
+                    GLPostingDS = new GLPostingTDS();
+                    AAccountAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyDetailAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, Transaction);
+                    ACostCentreAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, Transaction);
+                    ALedgerAccess.LoadByPrimaryKey(GLPostingDS, ALedgerNumber, Transaction);
 
-            // get the glm sequences for this year and next year
-            for (int i = 0; i <= 1; i++)
-            {
-                int Year = GLPostingDS.ALedger[0].CurrentFinancialYear + i;
+                    // get the glm sequences for this year and next year
+                    for (int i = 0; i <= 1; i++)
+                    {
+                        int Year = GLPostingDS.ALedger[0].CurrentFinancialYear + i;
 
-                AGeneralLedgerMasterRow TemplateRow = (AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.NewRowTyped(false);
+                        AGeneralLedgerMasterRow TemplateRow = (AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.NewRowTyped(false);
 
-                TemplateRow.LedgerNumber = ALedgerNumber;
-                TemplateRow.Year = Year;
+                        TemplateRow.LedgerNumber = ALedgerNumber;
+                        TemplateRow.Year = Year;
 
-                GLPostingDS.AGeneralLedgerMaster.Merge(AGeneralLedgerMasterAccess.LoadUsingTemplate(TemplateRow, null));
-            }
+                        GLPostingDS.AGeneralLedgerMaster.Merge(AGeneralLedgerMasterAccess.LoadUsingTemplate(TemplateRow, Transaction));
+                    }
 
-            string sqlLoadGlmperiodForThisAndNextYear =
-                string.Format("SELECT {0}.* FROM PUB_{0}, PUB_{1} WHERE {0}.a_glm_sequence_i = {1}.a_glm_sequence_i AND " +
-                    "{2}=? AND ({3} = ? OR {3} = ?)",
-                    AGeneralLedgerMasterPeriodTable.GetTableDBName(),
-                    AGeneralLedgerMasterTable.GetTableDBName(),
-                    AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
-                    AGeneralLedgerMasterTable.GetYearDBName());
+                    string sqlLoadGlmperiodForThisAndNextYear =
+                        string.Format("SELECT {0}.* FROM PUB_{0}, PUB_{1} WHERE {0}.a_glm_sequence_i = {1}.a_glm_sequence_i AND " +
+                            "{2}=? AND ({3} = ? OR {3} = ?)",
+                            AGeneralLedgerMasterPeriodTable.GetTableDBName(),
+                            AGeneralLedgerMasterTable.GetTableDBName(),
+                            AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
+                            AGeneralLedgerMasterTable.GetYearDBName());
 
-            DBAccess.GDBAccessObj.Select(GLPostingDS,
-                sqlLoadGlmperiodForThisAndNextYear,
-                GLPostingDS.AGeneralLedgerMasterPeriod.TableName,
-                null,
-                parameters.ToArray());
+                    DBAccess.GDBAccessObj.Select(GLPostingDS,
+                        sqlLoadGlmperiodForThisAndNextYear,
+                        GLPostingDS.AGeneralLedgerMasterPeriod.TableName,
+                        Transaction,
+                        parameters.ToArray());
+                });
 
             GLPostingDS.AcceptChanges();
 
@@ -264,10 +272,17 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (TempRow == null)
             {
-                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence,
-                    APeriodNumber,
-                    null);
+                AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
                 AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+
+                TDBTransaction transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref transaction,
+                    delegate
+                    {
+                        GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSequence, APeriodNumber, transaction);
+                    });
 
                 if (GeneralLedgerMasterPeriodTable.Count > 0)
                 {

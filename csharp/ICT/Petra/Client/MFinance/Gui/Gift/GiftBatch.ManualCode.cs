@@ -80,11 +80,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// International To Base Exchange Rate
-        /// </summary>
-        public decimal FInternationalToBaseExchangeRate;
-
-        /// <summary>
         /// use this ledger
         /// </summary>
         public Int32 LedgerNumber
@@ -140,6 +135,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning()
+        {
+            if (FNewDonorWarning)
+            {
+                if (FMainDS.GetChangesTyped(false) == null)
+                {
+                    FGiftDetailTable = null;
+                    return;
+                }
+
+                //add changed gift records to datatable
+                GetDataFromControls();
+                FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
+            }
+        }
+
+        private void FPetraUtilsObject_DataSaved_NewDonorWarning(object Sender, TDataSavedEventArgs e)
+        {
+            // if data successfully saved then look for new donors and warn the user
+            if (e.Success && (FGiftDetailTable != null) && FNewDonorWarning)
+            {
+                // this list contains a list of all new donors that were entered onto form
+                List <Int64>NewDonorsList = ucoTransactions.NewDonorsList;
+
+                foreach (GiftBatchTDSAGiftDetailRow Row in FGiftDetailTable.Rows)
+                {
+                    // check changed data is either added or modified and that it is by a new donor
+                    if (((Row.RowState == DataRowState.Added) || (Row.RowState == DataRowState.Modified))
+                        && NewDonorsList.Contains(Row.DonorKey))
+                    {
+                        if (MessageBox.Show(string.Format(Catalog.GetString(
+                                        "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
+                                        "(Note: this message can be disabled in the 'File' menu by unselecting the 'New Donor Warning' item.)"),
+                                    Row.DonorName, Row.DonorKey, "\n\n"),
+                                Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                                MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                        {
+                            // Open the donor's Edit screen so subscriptions can be added
+                            TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+
+                            frm.SetParameters(TScreenMode.smEdit, Row.DonorKey, TPartnerEditTabPageEnum.petpSubscriptions);
+                            frm.ShowDialog();
+                        }
+
+                        // ensures message is not displayed twice for one new donor with two gifts
+                        NewDonorsList.Remove(Row.DonorKey);
+                    }
+                }
+
+                ucoTransactions.NewDonorsList.Clear();
+            }
+        }
+
         private void InitializeManualCode()
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
@@ -188,59 +236,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // This will ensure the grid gets the focus when the screen is shown for the first time
                 ucoBatches.SetInitialFocus();
             };
-        }
-
-        private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning()
-        {
-            if (FNewDonorWarning)
-            {
-                if (FMainDS.GetChangesTyped(false) == null)
-                {
-                    FGiftDetailTable = null;
-                    return;
-                }
-
-                // add changed gift records to datatable
-                GetDataFromControls();
-                FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
-            }
-        }
-
-        private void FPetraUtilsObject_DataSaved_NewDonorWarning(object Sender, TDataSavedEventArgs e)
-        {
-            // if data successfully saved then look for new donors and warn the user
-            if (e.Success && (FGiftDetailTable != null) && FNewDonorWarning)
-            {
-                // this list contains a list of all new donors that were entered onto form
-                List <Int64>NewDonorsList = ucoTransactions.NewDonorsList;
-
-                foreach (GiftBatchTDSAGiftDetailRow Row in FGiftDetailTable.Rows)
-                {
-                    // check changed data is either added or modified and that it is by a new donor
-                    if (((Row.RowState == DataRowState.Added) || (Row.RowState == DataRowState.Modified))
-                        && NewDonorsList.Contains(Row.DonorKey))
-                    {
-                        if (MessageBox.Show(string.Format(Catalog.GetString(
-                                        "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
-                                        "(Note: this message can be disabled by selecting from the menu File then New Donor Warning.)"),
-                                    Row.DonorName, Row.DonorKey, "\n\n"),
-                                Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                                MessageBoxDefaultButton.Button2) == DialogResult.Yes)
-                        {
-                            // Open the donor's Edit screen so subscriptions can be added
-                            TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
-
-                            frm.SetParameters(TScreenMode.smEdit, Row.DonorKey, TPartnerEditTabPageEnum.petpSubscriptions);
-                            frm.ShowDialog();
-                        }
-
-                        // ensures message is not displayed twice for one new donor with two gifts
-                        NewDonorsList.Remove(Row.DonorKey);
-                    }
-                }
-
-                ucoTransactions.NewDonorsList.Clear();
-            }
         }
 
         private void RunOnceOnActivationManual()
@@ -452,6 +447,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FMainDS.Tables.Remove("AUpdateErrors");
             }
+        }
+
+        /// <summary>
+        /// Ensure the data is loaded for the specified batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns>If transactions exist</returns>
+        public Boolean EnsureGiftDataPresent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            DataView TransDV = new DataView(FMainDS.AGiftDetail);
+
+            TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                AGiftDetailTable.GetLedgerNumberDBName(),
+                ALedgerNumber,
+                AGiftDetailTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            if (TransDV.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
+            }
+
+            return TransDV.Count > 0;
         }
 
         /// <summary>

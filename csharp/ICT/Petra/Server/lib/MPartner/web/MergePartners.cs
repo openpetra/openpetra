@@ -428,6 +428,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     throw new Exception("Partner merge was cancelled by the user");
                 }
@@ -1750,28 +1751,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmJobAssignmentAccess.SubmitChanges(JobAssignmentTable, ATransaction);
             }
 
-            PFamilyTable FamilyTable = PFamilyAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
+            PPartnerGiftDestinationTable GiftDestinationTable = PPartnerGiftDestinationAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
 
-            if (FamilyTable.Rows.Count > 0)
+            if (GiftDestinationTable.Rows.Count > 0)
             {
-                foreach (DataRow Row in FamilyTable.Rows)
+                foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
                 {
-                    ((PFamilyRow)Row).FieldKey = AToPartnerKey;
+                    Row.FieldKey = AToPartnerKey;
                 }
 
-                PFamilyAccess.SubmitChanges(FamilyTable, ATransaction);
-            }
-
-            PPersonTable PersonTable = PPersonAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
-
-            if (PersonTable.Rows.Count > 0)
-            {
-                foreach (DataRow Row in PersonTable.Rows)
-                {
-                    ((PPersonRow)Row).FieldKey = AToPartnerKey;
-                }
-
-                PPersonAccess.SubmitChanges(PersonTable, ATransaction);
+                PPartnerGiftDestinationAccess.SubmitChanges(GiftDestinationTable, ATransaction);
             }
 
             PmGeneralApplicationTable GeneralApplicationTable = PmGeneralApplicationAccess.LoadViaPUnitRegistrationOffice(AFromPartnerKey,
@@ -2132,11 +2121,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             ToRow.MaritalStatusComment = ToRow.MaritalStatusComment + " / " + FromRow.MaritalStatusComment;
 
-            if ((ToRow.IsFieldKeyNull() || (ToRow.FieldKey == 0)) && !FromRow.IsFieldKeyNull())
-            {
-                ToRow.FieldKey = FromRow.FieldKey;
-            }
-
             // Update family keys in all p_person records
             PPersonTable PersonTable = PPersonAccess.LoadViaPFamily(AFromPartnerKey, ATransaction);
 
@@ -2252,11 +2236,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             ToRow.MaritalStatusComment = ToRow.MaritalStatusComment + " / " + FromRow.MaritalStatusComment;
-
-            if ((ToRow.IsFieldKeyNull() || (ToRow.FieldKey == 0)) && !FromRow.IsFieldKeyNull())
-            {
-                ToRow.FieldKey = FromRow.FieldKey;
-            }
 
             PPersonAccess.SubmitChanges(ToPersonTable, ATransaction);
 

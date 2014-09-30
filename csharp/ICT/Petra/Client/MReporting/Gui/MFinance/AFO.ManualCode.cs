@@ -28,12 +28,9 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Ict.Common;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.MReporting.Gui;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {

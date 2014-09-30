@@ -236,6 +236,7 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref ANewRow, "p_date_effective_d",
                             string.Format("{0}-{1}-{2}", LastYear.Year, LastYear.Month, LastYear.Day));
                         SetValue(AColumnNames, ref ANewRow, "p_date_expires_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "p_comment_c", Catalog.GetString("Copied from Petra's OM Field Key."));
 
                         CommitmentFound = true;
                     }

@@ -125,6 +125,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         // ColumnIndex of our new columns in the extended dataset
         private int UsedByColumnOrdinal = -1;
         private int ContextColumnOrdinal = -1;
+        private int DataTypeColumnOrdinal = -1;
         // These are the database values for the DataLabelUse table
         // We default to using in all screens - this is better than defaulting to none (which is not allowed)
         private const string DefaultPartnerUsedBy = "Bank,Church,Family,Organisation,Person,Unit,Venue";
@@ -190,6 +191,19 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // Add a 'Used By' column to our main dataset (Do it twice so we track changes)
             FMainDS.PDataLabel.Columns.Add("UsedByInit", typeof(String));
             UsedByColumnOrdinal = FMainDS.PDataLabel.Columns.Add(DBUsedBy, typeof(String)).Ordinal;
+
+            // Add a 'Converted Data Type' column to the dataset because we want to 'translate' from geeky database entries to friendly user ones
+            // This column data is derived from an expression
+            string expression = String.Format("IIF(p_data_type_c='char','{0}',", Catalog.GetString("Text"));
+            expression += String.Format("IIF(p_data_type_c='float','{0}',", Catalog.GetString("Number"));
+            expression += String.Format("IIF(p_data_type_c='currency','{0}',", Catalog.GetString("Currency"));
+            expression += String.Format("IIF(p_data_type_c='boolean','{0}',", Catalog.GetString("Yes/No"));
+            expression += String.Format("IIF(p_data_type_c='date','{0}',", Catalog.GetString("Date"));
+            expression += String.Format("IIF(p_data_type_c='time','{0}',", Catalog.GetString("Time"));
+            expression += String.Format("IIF(p_data_type_c='lookup','{0}',", Catalog.GetString("Option List"));
+            expression += String.Format("IIF(p_data_type_c='partnerkey','{0}',", Catalog.GetString("Partner Key"));
+            expression += String.Format("'{0}'))))))))", Catalog.GetString("Unknown"));
+            DataTypeColumnOrdinal = FMainDS.PDataLabel.Columns.Add("DataTypeEx", typeof(System.String), expression).Ordinal;
 
             // Load the Extra Data from DataLabelUse table
             Type DataTableType;
@@ -310,6 +324,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 new TValidationControlsData(clbUsedBy, GUIUsedBy));
 
             // This is the point at which we can add our additional column to the details grid
+            grdDetails.AddTextColumn(Catalog.GetString("Data Type"), FMainDS.PDataLabel.Columns[DataTypeColumnOrdinal]);
+            grdDetails.AddCheckBoxColumn(Catalog.GetString("Displayed"), FMainDS.PDataLabel.ColumnDisplayed);
+
             if (CurrentContext != Context.Personnel)
             {
                 grdDetails.AddTextColumn(GUIUsedBy, FMainDS.PDataLabel.Columns[DBUsedBy]);

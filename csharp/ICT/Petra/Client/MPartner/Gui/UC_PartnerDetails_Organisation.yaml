@@ -33,8 +33,8 @@ RootNode:
         pnlCheckBoxes:
             Controls: 
                 Row0: [chkReligious, chkFoundation]
-            ColWidths: [0=Fixed:250]    
-            Margin: 110,0,0,5        
+            ColWidths: [0=Fixed:100]    
+            Margin: 110,0,0,5
                             
         chkReligious:
             Label: Religious Organisation

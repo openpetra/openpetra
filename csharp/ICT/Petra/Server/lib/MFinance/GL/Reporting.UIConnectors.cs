@@ -298,14 +298,20 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static string GetLedgerName(int ledgernumber)
         {
             String ReturnValue = "";
-            String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
-                            StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-            DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", null);
+            TDBTransaction ReadTransaction = null;
 
-            if (tab.Rows.Count > 0)
-            {
-                ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
-            }
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
+                                    StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
+                    DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
+
+                    if (tab.Rows.Count > 0)
+                    {
+                        ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
+                    }
+                });
 
             return ReturnValue;
         }
@@ -316,6 +322,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// <param name="ALedgerFilter"></param>
         /// <param name="AAccountCodeFilter"></param>
         /// <param name="ACostCentreFilter"></param>
+        /// <param name="AFinancialYear"></param>
         /// <param name="AStartPeriod"></param>
         /// <param name="AEndPeriod"></param>
         /// <param name="AInternational"></param>
@@ -324,6 +331,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable GetPeriodBalances(String ALedgerFilter,
             String AAccountCodeFilter,
             String ACostCentreFilter,
+            Int32 AFinancialYear,
             Int32 AStartPeriod,
             Int32 AEndPeriod,
             Boolean AInternational)
@@ -340,27 +348,28 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     AStartPeriod -= 1; // I want the closing balance of the previous period.
                 }
 
+                TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
                 String Query = "SELECT * FROM a_ledger WHERE " + ALedgerFilter;
-                DataTable LedgerTable = DBAccess.GDBAccessObj.SelectDT(Query, "Ledger", null);
-                Int32 FiancialYear = Convert.ToInt32(LedgerTable.Rows[0]["a_current_financial_year_i"]);
+                DataTable LedgerTable = DBAccess.GDBAccessObj.SelectDT(Query, "Ledger", ReadTrans);
 
                 String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
                 String StartBalanceField = (AInternational) ? "glm.a_start_balance_intl_n" : "glm.a_start_balance_base_n";
 
                 Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
+                        "a_account.a_debit_credit_indicator_l AS Debit, " +
                         StartBalanceField + " AS start_balance, " +
                         BalanceField + " AS balance " +
-                        " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp" +
+                        " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account" +
                         " WHERE glm." + ALedgerFilter +
-                        " AND glm.a_year_i = " + FiancialYear +
-                        AAccountCodeFilter +
+                        " AND a_account." + ALedgerFilter +
+                        " AND glm.a_year_i = " + AFinancialYear +
+                        " AND glm.a_account_code_c = a_account.a_account_code_c " +
+                        " AND glm." + AAccountCodeFilter +
                         ACostCentreFilter +
                         " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                        " AND glmp.a_period_number_i >= " + AStartPeriod +
-                        " AND glmp.a_period_number_i <= " + AEndPeriod +
+                        " AND glmp.a_period_number_i BETWEEN " + AStartPeriod + " AND " + AEndPeriod +
                         " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i";
 
-                TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
                 DataTable GlmTbl = DbAdapter.RunQuery(Query, "balances", ReadTrans);
                 Results.Columns.Add(new DataColumn("a_cost_centre_code_c", typeof(string)));
@@ -370,11 +379,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 String CostCentre = "";
                 String AccountCode = "";
-                Decimal OpeningBalance = 0;
-                Decimal ClosingBalance = 0;
                 Int32 MaxPeriod = -1;
                 Int32 MinPeriod = 99;
                 DataRow NewRow = null;
+                Decimal MakeItDebit = 1;
 
                 // For each CostCentre / Account combination  I want just a single row, with the opening and closing balances,
                 // so I need to pre-process the stuff I've got in this table, and generate another table.
@@ -386,6 +394,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         return Results;
                     }
 
+                    MakeItDebit = (Convert.ToBoolean(row["Debit"])) ? -1 : 1;
+
                     if ((row["a_cost_centre_code_c"].ToString() != CostCentre) || (row["a_account_code_c"].ToString() != AccountCode)) // a new CC/AC combination
                     {
                         NewRow = Results.NewRow();
@@ -394,6 +404,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         NewRow["a_cost_centre_code_c"] = CostCentre;
 
                         AccountCode = row["a_account_code_c"].ToString();
+                        MakeItDebit = (Convert.ToBoolean(row["Debit"])) ? -1 : 1;
                         NewRow["a_account_code_c"] = AccountCode;
                         Results.Rows.Add(NewRow);
 
@@ -406,17 +417,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     if (ThisPeriod < MinPeriod)
                     {
                         MinPeriod = ThisPeriod;
-                        OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
-                        NewRow["OpeningBalance"] = OpeningBalance;
+                        Decimal OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
+                        NewRow["OpeningBalance"] = MakeItDebit * OpeningBalance;
                     }
 
                     if (ThisPeriod > MaxPeriod)
                     {
                         MaxPeriod = ThisPeriod;
-                        ClosingBalance = Convert.ToDecimal(row["balance"]);
-                        NewRow["ClosingBalance"] = ClosingBalance;
+                        Decimal ClosingBalance = Convert.ToDecimal(row["balance"]);
+                        NewRow["ClosingBalance"] = MakeItDebit * ClosingBalance;
                     }
-                }
+                } // foreach
+
             }
             catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
             {
@@ -1839,16 +1851,25 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 foreach (AAccountHierarchyDetailRow Row in AccountHierarchyDetailTable.Rows)
                 {
-                    if (!AAccountList.Contains(Row.AccountCodeToReportTo) && (Row.AccountHierarchyCode == AHierarchyCode))
+                    if (Row.AccountHierarchyCode == AHierarchyCode)
                     {
-                        AAccountRow AccountRow =
-                            (AAccountRow)AAccountAccess.LoadByPrimaryKey(ALedgerNumber, Row.ReportingAccountCode, ATransaction).Rows[0];
+                        // check if Row.ReportingAccountCode has any posting accounts reporting to it
+                        string Query = "SELECT PUB_a_account.* FROM PUB_a_account, PUB_a_account_hierarchy_detail " +
+                                       "WHERE PUB_a_account_hierarchy_detail.a_ledger_number_i = " + ALedgerNumber +
+                                       " AND PUB_a_account_hierarchy_detail.a_account_hierarchy_code_c = '" + AHierarchyCode + "'" +
+                                       " AND PUB_a_account_hierarchy_detail.a_account_code_to_report_to_c = '" + Row.ReportingAccountCode + "'" +
+                                       " AND PUB_a_account.a_ledger_number_i = " + ALedgerNumber +
+                                       " AND PUB_a_account.a_account_code_c = PUB_a_account_hierarchy_detail.a_reporting_account_code_c" +
+                                       " AND PUB_a_account.a_posting_status_l";
 
-                        if ((AccountRow != null) && AccountRow.PostingStatus)
+                        DataTable NewTable = DBAccess.GDBAccessObj.SelectDT(Query, "NewTable", ATransaction);
+
+                        // if posting accounts found
+                        if (NewTable.Rows.Count > 0)
                         {
-                            AAccountList.Add(Row.AccountCodeToReportTo);
+                            AAccountList.Add(Row.ReportingAccountCode);
                         }
-                        else if (AccountRow != null)
+                        else
                         {
                             ScanHierarchy(ref AAccountList, ALedgerNumber, Row.ReportingAccountCode, AHierarchyCode, ATransaction);
                         }
@@ -2084,8 +2105,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         if ((ApDocumentRow.DateIssued.AddDays(ApDocumentRow.CreditTerms) >= NextPeriodStartDate)
                             && (ApDocumentRow.DateIssued.AddDays(ApDocumentRow.CreditTerms) <= NextPeriodEndDate)
-                            && (ApDocumentRow.DocumentStatus != MFinanceConstants.BATCH_UNPOSTED)
-                            && (ApDocumentRow.DocumentStatus != MFinanceConstants.BATCH_CANCELLED))
+                            && (!ApDocumentRow.DocumentStatus.Equals(MFinanceConstants.BATCH_UNPOSTED, StringComparison.InvariantCultureIgnoreCase))
+                            && (!ApDocumentRow.DocumentStatus.Equals(MFinanceConstants.BATCH_CANCELLED, StringComparison.InvariantCultureIgnoreCase)))
                         {
                             ResultRow["PaymentsDueThisMonth"] = Convert.ToDecimal(ResultRow["PaymentsDueThisMonth"]) + ApDocumentRow.TotalAmount;
                         }

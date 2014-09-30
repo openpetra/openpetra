@@ -28,12 +28,9 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Ict.Common;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.MReporting.Gui;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -120,7 +117,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
-            ACalc.AddStringParameter("param_base_currency", uco_GeneralSettings.GetBaseCurrency());
 
             Boolean HasData = ReportTable.Rows.Count > 0;
 
