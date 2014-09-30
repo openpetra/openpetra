@@ -651,6 +651,9 @@ namespace Ict.Petra.Client.CommonForms
                 }
             }
 
+            Cursor prevCursor = FPetraUtilsObject.GetForm().Cursor;
+            FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
+
             // Do we need to update the filter?
             // Yes if
             //  1. the panel is being shown and one or other has no ApplyNow button
@@ -700,6 +703,8 @@ namespace Ict.Petra.Client.CommonForms
                     ((Control)sender).Focus();
                 }
             }
+
+            FPetraUtilsObject.GetForm().Cursor = prevCursor;
         }
 
         /// <summary>

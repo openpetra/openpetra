@@ -87,7 +87,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                ucoBatches.LoadBatches(FLedgerNumber);
+
+                // setting the ledger number on the batch screen will automatically trigger loading the batches for the current year
+                ucoBatches.LedgerNumber = value;
 
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 

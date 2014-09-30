@@ -49,9 +49,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="AStartDateCurrentPeriod">If the caller knows this value it can be supplied. Otherwise the server will supply the value for the ledger.</param>
+        /// <param name="AEndDateLastForwardingPeriod">If the caller knows this value it can be supplied. Otherwise the server will supply the value for the ledger. <see cref="DataRow" /> which holds the the data against which the validation is
+        // run.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGLBatchManual(object AContext, ABatchRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            DateTime? AStartDateCurrentPeriod = null, DateTime? AEndDateLastForwardingPeriod = null)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -71,9 +75,18 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             DateTime StartDateCurrentPeriod;
             DateTime EndDateLastForwardingPeriod;
-            TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
-                out StartDateCurrentPeriod,
-                out EndDateLastForwardingPeriod);
+
+            if ((AStartDateCurrentPeriod == null) || (AEndDateLastForwardingPeriod == null))
+            {
+                TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+                    out StartDateCurrentPeriod,
+                    out EndDateLastForwardingPeriod);
+            }
+            else
+            {
+                StartDateCurrentPeriod = AStartDateCurrentPeriod.Value;
+                EndDateLastForwardingPeriod = AEndDateLastForwardingPeriod.Value;
+            }
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
