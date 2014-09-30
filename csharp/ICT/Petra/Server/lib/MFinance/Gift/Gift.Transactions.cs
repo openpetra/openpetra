@@ -1614,7 +1614,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataSet tempDataSet = new DataSet();
 
             TDBTransaction Transaction = null;
-
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
