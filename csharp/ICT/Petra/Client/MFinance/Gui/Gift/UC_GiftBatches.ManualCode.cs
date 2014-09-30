@@ -1236,11 +1236,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, currentBatchNo,
                     out GiftsWithInactiveKeyMinistries))
             {
-                string listOfRow = "Gift--Detail--Recipient------KeyMinistry";
+                string listOfRow = "Gift   Detail   Recipient        KeyMinistry" + Environment.NewLine;
+                listOfRow += "------------------------------------------------";
 
                 foreach (DataRow dr in GiftsWithInactiveKeyMinistries.Rows)
                 {
-                    listOfRow += String.Format("{0}{1}-{2}-{3}-{4}",
+                    listOfRow += String.Format("{0}{1:0000}    {2:00}    {3:00000000000}    {4}",
                         Environment.NewLine,
                         dr[0],
                         dr[1],
