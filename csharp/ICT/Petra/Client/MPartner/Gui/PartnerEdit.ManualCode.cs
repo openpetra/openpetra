@@ -2970,7 +2970,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
 #if  SHOWUNFINISHEDTABS
-                case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
                     FInitiallySelectedTabPage = FShowTabPage;
 

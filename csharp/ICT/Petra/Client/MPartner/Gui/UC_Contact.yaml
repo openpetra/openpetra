@@ -11,15 +11,44 @@ RootNode:
     Actions:
         actEditIssues: {Label=Edit Issues, ActionClick=EditIssues}
     Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlDetails]
         pnlDetails:
             Controls: 
-                Row0: [pnlDetailsLeft, pnlDetailsRight]
+                Row0: [grpContact]
+                Row1: [grpAttributes]
             Dock: Fill
-        pnlDetailsLeft:
-            Controls: [txtFoo]
-        pnlDetailsRight:
-            Controls: [txtFoo2]
-        txtFoo:
-            Label: FOOBAR
-        txtFoo2:
-            Label: 2BAR
+        grpContact: {Label=Contact, ControlsOrientation = horizontal}
+            Dock: Top
+            Controls: 
+                Row0: [txtContactor]
+                Row1: [cmbContactCode]
+                Row2: [cmbMailingCode]
+                Row3: [dtpContactDate, txtContactTime]
+                Row4: [txtNotes]
+        grpAttributes: {Label=Contact Attributes, ControlsOrientation=horizontal} 
+            Dock: Top
+            Row0:[clbAttributes, clbAttributeValues, clbSelectedAttributeValues]
+        txtContactor:
+            Label: Contactor
+            Type: Contactor
+        cmbContactCode:{Label=Contact Code,List=ContactCode}
+        cmbMailingCode:{Label=Mailing List, List=MailingList}
+        dtpContactDate:
+            Label: Contact Date
+            Type: ContactDate
+        txtContactTime:
+            Label: Time
+            Type: ContactTime
+        txtNotes:
+            Label: Notes
+            Type: ContactComment
+        clbAttributes:
+            Label: Attributes
+            Type: PartnerContactAttribute
+        clbAttributeValues:
+            Label: Attribute Values
+            Type: ContactAttributeDetail
+        clbSelectedAttributeValues:
+            Label: Selected

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1574,6 +1574,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetSubscriptionsInternal(out SubscriptionsCount, false);
         }
 
+        public PPartnerContactTable GetDataContacts()
+        {
+            Int32 ContactsCount;
+            DateTime LastContact;
+            return GetContactsInternal(out ContactsCount,out LastContact);
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -2868,7 +2875,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return SubscriptionDT;
         }
 
-        private DataTable GetContactsInternal(out int ACount, out DateTime ALastContact)
+        private PPartnerContactTable GetContactsInternal(out int ACount, out DateTime ALastContact)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;

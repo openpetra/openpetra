@@ -42,15 +42,56 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_Contact
     {
-		private void ShowData(PPartnerContactRow pPartnerContactRow)
-		{
-			throw new NotImplementedException();
-		}
+        private PPartnerContactRow FContactDR = null;
+        private bool FInitializationRunning { get; set; }
 
         private PPartnerContactRow GetSelectedMasterRow()
         {
-            throw new NotImplementedException();
+            return FContactDR;
         }
 
+        /// <summary>
+        /// Display data in control based on data from ARow
+        /// </summary>
+        /// <param name="ARow"></param>
+        public void ShowDetails(PPartnerContactRow ARow)
+        {
+            FInitializationRunning = true;
+
+            // show controls if not visible yet
+            //MakeScreenInvisible(false);
+
+            // set member
+            FContactDR = ARow;
+
+            //ShowData(ARow);
+            
+            // for every record initially disable issue group box, but enable button in the same group box
+            //if (FAllowEditIssues)
+            //{
+            //    this.btnEditIssues.Visible = true;
+            //    this.btnEditIssues.Enabled = true;
+            //}
+
+            //EnableDisableIssuesGroupBox(false);
+
+            //txtPublicationCost.ReadOnly = true;
+
+            // make sure initialization happens
+            //PublicationStatusChanged(null, null);
+
+            FInitializationRunning = false;
+        }
+
+        /// <summary>
+        /// Read data from controls into ARow parameter
+        /// </summary>
+        /// <param name="ARow"></param>
+        public void GetDetails(PPartnerContactRow ARow)
+        {
+            //ValidateAllData(false);
+            //GetDataFromControls(ARow);
+        }
+        
     }
 }

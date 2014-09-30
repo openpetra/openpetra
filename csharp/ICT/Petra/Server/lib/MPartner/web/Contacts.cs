@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-            
+
             try
             {
                 PPartnerContactAttributeTable attributes = new PPartnerContactAttributeTable();
@@ -65,7 +65,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     PPartnerContactAttributeRow row = attributes.NewRowTyped();
                     row.ContactId = contactId;
-                    
+
                 }
 
                 PPartnerContactAttributeAccess.SubmitChanges(attributes, WriteTransaction);
@@ -87,7 +87,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 throw;
             }
         }
-        
+
         /// <summary>
         /// this is useful when applying contact details to a group of people at the same time
         /// </summary>
@@ -98,7 +98,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AModuleID"></param>
         /// <param name="AMailingCode">can be empty string</param>
         [RequireModulePermission("PTNRUSER")]
-        public static void AddContact(List <Int64>APartnerKeys,
+        public static void AddContact(List<Int64> APartnerKeys,
             DateTime AContactDate,
             string AMethodOfContact,
             string AComment,
@@ -276,7 +276,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return contacts;
         }
 
-        
+
         /// <summary>
         /// delete all contacts that have been marked for deletion.
         /// this should help when something went wrong and needs to be corrected

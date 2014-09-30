@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, markusm, timop
+//       christiank, markusm, timop, andreww
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -109,6 +109,9 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             CommitmentStatusList,
+
+            /// <summary>todoComment</summary>
+            ContactCode,
 
             /// <summary>todoComment</summary>
             ContactList,
@@ -502,6 +505,14 @@ namespace Ict.Petra.Client.CommonControls
                     TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.CommitmentStatusList),
                     PmCommitmentStatusTable.GetCodeDBName(),
                     PmCommitmentStatusTable.GetDescDBName(),
+                    null
+                    );
+                    break;
+
+                case TListTableEnum.ContactCode:
+                    InitialiseUserControl(TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.MethodOfContactList),
+                    PMethodOfContactTable.GetMethodOfContactCodeDBName(),
+                    PMethodOfContactTable.GetDescriptionDBName(),
                     null
                     );
                     break;
@@ -1169,6 +1180,11 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol2 = 300;
                     break;
 
+                case TListTableEnum.ContactCode:
+                    this.ColumnWidthCol1 = 120;
+                    this.ColumnWidthCol2 = 250;
+                    break;
+                
                 case TListTableEnum.ContactList:
                     this.ColumnWidthCol1 = 120;
                     this.ColumnWidthCol2 = 350;

@@ -100,7 +100,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
         }
-
+        
+        /// <summary>
+        /// todoComment
+        /// </summary>
         public void SpecialInitUserControl()
         {
             LoadDataOnDemand();
@@ -141,7 +144,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
-            if (!FMainDS.Tables.Contains(Ict.Petra.Shared.MPartner.Mailroom.Data.PPartnerContactTable.GetTableName()))
+            if (!FMainDS.Tables.Contains(PPartnerContactTable.GetTableName()))
             {
                 FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactsForPartner(FMainDS.PPartner[0].PartnerKey));
 
@@ -150,76 +153,102 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FMainDS.InitVars();
+            
         }
 
         private Boolean LoadDataOnDemand()
         {
-            return false;
+            Boolean ReturnValue;
+
+            // Load Partner Types, if not already loaded
+            try
+            {
+                // Make sure that Typed DataTables are already there at Client side
+                if (FMainDS.PPartnerContact == null)
+                {
+                    FMainDS.Tables.Add(new PPartnerContactTable());
+                    FMainDS.InitVars();
+                }
+
+                if (TClientSettings.DelayedDataLoading)
+                {
+                    FMainDS.Merge(FPartnerEditUIConnector.GetDataContacts());
+
+                    // Make DataRows unchanged
+                    if (FMainDS.PPartnerContact.Rows.Count > 0)
+                    {
+                        FMainDS.PPartnerContact.AcceptChanges();
+                    }
+                }
+
+                if (FMainDS.PPartnerContact.Rows.Count != 0)
+                {
+                    ReturnValue = true;
+                }
+                else
+                {
+                    ReturnValue = false;
+                }
+            }
+            catch (System.NullReferenceException)
+            {
+                return false;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return ReturnValue;
         }
 
         private void ShowDataManual()
         {
         }
 
-        private void ShowDetailsManual(PPartnerInterestRow ARow)
+        private void NewRowManual(ref PPartnerContactRow ARow)
         {
-        }
 
-        private void GetDetailDataFromControlsManual(PPartnerInterestRow ARow)
-        {
-        }
-
-        private void FilterInterestCombo(object sender, EventArgs e)
-        {
-        }
-
-        private void NewRecord(System.Object sender, EventArgs e)
-        {
-        }
-
-        private void NewRowManual(ref PartnerEditTDSPPartnerInterestRow ARow)
-        {
-        }
-
-        private bool PreDeleteManual(PartnerEditTDSPPartnerInterestRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            return true;
-        }
-
-        private void PostDeleteManual(PartnerEditTDSPPartnerInterestRow ARowToDelete,
-            bool AAllowDeletion,
-            bool ADeletionPerformed,
-            string ACompletionMessage)
-        {
-        }
-
-        private void DoRecalculateScreenParts()
-        {
-        }
-
-        private void ValidateDataDetailsManual(PPartnerInterestRow ARow)
-        {
-        }
-
-        private void NewRowManual(ref PPartnerContactRow foo)
-        {
+            ARow.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
         }
 
         private void ShowDetailsManual(PPartnerContactRow ARow)
-        {   
+        {
+            if (ARow != null)
+            {
+                //ucoContact.AllowEditIssues = true;
+                
+                ucoContact.ShowDetails(ARow);
+                //btnCancelAllSubscriptions.Enabled = true;
+            }
         }
 
         private bool PreDeleteManual(PPartnerContactRow pPartnerContactRow, ref string ADeletionQuestion)
         {
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine); //TODO: get public vars from ucoContact to display message correctly
             return true;
         }
 
         private void GetDetailDataFromControlsManual(PPartnerContactRow ARow)
-        {   
+        {
+            ucoContact.GetDetails(ARow);   
         }
 
         private void PostDeleteManual(PPartnerContactRow pPartnerContactRow, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
-        {   
+        {
+            if (ADeletionPerformed)
+            {
+                DoRecalculateScreenParts();
+            }
+        }
+
+        private void DoRecalculateScreenParts()
+        {
+            OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs()
+            {
+                ScreenPart = TScreenPartEnum.spCounters
+            });
         }
 
         private void ValidateDataDetailsManual(PPartnerContactRow FPreviouslySelectedDetailRow)

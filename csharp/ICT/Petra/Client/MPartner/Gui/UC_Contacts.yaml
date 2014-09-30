@@ -37,6 +37,8 @@ RootNode:
             Columns: [ContactDate, ContactCode, Contactor, ContactComment, MailingCode]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls:
                 Row0: [ucoContact]
         ucoContact:
