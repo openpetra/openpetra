@@ -153,6 +153,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
  *                      }
  *                  }
  */
+                    foreach (PmGeneralApplicationRow Row in FMainDS.PmGeneralApplication.Rows)
+                    {
+                        if (!Row.IsGenAppPossSrvUnitKeyNull() && Row.GenAppPossSrvUnitKey == OfficeCode)
+                        {
+                            AddVerificationResult("Unknown Possible Field of Service in GeneralApplicationRow: " + OfficeCode);
+                            Row.SetGenAppPossSrvUnitKeyNull();
+                        }
+                    }
+
                     foreach (PmShortTermApplicationRow Row in FMainDS.PmShortTermApplication.Rows)
                     {
                         if (!Row.IsStCurrentFieldNull() && (Row.StCurrentField == OfficeCode))
@@ -443,6 +452,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerRow.PartnerShortName = ReadString();
             PartnerRow.AcquisitionCode = ReadString();
             PartnerRow.StatusCode = ReadString();
+
+            // Handle old data: set status to ACTIVE for PRIVATE partners from old systems.
+            // Status PRIVATE does not exist any longer.
+            if (PartnerRow.StatusCode == "PRIVATE")
+            {
+                AddVerificationResult("Status for Partner " + FPartnerKey.ToString() + " changed from PRIVATE to ACTIVE (PRIVATE no longer available).");
+                PartnerRow.StatusCode = "ACTIVE";
+            }
+
             PartnerRow.PreviousName = ReadString();
             PartnerRow.LanguageCode = ReadString();
             PartnerRow.AddresseeTypeCode = ReadString().ToUpper();
@@ -496,6 +514,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 FamilyRow.FirstName = ReadString();
                 FamilyRow.Title = ReadString();
 
+                if (APetraVersion.FileMajorPart < 3)
+                {
+                    ReadNullableInt64(); // field removed: FamilyRow.FieldKey
+                }
+
                 FamilyRow.MaritalStatus = ReadString();
                 FamilyRow.MaritalStatusSince = ReadNullableDate();
                 FamilyRow.MaritalStatusComment = ReadString();
@@ -533,6 +556,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 PersonRow.OccupationCode = ReadString();
+                if (APetraVersion.FileMajorPart < 3)
+                {
+                    ReadNullableInt64(); // field removed: PersonRow.FieldKey
+                }
 
                 PersonRow.FamilyKey = ReadInt64();
                 PersonRow.FamilyId = ReadInt32();
@@ -595,6 +622,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 VenueRow.VenueCode = ReadString();
                 VenueRow.CurrencyCode = CheckCurrencyCode(ReadString(), ATransaction);
                 VenueRow.ContactPartnerKey = ReadInt64();
+
+                if (!PPartnerAccess.Exists(VenueRow.ContactPartnerKey, ATransaction))
+                {
+                    // make sure that contact partner key exists in the database already, otherwise reset to take
+                    // care of referential integrity
+                    AddVerificationResult("Contact Partner for Venue " + FPartnerKey.ToString() + " not set"
+                                + " as Partner Key " + VenueRow.ContactPartnerKey.ToString() + " does not exist in database.");
+                    VenueRow.SetContactPartnerKeyNull();
+                }
 
                 if (!FIgnorePartner)
                 {
@@ -1073,6 +1109,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (GenAppPossSrvUnitKey.HasValue && (GenAppPossSrvUnitKey.Value != 0))
             {
                 GeneralApplicationRow.GenAppPossSrvUnitKey = GenAppPossSrvUnitKey.Value;
+                AddRequiredOffice(GeneralApplicationRow.GenAppPossSrvUnitKey);
             }
 
             GeneralApplicationRow.GenAppRecvgFldAccept = ReadNullableDate();
@@ -1178,6 +1215,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ImportStaffData(TDBTransaction ATransaction)
         {
+            Boolean ImportCommitment = true;
             PmStaffDataRow StaffDataRow = FMainDS.PmStaffData.NewRowTyped();
 
             StaffDataRow.PartnerKey = FPartnerKey;
@@ -1205,11 +1243,37 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (StaffDataRow.ReceivingField == 0)
             {
                 // We cannot import a partner that has a receiving field 0. This would break referential integrity.
-                AddVerificationResult("Error - PmStaffData.ReceivingField for partner " + FPartnerKey.ToString() + " is 0.");
-                return;
+                AddVerificationResult("Error - Commitment Record Receiving Field for Partner " + FPartnerKey.ToString() + " is 0. "
+                            + "Commitment Record will not be imported.");
+                ImportCommitment = false;
             }
 
-            if (!FIgnorePartner)
+            // do not import commitment record if unit for receiving field does not exist
+            if (!PUnitAccess.Exists(StaffDataRow.ReceivingField, ATransaction))
+            {
+                AddVerificationResult("Error - Commitment Record Receiving Field " + StaffDataRow.ReceivingField.ToString() + " for Partner " + FPartnerKey.ToString()
+                            + " does not exist in database. Commitment Record will not be imported.");
+                ImportCommitment = false;
+            }
+
+            // do not import commitment record if unit for home office field does not exist
+            if (!PUnitAccess.Exists(StaffDataRow.HomeOffice, ATransaction))
+            {
+                AddVerificationResult("Error - Commitment Record Sending Field " + StaffDataRow.HomeOffice.ToString() + " for Partner " + FPartnerKey.ToString()
+                            + " does not exist in database. Commitment Record will not be imported.");
+                ImportCommitment = false;
+            }
+
+            // do not import commitment record if unit for recruiting office does not exist
+            if (!PUnitAccess.Exists(StaffDataRow.OfficeRecruitedBy, ATransaction))
+            {
+                AddVerificationResult("Error - Commitment Record Recruiting Field " + StaffDataRow.OfficeRecruitedBy.ToString() + " for Partner " + FPartnerKey.ToString()
+                            + " does not exist in database. Commitment Record will not be imported.");
+                ImportCommitment = false;
+            }
+
+            if (   !FIgnorePartner
+                && ImportCommitment)
             {
                 PmStaffDataAccess.AddOrModifyRecord(StaffDataRow.SiteKey,
                     StaffDataRow.Key,
@@ -1570,6 +1634,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ImportJob(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
+            Boolean ImportJobAssignment = true;
             PmJobAssignmentRow JobAssignmentRow = FMainDS.PmJobAssignment.NewRowTyped();
 
             JobAssignmentRow.PartnerKey = FPartnerKey;
@@ -1583,6 +1648,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ReadInt64(); // JobAssignmentRow.JobAssignmentKey: not to be imported
 
             JobAssignmentRow.UnitKey = ReadInt64();
+
+            // do not import job record if unit does not exist
+            if (!PUnitAccess.Exists(JobAssignmentRow.UnitKey, ATransaction))
+            {
+                AddVerificationResult("Error - Job Assignment Unit Key " + JobAssignmentRow.UnitKey.ToString() + " for Partner " + FPartnerKey.ToString()
+                            + " does not exist in database. Job Assignment Record will not be imported.");
+                ImportJobAssignment = false;
+            }
+
             JobAssignmentRow.AssignmentTypeCode = CheckJobAssignmentTypeCode(ReadString(), ATransaction);
 
             if (APetraVersion.Compare(new TFileVersionInfo("3.0.0")) < 0)
@@ -1591,7 +1665,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ReadNullableDate(); // used to be JobAssignmentRow.LeavingCodeUpdatedDate
             }
 
-            if (!FIgnorePartner)
+            if (   !FIgnorePartner
+                && ImportJobAssignment)
             {
                 // find job assignment (ignoring job key and job assignment key)
                 PmJobAssignmentRow TmpJobAssignmentRow = FMainDS.PmJobAssignment.NewRowTyped(false);
