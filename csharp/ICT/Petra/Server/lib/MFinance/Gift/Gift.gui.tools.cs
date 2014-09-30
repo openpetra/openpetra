@@ -74,11 +74,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ref String AMotivationDetail)
         {
             Boolean PartnerKeyIsValid = false;
-            string MotivationDetail = AMotivationDetail;
 
             if (APartnerKey != 0)
             {
                 AMotivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+
+                string MotivationDetail = AMotivationDetail;
 
                 TDBTransaction readTransaction = null;
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
