@@ -62,6 +62,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FPrevYearEnding = -1;
         private string FPrevBaseFilter = String.Empty;
         private string FPrevFilter = String.Empty;
+        private Int32 FCurrentLedgerYear = -1;
+        private Int32 FCurrentLedgerPeriod = -1;
 
         #region Public Properties
 
@@ -98,6 +100,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     FcmbPeriod.SelectedIndex = value;
                 }
+            }
+        }
+
+        /// <summary>
+        ///  Sets the Current Ledger Year
+        /// </summary>
+
+        public Int32 CurrentLedgerYear
+        {
+            set
+            {
+                FCurrentLedgerYear = value;
+            }
+        }
+
+        /// <summary>
+        ///  Sets the current Ledger Period
+        /// </summary>
+
+        public Int32 CurrentLedgerPeriod
+        {
+            set
+            {
+                FCurrentLedgerPeriod = value;
             }
         }
 
@@ -223,6 +249,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// The code can modify this string in the light of current control values.</param>
         public void ApplyFilterManual(ref string AFilterString)
         {
+            if ((FCurrentLedgerYear < 0) || (FCurrentLedgerPeriod < 0))
+            {
+                return;
+            }
+
             string workingFilter = String.Empty;
             string additionalFilter = String.Empty;
             bool showingAllPeriods = false;
@@ -253,15 +284,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             int newPeriod = FcmbPeriod.GetSelectedInt32();
 
-            ALedgerRow LedgerRow =
-                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-
-            int CurrentLedgerYear = LedgerRow.CurrentFinancialYear;
-            int CurrentLedgerPeriod = LedgerRow.CurrentPeriod;
-
             if (newYear == -1)
             {
-                newYear = CurrentLedgerYear;
+                newYear = FCurrentLedgerYear;
 
                 workingFilter = String.Format("{0} = {1}", ABatchTable.GetBatchYearDBName(), newYear);
                 showingAllPeriods = true;
@@ -279,7 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 else if (newPeriod == -1)
                 {
-                    workingFilter += String.Format(" AND {0} >= {1}", ABatchTable.GetBatchPeriodDBName(), CurrentLedgerPeriod);
+                    workingFilter += String.Format(" AND {0} >= {1}", ABatchTable.GetBatchPeriodDBName(), FCurrentLedgerPeriod);
                 }
                 else if (newPeriod > 0)
                 {

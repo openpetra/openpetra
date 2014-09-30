@@ -95,7 +95,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Boolean FPostingInProgress = false;
 
         //Date related
-        private string FPeriodText = String.Empty;
         private DateTime FDateEffective;
         private DateTime FDefaultDate;
         private DateTime FStartDateCurrentPeriod;
@@ -904,7 +903,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
         {
-            string RowFilter = string.Empty;
+            //string RowFilter = string.Empty;
 
             if (!ASelectOnly)
             {

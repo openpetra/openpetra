@@ -127,6 +127,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 StringHelper.DateToLocalizedString(FStartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod, false, false));
+            
+            // Get the current year/period and pass on to the filter logic object
+            ALedgerRow LedgerRow =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+            FLoadAndFilterLogicObject.CurrentLedgerYear = LedgerRow.CurrentFinancialYear;
+            FLoadAndFilterLogicObject.CurrentLedgerPeriod = LedgerRow.CurrentPeriod;
 
             // This single call will fire the event that loads data and populates the grid
             FFilterAndFindObject.ApplyFilter();
@@ -261,7 +268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ParseHashTotal(ARow);
 
             TSharedFinanceValidation_GL.ValidateGLBatchManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
+                FValidationControlsDict, FStartDateCurrentPeriod, FEndDateLastForwardingPeriod);
 
             //TODO: remove this once database definition is set for Batch Description to be NOT NULL
             // Description is mandatory then make sure it is set
@@ -677,24 +684,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int newCurrentRowPos = GetSelectedRowIndex();
 
             //TODO: Allow the user in a dialog to specify the reverse date
-            DateTime StartDateCurrentPeriod;
-            DateTime EndDateLastForwardingPeriod;
             DateTime DateForReverseBatch = dtpDetailDateEffective.Date.Value;
 
             try
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(FMainDS.ALedger[0].LedgerNumber,
-                    out StartDateCurrentPeriod,
-                    out EndDateLastForwardingPeriod);
-
-                if ((DateForReverseBatch.Date < StartDateCurrentPeriod) || (DateForReverseBatch.Date > EndDateLastForwardingPeriod))
+                if ((DateForReverseBatch.Date < FStartDateCurrentPeriod) || (DateForReverseBatch.Date > FEndDateLastForwardingPeriod))
                 {
                     MessageBox.Show(String.Format(Catalog.GetString(
                                 "The Reverse Date is outside the periods available for reversing. We will set the posting date to the first possible date, {0}."),
-                            StartDateCurrentPeriod));
-                    DateForReverseBatch = StartDateCurrentPeriod;
+                            FStartDateCurrentPeriod));
+                    DateForReverseBatch = FStartDateCurrentPeriod;
                 }
 
                 if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to reverse batch {0}?"),
@@ -787,20 +788,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //get index position of row to post
             int newCurrentRowPos = GetSelectedRowIndex();
 
-            //TODO: Correct this if needed
-            DateTime StartDateCurrentPeriod;
-            DateTime EndDateLastForwardingPeriod;
-
-            TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(FMainDS.ALedger[0].LedgerNumber,
-                out StartDateCurrentPeriod,
-                out EndDateLastForwardingPeriod);
-
-            if ((dtpDetailDateEffective.Date < StartDateCurrentPeriod) || (dtpDetailDateEffective.Date > EndDateLastForwardingPeriod))
+            if ((dtpDetailDateEffective.Date < FStartDateCurrentPeriod) || (dtpDetailDateEffective.Date > FEndDateLastForwardingPeriod))
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "The Date Effective is outside the periods available for posting. Enter a date between {0:d} and {1:d}."),
-                        StartDateCurrentPeriod,
-                        EndDateLastForwardingPeriod));
+                        FStartDateCurrentPeriod,
+                        FEndDateLastForwardingPeriod));
 
                 return;
             }
@@ -971,7 +964,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
         {
-            string RowFilter = string.Empty;
+            //string RowFilter = string.Empty;
 
             if (!ASelectOnly)
             {

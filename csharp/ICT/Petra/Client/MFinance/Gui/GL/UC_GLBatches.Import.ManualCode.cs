@@ -344,6 +344,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// Import a batch from a spreadsheet
+        /// </summary>
+        /// <param name="ACSVDataFileName"></param>
+        /// <param name="ALatestTransactionDate"></param>
+        /// <returns></returns>
         public bool ImportFromSpreadsheet(out string ACSVDataFileName, out DateTime ALatestTransactionDate)
         {
             ALatestTransactionDate = DateTime.MinValue;
