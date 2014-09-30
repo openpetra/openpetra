@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public class TUC_GiftBatches_Import
     {
         private TDlgSelectCSVSeparator FdlgSeparator;
-        
+
         private TFrmPetraEditUtils FPetraUtilsObject = null;
         private Int32 FLedgerNumber = 0;
         private IUC_GiftBatches FMyUserControl = null;

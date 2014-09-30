@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     /// </summary>
     public class TUC_GiftBatches_LoadAndFilter
     {
-		// Variables that are set by the constructor
+        // Variables that are set by the constructor
         private Int32 FLedgerNumber = 0;
         private GiftBatchTDS FMainDS = null;
         private TFilterAndFindPanel FFilterFindPanelObject = null;
@@ -107,9 +107,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-		/// <summary>
-		/// Get/set the status filter to show 'all'
-		/// </summary>
+        /// <summary>
+        /// Get/set the status filter to show 'all'
+        /// </summary>
         public Boolean StatusAll
         {
             get
@@ -152,9 +152,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-		/// <summary>
-		/// Set the CostCentre table that is used to draw active/inactive codes
-		/// </summary>
+        /// <summary>
+        /// Set the CostCentre table that is used to draw active/inactive codes
+        /// </summary>
         public ACostCentreTable CostCentreTable
         {
             set
@@ -163,9 +163,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-		/// <summary>
-		/// Set the AccountCode table that is used to draw active/inactive codes
-		/// </summary>
+        /// <summary>
+        /// Set the AccountCode table that is used to draw active/inactive codes
+        /// </summary>
         public AAccountTable AccountTable
         {
             set
@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFinanceControls.InitialiseAvailableGiftYearsList(ref FcmbYearEnding, FLedgerNumber);
             //TLogging.Log("Gift Years completed");
 
-			// Ensure that we start with the status set to 'editing'.
+            // Ensure that we start with the status set to 'editing'.
             FrbtEditing.Checked = true;
             //TLogging.Log("Editing checkbox selected");
         }
@@ -274,6 +274,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 // The additional filter is the part that is coming from the extra filter panel
                 additionalFilter = AFilterString.Substring(FPrevBaseFilter.Length);
+
                 if (additionalFilter.StartsWith(CommonJoinString.JOIN_STRING_SQL_AND))
                 {
                     additionalFilter = additionalFilter.Substring(CommonJoinString.JOIN_STRING_SQL_AND.Length);
@@ -336,17 +337,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FrbtEditing.Checked)
             {
                 StringHelper.JoinAndAppend(ref workingFilter, String.Format("{0} = '{1}'",
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED),
+                        AGiftBatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED),
                     CommonJoinString.JOIN_STRING_SQL_AND);
             }
             else if (FrbtPosting.Checked)
             {
                 StringHelper.JoinAndAppend(ref workingFilter, String.Format("({0} = '{1}') AND ({2} <> 0) AND (({3} = 0) OR ({3} = {2}))",
-                    AGiftBatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED,
-                    AGiftBatchTable.GetBatchTotalDBName(),
-                    AGiftBatchTable.GetHashTotalDBName()),
+                        AGiftBatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED,
+                        AGiftBatchTable.GetBatchTotalDBName(),
+                        AGiftBatchTable.GetHashTotalDBName()),
                     CommonJoinString.JOIN_STRING_SQL_AND);
             }
             else //(FrbtAll.Checked)
@@ -419,7 +420,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (FCostCentreTable != null)
                 {
                     ACostCentreRow row = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, content });
-                    if (row != null && !row.CostCentreActiveFlag)
+
+                    if ((row != null) && !row.CostCentreActiveFlag)
                     {
                         brush = Brushes.Red;
                     }
@@ -430,7 +432,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (FAccountTable != null)
                 {
                     AAccountRow row = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, content });
-                    if (row != null && !row.AccountActiveFlag)
+
+                    if ((row != null) && !row.AccountActiveFlag)
                     {
                         brush = Brushes.Red;
                     }

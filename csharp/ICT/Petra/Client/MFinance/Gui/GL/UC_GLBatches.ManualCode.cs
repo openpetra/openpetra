@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// Load the batches for the current financial year (used in particular when the screen starts up).
         /// </summary>
         void LoadBatchesForCurrentYear();
-        
+
         /// <summary>
         /// Reload the batches
         /// </summary>
@@ -133,14 +133,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (grdDetails.Rows.Count > 1)
             {
-                ((TFrmGLBatch)this.ParentForm).EnableJournals();
+                ((TFrmGLBatch) this.ParentForm).EnableJournals();
                 AutoEnableTransTabForBatch();
             }
             else
             {
                 ClearControls();
-                ((TFrmGLBatch)this.ParentForm).DisableJournals();
-                ((TFrmGLBatch)this.ParentForm).DisableTransactions();
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
             }
 
             ShowData();
@@ -986,8 +986,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count < 2)
             {
                 ShowDetails(null);
-                ((TFrmGLBatch)this.ParentForm).DisableJournals();
-                ((TFrmGLBatch)this.ParentForm).DisableTransactions();
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
             }
             else if (FBatchesLoaded == true)
             {
@@ -1057,22 +1057,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //if (grdDetails.CanFocus)
             //{
-                //Set filter to current and forwarding
-                //if (FcmbPeriod.Items.Count > 0)
-                //{
-                //    FcmbPeriod.SelectedIndex = 1;
-                //}
+            //Set filter to current and forwarding
+            //if (FcmbPeriod.Items.Count > 0)
+            //{
+            //    FcmbPeriod.SelectedIndex = 1;
+            //}
 
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    btnNew.Focus();
-                }
-                else
-                {
-                    grdDetails.Focus();
-                }
+            if (grdDetails.Rows.Count <= 1)
+            {
+                btnNew.Focus();
+            }
+            else
+            {
+                grdDetails.Focus();
+            }
 
-                //FInitialFocusActionComplete = true;
+            //FInitialFocusActionComplete = true;
             //}
         }
 
@@ -1166,7 +1166,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void ReloadBatches()
         {
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FLoadAndFilterLogicObject.DatabaseYear, FLoadAndFilterLogicObject.DatabasePeriod));
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FLoadAndFilterLogicObject.DatabaseYear,
+                    FLoadAndFilterLogicObject.DatabasePeriod));
 
             grdDetails.SelectRowInGrid(1);
         }

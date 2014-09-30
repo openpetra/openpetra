@@ -258,7 +258,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     SaveUserDefaults(dialog, impOptions);
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber,
                             ACurrentBatchRow.BatchNumber, ACurrentJournalRow.JournalNumber));
-                    
+
                     //Update totals and set Journal last transaction number
                     GLRoutines.UpdateTotalsOfBatch(ref FMainDS, ACurrentBatchRow, true);
                     FMyForm.GetTransactionsControl().SelectRow(1);
@@ -394,7 +394,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (Path.GetExtension(dialog.FileName).ToLower() == ".csv")
                     {
                         ACSVDataFileName = dialog.FileName;
-                        
+
                         CreateBatchFromCSVFile(dialog.FileName,
                             RootNode,
                             NewJournal,

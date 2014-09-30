@@ -227,7 +227,7 @@ namespace Ict.Common.Controls
                 if (FSelectedIndexOnDataSourceChange == -1)
                 {
                     // problem to set it here, because the datasource is still being updated, and the indexchanged triggers give trouble
-                    // Sep 2014:  AlanP commented: It is true that we are already firing a DataSourceChanged event and now we will fire 
+                    // Sep 2014:  AlanP commented: It is true that we are already firing a DataSourceChanged event and now we will fire
                     //   an IndexChanged event - but we at least are not assuming that -1 is what is wanted.
                     this.SelectedIndex = -1;
                     this.Text = string.Empty;

@@ -71,7 +71,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Validate all data
         /// </summary>
-        bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null, bool ADontRecordNewDataValidationRun = true);
+        bool ValidateAllData(bool ARecordChangeVerification,
+            bool AProcessAnyDataValidationErrors,
+            Control AValidateSpecificControl = null,
+            bool ADontRecordNewDataValidationRun = true);
     }
 
     public partial class TUC_GiftBatches : IUC_GiftBatches
@@ -345,7 +348,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //TLogging.Log("Batch initialisation complete... Applying filter to populate grid");
             FFilterAndFindObject.ApplyFilter();
 
-            ((TFrmGiftBatch)this.ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
+            ((TFrmGiftBatch) this.ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
             ShowData();
 
             UpdateRecordNumberDisplay();

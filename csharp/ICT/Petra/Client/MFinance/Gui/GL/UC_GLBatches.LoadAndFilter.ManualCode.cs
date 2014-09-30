@@ -231,6 +231,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPrevBaseFilter.Length > 0)
             {
                 additionalFilter = AFilterString.Substring(FPrevBaseFilter.Length);
+
                 if (additionalFilter.StartsWith(CommonJoinString.JOIN_STRING_SQL_AND))
                 {
                     additionalFilter = additionalFilter.Substring(CommonJoinString.JOIN_STRING_SQL_AND.Length);
@@ -294,19 +295,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FrbtEditing.Checked)
             {
                 StringHelper.JoinAndAppend(ref workingFilter, String.Format("{0} = '{1}'",
-                    ABatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED),
-                CommonJoinString.JOIN_STRING_SQL_AND);
+                        ABatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
             else if (FrbtPosting.Checked)
             {
-                StringHelper.JoinAndAppend(ref workingFilter, String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
-                    ABatchTable.GetBatchStatusDBName(),
-                    MFinanceConstants.BATCH_UNPOSTED,
-                    ABatchTable.GetBatchCreditTotalDBName(),
-                    ABatchTable.GetBatchDebitTotalDBName(),
-                    ABatchTable.GetBatchControlTotalDBName()),
-                CommonJoinString.JOIN_STRING_SQL_AND);
+                StringHelper.JoinAndAppend(ref workingFilter,
+                    String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
+                        ABatchTable.GetBatchStatusDBName(),
+                        MFinanceConstants.BATCH_UNPOSTED,
+                        ABatchTable.GetBatchCreditTotalDBName(),
+                        ABatchTable.GetBatchDebitTotalDBName(),
+                        ABatchTable.GetBatchControlTotalDBName()),
+                    CommonJoinString.JOIN_STRING_SQL_AND);
             }
             else //(FrbtAll.Checked)
             {
