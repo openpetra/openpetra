@@ -51,7 +51,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// display data that is about to be validated.</param>
         /// <param name="AStartDateCurrentPeriod">If the caller knows this value it can be supplied. Otherwise the server will supply the value for the ledger.</param>
         /// <param name="AEndDateLastForwardingPeriod">If the caller knows this value it can be supplied. Otherwise the server will supply the value for the ledger. <see cref="DataRow" /> which holds the the data against which the validation is
-        // run.</param>
+        /// run.</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGLBatchManual(object AContext, ABatchRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
