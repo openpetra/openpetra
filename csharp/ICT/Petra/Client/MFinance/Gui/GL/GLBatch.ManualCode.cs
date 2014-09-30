@@ -88,7 +88,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-                ucoBatches.LoadBatches(FLedgerNumber);
+                // Setting the ledger number of the batch control will automatically load the current financial year batches
+                ucoBatches.LedgerNumber = value;
 
                 ucoJournals.WorkAroundInitialization();
                 ucoTransactions.WorkAroundInitialization();

@@ -53,80 +53,73 @@ using Ict.Petra.Shared.Interfaces.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    public partial class TUC_GLBatches
+    /// <summary>
+    /// Interface used by logic objects in order to access selected public methods in the TUC_GLBatches class
+    /// </summary>
+    public interface IUC_GLBatches
+    {
+        /// <summary>
+        /// Load the batches for the current financial year (used in particular when the screen starts up).
+        /// </summary>
+        void LoadBatchesForCurrentYear();
+        
+        /// <summary>
+        /// Reload the batches
+        /// </summary>
+        void ReloadBatches();
+
+        /// <summary>
+        /// Create a New Batch
+        /// </summary>
+        bool CreateNewABatch();
+    }
+
+    public partial class TUC_GLBatches : IUC_GLBatches
     {
         private Int32 FLedgerNumber = -1;
+
+        // Logic objects
+        private TUC_GLBatches_LoadAndFilter FLoadAndFilterLogicObject = null;
+        private TUC_GLBatches_Import FImportLogicObject = null;
+
         private Int32 FSelectedBatchNumber = -1;
         private DateTime FDefaultDate;
         private bool FBatchesLoaded = false;
-        private bool FInitialFocusActionComplete = false;
 
-        //Filter and date related
-        private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
-        private string FStatusFilter = "1 = 1";
-        private string FPeriodFilter = "1 = 1";
+        //Date related
         private DateTime FStartDateCurrentPeriod;
         private DateTime FEndDateLastForwardingPeriod;
-        private Int32 FSelectedYear;
-        private Int32 FSelectedPeriod = -1;
-        private string FPeriodText = String.Empty;
-
-        private bool FSuppressRefreshFilter = false;
-        private bool FSuppressRefreshPeriods = false;
         private DateTime FCurrentEffectiveDate;
 
-        TCmbAutoComplete FcmbYearEnding = null;
-        TCmbAutoComplete FcmbPeriod = null;
-        RadioButton FrbtEditing = null;
-        RadioButton FrbtPosting = null;
-        RadioButton FrbtAll = null;
-
-        private void InitialiseControls()
+        /// <summary>
+        /// load the batches into the grid
+        /// </summary>
+        public Int32 LedgerNumber
         {
-            FcmbYearEnding = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbYearEnding");
-            FcmbPeriod = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbPeriod");
-            FrbtEditing = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtEditing");
-            FrbtPosting = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtPosting");
-            FrbtAll = (RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtAll");
+            set
+            {
+                FLedgerNumber = value;
+
+                LoadBatchesForCurrentYear();
+            }
+        }
+
+        private void InitialiseLogicObjects()
+        {
+            FLoadAndFilterLogicObject = new TUC_GLBatches_LoadAndFilter(FLedgerNumber, FMainDS, FFilterAndFindObject);
+            FImportLogicObject = new TUC_GLBatches_Import(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
         }
 
         /// <summary>
         /// load the batches into the grid
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        public void LoadBatches(Int32 ALedgerNumber)
+        public void LoadBatchesForCurrentYear()
         {
             FBatchesLoaded = false;
-            InitialiseControls();
-
-            FLedgerNumber = ALedgerNumber;
-
-            FrbtEditing.Checked = true;
-
-            // This will populate the periods combos without firing off cascading events
-            FSuppressRefreshPeriods = true;
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref FcmbYearEnding, FLedgerNumber, false, true);
-            FSuppressRefreshPeriods = false;
-
-            // Now we can set the period part of the filter
-            RefreshPeriods(null, null);
-
-            if (grdDetails.Rows.Count > 1)
-            {
-                ((TFrmGLBatch) this.ParentForm).EnableJournals();
-                AutoEnableTransTabForBatch();
-            }
-            else
-            {
-                ClearControls();
-                ((TFrmGLBatch) this.ParentForm).DisableJournals();
-                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-            }
-
-            ShowData();
+            InitialiseLogicObjects();
 
             //Set the valid date range label
-            TLedgerSelection.GetCurrentPostingRangeDates(ALedgerNumber,
+            TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
                 out FStartDateCurrentPeriod,
                 out FEndDateLastForwardingPeriod,
                 out FDefaultDate);
@@ -135,34 +128,56 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 StringHelper.DateToLocalizedString(FStartDateCurrentPeriod, false, false),
                 StringHelper.DateToLocalizedString(FEndDateLastForwardingPeriod, false, false));
 
+            // This single call will fire the event that loads data and populates the grid
+            FFilterAndFindObject.ApplyFilter();
+
+            if (grdDetails.Rows.Count > 1)
+            {
+                ((TFrmGLBatch)this.ParentForm).EnableJournals();
+                AutoEnableTransTabForBatch();
+            }
+            else
+            {
+                ClearControls();
+                ((TFrmGLBatch)this.ParentForm).DisableJournals();
+                ((TFrmGLBatch)this.ParentForm).DisableTransactions();
+            }
+
+            ShowData();
+
             FBatchesLoaded = true;
 
             if (((TFrmGLBatch) this.ParentForm).LoadForImport)
             {
-                ImportBatches();
-            }
-        }
-
-        /// Reset the control
-        public void ClearCurrentSelection()
-        {
-            if (FPetraUtilsObject.HasChanges)
-            {
-                GetDataFromControls();
+                FImportLogicObject.ImportBatches();
             }
 
-            this.FPreviouslySelectedDetailRow = null;
-            ShowData();
+            UpdateRecordNumberDisplay();
+            SelectRowInGrid(1);
         }
 
-        /// <summary>
-        /// Returns FMainDS
-        /// </summary>
-        /// <returns></returns>
-        public GLBatchTDS BatchFMainDS()
-        {
-            return FMainDS;
-        }
+        ///// No longer used?  It has disappeared inside the load and filter object
+        ///// Reset the control
+        //public void ClearCurrentSelection()
+        //{
+        //    if (FPetraUtilsObject.HasChanges)
+        //    {
+        //        GetDataFromControls();
+        //    }
+
+        //    this.FPreviouslySelectedDetailRow = null;
+        //    ShowData();
+        //}
+
+        ///// No longer used?
+        ///// <summary>
+        ///// Returns FMainDS
+        ///// </summary>
+        ///// <returns></returns>
+        //public GLBatchTDS BatchFMainDS()
+        //{
+        //    return FMainDS;
+        //}
 
         /// <summary>
         /// Enable the transaction tab
@@ -207,6 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDataManual()
         {
+            // AlanP: Can this happen?
             if (FLedgerNumber == -1)
             {
                 EnableButtonControl(false);
@@ -286,6 +302,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 CorrectHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
             }
 
+            // AlanP: is this another case of needing to check for a real change??
             txtDetailBatchControlTotal.NumberValueDecimal = CorrectHashValue;
             ARow.BatchControlTotal = CorrectHashValue;
         }
@@ -360,10 +377,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0)
-                && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
-            FFilterAndFindObject.ApplyFilter();
+            // AlanP:  review this
+            //string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            //FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0)
+            //    && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+            //FFilterAndFindObject.ApplyFilter();
 
             CreateNewABatch();
 
@@ -536,19 +554,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.EnableDataChangedEvent();
         }
 
-        private int CurrentRowIndex()
-        {
-            int rowIndex = -1;
+        // Not used any more?
+        // ALanP: should be able to use standard method
+        //private int CurrentRowIndex()
+        //{
+        //    int rowIndex = -1;
 
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
+        //    SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
 
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
+        //    if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
+        //    {
+        //        rowIndex = selectedRegion.GetRowsIndex()[0];
+        //    }
 
-            return rowIndex;
-        }
+        //    return rowIndex;
+        //}
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
@@ -593,16 +613,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             //Update the Transaction effective dates
                             UpdateTransactionDates = true;
 
-                            if (FcmbYearEnding.SelectedIndex != 0)
+                            if (FLoadAndFilterLogicObject.YearIndex != 0)
                             {
-                                FcmbYearEnding.SelectedIndex = 0;
-                                FcmbPeriod.SelectedIndex = 1;
+                                FLoadAndFilterLogicObject.YearIndex = 0;
+                                FLoadAndFilterLogicObject.PeriodIndex = 1;
                                 dtpDetailDateEffective.Date = dateValue;
                                 dtpDetailDateEffective.Focus();
                             }
-                            else if (FcmbPeriod.SelectedIndex != 1)
+                            else if (FLoadAndFilterLogicObject.PeriodIndex != 1)
                             {
-                                FcmbPeriod.SelectedIndex = 1;
+                                FLoadAndFilterLogicObject.PeriodIndex = 1;
                                 dtpDetailDateEffective.Date = dateValue;
                                 dtpDetailDateEffective.Focus();
                             }
@@ -718,7 +738,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                         ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                        LoadBatches(FLedgerNumber);
+                        LoadBatchesForCurrentYear();
 
                         // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
                         //Select unposted batch row in same index position as batch just posted
@@ -825,7 +845,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                    LoadBatches(FLedgerNumber);
+                    LoadBatchesForCurrentYear();
 
                     // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
                     ////Select unposted batch row in same index position as batch just posted
@@ -949,213 +969,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void RefreshPeriods(Object sender, EventArgs e)
-        {
-            int NewYearSelected;
-            bool IncludeCurrentAndForwardingItem = true;
-
-            if (FSuppressRefreshPeriods)
-            {
-                return;
-            }
-
-            FSuppressRefreshFilter = true;
-
-            NewYearSelected = FcmbYearEnding.GetSelectedInt32();
-
-            if ((FSelectedYear == NewYearSelected) && (sender != null))
-            {
-                FSuppressRefreshFilter = false;
-                return;
-            }
-
-            FSelectedYear = NewYearSelected;
-
-            if (sender is TCmbAutoComplete)
-            {
-                FPetraUtilsObject.ClearControl(FcmbPeriod);
-            }
-
-            FSuppressRefreshFilter = false;
-
-            //Determine whether or not to include the "Current and forwarding periods" item in the period combo
-            if (FMainDS.ALedger.Rows.Count == 1)
-            {
-                IncludeCurrentAndForwardingItem = (FSelectedYear == FMainDS.ALedger[0].CurrentFinancialYear);
-            }
-
-            if (sender != null)
-            {
-                RefreshFilter(sender, e);
-            }
-
-            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref FcmbPeriod,
-                FLedgerNumber,
-                FSelectedYear,
-                0,
-                IncludeCurrentAndForwardingItem);
-        }
-
-        private void RefreshFilter(Object sender, EventArgs e)
-        {
-            int BatchNumber = 0;
-
-            if (FSuppressRefreshFilter
-                || (FPetraUtilsObject == null)
-                || FPetraUtilsObject.SuppressChangeDetection
-                || ((sender != null) && sender is RadioButton && (((RadioButton)sender).Checked == false)))
-            {
-                return;
-            }
-
-            if ((sender != null) && sender is RadioButton)
-            {
-                //Avoid repeat events
-                RadioButton rbt = (RadioButton)sender;
-
-                if (rbt.Name.Contains(FCurrentBatchViewOption))
-                {
-                    return;
-                }
-            }
-
-            if (sender is TCmbAutoComplete)
-            {
-                if (FFilterAndFindObject.FilterFindPanel.CanIgnoreChangeEvent)
-                {
-                    return;
-                }
-
-                int newYear = FcmbYearEnding.GetSelectedInt32();
-                int newPeriod = FcmbPeriod.GetSelectedInt32();
-                string newPeriodText = FcmbPeriod.Text;
-
-                if (FSelectedYear == newYear)
-                {
-                    if (((newPeriod == -1) && (newPeriodText != String.Empty))
-                        || ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText)))
-                    {
-                        return;
-                    }
-                }
-            }
-
-            //Record the current batch
-            if (FPreviouslySelectedDetailRow != null)
-            {
-                BatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
-            }
-
-            ClearCurrentSelection();
-
-            FSelectedYear = FcmbYearEnding.GetSelectedInt32();
-            FSelectedPeriod = FcmbPeriod.GetSelectedInt32();
-            FPeriodText = FcmbPeriod.Text;
-
-            ALedgerRow LedgerRow =
-                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-
-            int CurrentLedgerYear = LedgerRow.CurrentFinancialYear;
-            int CurrentLedgerPeriod = LedgerRow.CurrentPeriod;
-
-            if (FSelectedYear == -1)
-            {
-                FSelectedYear = CurrentLedgerYear;
-
-                FPeriodFilter = String.Format(
-                    "{0} = {1}",
-                    ABatchTable.GetBatchYearDBName(), FSelectedYear);
-            }
-            else
-            {
-                FPeriodFilter = String.Format(
-                    "{0} = {1}",
-                    ABatchTable.GetBatchYearDBName(), FSelectedYear);
-
-                if (FSelectedPeriod == -2)  //All periods for year
-                {
-                    //Nothing to add to filter
-                }
-                else if (FSelectedPeriod == 0)
-                {
-                    FPeriodFilter += String.Format(
-                        " AND {0} >= {1}",
-                        ABatchTable.GetBatchPeriodDBName(), CurrentLedgerPeriod);
-                }
-                else if (FSelectedPeriod > 0)
-                {
-                    FPeriodFilter += String.Format(
-                        " AND {0} = {1}",
-                        ABatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
-                }
-            }
-
-            try
-            {
-                this.ParentForm.Cursor = Cursors.WaitCursor;
-
-                if (!BatchYearIsLoaded(FSelectedYear))
-                {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FSelectedYear, FSelectedPeriod));
-                }
-
-                if (FrbtEditing.Checked)
-                {
-                    FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
-
-                    FStatusFilter = String.Format("{0} = '{1}'",
-                        ABatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED);
-                    btnNew.Enabled = true;
-                }
-                else if (FrbtPosting.Checked)
-                {
-                    FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_POSTING;
-
-                    FStatusFilter = String.Format("({0} = '{1}') AND ({2} = {3}) AND ({2} <> 0) AND (({4} = 0) OR ({4} = {2}))",
-                        ABatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED,
-                        ABatchTable.GetBatchCreditTotalDBName(),
-                        ABatchTable.GetBatchDebitTotalDBName(),
-                        ABatchTable.GetBatchControlTotalDBName());
-                }
-                else //(FrbtAll.Checked)
-                {
-                    FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_ALL;
-
-                    FStatusFilter = "1 = 1";
-                    btnNew.Enabled = true;
-                }
-
-                RefreshGridData(BatchNumber, (sender is TCmbAutoComplete));
-
-                UpdateChangeableStatus();
-                UpdateRecordNumberDisplay();
-            }
-            finally
-            {
-                this.ParentForm.Cursor = Cursors.Default;
-            }
-        }
-
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
         {
             string RowFilter = string.Empty;
 
             if (!ASelectOnly)
             {
-                RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+                //RowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
-                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
-                    && (FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL));
+                //// AlanP: review this
+                //FFilterAndFindObject.FilterPanelControls.SetBaseFilter(RowFilter, (FSelectedPeriod == -1)
+                //    && (FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL));
                 FFilterAndFindObject.ApplyFilter();
             }
 
             if (grdDetails.Rows.Count < 2)
             {
                 ShowDetails(null);
-                ((TFrmGLBatch) this.ParentForm).DisableJournals();
-                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+                ((TFrmGLBatch)this.ParentForm).DisableJournals();
+                ((TFrmGLBatch)this.ParentForm).DisableTransactions();
             }
             else if (FBatchesLoaded == true)
             {
@@ -1202,36 +1034,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return rowPos + 1;
         }
 
-        /// <summary>
-        /// Set focus to the gid controltab
-        /// </summary>
-        public void FocusGrid()
-        {
-            if ((grdDetails != null) && grdDetails.CanFocus)
-            {
-                grdDetails.Focus();
-            }
-        }
+        ///// <summary>
+        ///// Set focus to the gid controltab
+        ///// </summary>
+        //public void FocusGrid()
+        //{
+        //    if ((grdDetails != null) && grdDetails.CanFocus)
+        //    {
+        //        grdDetails.Focus();
+        //    }
+        //}
 
         /// <summary>
         /// Sets the initial focus to the grid or the New button depending on the row count
         /// </summary>
         public void SetInitialFocus()
         {
-            if (FInitialFocusActionComplete)
-            {
-                return;
-            }
+            //if (FInitialFocusActionComplete)
+            //{
+            //    return;
+            //}
 
-            if (grdDetails.CanFocus)
-            {
+            //if (grdDetails.CanFocus)
+            //{
                 //Set filter to current and forwarding
-                if (FcmbPeriod.Items.Count > 0)
-                {
-                    FcmbPeriod.SelectedIndex = 1;
-                }
+                //if (FcmbPeriod.Items.Count > 0)
+                //{
+                //    FcmbPeriod.SelectedIndex = 1;
+                //}
 
-                if (grdDetails.Rows.Count < 2)
+                if (grdDetails.Rows.Count <= 1)
                 {
                     btnNew.Focus();
                 }
@@ -1240,8 +1072,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     grdDetails.Focus();
                 }
 
-                FInitialFocusActionComplete = true;
-            }
+                //FInitialFocusActionComplete = true;
+            //}
         }
 
         private void RunOnceOnParentActivationManual()
@@ -1260,247 +1092,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
+            string CSVDataFileName;
+            DateTime LatestTransactionDate;
 
-            dialog.Title = Catalog.GetString("Import transactions from spreadsheet file");
-            dialog.Filter = Catalog.GetString("Spreadsheet files (*.csv)|*.csv");
-
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (FImportLogicObject.ImportFromSpreadsheet(out CSVDataFileName, out LatestTransactionDate))
             {
-                string directory = Path.GetDirectoryName(dialog.FileName);
-                string[] ymlFiles = Directory.GetFiles(directory, "*.yml");
-                string definitionFileName = String.Empty;
-
-                if (ymlFiles.Length == 1)
-                {
-                    definitionFileName = ymlFiles[0];
-                }
-                else
-                {
-                    // show another open file dialog for the description file
-                    OpenFileDialog dialogDefinitionFile = new OpenFileDialog();
-                    dialogDefinitionFile.Title = Catalog.GetString("Please select a yml file that describes the content of the spreadsheet");
-                    dialogDefinitionFile.Filter = Catalog.GetString("Data description files (*.yml)|*.yml");
-
-                    if (dialogDefinitionFile.ShowDialog() == DialogResult.OK)
-                    {
-                        definitionFileName = dialogDefinitionFile.FileName;
-                    }
-                }
-
-                if (File.Exists(definitionFileName))
-                {
-                    TYml2Xml parser = new TYml2Xml(definitionFileName);
-                    XmlDocument dataDescription = parser.ParseYML2XML();
-                    XmlNode RootNode = TXMLParser.FindNodeRecursive(dataDescription.DocumentElement, "RootNode");
-                    Int32 FirstTransactionRow = TXMLParser.GetIntAttribute(RootNode, "FirstTransactionRow");
-                    string DefaultCostCentre = TXMLParser.GetAttribute(RootNode, "CostCentre");
-
-                    CreateNewABatch();
-                    GLBatchTDSAJournalRow NewJournal = FMainDS.AJournal.NewRowTyped(true);
-                    ((TFrmGLBatch)ParentForm).GetJournalsControl().NewRowManual(ref NewJournal);
-                    FMainDS.AJournal.Rows.Add(NewJournal);
-                    NewJournal.TransactionCurrency = TXMLParser.GetAttribute(RootNode, "Currency");
-
-                    if (Path.GetExtension(dialog.FileName).ToLower() == ".csv")
-                    {
-                        CreateBatchFromCSVFile(dialog.FileName,
-                            RootNode,
-                            NewJournal,
-                            FirstTransactionRow,
-                            DefaultCostCentre);
-                    }
-                }
+                dtpDetailDateEffective.Date = LatestTransactionDate;
+                txtDetailBatchDescription.Text = Path.GetFileNameWithoutExtension(CSVDataFileName);
             }
-        }
-
-        /// load transactions from a CSV file into the currently selected batch
-        private void CreateBatchFromCSVFile(string ADataFilename,
-            XmlNode ARootNode,
-            AJournalRow ARefJournalRow,
-            Int32 AFirstTransactionRow,
-            string ADefaultCostCentre)
-        {
-            StreamReader dataFile = new StreamReader(ADataFilename, System.Text.Encoding.Default);
-
-            XmlNode ColumnsNode = TXMLParser.GetChild(ARootNode, "Columns");
-            string Separator = TXMLParser.GetAttribute(ARootNode, "Separator");
-            string DateFormat = TXMLParser.GetAttribute(ARootNode, "DateFormat");
-            string ThousandsSeparator = TXMLParser.GetAttribute(ARootNode, "ThousandsSeparator");
-            string DecimalSeparator = TXMLParser.GetAttribute(ARootNode, "DecimalSeparator");
-            Int32 lineCounter;
-
-            // read headers
-            for (lineCounter = 0; lineCounter < AFirstTransactionRow - 1; lineCounter++)
-            {
-                dataFile.ReadLine();
-            }
-
-            decimal sumDebits = 0.0M;
-            decimal sumCredits = 0.0M;
-            DateTime LatestTransactionDate = DateTime.MinValue;
-
-            do
-            {
-                string line = dataFile.ReadLine();
-                lineCounter++;
-
-                GLBatchTDSATransactionRow NewTransaction = FMainDS.ATransaction.NewRowTyped(true);
-                ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref NewTransaction, ARefJournalRow);
-                FMainDS.ATransaction.Rows.Add(NewTransaction);
-
-                foreach (XmlNode ColumnNode in ColumnsNode.ChildNodes)
-                {
-                    string Value = StringHelper.GetNextCSV(ref line, Separator);
-                    string UseAs = TXMLParser.GetAttribute(ColumnNode, "UseAs");
-
-                    if (UseAs.ToLower() == "reference")
-                    {
-                        NewTransaction.Reference = Value;
-                    }
-                    else if (UseAs.ToLower() == "narrative")
-                    {
-                        NewTransaction.Narrative = Value;
-                    }
-                    else if (UseAs.ToLower() == "dateeffective")
-                    {
-                        NewTransaction.SetTransactionDateNull();
-
-                        if (Value.Trim().ToString().Length > 0)
-                        {
-                            try
-                            {
-                                NewTransaction.TransactionDate = XmlConvert.ToDateTime(Value, DateFormat);
-
-                                if (NewTransaction.TransactionDate > LatestTransactionDate)
-                                {
-                                    LatestTransactionDate = NewTransaction.TransactionDate;
-                                }
-                            }
-                            catch (Exception exp)
-                            {
-                                MessageBox.Show(Catalog.GetString("Problem with date in row " + lineCounter.ToString() + " Error: " + exp.Message));
-                            }
-                        }
-                    }
-                    else if (UseAs.ToLower() == "account")
-                    {
-                        if (Value.Length > 0)
-                        {
-                            if (Value.Contains(" "))
-                            {
-                                // cut off currency code; should have been defined in the data description file, for the whole batch
-                                Value = Value.Substring(0, Value.IndexOf(" ") - 1);
-                            }
-
-                            Value = Value.Replace(ThousandsSeparator, "");
-                            Value = Value.Replace(DecimalSeparator, ".");
-
-                            NewTransaction.TransactionAmount = Convert.ToDecimal(Value, System.Globalization.CultureInfo.InvariantCulture);
-                            NewTransaction.CostCentreCode = ADefaultCostCentre;
-                            NewTransaction.AccountCode = ColumnNode.Name;
-                            NewTransaction.DebitCreditIndicator = true;
-
-                            if (TXMLParser.HasAttribute(ColumnNode,
-                                    "CreditDebit") && (TXMLParser.GetAttribute(ColumnNode, "CreditDebit").ToLower() == "credit"))
-                            {
-                                NewTransaction.DebitCreditIndicator = false;
-                            }
-
-                            if (NewTransaction.TransactionAmount < 0)
-                            {
-                                NewTransaction.TransactionAmount *= -1.0M;
-                                NewTransaction.DebitCreditIndicator = !NewTransaction.DebitCreditIndicator;
-                            }
-
-                            if (TXMLParser.HasAttribute(ColumnNode, "AccountCode"))
-                            {
-                                NewTransaction.AccountCode = TXMLParser.GetAttribute(ColumnNode, "AccountCode");
-                            }
-
-                            if (NewTransaction.DebitCreditIndicator)
-                            {
-                                sumDebits += NewTransaction.TransactionAmount;
-                            }
-                            else if (!NewTransaction.DebitCreditIndicator)
-                            {
-                                sumCredits += NewTransaction.TransactionAmount;
-                            }
-                        }
-                    }
-                }
-
-                if (!NewTransaction.IsTransactionDateNull())
-                {
-                    NewTransaction.AmountInBaseCurrency = GLRoutines.Multiply(NewTransaction.TransactionAmount,
-                        TExchangeRateCache.GetDailyExchangeRate(
-                            ARefJournalRow.TransactionCurrency,
-                            FMainDS.ALedger[0].BaseCurrency,
-                            NewTransaction.TransactionDate));
-                    //
-                    // The International currency calculation is changed to "Base -> International", because it's likely
-                    // we won't have a "Transaction -> International" conversion rate defined.
-                    //
-                    NewTransaction.AmountInIntlCurrency = GLRoutines.Multiply(NewTransaction.AmountInBaseCurrency,
-                        TExchangeRateCache.GetDailyExchangeRate(
-                            FMainDS.ALedger[0].BaseCurrency,
-                            FMainDS.ALedger[0].IntlCurrency,
-                            NewTransaction.TransactionDate));
-                }
-            } while (!dataFile.EndOfStream);
-
-            // create a balancing transaction; not sure if this is needed at all???
-            if (Convert.ToDecimal(sumCredits - sumDebits) != 0)
-            {
-                GLBatchTDSATransactionRow BalancingTransaction = FMainDS.ATransaction.NewRowTyped(true);
-                ((TFrmGLBatch)ParentForm).GetTransactionsControl().NewRowManual(ref BalancingTransaction, ARefJournalRow);
-                FMainDS.ATransaction.Rows.Add(BalancingTransaction);
-
-                BalancingTransaction.TransactionDate = LatestTransactionDate;
-                BalancingTransaction.DebitCreditIndicator = true;
-                BalancingTransaction.TransactionAmount = sumCredits - sumDebits;
-
-                if (BalancingTransaction.TransactionAmount < 0)
-                {
-                    BalancingTransaction.TransactionAmount *= -1;
-                    BalancingTransaction.DebitCreditIndicator = !BalancingTransaction.DebitCreditIndicator;
-                }
-
-                if (BalancingTransaction.DebitCreditIndicator)
-                {
-                    sumDebits += BalancingTransaction.TransactionAmount;
-                }
-                else
-                {
-                    sumCredits += BalancingTransaction.TransactionAmount;
-                }
-
-                BalancingTransaction.AmountInIntlCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
-                    TExchangeRateCache.GetDailyExchangeRate(
-                        ARefJournalRow.TransactionCurrency,
-                        FMainDS.ALedger[0].IntlCurrency,
-                        BalancingTransaction.TransactionDate));
-                BalancingTransaction.AmountInBaseCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
-                    TExchangeRateCache.GetDailyExchangeRate(
-                        ARefJournalRow.TransactionCurrency,
-                        FMainDS.ALedger[0].BaseCurrency,
-                        BalancingTransaction.TransactionDate));
-                BalancingTransaction.Narrative = Catalog.GetString("Automatically generated balancing transaction");
-                BalancingTransaction.CostCentreCode = TXMLParser.GetAttribute(ARootNode, "CashCostCentre");
-                BalancingTransaction.AccountCode = TXMLParser.GetAttribute(ARootNode, "CashAccount");
-            }
-
-            ARefJournalRow.JournalCreditTotal = sumCredits;
-            ARefJournalRow.JournalDebitTotal = sumDebits;
-            ARefJournalRow.JournalDescription = Path.GetFileNameWithoutExtension(ADataFilename);
-
-            dtpDetailDateEffective.Date = LatestTransactionDate;
-            txtDetailBatchDescription.Text = Path.GetFileNameWithoutExtension(ADataFilename);
-            ABatchRow RefBatch = (ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1];
-            RefBatch.BatchCreditTotal = sumCredits;
-            RefBatch.BatchDebitTotal = sumDebits;
-            // todo RefBatch.BatchControlTotal = sumCredits  - sumDebits;
-            // csv !
         }
 
         /// <summary>
@@ -1515,7 +1114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            ImportBatches();
+            FImportLogicObject.ImportBatches();
         }
 
         private void ImportFromClipboard(object sender, EventArgs e)
@@ -1525,7 +1124,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            ImportFromClipboard();
+            FImportLogicObject.ImportFromClipboard();
+        }
+
+        /// <summary>
+        /// Public method called from the transactions tab
+        /// </summary>
+        public void ImportTransactions()
+        {
+            FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow, GetCurrentJournal());
         }
 
         private void ExportBatches(object sender, EventArgs e)
@@ -1544,22 +1151,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             gl.Show();
         }
 
-        private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
-        {
-            if (AToggleOn)
-            {
-                FrbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                FrbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                FrbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-            }
-            else
-            {
-                FrbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                FrbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                FrbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-            }
-        }
-
         private void CreateFilterFindPanelsManual()
         {
             ((Label)FFilterAndFindObject.FindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
@@ -1570,23 +1161,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return (AJournalRow)((TFrmGLBatch) this.ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
 
-        private bool BatchYearIsLoaded(Int32 AYear)
-        {
-            DataView BatchDV = new DataView(FMainDS.ABatch);
-
-            BatchDV.RowFilter = String.Format("{0}={1}",
-                ABatchTable.GetBatchYearDBName(),
-                AYear);
-
-            return BatchDV.Count > 0;
-        }
-
         /// <summary>
         /// Reload batches after an import
         /// </summary>
-        private void ReloadBatches()
+        public void ReloadBatches()
         {
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FSelectedYear, FSelectedPeriod));
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FLoadAndFilterLogicObject.DatabaseYear, FLoadAndFilterLogicObject.DatabasePeriod));
 
             grdDetails.SelectRowInGrid(1);
         }
@@ -1597,9 +1177,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             try
             {
-                if (!FrbtEditing.Checked)
+                if (!FLoadAndFilterLogicObject.StatusEditing)
                 {
-                    FrbtEditing.Checked = true;
+                    FLoadAndFilterLogicObject.StatusEditing = true;
                 }
 
                 if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
@@ -1609,15 +1189,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 else
                 {
                     //Set year and period to correct value
-                    if ((FcmbYearEnding.Items.Count > 0) && (FcmbYearEnding.SelectedIndex != 0))
-                    {
-                        FcmbYearEnding.SelectedIndex = 0;
-                    }
+                    FLoadAndFilterLogicObject.YearIndex = 0;
+                    FLoadAndFilterLogicObject.PeriodIndex = 0;
 
-                    if ((FcmbPeriod.Items.Count > 1) && (FcmbPeriod.SelectedIndex != 1))
-                    {
-                        FcmbPeriod.SelectedIndex = 1;
-                    }
+                    FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
                 }
             }
             catch (Exception)
@@ -1626,6 +1201,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return RetVal;
+        }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+            if (FLoadAndFilterLogicObject != null)
+            {
+                FLoadAndFilterLogicObject.ApplyFilterManual(ref AFilterString);
+            }
         }
     }
 }

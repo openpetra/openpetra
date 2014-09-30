@@ -602,6 +602,10 @@ namespace Ict.Petra.Client.CommonControls
                 else
                 {
                     value = AFilterPanelControls[i].PanelControl.Text;
+
+                    // certain text characters mess up a LIKE SQL statement
+                    value = value.Replace("[", "");
+                    value = value.Replace("]", "");
                 }
 
                 if (value != String.Empty)

@@ -208,7 +208,7 @@ namespace Ict.Common
         /// There are some predefined strings in the CommonJoinStrings class.</param>
         public static void JoinAndAppend(ref string AStringToExtend, string AStringToAppend, string AJoinString)
         {
-            if (AStringToExtend.Length > 0)
+            if ((AStringToExtend.Length > 0) && (AStringToAppend.Length > 0))
             {
                 AStringToExtend += AJoinString;
             }
