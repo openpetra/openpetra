@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -487,6 +487,8 @@ namespace Ict.Petra.Client.MReporting.Logic
 
                 // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
                 TEnsureKeepAlive.UnRegister(FReportingGenerator);
+
+                return false;
             }
 
             // todo: allow canceling of the calculation of a report
@@ -496,6 +498,9 @@ namespace Ict.Petra.Client.MReporting.Logic
             }
 
             ReturnValue = FReportingGenerator.GetSuccess();
+
+            // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
+            TEnsureKeepAlive.UnRegister(FReportingGenerator);
 
             if (ReturnValue)
             {
@@ -551,8 +556,6 @@ namespace Ict.Petra.Client.MReporting.Logic
                             TLogging.Log(FReportingGenerator.GetErrorMessage());
                         }
 
-                        // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
-                        TEnsureKeepAlive.UnRegister(FReportingGenerator);
                         FKeepUpProgressCheck = false;
                         break;
 
