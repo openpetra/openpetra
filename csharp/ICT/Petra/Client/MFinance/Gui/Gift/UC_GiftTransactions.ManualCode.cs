@@ -607,16 +607,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
                 }
 
-                if (FMotivationDetail != FPreviouslySelectedDetailRow.MotivationDetailCode)
-                {
-                	if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
-	                {
-	                    if (FMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
-	                    {
-	                        cmbDetailMotivationDetailCode.SetSelectedString(MFinanceConstants.GROUP_DETAIL_KEY_MIN);
-	                    }
-                	}
+                {
+                    if (FMotivationGroup != cmbDetailMotivationGroupCode.GetSelectedString())
+                    {
+                        cmbDetailMotivationGroupCode.SetSelectedString(FMotivationGroup);
+                    }
+
+                    if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
+                    {
+                        cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
+                    }
                 }
 
                 if (APartnerKey > 0)
