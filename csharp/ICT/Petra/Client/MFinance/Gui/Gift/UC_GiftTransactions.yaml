@@ -164,8 +164,8 @@ RootNode:
         mnuTabPage:
 
         txtDeductiblePercentage: {Visible=false, Label=% Tax Deductible, Format=PercentDecimal(2), Width=80, NullValueAllowed=false}
-        txtTaxDeductAmount: {Visible=false, Label=Tax-Deductible, Format=Currency, ReadOnly=true}
-        txtNonDeductAmount: {Visible=false, Label=Non-Deductible, Format=Currency, ReadOnly=true}
+        txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
+        txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
         txtDeductibleAccount: {Visible=false, Label=Account, ReadOnly=true}
 
     Menu:

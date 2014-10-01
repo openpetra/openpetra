@@ -100,16 +100,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDeductiblePercentage.NumberValueDecimal = 100;
             txtDeductiblePercentage.NegativeValueAllowed = false;
 
-            lblTaxDeductAmount.Location = new System.Drawing.Point(lblTaxDeductAmount.Location.X, lblTaxDeductAmount.Location.Y - (YSPACE * 5));
+            lblTaxDeductAmount.Location = new System.Drawing.Point(lblTaxDeductAmount.Location.X - 5, lblTaxDeductAmount.Location.Y - (YSPACE * 5));
+            lblTaxDeductAmount.Width = lblTaxDeductAmount.Width + 10;
             txtTaxDeductAmount.Location = new System.Drawing.Point(txtTaxDeductAmount.Location.X, txtTaxDeductAmount.Location.Y - (YSPACE * 5));
             lblTaxDeductAmount.Visible = true;
             txtTaxDeductAmount.Visible = true;
             txtTaxDeductAmount.CurrencyCode = FBatchRow.CurrencyCode;
-            lblNonDeductAmount.Location = new System.Drawing.Point(lblNonDeductAmount.Location.X, lblNonDeductAmount.Location.Y - (YSPACE * 3));
+            lblTaxDeductAmount.Text = Catalog.GetString("Tax Deductible Amt:");
+            lblNonDeductAmount.Location = new System.Drawing.Point(lblNonDeductAmount.Location.X - 5, lblNonDeductAmount.Location.Y - (YSPACE * 3));
+            lblNonDeductAmount.Width = lblNonDeductAmount.Width + 11;
             txtNonDeductAmount.Location = new System.Drawing.Point(txtNonDeductAmount.Location.X, txtNonDeductAmount.Location.Y - (YSPACE * 3));
             lblNonDeductAmount.Visible = true;
             txtNonDeductAmount.Visible = true;
             txtNonDeductAmount.CurrencyCode = FBatchRow.CurrencyCode;
+            lblNonDeductAmount.Text = Catalog.GetString("Non Deductible Amt:");
 
             lblDeductibleAccount.Location = new System.Drawing.Point(lblDeductibleAccount.Location.X, lblDeductibleAccount.Location.Y - (YSPACE * 5));
             txtDeductibleAccount.Location = new System.Drawing.Point(txtDeductibleAccount.Location.X, txtDeductibleAccount.Location.Y - (YSPACE * 5));
@@ -121,7 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDeductiblePercentage.TextChanged += UpdateTaxDeductibilityAmounts;
 
             /* add extra column to grid */
-            grdDetails.AddTextColumn(Catalog.GetString("Tax Deductibility %"), FMainDS.AGiftDetail.ColumnTaxDeductiblePct);
+            grdDetails.AddTextColumn(Catalog.GetString("% Tax Deductibility"), FMainDS.AGiftDetail.ColumnTaxDeductiblePct);
 
             /* fix tab order */
             int STARTINGINDEX = txtDetailGiftTransactionAmount.TabIndex + 20;
@@ -146,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FValidationControlsDict.Add(FMainDS.AGiftDetail.Columns[(short)FMainDS.AGiftDetail.GetType().GetField("ColumnTaxDeductiblePctId",
                                                                             BindingFlags.Public | BindingFlags.Static |
                                                                             BindingFlags.FlattenHierarchy).GetValue(FMainDS.AGiftDetail.GetType())],
-                    new TValidationControlsData(txtDeductiblePercentage, Catalog.GetString("Tax Deductible %")));
+                    new TValidationControlsData(txtDeductiblePercentage, Catalog.GetString("% Tax Deductible")));
             }
         }
 
@@ -215,7 +219,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDeductibleAccount.Text = ARow.TaxDeductibleAccountCode;
             }
 
-            EnableOrDiasbleTaxDeductibilityPct(ARow.TaxDeductible, false);
+            EnableOrDiasbleTaxDeductibilityPct(ARow.TaxDeductible);
         }
 
         // get tax deductible percentage data from controls
@@ -337,7 +341,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void EnableOrDiasbleTaxDeductibilityPct(bool AEnabled, bool AChangedByUser = true)
+        private void EnableOrDiasbleTaxDeductibilityPct(bool AEnabled)
         {
             if (AEnabled && !string.IsNullOrEmpty(txtDeductibleAccount.Text))
             {
@@ -346,11 +350,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                if (AChangedByUser)
-                {
-                    txtDeductiblePercentage.NumberValueDecimal = 0;
-                }
-
                 txtDeductiblePercentage.Enabled = false;
                 txtTaxDeductAmount.Enabled = false;
             }
@@ -359,32 +358,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // Set the Tax Deductibility Percentage from a Recipient's PPartnerTaxDeductiblePct row (if it exists)
         private void UpdateTaxDeductiblePct(Int64 APartnerKey, bool ARecipientChanged)
         {
-        	if (chkDetailTaxDeductible.Checked && txtDeductiblePercentage.Enabled)
-        	{
-        		txtDeductiblePercentage.NumberValueDecimal = 100;
-        	}
- 
-            if (APartnerKey == 0)
+        	if (APartnerKey == 0)
             {
+        		if (!txtDeductiblePercentage.Enabled)
+        		{
+        			txtDeductiblePercentage.NumberValueDecimal = 0;
+        		}
+        		else
+        		{
+        			txtDeductiblePercentage.NumberValueDecimal = 100;
+        		}
+        		
                 return;
             }
+            
+            // 100% default if tax deductibility is not limited
+            decimal TaxDeductiblePct = 100;
 
             if (ARecipientChanged)
             {
                 FMainDS.PPartnerTaxDeductiblePct.Merge(TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(APartnerKey));
             }
-
+            
             if (chkDetailTaxDeductible.Checked && txtDeductiblePercentage.Enabled
                 && (FMainDS.PPartnerTaxDeductiblePct != null) && (FMainDS.PPartnerTaxDeductiblePct.Rows.Count > 0))
             {
             	foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
                 {
+            		// if no valid records exist then the recipient has not limited tax deductible by default
             		if (Row.PartnerKey == APartnerKey && Row.DateValidFrom <= DateTime.Today)
                     {
-                        txtDeductiblePercentage.NumberValueDecimal = Row.PercentageTaxDeductible;
+                        TaxDeductiblePct = Row.PercentageTaxDeductible;
                     }
                 }
             }
+            else if (!chkDetailTaxDeductible.Checked || !txtDeductiblePercentage.Enabled)
+            {
+            	TaxDeductiblePct = 0;
+            }
+            
+            txtDeductiblePercentage.NumberValueDecimal = TaxDeductiblePct;
         }
 
         private void ValidateTaxDeductiblePct(GiftBatchTDSAGiftDetailRow ARow, ref TVerificationResultCollection AVerificationResultCollection)

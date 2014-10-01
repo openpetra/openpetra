@@ -2215,6 +2215,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
+            	// do not allow posting gifts with no donor
+            	if (giftDetail.DonorKey == 0)
+            	{
+            		AVerifications.Add(
+                        new TVerificationResult(
+                            "Posting Gift Batch",
+                            String.Format("Donor key needed in gift {0}",
+                                giftDetail.GiftTransactionNumber),
+                            TResultSeverity.Resv_Critical));
+                    return null;
+            	}
+            	
                 // find motivation detail
                 AMotivationDetailRow motivationRow =
                     (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber,
