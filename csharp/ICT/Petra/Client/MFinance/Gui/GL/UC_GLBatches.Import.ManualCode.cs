@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, alanP
 //
 // Copyright 2004-2013 by OM International
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Collections;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using System.Xml;
