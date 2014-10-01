@@ -326,7 +326,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
                  || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
 
-            FSelectedBatchNumber = ARow.BatchNumber;
             FCurrentEffectiveDate = ARow.DateEffective;
 
             UpdateBatchPeriod(null, null);
@@ -399,8 +398,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             newBatchRow.DateEffective = FDefaultDate;
             dtpDetailDateEffective.Date = FDefaultDate;
-
-            FSelectedBatchNumber = newBatchRow.BatchNumber;
 
             //Needed as GL batches can not be deleted
             ((TFrmGLBatch)ParentForm).SaveChanges();

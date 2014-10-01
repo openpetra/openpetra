@@ -55,7 +55,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject = APetraUtilsObject;
             FLedgerNumber = ALedgerNumber;
             FMainDS = AMainDS;
-            FMyUserControl = AUserControl;
 
             FMyForm = (TFrmGLBatch)FPetraUtilsObject.GetForm();
         }
