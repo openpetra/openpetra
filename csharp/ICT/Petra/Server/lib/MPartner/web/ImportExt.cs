@@ -156,7 +156,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
  */
                     foreach (PmGeneralApplicationRow Row in FMainDS.PmGeneralApplication.Rows)
                     {
-                        if (!Row.IsGenAppPossSrvUnitKeyNull() && Row.GenAppPossSrvUnitKey == OfficeCode)
+                        if (!Row.IsGenAppPossSrvUnitKeyNull() && (Row.GenAppPossSrvUnitKey == OfficeCode))
                         {
                             AddVerificationResult("Unknown Possible Field of Service in GeneralApplicationRow: " + OfficeCode);
                             Row.SetGenAppPossSrvUnitKeyNull();
@@ -458,7 +458,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // Status PRIVATE does not exist any longer.
             if (PartnerRow.StatusCode == "PRIVATE")
             {
-                AddVerificationResult("Status for Partner " + FPartnerKey.ToString() + " changed from PRIVATE to ACTIVE (PRIVATE no longer available).");
+                AddVerificationResult(
+                    "Status for Partner " + FPartnerKey.ToString() + " changed from PRIVATE to ACTIVE (PRIVATE no longer available).");
                 PartnerRow.StatusCode = "ACTIVE";
             }
 
@@ -557,6 +558,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 PersonRow.OccupationCode = ReadString();
+
                 if (APetraVersion.FileMajorPart < 3)
                 {
                     ReadNullableInt64(); // field removed: PersonRow.FieldKey
@@ -628,8 +630,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     // make sure that contact partner key exists in the database already, otherwise reset to take
                     // care of referential integrity
-                    AddVerificationResult("Contact Partner for Venue " + FPartnerKey.ToString() + " not set"
-                                + " as Partner Key " + VenueRow.ContactPartnerKey.ToString() + " does not exist in database.");
+                    AddVerificationResult("Contact Partner for Venue " + FPartnerKey.ToString() + " not set" +
+                        " as Partner Key " + VenueRow.ContactPartnerKey.ToString() + " does not exist in database.");
                     VenueRow.SetContactPartnerKeyNull();
                 }
 
@@ -1244,36 +1246,41 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (StaffDataRow.ReceivingField == 0)
             {
                 // We cannot import a partner that has a receiving field 0. This would break referential integrity.
-                AddVerificationResult("Error - Commitment Record Receiving Field for Partner " + FPartnerKey.ToString() + " is 0. "
-                            + "Commitment Record will not be imported.");
+                AddVerificationResult("Error - Commitment Record Receiving Field for Partner " + FPartnerKey.ToString() + " is 0. " +
+                    "Commitment Record will not be imported.");
                 ImportCommitment = false;
             }
 
             // do not import commitment record if unit for receiving field does not exist
             if (!PUnitAccess.Exists(StaffDataRow.ReceivingField, ATransaction))
             {
-                AddVerificationResult("Error - Commitment Record Receiving Field " + StaffDataRow.ReceivingField.ToString() + " for Partner " + FPartnerKey.ToString()
-                            + " does not exist in database. Commitment Record will not be imported.");
+                AddVerificationResult(
+                    "Error - Commitment Record Receiving Field " + StaffDataRow.ReceivingField.ToString() + " for Partner " +
+                    FPartnerKey.ToString() +
+                    " does not exist in database. Commitment Record will not be imported.");
                 ImportCommitment = false;
             }
 
             // do not import commitment record if unit for home office field does not exist
             if (!PUnitAccess.Exists(StaffDataRow.HomeOffice, ATransaction))
             {
-                AddVerificationResult("Error - Commitment Record Sending Field " + StaffDataRow.HomeOffice.ToString() + " for Partner " + FPartnerKey.ToString()
-                            + " does not exist in database. Commitment Record will not be imported.");
+                AddVerificationResult(
+                    "Error - Commitment Record Sending Field " + StaffDataRow.HomeOffice.ToString() + " for Partner " + FPartnerKey.ToString() +
+                    " does not exist in database. Commitment Record will not be imported.");
                 ImportCommitment = false;
             }
 
             // do not import commitment record if unit for recruiting office does not exist
             if (!PUnitAccess.Exists(StaffDataRow.OfficeRecruitedBy, ATransaction))
             {
-                AddVerificationResult("Error - Commitment Record Recruiting Field " + StaffDataRow.OfficeRecruitedBy.ToString() + " for Partner " + FPartnerKey.ToString()
-                            + " does not exist in database. Commitment Record will not be imported.");
+                AddVerificationResult(
+                    "Error - Commitment Record Recruiting Field " + StaffDataRow.OfficeRecruitedBy.ToString() + " for Partner " +
+                    FPartnerKey.ToString() +
+                    " does not exist in database. Commitment Record will not be imported.");
                 ImportCommitment = false;
             }
 
-            if (   !FIgnorePartner
+            if (!FIgnorePartner
                 && ImportCommitment)
             {
                 PmStaffDataAccess.AddOrModifyRecord(StaffDataRow.SiteKey,
@@ -1616,8 +1623,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // do not import job record if unit does not exist
             if (!PUnitAccess.Exists(GiftDestinationRow.FieldKey, ATransaction))
             {
-                AddVerificationResult("Error - Gift Destination Field Key " + GiftDestinationRow.FieldKey.ToString() + " for Partner " + FPartnerKey.ToString()
-                            + " does not exist in database. Gift Destination Record will not be imported.");
+                AddVerificationResult(
+                    "Error - Gift Destination Field Key " + GiftDestinationRow.FieldKey.ToString() + " for Partner " + FPartnerKey.ToString() +
+                    " does not exist in database. Gift Destination Record will not be imported.");
                 return;
             }
 
@@ -1630,7 +1638,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 TmpGiftDestinationRow.FieldKey = GiftDestinationRow.FieldKey;
                 TmpGiftDestinationRow.DateEffective = GiftDestinationRow.DateEffective;
 
-                PPartnerGiftDestinationTable ExistingGiftDestinationTable = PPartnerGiftDestinationAccess.LoadUsingTemplate(TmpGiftDestinationRow, ATransaction);
+                PPartnerGiftDestinationTable ExistingGiftDestinationTable = PPartnerGiftDestinationAccess.LoadUsingTemplate(TmpGiftDestinationRow,
+                    ATransaction);
 
                 if (ExistingGiftDestinationTable.Count == 0)
                 {
@@ -1715,8 +1724,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // do not import job record if unit does not exist
             if (!PUnitAccess.Exists(JobAssignmentRow.UnitKey, ATransaction))
             {
-                AddVerificationResult("Error - Job Assignment Unit Key " + JobAssignmentRow.UnitKey.ToString() + " for Partner " + FPartnerKey.ToString()
-                            + " does not exist in database. Job Assignment Record will not be imported.");
+                AddVerificationResult(
+                    "Error - Job Assignment Unit Key " + JobAssignmentRow.UnitKey.ToString() + " for Partner " + FPartnerKey.ToString() +
+                    " does not exist in database. Job Assignment Record will not be imported.");
                 ImportJobAssignment = false;
             }
 
@@ -1728,7 +1738,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ReadNullableDate(); // used to be JobAssignmentRow.LeavingCodeUpdatedDate
             }
 
-            if (   !FIgnorePartner
+            if (!FIgnorePartner
                 && ImportJobAssignment)
             {
                 // find job assignment (ignoring job key and job assignment key)
