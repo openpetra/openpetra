@@ -646,7 +646,13 @@ namespace Ict.Petra.Client.CommonForms
                 if (!FCallerFormOrControl.DoValidation(true, true))
                 {
                     // Remember who called us and why, so we can replay the event when the data becomes valid again
-                    FFailedValidation_CtrlChangeEventArgsInfo = new TEventArgsInfo(sender, e);
+                    Control senderAsControl = (sender as Control);
+
+                    if ((senderAsControl != null) && (senderAsControl.CanFocus))
+                    {
+                        FFailedValidation_CtrlChangeEventArgsInfo = new TEventArgsInfo(sender, e);
+                    }
+
                     return;
                 }
             }
