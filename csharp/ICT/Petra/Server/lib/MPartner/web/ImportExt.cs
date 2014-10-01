@@ -45,6 +45,7 @@ using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Server.MHospitality.Data.Access;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {
@@ -1598,6 +1599,68 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
+        private void ImportGiftDestination(TDBTransaction ATransaction)
+        {
+            PPartnerGiftDestinationRow GiftDestinationRow = FMainDS.PPartnerGiftDestination.NewRowTyped();
+
+            GiftDestinationRow.PartnerKey = FPartnerKey;
+
+            GiftDestinationRow.FieldKey = ReadInt64();
+            GiftDestinationRow.DateEffective = ReadDate();
+            GiftDestinationRow.DateExpires = ReadNullableDate();
+            GiftDestinationRow.Active = ReadBoolean();
+            GiftDestinationRow.DefaultGiftDestination = ReadBoolean();
+            GiftDestinationRow.PartnerClass = ReadString();
+            GiftDestinationRow.Comment = ReadString();
+
+            // do not import job record if unit does not exist
+            if (!PUnitAccess.Exists(GiftDestinationRow.FieldKey, ATransaction))
+            {
+                AddVerificationResult("Error - Gift Destination Field Key " + GiftDestinationRow.FieldKey.ToString() + " for Partner " + FPartnerKey.ToString()
+                            + " does not exist in database. Gift Destination Record will not be imported.");
+                return;
+            }
+
+            // ignore types that are not in the database. avoid constraint violation
+            if (!FIgnorePartner)
+            {
+                // check if a record already exists with this partner key, field key and start date
+                PPartnerGiftDestinationRow TmpGiftDestinationRow = FMainDS.PPartnerGiftDestination.NewRowTyped(false);
+                TmpGiftDestinationRow.PartnerKey = FPartnerKey;
+                TmpGiftDestinationRow.FieldKey = GiftDestinationRow.FieldKey;
+                TmpGiftDestinationRow.DateEffective = GiftDestinationRow.DateEffective;
+
+                PPartnerGiftDestinationTable ExistingGiftDestinationTable = PPartnerGiftDestinationAccess.LoadUsingTemplate(TmpGiftDestinationRow, ATransaction);
+
+                if (ExistingGiftDestinationTable.Count == 0)
+                {
+                    // New record: create a key that is at least one more that all the (unsaved) imported records AND all the records in the database
+                    int Max = 0;
+
+                    foreach (PPartnerGiftDestinationRow Row in FMainDS.PPartnerGiftDestination.Rows)
+                    {
+                        if ((Row.RowState != DataRowState.Deleted) && (Row.Key >= Max))
+                        {
+                            Max = Row.Key + 1;
+                        }
+                    }
+
+                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination());
+                }
+                else
+                {
+                    // use existing key --> overwrite existing record
+                    GiftDestinationRow.Key = ((PPartnerGiftDestinationRow)ExistingGiftDestinationTable.Rows[0]).Key;
+                }
+
+                PPartnerGiftDestinationAccess.AddOrModifyRecord(GiftDestinationRow.Key,
+                    FMainDS.PPartnerGiftDestination,
+                    GiftDestinationRow,
+                    FDoNotOverwrite,
+                    ATransaction);
+            }
+        }
+
         private void ImportUnitAbility(TDBTransaction ATransaction)
         {
             /* AbilityAreaName */
@@ -1969,6 +2032,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 else if (KeyWord == "INTEREST")
                 {
                     ImportInterest(ATransaction);
+                }
+                else if (KeyWord == "GIFTDESTINATION")
+                {
+                    ImportGiftDestination(ATransaction);
                 }
                 else if (KeyWord == "U-ABILITY")
                 {
