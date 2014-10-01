@@ -609,6 +609,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FCurrentEffectiveDate = dateValue;
                         FPreviouslySelectedDetailRow.DateEffective = dateValue;
                     }
+                    else
+                    {
+                        return;
+                    }
 
                     //Check if new date is in a different Batch period to the current one
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
@@ -637,7 +641,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", UpdateTransactionDates);
-                    FPetraUtilsObject.HasChanges = true;
+                    FPetraUtilsObject.SetChangedFlag();
                 }
             }
             catch (Exception ex)
@@ -1043,19 +1047,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void SetInitialFocus()
         {
-            //if (FInitialFocusActionComplete)
-            //{
-            //    return;
-            //}
-
-            //if (grdDetails.CanFocus)
-            //{
-            //Set filter to current and forwarding
-            //if (FcmbPeriod.Items.Count > 0)
-            //{
-            //    FcmbPeriod.SelectedIndex = 1;
-            //}
-
             if (grdDetails.Rows.Count <= 1)
             {
                 btnNew.Focus();
@@ -1064,9 +1055,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.Focus();
             }
-
-            //FInitialFocusActionComplete = true;
-            //}
         }
 
         private void RunOnceOnParentActivationManual()

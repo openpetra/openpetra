@@ -544,8 +544,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
         {
-            if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
-                && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            bool CurrencyCodeHasChanged = false;
+            
+            if (FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null)
+                || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
+            CurrencyCodeHasChanged = (FTransactionCurrency != cmbDetailTransactionCurrency.GetSelectedString());
+
+            if (CurrencyCodeHasChanged)
             {
                 FTransactionCurrency = cmbDetailTransactionCurrency.GetSelectedString();
 
@@ -566,6 +575,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     btnGetSetExchangeRate.Enabled = true;
                 }
             }
+
         }
 
         private void RefreshCurrencyAndExchangeRate()
