@@ -43,7 +43,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private TFrmPetraEditUtils FPetraUtilsObject = null;
         private Int32 FLedgerNumber = 0;
         private GLBatchTDS FMainDS = null;
-        private IUC_GLBatches FMyUserControl = null;
         private TFrmGLBatch FMyForm = null;
 
         #region Constructor

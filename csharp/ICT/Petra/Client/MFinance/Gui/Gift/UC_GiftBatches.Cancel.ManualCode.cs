@@ -42,7 +42,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private TFrmPetraEditUtils FPetraUtilsObject = null;
         private Int32 FLedgerNumber = 0;
         private GiftBatchTDS FMainDS = null;
-        private IUC_GiftBatches FMyUserControl = null;
         private TFrmGiftBatch FMyForm = null;
 
         #region Constructor

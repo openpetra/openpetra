@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private TUC_GLBatches_Post FPostingLogicObject = null;
         private TUC_GLBatches_Reverse FReverseLogicObject = null;
 
-        private Int32 FSelectedBatchNumber = -1;
         private DateTime FDefaultDate;
         private bool FBatchesLoaded = false;
 
