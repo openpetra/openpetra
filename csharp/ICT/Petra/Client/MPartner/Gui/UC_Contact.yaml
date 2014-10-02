@@ -6,7 +6,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     FormType: edit
     Template: usercontrol
-    MasterTable: PPartnerContact
+    MasterTable: PContactLog
     MultipleMasterRows: true   # generates a call to the Method 'GetSelectedMasterRow' as there can be more than one master row so need to determine the current one in manual code file
     Actions:
         actEditIssues: {Label=Edit Issues, ActionClick=EditIssues}

@@ -144,13 +144,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
-            if (!FMainDS.Tables.Contains(PPartnerContactTable.GetTableName()))
-            {
-                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactsForPartner(FMainDS.PPartner[0].PartnerKey));
+            //if (!FMainDS.Tables.Contains(PPartnerContactTable.GetTableName()))
+            //{
+            //    FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactsForPartner(FMainDS.PPartner[0].PartnerKey));
 
-                FMainDS.PPartnerContact.DefaultView.AllowNew = false;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PPartnerContact.DefaultView);
-            }
+            //    FMainDS.PPartnerContact.DefaultView.AllowNew = false;
+            //    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PPartnerContact.DefaultView);
+            //}
 
             FMainDS.InitVars();
             
@@ -158,37 +158,37 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private Boolean LoadDataOnDemand()
         {
-            Boolean ReturnValue;
+            Boolean ReturnValue = false;
 
             // Load Partner Types, if not already loaded
             try
             {
-                // Make sure that Typed DataTables are already there at Client side
-                if (FMainDS.PPartnerContact == null)
-                {
-                    FMainDS.Tables.Add(new PPartnerContactTable());
-                    FMainDS.InitVars();
-                }
+                //// Make sure that Typed DataTables are already there at Client side
+                //if (FMainDS.PPartnerContact == null)
+                //{
+                //    FMainDS.Tables.Add(new PPartnerContactTable());
+                //    FMainDS.InitVars();
+                //}
 
-                if (TClientSettings.DelayedDataLoading)
-                {
-                    FMainDS.Merge(FPartnerEditUIConnector.GetDataContacts());
+                //if (TClientSettings.DelayedDataLoading)
+                //{
+                //    FMainDS.Merge(FPartnerEditUIConnector.GetDataContacts());
 
-                    // Make DataRows unchanged
-                    if (FMainDS.PPartnerContact.Rows.Count > 0)
-                    {
-                        FMainDS.PPartnerContact.AcceptChanges();
-                    }
-                }
+                //    // Make DataRows unchanged
+                //    if (FMainDS.PPartnerContact.Rows.Count > 0)
+                //    {
+                //        FMainDS.PPartnerContact.AcceptChanges();
+                //    }
+                //}
 
-                if (FMainDS.PPartnerContact.Rows.Count != 0)
-                {
-                    ReturnValue = true;
-                }
-                else
-                {
-                    ReturnValue = false;
-                }
+                //if (FMainDS.PPartnerContact.Rows.Count != 0)
+                //{
+                //    ReturnValue = true;
+                //}
+                //else
+                //{
+                //    ReturnValue = false;
+                //}
             }
             catch (System.NullReferenceException)
             {
@@ -205,13 +205,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
-        private void NewRowManual(ref PPartnerContactRow ARow)
+        private void NewRowManual(ref PContactLogRow ARow)
         {
 
-            ARow.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
+            //ARow.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
         }
 
-        private void ShowDetailsManual(PPartnerContactRow ARow)
+        private void ShowDetailsManual(PContactLogRow ARow)
         {
             if (ARow != null)
             {
@@ -222,7 +222,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private bool PreDeleteManual(PPartnerContactRow pPartnerContactRow, ref string ADeletionQuestion)
+        private bool PreDeleteManual(PContactLogRow pContactLogRow, ref string ADeletionQuestion)
         {
             ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
@@ -230,12 +230,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             return true;
         }
 
-        private void GetDetailDataFromControlsManual(PPartnerContactRow ARow)
+        private void GetDetailDataFromControlsManual(PContactLogRow ARow)
         {
             ucoContact.GetDetails(ARow);   
         }
 
-        private void PostDeleteManual(PPartnerContactRow pPartnerContactRow, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+        private void PostDeleteManual(PContactLogRow pContactLogRow, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
         {
             if (ADeletionPerformed)
             {
@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             });
         }
 
-        private void ValidateDataDetailsManual(PPartnerContactRow FPreviouslySelectedDetailRow)
+        private void ValidateDataDetailsManual(PContactLogRow FPreviouslySelectedDetailRow)
         {
         }
         #endregion

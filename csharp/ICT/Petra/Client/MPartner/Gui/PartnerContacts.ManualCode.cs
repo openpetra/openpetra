@@ -48,37 +48,37 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void Search(object sender, EventArgs e)
         {
-            FMainDS.PPartnerContact.Clear();
+            //FMainDS.PPartnerContact.Clear();
 
-            FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContacts(
-                    txtContactor.Text,
-                    dtpContactDate.Date,
-                    txtCommentContains.Text,
-                    txtMethodOfContact.Text,
-                    txtModule.Text,
-                    txtMailingCode.Text));
+            //FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContacts(
+            //        txtContactor.Text,
+            //        dtpContactDate.Date,
+            //        txtCommentContains.Text,
+            //        txtMethodOfContact.Text,
+            //        txtModule.Text,
+            //        txtMailingCode.Text));
 
-            FMainDS.PPartnerContact.DefaultView.AllowNew = false;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PPartnerContact.DefaultView);
+            //FMainDS.PPartnerContact.DefaultView.AllowNew = false;
+            //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PPartnerContact.DefaultView);
         }
 
         private void DeleteContacts(object Sender, EventArgs e)
         {
-            if (MessageBox.Show(
-                    String.Format(Catalog.GetString("Do you really want to delete all {0} contacts?"), FMainDS.PPartnerContact.Count),
-                    Catalog.GetString("Confirm deletion"),
-                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
-            {
-                foreach (PPartnerContactRow row in FMainDS.PPartnerContact.Rows)
-                {
-                    row.Delete();
-                }
+            //if (MessageBox.Show(
+            //        String.Format(Catalog.GetString("Do you really want to delete all {0} contacts?"), FMainDS.PPartnerContact.Count),
+            //        Catalog.GetString("Confirm deletion"),
+            //        MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            //{
+            //    foreach (PPartnerContactRow row in FMainDS.PPartnerContact.Rows)
+            //    {
+            //        row.Delete();
+            //    }
 
-                TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PPartnerContact);
+            //    TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PPartnerContact);
 
-                // refresh the grid
-                Search(Sender, e);
-            }
+            //    // refresh the grid
+            //    Search(Sender, e);
+            //}
         }
     }
 }

@@ -422,10 +422,10 @@ namespace Ict.Petra.Server.MPartner.Processing
              */
             Body = string.Format("Partner: {0}   [{1:0000000000}]{2}", PartnerShortName, APartnerReminderDR.PartnerKey, LF);
 
-            if (APartnerReminderDR.ContactId != 0)
-            {
-                Body += GetContactDetails(APartnerReminderDR.ContactId, AReadWriteTransaction);
-            }
+            //if (APartnerReminderDR.ContactId != 0)
+            //{
+            //    Body += GetContactDetails(APartnerReminderDR.ContactId, AReadWriteTransaction);
+            //}
 
             Body += String.Format("Reason: {0}{1}", APartnerReminderDR.ReminderReason, LF);
 
@@ -470,38 +470,38 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// <returns>Specified contact details.</returns>
         private static string GetContactDetails(int AContactID, TDBTransaction AReadTransaction)
         {
-            PPartnerContactTable PartnerContactDT;
-            PPartnerContactRow PartnerContactDR;
-            DateTime ContactTime;
-            char LF = Convert.ToChar(10);
+            //PPartnerContactTable PartnerContactDT;
+            //PPartnerContactRow PartnerContactDR;
+            //DateTime ContactTime;
+            //char LF = Convert.ToChar(10);
             string ReturnValue = "";
 
-            try
-            {
-                if (!PPartnerContactAccess.Exists(AContactID, AReadTransaction))
-                {
-                    return String.Format("Contact ID {0} not found{1}", AContactID, LF);
-                }
+            //try
+            //{
+            //    if (!PPartnerContactAccess.Exists(AContactID, AReadTransaction))
+            //    {
+            //        return String.Format("Contact ID {0} not found{1}", AContactID, LF);
+            //    }
 
-                PartnerContactDT = PPartnerContactAccess.LoadByPrimaryKey(AContactID, AReadTransaction);
-            }
-            catch (Exception Exp)
-            {
-                TLogging.Log("TProcessPartnerReminders.GetContactDetails encountered an Exception: " + Exp.ToString());
+            //    PartnerContactDT = PPartnerContactAccess.LoadByPrimaryKey(AContactID, AReadTransaction);
+            //}
+            //catch (Exception Exp)
+            //{
+            //    TLogging.Log("TProcessPartnerReminders.GetContactDetails encountered an Exception: " + Exp.ToString());
 
-                throw;
-            }
+            //    throw;
+            //}
 
-            PartnerContactDR = PartnerContactDT[0];
+            //PartnerContactDR = PartnerContactDT[0];
 
-            ContactTime = DateTime.Now.AddSeconds(PartnerContactDR.ContactTime);
+            //ContactTime = DateTime.Now.AddSeconds(PartnerContactDR.ContactTime);
 
-            ReturnValue = String.Format("Contact: {0} {1} {2:HH}:{2:mm} {3} {4}",
-                PartnerContactDR.Contactor,
-                PartnerContactDR.ContactDate.Date,
-                ContactTime,
-                PartnerContactDR.ContactCode,
-                Environment.NewLine);
+            //ReturnValue = String.Format("Contact: {0} {1} {2:HH}:{2:mm} {3} {4}",
+            //    PartnerContactDR.Contactor,
+            //    PartnerContactDR.ContactDate.Date,
+            //    ContactTime,
+            //    PartnerContactDR.ContactCode,
+            //    Environment.NewLine);
 
             return ReturnValue;
         }

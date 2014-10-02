@@ -206,19 +206,19 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 Keys.Add(PartnerKey);
 
-                PPartnerContactRow PartnerContactRow = MainDS.PPartnerContact.NewRowTyped(true);
-                PartnerContactRow.ContactId = (MainDS.PPartnerContact.Rows.Count + 1) * -1;
-                PartnerContactRow.PartnerKey = PartnerKey;
-                PartnerContactRow.ContactCode = (AHandingOutHeadset ? HEADSET_OUT_METHOD_OF_CONTACT : HEADSET_RETURN_METHOD_OF_CONTACT);
-                PartnerContactRow.ContactDate = DateTime.Now;
-                PartnerContactRow.ContactTime = Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds);
-                MainDS.PPartnerContact.Rows.Add(PartnerContactRow);
+                //PPartnerContactRow PartnerContactRow = MainDS.PPartnerContact.NewRowTyped(true);
+                //PartnerContactRow.ContactId = (MainDS.PPartnerContact.Rows.Count + 1) * -1;
+                //PartnerContactRow.PartnerKey = PartnerKey;
+                //PartnerContactRow.ContactCode = (AHandingOutHeadset ? HEADSET_OUT_METHOD_OF_CONTACT : HEADSET_RETURN_METHOD_OF_CONTACT);
+                //PartnerContactRow.ContactDate = DateTime.Now;
+                //PartnerContactRow.ContactTime = Convert.ToInt32(DateTime.Now.TimeOfDay.TotalSeconds);
+                //MainDS.PPartnerContact.Rows.Add(PartnerContactRow);
 
-                PPartnerContactAttributeRow PartnerContactAttributeRow = MainDS.PPartnerContactAttribute.NewRowTyped(true);
-                PartnerContactAttributeRow.ContactId = PartnerContactRow.ContactId;
-                PartnerContactAttributeRow.ContactAttributeCode = SESSION_CONTACT_ATTRIBUTE;
-                PartnerContactAttributeRow.ContactAttrDetailCode = ASessionName;
-                MainDS.PPartnerContactAttribute.Rows.Add(PartnerContactAttributeRow);
+                //PPartnerContactAttributeRow PartnerContactAttributeRow = MainDS.PPartnerContactAttribute.NewRowTyped(true);
+                //PartnerContactAttributeRow.ContactId = PartnerContactRow.ContactId;
+                //PartnerContactAttributeRow.ContactAttributeCode = SESSION_CONTACT_ATTRIBUTE;
+                //PartnerContactAttributeRow.ContactAttrDetailCode = ASessionName;
+                //MainDS.PPartnerContactAttribute.Rows.Add(PartnerContactAttributeRow);
             }
 
             MainDS.ThrowAwayAfterSubmitChanges = true;

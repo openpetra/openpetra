@@ -6271,151 +6271,196 @@
                 thisFields="p_method_of_contact_code_c"/>
     <!-- Explicit Indexes on table p_method_of_contact  -->
   </table>
-  <table name="p_partner_contact"
-         descr="Details of contacts with partners"
-         area="Petra Data"
-         label="Partner Contact"
-         dumpname="p_prtcon"
-         group="mailroom">
-    <tablefield name="p_contact_id_i"
-                type="integer"
-                sequence="seq_contact"
-                descr="identifying key for p_partner_contact"
-                format="&gt;&gt;&gt;&gt;&gt;9"
-                label="Number"
-                help="identifying key for p_partner_contact"
-                notnull="yes"
-                initial="0"/>
-    <tablefield name="p_partner_key_n"
-                type="number"
-                length="10"
-                descr="This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number."
-                format="9999999999"
-                label="Partner Key"
-                help="Enter the partner key (SiteID + Number)"
-                notnull="yes"
-                initial="0"/>
-    <tablefield name="s_contact_date_d"
-                type="date"
-                descr="Date of contact"
-                format="99/99/9999"
-                label="Contact Date"
-                help="Enter the date the contact was made"
-                notnull="yes"/>
-    <tablefield name="s_contact_time_i"
-                type="integer"
-                descr="Time of contact"
-                format="99999"
-                notnull="yes"
-                initial="0"/>
-    <tablefield name="p_contact_code_c"
-                type="varchar"
-                descr="Contact code"
-                format="X(8)"
-                label="Contact Code"
-                help="Select a contact code"
-                notnull="yes"/>
-    <tablefield name="p_contactor_c"
-                type="varchar"
-                descr="User who made the contact"
-                format="X(10)"
-                label="User ID"
-                help="Enter the User ID"/>
-    <tablefield name="p_contact_message_id_c"
-                type="varchar"
-                descr="The Message ID (only applies if the type of contact is an email); this helps to identify the email and to interface with the EMail application"
-                format="X(100)"
-                label="Message ID"/>
-    <tablefield name="p_contact_comment_c"
-                type="varchar"
-                format="X(15000)"
-                descr="Contact Comment (also used to hold contents of emails)"
-                label="Description"
-                help="Enter any additional information regarding this contact"/>
-    <tablefield name="s_module_id_c"
-                type="varchar"
-                descr="Identifies a module. A module is any part of aprogram which is related to each menu entry or to the sub-system. Eg, partner administration, AP, AR etc."
-                format="X(10)"
-                label="Module ID"/>
-    <tablefield name="s_user_id_c"
-                type="varchar"
-                descr="If set, this contact is restricted to one user."
-                format="X(10)"
-                label=""/>
-    <tablefield name="p_mailing_code_c"
-                type="varchar"
-                descr="The mailing code associated with the contact"
-                format="X(25)"
-                label="Mailing Code"
-                columnlabel="Mailing Code"
-                help="Enter the mailing code associated with the contact"/>
-    <tablefield name="p_restricted_l"
-                type="bit"
-                descr="Indicates whether or not the contact has restricted access. If it does then the access will be controlled by s_group_partner_contact"
-                format="yes/no"
-                label="Contact Restricted"
-                help="Should access to this contact be restricted to some people?"
-                initial="no"/>
-    <tablefield name="p_contact_location_c"
-                type="varchar"
-                descr="Location of contact"
-                format="X(4000)"
-                label="Location"
-                help="Enter a location for this contact."/>
-    <!-- Constraints on table p_partner_contact -->
-    <primarykey name="p_partner_contact_pk"
-                descr=""
-                thisFields="p_contact_id_i"/>
-    <uniquekey name="p_partner_contact_uk"
+
+
+    <table name="p_contact_log"
+           descr="Details of contacts with partners"
+           area="Petra Data"
+           label="Contact Log"
+           dumpname="p_con"
+           group="mailroom">
+        <tablefield name="p_contact_log_id_i"
+                    type="number"
+                    length="10"
+                    format="9999999999"
+                    sequence="seq_contact"
+                    descr="identifying key for p_contact_log"
+                    label="Number"
+                    help="identifying key for p_contact_log"
+                    notnull="yes"
+                    initial="0"/>
+
+        <tablefield name="s_contact_date_d"
+                    type="date"
+                    descr="Date of contact"
+                    format="99/99/9999"
+                    label="Contact Date"
+                    help="Enter the date the contact was made"
+                    notnull="yes"/>
+        <tablefield name="s_contact_time_i"
+                    type="integer"
+                    descr="Time of contact"
+                    format="99999"
+                    notnull="yes"
+                    initial="0"/>
+        <tablefield name="p_contact_code_c"
+                    type="varchar"
+                    descr="Contact code"
+                    format="X(8)"
+                    label="Contact Code"
+                    help="Select a contact code"
+                    notnull="yes"/>
+        <tablefield name="p_contactor_c"
+                    type="varchar"
+                    descr="User who made the contact"
+                    format="X(10)"
+                    label="User ID"
+                    help="Enter the User ID"/>
+        <tablefield name="p_contact_message_id_c"
+                    type="varchar"
+                    descr="The Message ID (only applies if the type of contact is an email); this helps to identify the email and to interface with the EMail application"
+                    format="X(100)"
+                    label="Message ID"/>
+        <tablefield name="p_contact_comment_c"
+                    type="varchar"
+                    format="X(15000)"
+                    descr="Contact Comment (also used to hold contents of emails)"
+                    label="Description"
+                    help="Enter any additional information regarding this contact"/>
+        <tablefield name="s_module_id_c"
+                    type="varchar"
+                    descr="Identifies a module. A module is any part of aprogram which is related to each menu entry or to the sub-system. Eg, partner administration, AP, AR etc."
+                    format="X(10)"
+                    label="Module ID"/>
+        <tablefield name="s_user_id_c"
+                    type="varchar"
+                    descr="If set, this contact is restricted to one user."
+                    format="X(10)"
+                    label=""/>
+        <tablefield name="p_mailing_code_c"
+                    type="varchar"
+                    descr="The mailing code associated with the contact"
+                    format="X(25)"
+                    label="Mailing Code"
+                    columnlabel="Mailing Code"
+                    help="Enter the mailing code associated with the contact"/>
+        <tablefield name="p_restricted_l"
+                    type="bit"
+                    descr="Indicates whether or not the contact has restricted access. If it does then the access will be controlled by s_group_partner_contact"
+                    format="yes/no"
+                    label="Contact Restricted"
+                    help="Should access to this contact be restricted to some people?"
+                    initial="no"/>
+        <tablefield name="p_contact_location_c"
+                    type="varchar"
+                    descr="Location of contact"
+                    format="X(4000)"
+                    label="Location"
+                    help="Enter a location for this contact."/>
+        <!-- Constraints on table p_contact_log -->
+        <primarykey name="p_contact_log_pk"
+                    descr=""
+                    thisFields="p_contact_log_id_i"/>
+        <foreignkey name="p_partner_contact_fk1"
+                    descr=""
+                    thisFields="p_mailing_code_c"
+                    otherTable="p_mailing"
+                    otherFields="p_mailing_code_c"/>
+        <foreignkey name="p_partner_contact_fk2"
+                    descr=""
+                    thisFields="p_contact_code_c"
+                    otherTable="p_method_of_contact"
+                    otherFields="p_method_of_contact_code_c"/>
+        <foreignkey name="p_partner_contact_fk3"
+                    descr=""
+                    thisFields="s_module_id_c"
+                    otherTable="s_module"
+                    otherFields="s_module_id_c"/>
+        <foreignkey name="p_partner_contact_fk4"
+                    descr=""
+                    thisFields="s_user_id_c"
+                    otherTable="s_user"
+                    otherFields="s_user_id_c"/>
+        <!-- Explicit Indexes on table p_partner_contact  -->
+        <!--<index name="inx_p_partner_contact_uk"
+             descr=""
+             area=""
+             unique="yes">
+          <indexfield name="p_partner_key_n" order="ascending"/>
+          <indexfield name="s_contact_date_d" order="ascending"/>
+          <indexfield name="s_contact_time_i" order="ascending"/>
+      </index>-->
+    </table>
+
+    <table name="p_partner_contact"
+           descr="Link between Partners and Contacts"
+           area="Petra Data"
+           label="Partner Contact"
+           dumpname="p_prtcon"
+           group="mailroom">
+        <tablefield name="p_partner_contact_id_i"
+                    type="number"
+                    length="10"
+                    descr="Primary Key of Partner - Contact join table"
+                    format="9999999999"
+                    label="PartnerContact"
+                    help=""
+                    notnull="yes"
+                    initial="0"/>
+        
+        <tablefield name="p_partner_key_n"
+                    type="number"
+                    length="10"
+                    descr="This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number."
+                    format="9999999999"
+                    label="Partner Key"
+                    help="Enter the partner key (SiteID + Number)"
+                    notnull="yes"/>
+
+        <tablefield name="p_contact_log_id_i"
+                    type="number"
+                    length="10"
+                    descr="This is the contact log id.  " 
+                    format="9999999999"
+                    label="Contact Key"
+                    notnull="yes" />
+
+        <primarykey name="p_partner_contact_pk"
+                    descr=""
+                    thisFields="p_partner_contact_id_i"/>
+        
+        <foreignkey name="p_partner_contact_fk1"
+                    descr=""
+                    thisFields="p_partner_key_n"
+                    otherTable="p_partner"
+                    otherFields="p_partner_key_n"/>
+
+        <foreignkey name="p_partner_contact_fk2"
+                    descr=""
+                    thisFields="p_contact_log_id_i"
+                    otherTable="p_contact_log"
+                    otherFields="p_contact_log_id_i"/>
+        <index name="inx_p_partner_contact_uk"
                descr=""
-               thisFields="p_partner_key_n, s_contact_date_d, s_contact_time_i"/>
-    <foreignkey name="p_partner_contact_fk1"
-                descr=""
-                thisFields="p_partner_key_n"
-                otherTable="p_partner"
-                otherFields="p_partner_key_n"/>
-    <foreignkey name="p_partner_contact_fk2"
-                descr=""
-                thisFields="p_mailing_code_c"
-                otherTable="p_mailing"
-                otherFields="p_mailing_code_c"/>
-    <foreignkey name="p_partner_contact_fk3"
-                descr=""
-                thisFields="p_contact_code_c"
-                otherTable="p_method_of_contact"
-                otherFields="p_method_of_contact_code_c"/>
-    <foreignkey name="p_partner_contact_fk4"
-                descr=""
-                thisFields="s_module_id_c"
-                otherTable="s_module"
-                otherFields="s_module_id_c"/>
-    <foreignkey name="p_partner_contact_fk7"
-                descr=""
-                thisFields="s_user_id_c"
-                otherTable="s_user"
-                otherFields="s_user_id_c"/>
-    <!-- Explicit Indexes on table p_partner_contact  -->
-    <index name="inx_p_partner_contact_uk"
-           descr=""
-           area=""
-           unique="yes">
-      <indexfield name="p_partner_key_n" order="ascending"/>
-      <indexfield name="s_contact_date_d" order="ascending"/>
-      <indexfield name="s_contact_time_i" order="ascending"/>
-    </index>
-  </table>
-  <table name="p_partner_contact_attribute"
-         descr="Associates a p_contact_attribute_detail with a p_partner_contact.  A contact with a partner may have more than one p_contact_attribute_detail associated with it."
+               area=""
+               unique="yes">
+            <indexfield name="p_partner_key_n" order="ascending"/>
+            <indexfield name="p_contact_log_id_i" order="ascending"/>
+        </index>
+    </table>
+
+    <table name="p_partner_contact_attribute"
+         descr="Associates a p_contact_attribute_detail with a p_contact_log.  A contact log may have more than one p_contact_attribute_detail associated with it."
          label="Partner Contact Attribute"
          area="Petra Data"
          dumpname="p_conatp"
          group="mailroom">
     <tablefield name="p_contact_id_i"
-                type="integer"
-                descr="identifying key for p_partner_contact"
-                format="&gt;&gt;&gt;&gt;&gt;9"
-                label="Number"
-                help="identifying key for p_partner_contact"
+                descr="identifying key for p_contact_log"
+                type="number"
+                length="10"
+                format="9999999999"
+                help="identifying key for p_contact_log"
                 notnull="yes"
                 initial="0"/>
     <tablefield name="p_contact_attribute_code_c"
@@ -6443,10 +6488,10 @@
     <foreignkey name="p_partner_contact_attribute_fk2"
                 descr=""
                 thisFields="p_contact_id_i"
-                otherTable="p_partner_contact"
-                otherFields="p_contact_id_i"/>
-    <!-- Explicit Indexes on table p_partner_contact_attribute  -->
-    <index name="p_partner_contact_attribute_k"
+                otherTable="p_contact_log"
+                otherFields="p_contact_log_id_i"/>
+    <!-- Explicit Indexes on table p_contact_log_attribute  -->
+    <index name="p_contact_log_attribute_k"
            descr=""
            area="Petra Index"
            primary="yes"
@@ -20453,9 +20498,10 @@
                 label="Partner Key"
                 notnull="yes"/>
     <tablefield name="p_contact_id_i"
-                type="integer"
                 descr="ID of Contact to which reminder relates. Null means that reminder relates just to a Partner"
-                format="&gt;&gt;&gt;&gt;&gt;9"
+                type="number"
+                length="10"
+                format="9999999999"
                 label="Contact ID"
                 initial="?"
                 notnull="yes"/>
@@ -20568,8 +20614,8 @@
     <foreignkey name="p_partner_reminder_fk2"
                 descr=""
                 thisFields="p_contact_id_i"
-                otherTable="p_partner_contact"
-                otherFields="p_contact_id_i"/>
+                otherTable="p_contact_log"
+                otherFields="p_contact_log_id_i"/>
     <foreignkey name="p_partner_reminder_fk3"
                 descr=""
                 thisFields="s_user_id_c"
@@ -21518,9 +21564,10 @@
                 notnull="yes"
                 initial="0"/>
     <tablefield name="p_contact_id_i"
-                type="integer"
-                descr="identifying key for p_partner_contact"
-                format="&gt;&gt;&gt;&gt;&gt;9"
+                type="number"
+                length="10"
+                format="9999999999"
+                descr="identifying key for p_contact_log"
                 label="Contact ID"
                 notnull="yes"
                 initial="0"/>
@@ -21551,8 +21598,8 @@
     <foreignkey name="s_group_partner_contact_fk2"
                 descr=""
                 thisFields="p_contact_id_i"
-                otherTable="p_partner_contact"
-                otherFields="p_contact_id_i"/>
+                otherTable="p_contact_log"
+                otherFields="p_contact_log_id_i"/>
   </table>
   <table name="s_group_partner_reminder"
          descr="Controls the access that a group has to a specific Partner reminder, if the reminder is restricted"
@@ -23054,9 +23101,10 @@
                 label="Partner Key"
                 notnull="yes"/>
     <tablefield name="p_contact_id_i"
-                type="integer"
                 descr="identifying key for Partner Contact"
-                format="&gt;&gt;&gt;&gt;&gt;9"
+                type="number"
+                length="10"
+                format="9999999999"
                 label="Contact ID"
                 notnull="yes"/>
     <!-- Constraints on table p_partner_contact_file -->
@@ -23075,8 +23123,8 @@
     <foreignkey name="p_partner_contact_file_fk3"
                 descr=""
                 thisFields="p_contact_id_i"
-                otherTable="p_partner_contact"
-                otherFields="p_contact_id_i"/>
+                otherTable="p_contact_log"
+                otherFields="p_contact_log_id_i"/>
     <!-- Explicit Indexes on table p_partner_contact_file  -->
     <index name="p_partner_contact_file_k"
            descr=""

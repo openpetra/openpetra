@@ -42,10 +42,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_Contact
     {
-        private PPartnerContactRow FContactDR = null;
+        private PContactLogRow FContactDR = null;
         private bool FInitializationRunning { get; set; }
 
-        private PPartnerContactRow GetSelectedMasterRow()
+        private PContactLogRow GetSelectedMasterRow()
         {
             return FContactDR;
         }
@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Display data in control based on data from ARow
         /// </summary>
         /// <param name="ARow"></param>
-        public void ShowDetails(PPartnerContactRow ARow)
+        public void ShowDetails(PContactLogRow ARow)
         {
             FInitializationRunning = true;
 
@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Read data from controls into ARow parameter
         /// </summary>
         /// <param name="ARow"></param>
-        public void GetDetails(PPartnerContactRow ARow)
+        public void GetDetails(PContactLogRow ARow)
         {
             //ValidateAllData(false);
             //GetDataFromControls(ARow);

@@ -606,30 +606,30 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
 
                 // Delete contact attributes before deleting contacts
-                if (ResultValue)
-                {
-                    String SqlStmt;
+                //////if (ResultValue)
+                //////{
+                //////    String SqlStmt;
 
-                    try
-                    {
-                        // build sql statement for deletion
-                        SqlStmt = "DELETE FROM " + PPartnerContactAttributeTable.GetTableDBName() +
-                                  " WHERE " + PPartnerContactAttributeTable.GetContactIdDBName() +
-                                  " IN (SELECT " + PPartnerContactTable.GetContactIdDBName() +
-                                  " FROM " + PPartnerContactTable.GetTableDBName() +
-                                  " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + ")";
+                //////    try
+                //////    {
+                //////        // build sql statement for deletion
+                //////        SqlStmt = "DELETE FROM " + PPartnerContactAttributeTable.GetTableDBName() +
+                //////                  " WHERE " + PPartnerContactAttributeTable.GetContactIdDBName() +
+                //////                  " IN (SELECT " + PPartnerContactTable.GetContactIdDBName() +
+                //////                  " FROM " + PPartnerContactTable.GetTableDBName() +
+                //////                  " WHERE " + PPartnerContactTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() + ")";
 
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
-                    }
-                    catch (Exception Exc)
-                    {
-                        TLogging.Log(
-                            "An Exception occured during the deletion of " + PPartnerContactAttributeTable.GetTableDBName() +
-                            " while deleting a partner: " + Environment.NewLine + Exc.ToString());
+                //////        DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                //////    }
+                //////    catch (Exception Exc)
+                //////    {
+                //////        TLogging.Log(
+                //////            "An Exception occured during the deletion of " + PPartnerContactAttributeTable.GetTableDBName() +
+                //////            " while deleting a partner: " + Environment.NewLine + Exc.ToString());
 
-                        throw;
-                    }
-                }
+                //////        throw;
+                //////    }
+                //////}
 
                 if (ResultValue)
                 {

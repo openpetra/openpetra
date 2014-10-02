@@ -571,12 +571,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     FPartnerEditScreenDS.Merge(GetContactsInternal(out ItemsCountContacts, out LastContactDate));
                     if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpContacts))
                     {
-                        // Only count Contacts
-                        Calculations.CalculateTabCountsContacts(FPartnerEditScreenDS.PPartnerContact,
-                            out ItemsCountContacts);
+                        //// Only count Contacts
+                        //Calculations.CalculateTabCountsContacts(FPartnerEditScreenDS.PPartnerContact,
+                        //    out ItemsCountContacts);
 
-                        // Empty Tables again, we don't want to transfer the data contained in them
-                        FPartnerEditScreenDS.PPartnerContact.Rows.Clear();
+                        //// Empty Tables again, we don't want to transfer the data contained in them
+                        //FPartnerEditScreenDS.PPartnerContact.Rows.Clear();
                     }
 
                     // Partner Relationships
@@ -2894,7 +2894,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         
                     foreach (PPartnerContactRow row in ContactDT.Rows)
                     {
-                        ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
+                        //ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
                     }
                 }
                 catch (Exception)

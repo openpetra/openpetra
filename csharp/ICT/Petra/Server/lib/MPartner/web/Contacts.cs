@@ -105,55 +105,55 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AModuleID,
             string AMailingCode)
         {
-            Boolean NewTransaction;
+            //Boolean NewTransaction;
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            //TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+            //    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            try
-            {
-                PPartnerContactTable contacts = new PPartnerContactTable();
+            //try
+            //{
+            //    PPartnerContactTable contacts = new PPartnerContactTable();
 
-                foreach (Int64 partnerKey in APartnerKeys)
-                {
-                    PPartnerContactRow contact = contacts.NewRowTyped();
-                    contact.ContactId = (contacts.Count + 1) * -1;
-                    contact.PartnerKey = partnerKey;
-                    contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
-                    contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
-                    contact.ContactCode = AMethodOfContact;
-                    contact.ContactComment = AComment;
-                    contact.ModuleId = AModuleID;
-                    contact.Contactor = UserInfo.GUserInfo.UserID;
+            //    foreach (Int64 partnerKey in APartnerKeys)
+            //    {
+            //        PPartnerContactRow contact = contacts.NewRowTyped();
+            //        contact.ContactId = (contacts.Count + 1) * -1;
+            //        contact.PartnerKey = partnerKey;
+            //        contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
+            //        contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
+            //        contact.ContactCode = AMethodOfContact;
+            //        contact.ContactComment = AComment;
+            //        contact.ModuleId = AModuleID;
+            //        contact.Contactor = UserInfo.GUserInfo.UserID;
 
-                    if (AMailingCode.Length > 0)
-                    {
-                        contact.MailingCode = AMailingCode;
-                    }
+            //        if (AMailingCode.Length > 0)
+            //        {
+            //            contact.MailingCode = AMailingCode;
+            //        }
 
-                    // TODO: restrictions implemented via p_restricted_l or s_user_id_c
+            //        // TODO: restrictions implemented via p_restricted_l or s_user_id_c
 
-                    contacts.Rows.Add(contact);
-                }
+            //        contacts.Rows.Add(contact);
+            //    }
 
-                PPartnerContactAccess.SubmitChanges(contacts, WriteTransaction);
+            //    PPartnerContactAccess.SubmitChanges(contacts, WriteTransaction);
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the adding of a Contact:" + Environment.NewLine + Exc.ToString());
+            //    if (NewTransaction)
+            //    {
+            //        DBAccess.GDBAccessObj.CommitTransaction();
+            //    }
+            //}
+            //catch (Exception Exc)
+            //{
+            //    TLogging.Log("An Exception occured during the adding of a Contact:" + Environment.NewLine + Exc.ToString());
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+            //    if (NewTransaction)
+            //    {
+            //        DBAccess.GDBAccessObj.RollbackTransaction();
+            //    }
 
-                throw;
-            }
+            //    throw;
+            //}
         }
 
         /// <summary>
@@ -174,68 +174,68 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             string AModuleID,
             string AMailingCode)
         {
-            Boolean NewTransaction;
+            //Boolean NewTransaction;
             PPartnerContactTable contacts = new PPartnerContactTable();
 
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            //TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            //    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            try
-            {
-                PPartnerContactTable TempTable = new PPartnerContactTable();
-                PPartnerContactRow TemplateRow = TempTable.NewRowTyped(false);
+            //try
+            //{
+            //    PPartnerContactTable TempTable = new PPartnerContactTable();
+            //    PPartnerContactRow TemplateRow = TempTable.NewRowTyped(false);
 
-                if (AContactor.Length > 0)
-                {
-                    TemplateRow.Contactor = AContactor;
-                }
+            //    if (AContactor.Length > 0)
+            //    {
+            //        TemplateRow.Contactor = AContactor;
+            //    }
 
-                if (AContactDate.HasValue)
-                {
-                    TemplateRow.ContactDate = new DateTime(AContactDate.Value.Year, AContactDate.Value.Month, AContactDate.Value.Day);
-                }
+            //    if (AContactDate.HasValue)
+            //    {
+            //        TemplateRow.ContactDate = new DateTime(AContactDate.Value.Year, AContactDate.Value.Month, AContactDate.Value.Day);
+            //    }
 
-                if (AMethodOfContact.Length > 0)
-                {
-                    TemplateRow.ContactCode = AMethodOfContact;
-                }
+            //    if (AMethodOfContact.Length > 0)
+            //    {
+            //        TemplateRow.ContactCode = AMethodOfContact;
+            //    }
 
-                if (AModuleID.Length > 0)
-                {
-                    TemplateRow.ModuleId = AModuleID;
-                }
+            //    if (AModuleID.Length > 0)
+            //    {
+            //        TemplateRow.ModuleId = AModuleID;
+            //    }
 
-                if (AMailingCode.Length > 0)
-                {
-                    TemplateRow.MailingCode = AMailingCode;
-                }
+            //    if (AMailingCode.Length > 0)
+            //    {
+            //        TemplateRow.MailingCode = AMailingCode;
+            //    }
 
-                contacts = PPartnerContactAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
+            //    contacts = PPartnerContactAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
 
-                Int32 Counter = 0;
+            //    Int32 Counter = 0;
 
-                while (Counter < contacts.Rows.Count)
-                {
-                    if ((ACommentContains.Length > 0) && !StringHelper.ContainsI(contacts[Counter].ContactComment, ACommentContains))
-                    {
-                        contacts.Rows.RemoveAt(Counter);
-                    }
-                    else
-                    {
-                        Counter++;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-            }
+            //    while (Counter < contacts.Rows.Count)
+            //    {
+            //        if ((ACommentContains.Length > 0) && !StringHelper.ContainsI(contacts[Counter].ContactComment, ACommentContains))
+            //        {
+            //            contacts.Rows.RemoveAt(Counter);
+            //        }
+            //        else
+            //        {
+            //            Counter++;
+            //        }
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    TLogging.Log(e.Message);
+            //    TLogging.Log(e.StackTrace);
+            //}
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            //if (NewTransaction)
+            //{
+            //    DBAccess.GDBAccessObj.RollbackTransaction();
+            //}
 
             return contacts;
         }

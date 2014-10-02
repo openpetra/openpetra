@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui   
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Partner.Validation,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
-    DetailTable: PPartnerContact
+    DetailTable: PContactLog
     FormType: edit
     Template: controlMaintainTable   
     Controls:

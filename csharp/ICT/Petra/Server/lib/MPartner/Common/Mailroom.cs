@@ -58,20 +58,21 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             DataSet LastContactDS;
-            PPartnerContactRow ContactDR;
+            PContactLogRow ContactDR;
 
             LastContactDS = new DataSet("LastContactDate");
             LastContactDS.Tables.Add(new PPartnerContactTable());
+            LastContactDS.Tables.Add(new PContactLogTable());
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            PPartnerContactAccess.LoadViaPPartner(LastContactDS, APartnerKey,
-                StringHelper.InitStrArr(new String[] { PPartnerContactTable.GetContactDateDBName() }), ReadTransaction,
-                StringHelper.InitStrArr(new String[] { "ORDER BY " + PPartnerContactTable.GetContactDateDBName() + " DESC" }), 0, 1);
+            PContactLogAccess.LoadViaPPartner(LastContactDS, APartnerKey,
+                StringHelper.InitStrArr(new String[] { PContactLogTable.GetContactDateDBName() }), ReadTransaction,
+                StringHelper.InitStrArr(new String[] { "ORDER BY " + PContactLogTable.GetContactDateDBName() + " DESC" }), 0, 1);
 
-            if (LastContactDS.Tables[PPartnerContactTable.GetTableName()].Rows.Count > 0)
+            if (LastContactDS.Tables[PContactLogTable.GetTableName()].Rows.Count > 0)
             {
-                ContactDR = ((PPartnerContactTable)LastContactDS.Tables[PPartnerContactTable.GetTableName()])[0];
+                ContactDR = ((PContactLogTable)LastContactDS.Tables[PContactLogTable.GetTableName()])[0];
                 ALastContactDate = ContactDR.ContactDate;
             }
             else
@@ -79,11 +80,11 @@ namespace Ict.Petra.Server.MPartner.Common
                 ALastContactDate = DateTime.MinValue;
             }
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TMailroom.GetLastContactDate: committed own transaction.");
-            }
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TMailroom.GetLastContactDate: committed own transaction.");
+                }
         }
     }
 }
