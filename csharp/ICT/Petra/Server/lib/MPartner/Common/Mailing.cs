@@ -327,56 +327,56 @@ namespace Ict.Petra.Server.MPartner.Common
         public static string GetBestEmailAddressWithDetails(Int64 APartnerKey, out PLocationTable AAddress, out string ACountryNameLocal)
         {
             string EmailAddress = "";
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            PLocationTable Address = null;
+            string CountryNameLocal = "";
+            TDBTransaction Transaction = null;
 
-            AAddress = null;
-            ACountryNameLocal = "";
-
-            DataSet PartnerLocationsDS = new DataSet();
-
-            PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
-            PartnerLocationsDS.Tables.Add(new PCountryTable());
-            DataTable PartnerLocationTable = PartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
-            PCountryTable CountryTable = (PCountryTable)PartnerLocationsDS.Tables[PCountryTable.GetTableName()];
-            CountryTable.DefaultView.Sort = PCountryTable.GetCountryCodeDBName();
-
-            // add special column BestAddress and Icon
-            PartnerLocationTable.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
-            PartnerLocationTable.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
-
-            // find all locations of the partner, put it into a dataset
-            PPartnerLocationAccess.LoadViaPPartner(PartnerLocationsDS, APartnerKey, Transaction);
-
-            Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
-            Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationsDS);
-
-            foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
-            {
-                // find the row with BestAddress = 1
-                if (Convert.ToInt32(row["BestAddress"]) == 1)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
                 {
-                    if (!row.IsEmailAddressNull())
+                    DataSet PartnerLocationsDS = new DataSet();
+
+                    PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
+                    PartnerLocationsDS.Tables.Add(new PCountryTable());
+                    DataTable PartnerLocationTable = PartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
+                    PCountryTable CountryTable = (PCountryTable)PartnerLocationsDS.Tables[PCountryTable.GetTableName()];
+                    CountryTable.DefaultView.Sort = PCountryTable.GetCountryCodeDBName();
+
+                    // add special column BestAddress and Icon
+                    PartnerLocationTable.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
+                    PartnerLocationTable.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
+
+                    // find all locations of the partner, put it into a dataset
+                    PPartnerLocationAccess.LoadViaPPartner(PartnerLocationsDS, APartnerKey, Transaction);
+
+                    Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
+                    Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationsDS);
+
+                    foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
                     {
-                        EmailAddress = row.EmailAddress;
+                        // find the row with BestAddress = 1
+                        if (Convert.ToInt32(row["BestAddress"]) == 1)
+                        {
+                            if (!row.IsEmailAddressNull())
+                            {
+                                EmailAddress = row.EmailAddress;
+                            }
+
+                            // we also want the post address, need to load the p_location table:
+                            Address = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, Transaction);
+
+                            if (CountryTable.DefaultView.Find(Address[0].CountryCode) == -1)
+                            {
+                                CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(Address[0].CountryCode, Transaction));
+                            }
+
+                            CountryNameLocal = CountryTable[CountryTable.DefaultView.Find(Address[0].CountryCode)].CountryNameLocal;
+                        }
                     }
+                });
 
-                    // we also want the post address, need to load the p_location table:
-                    AAddress = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, Transaction);
-
-                    if (CountryTable.DefaultView.Find(AAddress[0].CountryCode) == -1)
-                    {
-                        CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(AAddress[0].CountryCode, Transaction));
-                    }
-
-                    ACountryNameLocal = CountryTable[CountryTable.DefaultView.Find(AAddress[0].CountryCode)].CountryNameLocal;
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            AAddress = Address;
+            ACountryNameLocal = CountryNameLocal;
 
             return EmailAddress;
         }
