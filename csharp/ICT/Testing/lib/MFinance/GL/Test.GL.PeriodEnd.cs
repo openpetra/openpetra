@@ -28,6 +28,7 @@ using Ict.Testing.NUnitTools;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.GL;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -63,7 +64,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             return intOperationCount;
         }
 
-        public override void RunEndOfPeriodOperation()
+        public override void RunOperation()
         {
             Assert.AreEqual(1, intCount);
             ++intOperationCount;
@@ -73,6 +74,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
     class TestOperations : TPeriodEndOperations
     {
+        /// <summary></summary>
         public void Test1(TVerificationResultCollection tvr)
         {
             FverificationResults = tvr;
@@ -83,6 +85,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(1, testOperation.GetOperationCount());
         }
 
+        /// <summary></summary>
         public void Test2(TVerificationResultCollection tvr)
         {
             FverificationResults = tvr;
@@ -91,6 +94,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             testOperation.IsInInfoMode = false;
             RunPeriodEndSequence(testOperation, "Message");
             Assert.AreEqual(1, testOperation.GetOperationCount());
+        }
+
+        /// <summary></summary>
+        public override void SetNextPeriod(TCarryForward carryForward)
+        {
         }
     }
 

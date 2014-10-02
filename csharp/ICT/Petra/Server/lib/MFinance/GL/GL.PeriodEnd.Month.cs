@@ -49,7 +49,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     /// <summary>
     /// Routines for running the period month end check.
     /// </summary>
-    public partial class TPeriodIntervallConnector
+    public partial class TPeriodIntervalConnector
     {
         /// <summary>
         /// Month end master routine ...
@@ -149,6 +149,23 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="carryForward"></param>
+        public override void SetNextPeriod(TCarryForward carryForward)
+        {
+            if (carryForward.FledgerInfo.CurrentPeriod == carryForward.FledgerInfo.NumberOfAccountingPeriods)
+            {
+                // Set the YearEndFlag to Switch between the months...
+                carryForward.SetProvisionalYearEndFlag(true);
+            }
+            else
+            {
+                // Conventional Month->Month Switch ...
+                carryForward.SetNewFwdPeriodValue(carryForward.FledgerInfo.CurrentPeriod + 1);
+            }
+        }
 
         /// <summary>
         /// Main Entry point. The parameters are the same as in
@@ -180,7 +197,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            TCarryForward carryForward = new TCarryForward(FledgerInfo);
+            TCarryForward carryForward = new TCarryForward(FledgerInfo, this);
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Month)
             {
@@ -261,7 +278,7 @@ namespace Ict.Petra.Server.MFinance.GL
             return new RunMonthEndChecks(FledgerInfo);
         }
 
-        public override void RunEndOfPeriodOperation()
+        public override void RunOperation()
         {
             CheckIfRevaluationIsDone();
             CheckForUnpostedBatches();
@@ -425,7 +442,7 @@ namespace Ict.Petra.Server.MFinance.GL
             return new RunMonthlyAdminFees();
         }
 
-        public override void RunEndOfPeriodOperation()
+        public override void RunOperation()
         {
             // TODO: Some Code
         }

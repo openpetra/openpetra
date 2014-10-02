@@ -127,7 +127,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         }
 
         /// <summary>
-        /// populate ledger with gifts and invoices, post batches, close periods and years, according to FNumberOfClosedPeriods
+        /// Populate ledger with gifts and invoices, post batches, close periods and years, according to FNumberOfClosedPeriods
         /// </summary>
         /// <param name="datadirectory"></param>
         public static void PopulateData(string datadirectory)
@@ -145,6 +145,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 SampleDataGiftBatches.CreateGiftBatches(period);
                 SampleDataGiftBatches.PostBatches(yearCounter, period, periodOverall == FNumberOfClosedPeriods ? 1 : 0);
                 SampleDataAccountsPayable.PostAndPayInvoices(yearCounter, period, periodOverall == FNumberOfClosedPeriods ? 1 : 0);
+                TLedgerInfo LedgerInfo = new TLedgerInfo(FLedgerNumber);
 
                 if (periodOverall < FNumberOfClosedPeriods)
                 {
@@ -153,22 +154,22 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     TLogging.Log("closing period at " + AccountingPeriodInfo.PeriodEndDate.ToShortDateString());
 
                     // run month end
-                    TCarryForward carryForward = new TCarryForward(new TLedgerInfo(FLedgerNumber));
+                    TCarryForward carryForward = new TCarryForward(LedgerInfo);
                     carryForward.SetNextPeriod();
 
                     if (period == 12)
                     {
                         // run year end
                         TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-                        TReallocation reallocation = new TReallocation(new TLedgerInfo(FLedgerNumber));
+                        TReallocation reallocation = new TReallocation(LedgerInfo);
                         reallocation.VerificationResultCollection = verificationResult;
                         reallocation.IsInInfoMode = false;
-                        reallocation.RunEndOfPeriodOperation();
+                        reallocation.RunOperation();
 
-                        TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(FLedgerNumber, yearCounter);
+                        TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(LedgerInfo, yearCounter, null);
                         glmNewYearInit.VerificationResultCollection = verificationResult;
                         glmNewYearInit.IsInInfoMode = false;
-                        glmNewYearInit.RunEndOfPeriodOperation();
+                        glmNewYearInit.RunOperation();
 
                         YearAD++;
                         yearCounter++;

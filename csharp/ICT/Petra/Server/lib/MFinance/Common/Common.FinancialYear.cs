@@ -208,6 +208,7 @@ namespace Ict.Petra.Server.MFinance.Common
             return false;
         }
 
+/*
         /// <summary>
         /// close the current financial period, open the next period, if it was not the last period of the year
         /// </summary>
@@ -244,5 +245,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return false;
         }
+ */
     }
 }

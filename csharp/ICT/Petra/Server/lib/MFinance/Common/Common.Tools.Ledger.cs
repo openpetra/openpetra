@@ -75,10 +75,6 @@ namespace Ict.Petra.Server.MFinance.Common
                 ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, transaction);
                 row = (ALedgerRow)ledger[0];
             }
-            catch (Exception)
-            {
-                throw;
-            }
             finally
             {
                 if (NewTransaction)
@@ -199,11 +195,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 bool NewTransaction;
                 TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
-                strSQL += "SET " + ALedgerTable.GetCurrentFinancialYearDBName() + " = ? ";
-                strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    strSQL, transaction, ParametersArray);
+                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName()
+                    + " SET " + ALedgerTable.GetCurrentFinancialYearDBName() + "=?"
+                    + " WHERE " + ALedgerTable.GetLedgerNumberDBName() + "=?";
+                DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
 
                 if (NewTransaction)
                 {
@@ -534,9 +529,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
     /// <summary>
     /// LedgerInitFlag is a table wich holds a small set of "boolean" properties for each
-    /// Ledger refered to the actual month.
-    /// One example is the value that a Revaluation has been done in the actual month. Some other
-    /// values will be added soon.
+    /// Ledger related to the actual month.
+    /// One example is the value that a Revaluation has been done in the actual month.
     /// </summary>
     public class TLedgerInitFlagHandler
     {
@@ -576,7 +570,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// The flag property controls all databse requests.
+        /// The Flag property controls all database requests.
         /// </summary>
         public bool Flag
         {

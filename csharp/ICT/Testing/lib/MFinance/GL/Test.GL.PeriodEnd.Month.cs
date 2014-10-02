@@ -81,7 +81,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -123,7 +123,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             new ChangeSuspenseAccount(intLedgerNumber, strAccountBank).Suspense();
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                 intLedgerNumber, false, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -145,7 +145,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             while (!blnHasErrors && periodCounter < 12)
             {
-                blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                     intLedgerNumber, false, out verificationResult);
 
                 Assert.IsFalse(blnHasErrors, "there was an error closing period " + periodCounter.ToString());
@@ -153,7 +153,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 Assert.AreEqual(periodCounter, new TLedgerInfo(intLedgerNumber).CurrentPeriod, "should be in new period");
             }
 
-            blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                 intLedgerNumber, false, out verificationResult);
 
             blnStatusArrived = false;
@@ -207,7 +207,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ImportGiftBatch();
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -256,7 +256,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -281,7 +281,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TLogging.Log(verificationResult.BuildVerificationResultString());
             Assert.IsFalse(blnHasErrors, "Problem running the revaluation");
 
-            blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
             Assert.IsFalse(blnHasErrors, "should now be able to close the month now that the revaluation has been run");
         }
@@ -309,7 +309,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 ledgerInfo1 = new TLedgerInfo(intLedgerNumber);
                 // Period end now shall run ...
                 TVerificationResultCollection verificationResult;
-                bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                     intLedgerNumber, false, out verificationResult);
 
                 ledgerInfo2 = new TLedgerInfo(intLedgerNumber);

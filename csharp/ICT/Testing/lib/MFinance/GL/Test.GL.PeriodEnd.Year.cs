@@ -138,7 +138,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 else
                 {
                     TVerificationResultCollection VerificationResult;
-                    TPeriodIntervallConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
+                    TPeriodIntervalConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
                     CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                         "running the month end should not give critical error");
                 }
@@ -165,7 +165,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             reallocation.VerificationResultCollection = verificationResult;
             reallocation.IsInInfoMode = false;
             Assert.AreEqual(6, reallocation.GetJobSize(), "Check the number of reallocation jobs ...");
-            reallocation.RunEndOfPeriodOperation();
+            reallocation.RunOperation();
 
             reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
             reallocation.VerificationResultCollection = verificationResult;
@@ -181,12 +181,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 0, -100, 0, -200, 0, -300);
 
             // first run in info mode
-            TPeriodIntervallConnector.TPeriodYearEnd(intLedgerNumber, true, out verificationResult);
+            TPeriodIntervalConnector.TPeriodYearEnd(intLedgerNumber, true, out verificationResult);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "yearend test should not have critical errors");
 
             // now run for real
-            TPeriodIntervallConnector.TPeriodYearEnd(intLedgerNumber, false, out verificationResult);
+            TPeriodIntervalConnector.TPeriodYearEnd(intLedgerNumber, false, out verificationResult);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "yearend should not have critical errors");
 
@@ -240,7 +240,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql", intLedgerNumber);
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql",
                 intLedgerNumber);
-
+            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
             for (int countYear = 0; countYear < 2; countYear++)
             {
                 TLogging.Log("preparing year number " + countYear.ToString());
@@ -264,7 +264,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
                 while (blnLoop)
                 {
-                    carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+                    carryForward = new TCarryForward(LedgerInfo);
 
                     if (carryForward.GetPeriodType == TCarryForwardENum.Year)
                     {
@@ -273,28 +273,27 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     else
                     {
                         TVerificationResultCollection VerificationResult;
-                        TPeriodIntervallConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
+                        TPeriodIntervalConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
                         CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                             "running the month end should not give critical error");
                     }
                 }
 
                 TLogging.Log("closing year number " + countYear.ToString());
-                TReallocation reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
+                TReallocation reallocation = new TReallocation(LedgerInfo);
                 TVerificationResultCollection verificationResult = new TVerificationResultCollection();
                 reallocation.VerificationResultCollection = verificationResult;
                 reallocation.IsInInfoMode = false;
                 Assert.AreEqual(1, reallocation.GetJobSize(), "Check the number of reallocation jobs ...");
-                reallocation.RunEndOfPeriodOperation();
+                reallocation.RunOperation();
 
-                TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, countYear);
+                TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(LedgerInfo, countYear, null);
                 glmNewYearInit.VerificationResultCollection = verificationResult;
                 glmNewYearInit.IsInInfoMode = false;
                 Assert.Greater(glmNewYearInit.GetJobSize(), 0, "Check the number of reallocation jobs ...");
-                glmNewYearInit.RunEndOfPeriodOperation();
+                glmNewYearInit.RunOperation();
             }
 
-            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
             Assert.AreEqual(2, LedgerInfo.CurrentFinancialYear, "after year end, we are in a new financial year");
 
             TAccountPeriodInfo periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
@@ -439,7 +438,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             accountPeriodToNewYear.IsInInfoMode = false;
 
             // RunEndOfPeriodOperation ...
-            accountPeriodToNewYear.RunEndOfPeriodOperation();
+            accountPeriodToNewYear.RunOperation();
 
             TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
             accountPeriodInfo.AccountingPeriodNumber = 2;
@@ -449,7 +448,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // Switch to 2012 - this is a leap year ...
             accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010);
             accountPeriodToNewYear.IsInInfoMode = false;
-            accountPeriodToNewYear.RunEndOfPeriodOperation();
+            accountPeriodToNewYear.RunOperation();
 
             accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
             accountPeriodInfo.AccountingPeriodNumber = 2;
