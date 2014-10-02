@@ -1656,8 +1656,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
-            txtDetailExchangeRateToBase.BackColor =
-                (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+            txtDetailExchangeRateToBase.Enabled =
+                (FPreviouslySelectedDetailRow.ExchangeRateToBase != DEFAULT_CURRENCY_EXCHANGE);
 
             if ((FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
             {
