@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -141,6 +141,11 @@ public class TWriteSQL
             FileMode.Create, FileAccess.Write);
         sw = new StreamWriter(outPutFileStream);
 
+        if (ATargetDatabase == eDatabaseType.PostgreSQL)
+        {
+            sw.WriteLine("SET client_min_messages TO WARNING;");
+        }
+
         foreach (TTable Table in Tables)
         {
             if (!WriteTable(ATargetDatabase, sw, Table))
@@ -220,6 +225,11 @@ public class TWriteSQL
         outPutFileStream = new FileStream(CreateTablesFile,
             FileMode.Create, FileAccess.Write);
         sw = new StreamWriter(outPutFileStream);
+
+        if (ATargetDatabase == eDatabaseType.PostgreSQL)
+        {
+            sw.WriteLine("SET client_min_messages TO WARNING;");
+        }
 
         foreach (TTable Table in Tables)
         {
