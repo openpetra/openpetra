@@ -753,7 +753,7 @@ namespace {#NAMESPACE}
                 List<TMultiDeleteResult> listConflicts = new List<TMultiDeleteResult>();
                 List<TMultiDeleteResult> listExceptions = new List<TMultiDeleteResult>();
 
-                this.Cursor = Cursors.WaitCursor;
+                FPetraUtilsObject.ShowWaitCursor();
 
                 foreach (DataRowView drv in HighlightedRows)
                 {
@@ -826,7 +826,7 @@ namespace {#NAMESPACE}
                     {#POSTMULTIDELETEMANUAL}
                 }
 
-                this.Cursor = Cursors.Default;
+                FPetraUtilsObject.ShowDefaultCursor();
                 SelectRowInGrid(FPrevRowChangedRow);
 {#IFDEF BUTTONPANEL}
                 UpdateRecordNumberDisplay();
@@ -1559,13 +1559,13 @@ namespace {#NAMESPACE}
 {#INCLUDE findandfilter.cs}
 
 {##SNIPDELETEREFERENCECOUNT}
-this.Cursor = Cursors.WaitCursor;
+FPetraUtilsObject.ShowWaitCursor();
 TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
     FMainDS.{#NONCACHEABLETABLENAME},
     DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
     RefCountLimit,
     out VerificationResults);
-this.Cursor = Cursors.Default;
+FPetraUtilsObject.ShowDefaultCursor();
 
 {##SNIPMULTIDELETEDELETABLE}
 if (!rowToDelete.{#DELETEABLEFLAG})

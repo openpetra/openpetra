@@ -1438,34 +1438,10 @@ namespace {#NAMESPACE}
                 switch (SubmissionResult)
                 {
                     case TSubmitChangesResult.scrOK:
-                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.{#DETAILTABLE}.AcceptChanges();
-
-                        // Merge back with data from the Server (eg. for getting Sequence values)
-                        SubmitDT.AcceptChanges();
-                        FMainDS.{#DETAILTABLE}.Merge(SubmitDT, false);
-
-                        // need to accept the new modification ID
-                        FMainDS.{#DETAILTABLE}.AcceptChanges();
-
-                        // Update UI
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
-                        this.Cursor = Cursors.Default;
-
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-
-                        SetPrimaryKeyReadOnly(true);
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS.{#DETAILTABLE}, SubmitDT,
+                            FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, true, false, true);
 
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-
-                        if((VerificationResult != null)
-                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
-                        {
-                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
-                                this.GetType(), null);
-                        }
 
                         break;
 
@@ -1483,15 +1459,10 @@ namespace {#NAMESPACE}
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
 
-                        this.Cursor = Cursors.Default;
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
+                        ReturnValue = true;                            
 
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-                        
-                        ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                         break;
 
                     case TSubmitChangesResult.scrInfoNeeded:

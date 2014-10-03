@@ -1282,6 +1282,7 @@ namespace {#NAMESPACE}
     public bool SaveChanges()
     {
         bool ReturnValue = false;
+
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
@@ -1323,7 +1324,6 @@ namespace {#NAMESPACE}
                 // Submit changes to the PETRAServer
                 try
                 {
-                    // SubmissionResult = WEBCONNECTORMASTER.Save{#DETAILTABLE}(ref SubmitDS, out VerificationResult);
                     {#STOREMANUALCODE}
                 }
                 catch (ESecurityDBTableAccessDeniedException Exp)
@@ -1360,37 +1360,16 @@ namespace {#NAMESPACE}
                 switch (SubmissionResult)
                 {
                     case TSubmitChangesResult.scrOK:
-
-                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AcceptChanges();
-
-                        // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.Merge(SubmitDS, false);
-
-                        // need to accept the new modification ID
-                        FMainDS.AcceptChanges();
-
-                        // Update UI
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
-                        this.Cursor = Cursors.Default;
-
-
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-
 {#IFDEF PRIMARYKEYCONTROLSREADONLY}
-                        SetPrimaryKeyReadOnly(true);
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS, SubmitDS,
+                            FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, true, false);
 {#ENDIF PRIMARYKEYCONTROLSREADONLY}
+{#IFNDEF PRIMARYKEYCONTROLSREADONLY}
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS, SubmitDS,
+                            FPetraUtilsObject, VerificationResult, null, true, false);
+{#ENDIFN PRIMARYKEYCONTROLSREADONLY}
 
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-
-                        if((VerificationResult != null)
-                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
-                        {
-                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
-                                this.GetType(), null);
-                        }
 
                         break;
 
@@ -1408,13 +1387,10 @@ namespace {#NAMESPACE}
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
 
-                        this.Cursor = Cursors.Default;
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+
                         break;
 
                     case TSubmitChangesResult.scrInfoNeeded:

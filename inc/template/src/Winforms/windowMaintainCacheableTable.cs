@@ -534,6 +534,13 @@ namespace {#NAMESPACE}
 // :WMCT:ValidateDataDetailsManual
                 ValidateDataDetailsManual(FPreviouslySelectedDetailRow);
 {#ENDIF VALIDATEDATADETAILSMANUAL}
+{#IFDEF PERFORMUSERCONTROLVALIDATION}
+
+        // Perform validation in UserControls too
+// :WMCT:ucValidation
+        {#USERCONTROLVALIDATION}
+
+{#ENDIF PERFORMUSERCONTROLVALIDATION}
             }
             catch (ConstraintException)
             {
@@ -1375,23 +1382,53 @@ namespace {#NAMESPACE}
                 this.Cursor = Cursors.WaitCursor;
 
                 TSubmitChangesResult SubmissionResult;
-                TVerificationResultCollection VerificationResult;
+                TVerificationResultCollection VerificationResult = null;
 
                 Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.{#DETAILTABLE}.GetChangesTyped();
 
                 if (SubmitDT == null)
                 {
-                    // There is nothing to be saved.
-                    // Update UI
-                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
-                    this.Cursor = Cursors.Default;
-
-                    // We don't have unsaved changes anymore
-                    FPetraUtilsObject.DisableSaveButton();
+                    TNoMasterDataToSaveEventArgs EvArgs = new TNoMasterDataToSaveEventArgs();
+                    EvArgs.SubmitChangesResult = TSubmitChangesResult.scrNothingToBeSaved;
                     
-                    return true;
+                    FPetraUtilsObject.OnNoMasterDataToSave(this, EvArgs);
+                    
+                    switch (EvArgs.SubmitChangesResult) 
+                    {
+                        case TSubmitChangesResult.scrOK:
+                            TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS.{#DETAILTABLE}, EvArgs.ChildDataTableWhoseDataGotSaved,
+                                FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, false, false);
+                        
+                            return true;
+                            
+                        case TSubmitChangesResult.scrError:
+                            this.Cursor = Cursors.Default;
+                            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
+        
+                            FPetraUtilsObject.SubmitChangesContinue = false;
+                            
+                            ReturnValue = false;
+                            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+    
+                            return ReturnValue;                            
+                            
+                        case TSubmitChangesResult.scrInfoNeeded:                          
+                            // TODO scrInfoNeeded
+                            this.Cursor = Cursors.Default;
+                            
+                            ReturnValue = false;
+                            
+                            return ReturnValue;
+
+                        case TSubmitChangesResult.scrNothingToBeSaved:
+                            TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
+
+                            ReturnValue = true;                            
+
+                            return ReturnValue;
+                    }                    
                 }
-                
+
                 // Submit changes to the PETRAServer
                 try
                 {
@@ -1431,34 +1468,10 @@ namespace {#NAMESPACE}
                 switch (SubmissionResult)
                 {
                     case TSubmitChangesResult.scrOK:
-                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.{#DETAILTABLE}.AcceptChanges();
-
-                        // Merge back with data from the Server (eg. for getting Sequence values)
-                        SubmitDT.AcceptChanges();
-                        FMainDS.{#DETAILTABLE}.Merge(SubmitDT, false);
-
-                        // need to accept the new modification ID
-                        FMainDS.{#DETAILTABLE}.AcceptChanges();
-
-                        // Update UI
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
-                        this.Cursor = Cursors.Default;
-
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-
-                        SetPrimaryKeyReadOnly(true);
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS.{#DETAILTABLE}, SubmitDT,
+                            FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, true, false, true);
 
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-
-                        if((VerificationResult != null)
-                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
-                        {
-                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
-                                this.GetType(), null);
-                        }
 
                         break;
 
@@ -1476,14 +1489,10 @@ namespace {#NAMESPACE}
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
-                        this.Cursor = Cursors.Default;
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
 
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-                        
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+                        
                         break;
 
                     case TSubmitChangesResult.scrInfoNeeded:
@@ -1513,7 +1522,6 @@ namespace {#NAMESPACE}
             ReturnValue = false;
             FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
         }
-
 
         return ReturnValue;
     }
