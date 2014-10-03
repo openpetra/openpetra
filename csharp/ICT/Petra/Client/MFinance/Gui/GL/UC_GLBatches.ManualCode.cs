@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FLoadAndFilterLogicObject = new TUC_GLBatches_LoadAndFilter(FLedgerNumber, FMainDS, FFilterAndFindObject);
             FImportLogicObject = new TUC_GLBatches_Import(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
-            FCancelLogicObject = new TUC_GLBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
+            FCancelLogicObject = new TUC_GLBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
             FPostingLogicObject = new TUC_GLBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
             FReverseLogicObject = new TUC_GLBatches_Reverse(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
         }
