@@ -53,6 +53,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private string FBatchStatus = string.Empty;
         private ABatchRow FBatchRow = null;
 
+        // Logic Objects
+        private TUC_GLJournals_Cancel FCancelLogicObject = null;
+
         private string FTransactionCurrency = string.Empty;
         private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
 
@@ -108,6 +111,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
+
+            FCancelLogicObject = new TUC_GLJournals_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
 
             //Make sure the current effective date for the Batch is correct
             DateTime BatchDateEffective = FBatchRow.DateEffective;
@@ -365,109 +370,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            if ((FPreviouslySelectedDetailRow == null) || !((TFrmGLBatch)ParentForm).SaveChanges())
-            {
-                return;
-            }
-
             int CurrentJournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
 
-            if ((MessageBox.Show(String.Format(Catalog.GetString(
-                             "You have chosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
-                         CurrentJournalNumber),
-                     Catalog.GetString("Confirm Cancel"),
-                     MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            if (FCancelLogicObject.CancelRow(FPreviouslySelectedDetailRow, txtDetailJournalDescription, txtDetailExchangeRateToBase))
             {
-                try
-                {
-                    //clear any transactions currently being editied in the Transaction Tab
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-
-                    //Load any new data
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, FBatchNumber,
-                            CurrentJournalNumber));
-
-                    DataView dvAA = new DataView(FMainDS.ATransAnalAttrib);
-
-                    dvAA.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                        ATransAnalAttribTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        ATransAnalAttribTable.GetJournalNumberDBName(),
-                        CurrentJournalNumber);
-
-                    //Delete Analysis Attribs
-                    foreach (DataRowView dvr in dvAA)
-                    {
-                        dvr.Delete();
-                    }
-
-                    DataView dvTr = new DataView(FMainDS.ATransaction);
-
-                    dvTr.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                        ATransactionTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        ATransactionTable.GetJournalNumberDBName(),
-                        CurrentJournalNumber);
-
-                    //Delete Transactions
-                    foreach (DataRowView dvr in dvTr)
-                    {
-                        dvr.Delete();
-                    }
-
-                    FPreviouslySelectedDetailRow.BeginEdit();
-                    FPreviouslySelectedDetailRow.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
-
-                    //Ensure validation passes
-                    if (FPreviouslySelectedDetailRow.JournalDescription.Length == 0)
-                    {
-                        txtDetailJournalDescription.Text = " ";
-                    }
-
-                    if (FPreviouslySelectedDetailRow.ExchangeRateToBase == 0)
-                    {
-                        txtDetailExchangeRateToBase.NumberValueDecimal = 1;
-                    }
-
-                    FBatchRow.BatchCreditTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
-                    FBatchRow.BatchDebitTotal -= FPreviouslySelectedDetailRow.JournalDebitTotal;
-
-                    if (FBatchRow.BatchControlTotal != 0)
-                    {
-                        FBatchRow.BatchControlTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
-                    }
-
-                    FPreviouslySelectedDetailRow.JournalCreditTotal = 0;
-                    FPreviouslySelectedDetailRow.JournalDebitTotal = 0;
-                    FPreviouslySelectedDetailRow.EndEdit();
-
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    //Need to call save
-                    if (((TFrmGLBatch)ParentForm).SaveChanges())
-                    {
-                        MessageBox.Show(Catalog.GetString("The journal has been cancelled successfully!"),
-                            Catalog.GetString("Success"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        ((TFrmGLBatch)ParentForm).DisableTransactions();
-                    }
-                    else
-                    {
-                        // saving failed, therefore do not try to post
-                        MessageBox.Show(Catalog.GetString(
-                                "The journal has been cancelled but there were problems during saving; ") + Environment.NewLine +
-                            Catalog.GetString("Please try and save the cancellation immediately."),
-                            Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-
-                    UpdateChangeableStatus();
-                    SetFocusToDetailsGrid();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+                UpdateChangeableStatus();
+                SetFocusToDetailsGrid();
             }
         }
 
