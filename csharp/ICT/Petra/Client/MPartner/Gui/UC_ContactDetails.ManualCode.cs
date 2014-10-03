@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            // TODO
+            // TODO DataSavingStarted
                 // Do not call this method in your manual code.
                 // This is a method that is private to the generated code and is part of the Validation process.
                 // If you need to update the controls data into the Data Row object, you must use ValidateAllData and be prepared
@@ -223,7 +223,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!FPartnerAttributesExist)
             {
-                // TODO
+                // TODO PostInitUserControl - if (!FPartnerAttributesExist) 
 //                /* If Family has no members, these buttons are disabled */
 //                this.btnFamilyMemberDemote.Enabled = false;
 //                this.btnFamilyMemberPromote.Enabled = false;
@@ -269,7 +269,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             rtbValue.LinkClicked += new Ict.Common.Controls.TRtbHyperlinks.THyperLinkClickedArgs(rtbValue.Helper.LaunchHyperLink);
    
-//            ApplySecurity();            // TODO
+            // TODO ApplySecurity();            
         }
 
         /// <summary>
@@ -917,7 +917,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             switch (FValueKind) 
             {
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
-                    // TODO
+                    // TODO UpdateValueManual / CONTACTDETAIL_GENERAL
                     
                     break;
             
