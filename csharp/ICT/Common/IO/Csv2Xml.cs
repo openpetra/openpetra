@@ -512,7 +512,7 @@ namespace Ict.Common.IO
 
                 try
                 {
-                    XmlAttribute attr = myDoc.CreateAttribute(attrName);
+                    myDoc.CreateAttribute(attrName);
                 }
                 catch (Exception)
                 {
