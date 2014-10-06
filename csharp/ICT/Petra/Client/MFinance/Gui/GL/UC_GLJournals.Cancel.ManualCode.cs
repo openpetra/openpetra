@@ -85,7 +85,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AExchangeRateToBaseTextBox">Pass a reference to a TextBox that is used to display the exchange rate to base.  This is required
         /// to ensure that validation passes when the cancelled journal is saved.</param>
         /// <returns>True if the journal is cancelled.</returns>
-        public bool CancelRow(GLBatchTDSAJournalRow ACurrentJournalRow, TextBox AJournalDescriptionTextBox, TTxtNumericTextBox AExchangeRateToBaseTextBox)
+        public bool CancelRow(GLBatchTDSAJournalRow ACurrentJournalRow,
+            TextBox AJournalDescriptionTextBox,
+            TTxtNumericTextBox AExchangeRateToBaseTextBox)
         {
             if ((ACurrentJournalRow == null) || !FMyForm.SaveChanges())
             {
@@ -193,7 +195,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBox.Show(ex.Message);
                 }
             }
-            
+
             return false;
         }
 
