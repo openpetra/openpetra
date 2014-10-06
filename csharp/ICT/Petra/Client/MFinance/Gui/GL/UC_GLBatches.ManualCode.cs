@@ -156,29 +156,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SelectRowInGrid(1);
         }
 
-        ///// No longer used?  It has disappeared inside the load and filter object
-        ///// Reset the control
-        //public void ClearCurrentSelection()
-        //{
-        //    if (FPetraUtilsObject.HasChanges)
-        //    {
-        //        GetDataFromControls();
-        //    }
-
-        //    this.FPreviouslySelectedDetailRow = null;
-        //    ShowData();
-        //}
-
-        ///// No longer used?
-        ///// <summary>
-        ///// Returns FMainDS
-        ///// </summary>
-        ///// <returns></returns>
-        //public GLBatchTDS BatchFMainDS()
-        //{
-        //    return FMainDS;
-        //}
-
         /// <summary>
         /// Enable the transaction tab
         /// </summary>
@@ -491,6 +468,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FCurrentEffectiveDate = dateValue;
                         FPreviouslySelectedDetailRow.DateEffective = dateValue;
                     }
+                    else
+                    {
+                        return;
+                    }
 
                     //Check if new date is in a different Batch period to the current one
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
@@ -519,7 +500,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", UpdateTransactionDates);
-                    FPetraUtilsObject.HasChanges = true;
+                    FPetraUtilsObject.SetChangedFlag();
                 }
             }
             catch (Exception ex)
