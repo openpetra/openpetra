@@ -133,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             if (NewBatch != null)   // update the totals of the batch that has just been imported
                             {
-                                GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch, true);
+                                GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
                             }
 
                             NewBatch = MainDS.ABatch.NewRowTyped(true);
@@ -773,7 +773,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             // update the totals of the batch
-            GLRoutines.UpdateTotalsOfBatch(ref AMainDS, ANewBatchRow, true);
+            GLRoutines.UpdateTotalsOfBatch(ref AMainDS, ANewBatchRow);
 
             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
             {
