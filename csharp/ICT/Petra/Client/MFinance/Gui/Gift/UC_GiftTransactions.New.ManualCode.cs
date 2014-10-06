@@ -93,6 +93,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 newRow.DateEntered = CurrentGiftRow.DateEntered;
 
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    newRow.TaxDeductiblePct = 100;
+                }
+                
                 FMainDS.AGiftDetail.Rows.Add(newRow);
 
                 FPetraUtilsObject.SetChangedFlag();
@@ -131,7 +136,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Set the default motivation Group. This needs to happen after focus has returned
                 //  to the pnlDetails to ensure FInEditMode is correct.
+                FCreatingNewGift = true;
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                FCreatingNewGift = false;
+                
                 TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationDetailCode);
                 cmbKeyMinistries.Clear();
                 mniRecipientHistory.Enabled = false;

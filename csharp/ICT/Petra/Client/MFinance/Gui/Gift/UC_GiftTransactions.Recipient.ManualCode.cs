@@ -189,7 +189,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TextBox ATxtDeductibleAccount,
             string AMotivationGroup,
             ref string AMotivationDetail,
+            ref bool AMotivationDetailChangedFlag,
             bool ARecipientKeyChangingFlag,
+            bool ACreatingNewGiftFlag,
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
@@ -202,14 +204,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            // true if motivation detail has been changed by the user (i.e. not a row change)
-            bool ChangedByUser = !APetraUtilsObject.SuppressChangeDetection;
-
+            AMotivationDetailRow motivationDetail = null;
             AMotivationDetail = ACmbMotivationDetailCode.GetSelectedString();
 
             if (AMotivationDetail.Length > 0)
             {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
+                motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
                     new object[] { ALedgerNumber, AMotivationGroup, AMotivationDetail });
 
                 ACmbMotivationDetailCode.RefreshLabel();
@@ -219,8 +219,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     RetrieveMotivationDetailAccountCode(AMainDS, ALedgerNumber, ATxtDetailAccountCode, ATxtDeductibleAccount,
                         AMotivationGroup, AMotivationDetail, ATaxDeductiblePercentageEnabledFlag);
 
-                    // set tax deductible checkbox
-                    if (ChangedByUser || ARecipientKeyChangingFlag)
+                    // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
+                    if (!APetraUtilsObject.SuppressChangeDetection || ARecipientKeyChangingFlag)
                     {
                         AChkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
                     }
@@ -240,12 +240,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            long PartnerKey = 0;
-            Int64.TryParse(ATxtDetailRecipientKey.Text, out PartnerKey);
-
-            if (PartnerKey > 0)
+            if (!ACreatingNewGiftFlag && (motivationDetail.RecipientKey > 0))
             {
-                PopulateKeyMinistry(ACurrentDetailRow, ACmbKeyMinistries, ATxtDetailRecipientKey, ATxtDetailRecipientLedgerNumber, PartnerKey);
+                AMotivationDetailChangedFlag = true;
+                PopulateKeyMinistry(ACurrentDetailRow, ACmbKeyMinistries,ATxtDetailRecipientKey, ATxtDetailRecipientLedgerNumber, motivationDetail.RecipientKey);
+                AMotivationDetailChangedFlag = false;
             }
             else
             {
@@ -279,6 +278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AInKeyMinistryChangingFlag,
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
+            bool AMotivationDetailChangedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
             out bool? AEnableRecipientHistory,
             out bool ADoValidateGiftDestination,
@@ -313,7 +313,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ACurrentDetailRow.RecipientLedgerNumber = 0;
                 }
 
-                if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                if (!AMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
                 {
                     if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
@@ -415,7 +415,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TextBox ATxtDeductibleAccount,
             ref string AMotivationGroup,
             ref string AMotivationDetail,
+            ref bool AMotivationDetailChangedFlag,
             bool AActiveOnly,
+            bool ACreatingNewGiftFlag,
             bool ARecipientKeyChangingFlag,
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
@@ -446,7 +448,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ATxtDeductibleAccount,
                 AMotivationGroup,
                 ref AMotivationDetail,
+                ref AMotivationDetailChangedFlag,
                 AActiveOnly,
+                ACreatingNewGiftFlag,
                 ARecipientKeyChangingFlag,
                 AInEditModeFlag,
                 ABatchUnpostedFlag,
@@ -517,8 +521,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbKeyMinistries, ref TCmbAutoPopulated ACmbMotivationDetailCode, TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber, TextBox ATxtDetailCostCentreCode, TextBox ATxtDetailAccountCode,
             TextBox ATxtDetailRecipientKeyMinistry, CheckBox AChkDetailTaxDeductible, TextBox ATxtDeductibleAccount,
-            string AMotivationGroup, ref string AMotivationDetail,
-            bool AActiveOnly, bool ARecipientKeyChangingFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool ATaxDeductiblePercentageEnabledFlag,
+            string AMotivationGroup, ref string AMotivationDetail, ref bool AMotivationDetailChangedFlag,
+            bool AActiveOnly, bool ARecipientKeyChangingFlag, bool ACreatingNewGiftFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool ATaxDeductiblePercentageEnabledFlag,
             out bool ADoTaxUpdate)
         {
             if (ATxtDetailRecipientKeyMinistry.Visible)
@@ -538,8 +542,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATxtDeductibleAccount,
                     AMotivationGroup,
                     ref AMotivationDetail,
+                    ref AMotivationDetailChangedFlag,
                     AActiveOnly,
                     ARecipientKeyChangingFlag,
+                    ACreatingNewGiftFlag,
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
@@ -869,8 +875,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbKeyMinistries, ref TCmbAutoPopulated ACmbMotivationDetailCode, TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber, TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode, TextBox ATxtDetailRecipientKeyMinistry, CheckBox AChkDetailTaxDeductible, TextBox ATxtDeductibleAccount,
-            string AMotivationGroup, ref string AMotivationDetail,
-            bool AActiveOnly, bool ARecipientKeyChangingFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool ATaxDeductiblePercentageEnabledFlag,
+            string AMotivationGroup, ref string AMotivationDetail, ref bool AMotivationDetailChangedFlag,
+            bool AActiveOnly, bool ARecipientKeyChangingFlag, bool ACreatingNewGiftFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool ATaxDeductiblePercentageEnabledFlag,
             out bool ADoTaxUpdate)
         {
             //FMotivationbDetail will change by next process
@@ -906,7 +912,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATxtDeductibleAccount,
                     AMotivationGroup,
                     ref AMotivationDetail,
+                    ref AMotivationDetailChangedFlag,
                     ARecipientKeyChangingFlag,
+                    ACreatingNewGiftFlag,
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
@@ -931,7 +939,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATxtDeductibleAccount,
                     AMotivationGroup,
                     ref AMotivationDetail,
+                    ref AMotivationDetailChangedFlag,
                     ARecipientKeyChangingFlag,
+                    ACreatingNewGiftFlag,
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,

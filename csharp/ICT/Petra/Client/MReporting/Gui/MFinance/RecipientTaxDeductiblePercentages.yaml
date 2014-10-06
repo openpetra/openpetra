@@ -1,0 +1,54 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Recipient Tax Deductible Percentages
+    WindowWidth: 640
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        REPORTNAME: Recipient Tax Deduct Pct
+        CURRENTREPORT: Recipient Tax Deduct Pct
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [lblLedger, rgrPartnerSelection]
+
+        lblLedger:
+            Label: Ledger
+            Dock: Top
+        rgrPartnerSelection:
+            Label: Select Recipient
+            Controls: [rbtAllPartner, rbtExtract, rbtPartner]
+            ParameterName: param_recipient_selection
+            Dock: Top
+        rbtAllPartner:
+            Label: All Recipients
+            ParameterValue: all_recipients
+        rbtExtract:
+            Label: From Extract
+            ParameterValue: Extract
+            Controls: [txtExtract, chkPrintAllExtract]
+            ControlsOrientation: horizontal
+        rbtPartner:
+            Label: One Recipient
+            ParameterValue: one_partner
+            Controls: [txtRecipient]
+        txtExtract:
+            NoLabel: true
+            Type: Extract
+            Width: 130
+            Padding:-4,0,0,0
+        chkPrintAllExtract:
+            Label: Print for each partner even if no gifts
+        txtRecipient:
+            NoLabel: true
+            Type: PartnerKey
+            Stretch: horizontally
