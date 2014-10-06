@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,7 +24,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -34,10 +33,8 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MPartner.Gui;
 
@@ -211,7 +208,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enter += new EventHandler(BeginEditMode);
             pnlDetails.Leave += new EventHandler(EndEditMode);
 
-            SetTextBoxOverlayOnKeyMinistryCombo();
+            TUC_GiftTransactions_Recipient.SetTextBoxOverlayOnKeyMinistryCombo(FPreviouslySelectedDetailRow, FActiveOnly, cmbKeyMinistries,
+                cmbDetailMotivationDetailCode, txtDetailRecipientKeyMinistry, ref FMotivationDetail, FInEditMode, FBatchUnposted);
         }
 
         private void SetFocusToKeyMinistryCombo(object sender, EventArgs e)
@@ -232,50 +230,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void BeginEditMode(object sender, EventArgs e)
         {
             FInEditMode = true;
-            SetKeyMinistryTextBoxInvisible();
+
+            bool DoTaxUpdate;
+            TUC_GiftTransactions_Recipient.SetKeyMinistryTextBoxInvisible(FPreviouslySelectedDetailRow, FMainDS, FLedgerNumber, FPetraUtilsObject,
+                cmbKeyMinistries, ref cmbDetailMotivationDetailCode, txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode,
+                txtDetailAccountCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible, txtDeductibleAccount,
+                FMotivationGroup, ref FMotivationDetail, FActiveOnly,
+                FInRecipientKeyChanging, FInEditMode, FBatchUnposted, FTaxDeductiblePercentageEnabled, out DoTaxUpdate);
+
+            if (DoTaxUpdate)
+            {
+                bool ChangedByUser = !!FPetraUtilsObject.SuppressChangeDetection;
+
+                UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
+                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, ChangedByUser);
+            }
         }
 
         private void EndEditMode(object sender, EventArgs e)
         {
             FInEditMode = false;
-
-            if (!txtDetailRecipientKeyMinistry.Visible)
-            {
-                SetTextBoxOverlayOnKeyMinistryCombo();
-            }
-        }
-
-        private void SetTextBoxOverlayOnKeyMinistryCombo(bool AReadComboValue = false)
-        {
-            ResetMotivationDetailCodeFilter();
-
-            txtDetailRecipientKeyMinistry.Visible = true;
-            txtDetailRecipientKeyMinistry.BringToFront();
-            txtDetailRecipientKeyMinistry.Parent.Refresh();
-
-            if (AReadComboValue)
-            {
-                ReconcileKeyMinistryFromCombo();
-            }
-            else
-            {
-                ReconcileKeyMinistryFromTextbox();
-            }
-        }
-
-        private void SetKeyMinistryTextBoxInvisible()
-        {
-            if (txtDetailRecipientKeyMinistry.Visible)
-            {
-                ApplyMotivationDetailCodeFilter();
-
-                PopulateKeyMinistry();
-
-                ReconcileKeyMinistryFromTextbox();
-
-                //hide the overlay box during editing
-                txtDetailRecipientKeyMinistry.Visible = false;
-            }
+            TUC_GiftTransactions_Recipient.OnEndEditMode(FPreviouslySelectedDetailRow, cmbKeyMinistries, cmbDetailMotivationDetailCode,
+                txtDetailRecipientKeyMinistry, ref FMotivationDetail, FActiveOnly, FInEditMode, FBatchUnposted);
         }
 
         /// <summary>
@@ -283,40 +259,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ReconcileKeyMinistryFromCombo()
         {
-            string KeyMinistry = string.Empty;
-            bool EmptyRow = (FPreviouslySelectedDetailRow == null);
-
-            if (FBatchUnposted && FInEditMode)
-            {
-                if (!EmptyRow && (cmbKeyMinistries.SelectedIndex > -1))
-                {
-                    KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
-                }
-
-                txtDetailRecipientKeyMinistry.Text = KeyMinistry;
-            }
-        }
-
-        /// <summary>
-        /// Keep the combo and textboxes together
-        /// </summary>
-        public void ReconcileKeyMinistryFromTextbox()
-        {
-            string KeyMinistry = string.Empty;
-            bool EmptyRow = (FPreviouslySelectedDetailRow == null);
-
-            if (FBatchUnposted && FInEditMode)
-            {
-                if (!EmptyRow && (txtDetailRecipientKeyMinistry.Text.Length > 0))
-                {
-                    KeyMinistry = txtDetailRecipientKeyMinistry.Text;
-                    cmbKeyMinistries.SetSelectedString(KeyMinistry);
-                }
-                else
-                {
-                    cmbKeyMinistries.SelectedIndex = -1;
-                }
-            }
+            TUC_GiftTransactions_Recipient.ReconcileKeyMinistryFromCombo(FPreviouslySelectedDetailRow,
+                cmbKeyMinistries,
+                txtDetailRecipientKeyMinistry,
+                FInEditMode,
+                FBatchUnposted);
         }
 
         /// <summary>
@@ -441,7 +388,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-                GetRecipientData(FPreviouslySelectedDetailRow.RecipientKey);
+                TUC_GiftTransactions_Recipient.GetRecipientData(FPreviouslySelectedDetailRow, FPreviouslySelectedDetailRow.RecipientKey,
+                    ref cmbKeyMinistries, txtDetailRecipientKey, ref txtDetailRecipientLedgerNumber);
             }
 
             FTransactionsLoaded = true;
@@ -458,202 +406,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool RetVal = ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ALedgerNumber, ABatchNumber);
 
-            UpdateAllRecipientDescriptions(ABatchNumber);
+            TUC_GiftTransactions_Recipient.UpdateAllRecipientDescriptions(ABatchNumber, FMainDS);
 
             ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
 
             return RetVal;
         }
 
-        private void UpdateAllRecipientDescriptions(Int32 ABatchNumber)
-        {
-            DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
-
-            giftDetailView.RowFilter = String.Format("{0}={1}",
-                AGiftDetailTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            foreach (DataRowView rv in giftDetailView)
-            {
-                GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
-
-                if (row.RecipientKey == 0)
-                {
-                    row.RecipientDescription = row.MotivationDetailCode;
-                }
-            }
-        }
-
-        private void FindCostCentreCodeForRecipient(AGiftDetailRow ARow, Int64 APartnerKey, bool AShowError = false)
-        {
-            if (ARow == null)
-            {
-                return;
-            }
-
-            string CurrentCostCentreCode = ARow.CostCentreCode;
-            string NewCostCentreCode = string.Empty;
-
-            Int64 RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
-
-            string MotivationGroup = ARow.MotivationGroupCode;
-            string MotivationDetail = ARow.MotivationDetailCode;
-
-            Int64 RecipientLedgerNumber = ARow.RecipientLedgerNumber;
-
-            Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
-
-            bool KeyMinIsActive = false;
-            bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartnerKey, out KeyMinIsActive);
-
-            string ValidLedgerNumberCostCentreCode;
-
-            string errMsg = string.Empty;
-
-            if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
-                    out ValidLedgerNumberCostCentreCode)
-                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
-                    RecipientField,
-                    out ValidLedgerNumberCostCentreCode))
-            {
-                NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-            }
-            else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || KeyMinExists))
-            {
-                errMsg = String.Format(
-                    "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                    APartnerKey,
-                    FLedgerNumber,
-                    Environment.NewLine,
-                    RecipientLedgerNumber,
-                    LedgerPartnerKey);
-
-                if (AShowError)
-                {
-                    MessageBox.Show(errMsg,
-                        "Cost Centre Code Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
-                }
-                else
-                {
-                    TLogging.Log("Cost Centre Code Error: " + errMsg);
-                }
-            }
-            else
-            {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
-
-                if (motivationDetail != null)
-                {
-                    NewCostCentreCode = motivationDetail.CostCentreCode;
-                }
-                else
-                {
-                    errMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                        MotivationGroup,
-                        MotivationDetail,
-                        FLedgerNumber);
-
-                    if (AShowError)
-                    {
-                        MessageBox.Show(errMsg,
-                            "Cost Centre Code Error",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
-                    }
-                    else
-                    {
-                        TLogging.Log("Cost Centre Code Error: " + errMsg);
-                    }
-                }
-            }
-
-            if (CurrentCostCentreCode != NewCostCentreCode)
-            {
-                ARow.CostCentreCode = NewCostCentreCode;
-            }
-        }
-
         private void RecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection)
         {
-            if (FInRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || FShowingDetails)
+            bool? DoEnableRecipientHistory;
+            bool DoValidateGiftDestination;
+            bool DoTaxUpdate;
+
+            TUC_GiftTransactions_Recipient.OnRecipientKeyChanged(APartnerKey, APartnerShortName, AValidSelection, FPreviouslySelectedDetailRow,
+                FMainDS, FLedgerNumber, FPetraUtilsObject, ref cmbKeyMinistries, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode,
+                txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible,
+                ref FMotivationGroup, ref FMotivationDetail, FShowingDetails, ref FInRecipientKeyChanging, FInKeyMinistryChanging, FInEditMode,
+                FBatchUnposted, FTaxDeductiblePercentageEnabled, out DoEnableRecipientHistory, out DoValidateGiftDestination, out DoTaxUpdate);
+
+            if (DoTaxUpdate)
             {
-                return;
+                UpdateTaxDeductiblePct(APartnerKey, true);
+                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, true);
             }
 
-            FInRecipientKeyChanging = true;
-            txtDetailRecipientKeyMinistry.Text = string.Empty;
-
-            try
+            if (DoValidateGiftDestination)
             {
-                FPreviouslySelectedDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
-                FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
+                FPartnerShortName = APartnerShortName;
 
-                FPetraUtilsObject.SuppressChangeDetection = true;
-
-                //Set RecipientLedgerNumber
-                if (APartnerKey > 0)
-                {
-                    FPreviouslySelectedDetailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey);
-                }
-                else
-                {
-                    FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
-                }
-
-                if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
-                        APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
-                {
-                    if (FMotivationGroup != cmbDetailMotivationGroupCode.GetSelectedString())
-                    {
-                        cmbDetailMotivationGroupCode.SetSelectedString(FMotivationGroup);
-                    }
-
-                    if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
-                    {
-                        cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
-                    }
-                }
-
-                if (APartnerKey > 0)
-                {
-                    RetrieveRecipientCostCentreCode(APartnerKey);
-                    mniRecipientHistory.Enabled = true;
-                }
-                else
-                {
-                    UpdateRecipientKeyText(APartnerKey);
-                    RetrieveMotivationDetailCostCentreCode();
-                    mniRecipientHistory.Enabled = false;
-                }
-
-                if (!FInKeyMinistryChanging)
-                {
-                    GetRecipientData(APartnerKey);
-                    FPartnerShortName = APartnerShortName;
-
-                    //Thread only invokes ValidateGiftDestination once Partner Short Name has been updated.
-                    // Otherwise the Gift Destination screen is displayed and then the screen focus moves to this screen again
-                    // when the Partner Short Name is updated.
-                    new Thread(ValidateGiftDestinationThread).Start();
-                }
-
-                if (FTaxDeductiblePercentageEnabled)
-                {
-                    UpdateTaxDeductiblePct(APartnerKey, true);
-                    EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, true);
-                }
+                //Thread only invokes ValidateGiftDestination once Partner Short Name has been updated.
+                // Otherwise the Gift Destination screen is displayed and then the screen focus moves to this screen again
+                // when the Partner Short Name is updated.
+                new Thread(ValidateGiftDestinationThread).Start();
             }
-            finally
+
+            if (DoEnableRecipientHistory.HasValue)
             {
-                FInRecipientKeyChanging = false;
-                ReconcileKeyMinistryFromCombo();
-                FPetraUtilsObject.SuppressChangeDetection = false;
+                mniRecipientHistory.Enabled = DoEnableRecipientHistory.Value;
             }
         }
 
@@ -671,14 +463,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             Invoke(new SimpleDelegate(ValidateGiftDestination));
-        }
-
-        private void UpdateRecipientKeyText(Int64 APartnerKey)
-        {
-            if ((APartnerKey == 0) && (FPreviouslySelectedDetailRow != null))
-            {
-                FPreviouslySelectedDetailRow.RecipientDescription = cmbDetailMotivationDetailCode.GetSelectedString();
-            }
         }
 
         private void DonorKeyChanged(Int64 APartnerKey,
@@ -831,421 +615,79 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
-            string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
-            string RecipientKey = cmbKeyMinistries.GetSelectedInt64().ToString();
-
-            if ((FPreviouslySelectedDetailRow == null) || FInKeyMinistryChanging || FInRecipientKeyChanging
-                || FPetraUtilsObject.SuppressChangeDetection || txtDetailRecipientKeyMinistry.Visible)
-            {
-                return;
-            }
-
-            try
-            {
-                FInKeyMinistryChanging = true;
-
-                if (cmbKeyMinistries.Count == 0)
-                {
-                    cmbKeyMinistries.SelectedIndex = -1;
-                    txtDetailRecipientKeyMinistry.Text = string.Empty;
-                }
-                else
-                {
-                    txtDetailRecipientKeyMinistry.Text = KeyMinistry;
-                    FPreviouslySelectedDetailRow.RecipientKeyMinistry = KeyMinistry;
-                    txtDetailRecipientKey.Text = RecipientKey;
-                }
-            }
-            finally
-            {
-                FInKeyMinistryChanging = false;
-            }
+            TUC_GiftTransactions_Recipient.OnKeyMinistryChanged(FPreviouslySelectedDetailRow, FPetraUtilsObject, cmbKeyMinistries,
+                txtDetailRecipientKey, txtDetailRecipientKeyMinistry, FInRecipientKeyChanging, ref FInKeyMinistryChanging);
         }
 
         private void MotivationGroupChanged(object sender, EventArgs e)
         {
-            if (!FBatchUnposted || FPetraUtilsObject.SuppressChangeDetection || !FInEditMode || txtDetailRecipientKeyMinistry.Visible)
+            bool DoTaxUpdate;
+
+            TUC_GiftTransactions_Recipient.OnMotivationGroupChanged(FPreviouslySelectedDetailRow,
+                FMainDS,
+                FLedgerNumber,
+                FPetraUtilsObject,
+                cmbKeyMinistries,
+                cmbDetailMotivationGroupCode,
+                ref cmbDetailMotivationDetailCode,
+                txtDetailRecipientKey,
+                txtDetailRecipientLedgerNumber,
+                txtDetailCostCentreCode,
+                txtDetailAccountCode,
+                txtDetailRecipientKeyMinistry,
+                chkDetailTaxDeductible,
+                txtDeductibleAccount,
+                ref FMotivationGroup,
+                ref FMotivationDetail,
+                FActiveOnly,
+                FInRecipientKeyChanging,
+                FInEditMode,
+                FBatchUnposted,
+                FTaxDeductiblePercentageEnabled,
+                out DoTaxUpdate);
+
+            if (DoTaxUpdate)
             {
-                return;
+                bool ChangedByUser = !!FPetraUtilsObject.SuppressChangeDetection;
+
+                UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
+                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, ChangedByUser);
             }
-
-            FMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
-            FMotivationDetail = string.Empty;
-
-            ApplyMotivationDetailCodeFilter();
 
             ValidateGiftDestination();
         }
 
-        private void ApplyMotivationDetailCodeFilter()
-        {
-            //FMotivationbDetail will change by next process
-            string motivationDetail = FMotivationDetail;
-
-            ResetMotivationDetailCodeFilter();
-            TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, FMotivationGroup);
-            FMotivationDetail = motivationDetail;
-
-            if (FMotivationDetail.Length > 0)
-            {
-                cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
-                cmbDetailMotivationDetailCode.Text = FMotivationDetail;
-            }
-            else if (cmbDetailMotivationDetailCode.Count > 0)
-            {
-                cmbDetailMotivationDetailCode.SelectedIndex = 0;
-
-                //Force refresh of label
-                MotivationDetailChanged(null, null);
-            }
-            else
-            {
-                cmbDetailMotivationDetailCode.SelectedIndex = -1;
-                //Force refresh of label
-                MotivationDetailChanged(null, null);
-            }
-
-            RetrieveMotivationDetailAccountCode();
-
-            if ((txtDetailRecipientKey.Text == string.Empty) || (Convert.ToInt64(txtDetailRecipientKey.Text) == 0))
-            {
-                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-                RetrieveMotivationDetailCostCentreCode();
-            }
-        }
-
-        private void ResetMotivationDetailCodeFilter()
-        {
-            if ((cmbDetailMotivationDetailCode.Count == 0) && (cmbDetailMotivationDetailCode.Filter != null)
-                && (!cmbDetailMotivationDetailCode.Filter.Contains("1 = 2")))
-            {
-                FMotivationDetail = string.Empty;
-                cmbDetailMotivationDetailCode.RefreshLabel();
-
-                if (FActiveOnly)
-                {
-                    //This is needed as the code in TFinanceControls.ChangeFilterMotivationDetailList looks for presence of the active only prefix
-                    cmbDetailMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And 1 = 2";
-                }
-                else
-                {
-                    cmbDetailMotivationDetailCode.Filter = "1 = 2";
-                }
-
-                return;
-            }
-
-            if (cmbDetailMotivationDetailCode.Count > 0)
-            {
-                FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
-            }
-
-            if (FActiveOnly)
-            {
-                cmbDetailMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true";
-            }
-            else
-            {
-                cmbDetailMotivationDetailCode.Filter = string.Empty;
-            }
-
-            cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
-            cmbDetailMotivationDetailCode.RefreshLabel();
-        }
-
-        /// <summary>
-        /// To be called on the display of a new record
-        /// </summary>
-        private void RetrieveMotivationDetailAccountCode()
-        {
-            string AcctCode = string.Empty;
-            string TaxDeductibleAcctCode = string.Empty;
-
-            if (FMotivationDetail.Length > 0)
-            {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
-
-                if (motivationDetail != null)
-                {
-                    AcctCode = motivationDetail.AccountCode;
-
-                    if (FTaxDeductiblePercentageEnabled)
-                    {
-                        TaxDeductibleAcctCode = motivationDetail.TaxDeductibleAccount;
-                    }
-                }
-            }
-
-            txtDetailAccountCode.Text = AcctCode;
-            txtDeductibleAccount.Text = TaxDeductibleAcctCode;
-        }
-
-        private void RetrieveMotivationDetailCostCentreCode()
-        {
-            string CostCentreCode = string.Empty;
-
-            if (FMotivationDetail.Length > 0)
-            {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
-
-                if (motivationDetail != null)
-                {
-                    CostCentreCode = motivationDetail.CostCentreCode.ToString();
-                }
-            }
-
-            txtDetailCostCentreCode.Text = CostCentreCode;
-        }
-
-        private void RetrieveRecipientCostCentreCode(Int64 APartnerKey)
-        {
-            //string FailedUpdates = string.Empty;
-
-            if (FInKeyMinistryChanging || (FPreviouslySelectedDetailRow == null))
-            {
-                return;
-            }
-
-            //UpdateCostCentreCodeForRecipients(out FailedUpdates,
-            //    FPreviouslySelectedDetailRow.GiftTransactionNumber,
-            //    FPreviouslySelectedDetailRow.DetailNumber);
-
-            //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
-
-            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, APartnerKey, false);
-
-            txtDetailCostCentreCode.Text = FPreviouslySelectedDetailRow.CostCentreCode;
-        }
-
-        private bool UpdateCostCentreCodeForRecipients(out string AFailedUpdates,
-            Int32 AGiftTransactionNumber = 0,
-            Int32 AGiftDetailNumber = 0)
-        {
-            AFailedUpdates = string.Empty;
-
-            if ((FMainDS.AGiftBatch.Count == 0) || (FMainDS.AGift.Count == 0))
-            {
-                return true;
-            }
-
-            Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
-
-            string CurrentCostCentreCode = string.Empty;
-            string NewCostCentreCode = string.Empty;
-
-            string MotivationGroup = string.Empty;
-            string MotivationDetail = string.Empty;
-
-            Int64 PartnerKey = 0;
-            Int64 RecipientFundNumber = 0;
-
-            bool KeyMinIsActive = false;
-            bool IsKeyMinistry = false;
-
-            string ValidLedgerNumberCostCentreCode = string.Empty;
-            //bool ValidLedgerNumberExists = false;
-
-            string ErrMsg = string.Empty;
-
-            string RowFilterForGifts = string.Empty;
-
-            if (AGiftTransactionNumber > 0)
-            {
-                RowFilterForGifts = String.Format("{0}={1} And {2}={3} And {4}={5}",
-                    AGiftDetailTable.GetBatchNumberDBName(),
-                    FBatchNumber,
-                    AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                    AGiftTransactionNumber,
-                    AGiftDetailTable.GetDetailNumberDBName(),
-                    AGiftDetailNumber);
-            }
-            else
-            {
-                RowFilterForGifts = String.Format("{0}={1}",
-                    AGiftDetailTable.GetBatchNumberDBName(),
-                    FBatchNumber);
-            }
-
-            DataView giftRowsView = new DataView(FMainDS.AGiftDetail);
-            giftRowsView.RowFilter = RowFilterForGifts;
-
-            foreach (DataRowView dvRows in giftRowsView)
-            {
-                AGiftDetailRow giftDetailRow = (AGiftDetailRow)dvRows.Row;
-
-                AGiftRow giftRow = GetGiftRow(giftDetailRow.GiftTransactionNumber);
-
-                CurrentCostCentreCode = giftDetailRow.CostCentreCode;
-                NewCostCentreCode = CurrentCostCentreCode;
-
-                MotivationGroup = giftDetailRow.MotivationGroupCode;
-                MotivationDetail = giftDetailRow.MotivationDetailCode;
-
-                PartnerKey = giftDetailRow.RecipientKey;
-                RecipientFundNumber = giftDetailRow.RecipientLedgerNumber;
-
-                KeyMinIsActive = false;
-                IsKeyMinistry = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(PartnerKey, out KeyMinIsActive);
-
-                //ValidLedgerNumberExists = CheckCostCentreLinkForRecipient(LedgerNumber,
-                //    PartnerKey,
-                //    out ValidLedgerNumberCostCentreCode);
-
-                Int64 RecipientField = Convert.ToInt64(txtDetailRecipientLedgerNumber.Text);
-
-                if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, PartnerKey, RecipientField,
-                        out ValidLedgerNumberCostCentreCode)
-                    || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(giftRow.LedgerNumber, RecipientFundNumber,
-                        RecipientField,
-                        out ValidLedgerNumberCostCentreCode))
-                {
-                    NewCostCentreCode = ValidLedgerNumberCostCentreCode;
-                }
-                else if ((RecipientFundNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || IsKeyMinistry))
-                {
-                    ErrMsg = String.Format(
-                        "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-                        PartnerKey,
-                        FLedgerNumber,
-                        Environment.NewLine,
-                        RecipientFundNumber,
-                        LedgerPartnerKey);
-
-                    TLogging.Log("Cost Centre Code Error: " + ErrMsg);
-                }
-                else
-                {
-                    AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                        new object[] { FLedgerNumber, MotivationGroup, MotivationDetail });
-
-                    if (motivationDetail != null)
-                    {
-                        NewCostCentreCode = motivationDetail.CostCentreCode.ToString();
-                    }
-                    else
-                    {
-                        ErrMsg = String.Format(
-                            "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-                            MotivationGroup,
-                            MotivationDetail,
-                            FLedgerNumber);
-
-                        TLogging.Log("Cost Centre Code Error: " + ErrMsg);
-                    }
-                }
-
-                if (CurrentCostCentreCode != NewCostCentreCode)
-                {
-                    giftDetailRow.CostCentreCode = NewCostCentreCode;
-                }
-
-                if (ErrMsg.Length > 0)
-                {
-                    if (AFailedUpdates.Length > 0)
-                    {
-                        AFailedUpdates += (Environment.NewLine + Environment.NewLine);
-                    }
-
-                    AFailedUpdates += ErrMsg;
-                    ErrMsg = string.Empty;
-                }
-            }
-
-            return AFailedUpdates.Length == 0;
-        }
-
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
-            // true if motivation detail has been changed by the user (i.e. not a row change)
-            bool ChangedByUser = !FPetraUtilsObject.SuppressChangeDetection;
-            AMotivationDetailRow motivationDetail = null;
+            bool DoTaxUpdate;
 
-            if (!FBatchUnposted || !FInEditMode || txtDetailRecipientKeyMinistry.Visible)
+            TUC_GiftTransactions_Recipient.OnMotivationDetailChanged(FPreviouslySelectedDetailRow,
+                FMainDS,
+                FLedgerNumber,
+                FPetraUtilsObject,
+                cmbKeyMinistries,
+                cmbDetailMotivationDetailCode,
+                txtDetailRecipientKey,
+                txtDetailRecipientLedgerNumber,
+                txtDetailCostCentreCode,
+                txtDetailAccountCode,
+                txtDetailRecipientKeyMinistry,
+                chkDetailTaxDeductible,
+                txtDeductibleAccount,
+                FMotivationGroup,
+                ref FMotivationDetail,
+                FInRecipientKeyChanging,
+                FInEditMode,
+                FBatchUnposted,
+                FTaxDeductiblePercentageEnabled,
+                out DoTaxUpdate);
+
+            if (DoTaxUpdate)
             {
-                return;
-            }
+                bool ChangedByUser = !!FPetraUtilsObject.SuppressChangeDetection;
 
-            FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
-
-            if (FMotivationDetail.Length > 0)
-            {
-                motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
-
-                cmbDetailMotivationDetailCode.RefreshLabel();
-
-                if (motivationDetail != null)
-                {
-                    RetrieveMotivationDetailAccountCode();
-
-                    // set tax deductible checkbox
-                    if (ChangedByUser || FInRecipientKeyChanging)
-                    {
-                        chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
-                    }
-
-                    if (FTaxDeductiblePercentageEnabled)
-                    {
-                        if (string.IsNullOrEmpty(motivationDetail.TaxDeductibleAccount))
-                        {
-                            MessageBox.Show(Catalog.GetString("This Motivation Detail does not have an associated Tax Deductible Account. " +
-                                    "This can be added in Finance / Setup / Motivation Details.\n\n" +
-                                    "Unless this is changed it will be impossible to assign a Tax Deductible Percentage to this gift."),
-                                Catalog.GetString("Incomplete Motivation Detail"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-
-                        UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
-                        EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, ChangedByUser);
-                    }
-                }
-            }
-
-            long PartnerKey = 0;
-            Int64.TryParse(txtDetailRecipientKey.Text, out PartnerKey);
-
-            if (PartnerKey > 0)
-            {
-                PopulateKeyMinistry(PartnerKey);
-            }
-            else
-            {
-                RetrieveMotivationDetailCostCentreCode();
-                UpdateRecipientKeyText(0);
-            }
-        }
-
-        private void PopulateKeyMinistry(long APartnerKey = 0)
-        {
-            cmbKeyMinistries.Clear();
-
-            if (APartnerKey == 0)
-            {
-                APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
-
-                if (APartnerKey == 0)
-                {
-                    return;
-                }
-            }
-
-            GetRecipientData(APartnerKey);
-        }
-
-        private void GetRecipientData(long APartnerKey)
-        {
-            if (APartnerKey == 0)
-            {
-                APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
-            }
-
-            TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
-
-            if ((Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))
-            {
-                txtDetailRecipientLedgerNumber.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey,
-                    FPreviouslySelectedDetailRow.DateEntered).ToString();
+                UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
+                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, ChangedByUser);
             }
         }
 
@@ -1392,307 +834,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             return (GiftBatchTDSAGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(new object[] { FLedgerNumber, FBatchNumber, AGiftTransactionNumber,
                                                                                             AGiftDetailNumber });
-        }
-
-        private bool PreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            bool allowDeletion = true;
-
-            FGift = GetGiftRow(ARowToDelete.GiftTransactionNumber);
-            FFilterAllDetailsOfGift = String.Format("{0}={1} and {2}={3}",
-                AGiftDetailTable.GetBatchNumberDBName(),
-                FPreviouslySelectedDetailRow.BatchNumber,
-                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                FPreviouslySelectedDetailRow.GiftTransactionNumber);
-
-            FGiftDetailView = new DataView(FMainDS.AGiftDetail);
-            FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
-            FGiftDetailView.Sort = AGiftDetailTable.GetDetailNumberDBName() + " ASC";
-            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftTransactionAmount, GetCurrentBatchRow().CurrencyCode);
-
-            if (FGiftDetailView.Count == 1)
-            {
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete gift no. {1} from Gift Batch no. {2}?" +
-                        "\n\r\n\r" + "     From:  {3}" +
-                        "\n\r" + "         To:  {4}" +
-                        "\n\r" + "Amount:  {5}"),
-                    ARowToDelete.DetailNumber,
-                    ARowToDelete.GiftTransactionNumber,
-                    ARowToDelete.BatchNumber,
-                    ARowToDelete.DonorName,
-                    ARowToDelete.RecipientDescription,
-                    formattedDetailAmount);
-            }
-            else if (FGiftDetailView.Count > 1)
-            {
-                ADeletionQuestion =
-                    String.Format(Catalog.GetString("Are you sure you want to delete detail line: {0} from gift no. {1} in Gift Batch no. {2}?" +
-                            "\n\r\n\r" + "     From:  {3}" +
-                            "\n\r" + "         To:  {4}" +
-                            "\n\r" + "Amount:  {5}"),
-                        ARowToDelete.DetailNumber,
-                        ARowToDelete.GiftTransactionNumber,
-                        ARowToDelete.BatchNumber,
-                        ARowToDelete.DonorName,
-                        ARowToDelete.RecipientDescription,
-                        formattedDetailAmount);
-            }
-            else //this should never happen
-            {
-                ADeletionQuestion =
-                    String.Format(Catalog.GetString("Gift no. {0} in Batch no. {1} has no detail rows in the Gift Detail table!"),
-                        ARowToDelete.GiftTransactionNumber,
-                        ARowToDelete.BatchNumber);
-                allowDeletion = false;
-            }
-
-            return allowDeletion;
-        }
-
-        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
-            string originatingDetailRef = string.Empty;
-
-            ACompletionMessage = string.Empty;
-
-            if (ARowToDelete == null)
-            {
-                return deletionSuccessful;
-            }
-
-            // temporarily disable  New Donor Warning
-            ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = false;
-
-            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
-            {
-                MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
-                return deletionSuccessful;
-            }
-
-            ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = true;
-
-            //Backup the Dataset for reversion purposes
-            GiftBatchTDS FTempDS = (GiftBatchTDS)FMainDS.Copy();
-            FTempDS.Merge(FMainDS);
-
-            int selectedDetailNumber = ARowToDelete.DetailNumber;
-            int giftToDeleteTransNo = 0;
-            string filterAllGiftsOfBatch = String.Empty;
-            string filterAllGiftDetailsOfBatch = String.Empty;
-
-            int detailRowCount = FGiftDetailView.Count;
-
-            try
-            {
-                if (ARowToDelete.ModifiedDetailKey != null)
-                {
-                    originatingDetailRef = ARowToDelete.ModifiedDetailKey;
-                }
-
-                //Delete current detail row
-                ARowToDelete.Delete();
-
-                //If there existed (before the delete row above) more than one detail row, then no need to delete gift header row
-                if (detailRowCount > 1)
-                {
-                    FGiftSelectedForDeletion = false;
-
-                    foreach (DataRowView rv in FGiftDetailView)
-                    {
-                        GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
-
-                        if (row.DetailNumber > selectedDetailNumber)
-                        {
-                            row.DetailNumber--;
-                        }
-                    }
-
-                    FGift.LastDetailNumber--;
-
-                    FPetraUtilsObject.SetChangedFlag();
-                }
-                else
-                {
-                    giftToDeleteTransNo = FGift.GiftTransactionNumber;
-
-                    TLogging.Log("Delete row: " + giftToDeleteTransNo.ToString());
-
-                    // Reduce all Gift Detail row Transaction numbers by 1 if they are greater then gift to be deleted
-                    filterAllGiftDetailsOfBatch = String.Format("{0}={1} And {2}>{3}",
-                        AGiftDetailTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                        giftToDeleteTransNo);
-
-                    DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
-                    giftDetailView.RowFilter = filterAllGiftDetailsOfBatch;
-                    giftDetailView.Sort = String.Format("{0} ASC", AGiftDetailTable.GetGiftTransactionNumberDBName());
-
-                    foreach (DataRowView rv in giftDetailView)
-                    {
-                        GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
-
-                        row.GiftTransactionNumber--;
-                    }
-
-                    //Cannot delete the gift row, just copy the data of rows above down by 1 row
-                    // and then mark the top row for deletion
-                    //In other words, bubble the gift row to be deleted to the top
-                    filterAllGiftsOfBatch = String.Format("{0}={1} And {2}>={3}",
-                        AGiftTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        AGiftTable.GetGiftTransactionNumberDBName(),
-                        giftToDeleteTransNo);
-
-                    DataView giftView = new DataView(FMainDS.AGift);
-                    giftView.RowFilter = filterAllGiftsOfBatch;
-                    giftView.Sort = String.Format("{0} ASC", AGiftTable.GetGiftTransactionNumberDBName());
-
-                    AGiftRow giftRowToReceive = null;
-                    AGiftRow giftRowToCopyDown = null;
-                    AGiftRow giftRowCurrent = null;
-
-                    int currentGiftTransNo = 0;
-
-                    foreach (DataRowView gv in giftView)
-                    {
-                        giftRowCurrent = (AGiftRow)gv.Row;
-
-                        currentGiftTransNo = giftRowCurrent.GiftTransactionNumber;
-
-                        if (currentGiftTransNo > giftToDeleteTransNo)
-                        {
-                            giftRowToCopyDown = giftRowCurrent;
-
-                            //Copy column values down
-                            for (int j = 3; j < giftRowToCopyDown.Table.Columns.Count; j++)
-                            {
-                                //Update all columns except the pk fields that remain the same
-                                if (!giftRowToCopyDown.Table.Columns[j].ColumnName.EndsWith("_text"))
-                                {
-                                    giftRowToReceive[j] = giftRowToCopyDown[j];
-                                }
-                            }
-                        }
-
-                        if (currentGiftTransNo == FBatchRow.LastGiftNumber)
-                        {
-                            //Mark last record for deletion
-                            giftRowCurrent.GiftStatus = MFinanceConstants.MARKED_FOR_DELETION;
-                        }
-
-                        //Will always be previous row
-                        giftRowToReceive = giftRowCurrent;
-                    }
-
-                    FPreviouslySelectedDetailRow = null;
-
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    FGiftSelectedForDeletion = true;
-
-                    FBatchRow.LastGiftNumber--;
-                }
-
-                //Check if deleting a reversed gift detail
-                if (originatingDetailRef.StartsWith("|"))
-                {
-                    bool ok = TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, originatingDetailRef);
-
-                    if (!ok)
-                    {
-                        throw new Exception("Error in trying to reset Modified Detail field of the originating gift detail.");
-                    }
-                }
-
-                //Try to save changes
-                if (((TFrmGiftBatch) this.ParentForm).SaveChanges())
-                {
-                    //Clear current batch's gift data and reload from server
-                    if (RefreshCurrentBatchGiftData(FBatchNumber))
-                    {
-                        ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                    }
-                }
-                else
-                {
-                    throw new Exception("Unable to save after deleting a gift!");
-                }
-
-                ACompletionMessage = Catalog.GetString("Gift row deleted successfully!");
-
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Gift Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                //Revert to previous state
-                FMainDS.Merge(FTempDS);
-            }
-            finally
-            {
-                SetGiftDetailDefaultView();
-                FFilterAndFindObject.ApplyFilter();
-            }
-
-            UpdateRecordNumberDisplay();
-
-            return deletionSuccessful;
-        }
-
-        private void PostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
-            bool AAllowDeletion,
-            bool ADeletionPerformed,
-            string ACompletionMessage)
-        {
-            if (ADeletionPerformed)
-            {
-                if (FGiftSelectedForDeletion)
-                {
-                    FGiftSelectedForDeletion = false;
-
-                    SetBatchLastGiftNumber();
-
-                    UpdateControlsProtection();
-
-                    if (!pnlDetails.Enabled)
-                    {
-                        ClearControls();
-                    }
-                }
-
-                UpdateTotals();
-
-                ((TFrmGiftBatch) this.ParentForm).SaveChanges();
-
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion Successful",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            else if (!AAllowDeletion && (ACompletionMessage.Length > 0))
-            {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion not allowed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-            else if (!ADeletionPerformed && (ACompletionMessage.Length > 0))
-            {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
         }
 
         /// <summary>
@@ -1855,131 +996,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Creates a new gift or gift detail depending upon the parameter
-        /// </summary>
-        /// <param name="ACompletelyNewGift"></param>
-        private void CreateANewGift(bool ACompletelyNewGift)
-        {
-            AGiftRow CurrentGiftRow = null;
-            bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
-
-            if (ValidateAllData(true, true))
-            {
-                if (!ACompletelyNewGift)  //i.e. a gift detail
-                {
-                    ACompletelyNewGift = IsEmptyGrid;
-                }
-
-                if (ACompletelyNewGift)
-                {
-                    //Run this if a new gift is requested or required.
-
-                    // we create the table locally, no dataset
-                    AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
-
-                    giftRow.DateEntered = FBatchRow.GlEffectiveDate;
-                    giftRow.LedgerNumber = FBatchRow.LedgerNumber;
-                    giftRow.BatchNumber = FBatchRow.BatchNumber;
-                    giftRow.GiftTransactionNumber = ++FBatchRow.LastGiftNumber;
-                    giftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
-                    giftRow.LastDetailNumber = 1;
-
-                    FMainDS.AGift.Rows.Add(giftRow);
-
-                    CurrentGiftRow = giftRow;
-
-                    mniDonorHistory.Enabled = false;
-                }
-                else
-                {
-                    CurrentGiftRow = GetGiftRow(FPreviouslySelectedDetailRow.GiftTransactionNumber);
-                    CurrentGiftRow.LastDetailNumber++;
-                }
-
-                //New gifts will require a new detail anyway, so this code always runs
-                GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
-
-                newRow.LedgerNumber = FBatchRow.LedgerNumber;
-                newRow.BatchNumber = FBatchRow.BatchNumber;
-                newRow.GiftTransactionNumber = CurrentGiftRow.GiftTransactionNumber;
-                newRow.DetailNumber = CurrentGiftRow.LastDetailNumber;
-                newRow.MethodOfPaymentCode = CurrentGiftRow.MethodOfPaymentCode;
-                newRow.MethodOfGivingCode = CurrentGiftRow.MethodOfGivingCode;
-                newRow.DonorKey = CurrentGiftRow.DonorKey;
-
-                if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
-                {
-                    newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
-                }
-
-                newRow.DateEntered = CurrentGiftRow.DateEntered;
-
-                FMainDS.AGiftDetail.Rows.Add(newRow);
-
-                FPetraUtilsObject.SetChangedFlag();
-
-                if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
-                {
-                    if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
-                    {
-                        MessageBox.Show(
-                            MCommonResourcestrings.StrNewRecordIsFiltered,
-                            MCommonResourcestrings.StrAddNewRecordTitle,
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
-
-                        if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
-                        {
-                            FFilterAndFindObject.ApplyFilter();
-                        }
-
-                        SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
-                    }
-                }
-
-                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
-                UpdateRecordNumberDisplay();
-
-                //Focus accordingly
-                if (ACompletelyNewGift)
-                {
-                    txtDetailDonorKey.Focus();
-                }
-                else
-                {
-                    txtDetailRecipientKey.Focus();
-                }
-
-                //Set the default motivation Group. This needs to happen after focus has returned
-                //  to the pnlDetails to ensure FInEditMode is correct.
-                cmbDetailMotivationGroupCode.SelectedIndex = 0;
-                UpdateRecipientKeyText(0);
-                cmbKeyMinistries.Clear();
-                mniRecipientHistory.Enabled = false;
-            }
-        }
-
-        /// <summary>
-        /// add a new gift
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void NewGift(System.Object sender, EventArgs e)
-        {
-            CreateANewGift(true);
-        }
-
-        /// <summary>
-        /// add a new gift detail
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void NewGiftDetail(System.Object sender, EventArgs e)
-        {
-            CreateANewGift(false);
-        }
-
-        /// <summary>
         /// show ledger and batch number
         /// </summary>
         private void ShowDataManual()
@@ -2012,91 +1028,56 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if (!txtDetailRecipientKeyMinistry.Visible)
+            if (TUC_GiftTransactions_Recipient.OnStartShowDetailsManual(ARow, cmbKeyMinistries, cmbDetailMotivationDetailCode,
+                    txtDetailRecipientKeyMinistry, ref FMotivationDetail, FActiveOnly, FTransactionsLoaded, FInEditMode, FBatchUnposted))
             {
-                SetTextBoxOverlayOnKeyMinistryCombo(true);
-            }
-            else if (!FTransactionsLoaded)
-            {
-                SetTextBoxOverlayOnKeyMinistryCombo();
-            }
-
-            if (ARow == null)
-            {
-                return;
-            }
-
-            try
-            {
-                this.Cursor = Cursors.WaitCursor;
-
-                FShowingDetails = true;
-
-                //Record current values for motivation
-                FMotivationGroup = ARow.MotivationGroupCode;
-                FMotivationDetail = ARow.MotivationDetailCode;
-
-                //Show gift table values
-                AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
-                ShowDetailsForGift(giftRow);
-
-                if (ARow.IsCostCentreCodeNull())
+                try
                 {
-                    txtDetailCostCentreCode.Text = string.Empty;
-                }
-                else
-                {
-                    txtDetailCostCentreCode.Text = ARow.CostCentreCode;
-                }
+                    this.Cursor = Cursors.WaitCursor;
 
-                if (ARow.IsAccountCodeNull())
-                {
-                    txtDetailAccountCode.Text = string.Empty;
-                }
-                else
-                {
-                    txtDetailAccountCode.Text = ARow.AccountCode;
-                }
+                    FShowingDetails = true;
 
-                if (ARow.IsRecipientKeyNull())
-                {
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-                    UpdateRecipientKeyText(0);
-                }
-                else
-                {
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
-                    UpdateRecipientKeyText(ARow.RecipientKey);
-                }
+                    bool? DoEnableRecipientHistory;
+                    bool? DoEnableRecipientGiftDestination;
+                    TUC_GiftTransactions_Recipient.FinishShowDetailsManual(ARow,
+                        cmbDetailMotivationDetailCode,
+                        txtDetailRecipientKey,
+                        txtDetailRecipientLedgerNumber,
+                        txtDetailCostCentreCode,
+                        txtDetailAccountCode,
+                        ref FMotivationGroup,
+                        ref FMotivationDetail,
+                        out DoEnableRecipientHistory,
+                        out DoEnableRecipientGiftDestination);
 
-                if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
-                {
-                    mniRecipientHistory.Enabled = false;
-                    RecipientPartnerClassChanged(null);
-                }
-                else
-                {
-                    mniRecipientHistory.Enabled = true;
-
-                    if (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
+                    if (DoEnableRecipientHistory.HasValue)
                     {
-                        RecipientPartnerClassChanged(null);
+                        mniRecipientHistory.Enabled = DoEnableRecipientHistory.Value;
+                    }
+
+                    if (DoEnableRecipientGiftDestination.HasValue)
+                    {
+                        mniRecipientGiftDestination.Enabled = DoEnableRecipientGiftDestination.Value;
+                    }
+
+                    //Show gift table values
+                    AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+                    ShowDetailsForGift(giftRow);
+
+                    ShowReceiptFrequency(Convert.ToInt64(txtDetailDonorKey.Text));
+
+                    UpdateControlsProtection(ARow);
+
+                    if (FTaxDeductiblePercentageEnabled)
+                    {
+                        ShowTaxDeductibleManual(ARow);
                     }
                 }
-
-                ShowReceiptFrequency(Convert.ToInt64(txtDetailDonorKey.Text));
-
-                UpdateControlsProtection(ARow);
-
-                if (FTaxDeductiblePercentageEnabled)
+                finally
                 {
-                    ShowTaxDeductibleManual(ARow);
+                    FShowingDetails = false;
+                    this.Cursor = Cursors.Default;
                 }
-            }
-            finally
-            {
-                FShowingDetails = false;
-                this.Cursor = Cursors.Default;
             }
         }
 
@@ -2348,7 +1329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                UpdateRecipientKeyText(ARow.RecipientKey);
+                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow, cmbDetailMotivationDetailCode);
             }
 
             if (txtDetailRecipientLedgerNumber.Text.Length == 0)
@@ -2986,120 +1967,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void DeleteAllGifts(System.Object sender, EventArgs e)
-        {
-            string completionMessage = string.Empty;
-
-            if ((FPreviouslySelectedDetailRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
-            {
-                return;
-            }
-
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                ||
-                (MessageBox.Show(String.Format(Catalog.GetString(
-                             "You have chosen to delete all gifts from batch ({0}).\n\nDo you really want to delete all?"),
-                         FBatchNumber),
-                     Catalog.GetString("Confirm Delete All"),
-                     MessageBoxButtons.YesNo,
-                     MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
-            {
-                try
-                {
-                    //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                    completionMessage = String.Format(Catalog.GetString("All gifts and details cancelled successfully."),
-                        FPreviouslySelectedDetailRow.BatchNumber);
-
-                    //clear any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection();
-
-                    //Clear out the gift data for the current batch without marking the records for deletion
-                    //  and then reload from server
-                    if (RefreshCurrentBatchGiftData(FBatchNumber))
-                    {
-                        ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-                    }
-
-                    //Now delete all gift data for current batch
-                    DeleteCurrentBatchGiftData(FBatchNumber);
-
-                    FBatchRow.BatchTotal = 0;
-
-                    // Be sure to set the last gift number in the parent table before saving all the changes
-                    SetBatchLastGiftNumber();
-
-                    FPetraUtilsObject.HasChanges = true;
-
-                    // save first, then post
-                    if (!((TFrmGiftBatch)ParentForm).SaveChanges())
-                    {
-                        SelectRowInGrid(1);
-
-                        // saving failed, therefore do not try to cancel
-                        MessageBox.Show(Catalog.GetString("The emptied batch failed to save!"));
-                    }
-                    else
-                    {
-                        MessageBox.Show(completionMessage,
-                            "All Gifts Deleted.",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    completionMessage = ex.Message;
-                    MessageBox.Show(ex.Message,
-                        "Deletion Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    //Return FMainDS to original state
-                    FMainDS.RejectChanges();
-                }
-            }
-
-            if (grdDetails.Rows.Count < 2)
-            {
-                ShowDetails(null);
-                UpdateControlsProtection();
-            }
-
-            UpdateRecordNumberDisplay();
-        }
-
-        private void DeleteCurrentBatchGiftData(Int32 ABatchNumber)
-        {
-            DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
-
-            giftDetailView.RowFilter = String.Format("{0}={1}",
-                AGiftDetailTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            giftDetailView.Sort = String.Format("{0} DESC, {1} DESC",
-                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                AGiftDetailTable.GetDetailNumberDBName());
-
-            foreach (DataRowView dr in giftDetailView)
-            {
-                dr.Delete();
-            }
-
-            DataView giftView = new DataView(FMainDS.AGift);
-
-            giftView.RowFilter = String.Format("{0}={1}",
-                AGiftTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            giftView.Sort = String.Format("{0} DESC",
-                AGiftTable.GetGiftTransactionNumberDBName());
-
-            foreach (DataRowView dr in giftView)
-            {
-                dr.Delete();
-            }
-        }
-
         private void OpenDonorHistory(System.Object sender, EventArgs e)
         {
             TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
@@ -3137,20 +2004,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // modifies menu items depending on the Recipeint's Partner class
         private void RecipientPartnerClassChanged(TPartnerClass ? APartnerClass)
         {
-            string ItemText = Catalog.GetString("Open Recipient Gift Destination");
+            bool? DoEnableRecipientGiftDestination;
 
-            if ((APartnerClass == TPartnerClass.UNIT) || (APartnerClass == null))
+            TUC_GiftTransactions_Recipient.OnRecipientPartnerClassChanged(APartnerClass, txtDetailRecipientKey, txtDetailRecipientLedgerNumber,
+                out DoEnableRecipientGiftDestination);
+
+            if (DoEnableRecipientGiftDestination.HasValue)
             {
-                txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, false);
-                txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, false);
-                mniRecipientGiftDestination.Enabled = false;
+                mniRecipientGiftDestination.Enabled = DoEnableRecipientGiftDestination.Value;
             }
-            else if (APartnerClass == TPartnerClass.FAMILY)
-            {
-                txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, true);
-                txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
-                mniRecipientGiftDestination.Enabled = true;
-            }
+
+            //string ItemText = Catalog.GetString("Open Recipient Gift Destination");
+
+            //if ((APartnerClass == TPartnerClass.UNIT) || (APartnerClass == null))
+            //{
+            //    txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, false);
+            //    txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, false);
+            //    mniRecipientGiftDestination.Enabled = false;
+            //}
+            //else if (APartnerClass == TPartnerClass.FAMILY)
+            //{
+            //    txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, true);
+            //    txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
+            //    mniRecipientGiftDestination.Enabled = true;
+            //}
         }
 
         /// <summary>
