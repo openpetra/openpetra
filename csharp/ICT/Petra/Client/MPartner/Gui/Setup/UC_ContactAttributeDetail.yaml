@@ -39,7 +39,6 @@ RootNode:
                 DetailContactAttrDetailDescr: {Label=Description}
                 DetailActive: {Label=Active, Type=Boolean}
             SortOrder: DetailContactAttrDetailCode ASC
-            ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Height: 85
             Dock: Bottom

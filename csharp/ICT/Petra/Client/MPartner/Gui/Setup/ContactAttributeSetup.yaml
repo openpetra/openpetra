@@ -3,6 +3,7 @@ RootNode:
     FormTitle: Maintain Contact Attributes and Details
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PContactAttribute
+    DependentChildUserControl: true
     CacheableTable: ContactAttributeList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
@@ -55,7 +56,6 @@ RootNode:
                 DetailContactAttributeDescr: {Label=Description}
                 DetailActive: {Label=Active, Type=Boolean}
             SortOrder: DetailContactAttributeCode ASC
-            ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
