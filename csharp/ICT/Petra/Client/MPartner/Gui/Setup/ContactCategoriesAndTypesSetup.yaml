@@ -4,9 +4,11 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerContactSetupTDS
     DetailTable: PPartnerAttributeCategory
+    DependentChildUserControl: true
+    CacheableTable: ContactCategoryList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
-    Template: windowEdit
+    Template: windowMaintainCacheableTable
     WindowWidth: 790
     WindowHeight: 610
     Actions:
@@ -57,12 +59,14 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PPartnerAttributeCategory
-            Columns: [CategoryCode, CategoryDesc, Deletable]
+            Columns: [CategoryCode, CategoryDesc, Deletable, Index]
             CustomColumns:
                 CategoryCode: {Label=Contact Category}
                 CategoryDesc: {Label=Description}
                 Deletable: {Label=Deletable, Type=Boolean}
-            ActionFocusRow: FocusedRowChanged
+                Index:
+            SortOrder: Index ASC
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls:
