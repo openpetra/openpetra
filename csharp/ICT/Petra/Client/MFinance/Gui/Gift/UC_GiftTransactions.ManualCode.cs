@@ -426,7 +426,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS, FLedgerNumber, FPetraUtilsObject, ref cmbKeyMinistries, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode,
                 txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible,
                 ref FMotivationGroup, ref FMotivationDetail, FShowingDetails, ref FInRecipientKeyChanging, FInKeyMinistryChanging, FInEditMode,
-                FBatchUnposted, FMotivationDetailChanged, FTaxDeductiblePercentageEnabled, 
+                FBatchUnposted, FMotivationDetailChanged, FTaxDeductiblePercentageEnabled,
                 out DoEnableRecipientHistory, out DoValidateGiftDestination, out DoTaxUpdate);
 
             if (DoTaxUpdate)
@@ -1072,7 +1072,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
                     ShowDetailsForGift(giftRow);
 
-                ShowDonorInfo(Convert.ToInt64(txtDetailDonorKey.Text));
+                    ShowDonorInfo(Convert.ToInt64(txtDetailDonorKey.Text));
 
                     UpdateControlsProtection(ARow);
 
@@ -1517,8 +1517,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ValidateGiftDestination()
         {
             // if no gift destination exists for parter then give the user the option to open Gift Destination maintenance screen
-            if ((FPreviouslySelectedDetailRow != null) 
-                && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) 
+            if ((FPreviouslySelectedDetailRow != null)
+                && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 && (FPreviouslySelectedDetailRow.RecipientKey != 0)
                 && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)
                 && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +

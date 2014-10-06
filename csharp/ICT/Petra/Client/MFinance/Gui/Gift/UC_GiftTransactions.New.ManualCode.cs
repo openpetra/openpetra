@@ -97,7 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     newRow.TaxDeductiblePct = 100;
                 }
-                
+
                 FMainDS.AGiftDetail.Rows.Add(newRow);
 
                 FPetraUtilsObject.SetChangedFlag();
@@ -139,7 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FCreatingNewGift = true;
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 FCreatingNewGift = false;
-                
+
                 TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationDetailCode);
                 cmbKeyMinistries.Clear();
                 mniRecipientHistory.Enabled = false;

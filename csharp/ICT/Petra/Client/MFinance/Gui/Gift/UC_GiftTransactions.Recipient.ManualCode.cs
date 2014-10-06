@@ -243,7 +243,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (!ACreatingNewGiftFlag && (motivationDetail.RecipientKey > 0))
             {
                 AMotivationDetailChangedFlag = true;
-                PopulateKeyMinistry(ACurrentDetailRow, ACmbKeyMinistries,ATxtDetailRecipientKey, ATxtDetailRecipientLedgerNumber, motivationDetail.RecipientKey);
+                PopulateKeyMinistry(ACurrentDetailRow,
+                    ACmbKeyMinistries,
+                    ATxtDetailRecipientKey,
+                    ATxtDetailRecipientLedgerNumber,
+                    motivationDetail.RecipientKey);
                 AMotivationDetailChangedFlag = false;
             }
             else
@@ -516,13 +520,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// SetKeyMinistryTextBoxInvisible
         /// </summary>
-        public static void SetKeyMinistryTextBoxInvisible(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, GiftBatchTDS AMainDS, Int32 ALedgerNumber,
+        public static void SetKeyMinistryTextBoxInvisible(GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
+            GiftBatchTDS AMainDS,
+            Int32 ALedgerNumber,
             TFrmPetraEditUtils APetraUtilsObject,
-            TCmbAutoPopulated ACmbKeyMinistries, ref TCmbAutoPopulated ACmbMotivationDetailCode, TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber, TextBox ATxtDetailCostCentreCode, TextBox ATxtDetailAccountCode,
-            TextBox ATxtDetailRecipientKeyMinistry, CheckBox AChkDetailTaxDeductible, TextBox ATxtDeductibleAccount,
-            string AMotivationGroup, ref string AMotivationDetail, ref bool AMotivationDetailChangedFlag,
-            bool AActiveOnly, bool ARecipientKeyChangingFlag, bool ACreatingNewGiftFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool ATaxDeductiblePercentageEnabledFlag,
+            TCmbAutoPopulated ACmbKeyMinistries,
+            ref TCmbAutoPopulated ACmbMotivationDetailCode,
+            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber,
+            TextBox ATxtDetailCostCentreCode,
+            TextBox ATxtDetailAccountCode,
+            TextBox ATxtDetailRecipientKeyMinistry,
+            CheckBox AChkDetailTaxDeductible,
+            TextBox ATxtDeductibleAccount,
+            string AMotivationGroup,
+            ref string AMotivationDetail,
+            ref bool AMotivationDetailChangedFlag,
+            bool AActiveOnly,
+            bool ARecipientKeyChangingFlag,
+            bool ACreatingNewGiftFlag,
+            bool AInEditModeFlag,
+            bool ABatchUnpostedFlag,
+            bool ATaxDeductiblePercentageEnabledFlag,
             out bool ADoTaxUpdate)
         {
             if (ATxtDetailRecipientKeyMinistry.Visible)
@@ -870,13 +889,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// ApplyMotivationDetailCodeFilter
         /// </summary>
-        private static void ApplyMotivationDetailCodeFilter(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, GiftBatchTDS AMainDS, Int32 ALedgerNumber,
+        private static void ApplyMotivationDetailCodeFilter(GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
+            GiftBatchTDS AMainDS,
+            Int32 ALedgerNumber,
             TFrmPetraEditUtils APetraUtilsObject,
-            TCmbAutoPopulated ACmbKeyMinistries, ref TCmbAutoPopulated ACmbMotivationDetailCode, TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber, TextBox ATxtDetailCostCentreCode,
-            TextBox ATxtDetailAccountCode, TextBox ATxtDetailRecipientKeyMinistry, CheckBox AChkDetailTaxDeductible, TextBox ATxtDeductibleAccount,
-            string AMotivationGroup, ref string AMotivationDetail, ref bool AMotivationDetailChangedFlag,
-            bool AActiveOnly, bool ARecipientKeyChangingFlag, bool ACreatingNewGiftFlag, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool ATaxDeductiblePercentageEnabledFlag,
+            TCmbAutoPopulated ACmbKeyMinistries,
+            ref TCmbAutoPopulated ACmbMotivationDetailCode,
+            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber,
+            TextBox ATxtDetailCostCentreCode,
+            TextBox ATxtDetailAccountCode,
+            TextBox ATxtDetailRecipientKeyMinistry,
+            CheckBox AChkDetailTaxDeductible,
+            TextBox ATxtDeductibleAccount,
+            string AMotivationGroup,
+            ref string AMotivationDetail,
+            ref bool AMotivationDetailChangedFlag,
+            bool AActiveOnly,
+            bool ARecipientKeyChangingFlag,
+            bool ACreatingNewGiftFlag,
+            bool AInEditModeFlag,
+            bool ABatchUnpostedFlag,
+            bool ATaxDeductiblePercentageEnabledFlag,
             out bool ADoTaxUpdate)
         {
             //FMotivationbDetail will change by next process
