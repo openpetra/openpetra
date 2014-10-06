@@ -22,36 +22,32 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
-using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
-using Ict.Common.Remoting.Server;
-using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Shared.Interfaces.MFinance;
-using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Common;
-using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
-using System.Data.Common;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -2183,7 +2179,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable GiftBatchDetailTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             TDBTransaction Transaction = null;
-            //AAccountTable AccountTable = new AAccountTable();
             
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             int BatchNumber = AParameters["param_batch_number_i"].ToInt32();
@@ -2239,6 +2234,86 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 					" AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i " + 
                                     " AND Donor.p_partner_key_n = a_gift.p_donor_key_n" +
                 					" AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n";
+
+                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
+                });
+
+            return Results;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable RecipientTaxDeductPctTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            // create new datatable
+            DataTable Results = new DataTable();
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                	DateTime CurrentDate = DateTime.Today;
+                	
+                	string RecipientSelection = AParameters["param_recipient_selection"].ToString();
+                	
+                	string Query = "SELECT DISTINCT p_partner_tax_deductible_pct.p_partner_key_n, p_partner_tax_deductible_pct.p_date_valid_from_d, " +
+                					"p_partner_tax_deductible_pct.p_percentage_tax_deductible_n, p_partner.p_partner_short_name_c, " + 
+                					"p_partner_gift_destination.p_field_key_n, um_unit_structure.um_parent_unit_key_n " +
+                		
+                					"FROM p_partner_tax_deductible_pct " +
+	
+									"LEFT JOIN p_partner " +
+		        					"ON p_partner.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+	
+									"LEFT JOIN p_partner_gift_destination " +
+		        					"ON CASE WHEN p_partner.p_partner_class_c = 'FAMILY' " +
+                					"THEN p_partner.p_partner_key_n = p_partner_gift_destination.p_partner_key_n " +
+                					"AND p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "' " +
+		            				"AND (p_partner_gift_destination.p_date_expires_d IS NULL " +
+                						"OR (p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "' " +
+		        						"AND p_partner_gift_destination.p_date_effective_d <> p_partner_gift_destination.p_date_expires_d)) END " +
+		
+		        					"LEFT JOIN um_unit_structure " +
+		        					"ON CASE WHEN p_partner.p_partner_class_c = 'UNIT' " +
+		        					"THEN NOT EXISTS (SELECT * FROM p_partner_type " +
+		        					"WHERE p_partner_type.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+		        					"AND p_partner_type.p_type_code_c = 'LEDGER') " +
+		        					"AND um_unit_structure.um_child_unit_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+		        					"AND um_unit_structure.um_child_unit_key_n <> um_unit_structure.um_parent_unit_key_n END";
+                	
+                	if (RecipientSelection == "one_partner")
+                	{
+                		Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = " + AParameters["param_recipient_key"].ToInt64();
+                	}
+                	else if (RecipientSelection == "Extract")
+                	{
+                		// recipient must be part of extract
+                		Query += " WHERE EXISTS(SELECT * FROM m_extract, m_extract_master";
+                		
+                		if (!AParameters["param_chkPrintAllExtract"].ToBool())
+                		{
+                			Query += ", a_gift_detail, a_gift_batch";
+                		}
+                		
+                		Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = m_extract.p_partner_key_n " +
+		                			"AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i " +
+		                			"AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"] + "'";
+                		
+                		if (!AParameters["param_chkPrintAllExtract"].ToBool())
+                		{
+                			// recipient must have a posted gift
+                			Query += " AND a_gift_detail.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
+                						" AND a_gift_detail.p_recipient_key_n = m_extract.p_partner_key_n " +
+                						"AND a_gift_batch.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
+                						" AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
+                						"AND a_gift_batch.a_batch_status_c = 'Posted'";
+                		}
+                		
+                		Query += ")";
+                	}
 
                     Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
                 });

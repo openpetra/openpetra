@@ -111,12 +111,16 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.ExecutiveSummaryTable(AParameters, FDbAdapter);
                     break;
 
+                case "TrialBalance":
+                    ResultTbl = TFinanceReportingWebConnector.TrialBalanceTable(AParameters, FDbAdapter);
+                    break;
+
                 case "GiftBatchDetail":
                     ResultTbl = TFinanceReportingWebConnector.GiftBatchDetailTable(AParameters, FDbAdapter);
                     break;
 
-                case "TrialBalance":
-                    ResultTbl = TFinanceReportingWebConnector.TrialBalanceTable(AParameters, FDbAdapter);
+                case "RecipientTaxDeductPct":
+                    ResultTbl = TFinanceReportingWebConnector.RecipientTaxDeductPctTable(AParameters, FDbAdapter);
                     break;
 
                 default:

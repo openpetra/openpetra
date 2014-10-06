@@ -218,6 +218,7 @@ OpenPetra:
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
                         GiftBatchDetail: {ActionOpenScreen=TFrmGiftBatchDetail}
+                        RecipientTaxDeductiblePercentages: {ActionOpenScreen=TFrmRecipientTaxDeductiblePercentages}
                     #Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
                         #ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                         #RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}
