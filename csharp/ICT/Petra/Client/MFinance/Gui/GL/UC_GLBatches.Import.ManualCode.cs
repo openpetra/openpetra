@@ -259,7 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             ACurrentBatchRow.BatchNumber, ACurrentJournalRow.JournalNumber));
 
                     //Update totals and set Journal last transaction number
-                    GLRoutines.UpdateTotalsOfBatch(ref FMainDS, ACurrentBatchRow, true);
+                    GLRoutines.UpdateTotalsOfBatch(ref FMainDS, ACurrentBatchRow);
                     FMyForm.GetTransactionsControl().SelectRow(1);
                     FMyForm.SaveChanges();
                 }

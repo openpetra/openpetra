@@ -65,6 +65,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             out DateTime AEndDateLastForwardingPeriod)
         {
             bool RetVal = false;
+
             AStartDateCurrentPeriod = DateTime.MinValue;
             AEndDateLastForwardingPeriod = DateTime.MinValue;
 

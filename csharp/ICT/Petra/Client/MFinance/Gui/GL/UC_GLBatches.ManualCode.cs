@@ -156,29 +156,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SelectRowInGrid(1);
         }
 
-        ///// No longer used?  It has disappeared inside the load and filter object
-        ///// Reset the control
-        //public void ClearCurrentSelection()
-        //{
-        //    if (FPetraUtilsObject.HasChanges)
-        //    {
-        //        GetDataFromControls();
-        //    }
-
-        //    this.FPreviouslySelectedDetailRow = null;
-        //    ShowData();
-        //}
-
-        ///// No longer used?
-        ///// <summary>
-        ///// Returns FMainDS
-        ///// </summary>
-        ///// <returns></returns>
-        //public GLBatchTDS BatchFMainDS()
-        //{
-        //    return FMainDS;
-        //}
-
         /// <summary>
         /// Enable the transaction tab
         /// </summary>
