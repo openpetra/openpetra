@@ -172,7 +172,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     if (bdrow.RowState == DataRowState.Deleted)
                     {
-                        DeletedBankingDetails.Add(Convert.ToInt32(bdrow[AInspectDS.PPartnerBankingDetails.ColumnBankingDetailsKey, DataRowVersion.Original]));
+                        DeletedBankingDetails.Add(Convert.ToInt32(bdrow[AInspectDS.PPartnerBankingDetails.ColumnBankingDetailsKey,
+                                                                        DataRowVersion.Original]));
                     }
                 }
 

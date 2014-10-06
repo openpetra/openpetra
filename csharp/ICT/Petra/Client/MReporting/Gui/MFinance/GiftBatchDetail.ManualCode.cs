@@ -59,20 +59,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public Int32 BatchNumber
         {
-        	set
-        	{
-        		if (value != -1)
-        		{
-        			FBatchNumber = value;
-        			txtBatchNumber.Text = FBatchNumber.ToString();
-        		}
-        	}
+            set
+            {
+                if (value != -1)
+                {
+                    FBatchNumber = value;
+                    txtBatchNumber.Text = FBatchNumber.ToString();
+                }
+            }
         }
 
         //
@@ -122,17 +122,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
-            
+
             bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
                 TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
-            
+
             ACalc.AddParameter("param_tax_deductible_pct", TaxDeductiblePercentageEnabled);
-            
-            if (ACalc.GetParameters().Exists("param_currency") && ACalc.GetParameters().Get("param_currency").ToString() == Catalog.GetString("Transaction"))
+
+            if (ACalc.GetParameters().Exists("param_currency")
+                && (ACalc.GetParameters().Get("param_currency").ToString() == Catalog.GetString("Transaction")))
             {
-            	ACalc.RemoveParameter("param_currency_name");
-            	ACalc.AddParameter("param_currency_name", 
-            	                   TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, Convert.ToInt32(txtBatchNumber.Text)));
+                ACalc.RemoveParameter("param_currency_name");
+                ACalc.AddParameter("param_currency_name",
+                    TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, Convert.ToInt32(txtBatchNumber.Text)));
             }
 
             return true;

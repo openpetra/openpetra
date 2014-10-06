@@ -92,39 +92,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GenerateLetters(System.Object sender, EventArgs e)
         {
-        	Int64 DonorKey = 0;
-        	string Extract = null;
-        	
+            Int64 DonorKey = 0;
+            string Extract = null;
+
             if ((!dtpStartDate.Date.HasValue) || (!dtpEndDate.Date.HasValue))
             {
                 MessageBox.Show(Catalog.GetString("Please supply valid Start and End dates."));
                 return;
             }
-            
+
             if (rbtPartner.Checked)
             {
-            	if (txtDonor.Text == "0000000000")
-            	{
-            		MessageBox.Show(Catalog.GetString("Please select a donor."));
-                	return;
-            	}
-            	else
-            	{
-            		DonorKey = Convert.ToInt64(txtDonor.Text);
-            	}
+                if (txtDonor.Text == "0000000000")
+                {
+                    MessageBox.Show(Catalog.GetString("Please select a donor."));
+                    return;
+                }
+                else
+                {
+                    DonorKey = Convert.ToInt64(txtDonor.Text);
+                }
             }
 
             if (rbtExtract.Checked)
             {
-            	if (txtExtract.Text == "")
-            	{
-            		MessageBox.Show(Catalog.GetString("No extract name entered!"));
-                	return;
-            	}
-            	else
-            	{
-            		Extract = txtExtract.Text;
-            	}
+                if (txtExtract.Text == "")
+                {
+                    MessageBox.Show(Catalog.GetString("No extract name entered!"));
+                    return;
+                }
+                else
+                {
+                    Extract = txtExtract.Text;
+                }
             }
 
             OpenFileDialog DialogOpen = new OpenFileDialog();

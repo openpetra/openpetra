@@ -141,14 +141,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 String CurrencySelection = this.cmbCurrency.GetSelectedString();
                 ACalculator.AddParameter("param_currency", CurrencySelection);
-  
+
                 if (CurrencySelection == Catalog.GetString("Base"))
                 {
-                	CurrencyName = FLedgerRow.BaseCurrency;
+                    CurrencyName = FLedgerRow.BaseCurrency;
                 }
                 else if (CurrencySelection == Catalog.GetString("International"))
                 {
-                	CurrencyName = FLedgerRow.IntlCurrency;
+                    CurrencyName = FLedgerRow.IntlCurrency;
                 }
             }
             else
@@ -472,14 +472,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbBreakdownYear.Visible = AValue;
             grpPeriodRange.Height = (AValue) ? 240 : 164;
         }
-        
+
         /// <summary>
         /// Hide the Period Range group
         /// </summary>
         /// <param name="AHide"></param>
         public void HidePeriodRange(bool AHide = true)
         {
-        	grpPeriodRange.Visible = !AHide;
+            grpPeriodRange.Visible = !AHide;
         }
 
         private void UnselectAll(System.Object sender, System.EventArgs e)

@@ -428,18 +428,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                             FMainDS.Tables.Add(new PPartnerTaxDeductiblePctTable());
                             FMainDS.InitVars();
                         }
-                        
+
                         bool CreateNewRow = true;
-                        
+
                         // check if previous row can be edited otherwise create a new row
                         foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
                         {
-                        	if (Row.RowState != DataRowState.Deleted)
-                        	{
-                        		Row.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
-                            	Row.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
-                            	CreateNewRow = false;
-                        	}
+                            if (Row.RowState != DataRowState.Deleted)
+                            {
+                                Row.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+                                Row.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
+                                CreateNewRow = false;
+                            }
                         }
 
                         if (CreateNewRow)
@@ -455,14 +455,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         if ((FMainDS.PPartnerTaxDeductiblePct != null) && (FMainDS.PPartnerTaxDeductiblePct.Count > 0))
                         {
-                        	// every row in table should be deleted
+                            // every row in table should be deleted
                             foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
-		                    {
-		                    	if (Row.RowState != DataRowState.Deleted)
-		                    	{
-		                    		Row.Delete();
-		                    	}
-		                    }
+                            {
+                                if (Row.RowState != DataRowState.Deleted)
+                                {
+                                    Row.Delete();
+                                }
+                            }
                         }
                     }
                 }
@@ -708,14 +708,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void ShareExistingBankAccount(System.Object sender, EventArgs e)
         {
-        	FValidateBankingDetailsExtra = true;
-        	
-        	// first validate the currently selected row (if it exists)
-        	if(!ValidateAllData(true, true))
-        	{
-        		return;
-        	}
-        	
+            FValidateBankingDetailsExtra = true;
+
+            // first validate the currently selected row (if it exists)
+            if (!ValidateAllData(true, true))
+            {
+                return;
+            }
+
             PPartnerBankingDetailsRow NewRow;
 
             long PartnerKey = 0;

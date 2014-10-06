@@ -2179,61 +2179,73 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable GiftBatchDetailTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             TDBTransaction Transaction = null;
-            
+
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             int BatchNumber = AParameters["param_batch_number_i"].ToInt32();
 
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+                ref Transaction,
                 delegate
                 {
-                	DateTime CurrentDate = DateTime.Today;
-                	
-                	string Query = "SELECT DISTINCT a_gift_batch.a_batch_description_c, a_gift_batch.a_batch_status_c, a_gift_batch.a_gift_type_c, a_gift_batch.a_gl_effective_date_d, " +
-                					"a_gift_batch.a_bank_cost_centre_c, a_gift_batch.a_bank_account_code_c, a_gift_batch.a_currency_code_c, a_gift_batch.a_hash_total_n, a_gift_batch.a_batch_total_n, " +
-                		
-                					"a_gift_detail.a_gift_transaction_number_i, a_gift_detail.a_detail_number_i, a_gift_detail.a_confidential_gift_flag_l, " +
-                					"a_gift_detail.p_recipient_key_n, a_gift_detail.a_gift_amount_n, a_gift_detail.a_gift_amount_intl_n, a_gift_detail.a_gift_transaction_amount_n, " +
-                					"a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, a_gift_detail.a_recipient_ledger_number_n, " +
-                					"a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c, a_gift_detail.a_tax_deductible_pct_n, " +
-                		
-                					"a_gift.p_donor_key_n, a_gift.a_reference_c, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, " +
-                					"a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, " +
-                		
-                					"Donor.p_partner_class_c, Donor.p_partner_short_name_c, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, " +
-                					"Recipient.p_partner_class_c, Recipient.p_partner_short_name_c, " +
-                		
-                					// true if donor has a valid Ex-omer special type
-                					"CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
-                					"p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
-									" AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
-									" AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
-									" AND p_partner_type.p_type_code_c LIKE 'EX-OMER%'" +
-                					") THEN True ELSE False END AS EXOMER, " +
-                		
-                					// true if the gift is restricted for the user
-                					"CASE WHEN EXISTS (SELECT s_user_group.* FROM s_user_group " +
-                					"WHERE a_gift.a_restricted_l IS true" +
-                					" AND NOT EXISTS (SELECT s_group_gift.s_read_access_l FROM s_group_gift, s_user_group " +
-            							"WHERE s_group_gift.s_read_access_l" +
-										" AND s_group_gift.a_ledger_number_i = " + LedgerNumber +
-										" AND s_group_gift.a_batch_number_i = " + BatchNumber +
-										" AND s_group_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
-										" AND s_user_group.s_user_id_c = '" + UserInfo.GUserInfo.UserID + "'" +
-										" AND s_user_group.s_group_id_c = s_group_gift.s_group_id_c" +
-										" AND s_user_group.s_unit_key_n = s_group_gift.s_group_unit_key_n)" +
-                					") THEN False ELSE True END AS ReadAccess " +
-                		
-                				    "FROM a_gift_batch, a_gift_detail, a_gift, p_partner AS Donor, p_partner AS Recipient " +
-                		
-                                    "WHERE a_gift_batch.a_ledger_number_i = " + LedgerNumber + " AND a_gift_batch.a_batch_number_i = " + BatchNumber +
-                                    " AND a_gift.a_ledger_number_i = " + LedgerNumber + " AND a_gift.a_batch_number_i = " + BatchNumber +
-                                    " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " AND a_gift_detail.a_batch_number_i = " + BatchNumber +
-                					" AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i " + 
-                                    " AND Donor.p_partner_key_n = a_gift.p_donor_key_n" +
-                					" AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n";
+                    DateTime CurrentDate = DateTime.Today;
+
+                    string Query =
+                        "SELECT DISTINCT a_gift_batch.a_batch_description_c, a_gift_batch.a_batch_status_c, a_gift_batch.a_gift_type_c, a_gift_batch.a_gl_effective_date_d, "
+                        +
+                        "a_gift_batch.a_bank_cost_centre_c, a_gift_batch.a_bank_account_code_c, a_gift_batch.a_currency_code_c, a_gift_batch.a_hash_total_n, a_gift_batch.a_batch_total_n, "
+                        +
+
+                        "a_gift_detail.a_gift_transaction_number_i, a_gift_detail.a_detail_number_i, a_gift_detail.a_confidential_gift_flag_l, "
+                        +
+                        "a_gift_detail.p_recipient_key_n, a_gift_detail.a_gift_amount_n, a_gift_detail.a_gift_amount_intl_n, a_gift_detail.a_gift_transaction_amount_n, "
+                        +
+                        "a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, a_gift_detail.a_recipient_ledger_number_n, "
+                        +
+                        "a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c, a_gift_detail.a_tax_deductible_pct_n, "
+                        +
+
+                        "a_gift.p_donor_key_n, a_gift.a_reference_c, a_gift.a_method_of_giving_code_c, a_gift.a_method_of_payment_code_c, "
+                        +
+                        "a_gift.a_receipt_letter_code_c, a_gift.a_date_entered_d, a_gift.a_first_time_gift_l, a_gift.a_receipt_number_i, "
+                        +
+
+                        "Donor.p_partner_class_c, Donor.p_partner_short_name_c, Donor.p_receipt_letter_frequency_c, Donor.p_receipt_each_gift_l, "
+                        +
+                        "Recipient.p_partner_class_c, Recipient.p_partner_short_name_c, " +
+
+                        // true if donor has a valid Ex-omer special type
+                        "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
+                        "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
+                        " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
+                        " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
+                        " AND p_partner_type.p_type_code_c LIKE 'EX-OMER%'" +
+                        ") THEN True ELSE False END AS EXOMER, " +
+
+                        // true if the gift is restricted for the user
+                        "CASE WHEN EXISTS (SELECT s_user_group.* FROM s_user_group " +
+                        "WHERE a_gift.a_restricted_l IS true" +
+                        " AND NOT EXISTS (SELECT s_group_gift.s_read_access_l FROM s_group_gift, s_user_group " +
+                        "WHERE s_group_gift.s_read_access_l" +
+                        " AND s_group_gift.a_ledger_number_i = " + LedgerNumber +
+                        " AND s_group_gift.a_batch_number_i = " + BatchNumber +
+                        " AND s_group_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
+                        " AND s_user_group.s_user_id_c = '" + UserInfo.GUserInfo.UserID + "'" +
+                        " AND s_user_group.s_group_id_c = s_group_gift.s_group_id_c" +
+                        " AND s_user_group.s_unit_key_n = s_group_gift.s_group_unit_key_n)" +
+                        ") THEN False ELSE True END AS ReadAccess " +
+
+                        "FROM a_gift_batch, a_gift_detail, a_gift, p_partner AS Donor, p_partner AS Recipient " +
+
+                        "WHERE a_gift_batch.a_ledger_number_i = " + LedgerNumber + " AND a_gift_batch.a_batch_number_i = " + BatchNumber +
+                        " AND a_gift.a_ledger_number_i = " + LedgerNumber + " AND a_gift.a_batch_number_i = " + BatchNumber +
+                        " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber + " AND a_gift_detail.a_batch_number_i = " +
+                        BatchNumber +
+                        " AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i " +
+                        " AND Donor.p_partner_key_n = a_gift.p_donor_key_n" +
+                        " AND Recipient.p_partner_key_n = a_gift_detail.p_recipient_key_n";
 
                     Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
                 });
@@ -2255,65 +2267,66 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
-                	DateTime CurrentDate = DateTime.Today;
-                	
-                	string RecipientSelection = AParameters["param_recipient_selection"].ToString();
-                	
-                	string Query = "SELECT DISTINCT p_partner_tax_deductible_pct.p_partner_key_n, p_partner_tax_deductible_pct.p_date_valid_from_d, " +
-                					"p_partner_tax_deductible_pct.p_percentage_tax_deductible_n, p_partner.p_partner_short_name_c, " + 
-                					"p_partner_gift_destination.p_field_key_n, um_unit_structure.um_parent_unit_key_n " +
-                		
-                					"FROM p_partner_tax_deductible_pct " +
-	
-									"LEFT JOIN p_partner " +
-		        					"ON p_partner.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
-	
-									"LEFT JOIN p_partner_gift_destination " +
-		        					"ON CASE WHEN p_partner.p_partner_class_c = 'FAMILY' " +
-                					"THEN p_partner.p_partner_key_n = p_partner_gift_destination.p_partner_key_n " +
-                					"AND p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "' " +
-		            				"AND (p_partner_gift_destination.p_date_expires_d IS NULL " +
-                						"OR (p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "' " +
-		        						"AND p_partner_gift_destination.p_date_effective_d <> p_partner_gift_destination.p_date_expires_d)) END " +
-		
-		        					"LEFT JOIN um_unit_structure " +
-		        					"ON CASE WHEN p_partner.p_partner_class_c = 'UNIT' " +
-		        					"THEN NOT EXISTS (SELECT * FROM p_partner_type " +
-		        					"WHERE p_partner_type.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
-		        					"AND p_partner_type.p_type_code_c = 'LEDGER') " +
-		        					"AND um_unit_structure.um_child_unit_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
-		        					"AND um_unit_structure.um_child_unit_key_n <> um_unit_structure.um_parent_unit_key_n END";
-                	
-                	if (RecipientSelection == "one_partner")
-                	{
-                		Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = " + AParameters["param_recipient_key"].ToInt64();
-                	}
-                	else if (RecipientSelection == "Extract")
-                	{
-                		// recipient must be part of extract
-                		Query += " WHERE EXISTS(SELECT * FROM m_extract, m_extract_master";
-                		
-                		if (!AParameters["param_chkPrintAllExtract"].ToBool())
-                		{
-                			Query += ", a_gift_detail, a_gift_batch";
-                		}
-                		
-                		Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = m_extract.p_partner_key_n " +
-		                			"AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i " +
-		                			"AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"] + "'";
-                		
-                		if (!AParameters["param_chkPrintAllExtract"].ToBool())
-                		{
-                			// recipient must have a posted gift
-                			Query += " AND a_gift_detail.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
-                						" AND a_gift_detail.p_recipient_key_n = m_extract.p_partner_key_n " +
-                						"AND a_gift_batch.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
-                						" AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
-                						"AND a_gift_batch.a_batch_status_c = 'Posted'";
-                		}
-                		
-                		Query += ")";
-                	}
+                    DateTime CurrentDate = DateTime.Today;
+
+                    string RecipientSelection = AParameters["param_recipient_selection"].ToString();
+
+                    string Query =
+                        "SELECT DISTINCT p_partner_tax_deductible_pct.p_partner_key_n, p_partner_tax_deductible_pct.p_date_valid_from_d, " +
+                        "p_partner_tax_deductible_pct.p_percentage_tax_deductible_n, p_partner.p_partner_short_name_c, " +
+                        "p_partner_gift_destination.p_field_key_n, um_unit_structure.um_parent_unit_key_n " +
+
+                        "FROM p_partner_tax_deductible_pct " +
+
+                        "LEFT JOIN p_partner " +
+                        "ON p_partner.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+
+                        "LEFT JOIN p_partner_gift_destination " +
+                        "ON CASE WHEN p_partner.p_partner_class_c = 'FAMILY' " +
+                        "THEN p_partner.p_partner_key_n = p_partner_gift_destination.p_partner_key_n " +
+                        "AND p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate + "' " +
+                        "AND (p_partner_gift_destination.p_date_expires_d IS NULL " +
+                        "OR (p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate + "' " +
+                        "AND p_partner_gift_destination.p_date_effective_d <> p_partner_gift_destination.p_date_expires_d)) END " +
+
+                        "LEFT JOIN um_unit_structure " +
+                        "ON CASE WHEN p_partner.p_partner_class_c = 'UNIT' " +
+                        "THEN NOT EXISTS (SELECT * FROM p_partner_type " +
+                        "WHERE p_partner_type.p_partner_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+                        "AND p_partner_type.p_type_code_c = 'LEDGER') " +
+                        "AND um_unit_structure.um_child_unit_key_n = p_partner_tax_deductible_pct.p_partner_key_n " +
+                        "AND um_unit_structure.um_child_unit_key_n <> um_unit_structure.um_parent_unit_key_n END";
+
+                    if (RecipientSelection == "one_partner")
+                    {
+                        Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = " + AParameters["param_recipient_key"].ToInt64();
+                    }
+                    else if (RecipientSelection == "Extract")
+                    {
+                        // recipient must be part of extract
+                        Query += " WHERE EXISTS(SELECT * FROM m_extract, m_extract_master";
+
+                        if (!AParameters["param_chkPrintAllExtract"].ToBool())
+                        {
+                            Query += ", a_gift_detail, a_gift_batch";
+                        }
+
+                        Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = m_extract.p_partner_key_n " +
+                                 "AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i " +
+                                 "AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"] + "'";
+
+                        if (!AParameters["param_chkPrintAllExtract"].ToBool())
+                        {
+                            // recipient must have a posted gift
+                            Query += " AND a_gift_detail.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
+                                     " AND a_gift_detail.p_recipient_key_n = m_extract.p_partner_key_n " +
+                                     "AND a_gift_batch.a_ledger_number_i = " + AParameters["param_ledger_number_i"] +
+                                     " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i " +
+                                     "AND a_gift_batch.a_batch_status_c = 'Posted'";
+                        }
+
+                        Query += ")";
+                    }
 
                     Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
                 });
@@ -2526,21 +2539,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static string GetTransactionCurrency(int ALedgerNumber, int ABatchNumber)
         {
-        	TDBTransaction Transaction = null;
-        	string ReturnValue = "";
-        	
+            TDBTransaction Transaction = null;
+            string ReturnValue = "";
+
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
-		        	AGiftBatchTable GiftBatchTable = AGiftBatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
-		        	
-		        	if (GiftBatchTable != null && GiftBatchTable.Rows.Count > 0)
-		        	{
-		        		ReturnValue = GiftBatchTable[0].CurrencyCode;
-		        	}
+                    AGiftBatchTable GiftBatchTable = AGiftBatchAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, Transaction);
+
+                    if ((GiftBatchTable != null) && (GiftBatchTable.Rows.Count > 0))
+                    {
+                        ReturnValue = GiftBatchTable[0].CurrencyCode;
+                    }
                 });
-        	
-        	return ReturnValue;
+
+            return ReturnValue;
         }
     }
 }

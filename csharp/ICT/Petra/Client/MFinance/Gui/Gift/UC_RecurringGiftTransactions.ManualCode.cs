@@ -1951,7 +1951,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 this.Cursor = Cursors.Default;
             }
         }
-        
+
         /// <summary>
         /// displays information about the donor
         /// </summary>
@@ -1962,109 +1962,110 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-            	if (APartnerKey == 0)
-            	{
-            		return;
-            	}
-            	
-            	// find PPartnerRow from dataset
-	            PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
-	
-	            // if PPartnerRow cannot be found, load it from db
-	            if (DonorRow == null || DonorRow[PPartnerTable.GetReceiptEachGiftDBName()] == DBNull.Value)
-	            {
-	                PPartnerTable PartnerTable = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
-	                
-	                if (PartnerTable == null || PartnerTable.Rows.Count == 0)
-	                {
-	                	// invalid partner
-	                	return;
-	                }
-	                
-                	DonorRow = PartnerTable[0];
-	            }
-	            
-	            // get donor's banking details
-	            ARecurringGiftRow GiftRow = (ARecurringGiftRow)FMainDS.ARecurringGift.Rows.Find(
-	            	new object[] { FLedgerNumber, FBatchNumber, FPreviouslySelectedDetailRow.GiftTransactionNumber });
-	            PBankingDetailsTable BankingDetailsTable = TRemote.MFinance.Gift.WebConnectors.GetDonorBankingDetails(APartnerKey, GiftRow.BankingDetailsKey);
-	            PBankingDetailsRow BankingDetailsRow = null;
-	            
-	            // set donor info text
-	            if (BankingDetailsTable != null && BankingDetailsTable.Rows.Count > 0)
-	            {
-	            	BankingDetailsRow = BankingDetailsTable[0];
-	            }
-	
-	            if (BankingDetailsRow != null && !string.IsNullOrEmpty(BankingDetailsRow.BankAccountNumber))
-	            {
-	                DonorInfo = Catalog.GetString("Bank Account: ") + BankingDetailsRow.BankAccountNumber;
-	            }
-	
-	            if (DonorRow.ReceiptEachGift)
-	            {
-	                if (DonorInfo != string.Empty)
-	                {
-	                    DonorInfo += "; ";
-	                }
-	
-	                DonorInfo += "*" + Catalog.GetString("Receipt Each Gift") + "*";
-	            }
-	
-	            if (!string.IsNullOrEmpty(DonorRow.ReceiptLetterFrequency))
-	            {
-	                if (DonorInfo != string.Empty)
-	                {
-	                    DonorInfo += "; ";
-	                }
-	
-	                DonorInfo += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
-	            }
-	            
-	            if (DonorRow.AnonymousDonor)
-	            {
-	            	if (DonorInfo != string.Empty)
-	                {
-	                    DonorInfo += "; ";
-	                }
-	
-	                DonorInfo += Catalog.GetString("Anonymous");
-	            }
-	            
-	            if (BankingDetailsRow != null && !string.IsNullOrEmpty(BankingDetailsRow.Comment))
-	            {
-	            	if (DonorInfo != string.Empty)
-	                {
-	                    DonorInfo += "; ";
-	                }
-	
-	                DonorInfo += BankingDetailsRow.Comment;
-	            }
-	            
-	            if (!string.IsNullOrEmpty(DonorRow.FinanceComment))
-	            {
-	            	if (DonorInfo != string.Empty)
-	                {
-	                    DonorInfo += "; ";
-	                }
-	
-	                DonorInfo += DonorRow.FinanceComment;
-	            }
+                if (APartnerKey == 0)
+                {
+                    return;
+                }
+
+                // find PPartnerRow from dataset
+                PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
+
+                // if PPartnerRow cannot be found, load it from db
+                if ((DonorRow == null) || (DonorRow[PPartnerTable.GetReceiptEachGiftDBName()] == DBNull.Value))
+                {
+                    PPartnerTable PartnerTable = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+
+                    if ((PartnerTable == null) || (PartnerTable.Rows.Count == 0))
+                    {
+                        // invalid partner
+                        return;
+                    }
+
+                    DonorRow = PartnerTable[0];
+                }
+
+                // get donor's banking details
+                ARecurringGiftRow GiftRow = (ARecurringGiftRow)FMainDS.ARecurringGift.Rows.Find(
+                    new object[] { FLedgerNumber, FBatchNumber, FPreviouslySelectedDetailRow.GiftTransactionNumber });
+                PBankingDetailsTable BankingDetailsTable = TRemote.MFinance.Gift.WebConnectors.GetDonorBankingDetails(APartnerKey,
+                    GiftRow.BankingDetailsKey);
+                PBankingDetailsRow BankingDetailsRow = null;
+
+                // set donor info text
+                if ((BankingDetailsTable != null) && (BankingDetailsTable.Rows.Count > 0))
+                {
+                    BankingDetailsRow = BankingDetailsTable[0];
+                }
+
+                if ((BankingDetailsRow != null) && !string.IsNullOrEmpty(BankingDetailsRow.BankAccountNumber))
+                {
+                    DonorInfo = Catalog.GetString("Bank Account: ") + BankingDetailsRow.BankAccountNumber;
+                }
+
+                if (DonorRow.ReceiptEachGift)
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += "*" + Catalog.GetString("Receipt Each Gift") + "*";
+                }
+
+                if (!string.IsNullOrEmpty(DonorRow.ReceiptLetterFrequency))
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
+                }
+
+                if (DonorRow.AnonymousDonor)
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += Catalog.GetString("Anonymous");
+                }
+
+                if ((BankingDetailsRow != null) && !string.IsNullOrEmpty(BankingDetailsRow.Comment))
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += BankingDetailsRow.Comment;
+                }
+
+                if (!string.IsNullOrEmpty(DonorRow.FinanceComment))
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += DonorRow.FinanceComment;
+                }
             }
             finally
             {
-	            // shorten text if it is too long to display on screen
-	            if (DonorInfo.Length >= 65)
-	            {
-	            	txtDonorInfo.Text = DonorInfo.Substring(0, 62) + "...";
-	            }
-	            else
-	            {
-	            	txtDonorInfo.Text = DonorInfo;
-	            }
-	            
-	            FDonorInfoToolTip.SetToolTip(txtDonorInfo, DonorInfo);
-	            FPetraUtilsObject.SetStatusBarText(txtDonorInfo, DonorInfo);
+                // shorten text if it is too long to display on screen
+                if (DonorInfo.Length >= 65)
+                {
+                    txtDonorInfo.Text = DonorInfo.Substring(0, 62) + "...";
+                }
+                else
+                {
+                    txtDonorInfo.Text = DonorInfo;
+                }
+
+                FDonorInfoToolTip.SetToolTip(txtDonorInfo, DonorInfo);
+                FPetraUtilsObject.SetStatusBarText(txtDonorInfo, DonorInfo);
             }
         }
 

@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     Catalog.GetString("No extract name entered!"), TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
-        	
+
             ACalc.AddParameter("param_recipient_key", txtRecipient.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
@@ -130,7 +130,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (!HasData)
             {
-                MessageBox.Show(Catalog.GetString("No Recipient Tax Deductible Percentages found for current Ledger."), "Recipient Tax Deductible Percentages");
+                MessageBox.Show(Catalog.GetString(
+                        "No Recipient Tax Deductible Percentages found for current Ledger."), "Recipient Tax Deductible Percentages");
             }
 
             return HasData;

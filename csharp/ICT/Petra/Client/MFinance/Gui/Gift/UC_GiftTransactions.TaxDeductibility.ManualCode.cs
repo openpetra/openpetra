@@ -358,20 +358,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // Set the Tax Deductibility Percentage from a Recipient's PPartnerTaxDeductiblePct row (if it exists)
         private void UpdateTaxDeductiblePct(Int64 APartnerKey, bool ARecipientChanged)
         {
-        	if (APartnerKey == 0)
+            if (APartnerKey == 0)
             {
-        		if (!txtDeductiblePercentage.Enabled)
-        		{
-        			txtDeductiblePercentage.NumberValueDecimal = 0;
-        		}
-        		else
-        		{
-        			txtDeductiblePercentage.NumberValueDecimal = 100;
-        		}
-        		
+                if (!txtDeductiblePercentage.Enabled)
+                {
+                    txtDeductiblePercentage.NumberValueDecimal = 0;
+                }
+                else
+                {
+                    txtDeductiblePercentage.NumberValueDecimal = 100;
+                }
+
                 return;
             }
-            
+
             // 100% default if tax deductibility is not limited
             decimal TaxDeductiblePct = 100;
 
@@ -379,14 +379,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.PPartnerTaxDeductiblePct.Merge(TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(APartnerKey));
             }
-            
+
             if (chkDetailTaxDeductible.Checked && txtDeductiblePercentage.Enabled
                 && (FMainDS.PPartnerTaxDeductiblePct != null) && (FMainDS.PPartnerTaxDeductiblePct.Rows.Count > 0))
             {
-            	foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
+                foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
                 {
-            		// if no valid records exist then the recipient has not limited tax deductible by default
-            		if (Row.PartnerKey == APartnerKey && Row.DateValidFrom <= DateTime.Today)
+                    // if no valid records exist then the recipient has not limited tax deductible by default
+                    if ((Row.PartnerKey == APartnerKey) && (Row.DateValidFrom <= DateTime.Today))
                     {
                         TaxDeductiblePct = Row.PercentageTaxDeductible;
                     }
@@ -394,9 +394,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (!chkDetailTaxDeductible.Checked || !txtDeductiblePercentage.Enabled)
             {
-            	TaxDeductiblePct = 0;
+                TaxDeductiblePct = 0;
             }
-            
+
             txtDeductiblePercentage.NumberValueDecimal = TaxDeductiblePct;
         }
 

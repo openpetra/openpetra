@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             }
-            
+
             mniPrintGiftBatchDetail.Enabled = true;
         }
 
@@ -561,14 +561,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // change user default
             TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
         }
-        
+
         // open screen to print the Gift Batch Detail report
         private void PrintGiftBatchDetail(Object sender, EventArgs e)
         {
-        	TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
-        	Report.LedgerNumber = FLedgerNumber;
-        	Report.BatchNumber = ucoBatches.FSelectedBatchNumber;
-        	Report.Show();
+            TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
+
+            Report.LedgerNumber = FLedgerNumber;
+            Report.BatchNumber = ucoBatches.FSelectedBatchNumber;
+            Report.Show();
         }
 
         private int GetChangedRecordCountManual(out string AMessage)

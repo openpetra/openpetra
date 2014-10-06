@@ -675,8 +675,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         // drop all tables apart from AGift and AGiftDetail and PPartnerTaxDeductiblePct
                         foreach (DataTable table in MainDS.Tables)
                         {
-                            if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName) 
-                        	    && (table.TableName != MainDS.PPartnerTaxDeductiblePct.TableName))
+                            if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName)
+                                && (table.TableName != MainDS.PPartnerTaxDeductiblePct.TableName))
                             {
                                 table.Clear();
                             }
@@ -1775,11 +1775,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 {
                                     giftDetail.SetRecipientKeyMinistryNull();
                                 }
-                                
+
                                 if (TaxDeductiblePercentageEnabled)
                                 {
-                                	MainDS.PPartnerTaxDeductiblePct.Merge(
-                                		PPartnerTaxDeductiblePctAccess.LoadViaPPartner(giftDetail.RecipientKey, Transaction));
+                                    MainDS.PPartnerTaxDeductiblePct.Merge(
+                                        PPartnerTaxDeductiblePctAccess.LoadViaPPartner(giftDetail.RecipientKey, Transaction));
                                 }
                             }
                             else
@@ -2215,18 +2215,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
-            	// do not allow posting gifts with no donor
-            	if (giftDetail.DonorKey == 0)
-            	{
-            		AVerifications.Add(
+                // do not allow posting gifts with no donor
+                if (giftDetail.DonorKey == 0)
+                {
+                    AVerifications.Add(
                         new TVerificationResult(
                             "Posting Gift Batch",
                             String.Format("Donor key needed in gift {0}",
                                 giftDetail.GiftTransactionNumber),
                             TResultSeverity.Resv_Critical));
                     return null;
-            	}
-            	
+                }
+
                 // find motivation detail
                 AMotivationDetailRow motivationRow =
                     (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber,
@@ -2528,7 +2528,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             return PartnerTbl;
         }
-        
+
         /// <summary>
         /// Load Donor Banking Details
         /// </summary>
@@ -2547,26 +2547,26 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                	if (ABankingDetailsKey == 0)
-                	{
-	            		PBankingDetailsTable BankingDetailsTable = 
-	            			PBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
-	                	
-	            		// Find partner's 'main' bank account
-	                	foreach (PBankingDetailsRow Row in BankingDetailsTable.Rows)
-	                	{
-	                		if (PBankingDetailsUsageAccess.Exists(APartnerKey, Row.BankingDetailsKey, "MAIN", Transaction))
-	                		{
-                				ReturnValue = new PBankingDetailsTable();
-                				ReturnValue.Rows.Add((object[]) Row.ItemArray.Clone());
-	                			break;
-	                		}
-	                	}
-                	}
-                	else
-                	{
-                		ReturnValue = PBankingDetailsAccess.LoadByPrimaryKey(ABankingDetailsKey, Transaction);
-                	}
+                    if (ABankingDetailsKey == 0)
+                    {
+                        PBankingDetailsTable BankingDetailsTable =
+                            PBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
+
+                        // Find partner's 'main' bank account
+                        foreach (PBankingDetailsRow Row in BankingDetailsTable.Rows)
+                        {
+                            if (PBankingDetailsUsageAccess.Exists(APartnerKey, Row.BankingDetailsKey, "MAIN", Transaction))
+                            {
+                                ReturnValue = new PBankingDetailsTable();
+                                ReturnValue.Rows.Add((object[])Row.ItemArray.Clone());
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ReturnValue = PBankingDetailsAccess.LoadByPrimaryKey(ABankingDetailsKey, Transaction);
+                    }
                 });
 
             return ReturnValue;
@@ -2822,28 +2822,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-		            PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-		
-		            if (UnitTable.Rows.Count == 1)
-		            {
-		                // this partner is indeed a unit
-		                PUnitRow UnitRow = UnitTable[0];
-		
-		                if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
-		                {
-		                    KeyMinistryExists = true;
-		
-		                    PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-		                    PPartnerRow PartnerRow = PartnerTable[0];
-		
-		                    if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
-		                    {
-		                        IsActive = true;
-		                    }
-		                }
-		            }
+                    PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+
+                    if (UnitTable.Rows.Count == 1)
+                    {
+                        // this partner is indeed a unit
+                        PUnitRow UnitRow = UnitTable[0];
+
+                        if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                        {
+                            KeyMinistryExists = true;
+
+                            PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+                            PPartnerRow PartnerRow = PartnerTable[0];
+
+                            if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
+                            {
+                                IsActive = true;
+                            }
+                        }
+                    }
                 });
-            
+
             AIsActive = IsActive;
 
             return KeyMinistryExists;

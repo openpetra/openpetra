@@ -67,7 +67,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// TODO images are currently locally linked
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber, DateTime AStartDate, DateTime AEndDate, string AHTMLTemplate, bool ADeceasedFirst = false, string AExtract = null, Int64 ADonorKey = 0)
+        public static string CreateAnnualGiftReceipts(Int32 ALedgerNumber,
+            DateTime AStartDate,
+            DateTime AEndDate,
+            string AHTMLTemplate,
+            bool ADeceasedFirst = false,
+            string AExtract = null,
+            Int64 ADonorKey = 0)
         {
             TLanguageCulture.LoadLanguageAndCulture();
 
@@ -92,65 +98,65 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (ADonorKey != 0)
                 {
-                	TPartnerClass Class;
-                	string ShortName;
-                	TPartnerServerLookups.GetPartnerShortName(ADonorKey, out ShortName, out Class);
-                	
-                	donorkeys.Columns.Add(new DataColumn("DonorKey"));
-                	donorkeys.Columns.Add(new DataColumn("DonorName"));
-                	DataRow SingleRow = donorkeys.NewRow();
-                	SingleRow[0] = ADonorKey;
-                	SingleRow[1] = ShortName;
-                	
-                	donorkeys.Rows.Add(SingleRow);
+                    TPartnerClass Class;
+                    string ShortName;
+                    TPartnerServerLookups.GetPartnerShortName(ADonorKey, out ShortName, out Class);
+
+                    donorkeys.Columns.Add(new DataColumn("DonorKey"));
+                    donorkeys.Columns.Add(new DataColumn("DonorName"));
+                    DataRow SingleRow = donorkeys.NewRow();
+                    SingleRow[0] = ADonorKey;
+                    SingleRow[1] = ShortName;
+
+                    donorkeys.Rows.Add(SingleRow);
                 }
                 else
                 {
-                	SortedList <string, string> Defines = new SortedList<string, string>();
- 
-                	if (!string.IsNullOrEmpty(AExtract))
-                	{
-	                	Defines.Add("BYEXTRACT", string.Empty);
-                	}
-                	
-	                // first get all donors in the given date range
-	                SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql", Defines);
-	
-	                OdbcParameter[] parameters = new OdbcParameter[4];
-	                parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
-	                parameters[0].Value = ALedgerNumber;
-	                parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
-	                parameters[1].Value = AStartDate;
-	                parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
-	                parameters[2].Value = AEndDate;
-	                parameters[3] = new OdbcParameter("Extract", OdbcType.VarChar);
-		            parameters[3].Value = AExtract;
-	
-	                donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
-	                
-	                // put deceased partner's at the front (still sorted alphabetically)
-	                if (ADeceasedFirst)
-	                {
-	                	// create a new datatable with same structure as donorkeys
-	                	DataTable temp = donorkeys.Clone();
-	                	temp.Clear();
-	                	
-	                	// add deceased donors to the temp table and delete from donorkeys
-	                	for (int i=0; i<donorkeys.Rows.Count; i++)
-	                	{
-	                		if (SharedTypes.StdPartnerStatusCodeStringToEnum(donorkeys.Rows[i][2].ToString()) == TStdPartnerStatusCode.spscDIED)
-	                		{
-	                			temp.Rows.Add((object[]) donorkeys.Rows[i].ItemArray.Clone());
-	                			donorkeys.Rows[i].Delete();
-	                		}
-	                	}
-	                	
-	                	// add remaining partners to temp table
-	                	donorkeys.AcceptChanges();
-	                	temp.Merge(donorkeys);
-	                	
-	                	donorkeys = temp;
-	                }
+                    SortedList <string, string>Defines = new SortedList <string, string>();
+
+                    if (!string.IsNullOrEmpty(AExtract))
+                    {
+                        Defines.Add("BYEXTRACT", string.Empty);
+                    }
+
+                    // first get all donors in the given date range
+                    SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql", Defines);
+
+                    OdbcParameter[] parameters = new OdbcParameter[4];
+                    parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
+                    parameters[1].Value = AStartDate;
+                    parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
+                    parameters[2].Value = AEndDate;
+                    parameters[3] = new OdbcParameter("Extract", OdbcType.VarChar);
+                    parameters[3].Value = AExtract;
+
+                    donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
+
+                    // put deceased partner's at the front (still sorted alphabetically)
+                    if (ADeceasedFirst)
+                    {
+                        // create a new datatable with same structure as donorkeys
+                        DataTable temp = donorkeys.Clone();
+                        temp.Clear();
+
+                        // add deceased donors to the temp table and delete from donorkeys
+                        for (int i = 0; i < donorkeys.Rows.Count; i++)
+                        {
+                            if (SharedTypes.StdPartnerStatusCodeStringToEnum(donorkeys.Rows[i][2].ToString()) == TStdPartnerStatusCode.spscDIED)
+                            {
+                                temp.Rows.Add((object[])donorkeys.Rows[i].ItemArray.Clone());
+                                donorkeys.Rows[i].Delete();
+                            }
+                        }
+
+                        // add remaining partners to temp table
+                        donorkeys.AcceptChanges();
+                        temp.Merge(donorkeys);
+
+                        donorkeys = temp;
+                    }
                 }
 
                 string ResultDocument = "";

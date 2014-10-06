@@ -46,14 +46,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
 
-	            FTaxDeductiblePercentageEnabled = Convert.ToBoolean(
-	                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
-	            
+                FTaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                    TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
                 // use a different xml file if tax deductible pct is enabled
-	            if (FTaxDeductiblePercentageEnabled)
-	            {
-	            	FPetraUtilsObject.FXMLFiles = "Finance\\\\totalgiftsthroughfieldtaxdeduct.xml,Finance\\\\finance.xml,common.xml";
-	            }
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    FPetraUtilsObject.FXMLFiles = "Finance\\\\totalgiftsthroughfieldtaxdeduct.xml,Finance\\\\finance.xml,common.xml";
+                }
             }
         }
 
@@ -83,42 +83,42 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 //            ACalc.AddParameter("param_calculation", "MonthWorker", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
-            
+
             // MonthWorkerTaxDeduct
             if (FTaxDeductiblePercentageEnabled)
             {
-            	ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
-            	++ColumnCounter;
+                ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
+                ++ColumnCounter;
             }
-            
+
 //            ACalc.AddParameter("param_calculation", "MonthWorkerCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;
 //            ACalc.AddParameter("param_calculation", "MonthField", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
-            
+
             // MonthFieldTaxDeduct
             if (FTaxDeductiblePercentageEnabled)
             {
-            	ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
-            	++ColumnCounter;
+                ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
+                ++ColumnCounter;
             }
-            
+
 //            ACalc.AddParameter("param_calculation", "MonthFieldCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;
 //            ACalc.AddParameter("param_calculation", "MonthTotal", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
-            
+
             // MonthTotalTaxDeduct
             if (FTaxDeductiblePercentageEnabled)
             {
-            	ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
-            	++ColumnCounter;
+                ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
+                ++ColumnCounter;
             }
-            
+
 //            ACalc.AddParameter("param_calculation", "MonthTotalCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;

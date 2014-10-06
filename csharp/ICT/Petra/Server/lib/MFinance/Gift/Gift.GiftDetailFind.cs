@@ -194,22 +194,22 @@ namespace Ict.Petra.Server.MFinance.Gift
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;
-            
+
             if (!ReturnValue.Columns.Contains("BatchPosted"))
             {
-            	ReturnValue.Columns.Add(new DataColumn("BatchPosted", typeof(bool)));
+                ReturnValue.Columns.Add(new DataColumn("BatchPosted", typeof(bool)));
             }
-            
+
             foreach (DataRow Row in ReturnValue.Rows)
             {
-            	if (Row["a_batch_status_c"].ToString() == MFinanceConstants.BATCH_POSTED)
-            	{
-            		Row["BatchPosted"] = true;
-            	}
-            	else
-            	{
-            		Row["BatchPosted"] = false;
-            	}
+                if (Row["a_batch_status_c"].ToString() == MFinanceConstants.BATCH_POSTED)
+                {
+                    Row["BatchPosted"] = true;
+                }
+                else
+                {
+                    Row["BatchPosted"] = false;
+                }
             }
 
             if (ReturnValue != null)

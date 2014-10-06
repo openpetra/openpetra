@@ -193,19 +193,19 @@ namespace Ict.Petra.Server.MFinance.queries
             if (AParameters.Get("param_currency").ToString() == "Base")
             {
                 SqlQuery += "detail.a_gift_amount_n AS Amount";
-                
+
                 if (TaxDeductiblePercentageEnabled)
                 {
-                	SqlQuery += ", detail.a_tax_deductible_amount_base_n AS TaxDeductAmount";
+                    SqlQuery += ", detail.a_tax_deductible_amount_base_n AS TaxDeductAmount";
                 }
             }
             else
             {
                 SqlQuery += "detail.a_gift_amount_intl_n AS Amount";
-                
+
                 if (TaxDeductiblePercentageEnabled)
                 {
-                	SqlQuery += ", detail.a_tax_deductible_amount_intl_n AS TaxDeductAmount";
+                    SqlQuery += ", detail.a_tax_deductible_amount_intl_n AS TaxDeductAmount";
                 }
             }
 
@@ -243,10 +243,10 @@ namespace Ict.Petra.Server.MFinance.queries
             resultTable.Columns.Add("MonthFieldCount", typeof(Int32));          //
             resultTable.Columns.Add("MonthTotal", typeof(Decimal));             //
             resultTable.Columns.Add("MonthTotalCount", typeof(Int32));          //
-            
+
             resultTable.Columns.Add("MonthWorkerTaxDeduct", typeof(Decimal));
-        	resultTable.Columns.Add("MonthFieldTaxDeduct", typeof(Decimal));
-        	resultTable.Columns.Add("MonthTotalTaxDeduct", typeof(Decimal));
+            resultTable.Columns.Add("MonthFieldTaxDeduct", typeof(Decimal));
+            resultTable.Columns.Add("MonthTotalTaxDeduct", typeof(Decimal));
 
             for (int mnth = 1; mnth <= 12; mnth++)
             {
@@ -277,20 +277,20 @@ namespace Ict.Petra.Server.MFinance.queries
                     {
                         WorkerCount++;
                         WorkerTotal += Convert.ToDecimal(Row["Amount"]);
-                        
+
                         if (TaxDeductiblePercentageEnabled)
                         {
-                        	WorkerTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
+                            WorkerTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
                         }
                     }
                     else
                     {
                         FieldCount++;
                         FieldTotal += Convert.ToDecimal(Row["Amount"]);
-                        
+
                         if (TaxDeductiblePercentageEnabled)
                         {
-                        	FieldTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
+                            FieldTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
                         }
                     }
                 }
@@ -304,12 +304,12 @@ namespace Ict.Petra.Server.MFinance.queries
                 resultRow["MonthFieldCount"] = FieldCount;
                 resultRow["MonthTotal"] = WorkerTotal + FieldTotal;
                 resultRow["MonthTotalCount"] = TotalCount;
-            
-	            resultRow["MonthWorkerTaxDeduct"] = WorkerTotalTaxDeduct;
-            	resultRow["MonthFieldTaxDeduct"] = FieldTotalTaxDeduct;
-            	resultRow["MonthTotalTaxDeduct"] = WorkerTotalTaxDeduct + FieldTotalTaxDeduct;
-	                
-	            resultTable.Rows.Add(resultRow);
+
+                resultRow["MonthWorkerTaxDeduct"] = WorkerTotalTaxDeduct;
+                resultRow["MonthFieldTaxDeduct"] = FieldTotalTaxDeduct;
+                resultRow["MonthTotalTaxDeduct"] = WorkerTotalTaxDeduct + FieldTotalTaxDeduct;
+
+                resultTable.Rows.Add(resultRow);
             }
 
             return resultTable;
@@ -322,7 +322,7 @@ namespace Ict.Petra.Server.MFinance.queries
         {
             bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
                 TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
- 
+
             Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
             Int32 NumberOfYears = AParameters.Get("param_NumberOfYears").ToInt32();
             string SqlQuery = "SELECT batch.a_gl_effective_date_d as Date, motive.a_report_column_c AS ReportColumn, ";
@@ -330,19 +330,19 @@ namespace Ict.Petra.Server.MFinance.queries
             if (AParameters.Get("param_currency").ToString() == "Base")
             {
                 SqlQuery += "detail.a_gift_amount_n AS Amount";
-                
+
                 if (TaxDeductiblePercentageEnabled)
                 {
-                	SqlQuery += ", detail.a_tax_deductible_amount_base_n AS TaxDeductAmount";
+                    SqlQuery += ", detail.a_tax_deductible_amount_base_n AS TaxDeductAmount";
                 }
             }
             else
             {
                 SqlQuery += "detail.a_gift_amount_intl_n AS Amount";
-                
+
                 if (TaxDeductiblePercentageEnabled)
                 {
-                	SqlQuery += ", detail.a_tax_deductible_amount_intl_n AS TaxDeductAmount";
+                    SqlQuery += ", detail.a_tax_deductible_amount_intl_n AS TaxDeductAmount";
                 }
             }
 
@@ -361,7 +361,7 @@ namespace Ict.Petra.Server.MFinance.queries
                          " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
                          " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
                          " AND motive.a_receipt_l=true");
- 
+
             Boolean newTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
             DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "result", Transaction);
@@ -379,7 +379,7 @@ namespace Ict.Petra.Server.MFinance.queries
             resultTable.Columns.Add("YearFieldCount", typeof(Int32));           //
             resultTable.Columns.Add("YearTotal", typeof(Decimal));              //
             resultTable.Columns.Add("YearTotalCount", typeof(Int32));           //
-            
+
             resultTable.Columns.Add("YearWorkerTaxDeduct", typeof(Decimal));
             resultTable.Columns.Add("YearFieldTaxDeduct", typeof(Decimal));
             resultTable.Columns.Add("YearTotalTaxDeduct", typeof(Decimal));
@@ -398,7 +398,7 @@ namespace Ict.Petra.Server.MFinance.queries
                 Int32 WorkerCount = 0;
                 Int32 FieldCount = 0;
                 Int32 TotalCount = tempTbl.DefaultView.Count;
-                
+
                 Decimal WorkerTotalTaxDeduct = 0;
                 Decimal FieldTotalTaxDeduct = 0;
 
@@ -410,20 +410,20 @@ namespace Ict.Petra.Server.MFinance.queries
                     {
                         WorkerCount++;
                         WorkerTotal += Convert.ToDecimal(Row["Amount"]);
-                        
+
                         if (TaxDeductiblePercentageEnabled)
                         {
-                        	WorkerTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
+                            WorkerTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
                         }
                     }
                     else
                     {
                         FieldCount++;
                         FieldTotal += Convert.ToDecimal(Row["Amount"]);
-                        
+
                         if (TaxDeductiblePercentageEnabled)
                         {
-                        	FieldTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
+                            FieldTotalTaxDeduct += Convert.ToDecimal(Row["TaxDeductAmount"]);
                         }
                     }
                 }
@@ -437,11 +437,11 @@ namespace Ict.Petra.Server.MFinance.queries
                 resultRow["YearFieldCount"] = FieldCount;
                 resultRow["YearTotal"] = WorkerTotal + FieldTotal;
                 resultRow["YearTotalCount"] = TotalCount;
-                
+
                 resultRow["YearWorkerTaxDeduct"] = WorkerTotalTaxDeduct;
                 resultRow["YearFieldTaxDeduct"] = FieldTotalTaxDeduct;
                 resultRow["YearTotalTaxDeduct"] = WorkerTotalTaxDeduct + FieldTotalTaxDeduct;
-                
+
                 resultTable.Rows.Add(resultRow);
             }
 
