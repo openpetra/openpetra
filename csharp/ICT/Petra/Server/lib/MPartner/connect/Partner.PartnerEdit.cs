@@ -168,11 +168,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 // workaround for bug 1871
                 List <Int32>DeletedBankingDetails = new List <Int32>();
 
-                foreach (DataRow bdrow in AInspectDS.PBankingDetails.Rows)
+                foreach (DataRow bdrow in AInspectDS.PPartnerBankingDetails.Rows)
                 {
                     if (bdrow.RowState == DataRowState.Deleted)
                     {
-                        DeletedBankingDetails.Add(Convert.ToInt32(bdrow[AInspectDS.PBankingDetails.ColumnBankingDetailsKey, DataRowVersion.Original]));
+                        DeletedBankingDetails.Add(Convert.ToInt32(bdrow[AInspectDS.PPartnerBankingDetails.ColumnBankingDetailsKey,
+                                                                        DataRowVersion.Original]));
                     }
                 }
 

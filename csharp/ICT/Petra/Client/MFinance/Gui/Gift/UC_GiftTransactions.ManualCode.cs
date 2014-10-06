@@ -58,9 +58,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FSuppressListChanged = false;
         private bool FInRecipientKeyChanging = false;
         private bool FInKeyMinistryChanging = false;
+        private bool FMotivationDetailChanged = false;
+        private bool FCreatingNewGift = false;
         private bool FInEditMode = false;
         private bool FShowingDetails = false;
         private bool FTaxDeductiblePercentageEnabled = false;
+        private ToolTip FDonorInfoToolTip = new ToolTip();
 
         private AGiftRow FGift = null;
         private string FMotivationGroup = string.Empty;
@@ -166,8 +169,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             SetupComboTextBoxOverlayControls();
 
             //Make TextBox look like a label
-            txtGiftReceipting.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            txtGiftReceipting.Font = TAppSettingsManager.GetDefaultBoldFont();
+            txtDonorInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            txtDonorInfo.Font = TAppSettingsManager.GetDefaultBoldFont();
 
             if (FTaxDeductiblePercentageEnabled)
             {
@@ -606,7 +609,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
                 }
 
-                if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                if (!FMotivationDetailChanged && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
                 {
                     if (FMotivationGroup != cmbDetailMotivationGroupCode.GetSelectedString())
@@ -645,8 +648,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (FTaxDeductiblePercentageEnabled)
                 {
+                    EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
                     UpdateTaxDeductiblePct(APartnerKey, true);
-                    EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, true);
                 }
             }
             finally
@@ -694,7 +697,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FShowingDetails || (APartnerKey == 0))
             {
                 mniDonorHistory.Enabled = false;
-                txtGiftReceipting.Text = "";
+                txtDonorInfo.Text = "";
                 return;
             }
             else
@@ -731,7 +734,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         mniDonorHistory.Enabled = true;
                     }
 
-                    ShowReceiptFrequency(APartnerKey);
+                    ShowDonorInfo(APartnerKey);
 
                     FLastDonor = APartnerKey;
                 }
@@ -1158,8 +1161,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
-            // true if motivation detail has been changed by the user (i.e. not a row change)
-            bool ChangedByUser = !FPetraUtilsObject.SuppressChangeDetection;
             AMotivationDetailRow motivationDetail = null;
 
             if (!FBatchUnposted || !FInEditMode || txtDetailRecipientKeyMinistry.Visible)
@@ -1180,8 +1181,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RetrieveMotivationDetailAccountCode();
 
-                    // set tax deductible checkbox
-                    if (ChangedByUser || FInRecipientKeyChanging)
+                    // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
+                    if (!FPetraUtilsObject.SuppressChangeDetection || FInRecipientKeyChanging)
                     {
                         chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
                     }
@@ -1196,18 +1197,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 Catalog.GetString("Incomplete Motivation Detail"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
 
-                        UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
-                        EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked, ChangedByUser);
+                        bool DeductiblePercentageEnabled = txtDeductiblePercentage.Enabled;
+                        EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+
+                        // if txtDeductiblePercentage has been enabled or disabled then update the percentage
+                        if (DeductiblePercentageEnabled != txtDeductiblePercentage.Enabled)
+                        {
+                            UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
+                        }
                     }
                 }
             }
 
-            long PartnerKey = 0;
-            Int64.TryParse(txtDetailRecipientKey.Text, out PartnerKey);
-
-            if (PartnerKey > 0)
+            if (!FCreatingNewGift && (motivationDetail.RecipientKey > 0))
             {
-                PopulateKeyMinistry(PartnerKey);
+                FMotivationDetailChanged = true;
+                PopulateKeyMinistry(motivationDetail.RecipientKey);
+                FMotivationDetailChanged = false;
             }
             else
             {
@@ -1914,6 +1920,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 newRow.DateEntered = CurrentGiftRow.DateEntered;
 
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    newRow.TaxDeductiblePct = 100;
+                }
+
                 FMainDS.AGiftDetail.Rows.Add(newRow);
 
                 FPetraUtilsObject.SetChangedFlag();
@@ -1952,7 +1963,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Set the default motivation Group. This needs to happen after focus has returned
                 //  to the pnlDetails to ensure FInEditMode is correct.
+                FCreatingNewGift = true;
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                FCreatingNewGift = false;
+
                 UpdateRecipientKeyText(0);
                 cmbKeyMinistries.Clear();
                 mniRecipientHistory.Enabled = false;
@@ -2084,7 +2098,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                ShowReceiptFrequency(Convert.ToInt64(txtDetailDonorKey.Text));
+                ShowDonorInfo(Convert.ToInt64(txtDetailDonorKey.Text));
 
                 UpdateControlsProtection(ARow);
 
@@ -2100,38 +2114,120 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        // displays information about the donor's receipt frequency options
-        private void ShowReceiptFrequency(long APartnerKey)
+        /// <summary>
+        /// displays information about the donor
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        private void ShowDonorInfo(long APartnerKey)
         {
-            txtGiftReceipting.Text = string.Empty;
+            string DonorInfo = string.Empty;
 
-            if (APartnerKey == 0)
+            try
             {
-                return;
-            }
-
-            // find PPartnerRow from dataset
-            PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
-
-            // if PPartnerRow cannot be found load it from db
-            if (DonorRow == null)
-            {
-                DonorRow = (PPartnerRow)TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey).Rows[0];
-            }
-
-            if (DonorRow.ReceiptEachGift)
-            {
-                txtGiftReceipting.Text = "*" + Catalog.GetString("Receipt Each Gift") + "*";
-            }
-
-            if (!string.IsNullOrEmpty(DonorRow.ReceiptLetterFrequency))
-            {
-                if (DonorRow.ReceiptEachGift)
+                if (APartnerKey == 0)
                 {
-                    txtGiftReceipting.Text += "; ";
+                    return;
                 }
 
-                txtGiftReceipting.Text += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
+                // find PPartnerRow from dataset
+                PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
+
+                // if PPartnerRow cannot be found, load it from db
+                if ((DonorRow == null) || (DonorRow[PPartnerTable.GetReceiptEachGiftDBName()] == DBNull.Value))
+                {
+                    PPartnerTable PartnerTable = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+
+                    if ((PartnerTable == null) || (PartnerTable.Rows.Count == 0))
+                    {
+                        // invalid partner
+                        return;
+                    }
+
+                    DonorRow = PartnerTable[0];
+                }
+
+                // get donor's banking details
+                AGiftRow GiftRow = (AGiftRow)FMainDS.AGift.Rows.Find(new object[] { FLedgerNumber, FBatchNumber,
+                                                                                    FPreviouslySelectedDetailRow.GiftTransactionNumber });
+                PBankingDetailsTable BankingDetailsTable = TRemote.MFinance.Gift.WebConnectors.GetDonorBankingDetails(APartnerKey,
+                    GiftRow.BankingDetailsKey);
+                PBankingDetailsRow BankingDetailsRow = null;
+
+                // set donor info text
+                if ((BankingDetailsTable != null) && (BankingDetailsTable.Rows.Count > 0))
+                {
+                    BankingDetailsRow = BankingDetailsTable[0];
+                }
+
+                if ((BankingDetailsRow != null) && !string.IsNullOrEmpty(BankingDetailsRow.BankAccountNumber))
+                {
+                    DonorInfo = Catalog.GetString("Bank Account: ") + BankingDetailsRow.BankAccountNumber;
+                }
+
+                if (DonorRow.ReceiptEachGift)
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += "*" + Catalog.GetString("Receipt Each Gift") + "*";
+                }
+
+                if (!string.IsNullOrEmpty(DonorRow.ReceiptLetterFrequency))
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += DonorRow.ReceiptLetterFrequency + " " + Catalog.GetString("Receipt");
+                }
+
+                if (DonorRow.AnonymousDonor)
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += Catalog.GetString("Anonymous");
+                }
+
+                if ((BankingDetailsRow != null) && !string.IsNullOrEmpty(BankingDetailsRow.Comment))
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += BankingDetailsRow.Comment;
+                }
+
+                if (!string.IsNullOrEmpty(DonorRow.FinanceComment))
+                {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
+                    DonorInfo += DonorRow.FinanceComment;
+                }
+            }
+            finally
+            {
+                // shorten text if it is too long to display on screen
+                if (DonorInfo.Length >= 65)
+                {
+                    txtDonorInfo.Text = DonorInfo.Substring(0, 62) + "...";
+                }
+                else
+                {
+                    txtDonorInfo.Text = DonorInfo;
+                }
+
+                FDonorInfoToolTip.SetToolTip(txtDonorInfo, DonorInfo);
+                FPetraUtilsObject.SetStatusBarText(txtDonorInfo, DonorInfo);
             }
         }
 
@@ -3129,7 +3225,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FTaxDeductiblePercentageEnabled)
             {
                 EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
-
                 UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
             }
         }

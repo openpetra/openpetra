@@ -672,10 +672,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
                         }
 
-                        // drop all tables apart from AGift and AGiftDetail
+                        // drop all tables apart from AGift and AGiftDetail and PPartnerTaxDeductiblePct
                         foreach (DataTable table in MainDS.Tables)
                         {
-                            if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName))
+                            if ((table.TableName != MainDS.AGift.TableName) && (table.TableName != MainDS.AGiftDetail.TableName)
+                                && (table.TableName != MainDS.PPartnerTaxDeductiblePct.TableName))
                             {
                                 table.Clear();
                             }
@@ -1512,7 +1513,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             // load all donor shortnames in one go
             string getDonorSQL =
-                "SELECT DISTINCT dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g " +
+                "SELECT DISTINCT dp.p_partner_key_n, dp.p_partner_short_name_c, dp.p_status_code_c FROM PUB_p_partner dp, PUB_a_gift g " + //, dp.p_receipt_each_gift_l
                 "WHERE g.a_ledger_number_i = ? AND g.a_batch_number_i = ? AND g.p_donor_key_n = dp.p_partner_key_n";
 
             if (ARecurring)
@@ -1717,6 +1718,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -1770,6 +1774,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 else
                                 {
                                     giftDetail.SetRecipientKeyMinistryNull();
+                                }
+
+                                if (TaxDeductiblePercentageEnabled)
+                                {
+                                    MainDS.PPartnerTaxDeductiblePct.Merge(
+                                        PPartnerTaxDeductiblePctAccess.LoadViaPPartner(giftDetail.RecipientKey, Transaction));
                                 }
                             }
                             else
@@ -2205,6 +2215,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
             {
+                // do not allow posting gifts with no donor
+                if (giftDetail.DonorKey == 0)
+                {
+                    AVerifications.Add(
+                        new TVerificationResult(
+                            "Posting Gift Batch",
+                            String.Format("Donor key needed in gift {0}",
+                                giftDetail.GiftTransactionNumber),
+                            TResultSeverity.Resv_Critical));
+                    return null;
+                }
+
                 // find motivation detail
                 AMotivationDetailRow motivationRow =
                     (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber,
@@ -2508,6 +2530,49 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Load Donor Banking Details
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key </param>
+        /// <param name="ABankingDetailsKey">Banking Details Key Key </param>
+        /// <returns>Partnertable for the partner Key</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PBankingDetailsTable GetDonorBankingDetails(long APartnerKey, int ABankingDetailsKey = 0)
+        {
+            PBankingDetailsTable ReturnValue = null;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    if (ABankingDetailsKey == 0)
+                    {
+                        PBankingDetailsTable BankingDetailsTable =
+                            PBankingDetailsAccess.LoadViaPPartner(APartnerKey, Transaction);
+
+                        // Find partner's 'main' bank account
+                        foreach (PBankingDetailsRow Row in BankingDetailsTable.Rows)
+                        {
+                            if (PBankingDetailsUsageAccess.Exists(APartnerKey, Row.BankingDetailsKey, "MAIN", Transaction))
+                            {
+                                ReturnValue = new PBankingDetailsTable();
+                                ReturnValue.Rows.Add((object[])Row.ItemArray.Clone());
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ReturnValue = PBankingDetailsAccess.LoadByPrimaryKey(ABankingDetailsKey, Transaction);
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Load Partner Tax Deductible Pct
         /// </summary>
         /// <param name="PartnerKey">Partner Key </param>
@@ -2747,14 +2812,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Boolean KeyMinistryExists(Int64 APartnerKey, out Boolean AIsActive)
         {
-            bool KeyMinistryExists = false;
-
-            AIsActive = false;
-            bool IsActive = AIsActive;
-
-            AIsActive = false;
-
+            Boolean KeyMinistryExists = false;
             TDBTransaction Transaction = null;
+
+            bool IsActive = false;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
