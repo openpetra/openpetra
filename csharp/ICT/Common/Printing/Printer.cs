@@ -25,6 +25,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using Ict.Common.Printing;
+using System.Drawing.Printing;
 
 namespace Ict.Common.Printing
 {
@@ -168,6 +169,9 @@ namespace Ict.Common.Printing
         /// <summary>todoComment</summary>
         public eFont FCurrentFont;
 
+        /// <summary>height of line, is multiplied with the height of the font</summary>
+        public float FCurrentLineHeight = 1.0f;
+
         /// relative number; 0 is normal size
         public float FCurrentRelativeFontSize = 0;
 
@@ -189,6 +193,7 @@ namespace Ict.Common.Printing
             newState.FAnchorXPos = FAnchorXPos;
             newState.FAnchorYPos = FAnchorYPos;
             newState.FCurrentFont = FCurrentFont;
+            newState.FCurrentLineHeight = FCurrentLineHeight;
             newState.FCurrentRelativeFontSize = FCurrentRelativeFontSize;
             newState.FCurrentAlignment = FCurrentAlignment;
             newState.FNoWrap = FNoWrap;
@@ -240,6 +245,9 @@ namespace Ict.Common.Printing
 
         /// current state of printer
         protected TPrinterState FCurrentState = new TPrinterState();
+
+        /// I can check whether I'm printing to a preview or a real printer.
+        protected PrintAction FprintAction;
 
         /// <summary>todoComment</summary>
         public System.Int32 CurrentPageNr
@@ -365,6 +373,19 @@ namespace Ict.Common.Printing
             set
             {
                 FCurrentState.FCurrentFont = value;
+            }
+        }
+
+        /// <summary>1 is the normal height of the font, CurrentLineHeight is multiplied with the height of the font</summary>
+        public float CurrentLineHeight
+        {
+            get
+            {
+                return FCurrentState.FCurrentLineHeight;
+            }
+            set
+            {
+                FCurrentState.FCurrentLineHeight = value;
             }
         }
 

@@ -10,7 +10,7 @@ RootNode:
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
         actDelete: {Label=&Delete Batch, SkipReferenceCheck=true, ActionClick=DeleteRecord}
-        actSubmit: {Label=&Submit Batch, ActionClick=Submit}
+        actSubmit: {Label=&Submit Batch, ActionClick=SubmitBatch}
     Controls:
         pnlContent:
             Dock: Fill
@@ -55,12 +55,12 @@ RootNode:
                 Row0: [txtDetailBatchDescription]
                 Row1: [cmbDetailBankCostCentre]
                 Row2: [cmbDetailBankAccountCode]
-                Row3: [txtDetailHashTotal, cmbDetailCurrencyCode]
+                Row3: [cmbDetailCurrencyCode, txtDetailHashTotal]
                 Row4: [cmbDetailMethodOfPaymentCode]
                 Row5: [rgrDetailGiftType]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
-        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
-        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
+        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2, Validation=true}
+        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2, Validation=true}
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList, OnChange=MethodOfPaymentChanged}

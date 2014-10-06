@@ -1287,13 +1287,21 @@ namespace SourceGrid
 			#region Processing keys
             // AlanP: Nov 2013. Made some changes to the behaviours of ENTER and Esc so we move to the next editable cell
             //   Also there was a bug in the code that checked if a cell IsEditing
-			//Escape
-			if (e.KeyCode == Keys.Escape && enableEscape)
-			{
-				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-                ICellVirtual contextCell = focusCellContext.Cell;
-				if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
-				{
+            // AlanP: Aug 2014. We have 2 styles of grid.  The main one for displaying data tables and a spacialised one for Local Partner Data
+            //   The specialised one uses Controllers, where the standard one uses optional Editors
+            CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
+            ICellVirtual contextCell = focusCellContext.Cell;
+
+            //if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+            // AlanP: Nov 2013.  Replcaed the line above with this because focusCellContext.IsEditing() returns false for a reason I don't understand.
+            bool isEditorEditing = (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing);
+            bool useSimplifiedTabEnter = ((SpecialKeys & GridSpecialKeys.SimplifiedTabEnter) == GridSpecialKeys.SimplifiedTabEnter);
+
+            //Escape
+            if (e.KeyCode == Keys.Escape && enableEscape)
+            {
+                if (isEditorEditing)
+                {
                     if (focusCellContext.EndEdit(true))
                     {
                         // Move to next editable cell if there is one
@@ -1315,19 +1323,19 @@ namespace SourceGrid
 			if (e.KeyCode == Keys.Enter && enableEnter)
 			{
                 // This is the main special key for dealing with edit-in-place in OpenPetra
+                // Pressing ENTER always completes an outstanding edit
+                if (isEditorEditing)
+                {
+                    focusCellContext.EndEdit(false);
+                }
+
+                if (useSimplifiedTabEnter)
+                {
+                    return;
+                }
+
                 bool isLastColumn = (Selection.ActivePosition.Column == this.Columns.Count - 1);
                 bool isFirstColumn = (Selection.ActivePosition.Column == firstActiveColumn);
-
-				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-                //if (focusCellContext.Cell != null && focusCellContext.IsEditing())
-                // AlanP: Nov 2013.  Replcaed the line above with this because focusCellContext.IsEditing() returns false for a reason I don't understand.
-                ICellVirtual contextCell = focusCellContext.Cell;
-                
-                // Pressing ENTER always completes an outstanding edit
-                if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
-				{
-					focusCellContext.EndEdit(false);
-				}
 
                 if (isFirstColumn)
                 {
@@ -1388,24 +1396,28 @@ namespace SourceGrid
 			if (e.KeyCode == Keys.Tab && enableTab)
 			{
                 // All we need to do is close down any edit
-				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-                //if (focusCellContext.Cell != null && focusCellContext.IsEditing())
-                // AlanP: Nov 2013.  Replcaed the line above with this because focusCellContext.IsEditing() returns false for a reason I don't understand.
-                ICellVirtual contextCell = focusCellContext.Cell;
-
                 // Pressing TAB always completes an outstanding edit
-                if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
+                if (isEditorEditing)
                 {
                     focusCellContext.EndEdit(false);
 				}
 
-                // Be sure to go back to column 0 in the current row
-                if (Selection.ActivePosition.Column != firstActiveColumn)
+                if (useSimplifiedTabEnter)
                 {
-                    this.Selection.Focus(new Position(Selection.ActivePosition.Row, firstActiveColumn), true);
+                    // Carry on below...
                 }
+                else
+                {
+                    // There is no controller on the cell (we have a controller on the special grid on LocalData screen)
+                    // That screen behaves differently.
+                    // For all normal grids be sure to go back to column 0 in the current row
+                    if (Selection.ActivePosition.Column != firstActiveColumn)
+                    {
+                        this.Selection.Focus(new Position(Selection.ActivePosition.Row, firstActiveColumn), true);
+                    }
 
-                return;
+                    return;
+                }
             }
 			#endregion
 
@@ -1442,23 +1454,23 @@ namespace SourceGrid
                 Selection.MoveActiveCell(0, -1, resetSelection);
                 e.Handled = true;
             }
-            //else if (e.KeyCode == Keys.Tab && enableTab)
-            //{
-            //    //If the tab failed I automatically select the next control in the form (SelectNextControl)
+            else if (e.KeyCode == Keys.Tab && enableTab)
+            {
+                //If the tab failed I automatically select the next control in the form (SelectNextControl)
 
-            //    if (e.Modifiers == Keys.Shift) // backward
-            //    {
-            //        if (Selection.MoveActiveCell(0, -1, -1, int.MaxValue) == false)
-            //            FindForm().SelectNextControl(this, false, true, true, true);
-            //        e.Handled = true;
-            //    }
-            //    else //forward
-            //    {
-            //        if (Selection.MoveActiveCell(0, 1, 1, int.MinValue) == false)
-            //            FindForm().SelectNextControl(this, true, true, true, true);
-            //        e.Handled = true;
-            //    }
-            //}
+                if (e.Modifiers == Keys.Shift) // backward
+                {
+                    if (Selection.MoveActiveCell(0, -1, -1, int.MaxValue) == false)
+                        FindForm().SelectNextControl(this, false, true, true, true);
+                    e.Handled = true;
+                }
+                else //forward
+                {
+                    if (Selection.MoveActiveCell(0, 1, 1, int.MinValue) == false)
+                        FindForm().SelectNextControl(this, true, true, true, true);
+                    e.Handled = true;
+                }
+            }
 			else if ( (e.KeyCode == Keys.PageUp || e.KeyCode == Keys.PageDown)
 			         && enablePageDownUp)
 			{
@@ -1484,7 +1496,7 @@ namespace SourceGrid
             // Pressing SHIFT on its own caused a cascade of Focus events and selection_changed events - the knock-on effects were amazing!
             //  1. Just pressing SHIFT would cause multiple highlighted rows to become just one highlighted row
             //  2. SHIFT+mouse click did not work.
-            if (shiftPressed && e.Handled)
+            if (shiftPressed && e.Handled && !useSimplifiedTabEnter)
             {
                 // AlanP: Sep 2013  Inhibit the change event on this one
                 Selection.ResetSelection(true, true);
@@ -1808,6 +1820,8 @@ namespace SourceGrid
                     if (cellMouseDown.Editor != null && cellMouseDown.Editor.EditableMode == EditableMode.Focus)
                     {
                         // The position is ok
+                        CellContext newFocusCell = new CellContext(this, position);
+                        newFocusCell.StartEdit();
                     }
                     else if (position.Row >= this.FixedRows)
                     {

@@ -46,7 +46,7 @@ RootNode:
             ActionClick: GridRowSelected
             CustomColumns:
                 PPartner.PartnerShortName: {Label=Attendee Name}
-                PmShortTermApplication.StAppDate: {Label=Date Entered}
+                PmShortTermApplication.StAppDate: {Label=Date Entered, Type=DateTime}
 
         rbtAll:
             Height: 15

@@ -9,27 +9,67 @@ RootNode:
     WindowHeight: 500
     Controls:
         pnlDialogContent:
-            Controls: [grpGeneral, grpCurrencies, grpAccountingPeriods, grpSubsystems]
+            Controls: [grpGeneral, grpCurrencies, grpAccountingPeriods, rgrIch, grpSubsystems]
 
         grpGeneral: {Label=General, Stretch=horizontally}
-            Controls: [nudLedgerNumber, txtLedgerName, cmbCountryCode]            
+            Controls: [pnlGeneralRow1, txtLedgerName]
+        pnlGeneralRow1:
+            Controls: [nudLedgerNumber, cmbCountryCode]
+            ControlsOrientation:horizontal
         grpCurrencies: {Label=Currencies, Stretch=horizontally}
-            Controls: [cmbBaseCurrency, cmbIntlCurrency]            
+            Controls: [cmbBaseCurrency, cmbIntlCurrency]
+            ControlsOrientation:horizontal
         grpAccountingPeriods: {Label=Accounting Periods, Stretch=horizontally}
-            Controls: [dtpCalendarStartDate, nudNumberOfPeriods, nudCurrentPeriod, nudNumberOfFwdPostingPeriods]
+            Controls: [dtpCalendarStartDate, pnlPeriodsRow, nudNumberOfFwdPostingPeriods]
+        pnlPeriodsRow:
+            Controls: [nudNumberOfPeriods, nudCurrentPeriod]
+            ControlsOrientation:horizontal
+        rgrIch:
+            Label:ICH
+            Stretch: horizontally
+            Controls: [rbtIchIsAsset, rbtIchIsLiability]
+        rbtIchIsAsset:
+            Label:ICH account is an ASSET (generally I receive money from ICH)
+        rbtIchIsLiability:
+            Label:ICH account is a LIABILITY (generally I send money to ICH)
         grpSubsystems: {Label=Subsystems, Stretch=horizontally}
-            Controls: [chkActivateGiftProcessing, txtStartingReceiptNumber, chkActivateAccountsPayable]
-
+            Controls: [pnlSubsystemsRow1, chkActivateAccountsPayable]
+        pnlSubsystemsRow1:
+            Controls: [chkActivateGiftProcessing, txtStartingReceiptNumber]
+            ControlsOrientation:horizontal
         nudLedgerNumber: {OnChange=LedgerNumberChanged}
-        txtLedgerName: {Width=300}
+            Width:100
+            LabelWidth:195
+        txtLedgerName: {Width=310}
+            LabelWidth:200
         cmbCountryCode: {List=CountryList}
+            LabelWidth:100
+            Width:150
         cmbBaseCurrency: {List=CurrencyCodeList}
+            Width:100
+            LabelWidth:200
+
         cmbIntlCurrency: {List=CurrencyCodeList}
+            LabelWidth:100
+            Width:150
         dtpCalendarStartDate: {Label=First Day of the Financial Year}
+            Width:100
+            LabelWidth:200
         nudNumberOfPeriods:
+            LabelWidth:195
+            Width:100
         nudCurrentPeriod:
+            LabelWidth:100
+            Width:100
         nudNumberOfFwdPostingPeriods:
-        chkActivateGiftProcessing: {Label=Activate Gift Processing Subsystem, OnChange=ActivateGiftProcessing_Changed}
-        txtStartingReceiptNumber: {Width=60, Format=Integer}
-        chkActivateAccountsPayable: {Label=Activate Accounts Payable Subsystem}
+            Width:100
+        chkActivateGiftProcessing: {Label=Gift Processing Subsystem, OnChange=ActivateGiftProcessing_Changed}
+            Width:100
+            LabelWidth:195
+
+        txtStartingReceiptNumber: {Width=100, Format=Integer}
+            LabelWidth:170
+            Label:First Receipt num
+        chkActivateAccountsPayable: {Label=Accounts Payable Subsystem}
+            LabelWidth:200
         btnOK: {Label="C&reate Ledger"}

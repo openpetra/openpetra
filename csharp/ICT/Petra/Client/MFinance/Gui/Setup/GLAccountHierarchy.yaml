@@ -7,11 +7,11 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.GL.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowTDS
-    WindowWidth: 680
-    WindowHeight: 650
+    WindowWidth: 740
+    WindowHeight: 680
     Actions:
         actAddNewAccount: {Label=&Add Account, ActionClick=AddNewAccount}
-        actDeleteUnusedAccount: {Label=&Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteUnusedAccount}
+        actDeleteAccount: {Label=&Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteAccount}
         actImportHierarchy: {Label=&Import Hierarchy, Help: This only works for accounts that have no transactions yet, ActionClick=ImportHierarchy}
         actExportHierarchy: {Label=E&xport Hierarchy, ActionClick=ExportHierarchy}
     Controls:
@@ -19,14 +19,31 @@ RootNode:
             Controls: [sptAccountSplitter]
             Dock: Fill
         sptAccountSplitter:
-            Panel1: trvAccounts
+            Panel1: tabAccounts
             Panel2: pnlDetails
-            SplitterDistance: 60
+            SplitterDistance: 70
             SplitterOrientation: vertical
             Dock: Fill
-        trvAccounts: {Dock=Fill}
+        tabAccounts:
+            Controls: [tpgAccountsTree, tpgAccountsList]
+            ActionClick: OnTabChange
+            Dock: Fill
+        tpgAccountsTree:
+            Label:Tree view
+            Controls: [ucoAccountsTree]
+            Dock: Fill
+        tpgAccountsList:
+            Label:List view
+            Controls: [ucoAccountsList]
+            Dock: Fill
+        ucoAccountsTree:
+            Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountsTree
+            Dock: Fill
+        ucoAccountsList:
+            Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountsList
+            Dock: Fill
         pnlDetails: {Dock=Fill}
-            Controls: [pnlDetailTop, pnlFlags, pnlSummary, pnlForeignCurrency, ucoAccountAnalysisAttributes, txtStatus]
+            Controls: [pnlDetailTop, pnlFlags, pnlSummary, pnlForeignCurrency, pnlBudget, ucoAccountAnalysisAttributes, txtStatus]
         pnlDetailTop:
             Controls: 
                 Row0: [txtDetailAccountCode, btnRename]
@@ -42,35 +59,40 @@ RootNode:
             Controls: [chkDetailIsSummary, txtRptOrder]
         pnlForeignCurrency: {ControlsOrientation = horizontal}
             Controls: [chkDetailForeignCurrencyFlag, cmbDetailForeignCurrencyCode]
+        pnlBudget:
+            Controls: [chkDetailBudgetControlFlag]
+        chkDetailBudgetControlFlag:
+            LabelWidth:130
+            Label: Budget Control
         txtDetailAccountCode: {LabelWidth=150, OnLeave=ChangeAccountCodeValue, CharacterCasing=Upper }
         btnRename:
         cmbDetailAccountType: {LabelWidth=150}
             OptionalValues: [Income, Expense, Asset, Equity, Liability]
         # TODO: still need english and local description? easier to use different account hierarchies?
-        txtDetailEngAccountCodeLongDesc: {LabelWidth=150, Label=Description Long English}
-        txtDetailEngAccountCodeShortDesc: {LabelWidth=150, Label=Description Short English}
-        txtDetailAccountCodeLongDesc: {LabelWidth=150, Label=Description Long Local}
-        txtDetailAccountCodeShortDesc: {LabelWidth=150, Label=Description Short Local}
-        cmbDetailValidCcCombo: {LabelWidth=150, Label=Valid Cost Centres}
+        txtDetailEngAccountCodeLongDesc: {LabelWidth=130, Label=Descr Long English}
+        txtDetailEngAccountCodeShortDesc: {LabelWidth=130, Label=Descr Short English}
+        txtDetailAccountCodeLongDesc: {LabelWidth=130, Label=Descr Long Local}
+        txtDetailAccountCodeShortDesc: {LabelWidth=130, Label=Descr Short Local}
+        cmbDetailValidCcCombo: {LabelWidth=130, Label=Valid Cost Centres}
             OptionalValues: [All, Foreign, Local]
         # TODO: budget type, budget control
         # TODO: analysis attributes
         # TODO: which bank account (pbankingdetail) is this account linked to
-        chkDetailBankAccountFlag: {LabelWidth=150, Label=Bank Account}
+        chkDetailBankAccountFlag: {LabelWidth=130, Label=Bank Account}
         # TODO: system account, standard account
         chkDetailAccountActiveFlag: {Label=Active}
-        chkDetailIsSummary: {LabelWidth=150, Label=Summary}
+        chkDetailIsSummary: {LabelWidth=130, Label=Summary}
         txtRptOrder: {LabelWidth=73, Width=45}
-        chkDetailForeignCurrencyFlag: {LabelWidth=150, Label=Foriegn Currency}
+        chkDetailForeignCurrencyFlag: {LabelWidth=130, Label=Foreign Currency}
         cmbDetailForeignCurrencyCode: {Width=180, NoLabel=true, List=CurrencyCodeList}
         ucoAccountAnalysisAttributes:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_AccountAnalysisAttributes
             Height:170
-            Width:310
+            Width:290
         txtStatus:
             NoLabel:true
             Height:76
-            Width:310
+            Width:290
             Multiline:true
             ScrollBars:Vertical
             ReadOnly:true
@@ -78,12 +100,12 @@ RootNode:
     Menu:
         mniAccounts:
             mniAddNewAccount:
-            mniDeleteUnusedAccount:
+            mniDeleteAccount:
             mniSeparator:
             mniExportHierarchy:
             mniImportHierarchy:
     Toolbar:
         tbbAddNewAccount:
-        tbbDeleteUnusedAccount:
+        tbbDeleteAccount:
         tbbExportHierarchy:
         tbbImportHierarchy:

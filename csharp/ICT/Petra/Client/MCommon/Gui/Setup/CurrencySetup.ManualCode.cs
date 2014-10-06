@@ -24,7 +24,7 @@
 using System;
 
 using Ict.Common;
-using Ict.Common.Controls;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup

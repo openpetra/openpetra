@@ -813,9 +813,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 writer.Template.SetCodelet("CUSTOMDISPOSING",
-                    "if (FucoFilterAndFind != null)" + Environment.NewLine +
+                    "if (FFilterAndFindObject.FilterFindPanel != null)" + Environment.NewLine +
                     "{" + Environment.NewLine +
-                    "    FucoFilterAndFind.Dispose();" + Environment.NewLine +
+                    "    FFilterAndFindObject.FilterFindPanel.Dispose();" + Environment.NewLine +
                     "}");
 
                 XmlNodeList controlAttributesList = null;
@@ -882,7 +882,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (FCodeStorage.ManualFileExistsAndContains("void ApplyFilterManual(ref"))
                 {
-                    writer.Template.SetCodelet("APPLYFILTERMANUAL", "ApplyFilterManual(ref FCurrentActiveFilter);" + Environment.NewLine);
+                    writer.Template.SetCodelet("APPLYFILTERMANUAL", "ApplyFilterManual(ref AFilterString);" + Environment.NewLine);
                 }
                 else
                 {
@@ -895,7 +895,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
-                    writer.Template.SetCodelet("ISMATCHINGROW", "FFindPanelControls.IsMatchingRow");
+                    writer.Template.SetCodelet("ISMATCHINGROW", "FFilterAndFindObject.FindPanelControls.IsMatchingRow");
                 }
 
                 // Write the whole thing out
@@ -1284,6 +1284,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
+                    // This is a control that we are cloning direct from the details panel
                     // The control name may include an instance - remember this and work out the control name without the instance
                     string controlNameWithInstance = controlName;
 
@@ -1298,9 +1299,29 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         throw new Exception("Could not find a reference to the control: " + controlName);
                     }
 
-                    // The column is specified by its control name
-                    string columnName = controlName.Substring(3);
                     string lblName = "lbl" + controlName.Substring(3);
+
+                    // The column is specified by its control name (or by the DataColumn control attribute)
+                    string columnName = controlName.Substring(3);
+
+                    if (FCodeStorage.FControlList[controlName].HasAttribute("DataColumn"))
+                    {
+                        columnName = FCodeStorage.FControlList[controlName].GetAttribute("DataColumn");
+
+                        if (columnName.Contains("."))
+                        {
+                            if (columnName.Substring(0, columnName.IndexOf('.')).CompareTo(FCodeStorage.GetAttribute("DetailTable")) != 0)
+                            {
+                                throw new Exception(
+                                    "When specifying a DataColumn for a Find/Filter control the table must refer to the DetailTable. The control is: "
+                                    +
+                                    controlName);
+                            }
+
+                            columnName = columnName.Substring(columnName.LastIndexOf('.') + 1);
+                            TLogging.Log("Using DataColumn: " + columnName + " for Filter/Find");
+                        }
+                    }
 
                     if (columnName.StartsWith("Detail"))
                     {
@@ -1472,7 +1493,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else if (att.Name == "Width")
                 {
-                    string width = String.Format("Math.Min({0}, FFilterAndFindParameters.FindAndFilterInitialWidth)", att.Value);
+                    string width = String.Format("Math.Min({0}, FFilterAndFindObject.FilterAndFindParameters.FindAndFilterInitialWidth)", att.Value);
                     AddFilterFindProperty(writer, AControlType, APanelType, AControlName, att.Name, width);
                 }
                 else if (att.Name == "Label")

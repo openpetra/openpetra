@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.CommonDialogs
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblPetra.Text = Catalog.GetString("OpenPetra");
             this.lblPetraVersion.Text = Catalog.GetString("Version");
-            this.lblCopyrightNotice.Text = Catalog.GetString("© 1995 - 2013 by OM International");
+            this.lblCopyrightNotice.Text = Catalog.GetString("© 1995 - 2014 by OM International");
             this.lblInstallationKind.Text = Catalog.GetString("Standalone / Network / Remote");
             #endregion
         }
@@ -139,6 +139,21 @@ namespace Ict.Petra.Client.CommonDialogs
         public void ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
         {
             // not implemented
+        }
+
+        void LblPetraVersionClick(object sender, System.EventArgs e)
+        {
+#if DEBUG
+            if (TApplicationVCSInfo.AppVCSData.IsInitialised)
+            {
+                MessageBox.Show("Version Control System: " + TApplicationVCSInfo.AppVCSData.VCSName + Environment.NewLine +
+                    "Revision Number: " + TApplicationVCSInfo.AppVCSData.RevisionNumber + Environment.NewLine +
+                    "Revision ID: " + TApplicationVCSInfo.AppVCSData.RevisionID + Environment.NewLine +
+                    "Revision Date: " + TApplicationVCSInfo.AppVCSData.RevisionDate + Environment.NewLine +
+                    "Revision Checkout Date: " + TApplicationVCSInfo.AppVCSData.RevisionCheckoutDate + Environment.NewLine,
+                    "Version Control System Information About This Build");
+            }
+#endif
         }
     }
 }

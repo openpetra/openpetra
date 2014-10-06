@@ -29,10 +29,12 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Extracts;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MPersonnel.queries
 {
@@ -245,6 +247,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
 
+            // filter data by postcode (if applicable)
+            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
+
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
             if (AParameters.Get("CancelReportCalculation").ToBool() == true)
@@ -305,6 +310,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
             partnerkeys.Clear();
             partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
+
+            // filter data by postcode (if applicable)
+            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???
@@ -427,6 +435,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
             DataTable partnerkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "partners", ATransaction,
                 SqlParameterList.ToArray());
+
+            // filter data by postcode (if applicable)
+            ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, ATransaction);
 
             // if this is taking a long time, every now and again update the TLogging statusbar, and check for the cancel button
             // TODO: we might need to add this functionality to TExtractsHandling.CreateExtractFromListOfPartnerKeys as well???

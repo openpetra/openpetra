@@ -23,7 +23,7 @@
             Dock: Top
             Controls:
                 Row0: [dtpStartDate, dtpEndDate]
-                Row1: [txtPublicationCode]
+                Row1: [cmbPublicationCode]
                 Row2: [txtExtract]
         sptResult:
             Dock: Fill
@@ -33,7 +33,7 @@
             Panel2: preLetters
         dtpStartDate:
         dtpEndDate:
-        txtPublicationCode:
+        cmbPublicationCode: {List=PublicationInfoList}
         txtExtract: {NoLabel=true, Type=Extract}
 #        pnlFilter:
 #            Controls: [rgrFilter]
@@ -47,7 +47,8 @@
             BackColor: System.Drawing.SystemColors.Control
             Columns: [DonorKey, DonorShortName, RecipientDescription, DateOfSubscriptionStart, DateOfFirstGift]
             CustomColumns:
-                DonorShortName: {Label=DonorShortName, Type=String}
+                DonorKey: {Label=Donor Partner Key, Type=PartnerKey}
+                DonorShortName: {Label=Donor Name, Type=String}
                 RecipientDescription: {Label=Recipient, Type=String}
                 DateOfSubscriptionStart: {Label=Subscription Start, Type=DateTime}
                 DateOfFirstGift: {Label=Date Gift, Type=DateTime}

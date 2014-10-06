@@ -22,8 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Windows.Forms;
 
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Validation;
 
@@ -38,6 +40,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // The TextBoxes are padded in YAML, but we need to move the Labels, too...
             lblDecorations.Left = lblDecorations.Left + 45;
             lblAcademicTitle.Left = lblAcademicTitle.Left + 45;
+
+            txtOccupationCode.TextBoxWidth = 200;
+            txtOccupationCode.CharacterCasing = CharacterCasing.Upper;
         }
 
         /// <summary>
@@ -65,8 +70,29 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedPartnerValidation_Partner.ValidatePartnerPersonManual(this, ARow, ref VerificationResultCollection,
+            TSharedPartnerValidation_Partner.ValidatePartnerPersonManual(this,
+                ARow,
+                @TDataCache.GetCacheableDataTableFromCache,
+                ref VerificationResultCollection,
                 FValidationControlsDict);
         }
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.E | Keys.Control))
+            {
+                this.txtPreferredName.Focus();
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

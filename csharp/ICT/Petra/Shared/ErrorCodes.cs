@@ -162,8 +162,8 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "The use of suspense accounts cannot be	disabled because there are accounts	currently in use.")]
         public const String ERR_NO_SUSPENSE_ACCOUNTS_ALLOWED = "FIN.00001V";
 
-        /// <summary>Partner Key is invalid.</summary>
-        [ErrCodeAttribute("Too small number of forwarding periods.",
+        /// <summary>Too few forwarding periods.</summary>
+        [ErrCodeAttribute("Too few forwarding periods.",
              ErrorMessageText = "There must be at least {0} periods because {1} periods have been used already.")]
         public const String ERR_NUMBER_FWD_PERIODS_TOO_SMALL = "FIN.00002V";
 
@@ -204,6 +204,16 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Key Ministry has been deactivated and cannot be used.")]
         public const String ERR_KEY_MINISTRY_DEACTIVATED = "FIN.00009V";
 
+        /// <summary>Allocation journal.</summary>
+        [ErrCodeAttribute("Amount is too large.",
+             ErrorMessageText = "The amount '{0}' is too large. An individual amount cannot be greater than the total amount.")]
+        public const String ERR_AMOUNT_TOO_LARGE = "FIN.00010V";
+
+        /// <summary>Allocation journal.</summary>
+        [ErrCodeAttribute("Percentage is above 100%.",
+             ErrorMessageText = "Percentage cannot be greater than 100%.")]
+        public const String ERR_PERCENTAGE_TOO_LARGE = "FIN.00011V";
+
         #endregion
 
         #region Partner Module-specific error codes
@@ -217,6 +227,11 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("Invalid Partner.",
              ErrorMessageText = "Invalid Partner entered: PartnerKey 0 is not a valid value.")]
         public const String ERR_PARTNERKEY_INVALID_NOZERO = "PARTN.00002V";
+
+        /// <summary>Recipient Field/Motivation Group combination is invalid (must be non-gift for field=0).</summary>
+        [ErrCodeAttribute("Invalid Motivation Group for Recipient's Field.",
+             ErrorMessageText = "The Recipient's Field is 0 and so cannot have a Gift Motivation Group Code.")]
+        public const String ERR_RECIPIENT_FIELD_MOTIVATION_GROUP = "PARTN.00999V";
 
         /// <summary>Partner Status MERGED must not be assigned.</summary>
         [ErrCodeAttribute("Partner Status MERGED must not be assigned",
@@ -279,6 +294,16 @@ namespace Ict.Petra.Shared
              ErrorMessageText =
                  "The dates overlap for two of more Gift Destination records. Please ensure that no two records are active on the same day.")]
         public const String ERR_DATES_OVERLAP = "PARTN.00030V";
+
+        /// <summary>Occupation Code is invalid.</summary>
+        [ErrCodeAttribute("Invalid Occupation Code.",
+             ErrorMessageText = "Invalid Occupation Code entered: The Occupation specified with Occupation Code {0} is not valid.")]
+        public const String ERR_OCCUPATIONCODE_INVALID = "PARTN.00031V";
+
+        /// <summary>Duplicate Family ID in one Family.</summary>
+        [ErrCodeAttribute("Duplicate Family ID.",
+             ErrorMessageText = "Duplicate Family IDs not allowed within one Family: More than one Person has been assigned Family ID {0}.")]
+        public const String ERR_DUPLICATE_FAMILY_ID = "PARTN.00032V";
 
         #region Subscriptions
 

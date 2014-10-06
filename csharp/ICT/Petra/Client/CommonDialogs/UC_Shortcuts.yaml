@@ -1,0 +1,20 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    Namespace: Ict.Petra.Client.CommonDialogs   
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+    Controls:
+        pnlContent:
+            Controls: [grpDescription, pnlGrid]
+            Dock: Fill
+        grpDescription:
+            Controls: [lblDescription]
+            Dock: Top
+        lblDescription: {NoLabel=true, Height=60}
+        pnlGrid:
+            Controls: [grdHelp]
+            Dock: Fill
+        grdHelp:
+            Dock: Fill
+

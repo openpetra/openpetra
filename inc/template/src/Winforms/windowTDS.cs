@@ -198,7 +198,20 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
-        {#SHOWDETAILS}
+		FPetraUtilsObject.DisableDataChangedEvent();
+
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+            {#CLEARDETAILS}
+        }
+        else
+        {
+            pnlDetails.Enabled = true;
+            {#SHOWDETAILS}
+        }
+
+		FPetraUtilsObject.EnableDataChangedEvent();
     }
 
     private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
@@ -498,6 +511,25 @@ namespace {#NAMESPACE}
     {
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
+
+    /// auto generated
+	public int GetChangedRecordCount(out string AMessage)
+	{
+{#IFDEF DATASETTYPE}
+{#IFDEF MASTERTABLE}
+        GetDataFromControls({#MASTERTABLETYPE}Row ARow);
+{#ENDIF MASTERTABLE}
+{#IFNDEF MASTERTABLE}
+        GetDataFromControls();
+{#ENDIFN MASTERTABLE}
+	    // Optionally return GetChangedRecordCountManual(out string AMessage)
+	    {#GETCHANGEDRECORDCOUNT}
+{#ENDIF DATASETTYPE}
+{#IFNDEF DATASETTYPE}
+	    AMessage = String.Empty;
+	    return -1;
+{#ENDIFN DATASETTYPE}
+	}
 
     /// auto generated
     public void FileSave(object sender, EventArgs e)

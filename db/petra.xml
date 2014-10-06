@@ -1284,25 +1284,29 @@
                 type="bit"
                 descr="Template will be selected by default"
                 label="Default"
-                initial="false"
+                format="Yes/No"
+                initial="no"
                 notnull="yes"/>
       <tablefield name="s_private_l"
                 type="bit"
                 descr="Template only available to me"
                 label="Private"
-                initial="false"
+                format="Yes/No"
+                initial="no"
                 notnull="yes"/>
       <tablefield name="s_private_default_l"
                 type="bit"
                 descr="Private template will be selected over public default"
                 label="Private default"
-                initial="false"
+                format="Yes/No"
+                initial="no"
                 notnull="yes"/>
       <tablefield name="s_readonly_l"
                 type="bit"
                 descr="Template cannot be modified"
                 label="Read only"
-                initial="false"
+                format="Yes/No"
+                initial="no"
                 notnull="yes"/>
       <tablefield name="s_xml_text_c"
                 type="text"
@@ -2952,14 +2956,6 @@
                 descr="Flag is set if there are different surnames entered for husband and wife"
                 format="Yes/No"
                 initial="no"/>
-    <tablefield name="p_field_key_n"
-                type="number"
-                length="10"
-                descr="This is the partner key of the field in which the partner (should be a Worker or ExWorker is serving."
-                format="9999999999"
-                label="Field Key"
-                help="Partner key for the partner&apos;s current field"
-                initial="?"/>
     <tablefield name="p_marital_status_c"
                 type="varchar"
                 descr=""
@@ -2989,11 +2985,6 @@
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
     <foreignkey name="p_family_fk2"
-                descr=""
-                thisFields="p_field_key_n"
-                otherTable="p_unit"
-                otherFields="p_partner_key_n"/>
-    <foreignkey name="p_family_fk3"
                 descr=""
                 thisFields="p_marital_status_c"
                 otherTable="pt_marital_status"
@@ -3221,14 +3212,6 @@
                 help="This field indicates the family id of the individual."
                 initial="0"
                 notnull="yes" />
-    <tablefield name="p_field_key_n"
-                type="number"
-                length="10"
-                descr="This is the partner key of the field in which the partner (should be a Worker or ExWorker) is serving."
-                format="9999999999"
-                label="Field Key"
-                help="Partner key for the partner&apos;s current field"
-                initial="?"/>
     <tablefield name="p_academic_title_c"
                 type="varchar"
                 descr="A person&apos;s academic title such as BSc(Hons) or Prof. (eg. Herr Prof. Klaus Shmitt)"
@@ -3271,11 +3254,6 @@
                 otherTable="pt_marital_status"
                 otherFields="pt_code_c"/>
     <foreignkey name="p_person_fk4"
-                descr=""
-                thisFields="p_field_key_n"
-                otherTable="p_unit"
-                otherFields="p_partner_key_n"/>
-    <foreignkey name="p_person_fk5"
                 descr=""
                 thisFields="p_occupation_code_c"
                 otherTable="p_occupation"
@@ -4415,8 +4393,8 @@
                 descr=""
                 thisFields="a_ep_match_key_i"/>
     <uniquekey name="a_ep_match_uk"
-               descr=""
-               thisFields="a_match_text_c, a_detail_i"/>
+               descr="unique key"
+               thisFields="a_match_text_c, a_detail_i, a_ledger_number_i"/>
     <foreignkey name="a_ep_match_fk1"
                 descr=""
                 thisFields="a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c"
@@ -5794,7 +5772,7 @@
   <table name="p_merge_form"
          descr="Master record for Mail Merge output creation"
          area="Petra Data"
-         label="P_Merge_Form"
+         label="Merge Form"
          dumpname="p_mrgfrm"
          group="mailroom">
     <tablefield name="p_merge_form_name_c"
@@ -5818,7 +5796,7 @@
   <table name="p_merge_field"
          descr="Fields within a Mail Merge Form"
          area="Petra Data"
-         label="P_Merge_Field"
+         label="Merge Field"
          dumpname="p_mrgfld"
          group="mailroom">
     <tablefield name="p_merge_form_name_c"
@@ -9805,6 +9783,12 @@
                 label="Reporting Column (Worker or Field)"
                 columnlabel="Reporting Column"
                 help="Any gifts for personnel should be assigned to Worker, otherwise Field."/>
+    <tablefield name="a_tax_deductible_account_c"
+                type="varchar"
+                descr="Account Code to be used for the Tax deductible portion of this Gift"
+                format="X(8)"
+                label="Tax Deductible Account Code"
+                help="The Account Code to be used for the Tax Deductible portion of this Gift"/>
     <!-- Constraints on table a_motivation_detail -->
     <primarykey name="a_motivation_detail_pk"
                 descr=""
@@ -11697,6 +11681,61 @@
                 format="X(80)"
                 label="Comment Three"
                 help="Enter a comment"/>
+    <tablefield name="a_tax_deductible_pct_n"
+                type="number"
+                length="5"
+                decimals="2"
+                descr="Percentage of gift amount that is tax-deductible"
+                label="Percentage Tax Deductible"
+                help="What percentage of this gift should be tax-deductible?"/>
+    <tablefield name="a_tax_deductible_amount_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="Tax deductible portion of gift"
+                format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
+                label="Tax deductible amount"
+                initial="0" />
+    <tablefield name="a_tax_deductible_amount_base_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="Tax deductible portion of gift (Base Currency)"
+                format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
+                label="Tax deductible amount (Base)"
+                initial="0" />
+    <tablefield name="a_tax_deductible_amount_intl_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="Tax deductible portion of gift (Intl Currency)"
+                format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
+                label="Tax deductible amount (Intl)"
+                initial="0" />
+    <tablefield name="a_non_deductible_amount_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="Non tax-deductible portion of gift"
+                format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
+                label="Non tax-deductible amount"
+                initial="0" />
+    <tablefield name="a_non_deductible_amount_base_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="Non tax-deductible portion of gift (Base Currency)"
+                format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
+                label="Non tax-deductible amount (Base)"
+                initial="0" />
+    <tablefield name="a_non_deductible_amount_intl_n"
+                type="number"
+                length="24"
+                decimals="10"
+                descr="Non tax-deductible portion of gift (Intl Currency)"
+                format="-&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;&gt;,&gt;&gt;9.99"
+                label="Non tax-eductible amount (Intl)"
+                initial="0" />         
     <!-- Constraints on table a_gift_detail -->
     <primarykey name="a_gift_detail_pk"
                 descr=""
@@ -13409,7 +13448,7 @@
   <table name="a_ar_article_price"
          descr="assign a price to an article, which can be updated by time"
          area="Petra Data"
-         label="ArticlePrice"
+         label="Article Price"
          dumpname="ar_price"
          group="ar">
     <tablefield name="a_ar_article_code_c"
@@ -15196,7 +15235,7 @@
     <index name="inx_pm_short_term_application_nk"
            descr=""
            area=""
-           unique="yes">
+           unique="no">
       <indexfield name="p_partner_key_n" order="ascending"/>
       <indexfield name="pm_st_app_date_d" order="ascending"/>
       <indexfield name="pm_st_application_type_c" order="ascending"/>
@@ -15364,14 +15403,6 @@
                 otherTable="pt_position"
                 otherFields="pt_position_name_c, pt_position_scope_c"/>
     <!-- Explicit Indexes on table pm_year_program_application  -->
-    <index name="inx__year_program_application_nk"
-           descr=""
-           area=""
-           unique="yes">
-      <indexfield name="p_partner_key_n" order="ascending"/>
-      <indexfield name="pm_yp_app_date_d" order="ascending"/>
-      <indexfield name="pm_yp_basic_app_type_c" order="ascending"/>
-    </index>
     <index name="ypa_partner_k"
            descr="partner key index"
            area="Petra Index">
@@ -20125,7 +20156,7 @@
   <table name="ph_room_booking"
          descr="Links room allocations and a booking"
          area="Petra Data"
-         label="RoomBooking"
+         label="Room Booking"
          dumpname="pc_rmbk"
          group="hospitality">
     <tablefield name="ph_booking_key_i"

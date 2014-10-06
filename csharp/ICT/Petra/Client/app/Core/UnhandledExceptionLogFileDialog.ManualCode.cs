@@ -1,9 +1,9 @@
 ﻿// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, andreww
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,17 +50,17 @@ namespace Ict.Petra.Client.App.Core
         }
 
 
-        private void btnOK_Click(System.Object sender, System.EventArgs e)
+        private void btnOK_Click(Object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void btnCopyToClipboard_Click(System.Object sender, System.EventArgs e)
+        private void btnCopyToClipboard_Click(Object sender, EventArgs e)
         {
             Clipboard.SetDataObject(txtLogFileContent.Text);
         }
 
-        private void Form_Load(System.Object sender, System.EventArgs e)
+        private void Form_Load(Object sender, EventArgs e)
         {
             if (FWhatToOpen.Equals("Server.log"))
             {
@@ -75,12 +75,13 @@ namespace Ict.Petra.Client.App.Core
                     StreamReader TLogFileReader = new StreamReader(FLogFileLocation);
                     FLogFileContent = TLogFileReader.ReadToEnd();
                     TLogFileReader.Close();
-                    txtLogFileContent.Text = Catalog.GetString("The Server log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent;
+                    txtLogFileContent.AppendText(Catalog.GetString(
+                            "The Server log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent);
                 }
                 catch (Exception)
                 {
-                    txtLogFileContent.Text = Catalog.GetString(
-                        "Problem on opening logfile. The server log can (at the moment) only be displayed in this window if you are using the standalone version or the development environment.");
+                    txtLogFileContent.AppendText(Catalog.GetString(
+                            "Problem on opening logfile. The server log can (at the moment) only be displayed in this window if you are using the standalone version or the development environment."));
                 }
             }
             else if (FWhatToOpen.Equals("PetraClient.log"))
@@ -92,18 +93,28 @@ namespace Ict.Petra.Client.App.Core
                     StreamReader TLogFileReader = new StreamReader(FLogFileLocation);
                     FLogFileContent = TLogFileReader.ReadToEnd();
                     TLogFileReader.Close();
-                    txtLogFileContent.Text = Catalog.GetString("The Client log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent;
+                    txtLogFileContent.AppendText(Catalog.GetString(
+                            "The Client log file:") + "\r\n " + FLogFileLocation + "\r\n\r\n" + FLogFileContent);
                 }
                 catch (Exception)
                 {
-                    txtLogFileContent.Text = Catalog.GetString("Problem on opening logfile");
+                    txtLogFileContent.AppendText(Catalog.GetString("Problem on opening logfile"));
                 }
             }
             else
             {
-                txtLogFileContent.Text =
-                    String.Format(Catalog.GetString("An error ocurred. The logfile you are looking for \r\n({0})\r\nis not available!"), FWhatToOpen);
+                txtLogFileContent.AppendText(
+                    String.Format(Catalog.GetString("An error ocurred. The logfile you are looking for \r\n({0})\r\nis not available!"), FWhatToOpen));
             }
+        }
+
+        private void Form_Shown(Object sender, EventArgs e)
+        {
+            // Scroll to the end of the error logs so that you see the most recent message first
+            txtLogFileContent.Focus();
+            txtLogFileContent.SelectionStart = txtLogFileContent.TextLength - 1;
+            txtLogFileContent.SelectionLength = 0;
+            txtLogFileContent.ScrollToCaret();
         }
     }
 }

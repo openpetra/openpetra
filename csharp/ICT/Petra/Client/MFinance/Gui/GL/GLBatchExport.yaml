@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.GL
     FormType: browse
     Template: window
-    WindowWidth: 660
-    WindowHeight: 700
+    WindowWidth: 620
+    WindowHeight: 600
     Actions:
         actExportBatches: {Label=&Start, ActionClick=ExportBatches}
         actClose: {Label=&Close, ActionClick=BtnCloseClick}
@@ -29,14 +29,19 @@ RootNode:
         rgrDetailSummary:
             Label: Detail or Summary
             Controls: [rbtDetail, rbtSummary]
+            Width:600
         rbtDetail:
             Label: Detail
+            Width:400
         rbtSummary:
             Controls: [dtpDateSummary, chkDontSummarize, cmbDontSummarizeAccount]
+            Width:400
         rgrCurrency:
             OptionalValues: [Base Currency, Original Transaction Currency]
+            Width:600
         rgrDateOrBatchRange:
             Controls: [rbtDateRange, rbtBatchNumberSelection]
+            Width:600
         rbtDateRange:
             NoLabel: true
             Controls: [dtpDateFrom, dtpDateTo]
@@ -45,13 +50,13 @@ RootNode:
             NoLabel: true
             Controls: [txtBatchNumberStart, txtBatchNumberEnd]
             ControlsOrientation: horizontal
-        dtpDateFrom: {Label=Date from}
-        dtpDateTo: {Label=To}
-        txtBatchNumberStart: {Label=Batch Number from, Format=Integer}
-        txtBatchNumberEnd: {Label=To, Format=Integer}
+        dtpDateFrom: {Label=Date from, Width=110, LabelWidth=90}
+        dtpDateTo: {Label=To, Width=110}
+        txtBatchNumberStart: {Label=Batch from, Format=Integer, Width=110, LabelWidth=90}
+        txtBatchNumberEnd: {Label=To, Format=Integer, Width=110}
         chkIncludeUnposted: {Label=Include Unposted Batches}
         chkTransactionsOnly:
-        chkDontSummarize: {Label=Don't summarize with}             
+        chkDontSummarize: {Label=Don't summarize with}
         cmbDontSummarizeAccount:
             List: UserDefinedList
             Label: Account
@@ -61,16 +66,18 @@ RootNode:
             Controls:
                 Row0: [txtFilename, btnBrowseFilename]
         pnlButtons:
-            Dock:Bottom
+            Dock:Top
             Controls:
                 Row0: [btnHelp, btnOK, btnClose]
-            ColWidths: [0=Fixed:400,1=Fixed:100,2=Fixed:100]
+            ColWidths: [0=Fixed:440,1=Fixed:60,2=Fixed:60]
         btnHelp: {Action=actHelp}
         btnClose: {Action=actClose}
         btnOK: {Action=actExportBatches}                
-        txtFilename: 
-            Width:300
+        txtFilename:
+            LabelWidth:160
+            Width:200
         btnBrowseFilename:
+            Label: Browse
             ActionClick: BtnBrowseClick
         cmbDateFormat:
             OptionalValues: [MM/dd/yyyy,dd/MM/yyyy,yyyy-MM-dd]

@@ -38,6 +38,89 @@ namespace Ict.Common.Data
     public class DataUtilities
     {
         /// <summary>
+        /// Gets the 0-based index in the specified DataView by specifying an index in a Datatable
+        /// </summary>
+        /// <param name="ADataView">The DataView to search</param>
+        /// <param name="ADataTable">The DataTable containing the known record</param>
+        /// <param name="ARowNumberInTable">The 0-based row in the DataTable</param>
+        /// <returns>0-based index in the DataView</returns>
+        public static int GetDataViewIndexByDataTableIndex(DataView ADataView, DataTable ADataTable, int ARowNumberInTable)
+        {
+            Int32 RowNumberInView = -1;
+
+            for (int Counter = 0; Counter < ADataView.Count; Counter++)
+            {
+                bool found = true;
+
+                foreach (DataColumn myColumn in ADataTable.PrimaryKey)
+                {
+                    string value1 = ADataTable.Rows[ARowNumberInTable][myColumn].ToString();
+                    string value2 = ADataView[Counter][myColumn.Ordinal].ToString();
+
+                    if (value1 != value2)
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    RowNumberInView = Counter;
+                    break;
+                }
+            }
+
+            return RowNumberInView;
+        }
+
+        /// <summary>
+        /// Gets the 0-based index of a row in a DataTable by specifying a DataRowView
+        /// </summary>
+        /// <param name="ADataTable">The DataTable to search</param>
+        /// <param name="ADataRowView">The DataRowView that is the DataRow to find</param>
+        /// <returns>The 0-based index in the DataTable</returns>
+        public static int GetDataTableIndexByDataRowView(DataTable ADataTable, DataRowView ADataRowView)
+        {
+            int RowNumberInData = -1;
+
+            int dataRowIndex = 0;
+
+            foreach (DataRow myRow in ADataTable.Rows)
+            {
+                bool found = true;
+
+                foreach (DataColumn myColumn in ADataTable.PrimaryKey)
+                {
+                    if (myRow.RowState != DataRowState.Deleted)
+                    {
+                        string value1 = myRow[myColumn].ToString();
+                        string value2 = ADataRowView[myColumn.Ordinal].ToString();
+
+                        if (value1 != value2)
+                        {
+                            found = false;
+                        }
+                    }
+                    else
+                    {
+                        found = false;
+                    }
+                }
+
+                if (found)
+                {
+                    RowNumberInData = dataRowIndex;
+                    break;
+                }
+
+                dataRowIndex++;
+            }
+
+            return RowNumberInData;
+        }
+
+        /// <summary>
         /// Remove the columns from the table that are not part of the template table
         /// </summary>
         /// <param name="ATable">table to be modified</param>
@@ -736,6 +819,62 @@ namespace Ict.Common.Data
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Changes a DataColumns' DataType to the desired DataType. This works even when the DataTable already holds data!
+        /// </summary>
+        /// <remarks>
+        /// <para>The Method traverses the full DataRows Collection of the DataTable to copy data to the new DataType.
+        /// This is likely not very efficient on huge DataTables!
+        /// </para>
+        /// <para>
+        /// The Method utilises <see cref="System.Convert.ChangeType(object, Type)" /> for the conversion of the type. Only conversions
+        /// that <see cref="System.Convert.ChangeType(object, Type)" /> supports will work. If
+        /// <see cref="System.Convert.ChangeType(object, Type)" /> throws an Exception then the
+        /// <see cref="ChangeDataColumnDataType" /> Method will return false.
+        /// </para>
+        /// </remarks>
+        /// <param name="ATable">DataTable that holds the DataColumn whose DataType should be changed.</param>
+        /// <param name="AColumnName">Name of the DataColumn whose DataType should be changed.</param>
+        /// <param name="ANewType">Desired type that the DataColumn whose DataType should be changed should be changed to.</param>
+        /// <returns>true if the change of DataType was successful or if the DataColumns' DataType was already the requested DataType, otherwise false.</returns>
+        public static bool ChangeDataColumnDataType(DataTable ATable, string AColumnName, Type ANewType)
+        {
+            if (ATable.Columns.Contains(AColumnName) == false)
+            {
+                return false;
+            }
+
+            DataColumn ColumnToReplace = ATable.Columns[AColumnName];
+
+            if (ColumnToReplace.DataType == ANewType)
+            {
+                return true;
+            }
+
+            try
+            {
+                DataColumn ColumnWithReplacedType = new DataColumn("Tmp", ANewType);
+
+                ATable.Columns.Add(ColumnWithReplacedType);
+                ColumnWithReplacedType.SetOrdinal(ATable.Columns.IndexOf(ColumnToReplace)); // Ensures that column is inserted at the same spot in the DataColumn Collection
+
+                foreach (DataRow ConvertRow in ATable.Rows)
+                {
+                    ConvertRow["Tmp"] = Convert.ChangeType(ConvertRow[AColumnName], ANewType);
+                }
+
+                ATable.Columns.Remove(AColumnName);
+
+                ColumnWithReplacedType.ColumnName = AColumnName;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 

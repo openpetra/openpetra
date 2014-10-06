@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash,timop,dougm
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -227,6 +227,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ExportBatches(object sender, EventArgs e)
         {
+            if (File.Exists(txtFilename.Text))
+            {
+                if (MessageBox.Show(Catalog.GetString("The file already exists. Is it OK to overwrite it?"),
+                        Catalog.GetString("Export Gifts"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+
             StreamWriter sw1 = null;
 
             try
@@ -365,6 +376,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
+                TLogging.Log("GiftBatchExport.ManualCode: " + ex.ToString());
                 MessageBox.Show(ex.Message,
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,

@@ -45,6 +45,7 @@ using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls;
@@ -52,7 +53,7 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MConference.Gui;
-using Ict.Petra.Client.MFinance.Gui;
+using Ict.Petra.Client.MFinance.Gui.Gift;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MPartner.Gui.Extracts;
 using Ict.Petra.Client.MPartner.Gui.Setup;
@@ -355,7 +356,9 @@ namespace Ict.Petra.Client.App.PetraClient
                 }
 
                 Catalog.Init();
-
+#if DEBUG
+                TApplicationVCSInfo.DetermineApplicationVCSInfo();
+#endif
                 // Register Types that can throw Error Codes (Ict.Common.CommonErrorCodes is automatically added)
                 ErrorCodeInventory.RegisteredTypes.Add(new Ict.Petra.Shared.PetraErrorCodes().GetType());
                 ErrorCodeInventory.RegisteredTypes.Add(new Ict.Common.Verification.TStringChecks().GetType());
@@ -659,6 +662,10 @@ namespace Ict.Petra.Client.App.PetraClient
             TCacheableTablesManager.InitializeUnit();
             new TIconCache();
 
+            // Set up Delegates for forwarding of calls for security-related Exceptions
+            ExceptionHandling.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
+            TUnhandledThreadExceptionHandler.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
+
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenPartnerFindByBankDetailsScreen = @TPartnerFindScreenManager.OpenModalForm;
@@ -667,7 +674,11 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractMasterScreen = @TExtractMasterScreenManager.OpenForm;
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen = @TDonorRecipientHistoryScreenManager.OpenForm;
+            TCommonScreensForwarding.OpenPartnerEditScreen = @TPartnerEditScreenManager.OpenForm;
+            TCommonScreensForwarding.OpenExtractMasterScreenHidden = @TExtractMasterScreenManager.OpenFormHidden;
             TCommonScreensForwarding.OpenRangeFindScreen = @TPostcodeRangeSetupManager.OpenModalForm;
+            TCommonScreensForwarding.OpenOccupationCodeFindScreen = @TOccupationCodeSetupManager.OpenModalForm;
             TCommonScreensForwarding.OpenGetMergeDataDialog = @TGetMergeDataManager.OpenModalForm;
             TCommonScreensForwarding.OpenPrintPartnerDialog = @TPrintPartnerModal.OpenModalForm;
 
@@ -681,7 +692,7 @@ namespace Ict.Petra.Client.App.PetraClient
             Ict.Common.Controls.TSgrdDataGrid.SetColourInformation = @SetDataGridColoursFromUserDefaults;
 
             // Set up Delegate for the set-up of various Colours of all Filter and Find instances from UserDefaults
-            Ict.Common.Controls.TUcoFilterAndFind.SetColourInformation = @SetFilterFindColoursFromUserDefaults;
+            Ict.Petra.Client.CommonControls.TUcoFilterAndFind.SetColourInformation = @SetFilterFindColoursFromUserDefaults;
 
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
@@ -709,6 +720,10 @@ namespace Ict.Petra.Client.App.PetraClient
             // I18N: assign proper font which helps to read asian characters
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
             TAppSettingsManager.InitFontI18N();
+
+            TCommonControlsHelper.SetInactiveIdentifier += delegate {
+                return SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS;
+            };
         }
 
         /// <summary>

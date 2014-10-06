@@ -13,6 +13,7 @@ RootNode:
             Dock: Fill
        
         grpPersonInfo:
+            Label: Overview / Person Info
             Controls: [pnlPersonInfoData]
                    
         pnlPersonInfoData:
@@ -37,7 +38,7 @@ RootNode:
             Controls: [grdDetails]
         
         grdDetails:
-            Height: 82
+            Height: 65
             Width: 540
             TableName: JobAssignmentStaffDataCombined
             Columns: [FieldKey, FieldName, Position, FromDate, ToDate]
@@ -50,6 +51,7 @@ RootNode:
             SortOrder: FromDate DESC
             
         grpChurchInfo:
+            Label: Overview / Church Info
             Controls: [pnlChurchInfoData]
                     
         pnlChurchInfoData:

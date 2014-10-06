@@ -13,9 +13,18 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlDetailGrid, pnlDetails]
+            Controls: [sptExperience]
+        sptExperience:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDetailGrid
+            Panel2: pnlDetails
         pnlDetailGrid:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
             Dock: Bottom
@@ -37,7 +46,8 @@ RootNode:
             SortOrder: PrevLocation ASC
             
         pnlDetails:
-            Dock: Bottom
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
 #            Width: 500
 #            Height: 400
             Controls:

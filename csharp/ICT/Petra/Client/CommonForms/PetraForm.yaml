@@ -15,6 +15,7 @@ RootNode:
     Actions:
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
         actAbout: {Label=&About OpenPetra, ActionId=eHelpAbout, Image: PetraInformation.ico}
+        actKeyboardShortcuts: {Label=&Keyboard Shortcuts, ActionId=eKeyboardShortcuts}
     Controls:
         mnuMain: 
         tbrMain:
@@ -28,6 +29,7 @@ RootNode:
             Label: &Help
             Order: AlwaysLast
             mniHelpPetraHelp: {Label=&OpenPetra Help, ActionId=eHelp, Image: Help2.ico}
+            mniHelpKeyboardShortcuts: {Label=&Keyboard Shortcuts, Action=actKeyboardShortcuts}
             mniSeparator: {Label=-}
             mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport, Image: BugReport.ico}
             mniSeparator: {Label=-}

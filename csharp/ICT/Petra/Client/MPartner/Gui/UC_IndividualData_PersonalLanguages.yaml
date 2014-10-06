@@ -14,9 +14,18 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlDetailGrid, pnlDetails]
+            Controls: [sptLanguages]
+        sptLanguages:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDetailGrid
+            Panel2: pnlDetails
         pnlDetailGrid:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
             Dock: Bottom
@@ -36,7 +45,8 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             
         pnlDetails:
-            Dock: Bottom
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
 #            Width: 500
 #            Height: 400
             Controls:

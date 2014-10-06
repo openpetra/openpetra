@@ -1,0 +1,76 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    FormType: navigation
+    Template: windowFind
+    FormTitle: Gift Detail Find
+    ClassName: TGiftDetailFindScreen
+    FormType: browse
+    Namespace: Ict.Petra.Client.MFinance.Gui.Gift
+    WindowWidth: 900
+    WindowHeight: 670
+
+    Events:
+
+    Actions:
+        actSearch: {Label=Search, ActionClick=BtnSearch_Click}
+        actClear: {Label=Clear, ActionClick=BtnClear_Click}
+        actView: {Label=View, ActionClick=BtnView_Click}
+
+    Controls:
+        pnlContent: 
+            Dock: Fill
+            Controls: [grpFindCriteria, pnlGrid]
+        grpFindCriteria:
+            Dock: Top
+            Controls:
+                Row0: [cmbLedger]
+                Row1: [txtGiftBatchNumber, txtDonor]
+                Row2: [txtGiftTransactionNumber, txtRecipient]
+                Row3: [txtReceiptNumber, dtpDateFrom]
+                Row4: [cmbMotivationGroup, dtpDateTo]
+                Row5: [cmbMotivationDetail, txtMinimumAmount]
+                Row6: [txtComment1, txtMaximumAmount]
+                Row7: [btnSearch, btnClear]
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdResult, pnlBlankSearchResult]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnView]
+            ControlsOrientation: horizontal
+        pnlBlankSearchResult:
+            Dock: Fill
+            Controls: [lblSearchInfo]
+            Stretch: horizontally
+ 
+        grdResult:
+            Dock: Fill
+
+        cmbLedger: {ReadOnly=true, List=LedgerNameList, ColSpan=2}
+        txtGiftBatchNumber: {Width=100, Format=Integer}
+        txtGiftTransactionNumber: {Width=100, Format=Integer}
+        txtReceiptNumber: {Width=100, Format=Integer}
+        cmbMotivationGroup: {List=UserDefinedList, OnChange=OnCmbMotivationChange, Width=100}
+        cmbMotivationDetail: {List=UserDefinedList, OnChange=OnCmbMotivationChange, Width=100}
+        txtComment1: {Label=Comment 1}
+        txtDonor: {Type=PartnerKey, Stretch=horizontally}
+        txtRecipient: {Type=PartnerKey, Stretch=horizontally}
+        dtpDateFrom:
+        dtpDateTo:
+        txtMinimumAmount: {Format=Integer}
+        txtMaximumAmount: {Format=Integer}
+        lblSearchInfo: {TextAlign=MiddleCenter, Stretch=horizontally}
+
+        btnSearch:
+            Width: 83
+            Height: 23
+            Action: actSearch
+        btnClear:
+            Width: 75
+            Height: 23
+            Align: right
+            Action: actClear
+        btnView:
+            Action: actView
+            Width: 80
+            Enabled: false

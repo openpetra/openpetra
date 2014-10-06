@@ -17,6 +17,7 @@ RootNode:
         READCONTROLSVERIFICATION: BLANK
         READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
         SETCONTROLSLOCALVARS: BLANK
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
     Security:
         ModulePermissionRequired: [PTNRUSER]
     Controls:
@@ -28,35 +29,43 @@ RootNode:
             Label: Sorting
             Controls: [ucoReportSorting]
         pnlSettingsGrid:
-            Controls: [lblIncludePublication, clbIncludePublication, dtpDateOfSendingCopy]
+            Controls: [lblIncludePublication, clbIncludePublication, pnlDetails]
             Order: AlwaysFirst
+            Dock: Fill
         pnlSettingsCriteria:
             Controls: 
-#                Row0: [chkActivePartnersOnly, chkMailingAddressesOnly]
-#                Row1: [chkFamiliesOnly, chkExcludeNoSolicitations]
-#                Row2: [chkFreeSubscriptionsOnly]
-#                Row3: [cmbSubscriptionStatus]
+                Row0: [chkIncludeActiveSubscriptionsOnly, chkFreeSubscriptionsOnly]
+                Row1: [cmbSubscriptionStatus]
+                Row2: [ucoAddress, ucoChkFilter]
 #                Row4: [dtpStartDateFrom, dtpStartDateTo]
 #                Row5: [dtpExpiryDateFrom, dtpExpiryDateTo]
-                Row0: [ucoAddress]
+            Dock: Bottom
         lblIncludePublication:
             Label: Report on all partners that have one of these subscriptions
+            Dock: Top
+            Height: 20
         clbIncludePublication:
             NoLabel: true 
             ParameterName: param_explicit_publication
-            Width: 550
-            Height: 200
+            Dock: Fill
+        pnlDetails:
+            Controls: [dtpDateOfSendingCopy]
+            Dock: Bottom
+            Height: 30
         dtpDateOfSendingCopy:
             ParameterName: param_date_effective
-#        chkActivePartnersOnly:
-#        chkMailingAddressesOnly:
-#        chkFamiliesOnly:
-#        chkExcludeNoSolicitations:
-#        chkFreeSubscriptionsOnly:
-#        cmbSubscriptionStatus:
-#            ColSpan: 2
-#            Label: Subscription Status
-#            OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
+        chkIncludeActiveSubscriptionsOnly: {OnChange=ActiveSubscriptionsBoxChanged}
+            Label: Active Subscriptions
+            CheckBoxAttachedLabel: right
+            ParameterName: param_include_active_subscriptions_only
+        chkFreeSubscriptionsOnly:
+            Label: Free Subscriptions only
+            CheckBoxAttachedLabel: right
+            ParameterName: param_free_subscriptions_only
+        cmbSubscriptionStatus:
+            Label: Subscription Status
+            OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
+            ParameterName: param_subscription_status
 #        dtpStartDateFrom:
 #            Label:  Start Date From
 #        dtpStartDateTo:
@@ -66,8 +75,12 @@ RootNode:
 #        dtpExpiryDateTo:
 #            Label:  To
         ucoAddress:
-#            ColSpan: 2
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
+            Height: 230
+        ucoChkFilter:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Width: 300
+            Height: 100
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
@@ -120,9 +133,9 @@ RootNode:
         Para16a:
             Name: Partner Name
             Parameter: 4.0
-        Para16:
-            Name: Short Name
-            Parameter: 4.0
+        #Para16:
+         #   Name: Short Name
+         #   Parameter: 4.0
         Para17:
             Name: Post Code
             Parameter: 2.0

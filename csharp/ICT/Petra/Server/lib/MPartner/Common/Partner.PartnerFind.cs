@@ -650,12 +650,26 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             }
 
             if (((Boolean)(CriteriaRow["WorkerFamOnly"]) == true)
-                && (CriteriaRow["PartnerClass"].ToString() == "FAMILY"))
+                && (CriteriaRow["PartnerClass"].ToString().StartsWith("FAMILY")))
             {
+                string temp =
+                    "EXISTS (select * FROM PUB.p_partner_gift_destination " +
+                    "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_partner_key_n " +
+                    "AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL OR PUB.p_partner_gift_destination.p_date_effective_d <> PUB.p_partner_gift_destination.p_date_expires_d))";
+
                 // A custom subquery seems to only speedy way of doing this!
-                CustomWhereCriteria = String.Format(
-                    "{0} AND EXISTS (select * FROM PUB.p_partner_type WHERE (PUB.p_partner_type.p_type_code_c LIKE 'WORKER%' OR PUB.p_partner_type.p_type_code_c LIKE 'EX-WORKER%') AND PUB.p_partner.p_partner_key_n = PUB.p_partner_type.p_partner_key_n)",
-                    CustomWhereCriteria);
+                if (CriteriaRow["PartnerClass"].ToString() == "FAMILY")
+                {
+                    CustomWhereCriteria = String.Format(
+                        "{0} AND " + temp,
+                        CustomWhereCriteria);
+                }
+                else
+                {
+                    CustomWhereCriteria = String.Format(
+                        "{0} AND (PUB.p_partner.p_partner_class_c = 'UNIT' OR " + temp + ")",
+                        CustomWhereCriteria);
+                }
             }
 
             if (CriteriaRow["LocationKey"].ToString().Length > 0)
@@ -919,7 +933,9 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             {
                 // A custom subquery seems to only speedy way of doing this!
                 CustomWhereCriteria = String.Format(
-                    "{0} AND EXISTS (select * FROM PUB.p_partner_type WHERE (PUB.p_partner_type.p_type_code_c LIKE 'WORKER%' OR PUB.p_partner_type.p_type_code_c LIKE 'EX-WORKER%') AND PUB.p_partner.p_partner_key_n = PUB.p_partner_type.p_partner_key_n)",
+                    "{0} AND EXISTS (select * FROM PUB.p_partner_gift_destination " +
+                    "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_partner_key_n " +
+                    "AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL OR PUB.p_partner_gift_destination.p_date_effective_d <> PUB.p_partner_gift_destination.p_date_expires_d))",
                     CustomWhereCriteria);
             }
 

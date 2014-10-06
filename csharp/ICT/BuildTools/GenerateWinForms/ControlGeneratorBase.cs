@@ -1470,6 +1470,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// constructor
+        /// </summary>
+        public TControlWithDependantControlsGenerator(string APrefix, String AControlType)
+            : base(APrefix, AControlType)
+        {
+        }
+
+        /// <summary>
         /// generate the children, and write the size of this control
         /// </summary>
         public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)

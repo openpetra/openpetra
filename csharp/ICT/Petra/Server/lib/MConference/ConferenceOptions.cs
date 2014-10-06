@@ -25,12 +25,9 @@ using System;
 using System.Data;
 using System.Data.Odbc;
 using System.Collections.Specialized;
-using GNU.Gettext;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Data;
-using Ict.Common.Verification;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
@@ -327,35 +324,24 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             String ConferenceCodePrefix = "";
             PUnitTable UnitTable = new PUnitTable();
             PUnitRow TemplateRow = UnitTable.NewRowTyped(false);
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
 
             TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions called!");
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
-            try
-            {
-                /* Load data */
-                UnitTable = PUnitAccess.LoadByPrimaryKey(AUnitKey, ReadTransaction);
+            TDBTransaction Transaction = null;
 
-                if (UnitTable.Rows.Count > 0)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
                 {
-                    ConferenceCodePrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode.Substring(0, 5);
+                    /* Load data */
+                    UnitTable = PUnitAccess.LoadByPrimaryKey(AUnitKey, Transaction);
 
-                    UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, null, null, ReadTransaction,
-                        null, 0, 0);
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(9, "TConferenceOptions.GetOutreachOptions: committed own transaction.");
-                }
-            }
+                    if (UnitTable.Rows.Count > 0)
+                    {
+                        ConferenceCodePrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode.Substring(0, 5);
+
+                        UnitTable = PUnitAccess.LoadUsingTemplate(TemplateRow, null, null, Transaction);
+                    }
+                });
 
             foreach (PUnitRow UnitRow in UnitTable.Rows)
             {
@@ -748,7 +734,7 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     long PartnerKey = (long)Row[PartnerKeyDBName];
 
-                    GetReceivingFieldFromPartnerTable(PartnerKey, ref AFieldsTable);
+                    GetReceivingFieldFromGiftDestination(PartnerKey, ref AFieldsTable);
                     GetReceivingFieldFromShortTermTable(PartnerKey, ref AFieldsTable);
                 }
             }
@@ -827,12 +813,12 @@ namespace Ict.Petra.Server.MConference.WebConnectors
         /// <param name="APartnerKey"></param>
         /// <param name="AFieldsTable"></param>
         /// <returns></returns>
-        private static bool GetReceivingFieldFromPartnerTable(long APartnerKey, ref DataTable AFieldsTable)
+        private static bool GetReceivingFieldFromGiftDestination(long APartnerKey, ref DataTable AFieldsTable)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
 
-            TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldFromPartnerTable called!");
+            TLogging.LogAtLevel(9, "TConferenceOptions.GetReceivingFieldFromGiftDestination called!");
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
@@ -840,8 +826,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
             try
             {
-                PFamilyTable FamilyTable;
                 PPersonTable PersonTable;
+                PPartnerGiftDestinationTable GiftDestinationTable;
+                long FamilyKey = APartnerKey;
 
                 PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
@@ -849,20 +836,20 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 {
                     PPersonRow PersonRow = (PPersonRow)PersonTable[0];
 
-                    if (!PersonRow.IsFieldKeyNull())
+                    FamilyKey = PersonRow.FamilyKey;
+                }
+
+                GiftDestinationTable = PPartnerGiftDestinationAccess.LoadViaPPartner(FamilyKey, ReadTransaction);
+
+                if (GiftDestinationTable.Rows.Count > 0)
+                {
+                    foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
                     {
-                        AddFieldToTable(PersonRow.FieldKey, ref AFieldsTable, ref ReadTransaction);
-                    }
-
-                    FamilyTable = PFamilyAccess.LoadByPrimaryKey(PersonRow.FamilyKey, ReadTransaction);
-
-                    if (FamilyTable.Rows.Count > 0)
-                    {
-                        PFamilyRow FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
-
-                        if (!FamilyRow.IsFieldKeyNull())
+                        // check if the gift destination is currently active
+                        if ((Row.DateEffective <= DateTime.Today)
+                            && (Row.IsDateExpiresNull() || ((Row.DateExpires >= DateTime.Today) && (Row.DateExpires != Row.DateEffective))))
                         {
-                            AddFieldToTable(FamilyRow.FieldKey, ref AFieldsTable, ref ReadTransaction);
+                            AddFieldToTable(Row.FieldKey, ref AFieldsTable, ref ReadTransaction);
                         }
                     }
                 }

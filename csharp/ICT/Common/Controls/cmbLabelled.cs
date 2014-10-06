@@ -75,8 +75,10 @@ namespace Ict.Common.Controls
     public class TCmbLabelled : System.Windows.Forms.UserControl
     {
         private const Int32 UNIT_HEIGHT = 22;
-        private const Int32 UNIT_LABEL_LEFT_OFFSET = 5;
-        private const Int32 UNIT_LABEL_TOP_OFFSET = 3;
+        private const Int32 UNIT_LABEL_LEFT_OFFSET = 6;
+
+        /// <summary>Denotes what this Control regards as the identifier string of inactive combobox items.</summary>
+        private static readonly string FInactiveIdentifier = "";
 
         /// <summary>
         /// the Combobox that is part of this user control
@@ -88,13 +90,31 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// the label that is part of this user control
+        /// Note: this control is actually a TextBox disguised as a Label. This makes it possible to select and copy this control's text
         /// </summary>
-        protected System.Windows.Forms.Label lblDescription;
+        protected System.Windows.Forms.TextBox lblDescription;
 
         /// <summary>
         /// define which column of the combobox will be used for the label
         /// </summary>
         protected String FLabelDisplaysColumn;
+
+        /// <summary>
+        /// Flag that, if true, still displays the description label even if the value is an empty string.
+        ///   (used by TcmbAutoPopulated with AllowDbNull = true)
+        /// </summary>
+        protected Boolean FIncludeDescriptionForEmptyValue = false;
+
+        /// <summary>
+        /// Denotes what this Control regards as the identifier string of inactive combobox items.
+        /// </summary>
+        public static string InactiveIdentifier
+        {
+            get
+            {
+                return FInactiveIdentifier;
+            }
+        }
 
         /// <summary>
         /// This property determines which column should be sorted. This may be esential
@@ -207,8 +227,8 @@ namespace Ict.Common.Controls
 
                 if (lblDescription.Visible)
                 {
-                    this.lblDescription.SetBounds(this.cmbCombobox.Bounds.X + value,
-                        this.cmbCombobox.Bounds.Y,
+                    this.lblDescription.SetBounds(this.cmbCombobox.Bounds.X + value + UNIT_LABEL_LEFT_OFFSET,
+                        this.cmbCombobox.Bounds.Y + GetYCoordStartLabel(),
                         this.Bounds.Width - value,
                         UNIT_HEIGHT);
                 }
@@ -415,7 +435,7 @@ namespace Ict.Common.Controls
         }
 
         /// the label attached to the combobox
-        public Label AttachedLabel
+        public TextBox AttachedLabel
         {
             get
             {
@@ -438,11 +458,10 @@ namespace Ict.Common.Controls
             get
             {
                 string labelText = this.lblDescription.Text;
-                string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
 
-                if (labelText.StartsWith(inactiveIdentifier))
+                if (labelText.StartsWith(FInactiveIdentifier))
                 {
-                    labelText = labelText.Substring(inactiveIdentifier.Length);
+                    labelText = labelText.Substring(FInactiveIdentifier.Length);
                 }
 
                 return labelText;
@@ -535,18 +554,24 @@ namespace Ict.Common.Controls
         {
             this.SuspendLayout();
 
-            this.lblDescription = new System.Windows.Forms.Label();
+            this.lblDescription = new System.Windows.Forms.TextBox();
 
             //
             // lblDescription
             //
             this.lblDescription.BackColor = System.Drawing.SystemColors.Control;
-            this.lblDescription.Location = new System.Drawing.Point(216, 0);
             this.lblDescription.Name = "lblDescription";
-            this.lblDescription.Size = new System.Drawing.Size(168, 22);
+            this.lblDescription.Size = new System.Drawing.Size(168, this.cmbCombobox.Height);
             this.lblDescription.TabIndex = 1;
-            this.lblDescription.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblDescription.TextAlign = HorizontalAlignment.Left;
             this.lblDescription.Paint += new PaintEventHandler(this.LblDescription_Paint);
+
+            this.lblDescription.Multiline = false;
+            this.lblDescription.WordWrap = false;
+            this.lblDescription.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lblDescription.ReadOnly = true;
+            this.lblDescription.Location = new System.Drawing.Point(GetLabelRectangle().Left + UNIT_LABEL_LEFT_OFFSET, GetYCoordStartLabel());
+            this.lblDescription.TabStop = false;
 
             //
             // TCmbLabelled
@@ -566,6 +591,18 @@ namespace Ict.Common.Controls
         #endregion
 
         #region Creation and Disposal
+
+        static TCmbLabelled()
+        {
+            if (TCommonControlsHelper.SetInactiveIdentifier != null)
+            {
+                FInactiveIdentifier = TCommonControlsHelper.SetInactiveIdentifier() + " ";
+            }
+            else
+            {
+                FInactiveIdentifier = "<INACTIVE> ";
+            }
+        }
 
         /// <summary>
         /// default constructor
@@ -689,6 +726,29 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// This function gets the start Y - Coordinate for the Label.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        private int GetYCoordStartLabel()
+        {
+            System.Single mLabelHeight;
+            System.Int32 mOffset;
+            double mYCoord;
+            mLabelHeight = this.lblDescription.CreateGraphics().MeasureString("SampleText", this.lblDescription.Font).Height;
+            mOffset = this.Size.Height - Convert.ToInt32(mLabelHeight);
+
+            if (mOffset < 0)
+            {
+                mOffset = 0;
+            }
+
+            mYCoord = mOffset / 2.0;
+
+            return Convert.ToInt32(mYCoord);
+        }
+
+        /// <summary>
         /// in some cases, we don't want the labelled combobox, the description and the display are the same
         /// </summary>
         public void RemoveDescriptionLabel()
@@ -732,8 +792,7 @@ namespace Ict.Common.Controls
 
         private void HighlightLabelForInactiveItems(string AItemDescription)
         {
-            string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
-            bool itemIsActive = !(AItemDescription.StartsWith(inactiveIdentifier));
+            bool itemIsActive = !(AItemDescription.StartsWith(FInactiveIdentifier));
 
             if (itemIsActive && (this.lblDescription.BackColor != System.Drawing.SystemColors.Control))
             {
@@ -825,7 +884,7 @@ namespace Ict.Common.Controls
 
             Rectangle mRectangle = this.GetLabelRectangle();
             int mXCoord = mRectangle.Left + UNIT_LABEL_LEFT_OFFSET;
-            int mYCoord = mRectangle.Top + UNIT_LABEL_TOP_OFFSET;
+            int mYCoord = mRectangle.Top + GetYCoordStartLabel();
 
             // Clear background
             e.Graphics.Clear(this.lblDescription.BackColor);
@@ -849,7 +908,7 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected void TCmbLabelled_Leave(System.Object sender, System.EventArgs e)
         {
-            if (this.cmbCombobox.Text == "")
+            if ((this.cmbCombobox.Text == "") && !this.FIncludeDescriptionForEmptyValue)
             {
                 this.lblDescription.Text = "";
                 this.lblDescription.Refresh();

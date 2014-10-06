@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private TDelegateGetPartnerShortName FDelegateGetPartnerShortName;
         private TDelegateIsNewPartner FDelegateIsNewPartner;
-        private TDelegateGetLocationRowOfCurrentlySelectedAddress FDelegateGetLocationRowOfCurrentlySelectedAddress;
+        private TDelegateGetPartnerLocationRowOfCurrentlySelectedAddress FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress;
 
         private Boolean FFamilyMembersExist;
 
@@ -302,11 +302,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnFamilyIDHelp.Visible = false;
 
                 /* Set up Family Partner Information */
-                FDelegateGetPartnerShortName = @GetPartnerShortName;
                 txtFamilyPartnerKey.Text = String.Format("{0:0000000000}", FMainDS.PPerson[0].FamilyKey);
             }
 
             // initialize variables
+            FDelegateGetPartnerShortName = @GetPartnerShortName;
             FDeadlineEditMode = false;
 
             // react to actions on grid
@@ -379,10 +379,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// delegate function to determine the currently selected location key of the partner
         /// </summary>
         /// <param name="ADelegateFunction"></param>
-        public void InitialiseDelegateGetLocationRowOfCurrentlySelectedAddress(TDelegateGetLocationRowOfCurrentlySelectedAddress ADelegateFunction)
+        public void InitialiseDelegateGetPartnerLocationRowOfCurrentlySelectedAddress(
+            TDelegateGetPartnerLocationRowOfCurrentlySelectedAddress ADelegateFunction)
         {
             /* set the delegate function from the calling System.Object */
-            FDelegateGetLocationRowOfCurrentlySelectedAddress = ADelegateFunction;
+            FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress = ADelegateFunction;
         }
 
         /// <summary>
@@ -416,56 +417,48 @@ namespace Ict.Petra.Client.MPartner.Gui
         public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, Control AValidateSpecificControl = null)
         {
             bool ReturnValue = true;
+            int DuplicateFamilyID = -1;
+            DataColumn ValidationColumn = null;
+            TValidationControlsData ValidationControlsData = new TValidationControlsData();
+            TVerificationResult VerificationResult = null;
 
-// TODO
-//            bool ReturnValue = false;
-//            Control ControlToValidate;
-//            PSubscriptionRow CurrentRow;
-//
-//            CurrentRow = GetSelectedDetailRow();
-//
-//            if (CurrentRow != null)
-//            {
-//                if (AValidateSpecificControl != null)
-//                {
-//                    ControlToValidate = AValidateSpecificControl;
-//                }
-//                else
-//                {
-//                    ControlToValidate = this.ActiveControl;
-//                }
-//
-//                GetDetailsFromControls(CurrentRow);
-//
-//                // TODO Generate automatic validation of data, based on the DB Table specifications (e.g. 'not null' checks)
-//                ValidateDataDetailsManual(CurrentRow);
-//
-//                if (AProcessAnyDataValidationErrors)
-//                {
-//                    // Only process the Data Validations here if ControlToValidate is not null.
-//                    // It can be null if this.ActiveControl yields null - this would happen if no Control
-//                    // on this UserControl has got the Focus.
-//                    if(ControlToValidate.FindUserControlOrForm(true) == this)
-//                    {
-//                        ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-//                            this.GetType(), ControlToValidate.FindUserControlOrForm(true).GetType());
-//                    }
-//                    else
-//                    {
-//                        ReturnValue = true;
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                ReturnValue = true;
-//            }
-//
-//            if(ReturnValue)
-//            {
-//                // Remove a possibly shown Validation ToolTip as the data validation succeeded
-//                FPetraUtilsObject.ValidationToolTip.RemoveAll();
-//            }
+            if (FMainDS.PPartner[0].PartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
+            {
+                // Validation only needed when displayed on FAMILY screen (as Family ID can only be modified there)
+                return true;
+            }
+
+            // Same 'Family ID' must only exist once across all family members
+            for (int Counter = 0; Counter <= (GetNumberOfRows() - 1); Counter += 1)
+            {
+                for (int Counter2 = Counter + 1; Counter2 <= (GetNumberOfRows() - 1); Counter2 += 1)
+                {
+                    if (FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()].ToString() ==
+                        FFamilyMembersDV[Counter2].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()].ToString())
+                    {
+                        DuplicateFamilyID = (int)FFamilyMembersDV[Counter].Row[PartnerEditTDSFamilyMembersTable.GetFamilyIdDBName()];
+                        break;
+                    }
+                }
+            }
+
+            if (DuplicateFamilyID >= 0)
+            {
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_DUPLICATE_FAMILY_ID,
+                            new string[] { DuplicateFamilyID.ToString() })),
+                    ValidationColumn, ValidationControlsData.ValidationControl);
+                ReturnValue = false;
+
+                // Handle addition to/removal from TVerificationResultCollection.
+                FPetraUtilsObject.VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+            }
+
+            if (AProcessAnyDataValidationErrors)
+            {
+                ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType());
+            }
 
             return ReturnValue;
         }
@@ -604,7 +597,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 "\r\n" +
                 "    Record of the family member with the the lowest Family ID" +
                 "\r\n" +
-                "    of those who have a current Commitment Record." +
+                "    of those who have a current Gift Destination." +
                 "\r\n" +
                 "\r\n" +
                 " This system needs to be consistently applied to all Families, to ensure that" +
@@ -872,10 +865,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     return;
                 }
 
-                if (FDelegateGetLocationRowOfCurrentlySelectedAddress != null)
+                if (FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress != null)
                 {
-                    FamilysCurrentLocationKey = FDelegateGetLocationRowOfCurrentlySelectedAddress().LocationKey;
-                    FamilysCurrentSiteKey = FDelegateGetLocationRowOfCurrentlySelectedAddress().SiteKey;
+                    FamilysCurrentLocationKey = FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress().LocationKey;
+                    FamilysCurrentSiteKey = FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress().SiteKey;
                 }
                 else
                 {
@@ -983,7 +976,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 catch (Exception exp)
                 {
-                    e.Cancel = true;
+                    //e.Cancel = true; // do not cancel at the moment as otherwise problems occur when user selects different row with mouseclick
                     MessageBox.Show("Exception in FamilyID_Validating: " + exp.ToString());
                     throw;
                 }
@@ -993,14 +986,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if ((NewFamilyID < 0) || (NewFamilyID > 99))
                     {
                         MessageBox.Show("Family ID needs to be a number between 0 and 99!");
-                        e.Cancel = true;
+                        //e.Cancel = true;
                         return;
                     }
                 }
                 else
                 {
                     MessageBox.Show("Only numbers are allowed as Family IDs!");
-                    e.Cancel = true;
+                    //e.Cancel = true; // do not cancel at the moment as otherwise problems occur when user selects different row with mouseclick
                     return;
                 }
 
@@ -1019,8 +1012,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         IsInUse = true;
 
-                        // the validating event is cancelled. (for saving the old FamilyID
-                        e.Cancel = true;
+                        // the validating event is cancelled. (for saving the old FamilyID)
+                        //e.Cancel = true; // do not cancel at the moment as otherwise problems occur when user selects different row with mouseclick
                         break;
                     }
                 }
@@ -1072,6 +1065,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private Int32 GetNumberOfRows()
         {
+            if (grdFamilyMembers.DataSource == null)
+            {
+                return 0;
+            }
+
             return grdFamilyMembers.DataSource.Count;
         }
 
@@ -1583,8 +1581,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Int32 GetRowSelected()
         {
             System.Int32 ARowNumber;
-            System.Int64 ASiteKey;
-            this.GetRowSelected(out ARowNumber, out ASiteKey);
+            System.Int64 APartnerKey;
+            this.GetRowSelected(out ARowNumber, out APartnerKey);
             return ARowNumber;
         }
 
@@ -1592,21 +1590,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Finds out the number of row, and it's Partnerkey in datagrid that's selected.
         /// </summary>
         /// <returns>void</returns>
-        public void GetRowSelected(out Int32 ARowNumber, out Int64 ASiteKey)
+        public void GetRowSelected(out Int32 ARowNumber, out Int64 APartnerKey)
         {
             System.Int32 CurrentRow;
             DataView AGridDataView;
             AGridDataView = ((DevAge.ComponentModel.BoundDataView)grdFamilyMembers.DataSource).DataView;
             ARowNumber = 0;
-            ASiteKey = Convert.ToInt64(
+            APartnerKey = Convert.ToInt64(
                 ((DataRowView)grdFamilyMembers.SelectedDataRows[0]).Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()]);
 
-            // goes throuhg the FamilyID:s in datagrid, break when comes to selected.
+            // goes through the FamilyID:s in datagrid, break when comes to selected.
             for (CurrentRow = 0; CurrentRow <= AGridDataView.Count - 1; CurrentRow += 1)
             {
                 ARowNumber = ARowNumber + 1;
 
-                if (Convert.ToInt64(AGridDataView[CurrentRow].Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()]) == ASiteKey)
+                if (Convert.ToInt64(AGridDataView[CurrentRow].Row[PartnerEditTDSFamilyMembersTable.GetPartnerKeyDBName()]) == APartnerKey)
                 {
                     break;
                 }
@@ -1875,6 +1873,24 @@ namespace Ict.Petra.Client.MPartner.Gui
                     return;
                 }
             }
+        }
+
+        #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.L | Keys.Control))
+            {
+                grdFamilyMembers.Focus();
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

@@ -50,6 +50,8 @@ OpenPetra:
                     ImportExport: {Label=Import and Export}
                         ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
+                    Subscriptions: {Label=Subscriptions}
+                        CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster, Singleton=true}
@@ -59,6 +61,7 @@ OpenPetra:
                         PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by City, ActionClick=TPartnerExtractsMain.PartnerByCityExtract}
                         PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Subscription, ActionClick=TPartnerExtractsMain.PartnerBySubscriptionExtract}
                         PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Special Type, ActionClick=TPartnerExtractsMain.PartnerBySpecialTypeExtract}
+                        PartnerByRelationship: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner By Relationship, ActionClick=TPartnerExtractsMain.PartnerByRelationshipExtract}
                         FamilyMembersExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Members Extract, ActionClick=TPartnerExtractsMain.FamilyMembersExtract}
                         FamilyExtractForPersons: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Family Extract for Persons, ActionClick=TPartnerExtractsMain.FamilyExtractForPersons}
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extract}
@@ -76,6 +79,7 @@ OpenPetra:
                     PartnerReports:
                         PrintPartner: {ActionOpenScreen=TFrmPrintPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
+                        RelationshipReport: {ActionOpenScreen=TFrmPartnerByRelationship}
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
                         PartnerBySubscription: {ActionOpenScreen=TFrmPartnerBySubscription}
                         PartnerAddress: {Label=Brief Address Report, ActionOpenScreen=TFrmBriefAddressReport}
@@ -144,25 +148,27 @@ OpenPetra:
             Finance:
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Transaction, Batch]
-                    General:
-                        LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
-                        ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
+                    GLBatchMaintenance:
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
                         RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches, ActionOpenScreen=TFrmRecurringGLBatch}
-                        GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
-                        ExportBatches: {Description:Export to CSV file for use with Excel,ActionOpenScreen= TFrmGLBatchExport}
+                        ImportBatches: {Description: Import batch data from CSV file, Namespace=Ict.Petra.Client.MFinance.Gui, ActionClick=TFinanceMain.LoadGLBatchesFormForImport}
+                        ImportBatchesFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
+                        ExportBatches: {Description:Export to CSV file for use with Excel, ActionOpenScreen=TFrmGLBatchExport}
+                    General:
+                        LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
+                        ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:
                         #EditExistingTransactions:
                         #EditTransactionsInPreviouslyUsedBatch:
                         #PostBatch:
                         #FindTransaction:
-                    PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
-                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
-                        YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
                     ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
                         StewardshipCalculation: {ActionOpenScreen=TFrmStewardshipCalculation, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
                         StewardshipReports: {ActionOpenScreen=TFrmStewardshipReports}
+                    PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
+                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
+                        YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
 #                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
@@ -179,21 +185,24 @@ OpenPetra:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                       # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
+                        AFO: {Description: Monthly report to be sent to Area Finance Officer, ActionOpenScreen=TFrmAFO}
+                        ExecutiveSummary: {Description: Key financial information for the year to date, ActionOpenScreen=TFrmExecutiveSummary}
                 GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Donor, Recipient]
                     GiftEntry:
-                        ImportGiftsFromBankStatement: {Description: Matching donors and recipients, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         GiftBatches: {Description:Manually enter and post Gift batches, ActionOpenScreen=TFrmGiftBatch}
                         RecurringGiftBatches: {Description:Manually enter Recurring Gift batches, ActionOpenScreen=TFrmRecurringGiftBatch}
+                        ImportGiftsFromBankStatement: {Description: Matching donors and recipients, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
                         #AddGifts:
                         #ImportGifts:
                         #EditExistingGifts:
                         #EditLastUnpostedGiftBatch:
                         #PostGiftBatch:
                         ExportGiftBatches: {Description:Export to CSV file for use with Excel,ActionOpenScreen= TFrmGiftBatchExport}
+                        GiftDetailFind: {Description:Search for gifts across all batches, ActionOpenScreen=TGiftDetailFindScreen}
                     GiftReceipting:
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=TFrmGiftReceiptPrinting}
-                        DonorOrRecipientHistory: {ActionOpenScreen=TFrmDonorRecipientHistory}
+                        DonorRecipientHistory: {Label=Donor / Recipient History, Description:Gift history for a Donor and/or Recipient, ActionOpenScreen=TFrmDonorRecipientHistory}
                         #PrintSingleReceipt:
                         ReceiptControl:{ActionOpenScreen=TFrmReceiptControl}
                     FormLetters:
@@ -263,7 +272,7 @@ OpenPetra:
                         #RenameCostCentre:
                         #LinkCostCentreToPartner:
                     Other:
-                        SuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}                        
+                        SuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}
                         Calendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
                         FinanceModuleSubsystems: {Description="Enable/Disable Finance Module Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
                         #ChangeNumberOfForwardingPeriods:
@@ -276,10 +285,6 @@ OpenPetra:
                         APSettings: {Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
             General: {SkipThisLevel=true}
-                Ledger: {DontShowNestedTasksAsLinks=true}
-                    LedgerSetup:
-                        #LedgerSetupShepherd:
-                        CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedgerDialog, PermissionsRequired="FINANCE-3", Singleton=true}
                 Setup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
                     ExchangeRates:
                         CorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
@@ -291,6 +296,10 @@ OpenPetra:
                         MethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
                         MethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
                         EmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
+                Ledger: {DontShowNestedTasksAsLinks=true}
+                    LedgerSetup:
+                        #LedgerSetupShepherd:
+                        CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedgerDialog, PermissionsRequired="FINANCE-3", Singleton=true}
         Personnel: {Icon=personel.ico, PermissionsRequired=PERSONNEL}
             # Module
             Main: {SkipThisLevel=true}
@@ -332,7 +341,6 @@ OpenPetra:
                         OutreachOptions: {ActionOpenScreen=TFrmOutreachOptions}
                         UnitHierarchy: {ActionOpenScreen=TFrmUnitHierarchy}
                         LocalPersonnelData: {ActionOpenScreen=TFrmLocalPersonnelDataReport}
-                        RelationshipReport: {ActionOpenScreen=TFrmRelationshipReport}
                     ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
                         FurtherShortTermerReports: {Namespace=Ict.Petra.Client.MPersonnel.Gui, ActionClick=TPersonnelMain.ShortTermerReports}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
@@ -428,7 +436,7 @@ OpenPetra:
                     LapsedDonorReport: {ActionOpenScreen=TFrmLapsedDonorReport}
                     SYBUNTReport: {ActionOpenScreen=TFrmSYBUNTReport}
                     NewDonorReport: {ActionOpenScreen=TFrmNewDonorReport}
-                        TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
+                    TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=settings.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main: {SkipThisLevel=true}
                 Preferences: {DontShowNestedTasksAsLinks=true}
@@ -471,5 +479,6 @@ OpenPetra:
                     #Sites
                     #Purging
                     General:
+                        InstalledSites: {Label=Maintain Sites, Description=Maintain Installed Sites, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmInstalledSitesSetup}
                         LanguageSpecifics: {Label=Language Specifics, Description=Maintain Month Names for Different Languages, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, ActionOpenScreen=TFrmLanguageSpecificSetup}
                 

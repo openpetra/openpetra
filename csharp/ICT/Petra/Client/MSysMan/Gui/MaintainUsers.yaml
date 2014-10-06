@@ -45,6 +45,7 @@
         txtDetailUserId:
         txtDetailPasswordHash:
             Label: Password
+            Tooltip: Enter a password for the user
             PasswordEntry: true
         txtDetailFirstName:
         txtDetailLastName:

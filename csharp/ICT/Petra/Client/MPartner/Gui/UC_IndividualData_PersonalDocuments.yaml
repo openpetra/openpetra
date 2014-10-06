@@ -13,9 +13,18 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlDetailGrid, pnlDetails]
+            Controls: [sptDocuments]
+        sptDocuments:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 240
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDetailGrid
+            Panel2: pnlDetails
         pnlDetailGrid:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
             Dock: Bottom
@@ -36,9 +45,8 @@ RootNode:
             SortOrder: DocCode ASC
             
         pnlDetails:
-            Dock: Bottom
-#            Width: 500
-#            Height: 400
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls:
                 Row0: [cmbDocumentCode]
                 Row1: [txtDocumentID, txtDocumentAssociatedID]
@@ -50,6 +58,8 @@ RootNode:
         cmbDocumentCode:
             Label: Document Type
             List: DocumentTypeList
+            ComboBoxWidth: 225
+            Width: 600
             DataField: PmDocument.DocCode
             ColSpan: 2
             Validation: true
@@ -79,6 +89,7 @@ RootNode:
             Validation: Pair(dtpDateOfStart)
             
         txtContact:
+            DataField: PmDocument.ContactPartnerKey
             Type: PartnerKey
             ColSpan: 2
         

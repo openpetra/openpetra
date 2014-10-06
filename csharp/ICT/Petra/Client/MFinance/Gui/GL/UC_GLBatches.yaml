@@ -29,7 +29,7 @@ RootNode:
             Dock: Left
             ExpandedWidth: 180
             InitiallyExpanded: true     
-            ShowApplyFilterButton: FilterContext.ExtraFilterOnly
+            #ShowApplyFilterButton: FilterContext.ExtraFilterOnly
             ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.ExtraFilterOnly
             FilterControls: [pnlBatchFilter]
@@ -44,18 +44,18 @@ RootNode:
                 dtpDetailDateEffective: {Label=Effective date, FindComparison=eq}
             Panels:
                 pnlBatchFilter:
-                    Controls: [rgrShowBatches, cmbYearFilter, cmbPeriodFilter]
+                    Controls: [rgrShowBatches, cmbYearEnding, cmbPeriod]
                     
                     rgrShowBatches: 
                         Label: Show batches for
                         ClearButton: false
                         OptionalValues: [Posting, =Editing, All]
                         
-                    cmbYearFilter: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
-                    cmbPeriodFilter: {OnChange=RefreshFilter, Width=250}
-                    rbtPosting: {OnChange=RefreshFilter}
-                    rbtEditing: {OnChange=RefreshFilter}
-                    rbtAll: {OnChange=RefreshFilter}
+                    cmbYearEnding: {ClearButton=false, Width=140}
+                    cmbPeriod: {ClearButton=false, Width=140}
+                    rbtPosting:
+                    rbtEditing:
+                    rbtAll:
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
@@ -86,7 +86,7 @@ RootNode:
                 Row0: [txtDetailBatchDescription]
                 Row1: [txtDetailBatchControlTotal]
                 Row2: [dtpDetailDateEffective, lblValidDateRange]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
         txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Decimal, Width=115, NullValueAllowed=false}
         lblValidDateRange: {Width=300}
         dtpDetailDateEffective: {Label=Effective Date, OnChange=UpdateBatchPeriod, Validation = true}
@@ -102,6 +102,7 @@ RootNode:
             mniImportFromClipboard:
             mniExportBatches:
     Toolbar:
+        tbbPostBatch:
         tbbReverseBatch:
         tbbImportBatches:
         tbbImportFromClipboard:

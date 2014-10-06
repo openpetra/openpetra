@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,10 +26,25 @@ using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Collections.Generic;
+using System.Threading;
+using System.Net.Security;
 using Ict.Common;
 
 namespace Ict.Common.IO
 {
+    /// <summary>
+    /// If TSmtpSender.SendMessage can detect that an email didn't reach its recipient
+    /// (which is not always possible)
+    /// It will report an array of these as FailedRecipients.
+    /// </summary>
+    public class TsmtpFailedRecipient
+    {
+        /// <summary></summary>
+        public String FailedAddress;
+        /// <summary></summary>
+        public String FailedMessage;
+    }
+
     /// <summary>
     /// this is a small wrapper around the .net SMTP Email services
     /// </summary>
@@ -38,11 +53,13 @@ namespace Ict.Common.IO
         private SmtpClient FSmtpClient;
 
         /// <summary>
-        /// setup the smtp client
+        /// After SendMessage, this array should be empty.
+        /// If it is not empty, the contents must be shown to the user.
         /// </summary>
-        public TSmtpSender(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
+        public List <TsmtpFailedRecipient>FailedRecipients;
+
+        private void Initialise(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
         {
-            //Set up SMTP client
             FSmtpClient = new SmtpClient();
 
             if (AOutputEMLToDirectory.Length > 0)
@@ -58,7 +75,29 @@ namespace Ict.Common.IO
                 FSmtpClient.UseDefaultCredentials = false;
                 FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
                 FSmtpClient.EnableSsl = AEnableSsl;
+
+                if (TAppSettingsManager.GetValue("IgnoreServerCertificateValidation", "false", false) == "true")
+                {
+                    // when checking the validity of a SSL certificate, always pass
+                    // this is needed for smtp.outlook365.com, since I cannot find a place to get the public key for the ssl certificate
+                    ServicePointManager.ServerCertificateValidationCallback =
+                        new RemoteCertificateValidationCallback(
+                            delegate
+                            { return true; }
+                            );
+                }
             }
+
+            FailedRecipients = new List <TsmtpFailedRecipient>();
+        }
+
+        /// <summary>
+        /// setup the smtp client
+        /// </summary>
+        public TSmtpSender(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
+        {
+            //Set up SMTP client
+            Initialise(ASMTPHost, ASMTPPort, AEnableSsl, AUsername, APassword, AOutputEMLToDirectory);
         }
 
         /// <summary>
@@ -67,23 +106,20 @@ namespace Ict.Common.IO
         public TSmtpSender()
         {
             //Set up SMTP client
-            FSmtpClient = new SmtpClient();
+            String EmailDirectory = "";
 
             if (TAppSettingsManager.HasValue("OutputEMLToDirectory"))
             {
-                FSmtpClient.PickupDirectoryLocation = TAppSettingsManager.GetValue("OutputEMLToDirectory");
-                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
+                EmailDirectory = TAppSettingsManager.GetValue("OutputEMLToDirectory");
             }
-            else
-            {
-                FSmtpClient.Host = TAppSettingsManager.GetValue("SmtpHost");
-                FSmtpClient.Port = TAppSettingsManager.GetInt16("SmtpPort", 25);
-                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                FSmtpClient.Credentials = new NetworkCredential(
-                    TAppSettingsManager.GetValue("SmtpUser", ""),
-                    TAppSettingsManager.GetValue("SmtpPassword", ""));
-                FSmtpClient.EnableSsl = TAppSettingsManager.GetBoolean("SmtpEnableSsl", false);
-            }
+
+            Initialise(
+                TAppSettingsManager.GetValue("SmtpHost"),
+                TAppSettingsManager.GetInt16("SmtpPort", 25),
+                TAppSettingsManager.GetBoolean("SmtpEnableSsl", false),
+                TAppSettingsManager.GetValue("SmtpUser", ""),
+                TAppSettingsManager.GetValue("SmtpPassword", ""),
+                EmailDirectory);
         }
 
         /// <summary>
@@ -105,7 +141,29 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// create a mail message and send it
+        /// Use this to get all the emails copied to an address
+        /// </summary>
+        public String CcEverythingTo = "";
+
+        /// <summary>
+        /// If the ReplyTo address should be different, use this.
+        /// </summary>
+        public String ReplyTo = "";
+
+        private Attachment FAttachedObject = null;
+
+        /// <summary>
+        /// If the attachment is not in a file, don't save it into one, use this instead:
+        /// </summary>
+        /// <param name="AReportText"></param>
+        /// <param name="AReportName"></param>
+        public void AttachFromStream(Stream AReportText, String AReportName)
+        {
+            FAttachedObject = new Attachment(AReportText, AReportName);
+        }
+
+        /// <summary>
+        /// Create a mail message and send it
         /// </summary>
         /// <returns></returns>
         public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body,
@@ -120,6 +178,16 @@ namespace Ict.Common.IO
                     email.From = new MailAddress(fromemail, fromDisplayName);
                     email.To.Add(receipients);
 
+                    if (CcEverythingTo != "")
+                    {
+                        email.CC.Add(new MailAddress(CcEverythingTo));
+                    }
+
+                    if (ReplyTo != "")
+                    {
+                        email.ReplyToList.Add(new MailAddress(ReplyTo));
+                    }
+
                     //Subject and Body
                     email.Subject = subject;
                     email.Body = body;
@@ -127,7 +195,14 @@ namespace Ict.Common.IO
 
                     List <Attachment>attachments = new List <Attachment>();
 
-                    //Attachment if any:
+                    // A single attachment may have been specified using the AttachFromStream method, above.
+                    if (FAttachedObject != null)
+                    {
+                        email.Attachments.Add(FAttachedObject);
+                        attachments.Add(FAttachedObject);
+                    }
+
+                    //Attachment files if any:
                     if (attachfiles != null)
                     {
                         foreach (string attachfile in attachfiles)
@@ -155,6 +230,7 @@ namespace Ict.Common.IO
                         data.Dispose();
                     }
 
+                    FAttachedObject = null;
                     return Result;
                 }
             }
@@ -165,6 +241,8 @@ namespace Ict.Common.IO
                 return false;
             }
         }
+
+        private static List <DateTime>FEmailsSentInLastMinute = new List <DateTime>();
 
         /// <summary>
         /// Send an email message
@@ -179,6 +257,8 @@ namespace Ict.Common.IO
                 return false;
             }
 
+            FailedRecipients.Clear();
+
             if (FSmtpClient.Host.EndsWith("example.org"))
             {
                 TLogging.Log("Not sending the email, since the configuration is just with an example server: " + FSmtpClient.Host);
@@ -191,10 +271,56 @@ namespace Ict.Common.IO
             {
                 AEmail.IsBodyHtml = AEmail.Body.ToLower().Contains("<html>");
 
+                int LimitEmailsPerMinute = TAppSettingsManager.GetInt32("SmtpLimitMessagesPerMinute", 30);
+                int countInLastMinute = LimitEmailsPerMinute;
+
+                while (countInLastMinute >= LimitEmailsPerMinute)
+                {
+                    countInLastMinute = 0;
+
+                    foreach (DateTime dt in FEmailsSentInLastMinute)
+                    {
+                        // better check the last 2 minutes, to avoid confusion
+                        if (DateTime.Compare(dt.AddMinutes(2), DateTime.Now) >= 0)
+                        {
+                            countInLastMinute++;
+                        }
+                    }
+
+                    if (countInLastMinute == 0)
+                    {
+                        FEmailsSentInLastMinute.Clear();
+                    }
+
+                    if (countInLastMinute >= LimitEmailsPerMinute)
+                    {
+                        Thread.Sleep(TimeSpan.FromSeconds(10));
+                    }
+                }
+
+                FEmailsSentInLastMinute.Add(DateTime.Now);
+
                 FSmtpClient.Send(AEmail);
 
                 AEmail.Headers.Add("Date-Sent", DateTime.Now.ToString());
                 return true;
+            }
+            catch (SmtpFailedRecipientsException frEx)  // If the SMTP server knows that the send failed because of failed recipients,
+            {                                           // I can produce a list of failed recipient addresses, and return false.
+                                                        // The caller can then retrieve the list and inform the user.
+                TLogging.Log("SmtpEmail: Email to the following addresses did not succeed:");
+                SmtpFailedRecipientException[] failureList = frEx.InnerExceptions;
+
+                foreach (SmtpFailedRecipientException problem in failureList)
+                {
+                    TsmtpFailedRecipient FailureDetails = new TsmtpFailedRecipient();
+                    FailureDetails.FailedAddress = problem.FailedRecipient;
+                    FailureDetails.FailedMessage = problem.Message;
+                    FailedRecipients.Add(FailureDetails);
+                    TLogging.Log(problem.FailedRecipient + " : " + problem.Message);
+                }
+
+                return false;
             }
             catch (Exception ex)
             {

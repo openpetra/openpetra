@@ -30,8 +30,9 @@ using Ict.Common.Data; // Implicit reference
 using Ict.Common.DB;
 using Ict.Common.IO; // Implicit reference
 using Ict.Common.Verification;
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
-using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.MReporting;
@@ -117,8 +118,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             if (StringHelper.IsSame(f, "AddressMeetsPostCodeCriteriaOrEmpty"))
             {
                 value =
-                    new TVariant(AddressMeetsPostCodeCriteriaOrEmpty(ops[1].ToBool(), ops[2].ToString(), ops[3].ToString(), ops[4].ToString(),
-                            ops[5].ToString(), ops[6].ToString()));
+                    new TVariant(AddressMeetsPostCodeCriteriaOrEmpty(ops[1].ToBool(), ops[2].ToString(), ops[3].ToString(), ops[4].ToString()));
                 return true;
             }
 
@@ -601,80 +601,18 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// </summary>
         /// <returns>void</returns>
         private bool AddressMeetsPostCodeCriteriaOrEmpty(bool ABestAddressWasFound,
-            String ARadioSelection,
             String APostalRegion,
             String APostCodeFrom,
-            String APostCodeTo,
-            String ACounty)
+            String APostCodeTo)
         {
-            bool ReturnValue = false;
-            Boolean NewTransaction;
-            String postalCode;
-
-            if (ARadioSelection != "DonorsCounty")
-            {
-                ACounty = "";
-            }
-
-            if (ARadioSelection != "DonorsPostalRegion")
-            {
-                APostalRegion = "";
-            }
-
-            if (ARadioSelection != "DonorsPostcode")
-            {
-                APostCodeFrom = "";
-                APostCodeTo = "";
-            }
-
             if (!ABestAddressWasFound)
             {
                 // only return true if the postcode parameters and county parameters are empty
-                return (APostalRegion.Length == 0) && (APostCodeFrom.Length == 0) && (APostCodeTo.Length == 0) && (ACounty.Length == 0);
+                return (APostalRegion.Length == 0) && (APostCodeFrom.Length == 0) && (APostCodeTo.Length == 0);
             }
 
-            if (APostalRegion.Length > 0)
-            {
-                postalCode = situation.GetParameters().Get("PostalCode").ToString();
-                DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
-                try
-                {
-// todo, wrong combination of table/columns
-//          TmpTable = DBAccess.GDBAccessObj.SelectDT("SELECT 1 " + " FROM PUB." + PPostcodeRangeTable.GetTableDBName() + " AS p " + " WHERE p.p_region_c = '" + APostalRegion + "' " + " AND p.p_from_c <= '" + postalCode + "' AND p.p_to_c >= '" +
-// postalCode
-// + "'", "temp", ReadTransaction);
-//          if (TmpTable.Rows.Count > 0)
-                    {
-                        ReturnValue = true;
-                    }
-                }
-                finally
-                {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                }
-            }
-            else if ((APostCodeFrom.Length > 0) && (APostCodeTo.Length > 0))
-            {
-                postalCode = situation.GetParameters().Get("PostalCode").ToString();
-
-                if ((String.CompareOrdinal(APostCodeFrom.ToLower(),
-                         postalCode.ToLower()) <= 0) && (String.CompareOrdinal(APostCodeTo.ToLower(), postalCode.ToLower()) >= 0))
-                {
-                    ReturnValue = true;
-                }
-            }
-            else if (ACounty.Length > 0)
-            {
-                if (ACounty.ToLower() == situation.GetParameters().Get("County").ToString().ToLower())
-                {
-                    ReturnValue = true;
-                }
-            }
-
-            return ReturnValue;
+            return ExtractQueryBase.AddressMeetsPostCodeCriteriaOrEmpty(situation.GetParameters().Get("PostalCode").ToString(),
+                APostalRegion, APostCodeFrom, APostCodeTo);
         }
 
         private String GetPartnerShortName(Int64 APartnerKey)
@@ -710,7 +648,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             foreach (PPartnerGiftDestinationRow Row in ResultTable.Rows)
             {
-                if (Row.Active)
+                if (Row.DateEffective != Row.DateExpires)
                 {
                     FieldName = GetPartnerShortName(Row.FieldKey);
                     break;
@@ -721,11 +659,11 @@ namespace Ict.Petra.Server.MReporting.MPartner
             // If there was no result and the partner given is a family, I can see about the field for the family member with id=0.
             if (FieldName == "")
             {
-                PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, null);
+                PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
 
                 if ((tbl.Rows.Count > 0) && (tbl[0].PartnerClass == TPartnerClass.FAMILY.ToString()))
                 {
-                    PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, null);
+                    PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, situation.GetDatabaseConnection().Transaction);
                     familyMembers.DefaultView.RowFilter = "p_family_id_i = 0";
 
                     if (familyMembers.DefaultView.Count > 0)

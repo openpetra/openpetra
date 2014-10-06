@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
@@ -57,7 +58,7 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MCommon.Data.Cascading;
-using System.Collections.Generic;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -76,19 +77,23 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            TDBTransaction Transaction = null;
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
-            AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            AAccountingPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AAccountingPeriodAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
 
             return MainDS;
         }
@@ -105,59 +110,72 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static GLSetupTDS LoadLedgerSettings(Int32 ALedgerNumber, out DateTime ACalendarStartDate,
             out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
         {
+            ACalendarStartDate = DateTime.MinValue;
+            ACurrencyChangeAllowed = false;
+            ACalendarChangeAllowed = false;
+
+            DateTime CalendarStartDate = ACalendarStartDate;
+            bool CurrencyChangeAllowed = ACurrencyChangeAllowed;
+
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
-            AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            ALedgerInitFlagAccess.LoadViaALedger(MainDS, ALedgerNumber, null, Transaction);
-
-            // retrieve calendar start date (start date of financial year)
-            AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
-            ACalendarStartDate = DateTime.MinValue;
-
-            if (CalendarTable.Count > 0)
-            {
-                ACalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
-            }
-
-            // now check if currency change would be allowed
-            ACurrencyChangeAllowed = true;
-
-            if ((AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
-                || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
-            {
-                // don't allow currency change if journals or gift batches exist
-                ACurrencyChangeAllowed = false;
-            }
-
-            if (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
-            {
-                // don't allow currency change if journals exist
-                ACurrencyChangeAllowed = false;
-            }
-
-            if (ACurrencyChangeAllowed)
-            {
-                // don't allow currency change if there are foreign currency accounts for this ledger
-                AAccountTable TemplateTable;
-                AAccountRow TemplateRow;
-                StringCollection TemplateOperators;
-
-                TemplateTable = new AAccountTable();
-                TemplateRow = TemplateTable.NewRowTyped(false);
-                TemplateRow.LedgerNumber = ALedgerNumber;
-                TemplateRow.ForeignCurrencyFlag = true;
-                TemplateOperators = new StringCollection();
-                TemplateOperators.Add("=");
-
-                if (AAccountAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    ACurrencyChangeAllowed = false;
-                }
-            }
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AAccountingSystemParameterAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    ALedgerInitFlagAccess.LoadViaALedger(MainDS, ALedgerNumber, null, Transaction);
 
+                    // retrieve calendar start date (start date of financial year)
+                    AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
+
+                    if (CalendarTable.Count > 0)
+                    {
+                        CalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
+                    }
+
+                    // now check if currency change would be allowed
+                    CurrencyChangeAllowed = true;
+
+                    if ((AJournalAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                        || (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0))
+                    {
+                        // don't allow currency change if journals or gift batches exist
+                        CurrencyChangeAllowed = false;
+                    }
+
+                    if (AGiftBatchAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
+                    {
+                        // don't allow currency change if journals exist
+                        CurrencyChangeAllowed = false;
+                    }
+
+                    if (CurrencyChangeAllowed)
+                    {
+                        // don't allow currency change if there are foreign currency accounts for this ledger
+                        AAccountTable TemplateTable;
+                        AAccountRow TemplateRow;
+                        StringCollection TemplateOperators;
+
+                        TemplateTable = new AAccountTable();
+                        TemplateRow = TemplateTable.NewRowTyped(false);
+                        TemplateRow.LedgerNumber = ALedgerNumber;
+                        TemplateRow.ForeignCurrencyFlag = true;
+                        TemplateOperators = new StringCollection();
+                        TemplateOperators.Add("=");
+
+                        if (AAccountAccess.CountUsingTemplate(TemplateRow, TemplateOperators, Transaction) > 0)
+                        {
+                            CurrencyChangeAllowed = false;
+                        }
+                    }
+                });
+
+            ACalendarStartDate = CalendarStartDate;
+            ACurrencyChangeAllowed = CurrencyChangeAllowed;
             // now check if calendar change would be allowed
             ACalendarChangeAllowed = IsCalendarChangeAllowed(ALedgerNumber);
 
@@ -166,8 +184,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
 
             return MainDS;
         }
@@ -665,14 +681,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, null);
-            AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AAnalysisTypeAccess.LoadAll(MainDS, null);
-            AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAnalysisTypeAccess.LoadAll(MainDS, Transaction);
+                    AAnalysisAttributeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // set Account BankAccountFlag if there exists a property
             foreach (AAccountPropertyRow accProp in MainDS.AAccountProperty.Rows)
@@ -685,6 +709,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     GLSetupTDSAAccountRow acc = (GLSetupTDSAAccountRow)MainDS.AAccount.DefaultView[0].Row;
                     acc.BankAccountFlag = true;
                     MainDS.AAccount.DefaultView.RowFilter = "";
+                }
+            }
+
+            // Don't include any AnalysisType for which there are no values set
+            MainDS.AFreeformAnalysis.DefaultView.Sort = "a_analysis_type_code_c";
+
+            foreach (AAnalysisTypeRow TypeRow in MainDS.AAnalysisType.Rows)
+            {
+                Int32 Idx = MainDS.AFreeformAnalysis.DefaultView.Find(TypeRow.AnalysisTypeCode);
+
+                if (Idx < 0)
+                {
+                    TypeRow.Delete();
                 }
             }
 
@@ -707,8 +744,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AValidLedgerNumberAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AValidLedgerNumberAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -732,7 +778,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                               " FROM PUB_a_cost_centre" +
                               " WHERE a_ledger_number_i = " + ALedgerNumber +
                               " AND a_cost_centre_type_c = 'Local';";
-            DataTable ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", null);
+
+            DataTable ParentCostCentreTbl = null;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", Transaction);
+                });
 
             return ParentCostCentreTbl;
         }
@@ -753,26 +810,87 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                               " WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
                               " AND PUB_p_partner_type.p_type_code_c = 'COSTCENTRE';";
 
-            DataTable PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", null);
+            DataTable PartnerCostCentreTbl = null;
 
-            PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
-            AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, null);
+            TDBTransaction Transaction = null;
 
-            foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
-            {
-                Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
-
-                if (RowIdx >= 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
-                    ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, null);
+                    PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
-                    if (CCTbl.Rows.Count > 0)
+                    PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
+                    AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+
+                    foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
                     {
-                        PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                        Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(Row.PartnerKey);
+
+                        if (RowIdx >= 0)
+                        {
+                            PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = Row.CostCentreCode;
+                            ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, Row.CostCentreCode, Transaction);
+
+                            if (CCTbl.Rows.Count > 0)
+                            {
+                                PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+                            }
+                        }
                     }
-                }
-            }
+                });
+
+            return PartnerCostCentreTbl;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCentreFilter"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetLinkedPartners(Int32 ALedgerNumber, String ACostCentreFilter)
+        {
+            DataTable PartnerCostCentreTbl = null;
+            PLocationTable tbl;
+            PPartnerLocationTable PartnerLocation;
+            String CountryNameLocal;
+            String EmailAddress;
+
+            String SqlQuery = "SELECT p_partner.p_partner_key_n as PartnerKey, " +
+                              " a_cost_centre_code_c as CostCentreCode, " +
+                              " '' AS EmailAddress," +
+                              " p_partner_short_name_c As PartnerShortName" +
+                              " FROM a_valid_ledger_number, p_partner" +
+                              " WHERE a_ledger_number_i=" + ALedgerNumber +
+                              ACostCentreFilter +
+                              " AND p_partner.p_partner_key_n = a_valid_ledger_number.p_partner_key_n" +
+                              " ORDER BY a_cost_centre_code_c";
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+
+                    foreach (DataRow Row in PartnerCostCentreTbl.Rows)
+                    {
+                        TAddressTools.GetBestAddress(
+                            Convert.ToInt64(Row["PartnerKey"]),
+                            out tbl,
+                            out PartnerLocation,
+                            out CountryNameLocal,
+                            out EmailAddress,
+                            Transaction
+                            );
+                        Row["EmailAddress"] = EmailAddress;
+                    }
+                });
 
             return PartnerCostCentreTbl;
         }
@@ -1324,7 +1442,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             // because AccountProperty has not been changed on the client, GetChangesTyped will have removed the table
                             // so we need to reload the table from the database
                             AInspectDS.Merge(new AAccountPropertyTable());
-                            AAccountPropertyAccess.LoadViaALedger(AInspectDS, ALedgerNumber, null);
+
+                            GLSetupTDS inspectDS = AInspectDS;
+                            TDBTransaction transaction = null;
+
+                            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                                TEnforceIsolationLevel.eilMinimum,
+                                ref transaction,
+                                delegate
+                                {
+                                    AAccountPropertyAccess.LoadViaALedger(inspectDS, ALedgerNumber, transaction);
+                                });
                         }
 
                         AInspectDS.AAccountProperty.DefaultView.RowFilter =
@@ -1379,6 +1507,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
                 GLSetupTDSAccess.SubmitChanges(AInspectDS);
+
+                if (AInspectDS.AAnalysisAttribute != null)
+                {
+                    AInspectDS.AAnalysisAttribute.AcceptChanges(); // This may prevent a constraints exception when the dataset is returned and merged.
+                }
 
                 ReturnValue = TSubmitChangesResult.scrOK;
             }
@@ -1587,10 +1720,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    AAccountHierarchyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AAccountPropertyAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
@@ -1649,7 +1790,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             XmlDocument doc = TYml2Xml.CreateXmlDocument();
 
@@ -1821,9 +1970,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if ((accountRow.RowState != DataRowState.Deleted) && !ImportedAccountNames.Contains(accountRow.AccountCode))
                 {
                     // if there are any existing posted transactions that reference this account, it can't be deleted.
-                    ATransactionTable TransTbl = ATransactionAccess.LoadViaAAccount(ALedgerNumber, accountRow.AccountCode, null);
+                    ATransactionTable transTbl = null;
 
-                    if (TransTbl.Rows.Count == 0) // No-one's used this account, so I can delete it.
+                    TDBTransaction transaction = null;
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        ref transaction,
+                        delegate
+                        {
+                            // if there are any existing posted transactions that reference this account, it can't be deleted.
+                            transTbl = ATransactionAccess.LoadViaAAccount(ALedgerNumber, accountRow.AccountCode, transaction);
+                        });
+
+                    if (transTbl.Rows.Count == 0) // No-one's used this account, so I can delete it.
                     {
                         //
                         // If the deleted account included Analysis types I need to unlink them from the Account first.
@@ -2341,6 +2500,64 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// On creation of a new Ledger, if the user requested ICH Account is Asset,
+        /// this does the rewire.
+        /// But if there was no ICH in the newly created Hierarchy, it doesn't panic.
+        /// </summary>
+        private static void RewireIchIsAsset(Int32 ANewLedgerNumber)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500", Transaction);
+            AAccountRow IchAccountRow = null;
+
+            if (AccountTbl.Rows.Count > 0)
+            {
+                IchAccountRow = AccountTbl[0];
+                IchAccountRow.AccountType = "Asset";
+                IchAccountRow.DebitCreditIndicator = true;
+                AAccountAccess.SubmitChanges(AccountTbl, Transaction);
+            }
+
+            //
+            // If there's an 8500X account, that also needs to be re-tweaked:
+            AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500X", Transaction);
+
+            if (AccountTbl.Rows.Count > 0)
+            {
+                IchAccountRow = AccountTbl[0];
+                IchAccountRow.AccountType = "Asset";
+                IchAccountRow.DebitCreditIndicator = true;
+                AAccountAccess.SubmitChanges(AccountTbl, Transaction);
+            }
+
+            //
+            // The Summary account also needs to be re-tweaked:
+            AccountTbl = AAccountAccess.LoadByPrimaryKey(ANewLedgerNumber, "8500S", Transaction);
+
+            if (AccountTbl.Rows.Count > 0)
+            {
+                IchAccountRow = AccountTbl[0];
+                IchAccountRow.AccountType = "Asset";
+                IchAccountRow.DebitCreditIndicator = true;
+                AAccountAccess.SubmitChanges(AccountTbl, Transaction);
+            }
+
+            //
+            // ICH ("8500S") normally reports to "CRS". I need it to report to "DRS" instead:
+            AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadByPrimaryKey(
+                ANewLedgerNumber, "STANDARD", "8500S", Transaction);
+
+            if (HierarchyTbl.Rows.Count > 0)
+            {
+                AAccountHierarchyDetailRow HierarchyRow = HierarchyTbl[0];
+                HierarchyRow.AccountCodeToReportTo = "DRS";
+                AAccountHierarchyDetailAccess.SubmitChanges(HierarchyTbl, Transaction);
+            }
+
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        /// <summary>
         /// create a new ledger and do the initial setup
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
@@ -2353,6 +2570,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ANumberOfPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberOfFwdPostingPeriods,
+            bool IchIsAsset,
             bool AActivateGiftProcessing,
             Int32 AStartingReceiptNumber,
             bool AActivateAccountsPayable,
@@ -2498,30 +2716,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     unitRow.PartnerKey = PartnerKey;
                     unitRow.UnitName = ALedgerName;
                     MainDS.PUnit.Rows.Add(unitRow);
-                }
-
-                if (!PPartnerLedgerAccess.Exists(PartnerKey, Transaction))
-                {
-                    PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
-                    partnerLedgerRow.PartnerKey = PartnerKey;
-
-                    // calculate last partner id, from older uses of this ledger number
-                    object MaxExistingPartnerKeyObj = DBAccess.GDBAccessObj.ExecuteScalar(
-                        String.Format("SELECT MAX(p_partner_key_n) FROM PUB_p_partner " +
-                            "WHERE p_partner_key_n > {0} AND p_partner_key_n < {1}",
-                            PartnerKey,
-                            PartnerKey + 500000), Transaction);
-
-                    if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
-                    {
-                        partnerLedgerRow.LastPartnerId = Convert.ToInt32(Convert.ToInt64(MaxExistingPartnerKeyObj) - PartnerKey);
-                    }
-                    else
-                    {
-                        partnerLedgerRow.LastPartnerId = 5000;
-                    }
-
-                    MainDS.PPartnerLedger.Rows.Add(partnerLedgerRow);
                 }
 
                 String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
@@ -2679,7 +2873,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ImportDefaultMotivations(ref MainDS, ANewLedgerNumber);
                 ImportDefaultAdminGrantsPayableReceivable(ref MainDS, ANewLedgerNumber);
 
-
                 // TODO: modify UI navigation yml file etc?
                 // TODO: permissions for which users?
 
@@ -2724,6 +2917,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (AllOK)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
+
+                    //
+                    // If the user has specified that ICH is an asset,
+                    // I need to re-write it into the hierarchy:
+                    if (IchIsAsset)
+                    {
+                        RewireIchIsAsset(ANewLedgerNumber);
+                    }
                 }
                 else
                 {
@@ -2902,15 +3103,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 ALedgerAccess.DeleteByPrimaryKey(ALedgerNumber, Transaction);
 
-                // remove from the list of sites when creating new partners
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    String.Format("DELETE FROM PUB_{0} WHERE p_partner_key_n = {1}",
-                        PPartnerLedgerTable.GetTableDBName(),
-                        Convert.ToInt64(ALedgerNumber) * 1000000),
-                    Transaction);
-
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
                 {
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     throw new Exception("Deletion of Ledger was cancelled by the user");
                 }
 
@@ -2945,13 +3140,25 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static ALedgerTable GetAvailableLedgers()
         {
             // TODO check for permissions of the current user
+            ALedgerTable LedgerTable = null;
+
             StringCollection Fields = new StringCollection();
 
             Fields.Add(ALedgerTable.GetLedgerNameDBName());
             Fields.Add(ALedgerTable.GetLedgerNumberDBName());
             Fields.Add(ALedgerTable.GetBaseCurrencyDBName());
             Fields.Add(ALedgerTable.GetLedgerStatusDBName());
-            return ALedgerAccess.LoadAll(Fields, null, null, 0, 0);
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    LedgerTable = ALedgerAccess.LoadAll(Fields, Transaction, null, 0, 0);
+                });
+
+            return LedgerTable;
         }
 
         /// <summary>
@@ -2962,7 +3169,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    AFreeformAnalysisAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();
@@ -3044,7 +3259,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber, String ATypeCode, String AAnalysisValue)
         {
-            return ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, null);
+            int RetVal = 0;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    RetVal = ATransAnalAttribAccess.CountViaAFreeformAnalysis(ALedgerNumber, ATypeCode, AAnalysisValue, Transaction);
+                });
+
+            return RetVal;
         }
 
         /// <summary>
@@ -3053,7 +3280,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static int CheckDeleteAAnalysisType(String ATypeCode)
         {
-            return AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, null);
+            int RetVal = 0;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    RetVal = AAnalysisAttributeAccess.CountViaAAnalysisType(ATypeCode, Transaction);
+                });
+
+            return RetVal;
         }
 
         /// <summary>
@@ -3063,7 +3302,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static StringCollection RequiredAnalysisAttributesForAccount(Int32 ALedgerNumber, String AAccountCode, Boolean AActiveOnly = false)
         {
             StringCollection Ret = new StringCollection();
-            AAnalysisAttributeTable tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, null);
+            AAnalysisAttributeTable tbl = null;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, Transaction);
+                });
 
             foreach (AAnalysisAttributeRow Row in tbl.Rows)
             {
@@ -3339,8 +3588,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
+                Int32 OriginalAttribCount = TempAnalAttrTbl.Rows.Count;
 
-                for (Int32 Idx = TempAnalAttrTbl.Rows.Count - 1; Idx >= 0; Idx--)
+                for (Int32 Idx = OriginalAttribCount - 1; Idx >= 0; Idx--)
                 {
                     AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
                     // "a_analysis_attribute"  is the referrent in foreign keys, so I can't just go changing it - I need to make a copy?
@@ -3348,23 +3598,29 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     DataUtilities.CopyAllColumnValues(OldAnalAttribRow, NewAnalAttribRow);
                     NewAnalAttribRow.AccountCode = ANewCode;
                     TempAnalAttrTbl.Rows.Add(NewAnalAttribRow);
-
-                    AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
-
-                    TempAnalAttrTbl.AcceptChanges();
-
-                    UpdateAccountField("a_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_recurring_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-
-                    OldAnalAttribRow.Delete();
-
-                    AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
                 }
+
+                AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
+                TempAnalAttrTbl.AcceptChanges();
+
+                UpdateAccountField("a_trans_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+                UpdateAccountField("a_recurring_trans_anal_attrib",
+                    "a_account_code_c",
+                    AOldCode,
+                    ANewCode,
+                    ALedgerNumber,
+                    Transaction,
+                    ref AttemptedOperation);
+                UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
+
+                for (Int32 Idx = OriginalAttribCount - 1; Idx >= 0; Idx--)
+                {
+                    AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
+                    OldAnalAttribRow.Delete();
+                }
+
+                AAnalysisAttributeAccess.SubmitChanges(TempAnalAttrTbl, Transaction);
+                TempAnalAttrTbl.AcceptChanges();
 
                 UpdateAccountField("a_suspense_account",
                     "a_suspense_account_code_c",
@@ -3469,21 +3725,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return IsInUse;
         }
 
-        /// <summary>I can add child accounts to this account if it's a summary account,
+        /// <summary>I can add child accounts to this account if it's a summary Cost Centre,
         ///          or if there have never been transactions posted to it,
         ///          or if it's linked to a partner.
         ///
-        ///          (If children are added to this account, it will be promoted to a summary account.)
+        ///          (If children are added to this Cost Centre, it will be promoted to a summary Cost Centre.)
         ///
-        ///          I can delete this account if it has no transactions posted as above,
+        ///          But I can't add to 'ILT', or the children of 'ILT'.
+        ///
+        ///          I can delete this Cost Centre if it has no transactions posted as above,
         ///          AND it has no children.
+        ///          But I can't delete System Cost Centres.
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ACostCentreCode"></param>
-        /// <param name="ACanBeParent"></param>
-        /// <param name="ACanDelete"></param>
-        /// <param name="AMsg"></param>
-        /// <returns></returns>
+        /// <returns>true if the attributes were found. (If not found, that's a serious fault!)</returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber,
             String ACostCentreCode,
@@ -3491,81 +3745,100 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out bool ACanDelete,
             out String AMsg)
         {
-            ACanBeParent = false;
-            ACanDelete = false;
-            AMsg = "";
+            Boolean canBeParent = false;
+            Boolean canDelete = false;
+            String msg = "";
+
             bool DbSuccess = true;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
+            TDBTransaction Transaction = null;
 
-            if (TempTbl.Rows.Count < 1)  // This shouldn't happen..
-            {
-                DbSuccess = false;
-                AMsg = Catalog.GetString("Not Found!");
-            }
-            else
-            {
-                bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
-                ACostCentreRow CostCentreRow = TempTbl[0];
-                ACanBeParent = !CostCentreRow.PostingCostCentreFlag; // If it's a summary Cost Centre, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
-
-                if (IsParent)
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
                 {
-                    ACanDelete = false;
-                    AMsg = Catalog.GetString("Cost Centre has children.");
-                }
-                else
-                {
-                    ACanDelete = true;
-                }
+                    ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
 
-                if (!ACanBeParent || ACanDelete)
-                {
-                    bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
-
-                    if (IsInUse)
+                    if (TempTbl.Rows.Count < 1)  // This shouldn't happen..
                     {
-                        ACanBeParent = false;
-                        ACanDelete = false;      // Once it has transactions posted, I can't delete it, ever.
-                        AMsg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                        DbSuccess = false;
+                        msg = Catalog.GetString("Not Found!");
+                        return;
+                    }
+
+                    ACostCentreRow CostCentreRow = TempTbl[0];
+
+                    //
+                    // OM - specific code ahead!
+                    // Don't allow any cost centres to be added to ILT or its children.
+                    if ((CostCentreRow.CostCentreCode == "ILT") || (CostCentreRow.CostCentreToReportTo == "ILT"))
+                    {
+                        canBeParent = false;
+                        canDelete = false;
+                        msg = Catalog.GetString("Cost Centres in ILT cannot have children.");
+                        return;
+                    }
+
+                    bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
+                    canBeParent = !CostCentreRow.PostingCostCentreFlag; // If it's a summary Cost Centre, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+
+                    if (IsParent)
+                    {
+                        canDelete = false;
+                        msg = Catalog.GetString("Cost Centre has children.");
                     }
                     else
                     {
-                        ACanBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
+                        canDelete = true;
                     }
-                }
 
-                if (ACanBeParent || ACanDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
-                {                                   // If it has, the link must be deleted first.
-                    AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
-
-                    if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                    if (!canBeParent || canDelete)
                     {
-                        ACanBeParent = false;
-                        ACanDelete = false;
-                        AMsg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
+                        bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
+
+                        if (IsInUse)
+                        {
+                            canBeParent = false;
+                            canDelete = false;      // Once it has transactions posted, I can't delete it, ever.
+                            msg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                        }
+                        else
+                        {
+                            canBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
+                        }
                     }
-                }
 
-                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
-                {                // and do the low-level database check to see if a deletion would succeed:
-                    TVerificationResultCollection ReferenceResults;
-                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
-                        ACostCentreCode,
-                        50,
-                        Transaction,
-                        false,
-                        out ReferenceResults);
+                    if (canBeParent || canDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
+                    {                                   // If it has, the link must be deleted first.
+                        AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
 
-                    if (RefCount > 0)
-                    {
-                        ACanDelete = false;
-                        AMsg = ReferenceResults.BuildVerificationResultString();
+                        if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                        {
+                            canBeParent = false;
+                            canDelete = false;
+                            msg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
+                        }
                     }
-                }
-            }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    if (canDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
+                    {                // and do the low-level database check to see if a deletion would succeed:
+                        TVerificationResultCollection ReferenceResults;
+                        Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
+                            ACostCentreCode,
+                            50,
+                            Transaction,
+                            false,
+                            out ReferenceResults);
+
+                        if (RefCount > 0)
+                        {
+                            canDelete = false;
+                            msg = ReferenceResults.BuildVerificationResultString();
+                        }
+                    }
+                }); // End of BeginAutoReadTransaction with anonymous function
+
+            ACanBeParent = canBeParent;
+            ACanDelete = canDelete;
+            AMsg = msg;
             return DbSuccess;
         }
 

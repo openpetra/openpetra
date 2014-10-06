@@ -108,6 +108,27 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Determines whether the control allows a negative value, or not. Default = true.
+        /// </summary>
+        [Category("NumericTextBox"),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         DefaultValue(true),
+         Browsable(true),
+         Description("Determines whether the control allows a negative value, or not. Default = true.")]
+        public bool NegativeValueAllowed
+        {
+            get
+            {
+                return FTxtNumeric.NegativeValueAllowed;
+            }
+
+            set
+            {
+                FTxtNumeric.NegativeValueAllowed = value;
+            }
+        }
+
         /// This property gets hidden because it doesn't make sense in the Designer!
         [Browsable(false),
          DefaultValue(0.00)]

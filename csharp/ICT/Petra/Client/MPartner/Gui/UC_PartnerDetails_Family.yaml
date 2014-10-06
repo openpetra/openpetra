@@ -13,7 +13,7 @@ RootNode:
             Controls: [grpNames, grpMisc]
             Dock: Fill
 
-        grpNames: {Dock=Top}
+        grpNames:
             Controls:
                 Row0: [txtPreviousName]
                 Row1: [txtLocalName]
@@ -24,7 +24,7 @@ RootNode:
         txtLocalName: {DataField=PPartner.PartnerShortNameLoc}
             Stretch: horizontally
          
-        grpMisc: {Label=Miscellaneous, Dock=Top}
+        grpMisc: {Label=Miscellaneous}
             Controls: 
                 Row1: [cmbMaritalStatus]
                 Row2: [dtpMaritalStatusSince]
@@ -32,7 +32,7 @@ RootNode:
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
             
-        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList}
+        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Validation=true}
         dtpMaritalStatusSince: {Validation=true}
         txtMaritalStatusComment:
             Multiline: true
@@ -40,4 +40,4 @@ RootNode:
             Width: 345
             Height: 46
         cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, Width=450}

@@ -287,6 +287,61 @@ namespace Ict.Common.Controls
         private Boolean FSorting;
 
         /// <summary>
+        /// The maximum number of rows to check when auto-sizing columns.  If the value is -1 we calculate the answer based on the number of columns.
+        /// </summary>
+        private int FMaxAutoSizeRows = -1;
+
+        /// <summary>
+        /// Flag indicating whether the Fixed Rows should be included in the column auto-size calculation or not
+        /// </summary>
+        private Boolean FIncludeFixedRowsInAutoSizeColumns = true;
+
+        private ToolTipText FGridTooltipController;
+
+        /// <summary>
+        /// Gets/sets the flag indicating whether the Fixed Rows should be included in the column auto-size calculation or not
+        /// </summary>
+        public Boolean IncludeFixedRowsInAutoSizeColumns
+        {
+            get
+            {
+                return FIncludeFixedRowsInAutoSizeColumns;
+            }
+            set
+            {
+                FIncludeFixedRowsInAutoSizeColumns = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets/sets the maximum number of rows to check when auto-sizing columns
+        /// </summary>
+        public int MaxAutoSizeRows
+        {
+            get
+            {
+                if (FMaxAutoSizeRows == -1)
+                {
+                    // automatic calculation
+                    if ((this.Rows.Count < 10) || (this.Columns.Count == 0))
+                    {
+                        return 10;
+                    }
+                    else
+                    {
+                        return Math.Max(100, 1000 / this.Columns.Count);
+                    }
+                }
+
+                return FMaxAutoSizeRows;
+            }
+            set
+            {
+                FMaxAutoSizeRows = value;
+            }
+        }
+
+        /// <summary>
         /// Returns true when the mouse is down inside the grid.
         /// </summary>
         public Boolean IsMouseDown
@@ -770,6 +825,10 @@ namespace Ict.Common.Controls
             InitializeComponent();
 
             FColumnHeaderView = new SourceGrid.Cells.Views.ColumnHeader();
+
+            FGridTooltipController = new SourceGrid.Cells.Controllers.ToolTipText();
+            FGridTooltipController.IsBalloon = false;
+            FGridTooltipController.ToolTipTitle = Catalog.GetString("Column Header:");
 
             // Hook up our custom DoubleClick Handler
             this.Controller.AddController(new DoubleClickController());
@@ -1344,6 +1403,27 @@ namespace Ict.Common.Controls
             TimeEditor.TypeConverter = new Ict.Common.TypeConverter.TLongTimeConverter();
 
             AddTextColumn(AColumnTitle, ADataColumn, -1, TimeEditor);
+        }
+
+        /// <summary>
+        /// Set a tooltip that is displayed when the user mouses over the specified column header row
+        /// </summary>
+        /// <param name="AColumnNumber">0-based column index</param>
+        /// <param name="ATipText">Text to show in the tooltip</param>
+        public void SetHeaderTooltip(int AColumnNumber, string ATipText)
+        {
+            if (AColumnNumber < this.Columns.Count)
+            {
+                SourceGrid.Cells.Cell cell = (SourceGrid.Cells.Cell) this.GetCell(0, AColumnNumber);
+
+                // If the cell is null we cannot set the text
+                // The cell will be null if the DataSource has not yet been bound to the grid.
+                if (cell != null)
+                {
+                    cell.ToolTipText = ATipText;
+                    cell.AddController(FGridTooltipController);
+                }
+            }
         }
 
         #endregion

@@ -268,9 +268,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 		private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
 		{
 			string FilterStr = String.Format("{0}='{1}'", PPartnerAttributeTypeTable.GetAttributeCategoryDBName(), ANewCode);
-			FFilterPanelControls.SetBaseFilter(FilterStr, true);
 			
-			ApplyFilter();
+			FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);			
+			FFilterAndFindObject.ApplyFilter();
 			
 			grdDetails.SelectRowWithoutFocus(ACurrentRowIndex);
 		}

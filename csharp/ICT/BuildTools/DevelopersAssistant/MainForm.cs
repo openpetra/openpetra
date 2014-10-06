@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 namespace Ict.Tools.DevelopersAssistant
 {
@@ -87,8 +88,11 @@ namespace Ict.Tools.DevelopersAssistant
             cboDatabase.SelectedIndex = _localSettings.DatabaseComboID;
             chkAutoStartServer.Checked = _localSettings.AutoStartServer;
             chkAutoStopServer.Checked = _localSettings.AutoStopServer;
+            chkCheckForUpdatesAtStartup.Checked = _localSettings.AutoCheckForUpdates;
             chkMinimizeServer.Checked = _localSettings.MinimiseServerAtStartup;
             chkTreatWarningsAsErrors.Checked = _localSettings.TreatWarningsAsErrors;
+            chkCompileWinform.Checked = _localSettings.CompileWinForm;
+            chkStartClientAfterGenerateWinform.Checked = _localSettings.StartClientAfterCompileWinForm;
             txtBranchLocation.Text = _localSettings.BranchLocation;
             txtYAMLPath.Text = _localSettings.YAMLLocation;
             txtFlashAfterSeconds.Text = _localSettings.FlashAfterSeconds.ToString();
@@ -571,6 +575,17 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
+            // Stop the server because we will restart it again with a different database connection
+            int NumFailures = 0;
+            int NumWarnings = 0;
+
+            GetServerState();
+
+            if (_serverIsRunning)
+            {
+                RunSimpleNantTarget(new NantTask(NantTask.TaskItem.stopPetraServer), ref NumFailures, ref NumWarnings);
+            }
+
             //  Ok - we write the specified settings to the config file and remove the unspecified ones
             BuildConfiguration DbCfg = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
 
@@ -775,17 +790,20 @@ namespace Ict.Tools.DevelopersAssistant
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             _localSettings.AltSequence = ConvertSequenceListToString(_altSequence);
+            _localSettings.AutoCheckForUpdates = chkCheckForUpdatesAtStartup.Checked;
             _localSettings.BazaarPath = txtBazaarPath.Text;
             _localSettings.BranchLocation = txtBranchLocation.Text;
             _localSettings.AutoStartServer = chkAutoStartServer.Checked;
             _localSettings.AutoStopServer = chkAutoStopServer.Checked;
             _localSettings.CodeGenerationComboID = cboCodeGeneration.SelectedIndex;
             _localSettings.CompilationComboID = cboCompilation.SelectedIndex;
+            _localSettings.CompileWinForm = chkCompileWinform.Checked;
             _localSettings.DatabaseComboID = cboDatabase.SelectedIndex;
             _localSettings.FlashAfterSeconds = Convert.ToUInt32(txtFlashAfterSeconds.Text);
             _localSettings.MinimiseServerAtStartup = chkMinimizeServer.Checked;
             _localSettings.MiscellaneousComboID = cboMiscellaneous.SelectedIndex;
             _localSettings.Sequence = ConvertSequenceListToString(_sequence);
+            _localSettings.StartClientAfterCompileWinForm = chkStartClientAfterGenerateWinform.Checked;
             _localSettings.TreatWarningsAsErrors = chkTreatWarningsAsErrors.Checked;
             _localSettings.YAMLLocation = txtYAMLPath.Text;
 
@@ -1114,11 +1132,7 @@ namespace Ict.Tools.DevelopersAssistant
                      || (task.Item == NantTask.TaskItem.mainNavigationTests))
             {
                 BuildConfiguration dbBldConfig = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
-                string curConfig = dbBldConfig.CurrentConfig;
-                string searchFor = "Database name: ";
-                int pos = curConfig.IndexOf(searchFor) + searchFor.Length;
-                int pos2 = curConfig.IndexOf(';', pos);
-                string dbName = curConfig.Substring(pos, pos2 - pos);
+                string dbName = dbBldConfig.CurrentDBName;
 
                 if (String.Compare(dbName, "nantTest", true) != 0)
                 {
@@ -1164,11 +1178,30 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnDatabase_Click(object sender, EventArgs e)
         {
+            BuildConfiguration dbBldConfig = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
+            string dbName = dbBldConfig.CurrentDBName;
+            NantTask task = new NantTask(cboDatabase.Items[cboDatabase.SelectedIndex].ToString());
+
+            if ((task.Item == NantTask.TaskItem.resetDatabase) || (task.Item == NantTask.TaskItem.recreateDatabase))
+            {
+                if (String.Compare(dbName, "nantTest", true) != 0)
+                {
+                    // We don't mind nantTest, but any other database name (including demo) gives rise to a warning
+                    string msg = "Warning!  Your current database is '{0}'.  If you proceed you will lose all the information in this database.";
+                    msg += "Are you sure that you want to continue?";
+
+                    if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+            }
+
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
             TickTimer.Enabled = false;
-            NantTask task = new NantTask(cboDatabase.Items[cboDatabase.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -1261,6 +1294,7 @@ namespace Ict.Tools.DevelopersAssistant
             int NumWarnings = 0;
 
             RunGenerateWinform(ref NumFailures, ref NumWarnings);
+            SetEnabledStates();
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
@@ -1404,7 +1438,7 @@ namespace Ict.Tools.DevelopersAssistant
             switch (Task.Item)
             {
                 case NantTask.TaskItem.startPetraServer:
-                    bOk = NantExecutor.StartServer(WorkingFolder, _localSettings.MinimiseServerAtStartup);
+                    bOk = NantExecutor.StartServer(WorkingFolder, chkMinimizeServer.Checked);
                     break;
 
                 case NantTask.TaskItem.stopPetraServer:
@@ -1505,7 +1539,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (NestedTask == NantTask.TaskItem.startPetraServer)
             {
-                if (NantExecutor.StartServer(txtBranchLocation.Text, _localSettings.MinimiseServerAtStartup))
+                if (NantExecutor.StartServer(txtBranchLocation.Text, chkMinimizeServer.Checked))
                 {
                     // It ran successfully - let us check the output ...
                     OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
@@ -1822,6 +1856,86 @@ namespace Ict.Tools.DevelopersAssistant
                 catch (Exception)
                 {
                 }
+            }
+        }
+
+        private void btnCheckForUpdates_Click(object sender, EventArgs e)
+        {
+            // The Check For Updates button has been clicked
+            if (CheckForUpdates.DoCheck(txtBranchLocation.Text, true))
+            {
+                RunUpdaterAndClose();
+            }
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            // The window has just been shown for the first time
+            string startupMessage = Program.cmdLine.StartupMessage;
+
+            if (startupMessage != String.Empty)
+            {
+                switch (startupMessage)
+                {
+                    case "UpdateSuccess":
+                        MessageBox.Show("The application was updated successfully.",
+                        Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        break;
+
+                    case "UpdateFail":
+                        MessageBox.Show(
+                        "An error occurred during the update process.  The new file was not copied.  The application has not been updated.",
+                        Program.APP_TITLE,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            else if (chkCheckForUpdatesAtStartup.Checked && !ShutdownTimer.Enabled)
+            {
+                if (CheckForUpdates.DoCheck(txtBranchLocation.Text, false))
+                {
+                    RunUpdaterAndClose();
+                }
+            }
+        }
+
+        private void RunUpdaterAndClose()
+        {
+            // get the path to the Updater application
+            string exePathInBranch = Path.Combine(txtBranchLocation.Text, "delivery/bin/Ict.Tools.DevelopersAssistantUpdater.exe");
+
+            if (!File.Exists(exePathInBranch))
+            {
+                // Unlikely but I suppose possible
+                MessageBox.Show(String.Format("Could not find the Updater executable: {0}",
+                        exePathInBranch), Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            // My path will be the argument for the Updater - it is me that needs to be updated!!
+            string myPath = Application.ExecutablePath;
+
+            ProcessStartInfo si = new ProcessStartInfo();
+            si.FileName = exePathInBranch;
+            si.Arguments = "\"" + myPath + "\"";
+            si.WindowStyle = ProcessWindowStyle.Hidden;
+
+            // Start the Updater application and close me down
+            Process p = new Process();
+            p.StartInfo = si;
+
+            if (p.Start())
+            {
+                Close();
+            }
+            else
+            {
+                MessageBox.Show(String.Format("Failed to launch the Updater executable: {0}",
+                        exePathInBranch), Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
     }

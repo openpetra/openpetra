@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
@@ -121,6 +122,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void ReadControls(TRptCalculator ACalculator, TReportActionEnum AReportAction)
         {
             int Year = 0;
+            DateTime EndDate = DateTime.Now;
+            DateTime StartDate = DateTime.Now;
 
             // TODO
             int DiffPeriod = 0;             //(System.Int32)CbB_YearEndsOn.SelectedItem;
@@ -132,10 +135,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
 
-            String CurrencySelection = this.cmbCurrency.GetSelectedString();
-            ACalculator.AddParameter("param_currency", CurrencySelection);
+            String CurrencyName;
 
-            String CurrencyName = (CurrencySelection == "Base") ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
+            if (cmbCurrency.Visible)
+            {
+                String CurrencySelection = this.cmbCurrency.GetSelectedString();
+                ACalculator.AddParameter("param_currency", CurrencySelection);
+                CurrencyName = (CurrencySelection == "Base") ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
+            }
+            else
+            {
+                CurrencyName = FLedgerRow.BaseCurrency;
+            }
+
             ACalculator.AddParameter("param_currency_name", CurrencyName);
 
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
@@ -158,8 +170,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_end_period_i", (System.Object)(Quarter * 3));
                 ACalculator.AddParameter("param_start_date",
                     TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3 - 2));
-                ACalculator.AddParameter("param_end_date",
-                    TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3));
+                EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3);
+                ACalculator.AddParameter("param_end_date", EndDate);
 
                 //VerificationResult = TFinancialPeriodChecks.ValidQuarter(DiffPeriod, Year, Quarter, "Quarter");
                 if (AReportAction == TReportActionEnum.raGenerate)
@@ -179,8 +191,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
                 ACalculator.AddParameter("param_end_period_i", EndPeriod);
-                ACalculator.AddParameter("param_end_date",
-                    TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod));
+                StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
+                ACalculator.AddParameter("param_start_date", StartDate);
+                EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
+                ACalculator.AddParameter("param_end_date", EndDate);
+
                 CheckPeriod(Year, EndPeriod);
                 dtpEndDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
 
@@ -221,7 +236,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     else
                     {
                         ACalculator.AddParameter("param_start_date", dtpStartDate.Date.Value);
-                        ACalculator.AddParameter("param_end_date", dtpEndDate.Date.Value);
+                        EndDate = dtpEndDate.Date.Value;
+                        ACalculator.AddParameter("param_end_date", EndDate);
                         ACalculator.AddParameter("param_real_year", dtpEndDate.Date.Value.Year);
                     }
                 }
@@ -232,7 +248,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_real_year", cmbBreakdownYear.GetSelectedString(1));
                 ACalculator.AddParameter("param_year_i", Year);
                 ACalculator.AddParameter("param_start_date", TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1));
-                ACalculator.AddParameter("param_end_date", TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12));
+                EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12);
+                ACalculator.AddParameter("param_end_date", EndDate);
+            }
+
+            // true if the selected date is in the current financial year
+            ACalculator.AddParameter("param_current_financial_year", FLedgerRow.CurrentFinancialYear == Year);
+
+            //
+            // I may need to check whether the selected currency has an exchange rate I can use!
+
+            if (CurrencyName == FLedgerRow.IntlCurrency)
+            {
+                Decimal IntlRate = TExchangeRateCache.GetDailyExchangeRate(FLedgerRow.BaseCurrency, FLedgerRow.IntlCurrency, EndDate);
+
+                if (IntlRate == 0) // No exchange rate has been specified
+                {
+                    FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                            Catalog.GetString("International Exchange Rate"),
+                            Catalog.GetString("No Exchange Rate is available for the requested period."),
+                            TResultSeverity.Resv_Critical));
+                }
             }
 
             if (Year < 0)
@@ -283,22 +319,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             txtStartPeriod.Text = AParameters.Get("param_start_period_i").ToString();
             txtEndPeriod.Text = AParameters.Get("param_end_period_i").ToString();
 
-            if (rbtPeriod.Checked)
+            if (txtStartPeriod.Text.Length == 0)
             {
-                if (txtStartPeriod.Text.Length == 0)
-                {
-                    txtStartPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
-                }
+                txtStartPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
+            }
 
-                if (txtEndPeriod.Text.Length == 0)
-                {
-                    txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
-                }
+            if (txtEndPeriod.Text.Length == 0)
+            {
+                txtEndPeriod.Text = FLedgerRow.CurrentPeriod.ToString();
+            }
 
-                if (cmbPeriodYear.SelectedIndex == -1)
-                {
-                    cmbPeriodYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
-                }
+            if (cmbPeriodYear.SelectedIndex == -1)
+            {
+                cmbPeriodYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
+            }
+
+            if (cmbQuarterYear.SelectedIndex == -1)
+            {
+                cmbQuarterYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
+            }
+
+            if (cmbBreakdownYear.SelectedIndex == -1)
+            {
+                cmbBreakdownYear.SetSelectedInt32(FLedgerRow.CurrentFinancialYear);
             }
 
             if (AParameters.Exists("param_start_date"))
@@ -394,8 +437,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <param name="items"></param>
         public void CurrencyOptions(object[] items)
         {
+            String CurrencySelection = cmbCurrency.GetSelectedString();
+
             this.cmbCurrency.Items.Clear();
-            this.cmbCurrency.Items.AddRange(items);
+            cmbCurrency.Items.AddRange(items);
+            cmbCurrency.SetSelectedString(CurrencySelection); // Potentially might not work, but probably will!
         }
 
         /// <summary>
@@ -522,6 +568,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         void txtStartPeriod_TextChanged(object sender, EventArgs e)
         {
             txtEndPeriod.Text = txtStartPeriod.Text;
+        }
+
+        /// <summary>
+        /// Get ledger's base currency
+        /// </summary>
+        /// <returns></returns>
+        public string GetBaseCurrency()
+        {
+            return FLedgerRow.BaseCurrency;
+        }
+
+        /// <summary>
+        /// Get ledger's international currency
+        /// </summary>
+        /// <returns></returns>
+        public string GetInternationalCurrency()
+        {
+            return FLedgerRow.IntlCurrency;
+        }
+
+        /// <summary>
+        /// Get ledger's current period
+        /// </summary>
+        /// <returns></returns>
+        public int GetCurrentPeiod()
+        {
+            return FLedgerRow.CurrentPeriod;
         }
     }
 }

@@ -65,6 +65,7 @@ compat:
   generateGuidedTranslations: Simplifies the translation of the .po files
   createI18NYamlFiles: create localised yaml files
     createI18NYamlFiles -language=de-DE -path=...
+  copyFrDlls: Copy the FastReports DLLS from the path specified in FASTREPORT_DLL_PATH to the bin folder
 
 releases:
   buildWindowsStandalone: will build the standalone installer for Windows. Only works on Windows with InnoSetup.
@@ -173,7 +174,6 @@ useful parameters
 <target name="quickClean" description="cleans all generated files and the delivery directory">    
   <echo message="Target quickClean started at: ${datetime::now()}" /> 
   
-  <!-- Do not remove dir.delivery, because this would change all UUIDs from the project files -->
   <!-- Do not remove dir.bin, because this fails on Windows Jenkins server for NUnit tests -->
   <delete>
     <fileset basedir="${dir.bin}">
@@ -187,6 +187,7 @@ useful parameters
       <exclude name="."/>
     </fileset>
   </delete>
+  <delete file="${uuidFile}"/>
   <delete file="${namespaceFile}"/>
   <delete file="${projectDependenciesFile}"/>
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
@@ -264,6 +265,7 @@ useful parameters
     <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
     <call target="generateNamespaceMap"/>
     <call target="generateProjectFiles"/>
+    <call target="copyFrDlls"/>
     
     <echo message="Target minimalGenerateSolution finished at: ${datetime::now()}" /> 
 </target>
@@ -273,6 +275,7 @@ useful parameters
     <echo message="Target generateSolution started at: ${datetime::now()}" />         
     
     <call target="quickCompile"/>
+    <call target="pullVCSVersionInfo"/>
     
     <echo message="Target generateSolution finished at: ${datetime::now()}" />         
 </target>
@@ -329,7 +332,29 @@ useful parameters
     DebugParameters="PetraClient,-C:${ClientConfigFile},PetraServerConsole,-C:${ServerConfigFile}"
     />
     
-  <echo message="Target generateProjectFilesInternal finished at: ${datetime::now()}" />         
+  <echo message="Target generateProjectFilesInternal finished at: ${datetime::now()}" />
+</target>
+
+<target name="copyFrDlls">
+    <if test="${environment::variable-exists('FASTREPORT_DLL_PATH')}">
+        <property name="FrDllsPath" value="${environment::get-variable('FASTREPORT_DLL_PATH')}" />
+        <if test="${directory::exists(FrDllsPath)}">
+            <echo message="Copying FastReports DLLs from ${FrDllsPath}.."/>
+            <copy todir="${dir.delivery}/bin">
+                <fileset basedir="${FrDllsPath}">
+                    <include name="*.*"/>
+                </fileset>
+            </copy>
+        </if>
+        <if test="${not directory::exists(FrDllsPath)}">
+            <echo message="FastReports DLLs not installed - "/>
+            <echo message="Folder not found: ${FrDllsPath}"/>
+        </if>
+    </if>
+    <if test="${not environment::variable-exists('FASTREPORT_DLL_PATH')}">
+        <echo message="FastReports DLLs not installed - "/>
+        <echo message="FASTREPORT_DLL_PATH environment variable not specified."/>
+    </if>
 </target>
 
 <!-- Include default implementation -->
@@ -544,5 +569,11 @@ useful parameters
     
     <echo message="Target devzip finished at: ${datetime::now()}" />
 </target>
+
+<target name="pullVCSVersionInfo">
+    <exec program="bzr" commandline="version-info" output="${dir.delivery}/bin/vcs-revision.txt" failonerror="false"/>
+    <echo message="Version Control System version updated in file ${dir.delivery}/bin/vcs-revision.txt" />
+</target>
+
 </project>
 

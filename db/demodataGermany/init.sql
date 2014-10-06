@@ -1,8 +1,8 @@
 -- passwords are inserted by OpenPetra.build
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('DEMO', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('MEDICAL', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('HEADSET', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('BOUNDARIES', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', true);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('DEMO', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('MEDICAL', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('HEADSET', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('BOUNDARIES', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', false);
 INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('ANONYMOUS', '{#PASSWORDHASHANONYMOUS}', '{#PASSWORDSALTANONYMOUS}', false);
 
 INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('LEDGER0043', 'LEDGER0043');
@@ -117,6 +117,7 @@ COPY a_account_hierarchy FROM '{#ABSOLUTEBASEDATAPATH}/a_account_hierarchy.csv' 
 COPY a_account_hierarchy_detail FROM '{#ABSOLUTEBASEDATAPATH}/a_account_hierarchy_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_accounting_period FROM '{#ABSOLUTEBASEDATAPATH}/a_accounting_period.csv.local' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_accounting_system_parameter FROM '{#ABSOLUTEBASEDATAPATH}/a_accounting_system_parameter.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY a_corporate_exchange_rate FROM '{#ABSOLUTEBASEDATAPATH}/a_corporate_exchange_rate.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_system_interface FROM '{#ABSOLUTEBASEDATAPATH}/a_system_interface.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_transaction_type FROM '{#ABSOLUTEBASEDATAPATH}/a_transaction_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_valid_ledger_number FROM '{#ABSOLUTEBASEDATAPATH}/a_valid_ledger_number.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

@@ -242,15 +242,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// </summary>
         /// <param name="ANewCode">New Code to filter on.</param>
         /// <param name="ACurrentRowIndex">The index of the Row that should get displayed (the 'current' Row).</param>
-		private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
-		{
-		    string FilterStr = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), ANewCode);
-			FFilterPanelControls.SetBaseFilter(FilterStr, true);
+	private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
+	{
+	    string FilterStr = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), ANewCode);
+ 	    
+ 	    FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);			
+	    FFilterAndFindObject.ApplyFilter();
 			
-			ApplyFilter();
-			
-			grdDetails.SelectRowWithoutFocus(ACurrentRowIndex);
-		}
+	    grdDetails.SelectRowWithoutFocus(ACurrentRowIndex);
+	}
                 
         /// <summary>
         /// Returns the number of detail code items in the database that use the specified attribute code
@@ -288,14 +288,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// Raises the 'NoMoreDetailRecords' Event.
         /// </summary>
         /// <param name="e">Event Arguments.</param>
-		protected virtual void OnNoMoreDetailRecords(EventArgs e)
-		{
-			var Eventhandler = NoMoreDetailRecords;
+	protected virtual void OnNoMoreDetailRecords(EventArgs e)
+	{
+		var Eventhandler = NoMoreDetailRecords;
 			
-			if (Eventhandler != null)
-			{
-				Eventhandler(this, e);
-			}
-		}        
+		if (Eventhandler != null)
+		{
+			Eventhandler(this, e);
+		}
+	}        
     }
 }

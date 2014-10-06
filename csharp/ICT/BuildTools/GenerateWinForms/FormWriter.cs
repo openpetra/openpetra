@@ -997,6 +997,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
         }
 
+        private void CallHandlerIfProvided(String AKey, String APlaceholder, String ACodeToInsert)
+        {
+            /* I'd like this code to work, but it causes extra code to be added,
+             * because codelets may be created that didn't previously exist:
+             * Boolean CallManualCode = FCodeStorage.ManualFileExistsAndContains(AKey);
+             * String CommentOutOption = CallManualCode ? "" : "// ";
+             * if (CallManualCode || FTemplate.FCodelets.ContainsKey(APlaceholder + FTemplate.FCodeletPostfix)) // If there's no ManualCode, and currently no Codelet, I don't want to create one!
+             * {
+             *  FTemplate.AddToCodelet(APlaceholder, CommentOutOption + ACodeToInsert + Environment.NewLine);
+             * }
+             */
+
+            if (FCodeStorage.ManualFileExistsAndContains(AKey))
+            {
+                FTemplate.AddToCodelet(APlaceholder, ACodeToInsert + Environment.NewLine);
+            }
+        }
+
         /// based on the code model, create the code;
         /// using the code generators that have been loaded
         public override void CreateCode(TCodeStorage ACodeStorage, string AXAMLFilename, string ATemplateFile)
@@ -1016,6 +1034,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("GRIDMULTISELECTION", "");
+            FTemplate.AddToCodelet("GRIDHEADERTOOLTIP", "");
             FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("RUNONCEONPARENTACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", "");
@@ -1028,19 +1047,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("MULTIDELETEREFERENCECOUNT", "");
             FTemplate.AddToCodelet("ENABLEDELETEBUTTON", "");
             FTemplate.AddToCodelet("CANDELETESELECTION", "");
-            FTemplate.AddToCodelet("PREDELETEMANUAL", "");
-            FTemplate.AddToCodelet("DELETEROWMANUAL", "");
-            FTemplate.AddToCodelet("POSTDELETEMANUAL", "");
-            FTemplate.AddToCodelet("PREMULTIDELETEMANUAL", "");
-            FTemplate.AddToCodelet("DELETEMULTIROWMANUAL", "");
-            FTemplate.AddToCodelet("POSTMULTIDELETEMANUAL", "");
-            FTemplate.AddToCodelet("MULTIDELETEDELETABLE", "");
+            FTemplate.AddToCodelet("CANDELETEROW", "");
             FTemplate.AddToCodelet("SELECTTABMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
             FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
+            FTemplate.AddToCodelet("PREPROCESSCMDKEY", "");
             FTemplate.AddToCodelet("PROCESSCMDKEY", "");
             FTemplate.AddToCodelet("PROCESSCMDKEYCTRLF", "");
             FTemplate.AddToCodelet("PROCESSCMDKEYCTRLR", "");
@@ -1058,68 +1072,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("IGNOREFIRSTTABPAGESELECTIONCHANGEDEVENT", "");
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", "");
             FTemplate.AddToCodelet("ELSESTATEMENT", "");
-//            FTemplate.AddToCodelet("VALIDATEDETAILS", "");
+//          FTemplate.AddToCodelet("VALIDATEDETAILS", "");
 
-            if (FCodeStorage.ManualFileExistsAndContains("void BeforeShowDetailsManual"))
-            {
-                FTemplate.AddToCodelet("SHOWDETAILS", "BeforeShowDetailsManual(ARow);" + Environment.NewLine);
-            }
 
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
 
-            if (FCodeStorage.ManualFileExistsAndContains("InitializeManualCode"))
-            {
-                FTemplate.AddToCodelet("INITMANUALCODE", "InitializeManualCode();" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("RunOnceOnActivationManual"))
-            {
-                FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("RunOnceOnParentActivationManual"))
-            {
-                FTemplate.AddToCodelet("RUNONCEONPARENTACTIVATIONMANUAL", "RunOnceOnParentActivationManual();" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("ExitManualCode"))
-            {
-                FTemplate.AddToCodelet("EXITMANUALCODE", "ExitManualCode();" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("CanCloseManual"))
-            {
-                FTemplate.AddToCodelet("CANCLOSEMANUAL", " && CanCloseManual()");
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("NewRowManual"))
-            {
-                FTemplate.AddToCodelet("INITNEWROWMANUAL", "NewRowManual(ref NewRow);" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("PreDeleteManual"))
-            {
-                FTemplate.AddToCodelet("PREDELETEMANUAL",
-                    "AllowDeletion = PreDeleteManual(FPreviouslySelectedDetailRow, ref DeletionQuestion);" + Environment.NewLine);
-                FTemplate.AddToCodelet("PREMULTIDELETEMANUAL",
-                    "AllowDeletion = PreDeleteManual(rowToDelete, ref DeletionQuestion);" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("DeleteRowManual"))
-            {
-                FTemplate.AddToCodelet("DELETEROWMANUAL",
-                    "DeletionPerformed = DeleteRowManual(FPreviouslySelectedDetailRow, ref CompletionMessage);" + Environment.NewLine);
-                FTemplate.AddToCodelet("DELETEMULTIROWMANUAL",
-                    "DeletionPerformed = AllowDeletion && DeleteRowManual(rowToDelete, ref CompletionMessage);" + Environment.NewLine);
-            }
-
-            if (FCodeStorage.ManualFileExistsAndContains("PostDeleteManual"))
-            {
-                FTemplate.AddToCodelet("POSTDELETEMANUAL",
-                    "PostDeleteManual(FPreviouslySelectedDetailRow, AllowDeletion, DeletionPerformed, CompletionMessage);" + Environment.NewLine);
-                FTemplate.AddToCodelet("POSTMULTIDELETEMANUAL",
-                    "PostDeleteManual(rowToDelete, AllowDeletion, DeletionPerformed, String.Empty);" + Environment.NewLine);
-            }
+            CallHandlerIfProvided("void BeforeShowDetailsManual", "SHOWDETAILS", "BeforeShowDetailsManual(ARow);");
+            CallHandlerIfProvided("InitializeManualCode", "INITMANUALCODE", "InitializeManualCode();");
+            CallHandlerIfProvided("RunOnceOnActivationManual", "RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();");
+            CallHandlerIfProvided("RunOnceOnParentActivationManual", "RUNONCEONPARENTACTIVATIONMANUAL", "RunOnceOnParentActivationManual();");
+            CallHandlerIfProvided("ExitManualCode", "EXITMANUALCODE", "ExitManualCode();");
+            CallHandlerIfProvided("CanCloseManual", "CANCLOSEMANUAL", " && CanCloseManual()");
+            CallHandlerIfProvided("NewRowManual", "INITNEWROWMANUAL", "NewRowManual(ref NewRow);");
+            CallHandlerIfProvided("StoreManualCode", "STOREMANUALCODE", "SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);");
+            CallHandlerIfProvided("FindAndFilterHookUpEvents", "FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();");
+            CallHandlerIfProvided("PreProcessCommandKey", "PREPROCESSCMDKEY", "PreProcessCommandKey();");
 
             if (FCodeStorage.ManualFileExistsAndContains("SelectTabManual"))
             {
@@ -1127,15 +1094,28 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "//Call code to execute on selection of new tab" + Environment.NewLine);
             }
 
-            if (FCodeStorage.ManualFileExistsAndContains("StoreManualCode"))
+            if (FCodeStorage.ManualFileExistsAndContains("PreDeleteManual"))
             {
-                FTemplate.AddToCodelet("STOREMANUALCODE",
-                    "SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);" + Environment.NewLine);
+                FTemplate.AddToCodelet("HASPREDELETEMANUAL", "true");
             }
 
-            if (FCodeStorage.ManualFileExistsAndContains("FindAndFilterHookUpEvents"))
+            if (FCodeStorage.ManualFileExistsAndContains("DeleteRowManual"))
             {
-                FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
+                FTemplate.AddToCodelet("HASDELETEROWMANUAL", "true");
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("PostDeleteManual"))
+            {
+                FTemplate.AddToCodelet("HASPOSTDELETEMANUAL", "true");
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("GetChangedRecordCountManual"))
+            {
+                FTemplate.AddToCodelet("GETCHANGEDRECORDCOUNT", "return GetChangedRecordCountManual(out AMessage);");
+            }
+            else
+            {
+                FTemplate.AddToCodelet("GETCHANGEDRECORDCOUNT", "return FPetraUtilsObject.GetChangedRecordCount(FMainDS, out AMessage);");
             }
 
             if (FTemplate.FSnippets.ContainsKey("PROCESSCMDKEYCTRLL"))
@@ -1147,11 +1127,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (FCodeStorage.FControlList.ContainsKey("pnlDetails"))
                     {
+                        ProcessTemplate snipCtrlE = FTemplate.GetSnippet("PROCESSCMDKEYCTRLE");
+                        FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlE);
+
                         ProcessTemplate snipSelectRow = FTemplate.GetSnippet("PROCESSCMDKEYSELECTROW");
                         FTemplate.InsertSnippet("PROCESSCMDKEY", snipSelectRow);
 
-                        ProcessTemplate snipFocusFirstControl = FTemplate.GetSnippet("FOCUSFIRSTDETAILSPANELCONTROL");
-                        FTemplate.InsertSnippet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", snipFocusFirstControl);
+                        if (FCodeStorage.ManualFileExistsAndContains("void FocusFirstEditableControlManual()"))
+                        {
+                            FTemplate.SetCodelet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", "FocusFirstEditableControlManual();" + Environment.NewLine);
+                        }
+                        else
+                        {
+                            ProcessTemplate snipFocusFirstControl = FTemplate.GetSnippet("FOCUSFIRSTDETAILSPANELCONTROL");
+                            FTemplate.InsertSnippet("FOCUSFIRSTEDITABLEDETAILSPANELCONTROL", snipFocusFirstControl);
+                        }
                     }
                 }
 
@@ -1419,8 +1409,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         FCodeStorage.GetAttribute("DetailTable"));
                     FTemplate.AddToCodelet("DELETERECORD", deleteRecord);
 
-                    ProcessTemplate snippetMultiDelete = FTemplate.GetSnippet("SNIPMULTIDELETEDELETABLE");
                     ProcessTemplate snippetCanDelete = FTemplate.GetSnippet("SNIPCANDELETESELECTION");
+                    ProcessTemplate snippetCanDeleteRow = FTemplate.GetSnippet("SNIPCANDELETEROW");
                     bool bRequiresCanDeleteSelection = false;
 
                     // Write the one-line codelet that handles enable/disable of the delete button
@@ -1431,26 +1421,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         || FCodeStorage.FControlList.ContainsKey("chkDeletable"))
                     {
                         enableDelete += enableDeleteExtra;
-                        snippetMultiDelete.SetCodelet("DELETEABLEFLAG", "Deletable");
-                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippetMultiDelete);
                         snippetCanDelete.SetCodelet("DELETEABLEFLAG", "Deletable");
+                        snippetCanDeleteRow.SetCodelet("DELETEABLEFLAG", "Deletable");
                         bRequiresCanDeleteSelection = true;
                     }
                     else if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletableFlag")
                              || FCodeStorage.FControlList.ContainsKey("chkDeletableFlag"))
                     {
                         enableDelete += enableDeleteExtra;
-                        snippetMultiDelete.SetCodelet("DELETEABLEFLAG", "DeletableFlag");
-                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippetMultiDelete);
                         snippetCanDelete.SetCodelet("DELETEABLEFLAG", "DeletableFlag");
+                        snippetCanDeleteRow.SetCodelet("DELETEABLEFLAG", "DeletableFlag");
                         bRequiresCanDeleteSelection = true;
                     }
                     else if (FCodeStorage.FControlList.ContainsKey("chkDetailTypeDeletable"))
                     {
                         enableDelete += enableDeleteExtra;
-                        snippetMultiDelete.SetCodelet("DELETEABLEFLAG", "TypeDeletable");
-                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippetMultiDelete);
                         snippetCanDelete.SetCodelet("DELETEABLEFLAG", "TypeDeletable");
+                        snippetCanDeleteRow.SetCodelet("DELETEABLEFLAG", "TypeDeletable");
                         bRequiresCanDeleteSelection = true;
                     }
 
@@ -1461,8 +1448,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         snippetCanDelete.SetCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
                         FTemplate.InsertSnippet("CANDELETESELECTION", snippetCanDelete);
+                        snippetCanDeleteRow.SetCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+                        FTemplate.InsertSnippet("CANDELETEROW", snippetCanDeleteRow);
                     }
                 }
+            }
+
+            if (FTemplate.FCodelets["CANDELETEROW"].ToString() == String.Empty)
+            {
+                FTemplate.SetCodelet("CANDELETEROW", "return true;");
             }
 
             // find the first control that is a panel or groupbox or tab control

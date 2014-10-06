@@ -1,0 +1,14 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [trvCostCentres]
+        trvCostCentres:
+            Dock: Fill
+

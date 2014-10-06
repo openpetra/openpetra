@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -88,9 +88,76 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.AnalysisTypeCode = newName;
         }
 
-        private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
+        private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitTDS, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitChanges, out AVerificationResult);
+            //
+            // I'll warn the user if they have created analysis Types with no values:
+
+            String EmptyTypesWarning = "";
+
+            //
+            // If the user has added a new type, I want to show her a warning if she didn't also add at least one value for the new type.
+
+            if (ASubmitTDS.AAnalysisType != null)
+            {
+                foreach (AAnalysisTypeRow TypeRow in ASubmitTDS.AAnalysisType.Rows)
+                {
+                    if (TypeRow.RowState == DataRowState.Deleted)
+                    {
+                        continue;
+                    }
+
+                    Boolean NoValuesProvided = true;
+
+                    if (ASubmitTDS.AFreeformAnalysis != null)
+                    {
+                        ASubmitTDS.AFreeformAnalysis.DefaultView.RowFilter =
+                            String.Format("a_analysis_type_code_c='{0}'", TypeRow["a_analysis_type_code_c"]);
+                        NoValuesProvided = ASubmitTDS.AFreeformAnalysis.DefaultView.Count == 0;
+                    }
+
+                    if (NoValuesProvided)
+                    {
+                        if (EmptyTypesWarning != "")
+                        {
+                            EmptyTypesWarning += "\r\n";
+                        }
+
+                        EmptyTypesWarning +=
+                            String.Format(Catalog.GetString("Type {0} has no values, and therefore it cannot yet be applied to any account."),
+                                TypeRow["a_analysis_type_code_c"]);
+                    }
+                }
+            }
+
+            if (EmptyTypesWarning != "")
+            {
+                MessageBox.Show(EmptyTypesWarning, Catalog.GetString("Empty Analysis Types"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitTDS, out AVerificationResult);
+        }
+
+        private void DeleteRecord(object sender, EventArgs e)
+        {
+            if (ucoValues.Count > 0)
+            {
+                string msg = string.Empty;
+
+                if (ucoValues.GridCount == 0)
+                {
+                    // The grid must be filtered because it has no rows!
+                    msg += Catalog.GetString(
+                        "The selected Analysis Type has Analysis Values associated with it, but they are being filtered out of the display.");
+                    msg += "  ";
+                }
+
+                msg += Catalog.GetString("You must delete all the Analysis Values for the selected Analysis Type before you can delete this record.");
+                MessageBox.Show(msg, MCommon.MCommonResourcestrings.StrRecordDeletionTitle);
+                return;
+            }
+
+            DeleteAAnalysisType();
         }
 
         /// <summary>
@@ -113,7 +180,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // Tell the user that we cannot allow deletion if any rows exist in the DataView
                 TMessages.MsgRecordCannotBeDeletedDueToDependantRecordsError(
-                    "Analysis Type", "an Analysis Type", "Analysis Types", "Analysis Value", "an Analysis Value", 
+                    "Analysis Type", "an Analysis Type", "Analysis Types", "Analysis Value", "an Analysis Value",
                     "Analysis Values", ARowToDelete.AnalysisTypeCode, DependentRecordsDV.Count);
 
                 return false;

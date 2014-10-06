@@ -99,14 +99,8 @@ public partial class TaskListTest : Form
 
         if (temp != null)
         {
-            if (TaskList.IsDisabled(temp))
-            {
-                TaskList.EnableTaskItem(temp);
-            }
-            else
-            {
-                TaskList.DisableTaskItem(temp);
-            }
+            TaskList.EnableDisableTaskItem(temp,
+                TTaskList.IsDisabled(temp));
         }
     }
 
@@ -120,20 +114,8 @@ public partial class TaskListTest : Form
 
         if (temp != null)
         {
-            if (!TaskList.IsVisible(temp))
-            {
-                TaskList.ShowTaskItem(temp);
-            }
-            else
-            {
-                TaskList.HideTaskItem(temp);
-            }
+            TaskList.ShowHideTaskItem(temp, !TTaskList.IsVisible(temp));
         }
-
-        //temp = TaskList.GetTaskByNumber("3");
-        //if(temp != null){
-        //TaskList.ShowTaskItem(temp);
-        //}
     }
 
     /// <summary>

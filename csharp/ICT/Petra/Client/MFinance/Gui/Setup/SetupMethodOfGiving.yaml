@@ -21,12 +21,8 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailMethodOfGivingCode, txtDetailMethodOfGivingDesc, chkDetailRecurringMethodFlag, chkDetailTaxRebateFlag, chkDetailTrustFlag, chkDetailActive]
-            FindControls: [txtDetailMethodOfGivingCode, txtDetailMethodOfGivingDesc, chkDetailRecurringMethodFlag, chkDetailTaxRebateFlag, chkDetailTrustFlag]
-            ControlAttributes:
-                chkDetailRecurringMethodFlag: {Text=Recurring}
-                chkDetailTaxRebateFlag: {Text=Tax Rebate}
-                chkDetailTrustFlag: {Text=Trust}
+            FilterControls: [txtDetailMethodOfGivingCode, txtDetailMethodOfGivingDesc, chkDetailActive]
+            FindControls: [txtDetailMethodOfGivingCode, txtDetailMethodOfGivingDesc]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -39,13 +35,10 @@ RootNode:
             Width: 80
         grdDetails:
             Dock: Fill
-            Columns: [MethodOfGivingCode, MethodOfGivingDesc, RecurringMethodFlag, TaxRebateFlag, TrustFlag, Active]
+            Columns: [MethodOfGivingCode, MethodOfGivingDesc, Active]
             CustomColumns:
                 MethodOfGivingCode:  {Label=Method of Giving}
                 MethodOfGivingDesc:  {Label=Description}
-                RecurringMethodFlag: {Label=Recurring, Type=Boolean}
-                TaxRebateFlag: {Label=Tax Rebate, Type=Boolean}
-                TrustFlag: {Label=Trust, Type=Boolean}
                 Active: {Label=Active, Type=Boolean}
             SortOrder: AMethodOfGiving.MethodOfGivingCode ASC
             ActionFocusRow: FocusedRowChanged
@@ -53,12 +46,7 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailMethodOfGivingCode, txtDetailMethodOfGivingDesc]
-                Row1: [chkDetailRecurringMethodFlag, chkDetailTaxRebateFlag]
-                Row2: [chkDetailTrustFlag]
-                Row3: [chkDetailActive]
+                Row1: [chkDetailActive]
         txtDetailMethodOfGivingCode: {Label=Method of Giving, CharacterCasing=Upper}
         txtDetailMethodOfGivingDesc: {Label=Description, Width=295}
-        chkDetailRecurringMethodFlag:  {Label=Used by Recurring Gifts}
-        chkDetailTaxRebateFlag:  {Label=Involves a Tax Rebate}
-        chkDetailTrustFlag:  {Label=Involves a Trust}
         chkDetailActive:  {Label=Active}

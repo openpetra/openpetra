@@ -182,7 +182,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     out ResultLocationPK,
                     AParentForm))
             {
-                ResultValue = DeletePartner(PartnerKey);
+                ResultValue = DeletePartner(PartnerKey, AParentForm);
             }
 
             return ResultValue;
@@ -191,12 +191,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// delete partner with given partner key
         /// </summary>
-        public static Boolean DeletePartner(Int64 APartnerKey)
+        public static Boolean DeletePartner(Int64 APartnerKey, Form AParentForm)
         {
             Boolean ResultValue = false;
             String ShortName;
             String Message;
             TVerificationResultCollection VerificationResult;
+
+            AParentForm.Cursor = Cursors.WaitCursor;
 
             if (TRemote.MPartner.Partner.WebConnectors.CanPartnerBeDeleted(APartnerKey, out Message))
             {
@@ -235,6 +237,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+
+            AParentForm.Cursor = Cursors.Default;
 
             return ResultValue;
         }
@@ -485,6 +489,29 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static void OpenLastUsedPartnerEditScreenPersonnelModule(Form AParentForm)
         {
             OpenLastUsedPartnerEditScreenByContext(AParentForm, "PersonnelLastPerson");
+        }
+
+        /// <summary>
+        /// Cancel all subscriptions that have a past expiry date and that are not cancelled yet
+        /// </summary>
+        /// <param name="AParentForm">Form where this method is called from</param>
+        /// <returns>void</returns>
+        public static void CancelExpiredSubscriptions(Form AParentForm)
+        {
+            if (MessageBox.Show(Catalog.GetString("You are about to cancel all subscriptions that have already expired. \r\nDo you want to continue?"),
+                    Catalog.GetString("Subscription Cancellation"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                if (TRemote.MPartner.Partner.WebConnectors.CancelExpiredSubscriptions())
+                {
+                    MessageBox.Show(Catalog.GetString("Expired Subscriptions are now cancelled"),
+                        Catalog.GetString("Subscription Cancellation"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("Error while cancelling expired Subscriptions"),
+                        Catalog.GetString("Subscription Cancellation"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

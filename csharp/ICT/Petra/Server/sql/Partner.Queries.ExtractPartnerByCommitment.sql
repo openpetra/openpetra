@@ -8,7 +8,7 @@ WHERE
     AND (? OR pub_pm_staff_data.pm_start_of_commitment_d <= ?) -- Start Date to
     AND (? OR pub_pm_staff_data.pm_end_of_commitment_d >= ?) -- End Date from
     AND (? OR pub_pm_staff_data.pm_end_of_commitment_d <= ?) -- End Date to
-    AND (? OR pub_pm_staff_data.pm_start_of_commitment_d <= ? AND pm_staff_data.pm_end_of_commitment_d >= ?) -- Commitment Valid on
+    AND (? OR (pub_pm_staff_data.pm_start_of_commitment_d <= ? AND (pm_staff_data.pm_end_of_commitment_d IS NULL OR pm_staff_data.pm_end_of_commitment_d >= ?))) -- Commitment Valid on
     AND (? OR pub_pm_staff_data.pm_home_office_n = ?) -- Sending Field office
     AND (? OR pub_pm_staff_data.pm_receiving_field_n = ?) -- Receiving Field office
     AND (? OR ( -- Include only persons with selected commmitment stati

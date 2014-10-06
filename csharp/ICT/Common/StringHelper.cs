@@ -198,6 +198,24 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// Appends a string to another string.  If the original length was non-zero the join string is inserted between the two strings.
+        /// Often used to join SQL parts in a filter statement.
+        /// </summary>
+        /// <param name="AStringToExtend">The string to extend.  May be empty</param>
+        /// <param name="AStringToAppend">The string to append</param>
+        /// <param name="AJoinString">A string that joins the other two.  If the first string is empty the join is not used.
+        /// There are some predefined strings in the CommonJoinStrings class.</param>
+        public static void JoinAndAppend(ref string AStringToExtend, string AStringToAppend, string AJoinString)
+        {
+            if ((AStringToExtend.Length > 0) && (AStringToAppend.Length > 0))
+            {
+                AStringToExtend += AJoinString;
+            }
+
+            AStringToExtend += AStringToAppend;
+        }
+
+        /// <summary>
         /// return a sorted version of the given StringCollection (not case sensitive)
         /// </summary>
         /// <param name="l">the StringCollection to be used to generate a sorted list</param>
@@ -2301,13 +2319,39 @@ namespace Ict.Common
         public const string INSTANCE_EQUALS = "Instance=";
 
         /// <summary>
-        /// Tag for Filter/Find to modify the default comparison (e.g. gte, lt, eq etc).  Used paticularly for numeric and date comparisons
+        /// Tag for Filter/Find to modify the default comparison (e.g. gte, lt, eq etc).  Used particularly for numeric and date comparisons
         /// </summary>
         public const string COMPARISON_EQUALS = "Comparison=";
+
+        /// <summary>
+        /// Tag for Filter/Find to specify that there is a manual handler for the Filter.
+        /// </summary>
+        public const string FILTER_HAS_MANUAL_FILTER = "HasManualFilter";
 
         /// <summary>
         /// Tag for 'Find' to use a different comparison from the Filter one (e.g. gte, lt, eq, StartsWith etc).  Used paticularly for numeric and date comparisons
         /// </summary>
         public const string FIND_COMPARISON_EQUALS = "FindComparison=";
+    }
+
+    /// <summary>
+    /// A class of pre-defined strings that may be used to join two other strings together
+    /// </summary>
+    public static class CommonJoinString
+    {
+        /// <summary>
+        /// The ' AND ' join string (without quotes)
+        /// </summary>
+        public const string JOIN_STRING_SQL_AND = " AND ";
+
+        /// <summary>
+        /// The ' OR ' join string (without quotes)
+        /// </summary>
+        public const string JOIN_STRING_SQL_OR = " OR ";
+
+        /// <summary>
+        /// A join string made up of comma followed by space
+        /// </summary>
+        public const string JOIN_STRING_COMMA_SPACE = ", ";
     }
 }

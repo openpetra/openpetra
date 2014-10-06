@@ -183,8 +183,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 232);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
@@ -321,7 +321,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
                     {
-                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<" + Catalog.GetString("INACTIVE") + "> " +
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " +
                                                                          rw[AAccountTable.ColumnAccountCodeShortDescId];
                     }
                 }
@@ -329,8 +329,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 200);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 90);
+            AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 232);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
@@ -371,7 +371,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     if ((rw[ACostCentreTable.ColumnCostCentreActiveFlagId] != null)
                         && (rw[ACostCentreTable.ColumnCostCentreActiveFlagId].ToString() == "False"))
                     {
-                        rw[ACostCentreTable.ColumnCostCentreNameId] = "<" + Catalog.GetString("INACTIVE") + "> " +
+                        rw[ACostCentreTable.ColumnCostCentreNameId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " +
                                                                       rw[ACostCentreTable.ColumnCostCentreNameId];
                     }
                 }
@@ -438,7 +438,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
                     {
-                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<" + Catalog.GetString("INACTIVE") + "> " +
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " +
                                                                          rw[AAccountTable.ColumnAccountCodeShortDescId];
                     }
                 }
@@ -703,6 +703,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             out Int64 AFieldNumber,
             Boolean ARefreshData = false)
         {
+            string CurrentRowFilter = string.Empty;
+
             AFieldNumber = 0;
 
             if ((FKeyMinTable != null) && !ARefreshData)
@@ -720,21 +722,37 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             string DisplayMember = PUnitTable.GetUnitNameDBName();
             string ValueMember = PUnitTable.GetPartnerKeyDBName();
-            FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
-            AFieldNumber = FFieldNumber;
-            FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
 
-            cmbMinistry.InitialiseUserControl(FKeyMinTable,
-                ValueMember,
-                DisplayMember,
-                DisplayMember,
-                null);
-            cmbMinistry.AppearanceSetup(new int[] { 250 }, -1);
-
-            if (!FindAndSelect(ref cmbMinistry, APartnerKey))
+            try
             {
-                //Clear the combobox
-                cmbMinistry.SelectedIndex = -1;
+                FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
+                AFieldNumber = FFieldNumber;
+
+                CurrentRowFilter = FKeyMinTable.DefaultView.RowFilter;
+                FKeyMinTable.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    PUnitTable.GetUnitTypeCodeDBName(),
+                    MPartnerConstants.UNIT_TYPE_KEYMIN);
+
+                FKeyMinTable.DefaultView.Sort = DisplayMember + " Desc";
+
+                DataTable dt = FKeyMinTable.DefaultView.ToTable();
+
+                cmbMinistry.InitialiseUserControl(dt,
+                    ValueMember,
+                    DisplayMember,
+                    DisplayMember,
+                    null);
+                cmbMinistry.AppearanceSetup(new int[] { 250 }, -1);
+
+                if (!FindAndSelect(ref cmbMinistry, APartnerKey))
+                {
+                    //Clear the combobox
+                    cmbMinistry.SelectedIndex = -1;
+                }
+            }
+            finally
+            {
+                FKeyMinTable.DefaultView.RowFilter = CurrentRowFilter;
             }
         }
 
@@ -892,15 +910,28 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoComplete AControl,
             System.Int32 ALedgerNr,
-            bool AIncludeNextYear = false)
+            bool AIncludeNextYear = false, bool AShowYearEndings = false)
         {
             string DisplayMember;
             string ValueMember;
-            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
-                0,
-                AIncludeNextYear,
-                out DisplayMember,
-                out ValueMember);
+            DataTable Table;
+
+            if (AShowYearEndings)
+            {
+                Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearEnds(ALedgerNr,
+                    0,
+                    AIncludeNextYear,
+                    out DisplayMember,
+                    out ValueMember);
+            }
+            else
+            {
+                Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
+                    0,
+                    AIncludeNextYear,
+                    out DisplayMember,
+                    out ValueMember);
+            }
 
             Table.DefaultView.Sort = ValueMember + " DESC";
 
@@ -928,14 +959,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.DisplayMember = "display";
             AControl.ValueMember = "value";
+            AControl.SelectedIndexOnDataSourceChange = AInitialSelectedIndex;
             AControl.DataSource = periods.DefaultView;
-
-            // If the initial index is -1 we don't need to do anything (which saves an event)
-            // The code used to always select the first item, which we do not want it to do if we are happy with an empty box.
-            if ((periods.DefaultView.Count > 0) && (AInitialSelectedIndex >= 0))
-            {
-                AControl.SelectedIndex = AInitialSelectedIndex;
-            }
         }
 
         /// <summary>
@@ -950,14 +975,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding);
 
+            AControl.InitialiseUserControl(periods, "value", "display", "descr", null, null);
+
             if (AShowCurrentAndForwarding)
             {
-                AControl.InitialiseUserControl(periods, "value", "display", null, null);
                 AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
             }
             else
             {
-                AControl.InitialiseUserControl(periods, "value", "display", null);
                 AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
             }
 
@@ -984,19 +1009,28 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             string DisplayMember = "display";
             string ValueMember = "value";
+            string DescrMember = "descr";
             DataTable periods = new DataTable();
             periods.Columns.Add(new DataColumn(ValueMember, typeof(Int32)));
             periods.Columns.Add(new DataColumn(DisplayMember, typeof(string)));
+            periods.Columns.Add(new DataColumn(DescrMember, typeof(string)));
 
             DataRow period;
+
+            period = periods.NewRow();
+            period[ValueMember] = 0;
+            period[DisplayMember] = "All";
+            period[DescrMember] = Catalog.GetString("(All periods)");
+            periods.Rows.Add(period);
 
             if (Ledger.CurrentFinancialYear == AYear)
             {
                 if (AShowCurrentAndForwarding)
                 {
                     period = periods.NewRow();
-                    period[ValueMember] = 0;
-                    period[DisplayMember] = Catalog.GetString("Current and forwarding periods");
+                    period[ValueMember] = -1;
+                    period[DisplayMember] = "Current";
+                    period[DescrMember] = Catalog.GetString("(Current and forwarding periods)");
                     periods.Rows.Add(period);
                 }
 
@@ -1004,7 +1038,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = periodCounter;
-                    period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    period[DisplayMember] = periodCounter.ToString("00");
+                    period[DescrMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
                     periods.Rows.Add(period);
                 }
             }
@@ -1014,7 +1049,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = periodCounter;
-                    period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
+                    period[DisplayMember] = "(" + periodCounter.ToString("00") + ") ";
+                    period[DescrMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
                     periods.Rows.Add(period);
                 }
             }
@@ -1169,11 +1205,15 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
+            // this unseen column is used to order the table
+            //(sorting using the 'CHECKED' column causes problems as sorting takes place as soon as a record is checked)
+            NewTable.Columns.Add(new DataColumn("ORDER", typeof(bool)));
+
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 100);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 228);
+            AControl.DataBindGrid(NewTable, "ORDER DESC, " + ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>
@@ -1195,11 +1235,15 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
+            // this unseen column is used to order the table
+            //(sorting using the 'CHECKED' column causes problems as sorting takes place as soon as a record is checked)
+            NewTable.Columns.Add(new DataColumn("ORDER", typeof(bool)));
+
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
-            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
-            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
+            AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 100);
+            AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 228);
+            AControl.DataBindGrid(NewTable, "ORDER DESC, " + ValueMember, CheckedMember, ValueMember, false, true, false);
         }
     }
 }

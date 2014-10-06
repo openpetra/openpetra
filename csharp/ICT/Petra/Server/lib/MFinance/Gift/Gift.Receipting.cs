@@ -366,11 +366,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                   "ORDER BY BatchNumber";
 
                 GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
-
-                foreach (DataRow Row in GiftsTbl.Rows)
-                {
-                    Row["Donor"] = Calculations.FormatShortName(Row["Donor"].ToString(), eShortNameFormat.eReverseShortname);
-                }
             }
             finally
             {
@@ -458,6 +453,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     FormValues["AdresseeFamilyName"].Add(Tbl[0].FamilyName);
                 }
             }
+            else
+            {
+                FormValues["AdresseeFamilyName"].Add(ADonorShortName);
+            }
 
             FormValues["DateToday"].Add(DateTime.Now.ToString("dd MMMM yyyy"));
 
@@ -508,20 +507,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DateEntered = "";                           // so if this gift has several details, I'll blank the subsequent lines.
 
                     string DonorComment = "";
-                    FormValues["GiftAmount"].Add(StringHelper.FormatUsingCurrencyCode(DetailRow.GiftAmount, AGiftCurrency));
+                    FormValues["GiftAmount"].Add(StringHelper.FormatUsingCurrencyCode(DetailRow.GiftTransactionAmount, AGiftCurrency));
                     FormValues["GiftCurrency"].Add(AGiftCurrency);
                     FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
-                    GiftTotal += DetailRow.GiftAmount;
+                    GiftTotal += DetailRow.GiftTransactionAmount;
 
                     if (DetailRow.TaxDeductible)
                     {
                         FormValues["GiftTxd"].Add("Y");
-                        TxdTotal += DetailRow.GiftAmount;
+                        TxdTotal += DetailRow.GiftTransactionAmount;
                     }
                     else
                     {
                         FormValues["GiftTxd"].Add(" ");
-                        NonTxdTotal += DetailRow.GiftAmount;
+                        NonTxdTotal += DetailRow.GiftTransactionAmount;
                     }
 
                     // Recipient Short Name:
@@ -736,6 +735,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>Mark selected gifts as receipted in the AGift table.</summary>
         /// <param name="AGiftTbl">Custom DataTable from GetUnreceiptedGifts, above.
         /// For this method, only {bool}Selected, LedgerNumber, BatchNumber and TransactionNumber fields are needed.</param>
+        /// <returns>True if successful</returns>
         [RequireModulePermission("FINANCE-1")]
         public static void MarkReceiptsPrinted(DataTable AGiftTbl)
         {

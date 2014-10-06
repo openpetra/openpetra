@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MPartnerResourcestrings.StrCancelButtonHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
-            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
 
             mniFile.DropDownOpening += new System.EventHandler(MniFile_DropDownOpening);
             mniEdit.DropDownOpening += new System.EventHandler(MniEdit_DropDownOpening);
@@ -180,8 +180,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.KeyCode == Keys.Enter)
             {
-                FCurrentlySelectedTab.BtnSearch_Click(sender, e);
-                e.Handled = true;
+                // make sure that the 'Enter' key has not been pressed to select a value from a combo boxes dropped down list
+                if (!ucoFindByPartnerDetails.PartnerFindCriteria.ComboboxDroppedDown()
+                    && !ucoFindByBankDetails.PartnerFindCriteria.ComboboxDroppedDown())
+                {
+                    FCurrentlySelectedTab.BtnSearch_Click(sender, e);
+
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                }
             }
             else
             {
@@ -756,9 +763,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Populate the combo boxes (if not done already)
                 if (ucoFindByBankDetails.PartnerFindCriteria.FBankDataset == null)
                 {
-                    // Do not load bank locations as this is much faster.
-                    // Downside is that 'Find Bank' dialog must then load bank data from scratch from the database. But this is ok.
-                    ucoFindByBankDetails.PartnerFindCriteria.FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(false);
+                    ucoFindByBankDetails.PartnerFindCriteria.FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
 
                     Thread NewThread = new Thread(ucoFindByBankDetails.PartnerFindCriteria.PopulateBankComboBoxes);
                     NewThread.Start();
@@ -1026,10 +1031,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ABankDetailsTabOnly">True if this instance should only display the
         /// Find By Bank Details tab
         /// </param>
+        /// <param name="ADefaultClass">Set a default partner class</param>
         /// <returns>void</returns>
-        public void SetParameters(String ARestrictToPartnerClasses, bool ABankDetailsTabOnly)
+        public void SetParameters(String ARestrictToPartnerClasses, bool ABankDetailsTabOnly, TPartnerClass ? ADefaultClass)
         {
-            SetParameters(ARestrictToPartnerClasses, ABankDetailsTabOnly, false, -1);
+            SetParameters(ARestrictToPartnerClasses, ABankDetailsTabOnly, ADefaultClass, false, -1);
         }
 
         /// <summary>
@@ -1042,10 +1048,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ABankDetailsTabOnly">True if this instance should only display the
         /// Find By Bank Details tab
         /// </param>
+        /// <param name="ADefaultClass">Set a default partner class</param>
         /// <param name="AInitiallyFocusLocationKey">True to set the focus on the location key</param>
         /// <param name="APassedLocationKey">location key</param>
         public void SetParameters(String ARestrictToPartnerClasses,
             bool ABankDetailsTabOnly,
+            TPartnerClass? ADefaultClass,
             Boolean AInitiallyFocusLocationKey,
             Int32 APassedLocationKey)
         {
@@ -1055,11 +1063,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ucoFindByBankDetails.InitBankDetailsTab(FRestrictToPartnerClasses);
 
+                if (ADefaultClass != null)
+                {
+                    ucoFindByBankDetails.SetDefaultPartnerClass(ADefaultClass);
+                }
+
                 if (!ABankDetailsTabOnly)
                 {
                     ucoFindByPartnerDetails.Init(FInitiallyFocusLocationKey,
                         FRestrictToPartnerClasses,
                         APassedLocationKey);
+
+                    if (ADefaultClass != null)
+                    {
+                        ucoFindByPartnerDetails.SetDefaultPartnerClass(ADefaultClass);
+                    }
                 }
                 else
                 {
@@ -1159,9 +1177,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             this.Cursor = Cursors.WaitCursor;
-
-            // Restore Window Position and Size
-            // TODO TUserDefaults.NamedDefaults.GetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
 #if TODO
             // Set up Splitter distances
             ucoPartnerFindCriteria.RestoreSplitterSetting();
@@ -1370,7 +1385,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 MessageProcessed = true;
             }
-            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+            else if (FCurrentlySelectedTab.PartnerFindCriteria.HasSearchCriteria()
+                     && ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                         || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted)))
             {
                 bool FoundRow = false;
 
@@ -1467,6 +1484,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// (separated by comma) to restrict the choice in the 'Partner Class' criteria
         /// ComboBox, or empty String '' to not restrict to any Partner Class.
         /// </param>
+        /// <param name="ADefaultClass">Set a default partner class</param>
         /// <param name="APartnerKey">PartnerKey of the found Partner.</param>
         /// <param name="AShortName">Partner ShortName of the found Partner.</param>
         /// <param name="APartnerClass">Partner Class of the found Partner.</param>
@@ -1475,6 +1493,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if a Partner was found and accepted by the user,
         /// otherwise false.</returns>
         public static bool OpenModalForm(String ARestrictToPartnerClasses,
+            TPartnerClass? ADefaultClass,
             out Int64 APartnerKey,
             out String AShortName,
             out TPartnerClass? APartnerClass,
@@ -1492,7 +1511,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ALocationPK = new TLocationPK(-1, -1);
 
             PartnerFindForm = new TPartnerFindScreen(AParentForm);
-            PartnerFindForm.SetParameters(ARestrictToPartnerClasses, false);
+            PartnerFindForm.SetParameters(ARestrictToPartnerClasses, false, ADefaultClass);
 
             AParentForm.Cursor = Cursors.Default;
 
@@ -1509,6 +1528,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Opens a Modal instance of the Partner Find screen.
+        /// </summary>
+        /// <param name="ARestrictToPartnerClasses">Pass in one or several PartnerClasses
+        /// (separated by comma) to restrict the choice in the 'Partner Class' criteria
+        /// ComboBox, or empty String '' to not restrict to any Partner Class.
+        /// </param>
+        /// <param name="APartnerKey">PartnerKey of the found Partner.</param>
+        /// <param name="AShortName">Partner ShortName of the found Partner.</param>
+        /// <param name="APartnerClass">Partner Class of the found Partner.</param>
+        /// <param name="ALocationPK">LocationKey of the found Partner.</param>
+        /// <param name="AParentForm"></param>
+        /// <returns>True if a Partner was found and accepted by the user,
+        /// otherwise false.</returns>
+        public static bool OpenModalForm(String ARestrictToPartnerClasses,
+            out Int64 APartnerKey,
+            out String AShortName,
+            out TPartnerClass? APartnerClass,
+            out TLocationPK ALocationPK,
+            Form AParentForm)
+        {
+            return OpenModalForm(ARestrictToPartnerClasses, null, out APartnerKey, out AShortName, out APartnerClass, out ALocationPK, AParentForm);
         }
 
         /// <summary>
@@ -1543,7 +1586,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ABankingDetailsKey = -1;
 
             PartnerFindForm = new TPartnerFindScreen(AParentForm);
-            PartnerFindForm.SetParameters(ARestrictToPartnerClasses, true);
+            PartnerFindForm.SetParameters(ARestrictToPartnerClasses, true, null);
 
             AParentForm.Cursor = Cursors.Default;
 

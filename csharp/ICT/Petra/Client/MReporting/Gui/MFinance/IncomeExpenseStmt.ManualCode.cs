@@ -55,14 +55,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 FPetraUtilsObject.LoadDefaultSettings();
 
-                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
-                {
-                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
-                }
-                else if (FPetraUtilsObject.GetCallerForm() != null)
-                {
-                    MessageBox.Show("The FastReports plugin did not initialise.", "Reporting engine");
-                }
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 
@@ -105,6 +98,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("IncomeExpense", paramsDictionary);
 
+            if (this.IsDisposed) // There's no cancel function as such - if the user has pressed Esc the form is closed!
+            {
+                return false;
+            }
+
             if (ReportTable == null)
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
@@ -127,6 +125,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
+
+            //
+            // For reports that must be sent on email, one page at a time,
+            // I'm calling the FastReports plugin multiple times,
+            // and then I'm going to return false, which will prevent the default action using this dataset.
+
+            Shared.MReporting.TParameterList pm = ACalc.GetParameters();
+
+            if ((pm.Get("param_auto_email").ToBool())
+                && !pm.Get("param_design_template").ToBool()
+                )
+            {
+                String CostCentreFilter = "";
+                String CostCentreOptions = pm.Get("param_costcentreoptions").ToString();
+
+                if (CostCentreOptions == "SelectedCostCentres")
+                {
+                    String CostCentreList = pm.Get("param_cost_centre_codes").ToString();
+                    CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
+                    CostCentreFilter = " AND a_cost_centre_code_c in ('" + CostCentreList + "')";
+                }
+
+                if (CostCentreOptions == "CostCentreRange")
+                {
+                    CostCentreFilter = " AND a_cost_centre_code_c >='" + pm.Get("param_cost_centre_code_start").ToString() +
+                                       "' AND a_cost_centre_code_c >='" + pm.Get("param_cost_centre_code_end").ToString() + "'";
+                }
+
+                FPetraUtilsObject.FFastReportsPlugin.AutoEmailReports(ACalc, FLedgerNumber, CostCentreFilter);
+                return false;
+            }
+
             return true;
         }
 

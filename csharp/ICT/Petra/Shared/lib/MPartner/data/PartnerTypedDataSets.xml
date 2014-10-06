@@ -15,6 +15,17 @@
     <Table sqltable="p_partner_location">
       <CustomField name="BestAddress" type="bool"/>
       <CustomField name="Icon" type="Int32"/>
+      <Field name="LocationLocality" sqltable="p_location" sqlfield="p_locality_c"/>
+      <Field name="LocationStreetName" sqltable="p_location" sqlfield="p_street_name_c"/>
+      <Field name="LocationAddress3" sqltable="p_location" sqlfield="p_address_3_c"/>
+      <Field name="LocationCity" sqltable="p_location" sqlfield="p_city_c"/>
+      <Field name="LocationCounty" sqltable="p_location" sqlfield="p_county_c"/>
+      <Field name="LocationPostalCode" sqltable="p_location" sqlfield="p_postal_code_c"/>
+      <Field name="LocationCountryCode" sqltable="p_location" sqlfield="p_country_code_c"/>
+      <CustomField name="LocationCreatedBy" type="string"/>
+      <CustomField name="LocationDateCreated" type="DateTime"/>
+      <CustomField name="LocationModifiedBy" type="string"/>
+      <CustomField name="LocationDateModified" type="DateTime"/>
     </Table>
     <Table sqltable="p_partner_attribute_category"/>
     <Table sqltable="p_partner_attribute_type"/>
@@ -41,6 +52,7 @@
     <Table sqltable="p_foundation_proposal"/>
     <Table sqltable="p_foundation_proposal_detail"/>
     <Table sqltable="p_partner_gift_destination"/>
+    <Table sqltable="p_partner_tax_deductible_pct"/>
     <Table sqltable="p_partner_interest">
       <Field name="InterestCategory" sqltable="p_interest" sqlfield="p_category_c"/>
     </Table>
@@ -453,6 +465,7 @@
     <Table sqltable="p_partner_interest">
       <CustomField name="Category" type="string"/>
     </Table>
+    <Table sqltable="p_partner_gift_destination"/>
 
     <Table sqltable="pt_position"/>
     <Table sqltable="um_job"/>
@@ -526,12 +539,16 @@
     </Table>
   </DataSet>
 
+	<!-- used for Finance Details tab and Bank Find dialog -->
   <DataSet name="BankTDS">
     <Table sqltable="p_bank">
       <Field name="StatusCode" sqltable="p_partner" sqlfield="p_status_code_c"/>
+      <Field name="SiteKey" sqltable="p_location" sqlfield="p_site_key_n" initial="-1"/>
+      <Field name="LocationKey" sqltable="p_location" sqlfield="p_location_key_i" initial="-1"/>
+      <Field name="City" sqltable="p_location" sqlfield="p_city_c"/>
+      <Field name="CountryCode" sqltable="p_location" sqlfield="p_country_code_c"/>
+  	  <PrimaryKey thisFields="p_partner_key_n, SiteKey, LocationKey"/>
     </Table>
-    <Table sqltable="p_partner_location"/>
-    <Table sqltable="p_location"/>
   </DataSet>
 
 

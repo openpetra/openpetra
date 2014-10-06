@@ -47,6 +47,7 @@ using Ict.Common.Controls;
 using System.Globalization;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
@@ -266,6 +267,7 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean FAddNotSetValue = false;
         private String FNotSetValue;
         private String FNotSetDisplay;
+        private Boolean FAllowDbNull = false;
 
         /// <summary>
         /// Gets or sets the text associated with this Control (in this case: the text in the editable part of the ComboBox)
@@ -342,6 +344,27 @@ namespace Ict.Petra.Client.CommonControls
                 // MessageBox.Show('FListTable: ' + FListTable.ToString("G"));
                 FListTable = value;
                 AppearanceSetup(FListTable);
+            }
+        }
+
+        /// <summary>
+        /// Set this to true to include a first row in the combo list that has a value of DbNull, a display of empty string and a description of 'Undefined'.
+        /// This row will not be added to the List table that is supplying the other values.
+        /// </summary>
+        public Boolean AllowDbNull
+        {
+            get
+            {
+                return FAllowDbNull;
+            }
+
+            set
+            {
+                FAllowDbNull = value;
+
+                // we also set this property of the labelled combo so that even though the value member is empty text
+                //  we still see our description of 'Undefined'
+                FIncludeDescriptionForEmptyValue = FAllowDbNull;
             }
         }
 
@@ -1029,6 +1052,24 @@ namespace Ict.Petra.Client.CommonControls
 
                 FDataCache_ListTable.Rows.InsertAt(Dr, 0);
             }
+            else if (FAllowDbNull)
+            {
+                // We need to add a row to the table that has a NULL value
+                // We don't want this new row to end up in the referenced data table so we make a copy first
+                FDataCache_ListTable = FDataCache_ListTable.Copy();
+
+                // Now add the row
+                DataRow Dr = FDataCache_ListTable.NewRow();
+                Dr[AValueDBName] = DBNull.Value;
+                Dr[ADisplayDBName] = String.Empty;
+
+                if (ADescDBName != null)
+                {
+                    Dr[ADescDBName] = ApplWideResourcestrings.StrUndefined;
+                }
+
+                FDataCache_ListTable.Rows.InsertAt(Dr, 0);
+            }
 
             if ((ADescDBName == null) || (ADescDBName.Length == 0))
             {
@@ -1216,7 +1257,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.ContactList:
                     this.ColumnWidthCol1 = 120;
-                    this.ColumnWidthCol2 = 300;
+                    this.ColumnWidthCol2 = 350;
                     break;
 
                 case TListTableEnum.CountryList:
@@ -1242,8 +1283,8 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.DocumentTypeList:
-                    this.ColumnWidthCol1 = 128;
-                    this.ColumnWidthCol2 = 200;
+                    this.ColumnWidthCol1 = 150;
+                    this.ColumnWidthCol2 = 275;
                     break;
 
                 case TListTableEnum.EventApplicationTypeList:

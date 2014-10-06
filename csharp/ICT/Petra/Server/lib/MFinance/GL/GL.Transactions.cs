@@ -94,12 +94,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// also get the ledger for the base currency etc
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AFilterBatchStatus"></param>
         /// <param name="AYear">if -1, the year will be ignored</param>
         /// <param name="APeriod">if AYear is -1 or period is -1, the period will be ignored.
         /// if APeriod is 0 and the current year is selected, then the current and the forwarding periods are used</param>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, TFinanceBatchFilterEnum AFilterBatchStatus, int AYear, int APeriod)
+        public static GLBatchTDS LoadABatch(Int32 ALedgerNumber, int AYear, int APeriod)
         {
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -108,7 +107,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             string FilterByPeriod = string.Empty;
 
-            if (AYear != -1)
+            if (AYear > -1)
             {
                 FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
                     ABatchTable.GetTableDBName(),
@@ -117,17 +116,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
                 {
+                    //Return current and forwarding periods
                     FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
                         ABatchTable.GetTableDBName(),
                         ABatchTable.GetBatchPeriodDBName(),
                         MainDS.ALedger[0].CurrentPeriod);
                 }
-                else if (APeriod != -1)
+                else if (APeriod > 0)
                 {
+                    //Return only specified period
                     FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
                         ABatchTable.GetTableDBName(),
                         ABatchTable.GetBatchPeriodDBName(),
                         APeriod);
+                }
+                else
+                {
+                    //Nothing to add, returns all periods
                 }
             }
 
@@ -137,21 +142,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ABatchTable.GetLedgerNumberDBName(),
                     ALedgerNumber);
 
-            string FilterByBatchStatus = string.Empty;
-
-            if (AFilterBatchStatus == TFinanceBatchFilterEnum.fbfAll)
-            {
-                // FilterByBatchStatus is empty
-            }
-            else if ((AFilterBatchStatus & TFinanceBatchFilterEnum.fbfEditing) != 0)
-            {
-                FilterByBatchStatus =
-                    string.Format(" AND {0} = '{1}'",
-                        ABatchTable.GetBatchStatusDBName(),
-                        MFinanceConstants.BATCH_UNPOSTED);
-            }
-
-            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByBatchStatus + FilterByPeriod,
+            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
                 MainDS.ABatch.TableName, Transaction);
 
             DBAccess.GDBAccessObj.RollbackTransaction();
@@ -296,7 +287,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-        /// loads a list of journals for the given ledger and batch
+        /// loads a list of journals and transactions for the given ledger and batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
@@ -355,6 +346,44 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
             ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+            TemplateTransactionRow.LedgerNumber = ALedgerNumber;
+            TemplateTransactionRow.BatchNumber = ABatchNumber;
+            ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
+
+            ARecurringTransAnalAttribTable TransAnalAttribTable = new ARecurringTransAnalAttribTable();
+            ARecurringTransAnalAttribRow TemplateTransAnalAttribRow = TransAnalAttribTable.NewRowTyped(false);
+            TemplateTransAnalAttribRow.LedgerNumber = ALedgerNumber;
+            TemplateTransAnalAttribRow.BatchNumber = ABatchNumber;
+            ARecurringTransAnalAttribAccess.LoadUsingTemplate(MainDS, TemplateTransAnalAttribRow, Transaction);
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of recurring transactions for the given ledger and recurring batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadARecurringTransactionAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            Boolean NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            ARecurringTransactionTable TransactionTable = new ARecurringTransactionTable();
+            ARecurringTransactionRow TemplateTransactionRow = TransactionTable.NewRowTyped(false);
+
             TemplateTransactionRow.LedgerNumber = ALedgerNumber;
             TemplateTransactionRow.BatchNumber = ABatchNumber;
             ARecurringTransactionAccess.LoadUsingTemplate(MainDS, TemplateTransactionRow, Transaction);
@@ -590,6 +619,31 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             return CacheDS;
+        }
+
+        /// <summary>
+        /// returns ledger table for specified ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadALedgerTable(Int32 ALedgerNumber)
+        {
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+            // Accept row changes here so that the Client gets 'unmodified' rows
+            MainDS.AcceptChanges();
+
+            // Remove all Tables that were not filled with data before remoting them.
+            MainDS.RemoveEmptyTables();
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            return MainDS;
         }
 
         /// <summary>
@@ -835,6 +889,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
+            TVerificationResultCollection VerificationResult = AVerificationResult;
 
             // make sure that empty tables are removed
             AInspectDS = AInspectDS.GetChangesTyped(true);
@@ -847,8 +902,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool recurrJournalTableInDataSet = (AInspectDS.ARecurringJournal != null);
             bool recurrTransTableInDataSet = (AInspectDS.ARecurringTransaction != null);
 
-            bool newTransaction = false;
+            //bool newTransaction = false;
             TDBTransaction Transaction = null;
+
+            GLBatchTDS InspectDS = AInspectDS;
 
             // calculate debit and credit sums for journal and batch? but careful: we only have the changed parts!
             // no, we calculate the debit and credit sums before the posting, with GLRoutines.UpdateTotalsOfBatch
@@ -871,221 +928,204 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 return SaveRecurringGLBatchTDS(ref AInspectDS);
             }
 
-            if (batchTableInDataSet)
-            {
-                LedgerNumber = ((ABatchRow)AInspectDS.ABatch.Rows[0]).LedgerNumber;
-
-                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out newTransaction);
-
-                foreach (ABatchRow batch in AInspectDS.ABatch.Rows)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                delegate
                 {
-                    if (batch.RowState != DataRowState.Added)
+                    if (batchTableInDataSet)
                     {
-                        Int32 BatchNumber;
+                        LedgerNumber = ((ABatchRow)InspectDS.ABatch.Rows[0]).LedgerNumber;
 
-                        try
+                        foreach (ABatchRow batch in InspectDS.ABatch.Rows)
                         {
-                            BatchNumber = batch.BatchNumber;
-                        }
-                        catch (Exception)
-                        {
-                            // for deleted batches
-                            BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
-                        }
+                            if (batch.RowState != DataRowState.Added)
+                            {
+                                Int32 BatchNumber;
 
-                        if (!BatchNumbersInvolved.Contains(BatchNumber))
-                        {
-                            BatchNumbersInvolved.Add(BatchNumber);
-                        }
-                    }
+                                try
+                                {
+                                    BatchNumber = batch.BatchNumber;
+                                }
+                                catch (Exception)
+                                {
+                                    // for deleted batches
+                                    BatchNumber = (Int32)batch[ABatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+                                }
 
-                    int PeriodNumber, YearNr;
+                                if (!BatchNumbersInvolved.Contains(BatchNumber))
+                                {
+                                    BatchNumbersInvolved.Add(BatchNumber);
+                                }
+                            }
 
-                    if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
-                            batch.DateEffective,
-                            out PeriodNumber,
-                            out YearNr,
-                            Transaction))
-                    {
-                        batch.BatchYear = YearNr;
-                        batch.BatchPeriod = PeriodNumber;
-                    }
-                }
+                            int PeriodNumber, YearNr;
 
-                if (newTransaction)
-                {
-                    newTransaction = false;
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-
-            if (journalTableInDataSet)
-            {
-                if (LedgerNumber == -1)
-                {
-                    LedgerNumber = ((AJournalRow)AInspectDS.AJournal.Rows[0]).LedgerNumber;
-                }
-
-                foreach (GLBatchTDSAJournalRow journal in AInspectDS.AJournal.Rows)
-                {
-                    Int32 BatchNumber;
-
-                    try
-                    {
-                        BatchNumber = journal.BatchNumber;
-                        LedgerNumber = journal.LedgerNumber;
-                    }
-                    catch (Exception)
-                    {
-                        // for deleted journals
-                        BatchNumber = (Int32)journal[AJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
-                        LedgerNumber = (Int32)journal[AJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
-                    }
-
-                    if (!BatchNumbersInvolved.Contains(BatchNumber))
-                    {
-                        BatchNumbersInvolved.Add(BatchNumber);
-                    }
-                }
-            }
-
-            if (transTableInDataSet)
-            {
-                if (LedgerNumber == -1)
-                {
-                    LedgerNumber = ((ATransactionRow)AInspectDS.ATransaction.Rows[0]).LedgerNumber;
-                }
-
-                GLPostingTDS TestAccountsAndCostCentres = new GLPostingTDS();
-
-                foreach (ATransactionRow transaction in AInspectDS.ATransaction.Rows)
-                {
-                    Int32 BatchNumber;
-
-                    try
-                    {
-                        BatchNumber = transaction.BatchNumber;
-                        LedgerNumber = transaction.LedgerNumber;
-
-                        if (TestAccountsAndCostCentres.AAccount.Count == 0)
-                        {
-                            AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
-                            ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, null);
-                        }
-
-                        // TODO could check for active accounts and cost centres?
-
-                        // check for valid accounts and cost centres
-                        if (TestAccountsAndCostCentres.AAccount.Rows.Find(new object[] { LedgerNumber, transaction.AccountCode }) == null)
-                        {
-                            AVerificationResult.Add(new TVerificationResult(
-                                    Catalog.GetString("Cannot save transaction"),
-                                    String.Format(Catalog.GetString("Invalid account code {0} in batch {1}, journal {2}, transaction {3}"),
-                                        transaction.AccountCode,
-                                        transaction.BatchNumber,
-                                        transaction.JournalNumber,
-                                        transaction.TransactionNumber),
-                                    TResultSeverity.Resv_Critical));
-                        }
-
-                        if (TestAccountsAndCostCentres.ACostCentre.Rows.Find(new object[] { LedgerNumber, transaction.CostCentreCode }) == null)
-                        {
-                            AVerificationResult.Add(new TVerificationResult(
-                                    Catalog.GetString("Cannot save transaction"),
-                                    String.Format(Catalog.GetString("Invalid cost centre code {0} in batch {1}, journal {2}, transaction {3}"),
-                                        transaction.CostCentreCode,
-                                        transaction.BatchNumber,
-                                        transaction.JournalNumber,
-                                        transaction.TransactionNumber),
-                                    TResultSeverity.Resv_Critical));
+                            if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
+                                    batch.DateEffective,
+                                    out PeriodNumber,
+                                    out YearNr,
+                                    Transaction))
+                            {
+                                batch.BatchYear = YearNr;
+                                batch.BatchPeriod = PeriodNumber;
+                            }
                         }
                     }
-                    catch (Exception)
+
+                    if (journalTableInDataSet)
                     {
-                        // for deleted transactions
-                        BatchNumber = (Int32)transaction[ATransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
-                        LedgerNumber = (Int32)transaction[ATransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
-                    }
-
-                    if (!BatchNumbersInvolved.Contains(BatchNumber))
-                    {
-                        BatchNumbersInvolved.Add(BatchNumber);
-                    }
-                }
-            }
-
-            if (attrTableInDataSet)
-            {
-                foreach (ATransAnalAttribRow transAnalAttrib in AInspectDS.ATransAnalAttrib.Rows)
-                {
-                    Int32 BatchNumber;
-
-                    if (transAnalAttrib.RowState != DataRowState.Deleted)
-                    {
-                        BatchNumber = transAnalAttrib.BatchNumber;
-
-                        if (!BatchNumbersInvolved.Contains(BatchNumber))
+                        if (LedgerNumber == -1)
                         {
-                            BatchNumbersInvolved.Add(BatchNumber);
+                            LedgerNumber = ((AJournalRow)InspectDS.AJournal.Rows[0]).LedgerNumber;
+                        }
+
+                        foreach (GLBatchTDSAJournalRow journal in InspectDS.AJournal.Rows)
+                        {
+                            Int32 BatchNumber;
+
+                            try
+                            {
+                                BatchNumber = journal.BatchNumber;
+                                LedgerNumber = journal.LedgerNumber;
+                            }
+                            catch (Exception)
+                            {
+                                // for deleted journals
+                                BatchNumber = (Int32)journal[AJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
+                                LedgerNumber = (Int32)journal[AJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                            }
+
+                            if (!BatchNumbersInvolved.Contains(BatchNumber))
+                            {
+                                BatchNumbersInvolved.Add(BatchNumber);
+                            }
                         }
                     }
-                }
-            }
 
-            // load previously stored batches and check for posted status
-            if (BatchNumbersInvolved.Count == 0)
-            {
-                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Saving Batch"),
-                        Catalog.GetString("Cannot save an empty Batch!"),
-                        TResultSeverity.Resv_Critical));
-            }
-            else
-            {
-                string ListOfBatchNumbers = string.Empty;
-
-                foreach (Int32 BatchNumber in BatchNumbersInvolved)
-                {
-                    ListOfBatchNumbers = StringHelper.AddCSV(ListOfBatchNumbers, BatchNumber.ToString());
-                }
-
-                string SQLStatement = "SELECT * " +
-                                      " FROM PUB_" + ABatchTable.GetTableDBName() + " WHERE " + ABatchTable.GetLedgerNumberDBName() + " = " +
-                                      LedgerNumber.ToString() +
-                                      " AND " + ABatchTable.GetBatchNumberDBName() + " IN (" + ListOfBatchNumbers + ")";
-
-                GLBatchTDS BatchDS = new GLBatchTDS();
-
-                //Get new or existing transaction
-                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                  (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out newTransaction);
-
-                try
-                {
-                    DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
-                }
-                finally
-                {
-                    if (newTransaction)
+                    if (transTableInDataSet)
                     {
-                        newTransaction = false;
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        if (LedgerNumber == -1)
+                        {
+                            LedgerNumber = ((ATransactionRow)InspectDS.ATransaction.Rows[0]).LedgerNumber;
+                        }
+
+                        GLPostingTDS TestAccountsAndCostCentres = new GLPostingTDS();
+
+                        foreach (ATransactionRow transaction in InspectDS.ATransaction.Rows)
+                        {
+                            Int32 BatchNumber;
+
+                            try
+                            {
+                                BatchNumber = transaction.BatchNumber;
+                                LedgerNumber = transaction.LedgerNumber;
+
+                                if (TestAccountsAndCostCentres.AAccount.Count == 0)
+                                {
+                                    AAccountAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                                    ACostCentreAccess.LoadViaALedger(TestAccountsAndCostCentres, LedgerNumber, Transaction);
+                                }
+
+                                // TODO could check for active accounts and cost centres?
+
+                                // check for valid accounts and cost centres
+                                if (TestAccountsAndCostCentres.AAccount.Rows.Find(new object[] { LedgerNumber, transaction.AccountCode }) == null)
+                                {
+                                    VerificationResult.Add(new TVerificationResult(
+                                            Catalog.GetString("Cannot save transaction"),
+                                            String.Format(Catalog.GetString("Invalid account code {0} in batch {1}, journal {2}, transaction {3}"),
+                                                transaction.AccountCode,
+                                                transaction.BatchNumber,
+                                                transaction.JournalNumber,
+                                                transaction.TransactionNumber),
+                                            TResultSeverity.Resv_Critical));
+                                }
+
+                                if (TestAccountsAndCostCentres.ACostCentre.Rows.Find(new object[] { LedgerNumber,
+                                                                                                    transaction.CostCentreCode }) == null)
+                                {
+                                    VerificationResult.Add(new TVerificationResult(
+                                            Catalog.GetString("Cannot save transaction"),
+                                            String.Format(Catalog.GetString("Invalid cost centre code {0} in batch {1}, journal {2}, transaction {3}"),
+                                                transaction.CostCentreCode,
+                                                transaction.BatchNumber,
+                                                transaction.JournalNumber,
+                                                transaction.TransactionNumber),
+                                            TResultSeverity.Resv_Critical));
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                // for deleted transactions
+                                BatchNumber = (Int32)transaction[ATransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
+                                LedgerNumber = (Int32)transaction[ATransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                            }
+
+                            if (!BatchNumbersInvolved.Contains(BatchNumber))
+                            {
+                                BatchNumbersInvolved.Add(BatchNumber);
+                            }
+                        }
                     }
-                }
 
-                foreach (ABatchRow batch in BatchDS.ABatch.Rows)
-                {
-                    if ((batch.BatchStatus == MFinanceConstants.BATCH_POSTED)
-                        || (batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED))
+                    if (attrTableInDataSet)
                     {
-                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Saving Batch"),
-                                String.Format(Catalog.GetString("Cannot modify Batch {0} because it is {1}"),
-                                    batch.BatchNumber, batch.BatchStatus),
+                        foreach (ATransAnalAttribRow transAnalAttrib in InspectDS.ATransAnalAttrib.Rows)
+                        {
+                            Int32 BatchNumber;
+
+                            if (transAnalAttrib.RowState != DataRowState.Deleted)
+                            {
+                                BatchNumber = transAnalAttrib.BatchNumber;
+
+                                if (!BatchNumbersInvolved.Contains(BatchNumber))
+                                {
+                                    BatchNumbersInvolved.Add(BatchNumber);
+                                }
+                            }
+                        }
+                    }
+
+                    // load previously stored batches and check for posted status
+                    if (BatchNumbersInvolved.Count == 0)
+                    {
+                        VerificationResult.Add(new TVerificationResult(Catalog.GetString("Saving Batch"),
+                                Catalog.GetString("Cannot save an empty Batch!"),
                                 TResultSeverity.Resv_Critical));
                     }
-                }
-            }
+                    else
+                    {
+                        string ListOfBatchNumbers = string.Empty;
+
+                        foreach (Int32 BatchNumber in BatchNumbersInvolved)
+                        {
+                            ListOfBatchNumbers = StringHelper.AddCSV(ListOfBatchNumbers, BatchNumber.ToString());
+                        }
+
+                        string SQLStatement = "SELECT * " +
+                                              " FROM PUB_" + ABatchTable.GetTableDBName() + " WHERE " + ABatchTable.GetLedgerNumberDBName() + " = " +
+                                              LedgerNumber.ToString() +
+                                              " AND " + ABatchTable.GetBatchNumberDBName() + " IN (" + ListOfBatchNumbers + ")";
+
+                        GLBatchTDS BatchDS = new GLBatchTDS();
+
+                        DBAccess.GDBAccessObj.Select(BatchDS, SQLStatement, BatchDS.ABatch.TableName, Transaction);
+
+                        foreach (ABatchRow batch in BatchDS.ABatch.Rows)
+                        {
+                            if ((batch.BatchStatus == MFinanceConstants.BATCH_POSTED)
+                                || (batch.BatchStatus == MFinanceConstants.BATCH_CANCELLED))
+                            {
+                                VerificationResult.Add(new TVerificationResult(Catalog.GetString("Saving Batch"),
+                                        String.Format(Catalog.GetString("Cannot modify Batch {0} because it is {1}"),
+                                            batch.BatchNumber, batch.BatchStatus),
+                                        TResultSeverity.Resv_Critical));
+                            }
+                        }
+                    }
+                });
+
+            AVerificationResult = VerificationResult;
 
             if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
@@ -1532,7 +1572,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         private static TSubmitChangesResult SaveRecurringGLBatchTDS(ref GLBatchTDS AInspectDS)
         {
-            bool NewTransaction = false;
             Int32 LedgerNumber;
             Int32 BatchNumber;
             Int32 JournalNumber;
@@ -1562,129 +1601,131 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             // had not been loaded yet: a type of cascading delete is being used (real cascading delete currently does
             // not go down the number of levels needed).
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
+            GLBatchTDS InspectDS = AInspectDS;
 
-            if (recurrBatchTableInDataSet)
-            {
-                foreach (ARecurringBatchRow batch in AInspectDS.ARecurringBatch.Rows)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                delegate
                 {
-                    if (batch.RowState == DataRowState.Deleted)
+                    if (recurrBatchTableInDataSet)
                     {
-                        // need to use this way of retrieving data from deleted rows
-                        LedgerNumber = (Int32)batch[ARecurringBatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
-                        BatchNumber = (Int32)batch[ARecurringBatchTable.ColumnBatchNumberId, DataRowVersion.Original];
-
-                        // load all depending journals, transactions and attributes and make sure they are also deleted via the dataset
-                        TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
-                        TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
-                        DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-
-                        for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
+                        foreach (ARecurringBatchRow batch in InspectDS.ARecurringBatch.Rows)
                         {
-                            DeletedTransAnalAttribTable.Rows[Counter].Delete();
+                            if (batch.RowState == DataRowState.Deleted)
+                            {
+                                // need to use this way of retrieving data from deleted rows
+                                LedgerNumber = (Int32)batch[ARecurringBatchTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                                BatchNumber = (Int32)batch[ARecurringBatchTable.ColumnBatchNumberId, DataRowVersion.Original];
+
+                                // load all depending journals, transactions and attributes and make sure they are also deleted via the dataset
+                                TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
+                                TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
+                                DeletedTransAnalAttribTable =
+                                    ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
+
+                                for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
+                                {
+                                    DeletedTransAnalAttribTable.Rows[Counter].Delete();
+                                }
+
+                                InspectDS.Merge(DeletedTransAnalAttribTable);
+
+                                TemplateTransactionRow.LedgerNumber = LedgerNumber;
+                                TemplateTransactionRow.BatchNumber = BatchNumber;
+                                ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
+
+                                for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
+                                {
+                                    DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
+                                }
+
+                                InspectDS.Merge(DeletedDS.ARecurringTransaction);
+
+                                TemplateJournalRow.LedgerNumber = LedgerNumber;
+                                TemplateJournalRow.BatchNumber = BatchNumber;
+                                ARecurringJournalAccess.LoadUsingTemplate(DeletedDS, TemplateJournalRow, Transaction);
+
+                                for (Counter = DeletedDS.ARecurringJournal.Count - 1; Counter >= 0; Counter--)
+                                {
+                                    DeletedDS.ARecurringJournal.Rows[Counter].Delete();
+                                }
+
+                                InspectDS.Merge(DeletedDS.ARecurringJournal);
+                            }
                         }
-
-                        AInspectDS.Merge(DeletedTransAnalAttribTable);
-
-                        TemplateTransactionRow.LedgerNumber = LedgerNumber;
-                        TemplateTransactionRow.BatchNumber = BatchNumber;
-                        ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
-
-                        for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
-                        {
-                            DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
-                        }
-
-                        AInspectDS.Merge(DeletedDS.ARecurringTransaction);
-
-                        TemplateJournalRow.LedgerNumber = LedgerNumber;
-                        TemplateJournalRow.BatchNumber = BatchNumber;
-                        ARecurringJournalAccess.LoadUsingTemplate(DeletedDS, TemplateJournalRow, Transaction);
-
-                        for (Counter = DeletedDS.ARecurringJournal.Count - 1; Counter >= 0; Counter--)
-                        {
-                            DeletedDS.ARecurringJournal.Rows[Counter].Delete();
-                        }
-
-                        AInspectDS.Merge(DeletedDS.ARecurringJournal);
                     }
-                }
-            }
 
-            if (recurrJournalTableInDataSet)
-            {
-                foreach (ARecurringJournalRow journal in AInspectDS.ARecurringJournal.Rows)
-                {
-                    if (journal.RowState == DataRowState.Deleted)
+                    if (recurrJournalTableInDataSet)
                     {
-                        // need to use this way of retrieving data from deleted rows
-                        LedgerNumber = (Int32)journal[ARecurringJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
-                        BatchNumber = (Int32)journal[ARecurringJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
-                        JournalNumber = (Int32)journal[ARecurringJournalTable.ColumnJournalNumberId, DataRowVersion.Original];
-
-                        // load all depending transactions and attributes and make sure they are also deleted via the dataset
-                        TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
-                        TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
-                        TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
-                        DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-
-                        for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
+                        foreach (ARecurringJournalRow journal in InspectDS.ARecurringJournal.Rows)
                         {
-                            DeletedTransAnalAttribTable.Rows[Counter].Delete();
+                            if (journal.RowState == DataRowState.Deleted)
+                            {
+                                // need to use this way of retrieving data from deleted rows
+                                LedgerNumber = (Int32)journal[ARecurringJournalTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                                BatchNumber = (Int32)journal[ARecurringJournalTable.ColumnBatchNumberId, DataRowVersion.Original];
+                                JournalNumber = (Int32)journal[ARecurringJournalTable.ColumnJournalNumberId, DataRowVersion.Original];
+
+                                // load all depending transactions and attributes and make sure they are also deleted via the dataset
+                                TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
+                                TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
+                                TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
+                                DeletedTransAnalAttribTable =
+                                    ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
+
+                                for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
+                                {
+                                    DeletedTransAnalAttribTable.Rows[Counter].Delete();
+                                }
+
+                                InspectDS.Merge(DeletedTransAnalAttribTable);
+
+                                TemplateTransactionRow.LedgerNumber = LedgerNumber;
+                                TemplateTransactionRow.BatchNumber = BatchNumber;
+                                TemplateTransactionRow.JournalNumber = JournalNumber;
+                                ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
+
+                                for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
+                                {
+                                    DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
+                                }
+
+                                InspectDS.Merge(DeletedDS.ARecurringTransaction);
+                            }
                         }
-
-                        AInspectDS.Merge(DeletedTransAnalAttribTable);
-
-                        TemplateTransactionRow.LedgerNumber = LedgerNumber;
-                        TemplateTransactionRow.BatchNumber = BatchNumber;
-                        TemplateTransactionRow.JournalNumber = JournalNumber;
-                        ARecurringTransactionAccess.LoadUsingTemplate(DeletedDS, TemplateTransactionRow, Transaction);
-
-                        for (Counter = DeletedDS.ARecurringTransaction.Count - 1; Counter >= 0; Counter--)
-                        {
-                            DeletedDS.ARecurringTransaction.Rows[Counter].Delete();
-                        }
-
-                        AInspectDS.Merge(DeletedDS.ARecurringTransaction);
                     }
-                }
-            }
 
-            if (recurrTransactionTableInDataSet)
-            {
-                foreach (ARecurringTransactionRow transaction in AInspectDS.ARecurringTransaction.Rows)
-                {
-                    if (transaction.RowState == DataRowState.Deleted)
+                    if (recurrTransactionTableInDataSet)
                     {
-                        // need to use this way of retrieving data from deleted rows
-                        LedgerNumber = (Int32)transaction[ARecurringTransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
-                        BatchNumber = (Int32)transaction[ARecurringTransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
-                        JournalNumber = (Int32)transaction[ARecurringTransactionTable.ColumnJournalNumberId, DataRowVersion.Original];
-                        TransactionNumber = (Int32)transaction[ARecurringTransactionTable.ColumnTransactionNumberId, DataRowVersion.Original];
-
-                        // load all depending transactions and attributes and make sure they are also deleted via the dataset
-                        TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
-                        TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
-                        TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
-                        TemplateTransAnalAttribRow.TransactionNumber = TransactionNumber;
-                        DeletedTransAnalAttribTable = ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
-
-                        for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
+                        foreach (ARecurringTransactionRow transaction in InspectDS.ARecurringTransaction.Rows)
                         {
-                            DeletedTransAnalAttribTable.Rows[Counter].Delete();
+                            if (transaction.RowState == DataRowState.Deleted)
+                            {
+                                // need to use this way of retrieving data from deleted rows
+                                LedgerNumber = (Int32)transaction[ARecurringTransactionTable.ColumnLedgerNumberId, DataRowVersion.Original];
+                                BatchNumber = (Int32)transaction[ARecurringTransactionTable.ColumnBatchNumberId, DataRowVersion.Original];
+                                JournalNumber = (Int32)transaction[ARecurringTransactionTable.ColumnJournalNumberId, DataRowVersion.Original];
+                                TransactionNumber = (Int32)transaction[ARecurringTransactionTable.ColumnTransactionNumberId, DataRowVersion.Original];
+
+                                // load all depending transactions and attributes and make sure they are also deleted via the dataset
+                                TemplateTransAnalAttribRow.LedgerNumber = LedgerNumber;
+                                TemplateTransAnalAttribRow.BatchNumber = BatchNumber;
+                                TemplateTransAnalAttribRow.JournalNumber = JournalNumber;
+                                TemplateTransAnalAttribRow.TransactionNumber = TransactionNumber;
+                                DeletedTransAnalAttribTable =
+                                    ARecurringTransAnalAttribAccess.LoadUsingTemplate(TemplateTransAnalAttribRow, Transaction);
+
+                                for (Counter = DeletedTransAnalAttribTable.Count - 1; Counter >= 0; Counter--)
+                                {
+                                    DeletedTransAnalAttribTable.Rows[Counter].Delete();
+                                }
+
+                                InspectDS.Merge(DeletedTransAnalAttribTable);
+                            }
                         }
-
-                        AInspectDS.Merge(DeletedTransAnalAttribTable);
                     }
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+                });
 
             // now submit the changes
             GLBatchTDSAccess.SubmitChanges(AInspectDS);
@@ -1886,8 +1927,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
             Int32 ABatchNumber = (Int32)requestParams["ABatchNumber"];
             DateTime AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
-            Decimal AExchangeRateToBase;
+            Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];;
+
+            Decimal AExchangeRateIntlToBase = (Decimal)requestParams["AExchangeRateIntlToBase"];
             int PeriodNumber, YearNr;
+
+            bool TransactionInIntlCurrency = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum,
@@ -1940,13 +1985,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 JournalRow.TransactionCurrency = recJournal.TransactionCurrency;
                                 JournalRow.JournalCreditTotal = recJournal.JournalCreditTotal;
                                 JournalRow.JournalDebitTotal = recJournal.JournalDebitTotal;
-
-                                Decimal.TryParse(
-                                    requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()].ToString(),
-                                    out AExchangeRateToBase);
-                                //AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
                                 JournalRow.ExchangeRateToBase = AExchangeRateToBase;
-
                                 JournalRow.DateEffective = AEffectiveDate;
                                 JournalRow.JournalPeriod = recJournal.JournalPeriod;
 
@@ -1957,7 +1996,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                     BatchRow.LastJournal = JournalRow.JournalNumber;
                                 }
 
-                                //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
+                                TransactionInIntlCurrency = (JournalRow.TransactionCurrency == LedgerTable[0].IntlCurrency);                                //TODO (not here, but in the client or while posting) Check for expired key ministry (while
+                                                                                                                                                            // Posting)
 
                                 foreach (ARecurringTransactionRow recTransaction in RGLMainDS.ARecurringTransaction.Rows)
                                 {
@@ -1981,6 +2021,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         TransactionRow.CostCentreCode = recTransaction.CostCentreCode;
                                         TransactionRow.TransactionAmount = recTransaction.TransactionAmount;
                                         TransactionRow.AmountInBaseCurrency = GLRoutines.Divide(recTransaction.TransactionAmount, AExchangeRateToBase);
+
+                                        if (!TransactionInIntlCurrency)
+                                        {
+                                            TransactionRow.AmountInIntlCurrency = GLRoutines.Divide((decimal)TransactionRow.AmountInBaseCurrency,
+                                                AExchangeRateIntlToBase);
+                                        }
+                                        else
+                                        {
+                                            TransactionRow.AmountInIntlCurrency = TransactionRow.TransactionAmount;
+                                        }
+
                                         TransactionRow.TransactionDate = AEffectiveDate;
                                         TransactionRow.DebitCreditIndicator = recTransaction.DebitCreditIndicator;
                                         TransactionRow.HeaderNumber = recTransaction.HeaderNumber;
@@ -2142,6 +2193,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// Import GL transaction data
+        /// The data file contents from the client is sent as a string, imported in the database
+        /// and committed immediately
+        /// </summary>
+        /// <param name="ARequestParams"></param>
+        /// <param name="AImportString"></param>
+        /// <param name="AMainDS"></param>
+        /// <param name="AMessages"></param>
+        /// <returns>false if error</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ImportGLTransactions(
+            Hashtable ARequestParams,
+            String AImportString,
+            ref GLBatchTDS AMainDS,
+            out TVerificationResultCollection AMessages
+            )
+        {
+            TGLImporting importing = new TGLImporting();
+
+            return importing.ImportGLTransactions(ARequestParams, AImportString, ref AMainDS, out AMessages);
+        }
+
+        /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
         ///   Assumes that the dataset has all batch, journal and transaction data loaded.
         /// </summary>
@@ -2293,7 +2367,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// Calculate the base amount for the transactions, and update the totals for the current journal
         ///   Assumes that transactions are already loaded into the Dataset
-        /// NOTE this no longer calculates AmountInBaseCurrency
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
@@ -2350,6 +2423,57 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ACurrentJournal.JournalCreditTotalBase += r.AmountInBaseCurrency;
                 }
             }
+        }
+
+        /// <summary>
+        /// Get current accounts and their current balances for use in the Reallocation Journal dialog
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APeriodNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetAccountsForReallocationJournal(int ALedgerNumber, int APeriodNumber)
+        {
+            TDBTransaction Transaction = null;
+            DataTable NewTable = new DataTable("NewTable");
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                delegate
+                {
+                    string Query =
+                        "SELECT PUB_a_general_ledger_master.a_cost_centre_code_c, PUB_a_general_ledger_master.a_account_code_c, " +
+                        "PUB_a_general_ledger_master_period.a_actual_base_n, " +
+                        "PUB_a_account.a_account_code_short_desc_c, PUB_a_account.a_debit_credit_indicator_l, " +
+                        "PUB_a_cost_centre.a_cost_centre_name_c " +
+
+                        "FROM PUB_a_general_ledger_master, PUB_a_general_ledger_master_period, PUB_a_account, PUB_a_cost_centre " +
+
+                        "WHERE PUB_a_general_ledger_master.a_ledger_number_i = " + ALedgerNumber + " AND " +
+
+                        "PUB_a_account.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c AND " +
+                        "PUB_a_account.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i AND " +
+                        "PUB_a_account.a_posting_status_l = 1 AND " +
+                        "PUB_a_account.a_account_active_flag_l = 1 AND " +
+
+                        "PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c AND " +
+                        "PUB_a_cost_centre.a_ledger_number_i = PUB_a_general_ledger_master.a_ledger_number_i AND " +
+                        "PUB_a_cost_centre.a_posting_cost_centre_flag_l = 1 AND " +
+                        "PUB_a_cost_centre.a_cost_centre_active_flag_l = 1 AND " +
+
+                        "PUB_a_general_ledger_master_period.a_glm_sequence_i = PUB_a_general_ledger_master.a_glm_sequence_i AND " +
+                        "PUB_a_general_ledger_master_period.a_period_number_i = " + APeriodNumber;
+
+                    NewTable = DBAccess.GDBAccessObj.SelectDT(Query, "NewTable", Transaction);
+                });
+
+            // create a new description
+            foreach (DataRow Row in NewTable.Rows)
+            {
+                Row["a_account_code_short_desc_c"] += ", " + Row["a_cost_centre_name_c"];
+            }
+
+            return NewTable;
         }
     }
 }

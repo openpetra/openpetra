@@ -167,7 +167,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 // need to set NOTUSED,
                 // otherwise the report generator complains about the missing parameter
-                // NOTUSED is used as an invalid value, there is no account with this name
+                // *NOTUSED* is used as an invalid value, there is no account with this name
                 ACalculator.AddParameter("param_account_list_title", SelectedAccountCodes);
                 ACalculator.AddParameter("param_account_code_start", "*NOTUSED*");
                 ACalculator.AddParameter("param_account_code_end", "*NOTUSED*");
@@ -364,6 +364,50 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     cmbSummaryCostCentres.GetSelectedString(),
                     string.Empty));
             clbCostCentres.SetCheckedStringList(SelectedCostCentres);
+        }
+
+        // Enable/disable btnSelectAllReportingCostCentres depending on value of cmbSummaryCostCentres.
+        // Fired when rbtCostCentreFromList is selected or when a value is chosen from cmbSummaryCostCentres.
+        private void SummaryCostCentresChanged(System.Object sender, System.EventArgs e)
+        {
+            if (string.IsNullOrEmpty(cmbSummaryCostCentres.cmbCombobox.Text))
+            {
+                btnSelectAllReportingCostCentres.Enabled = false;
+            }
+            else
+            {
+                btnSelectAllReportingCostCentres.Enabled = true;
+            }
+        }
+
+        // fired when rbtCostCentreFromList is changed
+        private void CostCentreChanged(System.Object sender, System.EventArgs e)
+        {
+            if (rbtCostCentreFromList.Checked)
+            {
+                btnUnselectAllCostCentres.Enabled = true;
+                cmbSummaryCostCentres.Enabled = true;
+                SummaryCostCentresChanged(this, null);
+            }
+            else
+            {
+                btnUnselectAllCostCentres.Enabled = false;
+                cmbSummaryCostCentres.Enabled = false;
+                btnSelectAllReportingCostCentres.Enabled = false;
+            }
+        }
+
+        // fired when rbtAccountFromList is changed
+        private void AccountChanged(System.Object sender, System.EventArgs e)
+        {
+            if (rbtAccountFromList.Checked)
+            {
+                btnUnselectAllAccountCodes.Enabled = true;
+            }
+            else
+            {
+                btnUnselectAllAccountCodes.Enabled = false;
+            }
         }
 
         #endregion

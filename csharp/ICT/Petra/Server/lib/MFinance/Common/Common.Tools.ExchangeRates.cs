@@ -532,7 +532,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 //ExchangeRate = 1.0M;
                 //Instead return 0 to make it easy to catch error
                 ExchangeRate = 0M;
-                TLogging.Log("cannot find corporate exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
+                TLogging.Log("Cannot find corporate exchange rate for " + ACurrencyFrom + " " + ACurrencyTo);
             }
 
             return ExchangeRate;
@@ -545,19 +545,18 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ACurrencyTo"></param>
         /// <param name="AStartDate"></param>
         /// <param name="AEndDate"></param>
-        /// <param name="AExchangeRate"></param>
+        /// <param name="AExchangeRateToFind"></param>
         /// <returns>true if a exchange rate was found for the date. Otherwise false</returns>
         public static bool GetCorporateExchangeRate(string ACurrencyFrom,
             string ACurrencyTo,
             DateTime AStartDate,
             DateTime AEndDate,
-            out decimal AExchangeRate)
+            out decimal AExchangeRateToFind)
         {
-            AExchangeRate = decimal.MinValue;
+            AExchangeRateToFind = decimal.MinValue;
+            decimal ExchangeRateToFind = AExchangeRateToFind;
 
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDBTransaction Transaction = null;
 
             ACorporateExchangeRateTable tempTable = new ACorporateExchangeRateTable();
             ACorporateExchangeRateRow templateRow = tempTable.NewRowTyped(false);
@@ -565,118 +564,63 @@ namespace Ict.Petra.Server.MFinance.Common
             templateRow.FromCurrencyCode = ACurrencyFrom;
             templateRow.ToCurrencyCode = ACurrencyTo;
 
-            ACorporateExchangeRateTable ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-            if (ExchangeRates.Count > 0)
-            {
-                // sort rates by date, look for rate just before the date we are looking for
-                ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
-                                                      AStartDate.ToString("yyyy-MM-dd") + "# AND " +
-                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                      AEndDate.ToString("yyyy-MM-dd") + "#";
-
-                if (ExchangeRates.DefaultView.Count > 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
                 {
-                    AExchangeRate = ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
-                }
-            }
-
-            if (AExchangeRate == decimal.MinValue)
-            {
-                // try other way round
-                templateRow.FromCurrencyCode = ACurrencyTo;
-                templateRow.ToCurrencyCode = ACurrencyFrom;
-
-                ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
-
-                if (ExchangeRates.Count > 0)
-                {
-                    // sort rates by date, look for rate just before the date we are looking for
-                    ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
-                    ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
-                                                          AStartDate.ToString("yyyy-MM-dd") + "# AND " +
-                                                          ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
-                                                          AEndDate.ToString("yyyy-MM-dd") + "#";
-
-                    if (ExchangeRates.DefaultView.Count > 0)
+                    try
                     {
-                        AExchangeRate = 1 / ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
+                        ACorporateExchangeRateTable ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
+
+                        if (ExchangeRates.Count > 0)
+                        {
+                            // sort rates by date, look for rate just before the date we are looking for
+                            ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
+                            ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                                  AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                                  ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                                  AEndDate.ToString("yyyy-MM-dd") + "#";
+
+                            if (ExchangeRates.DefaultView.Count > 0)
+                            {
+                                ExchangeRateToFind = ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
+                            }
+                        }
+
+                        if (ExchangeRateToFind == decimal.MinValue)
+                        {
+                            // try other way round
+                            templateRow.FromCurrencyCode = ACurrencyTo;
+                            templateRow.ToCurrencyCode = ACurrencyFrom;
+
+                            ExchangeRates = ACorporateExchangeRateAccess.LoadUsingTemplate(templateRow, Transaction);
+
+                            if (ExchangeRates.Count > 0)
+                            {
+                                // sort rates by date, look for rate just before the date we are looking for
+                                ExchangeRates.DefaultView.Sort = ACorporateExchangeRateTable.GetDateEffectiveFromDBName();
+                                ExchangeRates.DefaultView.RowFilter = ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + ">= #" +
+                                                                      AStartDate.ToString("yyyy-MM-dd") + "# AND " +
+                                                                      ACorporateExchangeRateTable.GetDateEffectiveFromDBName() + "<= #" +
+                                                                      AEndDate.ToString("yyyy-MM-dd") + "#";
+
+                                if (ExchangeRates.DefaultView.Count > 0)
+                                {
+                                    ExchangeRateToFind = 1 / ((ACorporateExchangeRateRow)ExchangeRates.DefaultView[0].Row).RateOfExchange;
+                                }
+                            }
+                        }
                     }
-                }
-            }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Error in GetCorporateExchangeRate: " + e.Message);
+                    }
+                });
 
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            AExchangeRateToFind = ExchangeRateToFind;
 
-            if (AExchangeRate == decimal.MinValue)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Get the latest Corporate exchange rate
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AIntlExchangeRate"></param>
-        /// <returns></returns>
-        public static bool GetLatestIntlCorpExchangeRate(int ALedgerNumber, out decimal AIntlExchangeRate)
-        {
-            bool retVal = true;
-            string CurrencyFrom;
-            string CurrencyTo;
-            DateTime StartDate;
-            DateTime EndDate;
-
-            AIntlExchangeRate = decimal.MinValue;
-
-            bool NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            ALedgerRow LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-            string IntlCurrency = LedgerRow.IntlCurrency.Trim();
-            string BaseCurrency = LedgerRow.BaseCurrency;
-            int CurrentPeriod = LedgerRow.CurrentPeriod;
-
-            if (IntlCurrency != string.Empty)
-            {
-                //ACurrencyTable CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(IntlCurrency, null);
-                AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, CurrentPeriod, Transaction);
-                AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
-
-                if (BaseCurrency == IntlCurrency)
-                {
-                    AIntlExchangeRate = 1;
-                }
-                else
-                {
-                    CurrencyFrom = BaseCurrency;
-                    CurrencyTo = IntlCurrency;
-                    StartDate = AccountingPeriodRow.PeriodStartDate;
-                    EndDate = AccountingPeriodRow.PeriodEndDate;
-                    retVal = GetCorporateExchangeRate(CurrencyFrom, CurrencyTo, StartDate, EndDate, out AIntlExchangeRate);
-                }
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            if (AIntlExchangeRate == decimal.MinValue)
-            {
-                retVal = false;
-            }
-
-            return retVal;
+            return AExchangeRateToFind != decimal.MinValue;
         }
 
         /// <summary>

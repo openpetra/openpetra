@@ -22,13 +22,19 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Collections.Generic;
 using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
-using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Remoting.Client;
+
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.CommonForms;
+
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -37,7 +43,39 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TFrmGLBatch
     {
-        private Int32 FLedgerNumber;
+        /// this window contains 3 tabs
+        public enum eGLTabs
+        {
+            /// list of batches
+            Batches,
+
+            /// list of journals
+            Journals,
+
+            /// list of transactions
+            Transactions
+        };
+
+        private eGLTabs FPreviouslySelectedTab = eGLTabs.Batches;
+        private Int32 FLedgerNumber = -1;
+        private Int32 FStandardTabIndex = 0;
+        private bool FLoadForImport = false;
+        private bool FWarnAboutMissingIntlExchangeRate = true;
+
+        /// <summary>
+        /// specify to load and import batches
+        /// </summary>
+        public Boolean LoadForImport
+        {
+            set
+            {
+                FLoadForImport = value;
+            }
+            get
+            {
+                return FLoadForImport;
+            }
+        }
 
         /// <summary>
         /// use this ledger
@@ -50,21 +88,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-                ucoBatches.LoadBatches(FLedgerNumber);
+                // Setting the ledger number of the batch control will automatically load the current financial year batches
+                ucoBatches.LedgerNumber = value;
 
                 ucoJournals.WorkAroundInitialization();
                 ucoTransactions.WorkAroundInitialization();
             }
         }
 
-        private int standardTabIndex = 0;
-
         private void TFrmGLBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            tabGLBatch.SelectedIndex = standardTabIndex;
-            TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            tabGLBatch.SelectedIndex = FStandardTabIndex;
+            TabSelectionChanged(null, null);
 
             this.Shown += delegate
             {
@@ -81,66 +118,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Load the journals for the current batch in the background
+        /// Enable the journal tab if we have an active batch
         /// </summary>
-        public void LoadJournals()
+        public void EnableJournals(Boolean AEnable = true)
         {
-            int batchNumber = ucoBatches.GetSelectedDetailRow().BatchNumber;
+            this.tabGLBatch.TabStop = AEnable;
 
-            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
-                AJournalTable.GetBatchNumberDBName(),
-                batchNumber);
-
-            // only load from server if there are no journals loaded yet for this batch
-            // otherwise we would overwrite journals that have already been modified
-            if (FMainDS.AJournal.DefaultView.Count == 0)
+            if (this.tpgJournals.Enabled != AEnable)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+                this.tpgJournals.Enabled = AEnable;
+                this.Refresh();
             }
-        }
-
-        /// <summary>
-        /// activate the journal tab and load the journals of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            this.tpgJournals.Enabled = true;
-            DisableTransactions();
-            this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
-        }
-
-        /// <summary>
-        /// activate the transaction tab and load the transactions of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <param name="AForeignCurrencyName"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, String AForeignCurrencyName)
-        {
-            this.tpgTransactions.Enabled = true;
-            this.ucoTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AForeignCurrencyName);
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// disable the transactions tab if we have no active journal
-        /// </summary>
-        public void DisableTransactions()
-        {
-            this.tpgTransactions.Enabled = false;
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// disable the transactions tab if we have no active journal
-        /// </summary>
-        public void EnableTransactions(bool AEnable = true)
-        {
-            this.tpgTransactions.Enabled = AEnable;
-            this.Refresh();
         }
 
         /// <summary>
@@ -150,40 +138,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tabGLBatch.TabStop = false;
 
-            this.tpgJournals.Enabled = false;
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// Enable the journal tab if we have an active batch
-        /// </summary>
-        public void EnableJournals()
-        {
-            this.tabGLBatch.TabStop = true;
-
-            if (!this.tpgJournals.Enabled)
+            if (this.tpgJournals.Enabled)
             {
-                this.tpgJournals.Enabled = true;
+                this.tpgJournals.Enabled = false;
                 this.Refresh();
             }
         }
 
-        /// this window contains 4 tabs
-        public enum eGLTabs
+        /// <summary>
+        /// Control transactions tab enabled status. This can do both ways
+        /// </summary>
+        public void EnableTransactions(Boolean AEnable = true)
         {
-            /// list of batches
-            Batches,
+            if (this.tpgTransactions.Enabled != AEnable)
+            {
+                this.tpgTransactions.Enabled = AEnable;
+                this.Refresh();
+            }
+        }
 
-            /// list of journals
-            Journals,
-
-            /// list of transactions
-            Transactions
-        };
-
-
-        //Might need this later
-        private eGLTabs FPreviousTab = eGLTabs.Batches;
+        /// <summary>
+        /// disable the transactions tab if we have no active journal
+        /// </summary>
+        public void DisableTransactions()
+        {
+            if (this.tpgTransactions.Enabled)
+            {
+                this.tpgTransactions.Enabled = false;
+                this.Refresh();
+            }
+        }
 
         /// <summary>
         /// Switch to the given tab
@@ -191,83 +175,84 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
-            this.Cursor = Cursors.WaitCursor;
-
-            if (ATab == eGLTabs.Batches)
+            try
             {
-                this.tabGLBatch.SelectedTab = this.tpgBatches;
-                this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
-                this.tabGLBatch.TabStop = this.tpgJournals.Enabled;
+                this.Cursor = Cursors.WaitCursor;
 
-                if (this.tpgTransactions.Enabled)
+                if (ATab == eGLTabs.Batches)
                 {
-                    this.ucoTransactions.CancelChangesToFixedBatches();
-                    this.ucoJournals.CancelChangesToFixedBatches();
-                    ucoBatches.EnableTransactionTabForBatch();
-                }
+                    this.tabGLBatch.SelectedTab = this.tpgBatches;
+                    this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
+                    this.tabGLBatch.TabStop = this.tpgJournals.Enabled;
 
-                ucoBatches.SetInitialFocus();
-                FPreviousTab = eGLTabs.Batches;
-            }
-            else if (ATab == eGLTabs.Journals)
-            {
-                if (this.tpgJournals.Enabled)
-                {
-                    this.tabGLBatch.SelectedTab = this.tpgJournals;
-
-                    this.ucoJournals.LoadJournals(FLedgerNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchNumber,
-                        ucoBatches.GetSelectedDetailRow().BatchStatus);
-
-                    this.tpgTransactions.Enabled =
-                        (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus !=
-                         MFinanceConstants.BATCH_CANCELLED);
-
-                    this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
-
-                    FPreviousTab = eGLTabs.Journals;
-                }
-            }
-            else if (ATab == eGLTabs.Transactions)
-            {
-                if (this.tpgTransactions.Enabled)
-                {
-                    // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
-                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
-                    this.tabGLBatch.SelectedTab = this.tpgTransactions;
-
-                    bool fromBatchTab = false;
-
-                    if (FPreviousTab == eGLTabs.Batches)
+                    if (this.tpgTransactions.Enabled)
                     {
-                        fromBatchTab = true;
-                        //This only happens when the user clicks from Batch to Transactions,
-                        //  which is only allowed when one journal exists
+                        this.ucoTransactions.CancelChangesToFixedBatches();
+                        this.ucoJournals.CancelChangesToFixedBatches();
+                    }
 
-                        //Need to make sure that the Journal is loaded
+                    ucoBatches.AutoEnableTransTabForBatch();
+                    ucoBatches.SetInitialFocus();
+                    FPreviouslySelectedTab = eGLTabs.Batches;
+                }
+                else if ((ucoBatches.GetSelectedDetailRow() != null) && (ATab == eGLTabs.Journals))
+                {
+                    if (this.tpgJournals.Enabled)
+                    {
+                        this.tabGLBatch.SelectedTab = this.tpgJournals;
+
                         this.ucoJournals.LoadJournals(FLedgerNumber,
                             ucoBatches.GetSelectedDetailRow().BatchNumber,
                             ucoBatches.GetSelectedDetailRow().BatchStatus);
-                    }
 
-                    if (this.ucoTransactions.LoadTransactions(
+                        this.tpgTransactions.Enabled =
+                            (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus !=
+                             MFinanceConstants.BATCH_CANCELLED);
+
+                        this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
+
+                        FPreviouslySelectedTab = eGLTabs.Journals;
+                    }
+                }
+                else if (ATab == eGLTabs.Transactions)
+                {
+                    if (this.tpgTransactions.Enabled)
+                    {
+                        // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
+                        this.tabGLBatch.SelectedTab = this.tpgTransactions;
+
+                        bool fromBatchTab = false;
+
+                        if (FPreviouslySelectedTab == eGLTabs.Batches)
+                        {
+                            fromBatchTab = true;
+                            //This only happens when the user clicks from Batch to Transactions,
+                            //  which is only allowed when one journal exists
+
+                            //Need to make sure that the Journal is loaded
+                            this.ucoJournals.LoadJournals(FLedgerNumber,
+                                ucoBatches.GetSelectedDetailRow().BatchNumber,
+                                ucoBatches.GetSelectedDetailRow().BatchStatus);
+                        }
+
+                        this.ucoTransactions.LoadTransactions(
                             FLedgerNumber,
                             ucoJournals.GetSelectedDetailRow().BatchNumber,
                             ucoJournals.GetSelectedDetailRow().JournalNumber,
                             ucoJournals.GetSelectedDetailRow().TransactionCurrency,
                             ucoBatches.GetSelectedDetailRow().BatchStatus,
                             ucoJournals.GetSelectedDetailRow().JournalStatus,
-                            fromBatchTab))
-                    {
-                        ucoTransactions.AutoSizeGrid();
-                    }
+                            fromBatchTab);
 
-                    FPreviousTab = eGLTabs.Transactions;
+                        FPreviouslySelectedTab = eGLTabs.Transactions;
+                    }
                 }
             }
-
-            this.Cursor = Cursors.Default;
-            this.Refresh();
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                this.Refresh();
+            }
         }
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
@@ -282,19 +267,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void SelectTabManual(int ASelectedTabIndex)
+        private void SelectTabManual(Int32 ASelectedTabIndex)
         {
-            if (ASelectedTabIndex == (int)eGLTabs.Batches)
+            switch (ASelectedTabIndex)
             {
-                SelectTab(eGLTabs.Batches);
-            }
-            else if (ASelectedTabIndex == (int)eGLTabs.Journals)
-            {
-                SelectTab(eGLTabs.Journals);
-            }
-            else //(ASelectedTabIndex == (int)eGLTabs.Transactions)
-            {
-                SelectTab(eGLTabs.Transactions);
+                case (int)eGLTabs.Batches:
+                    SelectTab(eGLTabs.Batches);
+                    break;
+
+                case (int)eGLTabs.Journals:
+                    SelectTab(eGLTabs.Journals);
+                    break;
+
+                default: //(ASelectedTabIndex == (int)eGLTabs.Transactions)
+                    SelectTab(eGLTabs.Transactions);
+                    break;
             }
         }
 
@@ -324,41 +311,189 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnActivationManual()
         {
-            this.Resize += new EventHandler(TFrmGLBatch_Resize);
         }
 
-        private bool FWindowIsMaximized = false;
-        void TFrmGLBatch_Resize(object sender, EventArgs e)
+        /// <summary>
+        /// Uses the current Batch effective date to return the
+        ///   corporate exchange rate value
+        /// </summary>
+        /// <returns></returns>
+        public decimal GetInternationalCurrencyExchangeRate()
         {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // set the flag that we are maximized
-                FWindowIsMaximized = true;
+            decimal IntlToBaseCurrencyExchRate = 0;
 
-                if (tabGLBatch.SelectedTab == this.tpgBatches)
+            ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
+
+            if (BatchRow == null)
+            {
+                return IntlToBaseCurrencyExchRate;
+            }
+
+            return GetInternationalCurrencyExchangeRate(BatchRow.DateEffective);
+        }
+
+        /// <summary>
+        /// Returns the corporate exchange rate for a given batch row
+        ///  and specifies whether or not the transaction is in International
+        ///  currency
+        /// </summary>
+        /// <param name="AEffectiveDate"></param>
+        /// <returns></returns>
+        private decimal GetInternationalCurrencyExchangeRate(DateTime AEffectiveDate)
+        {
+            DateTime StartOfMonth = new DateTime(AEffectiveDate.Year, AEffectiveDate.Month, 1);
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            decimal IntlToBaseCurrencyExchRate = 0;
+
+            if (FLedgerNumber != -1)
+            {
+                if (LedgerBaseCurrency == LedgerIntlCurrency)
                 {
-                    ucoTransactions.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing transactions");
-                }
-                else if (tabGLBatch.SelectedTab == this.tpgTransactions)
-                {
-                    ucoBatches.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing batches");
+                    IntlToBaseCurrencyExchRate = 1;
                 }
                 else
                 {
-                    ucoBatches.AutoSizeGrid();
-                    ucoTransactions.AutoSizeGrid();
+                    IntlToBaseCurrencyExchRate = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        StartOfMonth,
+                        AEffectiveDate);
+
+                    if ((IntlToBaseCurrencyExchRate == 0) && FWarnAboutMissingIntlExchangeRate)
+                    {
+                        FWarnAboutMissingIntlExchangeRate = false;
+
+                        string IntlRateErrorMessage =
+                            String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
+                                LedgerBaseCurrency,
+                                LedgerIntlCurrency,
+                                AEffectiveDate);
+
+                        MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
                 }
             }
-            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
+
+            return IntlToBaseCurrencyExchRate;
+        }
+
+        private int GetChangedRecordCountManual(out string AMessage)
+        {
+            // For GL Batch we will get some mix of batches, journals and transactions
+            List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
+            int allChangesCount = 0;
+
+            // Work out how many changes in each table
+            foreach (DataTable dt in FMainDS.Tables)
             {
-                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                ucoBatches.AutoSizeGrid();
-                ucoTransactions.AutoSizeGrid();
-                FWindowIsMaximized = false;
-                Console.WriteLine("Normal - autosizing both");
+                if (dt != null)
+                {
+                    int tableChangesCount = 0;
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        if (dr.RowState != DataRowState.Unchanged)
+                        {
+                            tableChangesCount++;
+                            allChangesCount++;
+                        }
+                    }
+
+                    if (tableChangesCount > 0)
+                    {
+                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                    }
+                }
             }
+
+            // Now build up a sensible message
+            AMessage = String.Empty;
+
+            if (TableAndCountList.Count > 0)
+            {
+                int nBatches = 0;
+                int nJournals = 0;
+                int nTransactions = 0;
+
+                foreach (Tuple <string, int>TableAndCount in TableAndCountList)
+                {
+                    if (TableAndCount.Item1.Equals(ABatchTable.GetTableName()))
+                    {
+                        nBatches = TableAndCount.Item2;
+                    }
+                    else if (TableAndCount.Item1.Equals(AJournalTable.GetTableName()))
+                    {
+                        nJournals = TableAndCount.Item2;
+                    }
+                    else if (TableAndCount.Item2 > nTransactions)
+                    {
+                        nTransactions = TableAndCount.Item2;
+                    }
+                }
+
+                AMessage = Catalog.GetString("    You have made changes to ");
+                string strBatches = String.Empty;
+                string strJournals = String.Empty;
+                string strTransactions = String.Empty;
+
+                if (nBatches > 0)
+                {
+                    strBatches = String.Format("{0} {1}",
+                        nBatches,
+                        Catalog.GetPluralString("batch", "batches", nBatches));
+                }
+
+                if (nJournals > 0)
+                {
+                    strJournals = String.Format("{0} {1}",
+                        nJournals,
+                        Catalog.GetPluralString("journal", "journals", nJournals));
+                }
+
+                if (nTransactions > 0)
+                {
+                    strTransactions = String.Format("{0} {1}",
+                        nTransactions,
+                        Catalog.GetPluralString("transaction", "transactions", nTransactions));
+                }
+
+                bool bGotAll = (nBatches > 0) && (nJournals > 0) && (nTransactions > 0);
+
+                if (nBatches > 0)
+                {
+                    AMessage += strBatches;
+                }
+
+                if (nJournals > 0)
+                {
+                    if (bGotAll)
+                    {
+                        AMessage += ", ";
+                    }
+                    else if (nBatches > 0)
+                    {
+                        AMessage += " and ";
+                    }
+
+                    AMessage += strJournals;
+                }
+
+                if (nTransactions > 0)
+                {
+                    if ((nBatches > 0) || (nJournals > 0))
+                    {
+                        AMessage += " and ";
+                    }
+
+                    AMessage += strTransactions;
+                }
+
+                AMessage += Environment.NewLine;
+                AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
+            }
+
+            return allChangesCount;
         }
 
         #region Menu and command key handlers for our user controls
@@ -387,6 +522,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            if (keyData == (Keys.S | Keys.Control))
+            {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    SaveChanges();
+                }
+
+                return true;
+            }
+
             if ((tabGLBatch.SelectedTab == tpgBatches) && (ucoBatches.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;

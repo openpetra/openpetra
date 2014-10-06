@@ -415,7 +415,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     cmbDetailToCurrencyCode.GetSelectedString());
             }
 
-            FMainDS.ACorporateExchangeRate.DefaultView.RowFilter = rowFilter;
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(rowFilter, !chkHideOthers.Checked);
+            FFilterAndFindObject.ApplyFilter();
             SelectRowInGrid(grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1);
 
             SetEnabledStates(FPreviouslySelectedDetailRow.RowState == DataRowState.Added);

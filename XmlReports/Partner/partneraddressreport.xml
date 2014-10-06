@@ -181,8 +181,8 @@
 			</query>
 		</calculation>
 
-		<calculation align="left" id="Short Name" returns="text" returnsFormat="text">
-			<caption><value text="Short name"></value></caption>
+		<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+			<caption><value text="Partner name"></value></caption>
 			<query>
 				<queryDetail>
 					<value variable="ShortName"></value>
@@ -190,14 +190,14 @@
 			</query>
 		</calculation>
 
-        <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <!-- <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
             <caption><value text="Partner Name"></value></caption>
             <query>
                 <queryDetail>
                     <value variable="NameWithTitle"></value>
                 </queryDetail>
             </query>
-        </calculation>
+        </calculation> -->
 
 		<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
 			<caption><value text="Partner Key"></value></caption>

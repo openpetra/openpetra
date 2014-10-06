@@ -10,7 +10,7 @@ RootNode:
     UIConnectorCreate: TRemote.MPartner.Partner.UIConnectors.PartnerEdit
     MasterTable: PPartner
     WindowWidth: 800
-    WindowHeight: 700
+    WindowHeight: 675
     
     Events:
         Load: {class=System.EventHandler, method=TFrmPartnerEdit2_Load}    

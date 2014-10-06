@@ -45,7 +45,7 @@ using Ict.Petra.Client.MCommon.Gui;
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>Delegate declaration</summary>
-    public delegate PLocationRow TDelegateGetLocationRowOfCurrentlySelectedAddress();
+    public delegate PartnerEditTDSPPartnerLocationRow TDelegateGetPartnerLocationRowOfCurrentlySelectedAddress();
 
     /// <summary>
     /// todoComment
@@ -172,7 +172,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <remarks>Performs all necessary initialisations in case the Address Tab
         /// hasn't been initialised before.</remarks>
-        public PLocationRow LocationDataRowOfCurrentlySelectedAddress
+        public PartnerEditTDSPPartnerLocationRow LocationDataRowOfCurrentlySelectedAddress
         {
             get
             {
@@ -181,7 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     SetupUserControlAddresses();
                 }
 
-                return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+                return FUcoAddresses.PartnerLocationDataRowOfCurrentlySelectedAddress;
             }
         }
 
@@ -192,7 +192,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         ///
         /// </summary>
         /// <returns></returns>
-        public PLocationRow Get_LocationRowOfCurrentlySelectedAddress()
+        public PartnerEditTDSPPartnerLocationRow Get_LocationRowOfCurrentlySelectedAddress()
         {
             if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
             {
@@ -200,7 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SetupUserControlAddresses();
             }
 
-            return FUcoAddresses.LocationDataRowOfCurrentlySelectedRecord;
+            return FUcoAddresses.PartnerLocationDataRowOfCurrentlySelectedAddress;
         }
 
         /// <summary>
@@ -460,8 +460,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
             {
-                TUCPartnerAddresses UCPartnerAddresses =
-                    (TUCPartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
+                TUC_PartnerAddresses UCPartnerAddresses =
+                    (TUC_PartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
 
                 if (!UCPartnerAddresses.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
@@ -539,6 +539,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TUC_FinanceDetails UCFinanceDetails =
                     (TUC_FinanceDetails)FTabSetup[TDynamicLoadableUserControls.dlucFinanceDetails];
+
+                // enable extra validation on tab change
+                UCFinanceDetails.ValidateBankingDetailsExtra = true;
 
                 if (!UCFinanceDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
@@ -684,38 +687,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void SetUpPartnerAddress()
+        public void SetUpPartnerAddressTab()
         {
-            FUcoAddresses = (TUCPartnerAddresses)DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);
-
-            if (TClientSettings.DelayedDataLoading)
-            {
-                // Signalise the user that data is beeing loaded
-                this.Cursor = Cursors.AppStarting;
-            }
-
-            FUcoAddresses.MainDS = FMainDS;
-            FUcoAddresses.PetraUtilsObject = FPetraUtilsObject;
-            FUcoAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
-            FUcoAddresses.HookupDataChange += new THookupDataChangeEventHandler(this.Uco_HookupDataChange);
-            FUcoAddresses.InitialiseUserControl();
-
-            // MessageBox.Show('TabSetupPartnerAddresses finished');
-            this.Cursor = Cursors.Default;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void DisableNewButtonOnAutoCreatedAddress()
-        {
-            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
-            {
-                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                SetupUserControlAddresses();
-            }
-
-            FUcoAddresses.DisableNewButtonOnAutoCreatedAddress();
+            SetupUserControlAddresses();
         }
 
         /// <summary>
@@ -787,6 +761,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FUcoFamilyMembers.RefreshFamilyMembersList(null, null);
                 FUcoFamilyMembers.BroadcastRefresh = false;
             }
+        }
+
+        /// <summary>
+        /// Refreshes position in Uni Hierarchy
+        /// </summary>
+        public void RefreshUnitHierarchy(Tuple <string, Int64, Int64>AUnitHierarchyChange)
+        {
+            // if partner details tab has not yet been initialised
+            if (FUcoPartnerDetailsUnit == null)
+            {
+                SetupVariableUserControlForTabPagePartnerDetails();
+            }
+
+            FUcoPartnerDetailsUnit.RefreshUnitHierarchy(AUnitHierarchyChange);
         }
 
         /// <summary>
@@ -868,9 +856,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoAddresses.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
                     FUcoAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
-                    FUcoAddresses.HookupDataChange += new THookupDataChangeEventHandler(Uco_HookupDataChange);
+                    FUcoAddresses.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupDataChange);
 
-                    FUcoAddresses.InitialiseUserControl();
+                    FUcoAddresses.SpecialInitUserControl();
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
@@ -938,7 +926,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoFamilyMembers.PartnerEditUIConnector = FPartnerEditUIConnector;
                     FUcoFamilyMembers.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
                     FUcoFamilyMembers.InitialiseDelegateIsNewPartner(FDelegateIsNewPartner);
-                    FUcoFamilyMembers.InitialiseDelegateGetLocationRowOfCurrentlySelectedAddress(
+                    FUcoFamilyMembers.InitialiseDelegateGetPartnerLocationRowOfCurrentlySelectedAddress(
                         Get_LocationRowOfCurrentlySelectedAddress);
 
                     FUcoFamilyMembers.SpecialInitUserControl();
@@ -982,6 +970,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+
+                FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
             }
         }
 
@@ -1042,7 +1032,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int32 CountAll;
             Int32 CountActive;
 
-            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerAddresses))
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerAddresses))
             {
                 if (FMainDS.Tables.Contains(PLocationTable.GetTableName()))
                 {
@@ -1441,6 +1431,111 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             OnDataLoadingFinished();
+        }
+
+        #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if ((this.tabPartners.SelectedTab == tpgAddresses) && (this.FUcoAddresses.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if (this.tabPartners.SelectedTab == tpgPartnerDetails)
+            {
+                switch (GetPartnerDetailsVariableUC())
+                {
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsFamily:
+
+                        if (this.FUcoPartnerDetailsFamily.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+
+                        break;
+
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsPerson:
+
+                        if (this.FUcoPartnerDetailsPerson.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+
+                        break;
+
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsBank:
+
+                        if (this.FUcoPartnerDetailsBank.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+
+                        break;
+
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
+
+                        if (this.FUcoPartnerDetailsChurch.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+
+                        break;
+
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsUnit:
+
+                        if (this.FUcoPartnerDetailsUnit.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+
+                        break;
+
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsOrganisation:
+
+                        if (this.FUcoPartnerDetailsOrganisation.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+
+                        break;
+
+                    case TDynamicLoadableUserControls.dlucPartnerDetailsVenue:
+
+                        if (this.FUcoPartnerDetailsVenue.ProcessParentCmdKey(ref msg, keyData))
+                        {
+                            return true;
+                        }
+
+                        break;
+                }
+            }
+            else if ((this.tabPartners.SelectedTab == tpgPartnerRelationships) && (this.FUcoPartnerRelationships.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((this.tabPartners.SelectedTab == tpgFinanceDetails) && (this.FUcoFinanceDetails.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((this.tabPartners.SelectedTab == tpgInterests) && (this.FUcoInterests.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((this.tabPartners.SelectedTab == tpgFamilyMembers) && (this.FUcoFamilyMembers.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+            else if ((this.tabPartners.SelectedTab == tpgSubscriptions) && (this.FUcoSubscriptions.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

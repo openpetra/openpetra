@@ -9,13 +9,14 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [grpLedger, grpCurrency, grpPeriodRange]
+            Dock: Fill
         grpLedger:
-            Width: 600
+            Width: 625
             Label: Ledger Details
             Controls: [txtLedger, cmbAccountHierarchy]
             ControlsOrientation: horizontal
         grpCurrency:
-            Width: 600
+            Width: 625
             Controls: [cmbCurrency]
         txtLedger: 
             ReadOnly: true
@@ -28,7 +29,7 @@ RootNode:
             ParameterName: param_currency
             OptionalValues: [Base, International, Transaction]
         grpPeriodRange:
-            Width: 600
+            Width: 625
             Controls: [rbtPeriod, rbtQuarter, rbtDate, rbtBreakdown]
         rbtPeriod:
             Width:50
@@ -47,14 +48,13 @@ RootNode:
             List: UserDefinedList
             ParameterName: param_year_i
             Width:200
-#           ComboBoxWidth:120 # don't do this - it doesn't work.
 
         rbtQuarter:
             ControlsOrientation: horizontal
             Controls: [txtQuarter, cmbQuarterYear]
             NoParameter: true
         txtQuarter:
-            Label: from
+            Label: Q
             Width: 30
             NoParameter: true
         cmbQuarterYear: 
@@ -62,7 +62,6 @@ RootNode:
             List: UserDefinedList
             ParameterName: param_year_i
             Width:200
-#           ComboBoxWidth:120 # don't do this - it doesn't work.
 
         rbtDate:
             ControlsOrientation: horizontal

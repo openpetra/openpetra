@@ -5,7 +5,7 @@
   <Parameter id="currentReport" value="eString:DonorGiftStatement" />
   <Parameter id="MaxDisplayColumns" value="eInteger:8" />
   <Parameter id="param_report_type" value="eString:Complete" />
-  <Parameter id="param_donor" value="eString:All Donors" />
+  <Parameter id="param_donor" value="eString:One Donor" />
   <Parameter id="param_min_amount" value="eInteger:0" />
   <Parameter id="param_max_amount" value="eInteger:999999999" />
   <Parameter id="param_currency" value="eString:Base" />
@@ -37,4 +37,5 @@
   <Parameter id="param_donorkey" value="eInteger:0" />
   <Parameter id="param_extract_name" value="eString:" />
   <Parameter id="param_gift_amount_column" value="eInteger:7" />
+  <Parameter id="param_order_by_name" value="eString:PartnerKey" />
 </Parameters>

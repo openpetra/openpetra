@@ -10,11 +10,15 @@ RootNode:
             ActionClick: UnselectAll
     Controls:
         pnlContent:
-            Controls: [rgrCostCentreOptions, chkCostCentreBreakdown, rgrDepth]
+            Controls: [grpCostCentreSelection, grpCostCentreOptions]
             Dock: Fill
-        rgrCostCentreOptions: 
+        grpCostCentreSelection:
+            Width: 650
             ParameterName: param_costcentreoptions
             Controls: [rbtSelectedCostCentres, rbtAllCostCentres, rbtAllActiveCostCentres, rbtAccountLevel, chkExcludeInactiveCostCentres]
+        grpCostCentreOptions:
+            Width: 650
+            Controls: [pnlAutoEmail, chkCostCentreBreakdown, rgrDepth]
         rbtSelectedCostCentres:
             Controls: [clbCostCentres, btnUnselectAllCostCentres]
             ControlsOrientation: horizontal
@@ -31,16 +35,25 @@ RootNode:
             List: UserDefinedList
             NoLabel:true
             ParameterName: param_cost_centre_codes
-            Width: 350
+            Width: 365
+            Stretch: vertically
         btnUnselectAllCostCentres: 
             Label: Unselect All
             Action: actUnselectAll
+        pnlAutoEmail:
+            Controls: [chkPaginate,chkAutoEmail]
+            ControlsOrientation: horizontal
+        chkPaginate:
+            ParameterName: param_paginate
+        chkAutoEmail:
+            ParameterName: param_auto_email
         chkCostCentreBreakdown: 
             ParameterName: param_cost_centre_breakdown
             Tooltip: group not by costcentre but by account
             CheckBoxAttachedLabel: right
         rgrDepth:
             ParameterName: param_depth
-            OptionalValues: [detail, standard, summary]
+            ControlsOrientation: horizontal
+            OptionalValues: [Summary, Standard, Detail]
             
      

@@ -22,11 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.Data;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -34,6 +38,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TFrmRecurringGiftBatch
     {
         private Int32 FLedgerNumber;
+        private int standardTabIndex = 0;
 
         /// <summary>
         /// use this ledger
@@ -43,7 +48,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FLedgerNumber = value;
-                ucoBatches.LoadBatches(FLedgerNumber);
+                ucoRecurringBatches.LoadRecurringBatches(FLedgerNumber);
+
+                this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+
+                //Enable below if want code to run before standard Save() is executed
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
             }
         }
 
@@ -52,13 +62,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-            ucoBatches.RefreshAll();
+            ucoRecurringBatches.RefreshAll();
+        }
+
+        // Before the dataset is saved, check for correlation between batch and transactions
+        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            ucoRecurringBatches.CheckBeforeSaving();
+            ucoRecurringTransactions.CheckBeforeSaving();
         }
 
         private void InitializeManualCode()
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
-            this.tpgTransactions.Enabled = false;
+            this.tpgRecurringTransactions.Enabled = false;
         }
 
         /// <summary>
@@ -71,60 +88,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             switch (tabGiftBatch.SelectedIndex)
             {
                 case (int)eGiftTabs.Batches:
-                    ucoBatches.MniFilterFind_Click(sender, e);
+                    ucoRecurringBatches.MniFilterFind_Click(sender, e);
                     break;
 
                 case (int)eGiftTabs.Transactions:
-                    ucoTransactions.MniFilterFind_Click(sender, e);
+                    ucoRecurringTransactions.ReconcileKeyMinistryFromCombo();
+                    ucoRecurringTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
         }
 
-        private int standardTabIndex = 0;
-
-        private void TFrmGiftBatch_Load(object sender, EventArgs e)
+        private void TFrmRecurringGiftBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
             tabGiftBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null);
+
+            this.Shown += delegate
+            {
+                // This will ensure the grid gets the focus when the screen is shown for the first time
+                ucoRecurringBatches.SetInitialFocus();
+            };
         }
 
         private void RunOnceOnActivationManual()
         {
-            ucoBatches.Focus();
-            HookupAllInContainer(ucoBatches);
-            HookupAllInContainer(ucoTransactions);
-            this.Resize += new EventHandler(TFrmGiftBatch_Resize);
-        }
-
-        private bool FWindowIsMaximized = false;
-        void TFrmGiftBatch_Resize(object sender, EventArgs e)
-        {
-            if (this.WindowState == FormWindowState.Maximized)
-            {
-                // set the flag that we are maximized
-                FWindowIsMaximized = true;
-
-                if (tabGiftBatch.SelectedTab == this.tpgBatches)
-                {
-                    ucoTransactions.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing transactions");
-                }
-                else
-                {
-                    ucoBatches.AutoSizeGrid();
-                    Console.WriteLine("Maximised - autosizing batches");
-                }
-            }
-            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
-            {
-                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
-                ucoBatches.AutoSizeGrid();
-                ucoTransactions.AutoSizeGrid();
-                FWindowIsMaximized = false;
-                Console.WriteLine("Normal - autosizing both");
-            }
+            ucoRecurringBatches.Focus();
+            HookupAllInContainer(ucoRecurringBatches);
+            HookupAllInContainer(ucoRecurringTransactions);
         }
 
         /// <summary>
@@ -135,16 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if new transactions were actually loaded, False if transactions have already been loaded for the ledger/batch</returns>
         public bool LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            try
-            {
-                //this.tpgTransactions.Enabled = true;
-                FPetraUtilsObject.DisableDataChangedEvent();
-                return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber);
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
+            return this.ucoRecurringTransactions.LoadRecurringGifts(ALedgerNumber, ABatchNumber);
         }
 
         /// <summary>
@@ -152,27 +135,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ClearCurrentSelections()
         {
-            if (this.ucoBatches != null)
+            if (this.ucoRecurringBatches != null)
             {
-                this.ucoBatches.ClearCurrentSelection();
+                this.ucoRecurringBatches.ClearCurrentSelection();
             }
 
-            if (this.ucoTransactions != null)
+            if (this.ucoRecurringTransactions != null)
             {
-                this.ucoTransactions.ClearCurrentSelection();
+                this.ucoRecurringTransactions.ClearCurrentSelection();
             }
         }
 
         /// enable the transaction tab page
-        public void EnableTransactionsTab(bool AEnable = true)
+        public void EnableTransactions(bool AEnable = true)
         {
-            this.tpgTransactions.Enabled = AEnable;
+            this.tpgRecurringTransactions.Enabled = AEnable;
         }
 
         /// enable the transaction tab page
-        public void DisableTransactionsTab()
+        public void DisableTransactions()
         {
-            this.tpgTransactions.Enabled = false;
+            this.tpgRecurringTransactions.Enabled = false;
         }
 
         /// <summary>
@@ -180,7 +163,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public TUC_RecurringGiftBatches GetBatchControl()
         {
-            return ucoBatches;
+            return ucoRecurringBatches;
         }
 
         /// <summary>
@@ -188,7 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public TUC_RecurringGiftTransactions GetTransactionsControl()
         {
-            return ucoTransactions;
+            return ucoRecurringTransactions;
         }
 
         /// this window contains 2 tabs
@@ -205,7 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!SaveChanges())
+            if (!ValidateAllData(false, true))
             {
                 e.Cancel = true;
 
@@ -235,33 +218,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ATab == eGiftTabs.Batches)
             {
-                this.tabGiftBatch.SelectedTab = this.tpgBatches;
-                this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
-                this.ucoBatches.FocusGrid();
+                this.tabGiftBatch.SelectedTab = this.tpgRecurringBatches;
+                this.tpgRecurringTransactions.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
+                this.ucoRecurringBatches.SetFocusToGrid();
             }
             else if (ATab == eGiftTabs.Transactions)
             {
-                if (this.tpgTransactions.Enabled)
+                if (this.tpgRecurringTransactions.Enabled)
                 {
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
-                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
-                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
-                    ARecurringGiftBatchRow SelectedRow = ucoBatches.GetSelectedDetailRow();
+                    this.tabGiftBatch.SelectedTab = this.tpgRecurringTransactions;
+
+                    ARecurringGiftBatchRow SelectedRow = ucoRecurringBatches.GetSelectedDetailRow();
+
+                    // If there's only one GiftBatch row, I'll not require that the user has selected it!
+                    if (FMainDS.ARecurringGiftBatch.Rows.Count == 1)
+                    {
+                        SelectedRow = FMainDS.ARecurringGiftBatch[0];
+                    }
 
                     if (SelectedRow != null)
                     {
-                        this.Cursor = Cursors.WaitCursor;
-
-                        if (LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber))
+                        try
                         {
-                            // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
-                            ucoTransactions.AutoSizeGrid();
-                        }
+                            this.Cursor = Cursors.WaitCursor;
 
-                        this.Cursor = Cursors.Default;
+                            LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber);
+                        }
+                        finally
+                        {
+                            this.Cursor = Cursors.Default;
+                        }
                     }
 
-                    this.ucoTransactions.FocusGrid();
+                    ucoRecurringTransactions.FocusGrid();
                 }
             }
         }
@@ -271,16 +261,171 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if ((tabGiftBatch.SelectedTab == tpgBatches) && (ucoBatches.ProcessParentCmdKey(ref msg, keyData)))
+            if (keyData == (Keys.S | Keys.Control))
+            {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    SaveChanges();
+                }
+
+                return true;
+            }
+
+            if ((tabGiftBatch.SelectedTab == tpgRecurringBatches) && (ucoRecurringBatches.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }
-            else if ((tabGiftBatch.SelectedTab == tpgTransactions) && (ucoTransactions.ProcessParentCmdKey(ref msg, keyData)))
+            else if ((tabGiftBatch.SelectedTab == tpgRecurringTransactions) && (ucoRecurringTransactions.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        /// <summary>
+        /// Check for any errors
+        /// </summary>
+        /// <param name="AShowMessage"></param>
+        public void ProcessRecipientCostCentreCodeUpdateErrors(bool AShowMessage = true)
+        {
+            //Process update errors
+            if (FMainDS.Tables.Contains("AUpdateErrors"))
+            {
+                //TODO remove this code when the worker field issue is sorted out
+                AShowMessage = false;
+
+                //--------------------------------------------------------------
+                if (AShowMessage)
+                {
+                    string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
+
+                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
+                            Environment.NewLine,
+                            loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                FMainDS.Tables.Remove("AUpdateErrors");
+            }
+        }
+
+        private int GetChangedRecordCountManual(out string AMessage)
+        {
+            // For Gift Batch we will
+            //  either get a change to N Batches
+            //  or get changes to M transactions in N Batches
+            List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
+            int allChangesCount = 0;
+
+            foreach (DataTable dt in FMainDS.Tables)
+            {
+                if (dt != null)
+                {
+                    int tableChangesCount = 0;
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        if (dr.RowState != DataRowState.Unchanged)
+                        {
+                            tableChangesCount++;
+                            allChangesCount++;
+                        }
+                    }
+
+                    if (tableChangesCount > 0)
+                    {
+                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
+                    }
+                }
+            }
+
+            // Now build up a sensible message
+            AMessage = String.Empty;
+
+            if (TableAndCountList.Count > 0)
+            {
+                if (TableAndCountList.Count == 1)
+                {
+                    // Only saving changes to batches
+                    Tuple <string, int>TableAndCount = TableAndCountList[0];
+
+                    AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
+                        TableAndCount.Item2,
+                        Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
+                        Environment.NewLine);
+                }
+                else
+                {
+                    // Saving changes to transactions as well
+                    int nBatches = 0;
+                    int nTransactions = 0;
+
+                    foreach (Tuple <string, int>TableAndCount in TableAndCountList)
+                    {
+                        if (TableAndCount.Item1.Equals(ARecurringGiftBatchTable.GetTableName()))
+                        {
+                            nBatches = TableAndCount.Item2;
+                        }
+                        else if (TableAndCount.Item2 > nTransactions)
+                        {
+                            nTransactions = TableAndCount.Item2;
+                        }
+                    }
+
+                    if (nBatches == 0)
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nTransactions,
+                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                            Environment.NewLine);
+                    }
+                    else
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            nTransactions,
+                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                            Environment.NewLine);
+                    }
+                }
+
+                AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
+            }
+
+            return allChangesCount;
+        }
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            // update gift destination
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)
+            {
+                ucoRecurringTransactions.ProcessGiftDetainationBroadcastMessage(AFormsMessage);
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
+        }
+
+        #endregion
     }
 }

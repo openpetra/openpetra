@@ -22,29 +22,19 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Drawing;
 using System.Collections;
-using System.ComponentModel;
 using System.Collections.Specialized;
 using System.Windows.Forms;
-using System.Data;
-using System.Resources;
 using System.Threading;
-using GNU.Gettext;
 using Ict.Common.Remoting.Client;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common.Verification;
-using SourceGrid;
-using SourceGrid.Selection;
 using System.IO;
-using System.Diagnostics;
-using Microsoft.Win32;
 using Ict.Common;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Controls;
-using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MReporting.Gui
@@ -710,6 +700,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.FWinForm.Cursor = Cursors.WaitCursor;
             FormCursor = FWinForm.Cursor;
             TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
+
+            // Open Extract Mast Screen if not already open.
+            // (If being opened, the screen will not actually be shown at theis stage.)
+            if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
+            {
+                TCommonScreensForwarding.OpenExtractMasterScreenHidden.Invoke(((ToolStripButton)sender).GetCurrentParent().FindForm());
+            }
 
             if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
             {

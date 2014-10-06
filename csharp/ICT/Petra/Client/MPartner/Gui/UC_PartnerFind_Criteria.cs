@@ -338,6 +338,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataRow PartnerClassDataRow;
 
             TmpString = ARestrictedPartnerClasses[0];
+            FPartnerClassDataTable.Rows.Clear();
 
             if (TmpString.IndexOf("WORKER-FAM") >= 0)
             {
@@ -471,15 +472,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblCounty.Text = Catalog.GetString("Co&unty") + ":";
             this.lblCountry.Text = Catalog.GetString("Co&untry") + ":";
             this.lblMailingAddressOnly.Text = Catalog.GetString("Mailin&g Addresses Only") + ":";
-            this.lblAccountName.Text = Catalog.GetString("&Account Name") + ":";
-            this.lblAccountNumber.Text = Catalog.GetString("A&ccount Number") + ":";
-            this.lblIban.Text = Catalog.GetString("&IBAN") + ":";
-            this.lblBic.Text = Catalog.GetString("B&IC/SWIFT Code") + ":";
-            this.lblBankCode.Text = Catalog.GetString("&Bank/Branch Code") + ":";
+            this.lblAccountName.Text = Catalog.GetString("Account Name") + ":";
+            this.lblAccountNumber.Text = Catalog.GetString("Account Number") + ":";
+            this.lblIban.Text = Catalog.GetString("IBAN") + ":";
+            this.lblBic.Text = Catalog.GetString("BIC") + ":";
+            this.lblBankKey.Text = Catalog.GetString("Bank Key") + ":";
+            this.txtBankKey.ButtonText = Catalog.GetString("Find");
+            this.lblBankName.Text = Catalog.GetString("Bank/Branch Name") + ":";
+            this.lblBankCode.Text = Catalog.GetString("Branch/Bank Code") + ":";
             #endregion
         }
 
         #region Bank Comboboxes
+
+        bool FComboBoxesCreated = false;
 
         /// <summary>
         /// Populates cmbBankName and cmbBankCode (loads data from database if needed)
@@ -493,59 +499,98 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Load bank records. (I don't think this will ever be null. Database is populated when tab is loaded.)
             if (FBankDataset == null)
             {
-                // Do not load bank locations as this is much faster.
-                // Downside is that 'Find Bank' dialog must then load bank data from scratch from the database. But this is ok.
-                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(false);
-                //txtBankKey.DataSet = FBankDataset;
+                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
+            }
+
+            txtBankKey.DataSet = FBankDataset;
+
+            // create new datatable without any partnerkey duplicates (same bank with different locations)
+            PBankTable ComboboxTable = new PBankTable();
+
+            foreach (BankTDSPBankRow Row in FBankDataset.PBank.Rows)
+            {
+                if (!ComboboxTable.Rows.Contains(Row.PartnerKey))
+                {
+                    PBankRow AddRow = (PBankRow)ComboboxTable.NewRow();
+                    AddRow.PartnerKey = Row.PartnerKey;
+                    AddRow.BranchName = Row.BranchName;
+                    AddRow.BranchCode = Row.BranchCode;
+                    ComboboxTable.Rows.Add(AddRow);
+                }
             }
 
             // add empty row
-            DataRow emptyRow = FBankDataset.PBank.NewRow();
-            emptyRow[PBankTable.ColumnPartnerKeyId] = 0;
-            emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
-            emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("");
-            FBankDataset.PBank.Rows.Add(emptyRow);
-
-            // add inactive row
-            emptyRow = FBankDataset.PBank.NewRow();
+            DataRow emptyRow = ComboboxTable.NewRow();
             emptyRow[PBankTable.ColumnPartnerKeyId] = -1;
             emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
-            emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("<INACTIVE> ");
-            FBankDataset.PBank.Rows.Add(emptyRow);
+            emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("");
+            ComboboxTable.Rows.Add(emptyRow);
+
+            // add inactive row
+            emptyRow = ComboboxTable.NewRow();
+            emptyRow[PBankTable.ColumnPartnerKeyId] = -2;
+            emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
+            emptyRow[PBankTable.ColumnBranchCodeId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ";
+            ComboboxTable.Rows.Add(emptyRow);
 
             // populate the bank name combo box
-            cmbBankName.InitialiseUserControl(FBankDataset.PBank,
+            cmbBankName.InitialiseUserControl(ComboboxTable,
                 PBankTable.GetPartnerKeyDBName(),
                 PBankTable.GetBranchNameDBName(),
                 PBankTable.GetBranchCodeDBName(),
                 null);
-            cmbBankName.AppearanceSetup(new int[] { 175, 160 }, -1);
             cmbBankName.Filter = PBankTable.GetBranchNameDBName() + " <> '' OR " +
                                  PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = ''";
             cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
 
             // populate the bank code combo box
-            cmbBankCode.InitialiseUserControl(FBankDataset.PBank,
+            cmbBankCode.InitialiseUserControl(ComboboxTable,
                 PBankTable.GetBranchCodeDBName(),
                 PBankTable.GetPartnerKeyDBName(),
                 null);
-            cmbBankCode.AppearanceSetup(new int[] { 175 }, -1);
             // filter rows that are blank or <INACTIVE>
-            cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '<INACTIVE> ') " +
+            cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '" +
+                                 SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '') " +
-                                 "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '<INACTIVE> ')";
+                                 "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '" +
+                                 SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ')";
             cmbBankCode.SelectedValueChanged += new System.EventHandler(this.BankCodeChanged);
+
+            FComboBoxesCreated = true;
+        }
+
+        private void TUC_PartnerFindCriteria_SizeChanged(System.Object sender, EventArgs e)
+        {
+            int ComboWidth = spcCriteria.Panel1.Width - cmbBankName.Location.X - 6;
+
+            cmbBankName.Width = ComboWidth;
+            cmbBankName.AppearanceSetup(new int[] { ComboWidth, 200 }, -1);
+            cmbBankCode.Width = ComboWidth;
+            cmbBankCode.AppearanceSetup(new int[] { ComboWidth }, -1);
         }
 
         /// <summary>
         /// The currently selected account's PBank row
         /// </summary>
-        private PBankRow FCurrentBankRow = null;
+        private PBankRow FCurrentBankRow;
 
         // called when FindBank dialog is accepted
         private void PartnerKeyChanged(long APartnerKey, String APartnerShortName, bool AValidSelection)
         {
-            FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { APartnerKey });
+            if (!FComboBoxesCreated)
+            {
+                return;
+            }
+
+            if (FBankDataset == null)
+            {
+                // populate the comboboxes for Bank Name and Bank Code if not done already (this should never actually happen!)
+                PopulateBankComboBoxes();
+            }
+
+            FCurrentBankRow = GetCurrentRow(APartnerKey);
+
+            // set search criteria
             FFindCriteriaDataTable.Rows[0]["BankKey"] = APartnerKey;
 
             // change the BankName combo (if it was not the control used to change the bank)
@@ -560,7 +605,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 while (cmbBankName.GetSelectedString() != FCurrentBankRow.BranchName
                        && cmbBankName.GetSelectedDescription() != FCurrentBankRow.BranchCode)
                 {
-                    cmbBankName.SelectedIndex += 1;
+                    cmbBankName.cmbCombobox.SelectedIndex += 1;
                 }
 
                 cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
@@ -593,14 +638,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void PartnerKeyChanged(System.Object sender, EventArgs e)
         {
-            PartnerKeyChanged(Convert.ToInt64(txtBankKey.Text), "", true);
+            // this if stops a crash when screen is closed causing this event to be fired
+            if (txtBankKey.Text != "")
+            {
+                PartnerKeyChanged(Convert.ToInt64(txtBankKey.Text), "", true);
+            }
         }
 
         // when cmbBankName is changed
         private void BankNameChanged(System.Object sender, EventArgs e)
         {
             // if a blank name has just been selected
-            if ((cmbBankName.GetSelectedString() == "") && (FCurrentBankRow.BranchName != ""))
+            if (string.IsNullOrEmpty(cmbBankName.GetSelectedString())
+                && ((FCurrentBankRow == null) || string.IsNullOrEmpty(FCurrentBankRow.BranchName)))
             {
                 txtBankKey.Text = "0";
             }
@@ -610,7 +660,40 @@ namespace Ict.Petra.Client.MPartner.Gui
                      && (cmbBankName.GetSelectedString() != "")
                      && cmbBankName.ContainsFocus)
             {
-                FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { Convert.ToInt64(cmbBankName.GetSelectedString()) });
+                FCurrentBankRow = GetCurrentRow(Convert.ToInt64(cmbBankName.GetSelectedString()));
+
+                // update partner key in txtBankKey
+                if (FCurrentBankRow != null)
+                {
+                    txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
+                    PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
+                }
+                else
+                {
+                    txtBankKey.Text = "0";
+                    PartnerKeyChanged(0, "", true);
+                }
+            }
+        }
+
+        // when cmbBankCode is changed
+        private void BankCodeChanged(System.Object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && (FCurrentBankRow == null))
+            {
+                return;
+            }
+            else if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
+                     || ((cmbBankCode.GetSelectedString() == SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ")
+                         && (FCurrentBankRow.BranchCode != SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " ")))
+            {
+                // if "<INACTIVE>" has been selected change it to blank
+                cmbBankCode.SelectedIndex = -1;
+                txtBankKey.Text = "0";
+            }
+            else if ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString()))
+            {
+                FCurrentBankRow = GetCurrentRow(Convert.ToInt64(cmbBankCode.GetSelectedDescription()));
 
                 // update partner key in txtBankKey
                 txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
@@ -618,27 +701,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        // when cmbBankCode is changed
-        private void BankCodeChanged(System.Object sender, EventArgs e)
+        private BankTDSPBankRow GetCurrentRow(long APartnerKey)
         {
-            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && (FCurrentBankRow != null)
-                 && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
-                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != "<INACTIVE> "))))
-            {
-                // if "<INACTIVE>" has been selected change it to blank
-                FCurrentBankRow = FBankDataset.PBank.NewRowTyped();
-                FCurrentBankRow.BranchCode = "";
-                cmbBankCode.SelectedIndex = -1;
-                txtBankKey.Text = "0";
-            }
-            else if ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString()))
-            {
-                FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { cmbBankCode.GetSelectedDescription() });
+            BankTDSPBankRow ReturnValue = null;
 
-                // update partner key in txtBankKey
-                txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
-                PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
+            // Multiple rows could have the same partner keys but different locaitons.
+            // We just want the first row.
+            foreach (BankTDSPBankRow Row in FBankDataset.PBank.Rows)
+            {
+                if (Row.PartnerKey == APartnerKey)
+                {
+                    ReturnValue = Row;
+                    break;
+                }
             }
+
+            return ReturnValue;
         }
 
         #endregion
@@ -711,7 +789,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;
+            if (cmbPartnerClass.Text != "FAMILY")
+            {
+                FCurrentWorkerFamOnlySelection = chkWorkerFamOnly.Checked;
+            }
 
             if (!FPartnerClassUpdateIsAutomatic)
             {
@@ -784,6 +865,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     txtPersonalName.Enabled = true;
                 }
+
+                if (FWorkerFamOnly == true)
+                {
+                    FFindCriteriaDataTable.Rows[0]["WORKERFAMONLY"] = true;
+                }
             }
             else if (txtPersonalName.Enabled == true)
             {
@@ -793,6 +879,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FDontRecordCurrentWorkerFamOnlySelection = false;
+
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbPartnerClass.DroppedDown)
+            {
+                // this is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down
+                PartnerClassDroppedDown = true;
+            }
         }
 
         private void BtnLocationKey_Click(System.Object sender, System.EventArgs e)
@@ -1989,7 +2082,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     critAccountNumber.DataBindings.Clear();
                     critIban.DataBindings.Clear();
                     critBic.DataBindings.Clear();
-                    //critBankCode.DataBindings.Clear();
                 }
             }
 
@@ -3065,6 +3157,91 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
+
+        /// <summary>
+        /// Set a default partner class
+        /// </summary>
+        /// <param name="ADefaultClass"></param>
+        public void SetDefaultPartnerClass(TPartnerClass ? ADefaultClass)
+        {
+            cmbPartnerClass.Text = ADefaultClass.ToString();
+        }
+
+        #region Comboboxes and the Enter key
+
+        // This is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down.
+
+        private bool CountryDroppedDown = false;
+        private bool BankNameDroppedDown = false;
+        private bool BankCodeDroppedDown = false;
+        private bool PartnerClassDroppedDown = false;
+
+        /// <summary>
+        /// Determines if a combo box's value has been changed while the list is dropped down
+        /// and that that combo box still contains the focus.
+        /// </summary>
+        /// <returns></returns>
+        public bool ComboboxDroppedDown()
+        {
+            if (CountryDroppedDown && ucoCountryComboBox.ContainsFocus)
+            {
+                CountryDroppedDown = false;
+                return true;
+            }
+            else if (BankNameDroppedDown && cmbBankName.ContainsFocus)
+            {
+                BankNameDroppedDown = false;
+                return true;
+            }
+            else if (BankCodeDroppedDown && cmbBankCode.ContainsFocus)
+            {
+                BankCodeDroppedDown = false;
+                return true;
+            }
+            else if (PartnerClassDroppedDown && cmbPartnerClass.ContainsFocus)
+            {
+                PartnerClassDroppedDown = false;
+                return true;
+            }
+
+            CountryDroppedDown = false;
+            BankNameDroppedDown = false;
+            BankCodeDroppedDown = false;
+            PartnerClassDroppedDown = false;
+
+            return false;
+        }
+
+        // events triggered when a combo box's value is changed
+
+        private void UcoCountryComboBox_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (ucoCountryComboBox.DroppedDown)
+            {
+                CountryDroppedDown = true;
+            }
+        }
+
+        private void CmbBankName_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbBankName.cmbCombobox.DroppedDown)
+            {
+                BankNameDroppedDown = true;
+            }
+        }
+
+        private void CmbBankCode_SelectedValueChanged(System.Object sender, System.EventArgs e)
+        {
+            // if the list is dropped down while the value is changed (not the case when a value from the list is clicked on)
+            if (cmbBankCode.cmbCombobox.DroppedDown)
+            {
+                BankCodeDroppedDown = true;
+            }
+        }
+
+        #endregion
     }
 
     /// <summary>todoComment</summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -39,6 +39,7 @@ namespace Ict.Tools.DataDumpPetra2
     public class TFixData
     {
         private static int FormSequence = 1;
+        private static List <string>FormElementsWithSequence0 = new List <string>();
         private static List <string>PostcodeRegionsList = new List <string>();
 
         /// <summary>
@@ -98,7 +99,10 @@ namespace Ict.Tools.DataDumpPetra2
             return ColumnNames;
         }
 
-        private static string FixValue(string AValue, TTableField ANewField)
+        /// <summary>
+        /// convert values from Progress notation to Postgresql notation
+        /// </summary>
+        public static string FixValue(string AValue, TTableField ANewField)
         {
             if (ANewField.strName == "s_modification_id_t")
             {
@@ -196,18 +200,39 @@ namespace Ict.Tools.DataDumpPetra2
             return AValue;
         }
 
-        /// <summary>
-        /// fix data that would cause problems for PostgreSQL constraints
-        /// </summary>
-        public static int MigrateData(TParseProgressCSV AParser, StreamWriter AWriter, StreamWriter AWriterTest, TTable AOldTable, TTable ANewTable)
+        private static void FixRow(string[] OldRow,
+            ref string[] NewRow,
+            StringCollection AOldColumnNames,
+            StringCollection ANewColumnNames,
+            TTable ANewTable,
+            List <TTableField>AMappingOfFields,
+            List <string>ADefaultValues)
         {
-            StringCollection OldColumnNames = GetColumnNames(AOldTable);
-            StringCollection NewColumnNames = GetColumnNames(ANewTable);
-            int RowCounter = 0;
+            int fieldCounter = 0;
 
-            List <TTableField>MappingOfFields = new List <TTableField>();
-            List <string>DefaultValues = new List <string>();
+            foreach (TTableField newField in ANewTable.grpTableField)
+            {
+                TTableField oldField = AMappingOfFields[fieldCounter];
 
+                if (oldField != null)
+                {
+                    string value = GetValue(AOldColumnNames, OldRow, oldField.strName);
+
+                    value = FixValue(value, newField);
+
+                    SetValue(ANewColumnNames, ref NewRow, newField.strName, value);
+                }
+                else
+                {
+                    SetValue(ANewColumnNames, ref NewRow, newField.strName, ADefaultValues[fieldCounter]);
+                }
+
+                fieldCounter++;
+            }
+        }
+
+        private static void PrepareTable(TTable AOldTable, TTable ANewTable, ref List <TTableField>AMappingOfFields, ref List <string>ADefaultValues)
+        {
             foreach (TTableField newField in ANewTable.grpTableField)
             {
                 string oldname = "";
@@ -219,7 +244,7 @@ namespace Ict.Tools.DataDumpPetra2
                     oldField = AOldTable.GetField(oldname);
                 }
 
-                MappingOfFields.Add(oldField);
+                AMappingOfFields.Add(oldField);
 
                 // prepare the default values once
                 // this is a new field. insert default value
@@ -251,8 +276,18 @@ namespace Ict.Tools.DataDumpPetra2
                     }
                 }
 
-                DefaultValues.Add(defaultValue);
+                ADefaultValues.Add(defaultValue);
             }
+        }
+
+        /// <summary>
+        /// fix data that would cause problems for PostgreSQL constraints
+        /// </summary>
+        public static int MigrateData(TParseProgressCSV AParser, StreamWriter AWriter, StreamWriter AWriterTest, TTable AOldTable, TTable ANewTable)
+        {
+            StringCollection OldColumnNames = GetColumnNames(AOldTable);
+            StringCollection NewColumnNames = GetColumnNames(ANewTable);
+            int RowCounter = 0;
 
             string[] NewRow = CreateRow(NewColumnNames);
 
@@ -264,6 +299,11 @@ namespace Ict.Tools.DataDumpPetra2
                 return RowCounter;
             }
 
+            List <TTableField>MappingOfFields = new List <TTableField>();
+            List <string>DefaultValues = new List <string>();
+
+            PrepareTable(AOldTable, ANewTable, ref MappingOfFields, ref DefaultValues);
+
             while (true)
             {
                 string[] OldRow = AParser.ReadNextRow();
@@ -273,36 +313,20 @@ namespace Ict.Tools.DataDumpPetra2
                     break;
                 }
 
-                int fieldCounter = 0;
-
-                foreach (TTableField newField in ANewTable.grpTableField)
-                {
-                    TTableField oldField = MappingOfFields[fieldCounter];
-
-                    if (oldField != null)
-                    {
-                        string value = GetValue(OldColumnNames, OldRow, oldField.strName);
-
-                        value = FixValue(value, newField);
-
-                        SetValue(NewColumnNames, ref NewRow, newField.strName, value);
-                    }
-                    else
-                    {
-                        SetValue(NewColumnNames, ref NewRow, newField.strName, DefaultValues[fieldCounter]);
-                    }
-
-                    fieldCounter++;
-                }
+                FixRow(OldRow, ref NewRow, OldColumnNames, NewColumnNames, ANewTable, MappingOfFields, DefaultValues);
 
                 if (FixData(ANewTable.strName, NewColumnNames, ref NewRow))
                 {
                     RowCounter++;
                     AWriter.WriteLine(CSVFile.StrMergeSpecial(NewRow));
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ANewTable.strName + " FROM stdin;");
-                    AWriterTest.WriteLine(CSVFile.StrMergeSpecial(NewRow));
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ANewTable.strName + " FROM stdin;");
+                        AWriterTest.WriteLine(CSVFile.StrMergeSpecial(NewRow));
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
                 }
             }
 
@@ -682,8 +706,19 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 if (GetValue(AColumnNames, ANewRow, "a_form_sequence_i") == "0")
                 {
-                    SetValue(AColumnNames, ref ANewRow, "a_form_sequence_i", FormSequence.ToString());
-                    FormSequence++;
+                    // check if we have multiple rows with same formcode and formname, with sequence 0
+                    // if patch 2.2.7 has been run, we should already have valid sequences
+                    string FormElementID = GetValue(AColumnNames, ANewRow, "a_form_code_c") + "::" + GetValue(AColumnNames, ANewRow, "a_form_name_c");
+
+                    if (FormElementsWithSequence0.Contains(FormElementID))
+                    {
+                        SetValue(AColumnNames, ref ANewRow, "a_form_sequence_i", FormSequence.ToString());
+                        FormSequence++;
+                    }
+                    else
+                    {
+                        FormElementsWithSequence0.Add(FormElementID);
+                    }
                 }
             }
 
@@ -791,6 +826,40 @@ namespace Ict.Tools.DataDumpPetra2
                 MyWriter.Close();
             }
 
+            if (ATableName == "s_user_defaults")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "s_default_code_c");
+
+                // replace old user default code that contains Petra screen name
+                if (val == "GR1120-NEWDONOR")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "s_default_code_c", "NewDonorWarning");
+                }
+            }
+
+            if ((ATableName == "pt_congress_code") || (ATableName == "pt_arrival_point") || (ATableName == "pt_outreach_preference_level")
+                || (ATableName == "pt_leadership_rating"))
+            {
+                string val = GetValue(AColumnNames, ANewRow, "pt_code_c");
+
+                // ignore record if code is blank
+                if (val == "")
+                {
+                    return false;
+                }
+            }
+
+            if (ATableName == "pt_contact")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "pt_contact_name_c");
+
+                // ignore record if this field is blank
+                if (val == "")
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -850,10 +919,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_default_value_c", SiteKey);
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -921,10 +995,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -954,10 +1033,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -993,6 +1077,12 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "pm_degree_c", "\\N");
                 SetValue(AColumnNames, ref ANewRow, "pm_year_of_degree_i", "0");
 
+                string[] FixedRow = CreateRow(PersonAbilityColumnNames);
+                List <TTableField>MappingOfFields = new List <TTableField>();
+                List <string>DefaultValues = new List <string>();
+
+                PrepareTable(PersonAbility, PersonAbility, ref MappingOfFields, ref DefaultValues);
+
                 while (true)
                 {
                     string[] OldRow = ParserAbility.ReadNextRow();
@@ -1002,8 +1092,17 @@ namespace Ict.Tools.DataDumpPetra2
                         break;
                     }
 
+                    // we need to fix the row of PersonAbility, eg. so that the s_date_created_d will be converted for Postgresql
+                    FixRow(OldRow,
+                        ref FixedRow,
+                        PersonAbilityColumnNames,
+                        PersonAbilityColumnNames,
+                        PersonAbility,
+                        MappingOfFields,
+                        DefaultValues);
+
                     // map old ability_area_name to new skill category
-                    String AbilityAreaName = GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_area_name_c");
+                    String AbilityAreaName = GetValue(PersonAbilityColumnNames, FixedRow, "pt_ability_area_name_c");
                     SkillCategory = "OTHER";
                     Description = "";
 
@@ -1044,7 +1143,7 @@ namespace Ict.Tools.DataDumpPetra2
                     }
 
                     // map old ability level to new skill level
-                    int AbilityLevel = Convert.ToInt32(GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_level_i"));
+                    int AbilityLevel = Convert.ToInt32(GetValue(PersonAbilityColumnNames, FixedRow, "pt_ability_level_i"));
                     SkillLevel = 99; // remains 99 if unknown
 
                     if ((AbilityLevel >= 0) && (AbilityLevel <= 3))
@@ -1064,7 +1163,7 @@ namespace Ict.Tools.DataDumpPetra2
                         SkillLevel = 4;
                     }
 
-                    string Comment = GetValue(PersonAbilityColumnNames, OldRow, "pm_comment_c");
+                    string Comment = GetValue(PersonAbilityColumnNames, FixedRow, "pm_comment_c");
 
                     if (SkillCategory == "OTHER")
                     {
@@ -1072,27 +1171,32 @@ namespace Ict.Tools.DataDumpPetra2
                     }
 
                     SetValue(AColumnNames, ref ANewRow, "pm_person_skill_key_i", RowCounter.ToString());
-                    SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(PersonAbilityColumnNames, OldRow, "p_partner_key_n"));
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(PersonAbilityColumnNames, FixedRow, "p_partner_key_n"));
                     SetValue(AColumnNames, ref ANewRow, "pm_skill_category_code_c", SkillCategory);
                     SetValue(AColumnNames, ref ANewRow, "pm_description_english_c", Description);
                     SetValue(AColumnNames, ref ANewRow, "pm_skill_level_i", SkillLevel.ToString());
                     SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_i",
-                        GetValue(PersonAbilityColumnNames, OldRow, "pm_years_of_experience_i"));
+                        GetValue(PersonAbilityColumnNames, FixedRow, "pm_years_of_experience_i"));
                     SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_as_of_d",
-                        GetValue(PersonAbilityColumnNames, OldRow, "pm_years_of_experience_as_of_d"));
+                        GetValue(PersonAbilityColumnNames, FixedRow, "pm_years_of_experience_as_of_d"));
                     SetValue(AColumnNames, ref ANewRow, "pm_professional_skill_l", "0");
                     SetValue(AColumnNames, ref ANewRow, "pm_comment_c", Comment);
-                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_created_d"));
-                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_created_by_c"));
-                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_modified_d"));
-                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_modified_by_c"));
-                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, OldRow, "s_modification_id_t"));
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", GetValue(PersonAbilityColumnNames, FixedRow, "s_date_created_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", GetValue(PersonAbilityColumnNames, FixedRow, "s_created_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, FixedRow, "s_date_modified_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, FixedRow, "s_modified_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, FixedRow, "s_modification_id_t"));
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
 
@@ -1106,6 +1210,11 @@ namespace Ict.Tools.DataDumpPetra2
                     PersonQualification.grpTableField.Count);
 
                 StringCollection PersonQualificationColumnNames = GetColumnNames(PersonQualification);
+                FixedRow = CreateRow(PersonQualificationColumnNames);
+                MappingOfFields = new List <TTableField>();
+                DefaultValues = new List <string>();
+
+                PrepareTable(PersonQualification, PersonQualification, ref MappingOfFields, ref DefaultValues);
 
                 while (true)
                 {
@@ -1116,8 +1225,17 @@ namespace Ict.Tools.DataDumpPetra2
                         break;
                     }
 
+                    // we need to fix the row of PersonQualification, eg. so that the s_date_created_d will be converted for Postgresql
+                    FixRow(OldRow,
+                        ref FixedRow,
+                        PersonQualificationColumnNames,
+                        PersonQualificationColumnNames,
+                        PersonQualification,
+                        MappingOfFields,
+                        DefaultValues);
+
                     // map old qualification_area_name to new skill category
-                    String QualificationAreaName = GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_area_name_c");
+                    String QualificationAreaName = GetValue(PersonQualificationColumnNames, FixedRow, "pt_qualification_area_name_c");
                     SkillCategory = "OTHER";
                     Description = "";
 
@@ -1158,7 +1276,7 @@ namespace Ict.Tools.DataDumpPetra2
                     }
 
                     // map old Qualification level to new skill level
-                    int QualificationLevel = Convert.ToInt32(GetValue(PersonQualificationColumnNames, OldRow, "pt_qualification_level_i"));
+                    int QualificationLevel = Convert.ToInt32(GetValue(PersonQualificationColumnNames, FixedRow, "pt_qualification_level_i"));
                     SkillLevel = 99; // remains 99 if unknown
 
                     if ((QualificationLevel >= 0) && (QualificationLevel <= 3))
@@ -1178,7 +1296,7 @@ namespace Ict.Tools.DataDumpPetra2
                         SkillLevel = 4;
                     }
 
-                    string Comment = GetValue(PersonQualificationColumnNames, OldRow, "pm_comment_c");
+                    string Comment = GetValue(PersonQualificationColumnNames, FixedRow, "pm_comment_c");
 
                     if (SkillCategory == "OTHER")
                     {
@@ -1215,27 +1333,32 @@ namespace Ict.Tools.DataDumpPetra2
                     }
 
                     SetValue(AColumnNames, ref ANewRow, "pm_person_skill_key_i", RowCounter.ToString());
-                    SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(PersonQualificationColumnNames, OldRow, "p_partner_key_n"));
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(PersonQualificationColumnNames, FixedRow, "p_partner_key_n"));
                     SetValue(AColumnNames, ref ANewRow, "pm_skill_category_code_c", SkillCategory);
                     SetValue(AColumnNames, ref ANewRow, "pm_description_english_c", Description);
                     SetValue(AColumnNames, ref ANewRow, "pm_skill_level_i", SkillLevel.ToString());
                     SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_i",
-                        GetValue(PersonQualificationColumnNames, OldRow, "pm_years_of_experience_i"));
+                        GetValue(PersonQualificationColumnNames, FixedRow, "pm_years_of_experience_i"));
                     SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_as_of_d",
-                        GetValue(PersonQualificationColumnNames, OldRow, "pm_years_of_experience_as_of_d"));
+                        GetValue(PersonQualificationColumnNames, FixedRow, "pm_years_of_experience_as_of_d"));
                     SetValue(AColumnNames, ref ANewRow, "pm_professional_skill_l", "1");
                     SetValue(AColumnNames, ref ANewRow, "pm_comment_c", Comment);
-                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_created_d"));
-                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_created_by_c"));
-                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_modified_d"));
-                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_modified_by_c"));
-                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, OldRow, "s_modification_id_t"));
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", GetValue(PersonAbilityColumnNames, FixedRow, "s_date_created_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", GetValue(PersonAbilityColumnNames, FixedRow, "s_created_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, FixedRow, "s_date_modified_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, FixedRow, "s_modified_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, FixedRow, "s_modification_id_t"));
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -1278,10 +1401,15 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                    AWriterTest.WriteLine("\\.");
-                    AWriterTest.WriteLine("ROLLBACK;");
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
                     RowCounter++;
                 }
             }
@@ -1326,10 +1454,15 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                 AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                AWriterTest.WriteLine("\\.");
-                AWriterTest.WriteLine("ROLLBACK;");
+
+                if (AWriterTest != null)
+                {
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                }
+
                 RowCounter++;
             }
 
@@ -1373,10 +1506,15 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                 AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                AWriterTest.WriteLine("\\.");
-                AWriterTest.WriteLine("ROLLBACK;");
+
+                if (AWriterTest != null)
+                {
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                }
+
                 RowCounter++;
             }
 
@@ -1488,10 +1626,15 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                         AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
-                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
-                        AWriterTest.WriteLine("\\.");
-                        AWriterTest.WriteLine("ROLLBACK;");
+
+                        if (AWriterTest != null)
+                        {
+                            AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                            AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                            AWriterTest.WriteLine("\\.");
+                            AWriterTest.WriteLine("ROLLBACK;");
+                        }
+
                         RowCounter++;
                     }
                 }

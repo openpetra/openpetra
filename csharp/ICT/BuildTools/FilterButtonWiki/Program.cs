@@ -105,7 +105,7 @@ namespace Ict.Tools.FilterButtonWiki
                     bool bHasGrid = yml.Contains("grdDetails:");
                     bool bHasDetails = yml.Contains("pnlDetails:");
                     bool bHasButtons = yml.Contains("pnlButtons:") || yml.Contains("pnlDetailButtons");
-                    bool bHasFilterFind = yml.Contains("[pnlFilterAndFind,");
+                    bool bHasFilterFind = yml.Contains("[pnlFilterAndFind,") || yml.Contains(", pnlFilterAndFind,");
                     bool bHasManualRowFilter = manual.Contains(".RowFilter = ");
 
                     if (!bHasGrid && !bHasDetails && !bHasButtons)

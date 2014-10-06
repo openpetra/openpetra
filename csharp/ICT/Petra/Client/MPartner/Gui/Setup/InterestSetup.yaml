@@ -46,5 +46,5 @@ RootNode:
                 Row0: [txtDetailInterest, cmbDetailCategory]
                 Row1: [txtDetailDescription]            
         txtDetailInterest: {Label=Interest, CharacterCasing=Upper}
-        cmbDetailCategory: {Label=Category, List=InterestCategoryList}
+        cmbDetailCategory: {Label=Category, List=InterestCategoryList, Validation=true}
         txtDetailDescription: {Width=357, ColSpan=2}

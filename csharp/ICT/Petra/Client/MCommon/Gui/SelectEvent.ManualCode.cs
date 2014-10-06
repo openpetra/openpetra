@@ -29,10 +29,13 @@ using System.Windows.Forms;
 using System.Data;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -64,6 +67,8 @@ namespace Ict.Petra.Client.MCommon.Gui
         private void EventFilterChanged(System.Object sender, System.EventArgs e)
         {
             LoadEventListData();
+            grdEvent.AutoResizeGrid();
+            grdEvent.Selection.SelectRow(1, true);
         }
 
         private void grdEventDoubleClick(System.Object sender, EventArgs e)
@@ -102,10 +107,10 @@ namespace Ict.Petra.Client.MCommon.Gui
             // Hook up EventFilterChanged Event to be able to react to changed filter
             ucoFilter.EventFilterChanged += new TEventHandlerEventFilterChanged(this.EventFilterChanged);
 
+            //grdEvent.AutoSizeCells();
+
             // now the filter is initialized we can load the initial data
             LoadEventListData();
-
-            grdEvent.AutoSizeCells();
 
             grdEvent.Columns.Clear();
 
@@ -115,13 +120,15 @@ namespace Ict.Petra.Client.MCommon.Gui
             grdEvent.AddDateColumn("Start Date", FEventTable.Columns[PPartnerLocationTable.GetDateEffectiveDBName()]);
             grdEvent.AddDateColumn("End Date", FEventTable.Columns[PPartnerLocationTable.GetDateGoodUntilDBName()]);
             grdEvent.AddPartnerKeyColumn("Event Key", FEventTable.Columns[PPartnerTable.GetPartnerKeyDBName()]);
-            grdEvent.AddTextColumn("Event Type", FEventTable.Columns[PUnitTable.GetUnitTypeCodeDBName()], 80);
+            grdEvent.AddTextColumn("Event Type", FEventTable.Columns[PUnitTable.GetUnitTypeCodeDBName()]);
 
             FEventTable.DefaultView.AllowDelete = false;
             FEventTable.DefaultView.AllowEdit = false;
             FEventTable.DefaultView.AllowNew = false;
 
             grdEvent.Selection.EnableMultiSelection = false;
+            grdEvent.AutoResizeGrid();
+            grdEvent.Selection.SelectRow(1, true);
         }
 
         private void LoadEventListData()

@@ -5,11 +5,11 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     FormType: browse
     Template: windowTDS
-    WindowWidth: 970
+    WindowWidth: 950
     WindowHeight: 800
 
     Events:
-        Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
+        Load: {class=System.EventHandler, method=TFrmRecurringGiftBatch_Load}    
     Actions:
 
     Controls:
@@ -17,15 +17,15 @@ RootNode:
             Controls: [tabGiftBatch]
             Dock: Fill
         tabGiftBatch: {Dock=Fill, DragTabPageEnabled=false}        
-        tpgBatches: 
+        tpgRecurringBatches: 
             Label: Batches
-            Controls: [ucoBatches]
-        tpgTransactions: 
+            Controls: [ucoRecurringBatches]
+        tpgRecurringTransactions: 
             Label: Details
-            Controls: [ucoTransactions]
-        ucoBatches:
+            Controls: [ucoRecurringTransactions]
+        ucoRecurringBatches:
             Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_RecurringGiftBatches
             Dock: Fill
-        ucoTransactions:
+        ucoRecurringTransactions:
             Type: Ict.Petra.Client.MFinance.Gui.Gift.TUC_RecurringGiftTransactions
             Dock: Fill    

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,9 +31,12 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.DataAggregates;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -305,6 +308,77 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// get the best email address that is valid today
+        /// </summary>
+        public static string GetBestEmailAddress(Int64 APartnerKey)
+        {
+            PLocationTable Address;
+            string CountryNameLocal;
+
+            return GetBestEmailAddressWithDetails(APartnerKey, out Address, out CountryNameLocal);
+        }
+
+        /// <summary>
+        /// get the best email address that is valid today, with some location details
+        /// </summary>
+        public static string GetBestEmailAddressWithDetails(Int64 APartnerKey, out PLocationTable AAddress, out string ACountryNameLocal)
+        {
+            string EmailAddress = "";
+            PLocationTable Address = null;
+            string CountryNameLocal = "";
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    DataSet PartnerLocationsDS = new DataSet();
+
+                    PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
+                    PartnerLocationsDS.Tables.Add(new PCountryTable());
+                    DataTable PartnerLocationTable = PartnerLocationsDS.Tables[PPartnerLocationTable.GetTableName()];
+                    PCountryTable CountryTable = (PCountryTable)PartnerLocationsDS.Tables[PCountryTable.GetTableName()];
+                    CountryTable.DefaultView.Sort = PCountryTable.GetCountryCodeDBName();
+
+                    // add special column BestAddress and Icon
+                    PartnerLocationTable.Columns.Add(new System.Data.DataColumn("BestAddress", typeof(Boolean)));
+                    PartnerLocationTable.Columns.Add(new System.Data.DataColumn("Icon", typeof(Int32)));
+
+                    // find all locations of the partner, put it into a dataset
+                    PPartnerLocationAccess.LoadViaPPartner(PartnerLocationsDS, APartnerKey, Transaction);
+
+                    Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
+                    Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationsDS);
+
+                    foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
+                    {
+                        // find the row with BestAddress = 1
+                        if (Convert.ToInt32(row["BestAddress"]) == 1)
+                        {
+                            if (!row.IsEmailAddressNull())
+                            {
+                                EmailAddress = row.EmailAddress;
+                            }
+
+                            // we also want the post address, need to load the p_location table:
+                            Address = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, Transaction);
+
+                            if (CountryTable.DefaultView.Find(Address[0].CountryCode) == -1)
+                            {
+                                CountryTable.Merge(PCountryAccess.LoadByPrimaryKey(Address[0].CountryCode, Transaction));
+                            }
+
+                            CountryNameLocal = CountryTable[CountryTable.DefaultView.Find(Address[0].CountryCode)].CountryNameLocal;
+                        }
+                    }
+                });
+
+            AAddress = Address;
+            ACountryNameLocal = CountryNameLocal;
+
+            return EmailAddress;
         }
     }
 }

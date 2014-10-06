@@ -36,6 +36,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -124,6 +125,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         // ColumnIndex of our new columns in the extended dataset
         private int UsedByColumnOrdinal = -1;
         private int ContextColumnOrdinal = -1;
+        private int DataTypeColumnOrdinal = -1;
         // These are the database values for the DataLabelUse table
         // We default to using in all screens - this is better than defaulting to none (which is not allowed)
         private const string DefaultPartnerUsedBy = "Bank,Church,Family,Organisation,Person,Unit,Venue";
@@ -189,6 +191,19 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // Add a 'Used By' column to our main dataset (Do it twice so we track changes)
             FMainDS.PDataLabel.Columns.Add("UsedByInit", typeof(String));
             UsedByColumnOrdinal = FMainDS.PDataLabel.Columns.Add(DBUsedBy, typeof(String)).Ordinal;
+
+            // Add a 'Converted Data Type' column to the dataset because we want to 'translate' from geeky database entries to friendly user ones
+            // This column data is derived from an expression
+            string expression = String.Format("IIF(p_data_type_c='char','{0}',", Catalog.GetString("Text"));
+            expression += String.Format("IIF(p_data_type_c='float','{0}',", Catalog.GetString("Number"));
+            expression += String.Format("IIF(p_data_type_c='currency','{0}',", Catalog.GetString("Currency"));
+            expression += String.Format("IIF(p_data_type_c='boolean','{0}',", Catalog.GetString("Yes/No"));
+            expression += String.Format("IIF(p_data_type_c='date','{0}',", Catalog.GetString("Date"));
+            expression += String.Format("IIF(p_data_type_c='time','{0}',", Catalog.GetString("Time"));
+            expression += String.Format("IIF(p_data_type_c='lookup','{0}',", Catalog.GetString("Option List"));
+            expression += String.Format("IIF(p_data_type_c='partnerkey','{0}',", Catalog.GetString("Partner Key"));
+            expression += String.Format("'{0}'))))))))", Catalog.GetString("Unknown"));
+            DataTypeColumnOrdinal = FMainDS.PDataLabel.Columns.Add("DataTypeEx", typeof(System.String), expression).Ordinal;
 
             // Load the Extra Data from DataLabelUse table
             Type DataTableType;
@@ -309,6 +324,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 new TValidationControlsData(clbUsedBy, GUIUsedBy));
 
             // This is the point at which we can add our additional column to the details grid
+            grdDetails.AddTextColumn(Catalog.GetString("Data Type"), FMainDS.PDataLabel.Columns[DataTypeColumnOrdinal]);
+            grdDetails.AddCheckBoxColumn(Catalog.GetString("Displayed"), FMainDS.PDataLabel.ColumnDisplayed);
+
             if (CurrentContext != Context.Personnel)
             {
                 grdDetails.AddTextColumn(GUIUsedBy, FMainDS.PDataLabel.Columns[DBUsedBy]);
@@ -323,6 +341,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             contextView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
+
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter("Context=" + ((int)CurrentContext).ToString(), true);
 
             grdDetails.SelectRowWithoutFocus(1);
         }
@@ -447,29 +467,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            // We use non-standard code here because of our three contexts
-            // We cannot call CreateNewPDataLabel() because it won't have the correct RowFilter
-            // So we use a modified version of the auto-generated code
-            if (ValidateAllData(true, true))
-            {
-                PDataLabelRow NewRow = FMainDS.PDataLabel.NewRowTyped();
-
-                NewRowManual(ref NewRow);
-                FMainDS.PDataLabel.Rows.Add(NewRow);
-
-                FPetraUtilsObject.SetChangedFlag();
-
-                DataView contextView = new DataView(FMainDS.PDataLabel,
-                    "Context=" + ((int)CurrentContext).ToString(), "p_group_c, p_text_c", DataViewRowState.CurrentRows);
-                contextView.AllowNew = false;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
-                grdDetails.Refresh();
-                SelectDetailRowByDataTableIndex(FMainDS.PDataLabel.Rows.Count - 1);
-
-                //CreateNewPDataLabel();
-                txtDetailText.SelectAll();
-                txtDetailText.Focus();
-            }
+            CreateNewPDataLabel();
         }
 
         // We have to have our own handler for the delete button because we need to check references
@@ -1038,6 +1036,75 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // Now call the central validation routine for the other verification tasks
             TSharedValidation_CacheableDataTables.ValidateLocalDataFieldSetup(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void CreateFilterFindPanelsManual()
+        {
+            if (CurrentContext == Context.Partner)
+            {
+                // For Partner we create a bunch of checkboxes
+                AddCheckBoxFilter("Person");
+                AddCheckBoxFilter("Family");
+                AddCheckBoxFilter("Church");
+                AddCheckBoxFilter("Organisation");
+                AddCheckBoxFilter("Bank");
+                AddCheckBoxFilter("Unit");
+                AddCheckBoxFilter("Venue");
+            }
+        }
+
+        private void AddCheckBoxFilter(string AnItemName)
+        {
+            TIndividualFilterFindPanel iffp;
+
+            CheckBox chkAny = new CheckBox();
+
+            chkAny.Name = "chk" + AnItemName;
+            chkAny.Text = AnItemName;
+
+            iffp = new TIndividualFilterFindPanel(
+                null,
+                TCloneFilterFindControl.ShallowClone <CheckBox>(chkAny, TFilterPanelControls.FILTER_NAME_SUFFIX),
+                null,
+                "bit",
+                "HasManualFilter");
+            FFilterAndFindObject.FilterPanelControls.FStandardFilterPanels.Add(iffp);
+        }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+            if (CurrentContext == Context.Partner)
+            {
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkPerson"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkFamily"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkChurch"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkOrganisation"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkBank"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkUnit"), ref AFilterString);
+                ApplyFilterFromCheckBox((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkVenue"), ref AFilterString);
+            }
+        }
+
+        private void ApplyFilterFromCheckBox(CheckBox ACheckBox, ref string AFilterString)
+        {
+            if (ACheckBox.CheckState == CheckState.Indeterminate)
+            {
+                return;
+            }
+
+            if (AFilterString.Length > 0)
+            {
+                AFilterString += " AND ";
+            }
+
+            if (ACheckBox.Checked)
+            {
+                AFilterString += String.Format("({0} LIKE '%{1}%')", DBUsedBy, ACheckBox.Text);
+            }
+            else
+            {
+                AFilterString += String.Format("NOT ({0} LIKE '%{1}%')", DBUsedBy, ACheckBox.Text);
+            }
         }
     }
 }

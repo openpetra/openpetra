@@ -24,10 +24,12 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
@@ -56,6 +58,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             dtpAddressStartTo.Text = "";
             dtpAddressEndFrom.Text = "";
             dtpAddressEndTo.Text = "";
+
+            txtPostCodeFrom.Validating += new CancelEventHandler(PostCode_Validating);
+            txtPostCodeTo.Validating += new CancelEventHandler(PostCode_Validating);
         }
 
         /// <summary>
@@ -78,10 +83,26 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (!chkCurrentAddressesOnly.Checked)
             {
-                ACalc.AddParameter("param_address_start_from", this.dtpAddressStartFrom.Date);
-                ACalc.AddParameter("param_address_start_to", this.dtpAddressStartTo.Date);
-                ACalc.AddParameter("param_address_end_from", this.dtpAddressEndFrom.Date);
-                ACalc.AddParameter("param_address_end_to", this.dtpAddressEndTo.Date);
+                // make sure that date values are only added as parameters if fields are visible
+                if (dtpAddressStartFrom.Visible)
+                {
+                    ACalc.AddParameter("param_address_start_from", this.dtpAddressStartFrom.Date);
+                }
+
+                if (dtpAddressStartTo.Visible)
+                {
+                    ACalc.AddParameter("param_address_start_to", this.dtpAddressStartTo.Date);
+                }
+
+                if (dtpAddressEndFrom.Visible)
+                {
+                    ACalc.AddParameter("param_address_end_from", this.dtpAddressEndFrom.Date);
+                }
+
+                if (dtpAddressEndTo.Visible)
+                {
+                    ACalc.AddParameter("param_address_end_to", this.dtpAddressEndTo.Date);
+                }
             }
         }
 
@@ -105,6 +126,16 @@ namespace Ict.Petra.Client.MReporting.Gui
             dtpAddressEndTo.Date = AParameters.Get("param_address_end_to").ToDate();
 
             EnableDisableDateFields();
+
+            if (!cmbRegion.Table.Rows.Contains(new object[] { "" }))
+            {
+                // add a blank row to the combobox
+                DataRow BlankRow = cmbRegion.Table.NewRow();
+                BlankRow[PPostcodeRegionTable.GetRegionDBName()] = "";
+                cmbRegion.Table.Rows.InsertAt(BlankRow, 0);
+            }
+
+            cmbRegion.cmbCombobox.SelectedIndex = 0;
         }
 
         /// <summary>
@@ -157,6 +188,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             dtpAddressEndFrom.Enabled = SetEnabled;
             lblAddressEndTo.Enabled = SetEnabled;
             dtpAddressEndTo.Enabled = SetEnabled;
+        }
+
+        private void PostCode_Validating(System.Object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            txtPostCodeFrom.Text = txtPostCodeFrom.Text.ToUpper();
+            txtPostCodeTo.Text = txtPostCodeTo.Text.ToUpper();
         }
     }
 }

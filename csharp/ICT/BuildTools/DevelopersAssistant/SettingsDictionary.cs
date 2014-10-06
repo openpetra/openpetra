@@ -162,6 +162,28 @@ namespace Ict.Tools.DevelopersAssistant
             get; set;
         }
 
+        /// <summary>
+        /// True if nant should compile the code that has been generated as a Winform
+        /// </summary>
+        public bool CompileWinForm {
+            get; set;
+        }
+
+        /// <summary>
+        /// True if nant should start the client after compiling the code that has been generated for a Winform
+        /// </summary>
+        public bool StartClientAfterCompileWinForm {
+            get; set;
+        }
+
+        /// <summary>
+        /// Set to true if the application should check for updates when it starts up
+        /// </summary>
+        public bool AutoCheckForUpdates {
+            get; set;
+        }
+
+
         // Private members
         private string _path;       // path to local settings file
         private string _applicationVersion;
@@ -196,6 +218,9 @@ namespace Ict.Tools.DevelopersAssistant
             TreatWarningsAsErrors = true;
             DoPreBuildOnIctCommon = false;
             DoPostBuildOnPetraClient = false;
+            CompileWinForm = true;
+            StartClientAfterCompileWinForm = true;
+            AutoCheckForUpdates = true;
 
             // Add items to our dictionary
             this.Add("AltSequence", AltSequence);
@@ -217,6 +242,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.Add("TreatWarningsAsErrors", TreatWarningsAsErrors ? "1" : "0");
             this.Add("DoPreBuildOnIctCommon", DoPreBuildOnIctCommon ? "1" : "0");
             this.Add("DoPostBuildOnPetraClient", DoPostBuildOnPetraClient ? "1" : "0");
+            this.Add("CompileWinForm", CompileWinForm ? "1" : "0");
+            this.Add("StartClientAfterCompileWinForm", StartClientAfterCompileWinForm ? "1" : "0");
+            this.Add("AutoCheckForUpdates", AutoCheckForUpdates ? "1" : "0");
         }
 
         /// <summary>
@@ -247,6 +275,9 @@ namespace Ict.Tools.DevelopersAssistant
             TreatWarningsAsErrors = (this["TreatWarningsAsErrors"] != "0");
             DoPreBuildOnIctCommon = (this["DoPreBuildOnIctCommon"] != "0");
             DoPostBuildOnPetraClient = (this["DoPostBuildOnPetraClient"] != "0");
+            CompileWinForm = (this["CompileWinForm"] != "0");
+            StartClientAfterCompileWinForm = (this["StartClientAfterCompileWinForm"] != "0");
+            AutoCheckForUpdates = (this["AutoCheckForUpdates"] != "0");
 
             // Do version-specific upgrades
             if (this.ContainsKey("ApplicationVersion"))
@@ -291,6 +322,9 @@ namespace Ict.Tools.DevelopersAssistant
             this["TreatWarningsAsErrors"] = TreatWarningsAsErrors ? "1" : "0";
             this["DoPreBuildOnIctCommon"] = DoPreBuildOnIctCommon ? "1" : "0";
             this["DoPostBuildOnPetraClient"] = DoPostBuildOnPetraClient ? "1" : "0";
+            this["CompileWinForm"] = CompileWinForm ? "1" : "0";
+            this["StartClientAfterCompileWinForm"] = StartClientAfterCompileWinForm ? "1" : "0";
+            this["AutoCheckForUpdates"] = AutoCheckForUpdates ? "1" : "0";
 
             // Add our appVersion key/value
             if (!this.ContainsKey("ApplicationVersion"))
@@ -365,7 +399,7 @@ namespace Ict.Tools.DevelopersAssistant
                         "Mantis Bug Tracker = https://tracker.openpetra.org/main_page.php ++ This links to the main project work item database known as 'Mantis'");
                     sw.WriteLine(
                         "Mantis Bug Tracker (My View) = https://tracker.openpetra.org/my_view_page.php ++ This links to the 'My View' page in the main project work item database known as 'Mantis'");
-                    sw.WriteLine("OpenPetra Wiki = http://wiki.openpetra.org/ ++ This links to the main project wiki");
+                    sw.WriteLine("OpenPetra Wiki = https://wiki.openpetra.org/ ++ This links to the main project wiki");
                     sw.WriteLine(
                         "Useful shortcuts = http://www.openpetra.org/en/shortcuts/ ++ Many useful shortcuts in one place, including many listed here");
 

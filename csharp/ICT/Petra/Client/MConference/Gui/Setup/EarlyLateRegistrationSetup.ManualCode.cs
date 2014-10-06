@@ -279,5 +279,11 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             TSharedConferenceValidation_Conference.ValidateEarlyLateRegistration(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict, GridData, FEndDate);
         }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+            AFilterString = AFilterString.Replace("Early", "1");
+            AFilterString = AFilterString.Replace("Late", "0");
+        }
     }
 }

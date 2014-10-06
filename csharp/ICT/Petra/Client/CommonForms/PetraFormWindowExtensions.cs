@@ -50,6 +50,9 @@ namespace Ict.Petra.Client.CommonForms
         private static SortedList <string, string>FWindowPositions = new SortedList <string, string>();
         private static bool FWindowPositionsLoaded = false;
 
+        /// dictionary to hold the most recent window position for floating (multi-use) windows
+        private static Dictionary <string, Point>FDicFloatingWindowLocations = new Dictionary <string, Point>();
+
         /// private class variable that stores the splitter positions that have already been displayed
         private List <string>FSplittersDisplayed = new List <string>();
 
@@ -77,7 +80,8 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // Restore the window positions if we know them
                 // (Note: Nant tests do not have a caller so we need to allow for this possibility)
-                if ((FWinForm.Name == "TFrmMainWindowNew") || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
+                if ((FWinForm.Name == "TFrmMainWindowNew") || (FWinForm.Name == "TFrmPartnerEdit")
+                    || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                 {
                     // Either we are loading the main window or we have been opened by the main window
                     if (!FWindowPositionsLoaded)
@@ -135,6 +139,11 @@ namespace Ict.Petra.Client.CommonForms
                         TLogging.Log(String.Format("Exception occurred while saving the window position file '{0}': {1}", settingsPath,
                                 ex.Message), TLoggingType.ToLogfile);
                     }
+                }
+                else if (FWinForm.Name == "TFrmPartnerEdit")
+                {
+                    // We always save the settings for this form - it can be launched from the main window or from Partner/Find or several other ways
+                    GetWindowPositionProperties();
                 }
                 else if ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew") && !FWinForm.Modal)
                 {
@@ -266,12 +275,22 @@ namespace Ict.Petra.Client.CommonForms
                     int w = int.Parse(items[2]);
                     int h = int.Parse(items[3]);
 
-                    // parse the sindow state
+                    // parse the window state
                     string windowState = items[4];
 
+                    // Screens that are multi-use need to be left in the position where Windows has defaulted them (if possible)
+                    // This prevents us from always positioning a new screen on top of a previous one
+                    bool ignoreLocation = (FWinForm.Name == "TFrmPartnerEdit");
+
                     // specify these as Points and Size
-                    Point location = new Point(l, t);
+                    if (ignoreLocation)
+                    {
+                        l = FWinForm.Location.X;
+                        t = FWinForm.Location.Y;
+                    }
+
                     Size size = new Size(w, h);
+                    Point location = new Point(l, t);
                     Point locationBottomRight = new Point(l + w, t + h);
 
                     // Check the location - just in case it is on a screen that is no longer attached
@@ -292,15 +311,59 @@ namespace Ict.Petra.Client.CommonForms
 
                     if (!bFound)
                     {
-                        // We did not find the previous position, but may be able to display it at its current size on the base screen
-                        if (Screen.AllScreens[0].Bounds.Contains(w - 5, h - 5))
+                        if (ignoreLocation)
                         {
-                            FWinForm.Location = new Point(2, 2);
-                            FWinForm.Size = size;
+                            // We could not fit a multi-use screen on the display where the OS has located the top left,
+                            //   but we can probably move it.  Try not to overlay any previous screen
+                            foreach (Screen screen in Screen.AllScreens)
+                            {
+                                if (screen.Bounds.Contains(location))
+                                {
+                                    // This is the screen that the OS is using for the display
+                                    if (FDicFloatingWindowLocations.ContainsKey(FWinForm.Name))
+                                    {
+                                        Point tryLocation = FDicFloatingWindowLocations[FWinForm.Name];
+                                        tryLocation.Offset(screen.Bounds.Width / 50, screen.Bounds.Height / 50);
+                                        locationBottomRight = new Point(tryLocation.X + w, tryLocation.Y + h);
+
+                                        if (screen.Bounds.Contains(locationBottomRight))
+                                        {
+                                            FWinForm.Location = tryLocation;
+                                            FWinForm.Size = size;
+                                            bFound = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!bFound)
+                        {
+                            // We did not find the previous position of a single-use screen,
+                            // but we may be able to display it at its current size on the base screen
+                            if (Screen.AllScreens[0].Bounds.Contains(w - 5, h - 5))
+                            {
+                                FWinForm.Location = new Point(2, 2);
+                                FWinForm.Size = size;
+                            }
+                        }
+
+                        if (ignoreLocation)
+                        {
+                            // Finally, for floating windows we save the location that we use
+                            if (FDicFloatingWindowLocations.ContainsKey(FWinForm.Name))
+                            {
+                                FDicFloatingWindowLocations[FWinForm.Name] = FWinForm.Location;
+                            }
+                            else
+                            {
+                                FDicFloatingWindowLocations.Add(FWinForm.Name, FWinForm.Location);
+                            }
                         }
                     }
 
-                    if (windowState == "Maximized")
+                    if ((windowState == "Maximized") && !ignoreLocation)
                     {
                         FWinForm.WindowState = FormWindowState.Maximized;
                     }
@@ -503,29 +566,55 @@ namespace Ict.Petra.Client.CommonForms
             string splitterProperties = String.Empty;
             GetSplitterPropertiesAsString(FWinForm, ref splitterProperties, String.Empty);
 
-            // Now we check to see if we are saving any positions on controls that were not actually displayed this time
-            if (prevWinPosString != String.Empty)
+            // We handle the splitter properties one of two ways...
+            // depending on whether the form uses dynamically loaded controls or not
+            if (FWinForm.Name == "TFrmPartnerEdit")
             {
-                string[] prevItems = prevWinPosString.Split(';');
-
-                for (int i = 5; i < prevItems.Length; i++)
+                // Dynamically loaded controls...
+                // This means that all the splitter distances will be correct but we will only have the splitters that have been opened
+                if (prevWinPosString != String.Empty)
                 {
-                    string[] prevExtraItems = prevItems[i].Split(':');
+                    string[] prevItems = prevWinPosString.Split(';');
 
-                    if (!FSplittersDisplayed.Contains(prevExtraItems[0]))
+                    for (int i = 5; i < prevItems.Length; i++)
                     {
-                        // This is a splitter we know about already and it has not been displayed while the screen was open this time
-                        // So we need to substitute the value we know for the one in splitterProperties, which will be some kind of default YAML value
-                        string[] newItems = splitterProperties.Split(';');
+                        string[] prevExtraItems = prevItems[i].Split(':');
 
-                        for (int k = 0; k < newItems.Length; k++)
+                        if (!splitterProperties.Contains(";" + prevExtraItems[0]))
                         {
-                            string[] newExtraItems = newItems[k].Split(':');
+                            splitterProperties += (";" + prevItems[i]);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Non-dynamically loaded controls...
+                // This means we will have all the splitters - but the distances on those we did not actually load will be incorrect.
+                // Now we check to see if we are saving any positions on controls that were not actually displayed this time
+                if (prevWinPosString != String.Empty)
+                {
+                    string[] prevItems = prevWinPosString.Split(';');
 
-                            if (newExtraItems[0] == prevExtraItems[0])
+                    for (int i = 5; i < prevItems.Length; i++)
+                    {
+                        string[] prevExtraItems = prevItems[i].Split(':');
+
+                        if (!FSplittersDisplayed.Contains(prevExtraItems[0]))
+                        {
+                            // This is a splitter we know about already and it has not been displayed while the screen was open this time
+                            // So we need to substitute the value we know for the one in splitterProperties, which will be some kind of default YAML value
+                            string[] newItems = splitterProperties.Split(';');
+
+                            for (int k = 0; k < newItems.Length; k++)
                             {
-                                splitterProperties = splitterProperties.Replace(newItems[k], prevItems[i]);
-                                break;
+                                string[] newExtraItems = newItems[k].Split(':');
+
+                                if (newExtraItems[0] == prevExtraItems[0])
+                                {
+                                    splitterProperties = splitterProperties.Replace(newItems[k], prevItems[i]);
+                                    break;
+                                }
                             }
                         }
                     }

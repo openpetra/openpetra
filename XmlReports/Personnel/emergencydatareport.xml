@@ -3,819 +3,793 @@
 <reports>
 
   <report id="Emergency Data Report">
-	<description>
-		Emergency Data Report
-		Depends on commonpersonnel.xml
-	</description>
-	<reportparameters>
-		<reportparameter name="param_source"></reportparameter>
-		<reportparameter name="param_extract_name"></reportparameter>
-		<reportparameter name="param_hide_empty_lines"></reportparameter>
-		<reportparameter name="param_print_two_lines"></reportparameter>
-	</reportparameters>
-	
-	<reportheader></reportheader>
-	<pageheader>
-		<field whichfield="title1"><value text ="Emergency Data Report" /></field>
-		<field whichfield="title2"><value function = "getSiteName()"/></field>
-		<field whichfield="descr1">
-			<fielddetail>
-				<value text = "Selection: "/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},one partner)">
-				<value text = "Partner "/><value variable = "param_partnerkey"/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},an extract)">
-				<value text = "Extract "/><value variable = "param_extract"/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},all current staff)">
-				<value text = "All current Staff at date "/>
-					<value variable = "param_currentstaffdate" format="formatteddate"/>
-			</fielddetail>
-		</field>
-		<field whichfield="descr2">
-			<fielddetail condition="ne({param_selection}, one partner)">
-				<value text="Sorted by: "/>
-				<value variable="param_sortby_readable"/>
-			</fielddetail>
-		</field>
-	</pageheader>
+    <description>
+        Emergency Data Report
+        Depends on commonpersonnel.xml
+    </description>
+    <reportparameters>
+        <reportparameter name="param_source"></reportparameter>
+        <reportparameter name="param_extract_name"></reportparameter>
+        <reportparameter name="param_hide_empty_lines"></reportparameter>
+        <reportparameter name="param_print_two_lines"></reportparameter>
+    </reportparameters>
+    
+    <reportheader></reportheader>
+    <pageheader>
+        <field whichfield="title1"><value text ="Emergency Data Report" /></field>
+        <field whichfield="title2"><value function = "getSiteName()"/></field>
+        <field whichfield="descr1">
+            <fielddetail>
+                <value text = "Selection: "/>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},one partner)">
+                <value text = "Partner "/><value variable = "param_partnerkey"/>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},an extract)">
+                <value text = "Extract "/><value variable = "param_extract"/>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},all current staff)">
+                <value text = "All current Staff at date "/>
+                    <value variable = "param_currentstaffdate" format="formatteddate"/>
+            </fielddetail>
+        </field>
+        <field whichfield="descr2">
+            <fielddetail condition="ne({param_selection}, one partner)">
+                <value text="Sorted by: "/>
+                <value variable="param_sortby_readable"/>
+            </fielddetail>
+        </field>
+    </pageheader>
 
     <calculations>
-	
-	<calculation id="SelectOtherEmergenyData" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_pm_personal_data.pm_height_cm_i,
-					PUB_pm_personal_data.pm_weight_kg_n,
-					PUB_pm_personal_data.pm_eye_colour_c,
-					PUB_pm_personal_data.pm_hair_colour_c,
-					PUB_pm_personal_data.pm_facial_hair_c,
-					PUB_pm_personal_data.pm_blood_type_c,
-					PUB_pm_personal_data.pm_physical_desc_c
-				FROM
-					PUB_pm_personal_data
-				WHERE
-					PUB_pm_personal_data.p_partner_key_n = {{StaffPartnerKey}}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectRelationships" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_p_partner_relationship.p_partner_key_n AS EmergencyContactKey,
-					PUB_p_partner_relationship.p_relation_name_c AS EmergencyContactType,
-					PUB_p_partner_relationship.p_comment_c AS Comment,
-					PUB_p_partner.p_partner_short_name_c AS EmergencyContactName
-				FROM
-					PUB_p_partner_relationship, PUB_p_partner
-				WHERE 
-						PUB_p_partner_relationship.p_relation_key_n = {{StaffPartnerKey}}
-					AND PUB_p_partner_relationship.p_partner_key_n &lt;&gt; 0
-					AND ( PUB_p_partner_relationship.p_relation_name_c = 'EMER-1' OR
-						PUB_p_partner_relationship.p_relation_name_c = 'EMER-2' )
-					AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="SelectProofOfLifeQuestions" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT
-					PUB_pm_personal_data.pm_life_question_1_c,
-					PUB_pm_personal_data.pm_life_question_2_c,
-					PUB_pm_personal_data.pm_life_question_3_c,
-					PUB_pm_personal_data.pm_life_question_4_c,
-					PUB_pm_personal_data.pm_life_answer_1_c,
-					PUB_pm_personal_data.pm_life_answer_2_c,
-					PUB_pm_personal_data.pm_life_answer_3_c,
-					PUB_pm_personal_data.pm_life_answer_4_c
-				FROM
-					PUB_pm_personal_data
-				WHERE
-					PUB_pm_personal_data.p_partner_key_n = {{StaffPartnerKey}}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="Get Emergency Contact Partner Address" returns="Automatic" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="GetPartnerBestAddress({EmergencyContactKey})"/>
-				<value function="assign(TelephoneNumber, concatenate({TelephoneNumber}, {Extension}))"/>
-				<value function="assign(TelephoneNumber, not known)" condition="lt(length({TelephoneNumber}), 1)"/>
-				<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
-				<value function="assign(FaxNumber, not known)" condition="lt(length({FaxNumber}), 2)"/>
-				<value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
-				<value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
-				<value function="assign(MobileNumber, not known)" condition="lt(length({MobileNumber}), 1)"/>
-				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{City}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
-		<caption><value text="DOB"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DateOfBirth"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Emergency Data" returns="text" returnsFormat="text">
-		<caption><value text=""></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EmergencyData"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="StaffPartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
+    
+    <calculation id="SelectOtherEmergenyData" returns="Automatic" returnsFormat="row">
+        <query>
+            <queryDetail><value>
+                SELECT
+                    PUB_pm_personal_data.pm_height_cm_i,
+                    PUB_pm_personal_data.pm_weight_kg_n,
+                    PUB_pm_personal_data.pm_eye_colour_c,
+                    PUB_pm_personal_data.pm_hair_colour_c,
+                    PUB_pm_personal_data.pm_facial_hair_c,
+                    PUB_pm_personal_data.pm_blood_type_c,
+                    PUB_pm_personal_data.pm_physical_desc_c
+                FROM
+                    PUB_pm_personal_data
+                WHERE
+                    PUB_pm_personal_data.p_partner_key_n = {{StaffPartnerKey}}
+            </value></queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="SelectRelationships" returns="Automatic" returnsFormat="row">
+        <query>
+            <queryDetail><value>
+                SELECT
+                    PUB_p_partner_relationship.p_partner_key_n AS EmergencyContactKey,
+                    PUB_p_partner_relationship.p_relation_name_c AS EmergencyContactType,
+                    PUB_p_partner_relationship.p_comment_c AS Comment,
+                    PUB_p_partner.p_partner_short_name_c AS EmergencyContactName
+                FROM
+                    PUB_p_partner_relationship, PUB_p_partner
+                WHERE 
+                        PUB_p_partner_relationship.p_relation_key_n = {{StaffPartnerKey}}
+                    AND PUB_p_partner_relationship.p_partner_key_n &lt;&gt; 0
+                    AND ( PUB_p_partner_relationship.p_relation_name_c = 'EMER-1' OR
+                        PUB_p_partner_relationship.p_relation_name_c = 'EMER-2' )
+                    AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
+            </value></queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="SelectProofOfLifeQuestions" returns="Automatic" returnsFormat="row">
+        <query>
+            <queryDetail><value>
+                SELECT
+                    PUB_pm_personal_data.pm_life_question_1_c,
+                    PUB_pm_personal_data.pm_life_question_2_c,
+                    PUB_pm_personal_data.pm_life_question_3_c,
+                    PUB_pm_personal_data.pm_life_question_4_c,
+                    PUB_pm_personal_data.pm_life_answer_1_c,
+                    PUB_pm_personal_data.pm_life_answer_2_c,
+                    PUB_pm_personal_data.pm_life_answer_3_c,
+                    PUB_pm_personal_data.pm_life_answer_4_c
+                FROM
+                    PUB_pm_personal_data
+                WHERE
+                    PUB_pm_personal_data.p_partner_key_n = {{StaffPartnerKey}}
+            </value></queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="Get Emergency Contact Partner Address" returns="Automatic" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="GetPartnerBestAddress({EmergencyContactKey})"/>
+                <value function="assign(TelephoneNumber, concatenate({TelephoneNumber}, {Extension}))"/>
+                <value function="assign(TelephoneNumber, not known)" condition="lt(length({TelephoneNumber}), 1)"/>
+                <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
+                <value function="assign(FaxNumber, not known)" condition="lt(length({FaxNumber}), 2)"/>
+                <value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
+                <value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
+                <value function="assign(MobileNumber, not known)" condition="lt(length({MobileNumber}), 1)"/>
+                <value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{City}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Date of birth" returns="text" returnsFormat="formatteddate">
+        <caption><value text="DOB"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DateOfBirth"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Emergency Data" returns="text" returnsFormat="text">
+        <caption><value text=""></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="EmergencyData"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Partner Key"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="StaffPartnerKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
     </calculations>
    
     <levels> 
-	<level name="main">
-		<detail>
-			<lowerLevelReport calculation="Select Partners" level="Partner Level"></lowerLevelReport>
-		</detail>
-	</level> 
-	
-	<level name="Partner Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="19cm">
-				<value text="Report for: "/>
-				<value variable="StaffPartnerKey" format="partnerkey"/>
-				<value text="  "/>
-				<value variable="PartnerName"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Partner Detail Level" ></lowerLevelReport>
-			<lowerLevelReport level="Family Members Level" condition="eq({param_chkFamilyMembers}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Address Level" condition="eq({param_chkAddress}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Passport Level" condition="eq({param_chkPassport}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Personal Documents Level" condition="eq({param_chkPersonalDocuments}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Driver License Level" condition="eq({param_chkDriverLicense}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Other Emergency Data Level" condition="eq({param_chkOtherEmergencyData}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Special Need Level" condition="eq({param_chkSpecialNeeds}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Ability Level" condition="eq({param_chkAbilities}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Language Level" condition="eq({param_chkLanguages}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Emergency Contact Level" condition="eq({param_chkEmergencyContacts}, true)"></lowerLevelReport>
-			<lowerLevelReport level="Proof Of Life Level" condition="eq({param_chkProofQuestion}, true)"></lowerLevelReport>
-		</detail>
-		<footer line="below" space="below">
-			<field whichfield="left 0" pos="0cm" width="1cm" >
-				<value text=" "/>
-			</field>
-			<field whichfield="column 0">
-				<value text=" "/>
-			</field>				
-		</footer>
-	</level>
-	
-	<level name="Partner Detail Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="******************** Partner ********************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Partner Detail lower Level"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Partner Detail lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Partner Detail Lowest Level" ></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Partner Detail Lowest Level" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0">
-				<value text="Full name: "/>
-				<value variable="p_title"/>
-				<value text=" "/>
-				<value variable="p_first_name"/>
-				<value text=" "/>
-				<value variable="p_middle_name_1"/>
-				<value text=" "/>
-				<value variable="p_family_name"/>
-				<value text=",  Preferred name: "/>
-				<value variable="p_prefered_name"/>
-				<value text=",  Gender: "/>
-				<value variable="Gender"/>
-				<value text=",  Date of birth: "/>
-				<value variable="DateOfBirth"/>
-				<value text=",  Marital Status: "/>
-				<value variable="MaritalStatus"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Family Members Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="*************** Family Members ***************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Family Members lower Level"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Family Members lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Family Members Lowest Level" calculation="GetFamilyMembers" condition="gt({FamilyKey}, 0)"></lowerLevelReport>
-		</detail>
-	</level>
-	
-	<level name="Family Members Lowest Level" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0">
-				<value text="Name: "/>
-				<value variable="FamilyName"/>
-				<value text="  Partner Key: "/>
-				<value variable="FamilyPartnerKey"/>
-				<value text="  (born: "/>
-				<value variable="FamilyDOB"/>
-				<value text=")"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Address Level" identification="StaffPartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************** Address of Partner **************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Address Lower Level"></lowerLevelReport>
-		</detail>
-	</level>
-	
-	<level name="Address Lower Level" identification="StaffPartnerKey">
-		<detail>
-			<lowerLevelReport level="Address Lower Level1"></lowerLevelReport>
-			<lowerLevelReport level="Address Lower Level2"></lowerLevelReport>
-		</detail>
-	</level>
-	
-	<level name="Address Lower Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" calculation="Get Partner Address">
-				<value variable="Locality"/>
-				<value text=" "/>
-				<value variable="StreetName"/>
-				<value text=" "/>
-				<value variable="Address3"/>
-				<value text=" "/>
-				<value variable="County"/>
-				<value text=" "/>
-				<value variable="PostalCode"/>
-				<value text=" "/>
-				<value variable="City"/>
-				<value text=" "/>
-				<value variable="CountryCode"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Address Lower Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" >
-				<value text="  Location Type: " condition="gt(length({LocationType}), 0)" />
-				<value variable="LocationType"/>
-				<value text="  Valid from: " condition="gt(length({LocationType}), 0)" />
-				<value variable="DateEffective"/>
-				<value text=" To: " condition="gt(length({LocationType}), 0)" />
-				<value variable="DateGoodUntil"/>
-				<value text="No Address found " condition="lt(length({LocationType}), 1)" />
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Passport Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="****************** Passport ******************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Passport Lowest Level" calculation="SelectPassports"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Passport Lowest Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Passport Lowest Level1"></lowerLevelReport>
-			<lowerLevelReport level="Passport Lowest Level2"></lowerLevelReport>
-			<lowerLevelReport level="Passport Lowest Level3"></lowerLevelReport>
-			<lowerLevelReport level="Passport Lowest Level4"></lowerLevelReport>
-		</detail>
-	</level>
+    <level name="main">
+        <detail>
+            <lowerLevelReport calculation="Select Partners" level="Partner Level"></lowerLevelReport>
+        </detail>
+    </level> 
+    
+    <level name="Partner Level" identification="StaffPartnerKey">
+        <header>
+            <field whichfield="header 0" pos="0cm" width="19cm">
+                <value text="Report for: "/>
+                <value variable="StaffPartnerKey" format="partnerkey"/>
+                <value text="  "/>
+                <value variable="PartnerName"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Partner Detail Level" ></lowerLevelReport>
+            <lowerLevelReport level="Family Members Level" condition="eq({param_chkFamilyMembers}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Address Level" condition="eq({param_chkAddress}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Passport Level" condition="eq({param_chkPassport}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Personal Documents Level" condition="eq({param_chkPersonalDocuments}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Other Emergency Data Level" condition="eq({param_chkOtherEmergencyData}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Special Need Level" condition="eq({param_chkSpecialNeeds}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Ability Level" condition="eq({param_chkAbilities}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Language Level" condition="eq({param_chkLanguages}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Emergency Contact Level" condition="eq({param_chkEmergencyContacts}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Proof Of Life Level" condition="eq({param_chkProofQuestion}, true)"></lowerLevelReport>
+        </detail>
+        <footer line="below" space="below">
+            <field whichfield="left 0" pos="0cm" width="1cm" >
+                <value text=" "/>
+            </field>
+            <field whichfield="column 0">
+                <value text=" "/>
+            </field>                
+        </footer>
+    </level>
+    
+    <level name="Partner Detail Level" identification="StaffPartnerKey">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="******************** Partner ********************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Partner Detail lower Level"></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Partner Detail lower Level" identification="StaffPartnerKey">
+        <detail>
+            <lowerLevelReport level="Partner Detail Lowest Level" ></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Partner Detail Lowest Level" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0">
+                <value text="Full name: "/>
+                <value variable="p_title"/>
+                <value text=" "/>
+                <value variable="p_first_name"/>
+                <value text=" "/>
+                <value variable="p_middle_name_1"/>
+                <value text=" "/>
+                <value variable="p_family_name"/>
+                <value text=",  Preferred name: "/>
+                <value variable="p_prefered_name"/>
+                <value text=",  Gender: "/>
+                <value variable="Gender"/>
+                <value text=",  Date of birth: "/>
+                <value variable="DateOfBirth"/>
+                <value text=",  Marital Status: "/>
+                <value variable="MaritalStatus"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Family Members Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="*************** Family Members ***************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Family Members lower Level"></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Family Members lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Family Members Lowest Level" calculation="GetFamilyMembers" condition="gt({FamilyKey}, 0)"></lowerLevelReport>
+        </detail>
+    </level>
+    
+    <level name="Family Members Lowest Level" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0">
+                <value text="Name: "/>
+                <value variable="FamilyName"/>
+                <value text="  Partner Key: "/>
+                <value variable="FamilyPartnerKey"/>
+                <value text="  (born: "/>
+                <value variable="FamilyDOB"/>
+                <value text=")"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Address Level" identification="StaffPartnerKey">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="************** Address of Partner **************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Address Lower Level"></lowerLevelReport>
+        </detail>
+    </level>
+    
+    <level name="Address Lower Level" identification="StaffPartnerKey">
+        <detail>
+            <lowerLevelReport level="Address Lower Level1"></lowerLevelReport>
+            <lowerLevelReport level="Address Lower Level2"></lowerLevelReport>
+        </detail>
+    </level>
+    
+    <level name="Address Lower Level1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" calculation="Get Partner Address">
+                <value variable="Locality"/>
+                <value text=" "/>
+                <value variable="StreetName"/>
+                <value text=" "/>
+                <value variable="Address3"/>
+                <value text=" "/>
+                <value variable="County"/>
+                <value text=" "/>
+                <value variable="PostalCode"/>
+                <value text=" "/>
+                <value variable="City"/>
+                <value text=" "/>
+                <value variable="CountryCode"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Address Lower Level2" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" >
+                <value text="  Location Type: " condition="gt(length({LocationType}), 0)" />
+                <value variable="LocationType"/>
+                <value text="  Valid from: " condition="gt(length({LocationType}), 0)" />
+                <value variable="DateEffective"/>
+                <value text=" To: " condition="gt(length({LocationType}), 0)" />
+                <value variable="DateGoodUntil"/>
+                <value text="No Address found " condition="lt(length({LocationType}), 1)" />
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Passport Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="****************** Passport ******************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Passport Lowest Level" calculation="SelectPassports"></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Passport Lowest Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Passport Lowest Level1"></lowerLevelReport>
+            <lowerLevelReport level="Passport Lowest Level2"></lowerLevelReport>
+            <lowerLevelReport level="Passport Lowest Level3"></lowerLevelReport>
+            <lowerLevelReport level="Passport Lowest Level4"></lowerLevelReport>
+        </detail>
+    </level>
 
-	<level name="Passport Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Passport Number: "/>
-				<value variable="pm_passport_number_c"/>
-				<value text="  Passport Name: "/>
-				<value variable="pm_full_passport_name_c"/>
-				<value text="  Passport Type: "/>
-				<value variable="pm_passport_details_type_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Passport Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Expiry Date: "/>
-				<value variable="pm_date_of_expiration_d"/>
-				<value text="Nationality: "/>
-				<value variable="p_passport_nationality_code_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Passport Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Date and Place of Birth: "/>
-				<value variable="pm_passport_dob_d"/>
-				<value text="   "/>
-				<value variable="pm_place_of_birth_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Passport Lowest Level4" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Date and Place of Issue: "/>
-				<value variable="pm_date_of_issue_d"/>
-				<value text="   "/>
-				<value variable="pm_place_of_issue_c"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Personal Documents Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************ Personal Documents ************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Personal Documents lower Level" calculation="SelectPersonalDocuments"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Personal Documents lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Personal Documents Lowest Level1"/>
-			<lowerLevelReport level="Personal Documents Lowest Level2"/>
-			<lowerLevelReport level="Personal Documents Lowest Level3"/>
-			<lowerLevelReport level="Personal Documents Contact Level1" condition="not(isNull({pm_contact_partner_key_n}))" calculation="GetContactPartnerName"/>
-			<lowerLevelReport level="Personal Documents Contact Level2" condition="not(isNull({pm_contact_partner_key_n}))"/>
-			<lowerLevelReport level="Personal Documents Contact Level3" condition="not(isNull({pm_contact_partner_key_n}))"/>
-			<lowerLevelReport level="Personal Documents Contact Level4" condition="not(isNull({pm_contact_partner_key_n}))"/>
-		</detail>
-		<footer space="below"/>
-	</level>
-	<level name="Personal Documents Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Document Type: "/>
-				<value variable="pm_doc_code_c"/>
-				<value text="    Document ID: "/>
-				<value variable="pm_document_id_c"/>
-				<value text="    Expiry Date: " condition="gt({pm_date_of_expiration_d},0)"/>
-				<value variable="pm_date_of_expiration_d"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Date and Place of Issue: " condition="gt({pm_date_of_issue_d},0)" />
-				<value variable="pm_date_of_issue_d"/>
-				<value text="  "/>
-				<value variable="pm_place_of_issue_c"/>
-				<value text="    Date of Start: " condition="gt({pm_date_of_start_d},0)"/>
-				<value variable="pm_date_of_start_d"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Comment: " condition="gt(length({pm_doc_comment_c}),0)"/>
-				<value variable="pm_doc_comment_c"/>
-				<value text="    Associated Document ID: " condition="gt(length({pm_assoc_doc_id_c}),0)"/>
-				<value variable="pm_assoc_doc_id_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Contact Level1" identification="pm_contact_partner_key_n">
-		<detail>
-			<field whichfield="column 0" pos="1cm" calculation="Get Contact Partner Address">
-				<value text="     Contact: "/>
-				<value variable="pm_contact_partner_key_n"/>
-				<value text="   "/>
-				<value variable="ContactPartnerName"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Contact Level2" identification="pm_contact_partner_key_n">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Phone: "/>
-				<value variable="TelephoneNumber"/>
-				<value text="   Alt.Phone: "/>
-				<value variable="AlternateTelephone"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Contact Level3" identification="pm_contact_partner_key_n">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Mobile: "/>
-				<value variable="MobileNumber"/>
-				<value text="   Fax: "/>
-				<value variable="FaxNumber"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Personal Documents Contact Level4" identification="pm_contact_partner_key_n">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Email: "/>
-				<value variable="EmailAddress"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Driver License Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="**************** Driver License ****************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Driving License lower Level" calculation="GetDrivingLicense"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Driving License lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Driving License Lowest Level" condition="gt(length({pm_driving_license_number_c}), 0)"/>
-		</detail>
-		<footer/>
-	</level>
-	<level name="Driving License Lowest Level" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Driving Licence Number: "/>
-				<value variable="pm_driving_license_number_c"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Other Emergency Data Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="*********** Other Emergency Data ***********"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Other Emergency Data lower Level" calculation="SelectOtherEmergenyData"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Other Emergency Data lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Other Emergency Data Lowest Level1"/>
-			<lowerLevelReport level="Other Emergency Data Lowest Level2"/>
-			<lowerLevelReport level="Other Emergency Data Lowest Level3"/>
-			<lowerLevelReport level="Other Emergency Data Lowest Level4"/>
-			<lowerLevelReport level="Other Emergency Data Lowest Level5"/>
-		</detail>
-		<footer space="below"/>
-	</level>
-	<level name="Other Emergency Data Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Height(cm): "/>
-				<value variable="pm_height_cm_i"/>
-				<value text="     Weight(kg): "/>
-				<value variable="pm_weight_kg_n"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Other Emergency Data Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Eye Color: "/>
-				<value variable="pm_eye_colour_c"/>
-				<value text="     Hair Color: "/>
-				<value variable="pm_hair_colour_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Other Emergency Data Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Facial Hair: "/>
-				<value variable="pm_facial_hair_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Other Emergency Data Lowest Level4" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Scars, marks, etc.: "/>
-				<value variable="pm_physical_desc_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Other Emergency Data Lowest Level5" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Blood Type: "/>
-				<value variable="pm_blood_type_c"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Special Need Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="**************** Special Needs ****************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Special Need lower Level" calculation="SelectSpecialNeeds" condition="HasChildRows"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Special Need lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Special Need Lowest Level1" condition="gt(length({pm_medical_comment_c}), 0)"/>
-			<lowerLevelReport level="Special Need Lowest Level2" condition="and(or(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l}), not(and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})))"/>
-			<lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})"/>
-			<lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})"/>
-			<lowerLevelReport level="Special Need Lowest Level3" condition="gt(length({pm_other_special_need_c}), 0)"/>
-		</detail>
-		<footer space="below"/>
-	</level>
-	<level name="Special Need Lowest Level1" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Medical Needs: "/>
-				<value variable="pm_medical_comment_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Special Need Lowest Level2" identification="StaffPartnerKey" >
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Dietary Needs: "/>
-				<value text="Vegetarian " condition="{pm_vegetarian_flag_l}"/>
-				<value variable="pm_dietary_comment_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Special Need Lowest Level2 tow lines 1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Dietary Needs: Vegetarian"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Special Need Lowest Level2 tow lines 2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="  -                  -   " condition="gt(length({pm_dietary_comment_c}), 0)"/>
-				<value variable="pm_dietary_comment_c"  condition="gt(length({pm_dietary_comment_c}), 0)"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Special Need Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Other Needs: "/>
-				<value variable="pm_other_special_need_c"/>
-			</field>
-		</detail>
-	</level>
+    <level name="Passport Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Passport Number: "/>
+                <value variable="pm_passport_number_c"/>
+                <value text="  Passport Name: "/>
+                <value variable="pm_full_passport_name_c"/>
+                <value text="  Passport Type: "/>
+                <value variable="pm_passport_details_type_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Passport Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Expiry Date: "/>
+                <value variable="pm_date_of_expiration_d"/>
+                <value text="Nationality: "/>
+                <value variable="p_passport_nationality_code_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Passport Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Date and Place of Birth: "/>
+                <value variable="pm_passport_dob_d"/>
+                <value text="   "/>
+                <value variable="pm_place_of_birth_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Passport Lowest Level4" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Date and Place of Issue: "/>
+                <value variable="pm_date_of_issue_d"/>
+                <value text="   "/>
+                <value variable="pm_place_of_issue_c"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Personal Documents Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="************ Personal Documents ************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Personal Documents lower Level" calculation="SelectPersonalDocuments"></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Personal Documents lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Personal Documents Lowest Level1"/>
+            <lowerLevelReport level="Personal Documents Lowest Level2"/>
+            <lowerLevelReport level="Personal Documents Lowest Level3"/>
+            <lowerLevelReport level="Personal Documents Contact Level1" condition="gt({pm_contact_partner_key_n},0)" calculation="GetContactPartnerName"/>
+            <lowerLevelReport level="Personal Documents Contact Level2" condition="gt({pm_contact_partner_key_n},0)"/>
+            <lowerLevelReport level="Personal Documents Contact Level3" condition="gt({pm_contact_partner_key_n},0)"/>
+            <lowerLevelReport level="Personal Documents Contact Level4" condition="gt({pm_contact_partner_key_n},0)"/>
+        </detail>
+        <footer space="below"/>
+    </level>
+    <level name="Personal Documents Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Document Type: "/>
+                <value variable="pm_doc_code_c"/>
+                <value text="    Document ID: "/>
+                <value variable="pm_document_id_c"/>
+                <value text="    Expiry Date: " condition="gt({pm_date_of_expiration_d},0)"/>
+                <value variable="pm_date_of_expiration_d"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Personal Documents Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Date and Place of Issue: " condition="gt({pm_date_of_issue_d},0)" />
+                <value variable="pm_date_of_issue_d"/>
+                <value text="  "/>
+                <value variable="pm_place_of_issue_c"/>
+                <value text="    Date of Start: " condition="gt({pm_date_of_start_d},0)"/>
+                <value variable="pm_date_of_start_d"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Personal Documents Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Comment: " condition="gt(length({pm_doc_comment_c}),0)"/>
+                <value variable="pm_doc_comment_c"/>
+                <value text="    Associated Document ID: " condition="gt(length({pm_assoc_doc_id_c}),0)"/>
+                <value variable="pm_assoc_doc_id_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Personal Documents Contact Level1" identification="pm_contact_partner_key_n">
+        <detail>
+            <field whichfield="column 0" pos="1cm" calculation="Get Contact Partner Address">
+                <value text="     Contact: "/>
+                <value variable="pm_contact_partner_key_n"/>
+                <value text="   "/>
+                <value variable="ContactPartnerName"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Personal Documents Contact Level2" identification="pm_contact_partner_key_n">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="     Phone: "/>
+                <value variable="TelephoneNumber"/>
+                <value text="   Alt.Phone: "/>
+                <value variable="AlternateTelephone"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Personal Documents Contact Level3" identification="pm_contact_partner_key_n">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="     Mobile: "/>
+                <value variable="MobileNumber"/>
+                <value text="   Fax: "/>
+                <value variable="FaxNumber"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Personal Documents Contact Level4" identification="pm_contact_partner_key_n">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="     Email: "/>
+                <value variable="EmailAddress"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Other Emergency Data Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="*********** Other Emergency Data ***********"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Other Emergency Data lower Level" calculation="SelectOtherEmergenyData"></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Other Emergency Data lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Other Emergency Data Lowest Level1"/>
+            <lowerLevelReport level="Other Emergency Data Lowest Level2"/>
+            <lowerLevelReport level="Other Emergency Data Lowest Level3"/>
+            <lowerLevelReport level="Other Emergency Data Lowest Level4"/>
+            <lowerLevelReport level="Other Emergency Data Lowest Level5"/>
+        </detail>
+        <footer space="below"/>
+    </level>
+    <level name="Other Emergency Data Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Height(cm): "/>
+                <value variable="pm_height_cm_i"/>
+                <value text="     Weight(kg): "/>
+                <value variable="pm_weight_kg_n"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Other Emergency Data Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Eye Color: "/>
+                <value variable="pm_eye_colour_c"/>
+                <value text="     Hair Color: "/>
+                <value variable="pm_hair_colour_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Other Emergency Data Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Facial Hair: "/>
+                <value variable="pm_facial_hair_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Other Emergency Data Lowest Level4" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Scars, marks, etc.: "/>
+                <value variable="pm_physical_desc_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Other Emergency Data Lowest Level5" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Blood Type: "/>
+                <value variable="pm_blood_type_c"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Special Need Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="**************** Special Needs ****************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Special Need lower Level" calculation="SelectSpecialNeeds" condition="HasChildRows"></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Special Need lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Special Need Lowest Level1" condition="gt(length({pm_medical_comment_c}), 0)"/>
+            <lowerLevelReport level="Special Need Lowest Level2" condition="and(or(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l}), not(and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})))"/>
+            <lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})"/>
+            <lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})"/>
+            <lowerLevelReport level="Special Need Lowest Level3" condition="gt(length({pm_other_special_need_c}), 0)"/>
+        </detail>
+        <footer space="below"/>
+    </level>
+    <level name="Special Need Lowest Level1" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Medical Needs: "/>
+                <value variable="pm_medical_comment_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Special Need Lowest Level2" identification="StaffPartnerKey" >
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Dietary Needs: "/>
+                <value text="Vegetarian " condition="{pm_vegetarian_flag_l}"/>
+                <value variable="pm_dietary_comment_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Special Need Lowest Level2 tow lines 1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Dietary Needs: Vegetarian"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Special Need Lowest Level2 tow lines 2" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="  -                  -   " condition="gt(length({pm_dietary_comment_c}), 0)"/>
+                <value variable="pm_dietary_comment_c"  condition="gt(length({pm_dietary_comment_c}), 0)"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Special Need Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Other Needs: "/>
+                <value variable="pm_other_special_need_c"/>
+            </field>
+        </detail>
+    </level>
 
-	<level name="Ability Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="***************** Ability Areas *****************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Ability lower Level" calculation="SelectAbilities"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Ability lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Ability Lowest Level1"/>
-		</detail>
-	</level>
-	<level name="Ability Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Ability Area: " />
-				<value variable="pt_ability_area_name_c"/>
-				<value text="  Level: " />
-				<value variable="pt_ability_level_i"/>
-				<value text="  Description: " />
-				<value variable="pt_ability_level_descr_c"/>
-				<value text="  Years of Experience: " />
-				<value variable="pm_years_of_experience_i"/>
-				<value text=" As of: " />
-				<value variable="pm_years_of_experience_as_of_d"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Language Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="*************** Language Areas ***************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Language lower Level" calculation="SelectLanguages"></lowerLevelReport>
-		</detail>
-	</level>
-	<level name="Language lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Language Lowest Level1"/>
-		</detail>	</level>
-	<level name="Language Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Language: " />
-				<value variable="p_language_description_c"/>
-				<value text="  Level: " />
-				<value variable="pt_language_level_i"/>
-				<value text="  Description: " />
-				<value variable="pt_language_level_descr_c"/>
-				<value text="  Years of Experience: " />
-				<value variable="pm_years_of_experience_i"/>
-				<value text=" As of: " />
-				<value variable="pm_years_of_experience_as_of_d"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Emergency Contact Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="************ Emergency Contacts ************"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Emergency Contact lower Level" calculation="SelectRelationships"></lowerLevelReport>
-		</detail>
-	</level>
-	
-	<level name="Emergency Contact lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Emergency Contact Lowest Level1"/>
-			<lowerLevelReport level="Emergency Contact Lowest Level2"/>
-			<lowerLevelReport level="Emergency Contact Lowest Level3"/>
-			<lowerLevelReport level="Emergency Contact Lowest Level4"/>
-			<lowerLevelReport level="Emergency Contact Lowest Level5"/>
-			<lowerLevelReport level="Emergency Contact Lowest Level6"/>
-			
-		</detail>
-		<footer space="below"/>
-	</level>
-	
-	<level name="Emergency Contact Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm" calculation="Get Emergency Contact Partner Address">
-				<value text=""/>
-				<value variable="EmergencyContactType"/>
-				<value text="     "/>
-				<value variable="EmergencyContactKey"/>
-				<value text="   "/>
-				<value variable="EmergencyContactName"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Emergency Contact Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm" >
-				<value text="Comment:  "/>
-				<value variable="Comment"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Emergency Contact Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Address:  "/>
+    <level name="Ability Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="***************** Ability Areas *****************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Ability lower Level" calculation="SelectAbilities"></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Ability lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Ability Lowest Level1"/>
+        </detail>
+    </level>
+    <level name="Ability Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Ability Area: " />
+                <value variable="pt_ability_area_name_c"/>
+                <value text="  Level: " />
+                <value variable="pt_ability_level_i"/>
+                <value text="  Description: " />
+                <value variable="pt_ability_level_descr_c"/>
+                <value text="  Years of Experience: " />
+                <value variable="pm_years_of_experience_i"/>
+                <value text=" As of: " />
+                <value variable="pm_years_of_experience_as_of_d"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Language Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="*************** Language Areas ***************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Language lower Level" calculation="SelectLanguages"></lowerLevelReport>
+        </detail>
+    </level>
+    <level name="Language lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Language Lowest Level1"/>
+        </detail>   </level>
+    <level name="Language Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Language: " />
+                <value variable="p_language_description_c"/>
+                <value text="  Level: " />
+                <value variable="pt_language_level_i"/>
+                <value text="  Description: " />
+                <value variable="pt_language_level_descr_c"/>
+                <value text="  Years of Experience: " />
+                <value variable="pm_years_of_experience_i"/>
+                <value text=" As of: " />
+                <value variable="pm_years_of_experience_as_of_d"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Emergency Contact Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="************ Emergency Contacts ************"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Emergency Contact lower Level" calculation="SelectRelationships"></lowerLevelReport>
+        </detail>
+    </level>
+    
+    <level name="Emergency Contact lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Emergency Contact Lowest Level1"/>
+            <lowerLevelReport level="Emergency Contact Lowest Level2"/>
+            <lowerLevelReport level="Emergency Contact Lowest Level3"/>
+            <lowerLevelReport level="Emergency Contact Lowest Level4"/>
+            <lowerLevelReport level="Emergency Contact Lowest Level5"/>
+            <lowerLevelReport level="Emergency Contact Lowest Level6"/>
+            
+        </detail>
+        <footer space="below"/>
+    </level>
+    
+    <level name="Emergency Contact Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm" calculation="Get Emergency Contact Partner Address">
+                <value text=""/>
+                <value variable="EmergencyContactType"/>
+                <value text="     "/>
+                <value variable="EmergencyContactKey"/>
+                <value text="   "/>
+                <value variable="EmergencyContactName"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Emergency Contact Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm" >
+                <value text="Comment:  "/>
+                <value variable="Comment"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Emergency Contact Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Address:  "/>
                 <value variable="PartnerAddress"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Emergency Contact Lowest Level4" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Phone: "/>
-				<value variable="TelephoneNumber"/>
-				<value text="   Alt.Phone: "/>
-				<value variable="AlternateTelephone"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Emergency Contact Lowest Level5" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Mobile: "/>
-				<value variable="MobileNumber"/>
-				<value text="   Fax: "/>
-				<value variable="FaxNumber"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Emergency Contact Lowest Level6" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="     Email: "/>
-				<value variable="EmailAddress"/>
-			</field>
-		</detail>
-	</level>
-	
-	<level name="Proof Of Life Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<header>
-			<field whichfield="header 0" pos="0cm">
-				<value text="*********** Proof of Life Questions ***********"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="Proof Of Life lower Level" calculation="SelectProofOfLifeQuestions"></lowerLevelReport>
-		</detail>
-	</level>
-	
-	<level name="Proof Of Life lower Level" identification="StaffPartnerKey" condition="HasChildRows">
-		<detail>
-			<lowerLevelReport level="Proof Of Life Lowest Level1" condition="gt(length({pm_life_question_1_c}), 0)"/>
-			<lowerLevelReport level="Proof Of Life Lowest Level2" condition="gt(length({pm_life_question_2_c}), 0)"/>
-			<lowerLevelReport level="Proof Of Life Lowest Level3" condition="gt(length({pm_life_question_3_c}), 0)"/>
-		</detail>
-	</level>
-	
-	<level name="Proof Of Life Lowest Level1" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Question1: "/>
-				<value variable="pm_life_question_1_c"/>
-				<value text="  Answer: "/>
-				<value variable="pm_life_answer_1_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Proof Of Life Lowest Level2" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Question2: "/>
-				<value variable="pm_life_question_2_c"/>
-				<value text="  Answer: "/>
-				<value variable="pm_life_answer_2_c"/>
-			</field>
-		</detail>
-	</level>
-	<level name="Proof Of Life Lowest Level3" identification="StaffPartnerKey">
-		<detail>
-			<field whichfield="column 0" pos="1cm">
-				<value text="Question3: "/>
-				<value variable="pm_life_question_3_c"/>
-				<value text="  Answer: "/>
-				<value variable="pm_life_answer_3_c"/>
-			</field>
-		</detail>
-	</level>
-	
+            </field>
+        </detail>
+    </level>
+    <level name="Emergency Contact Lowest Level4" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="     Phone: "/>
+                <value variable="TelephoneNumber"/>
+                <value text="   Alt.Phone: "/>
+                <value variable="AlternateTelephone"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Emergency Contact Lowest Level5" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="     Mobile: "/>
+                <value variable="MobileNumber"/>
+                <value text="   Fax: "/>
+                <value variable="FaxNumber"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Emergency Contact Lowest Level6" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="     Email: "/>
+                <value variable="EmailAddress"/>
+            </field>
+        </detail>
+    </level>
+    
+    <level name="Proof Of Life Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <header>
+            <field whichfield="header 0" pos="0cm">
+                <value text="*********** Proof of Life Questions ***********"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="Proof Of Life lower Level" calculation="SelectProofOfLifeQuestions"></lowerLevelReport>
+        </detail>
+    </level>
+    
+    <level name="Proof Of Life lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+        <detail>
+            <lowerLevelReport level="Proof Of Life Lowest Level1" condition="gt(length({pm_life_question_1_c}), 0)"/>
+            <lowerLevelReport level="Proof Of Life Lowest Level2" condition="gt(length({pm_life_question_2_c}), 0)"/>
+            <lowerLevelReport level="Proof Of Life Lowest Level3" condition="gt(length({pm_life_question_3_c}), 0)"/>
+        </detail>
+    </level>
+    
+    <level name="Proof Of Life Lowest Level1" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Question1: "/>
+                <value variable="pm_life_question_1_c"/>
+                <value text="  Answer: "/>
+                <value variable="pm_life_answer_1_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Proof Of Life Lowest Level2" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Question2: "/>
+                <value variable="pm_life_question_2_c"/>
+                <value text="  Answer: "/>
+                <value variable="pm_life_answer_2_c"/>
+            </field>
+        </detail>
+    </level>
+    <level name="Proof Of Life Lowest Level3" identification="StaffPartnerKey">
+        <detail>
+            <field whichfield="column 0" pos="1cm">
+                <value text="Question3: "/>
+                <value variable="pm_life_question_3_c"/>
+                <value text="  Answer: "/>
+                <value variable="pm_life_answer_3_c"/>
+            </field>
+        </detail>
+    </level>
+    
     </levels>
   </report>
 </reports>

@@ -91,6 +91,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // add additional event to chkbox
             chkShowInactive.CheckedChanged += new System.EventHandler(this.SelectRowInGrid);
+
+            // set initial focus
+            this.ActiveControl = txtBranchName;
+
+            // catch enter on all controls, to move focus to the grid
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
         }
 
         /// <summary>
@@ -100,11 +106,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void LoadDataGrid(bool AFirstTime)
         {
             // Only call data from server if the dataset is actually empty.
-            // (A filled dataset is passed to this screen from the 'Finance Details' tab.)
+            // (A filled dataset is passed to this screen from the 'Finance Details' tab and 'Find By Bank Details'.)
             if ((FMainDS == null) || (FMainDS.PBank.Rows.Count == 0))
             {
                 FMainDS = new BankTDS();
-                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(true));
+                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPBankRecords());
             }
 
             FCriteriaData.Clear();
@@ -122,15 +128,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     DataRow NewBankRow = FCriteriaData.NewRow();
                     NewBankRow[PBankTable.GetPartnerKeyDBName()] = BankRow.PartnerKey;
-                    NewBankRow[PLocationTable.GetSiteKeyDBName()] = 0;
-                    NewBankRow[PLocationTable.GetLocationKeyDBName()] = 0;
+                    NewBankRow[BankTDSPBankTable.GetCityDBName()] = BankRow.City;
+                    NewBankRow[BankTDSPBankTable.GetCountryCodeDBName()] = BankRow.CountryCode;
                     NewBankRow[PBankTable.GetBranchNameDBName()] = BankRow.BranchName;
 
-                    if (BankRow.BranchCode.StartsWith("<INACTIVE> "))
+                    if (BankRow.BranchCode.StartsWith(SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " "))
                     {
                         NewBankRow[PBankTable.GetBranchCodeDBName()] = BankRow.BranchCode.Substring(11);
                     }
-                    else if (BankRow.BranchCode.StartsWith("<INACTIVE>"))
+                    else if (BankRow.BranchCode.StartsWith(SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS))
                     {
                         NewBankRow[PBankTable.GetBranchCodeDBName()] = BankRow.BranchCode.Substring(10);
                     }
@@ -139,39 +145,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         NewBankRow[PBankTable.GetBranchCodeDBName()] = BankRow.BranchCode;
                     }
 
+                    NewBankRow[BankTDSPBankTable.GetSiteKeyDBName()] = BankRow.SiteKey;
+                    NewBankRow[BankTDSPBankTable.GetLocationKeyDBName()] = BankRow.LocationKey;
+
                     NewBankRow[PBankTable.GetBicDBName()] = BankRow.Bic;
-                    NewBankRow[BankTDSPBankTable.GetStatusCodeDBName()] = BankRow.StatusCode;
-                    FCriteriaData.Rows.Add(NewBankRow);
-                }
-            }
-
-            // add location information if it exists
-            foreach (PPartnerLocationRow Row in FMainDS.PPartnerLocation.Rows)
-            {
-                DataRow DRow = FCriteriaData.Rows.Find(new object[] { Row.PartnerKey, 0, 0 });
-                PLocationRow LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new object[] { Row.SiteKey, Row.LocationKey });
-
-                if (DRow != null)
-                {
-                    DRow[PLocationTable.GetSiteKeyDBName()] = Row.SiteKey;
-                    DRow[PLocationTable.GetLocationKeyDBName()] = Row.LocationKey;
-                    DRow[PLocationTable.GetCityDBName()] = LocationRow.City;
-                    DRow[PLocationTable.GetCountryCodeDBName()] = LocationRow.CountryCode;
-                }
-                // if more than one location exists for a bank create new record/s for the additional location/s
-                else
-                {
-                    BankTDSPBankRow BankRow = (BankTDSPBankRow)FMainDS.PBank.Rows.Find(new object[] { Row.PartnerKey });
-
-                    DataRow NewBankRow = FCriteriaData.NewRow();
-                    NewBankRow[PBankTable.GetPartnerKeyDBName()] = BankRow.PartnerKey;
-                    NewBankRow[PLocationTable.GetSiteKeyDBName()] = Row.SiteKey;
-                    NewBankRow[PLocationTable.GetLocationKeyDBName()] = Row.LocationKey;
-                    NewBankRow[PBankTable.GetBranchNameDBName()] = BankRow.BranchName;
-                    NewBankRow[PBankTable.GetBranchCodeDBName()] = BankRow.BranchCode;
-                    NewBankRow[PBankTable.GetBicDBName()] = BankRow.Bic;
-                    NewBankRow[PLocationTable.GetCityDBName()] = LocationRow.City;
-                    NewBankRow[PLocationTable.GetCountryCodeDBName()] = LocationRow.CountryCode;
                     NewBankRow[BankTDSPBankTable.GetStatusCodeDBName()] = BankRow.StatusCode;
                     FCriteriaData.Rows.Add(NewBankRow);
                 }
@@ -191,18 +168,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // create a new table
             FCriteriaData.Columns.Add(PBankTable.GetPartnerKeyDBName(), Type.GetType("System.Int64"));
-            FCriteriaData.Columns.Add(PLocationTable.GetSiteKeyDBName(), Type.GetType("System.Int64"));
-            FCriteriaData.Columns.Add(PLocationTable.GetLocationKeyDBName(), Type.GetType("System.Int32"));
+            FCriteriaData.Columns.Add(BankTDSPBankTable.GetSiteKeyDBName(), Type.GetType("System.Int64"));
+            FCriteriaData.Columns.Add(BankTDSPBankTable.GetLocationKeyDBName(), Type.GetType("System.Int32"));
             FCriteriaData.Columns.Add(PBankTable.GetBranchNameDBName(), Type.GetType("System.String"));
             FCriteriaData.Columns.Add(PBankTable.GetBranchCodeDBName(), Type.GetType("System.String"));
             FCriteriaData.Columns.Add(PBankTable.GetBicDBName(), Type.GetType("System.String"));
-            FCriteriaData.Columns.Add(PLocationTable.GetCityDBName(), Type.GetType("System.String"));
-            FCriteriaData.Columns.Add(PLocationTable.GetCountryCodeDBName(), Type.GetType("System.String"));
+            FCriteriaData.Columns.Add(BankTDSPBankTable.GetCityDBName(), Type.GetType("System.String"));
+            FCriteriaData.Columns.Add(BankTDSPBankTable.GetCountryCodeDBName(), Type.GetType("System.String"));
             FCriteriaData.Columns.Add(BankTDSPBankTable.GetStatusCodeDBName(), Type.GetType("System.String"));
 
             FCriteriaData.PrimaryKey = new DataColumn[] {
                 FCriteriaData.Columns[PBankTable.GetPartnerKeyDBName()],
-                FCriteriaData.Columns[PLocationTable.GetSiteKeyDBName()], FCriteriaData.Columns[PLocationTable.GetLocationKeyDBName()]
+                FCriteriaData.Columns[BankTDSPBankTable.GetSiteKeyDBName()], FCriteriaData.Columns[BankTDSPBankTable.GetLocationKeyDBName()]
             };
             FCriteriaData.DefaultView.AllowNew = false;
 
@@ -217,6 +194,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Country", FCriteriaData.Columns[PLocationTable.GetCountryCodeDBName()], 60);
 
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(grdDetails_DoubleClickCell);
+            grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(grdDetails_EnterKey);
+            grdDetails.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(this.FocusedRowChanged);
         }
 
         #endregion
@@ -229,49 +208,73 @@ namespace Ict.Petra.Client.MPartner.Gui
             int RowPos = 1;
 
             // if no bank is selected then no row should be selected
-            if (FBankPartnerKey == 0)
+            if ((grdDetails.Rows.Count <= 1) || (FBankPartnerKey == 0))
             {
-                btnAccept.Enabled = false;
-                btnEdit.Enabled = false;
+                // select the first row in the grid
+                if (grdDetails.Rows.Count > 1)
+                {
+                    grdDetails.SelectRowWithoutFocus(1);
+                }
+                else
+                {
+                    btnAccept.Enabled = false;
+                    btnEdit.Enabled = false;
+                }
 
                 return;
             }
 
-            BankTDSPBankRow BankRow = (BankTDSPBankRow)FMainDS.PBank.Rows.Find(new object[] { FBankPartnerKey });
+            BankTDSPBankRow BankRow = null;
+
+            // Multiple rows could have the same partner keys but different locations.
+            // We just want the first row.
+            foreach (BankTDSPBankRow Row in FMainDS.PBank.Rows)
+            {
+                if (Row.PartnerKey == FBankPartnerKey)
+                {
+                    BankRow = Row;
+                    break;
+                }
+            }
 
             // if current bank is 'inactive' then make sure chkShowInactive is checked (unchecked by default)
-            if ((BankRow.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+            if ((BankRow != null)
+                && (BankRow.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
                 && (chkShowInactive.Checked == false))
             {
                 chkShowInactive.Checked = true;
             }
 
-            // look through each row in the grid
-            foreach (DataRowView RowView in FCriteriaData.DefaultView)
+            if (BankRow == null)
             {
-                // if current grid row is the row we are looking for the select it
-                if (Convert.ToInt64(RowView[PBankTable.GetPartnerKeyDBName()]) == FBankPartnerKey)
+                grdDetails.SelectRowWithoutFocus(1);
+            }
+            else
+            {
+                // look through each row in the grid
+                foreach (DataRowView RowView in FCriteriaData.DefaultView)
                 {
-                    grdDetails.SelectRowWithoutFocus(RowPos);
+                    // if current grid row is the row we are looking for the select it
+                    if (Convert.ToInt64(RowView[PBankTable.GetPartnerKeyDBName()]) == FBankPartnerKey)
+                    {
+                        grdDetails.SelectRowWithoutFocus(RowPos);
 
-                    btnAccept.Enabled = true;
-                    btnEdit.Enabled = true;
+                        btnAccept.Enabled = true;
+                        btnEdit.Enabled = true;
 
-                    return;
-                }
+                        return;
+                    }
 
-                // account for grid rows being filtered by being inactive
-                if (chkShowInactive.Checked
-                    || (!chkShowInactive.Checked
-                        && (RowView[BankTDSPBankTable.GetStatusCodeDBName()].ToString() ==
-                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))))
-                {
-                    RowPos++;
+                    // account for grid rows being filtered by being inactive
+                    if (chkShowInactive.Checked
+                        || (!chkShowInactive.Checked
+                            && (RowView[BankTDSPBankTable.GetStatusCodeDBName()].ToString() ==
+                                SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))))
+                    {
+                        RowPos++;
+                    }
                 }
             }
-
-            btnAccept.Enabled = false;
-            btnEdit.Enabled = false;
         }
 
         // update the record counter
@@ -296,9 +299,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void SelectRowInGrid(System.Object sender, EventArgs e)
         {
             SelectRowInGrid();
+            FocusedRowChanged(this, null);
         }
 
         private void grdDetails_DoubleClickCell(object Sender, SourceGrid.CellContextEventArgs e)
+        {
+            Accept(e, null);
+        }
+
+        private void grdDetails_EnterKey(object Sender, EventArgs e)
         {
             Accept(e, null);
         }
@@ -399,6 +408,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             UpdateRecordNumberDisplay();
             SelectRowInGrid();
+            FocusedRowChanged(this, null);
         }
 
         // A new row is selected in the grid
@@ -444,6 +454,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             frm.SetParameters(TScreenMode.smEdit, FBankPartnerKey);
             frm.Show();
+        }
+
+        // use 'Enter' key to move focus to the grid
+        private void CatchEnterKey(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                this.ActiveControl = grdDetails;
+            }
+            else
+            {
+                e.Handled = false;
+            }
         }
 
         #endregion

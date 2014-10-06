@@ -861,7 +861,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(FamilyRow.IsFamilyNameNull() ? "" : FamilyRow.FamilyName);
                 Write(FamilyRow.IsFirstNameNull() ? "" : FamilyRow.FirstName);
                 Write(FamilyRow.IsTitleNull() ? "" : FamilyRow.Title);
-                Write(FamilyRow.IsFieldKeyNull() ? 0 : FamilyRow.FieldKey);
                 Write(FamilyRow.IsMaritalStatusNull() ? "" : FamilyRow.MaritalStatus);
                 Write(FamilyRow.IsMaritalStatusSinceNull() ? "?" : FamilyRow.MaritalStatusSince.Value.ToString(DATEFORMAT));
                 Write(FamilyRow.IsMaritalStatusCommentNull() ? "" : FamilyRow.MaritalStatusComment);
@@ -884,7 +883,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(PersonRow.IsMaritalStatusSinceNull() ? "?" : PersonRow.MaritalStatusSince.Value.ToString(DATEFORMAT));
                 Write(PersonRow.IsMaritalStatusCommentNull() ? "" : PersonRow.MaritalStatusComment);
                 Write(PersonRow.IsOccupationCodeNull() ? "" : PersonRow.OccupationCode);
-                Write(PersonRow.IsFieldKeyNull() ? 0 : PersonRow.FieldKey);
                 Write(PersonRow.IsFamilyKeyNull() ? 0 : PersonRow.FamilyKey);
                 Write(PersonRow.IsFamilyIdNull() ? 0 : PersonRow.FamilyId);
                 WriteLine();
@@ -1029,6 +1027,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 Write(tempRow.IsCategoryNull() ? "" : tempRow.Category);
                 Write(PartnerInterestRow.IsLevelNull() ? 0 : PartnerInterestRow.Level);
                 Write(PartnerInterestRow.IsCommentNull() ? "" : PartnerInterestRow.Comment);
+                WriteLine();
+            }
+
+            foreach (PPartnerGiftDestinationRow GiftDestinationRow in AMainDS.PPartnerGiftDestination.Rows)
+            {
+                Write("GIFTDESTINATION");
+                WriteLine();
+                Write(GiftDestinationRow.IsFieldKeyNull() ? 0 : GiftDestinationRow.FieldKey);
+                Write(GiftDestinationRow.IsDateEffectiveNull() ? "?" : GiftDestinationRow.DateEffective.ToString(DATEFORMAT));
+                Write(GiftDestinationRow.IsDateExpiresNull() ? "?" : GiftDestinationRow.DateExpires.Value.ToString(DATEFORMAT));
+                Write(GiftDestinationRow.IsActiveNull() ? false : GiftDestinationRow.Active);
+                Write(GiftDestinationRow.IsDefaultGiftDestinationNull() ? false : GiftDestinationRow.DefaultGiftDestination);
+                Write(GiftDestinationRow.IsPartnerClassNull() ? "" : GiftDestinationRow.PartnerClass);
+                Write(GiftDestinationRow.IsCommentNull() ? "" : GiftDestinationRow.Comment);
                 WriteLine();
             }
 

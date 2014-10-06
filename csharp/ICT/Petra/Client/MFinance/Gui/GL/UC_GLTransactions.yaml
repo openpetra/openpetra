@@ -11,6 +11,7 @@ RootNode:
         actNew: {Label=&Add, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
         actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}
+        actImportTransactions: {Label=&Import Transactions, ActionClick=ImportTransactions}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, pnlDetailGrid, pnlDetailsSection]
@@ -51,11 +52,11 @@ RootNode:
         pnlTransAnalysisAttributes:
             Dock: Right
             Controls: [lblAnalAttributes, grdAnalAttributes]
-            Width: 240
+            Width: 290
 
         grdAnalAttributes:
             TableName: ATransAnalAttrib
-            Width: 220
+            Width: 270
             Height: 110
             Columns: [AnalysisTypeCode]
             CustomColumns:
@@ -68,7 +69,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: ATransaction
-            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AnalysisAttributes]
+            Columns: [TransactionNumber, TransactionDate, CostCentreCode, AccountCode, TransactionAmount, DebitCreditIndicator, Reference, Narrative, AmountInBaseCurrency, AmountInIntlCurrency, AnalysisAttributes]
             CustomColumns:
                 TransactionNumber: {Label=Transaction, Type=Integer}
                 TransactionDate: {Label=Transaction Date, Type=DateTime}
@@ -112,9 +113,17 @@ RootNode:
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true, SuppressChangeDetection=true}
         txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=DebitAmountChanged}
         txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false, OnChange=CreditAmountChanged}
-        txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
-        txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
         txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency}
+        txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
+        txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmountBase: {Label=Debit Total, ReadOnly=true, Format=Currency}
         txtCreditTotalAmountBase: {Label=Credit Total, ReadOnly=true, Format=Currency} 
+        tbrTabPage: {NoAttribute=true}
+        mnuTabPage: {NoAttribute=true}
+    Menu:
+        mniJournal:
+            Label: &Import
+            mniImportTransactions:
+    Toolbar:
+        tbbImportTransactions:

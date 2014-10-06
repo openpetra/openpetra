@@ -102,7 +102,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 });
             ASQLParameterList.Add(new OdbcParameter("Active", OdbcType.Bit)
                 {
-                    Value = AParameters.Get("param_active_partners").ToBool()
+                    Value = AParameters.Get("param_active").ToBool()
                 });
             ASQLParameterList.Add(new OdbcParameter("Exclude_no_soliciations", OdbcType.Bit)
                 {

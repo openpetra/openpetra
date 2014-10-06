@@ -1,0 +1,53 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlGrid]
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlFilterAndFind, pnlButtons, grdAccounts]
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 175
+            FilterControls: [pnlAccountsFilter]
+            FindControls: [pnlAccountsFind]
+            Panels:
+                pnlAccountsFilter:
+                    Controls: [txtAccountCode, cmbAccountType, txtDescrEnglish, txtDescrLocal, chkBankAccount, chkActive, chkSummary, chkForeign]
+
+                    txtAccountCode:
+                    cmbAccountType:
+                       OptionalValues: [Income, Expense, Asset, Equity, Liabilty]
+                    txtDescrEnglish:
+                    txtDescrLocal:
+                    chkBankAccount:
+                    chkActive:
+                    chkSummary:
+                    chkPostable:
+                    chkForeign:
+                pnlAccountsFind:
+                    Controls: [txtAccountCode, cmbAccountType, txtDescrEnglish, txtDescrLocal, chkBankAccount, chkActive, chkSummary, chkForeign]
+
+                    txtAccountCode:
+                    cmbAccountType:
+                       OptionalValues: [Income, Expense, Asset, Equity, Liabilty]
+                    txtDescrEnglish:
+                    txtDescrLocal:
+                    chkBankAccount:
+                    chkActive:
+                    chkSummary:
+                    chkPostable:
+                    chkForeign:
+        pnlButtons:
+            Dock: Bottom
+            Controls: []
+            ControlsOrientation: horizontal
+        grdAccounts:
+            Dock: Fill
+

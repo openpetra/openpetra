@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -56,9 +57,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
-            AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, null);
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+                    AMotivationGroupAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                    AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                });
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             MainDS.AcceptChanges();

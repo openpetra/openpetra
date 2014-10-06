@@ -35,6 +35,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -61,8 +62,14 @@ namespace Ict.Petra.Client.CommonControls
     /// <summary>Partner found</summary>
     public delegate void TDelegatePartnerChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection);
 
+    /// <summary>Partner found</summary>
+    public delegate void TDelegateOccupationFound(string AOccupationCode);
+
     /// <summary>Dataset changed</summary>
     public delegate void TDelegateDatasetChanged(DataSet ADataset);
+
+    /// <summary>Partner Class changed for a control of type 'PartnerKey'</summary>
+    public delegate void TDelegatePartnerClassChanged(TPartnerClass ? APartnerClass);
 
     class txtAutoPopulatedButtonLabel
     {
@@ -195,6 +202,9 @@ namespace Ict.Petra.Client.CommonControls
 
         /// <summary></summary>
         protected String FPartnerClass;
+
+        /// <summary></summary>
+        protected TPartnerClass? FCurrentPartnerClass = null;
 
         /// <summary></summary>
         protected String FValueMember;
@@ -451,6 +461,24 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// This property gets the partner's Partner Class for a control of type 'PartnerKey'
+        /// </summary>
+        public TPartnerClass ? CurrentPartnerClass
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.Text))
+                {
+                    return null;
+                }
+                else
+                {
+                    return this.FCurrentPartnerClass;
+                }
+            }
+        }
+
+        /// <summary>
         /// This property determines whether the text in the edit control can be
         /// changed or not.
         /// </summary>
@@ -538,6 +566,17 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// This property gets and sets the Text of this control.
+        /// </summary>
+        public CharacterCasing CharacterCasing
+        {
+            set
+            {
+                this.txtAutoPopulated.txtTextBox.CharacterCasing = value;
+            }
+        }
+
+        /// <summary>
         /// Sets the BorderStyle of the underlying TextBox.
         /// </summary>
         public new System.Windows.Forms.BorderStyle BorderStyle
@@ -570,12 +609,22 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// This property is used to provide a function which sets the Label's and TextBox's Texts.
         /// </summary>
+        public event TDelegateOccupationFound OccupationFound;
+
+        /// <summary>
+        /// This property is used to provide a function which sets the Label's and TextBox's Texts.
+        /// </summary>
         public event TDelegateVerifyUserEntry VerifyUserEntry;
 
         /// <summary>
         /// This property is used to provide a function which sets calling screen's dataset.
         /// </summary>
         public event TDelegateDatasetChanged DatasetChanged;
+
+        /// <summary>
+        /// This event is fired when the Partner Class is changed for a control of type 'PartnerKey'
+        /// </summary>
+        public event TDelegatePartnerClassChanged PartnerClassChanged;
 
         /// <summary>
         /// Here the hosting form has to provide a function to come up with a partner short name.
@@ -691,7 +740,7 @@ namespace Ict.Petra.Client.CommonControls
             // TLogging.Log('ButtonTextAlign: ' + Enum.GetName(typeof(System.Drawing.ContentAlignment), this.FButtonTextAlign));
             switch (AListTable)
             {
-                case TListTableEnum.OccupationList:
+                case TListTableEnum.OccupationList :
                     #region TListTableEnum.OccupationList
 
                     // Settings for the button
@@ -709,7 +758,7 @@ namespace Ict.Petra.Client.CommonControls
                     #endregion
                     break;
 
-                case TListTableEnum.PartnerKey:
+                case TListTableEnum.PartnerKey :
                     #region TListTableEnum.PartnerKey
 
                     // Settings for the button
@@ -729,6 +778,8 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
                     }
+
+                    AddCustomContextMenuStrip();
 
                     #endregion
                     break;
@@ -773,6 +824,9 @@ namespace Ict.Petra.Client.CommonControls
                     this.txtAutoPopulated.txtTextBox.Text = "0000000000";
                     this.txtAutoPopulated.Size = this.Size;
                     this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+
+                    AddCustomContextMenuStrip();
+
                     #endregion
                     break;
 
@@ -792,6 +846,9 @@ namespace Ict.Petra.Client.CommonControls
                     this.txtAutoPopulated.txtTextBox.Text = "0000000000";
                     this.txtAutoPopulated.Size = this.Size;
                     this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+
+                    AddCustomContextMenuStrip();
+
                     #endregion
                     break;
 
@@ -815,6 +872,8 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
                     }
+
+                    AddCustomContextMenuStrip();
 
                     #endregion
                     break;
@@ -1638,12 +1697,53 @@ namespace Ict.Petra.Client.CommonControls
 
                             // call Progress from here
                             // TLogging.log('txtAutoPopulated_ButtonClick');
-//TODO                            mCmdMPartner.OpenOccupationFindScreen(this.ParentForm, out mResultStringTxt);
-                            mResultStringTxt = "TODO";
 
-                            // I can only return the Occupation Code
-                            TextBoxStringOut = mResultStringTxt;
-                            LabelStringOut = null;
+                            // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
+                            if (TCommonScreensForwarding.OpenOccupationCodeFindScreen != null)
+                            {
+                                // delegate IS defined
+                                // TLogging.Log('PartnerFindScreen is assigned!', [TLoggingType.ToLogfile]);
+                                try
+                                {
+                                    mResultStringTxt = mTextBoxStringOld;
+
+                                    TCommonScreensForwarding.OpenOccupationCodeFindScreen.Invoke(ref mResultStringTxt,
+                                        this.ParentForm);
+
+                                    mResultStringLbl = "";
+
+                                    if (!string.IsNullOrEmpty(mResultStringTxt))
+                                    {
+                                        TextBoxStringOut = mResultStringTxt;
+                                        LabelStringOut = mResultStringLbl;
+
+                                        if (OccupationFound != null)
+                                        {
+                                            OccupationFound(mResultStringTxt);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        TextBoxStringOut = "";
+                                        LabelStringOut = "";
+                                    }
+                                }
+                                catch (Exception exp)
+                                {
+                                    TextBoxStringOut = "";
+                                    LabelStringOut = "";
+                                    throw new EOPAppException("Exception occured while calling OccupationCodeFindScreen Delegate!", exp);
+                                }
+
+                                // end try
+                            }
+                            // end IS assigned
+                            else
+                            {
+                                // delegate IS NOT defined
+                                throw new EOPAppException(
+                                    "DEVELOPER ERROR: OpenOccupationCodeFindScreen Delegate must be assigned on this Control to be able to open a Occupation Code screen!");
+                            }
 
                             // End TListTableEnum.OccupationList:
                             #endregion
@@ -1676,6 +1776,13 @@ namespace Ict.Petra.Client.CommonControls
                                         {
                                             PartnerClassOut = SharedTypes.PartnerClassEnumToString(mPartnerClass2.Value);
                                         }
+
+                                        if ((PartnerClassChanged != null) && (FCurrentPartnerClass != mPartnerClass2))
+                                        {
+                                            PartnerClassChanged((TPartnerClass)mPartnerClass2);
+                                        }
+
+                                        FCurrentPartnerClass = mPartnerClass2;
 
                                         if (PartnerFound != null)
                                         {
@@ -2028,12 +2135,25 @@ namespace Ict.Petra.Client.CommonControls
                             ValidResult = true;
                         }
 
+                        if ((PartnerClassChanged != null) && (FCurrentPartnerClass != mPartnerClass))
+                        {
+                            PartnerClassChanged(mPartnerClass);
+                        }
+
+                        FCurrentPartnerClass = mPartnerClass;
                         APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
                     }
                     else
                     {
                         mPartnerKey = 0;
                         mPartnerShortName = "";
+
+                        if ((PartnerClassChanged != null) && (FCurrentPartnerClass != null))
+                        {
+                            PartnerClassChanged(null);
+                        }
+
+                        FCurrentPartnerClass = null;
                     }
 
                     if ((ValueChanged != null) && (OldLabelText != mPartnerShortName))
@@ -2421,6 +2541,129 @@ namespace Ict.Petra.Client.CommonControls
                     #endregion
                     break;
             }
+        }
+
+        #endregion
+
+        #region Custom ContextMenuStrip
+
+        // create ContextMenuStrip with default items
+        private void AddCustomContextMenuStrip(bool AOpenPartnerEditScreen = true)
+        {
+            ContextMenuStrip CustomContextMenuStrip = new ContextMenuStrip();
+
+            if (AOpenPartnerEditScreen)
+            {
+                CustomContextMenuStrip.Items.Add(Catalog.GetString("Open in Partner Edit Screen"), null, new EventHandler(this.OpenPartnerEditScreen));
+            }
+
+            CustomContextMenuStrip.Items.Add("-");
+            CustomContextMenuStrip.Items.Add(Catalog.GetString("Copy"), null, new EventHandler(this.ClickCopy));
+            CustomContextMenuStrip.Items.Add(new ToolStripSeparator());
+            CustomContextMenuStrip.Items.Add(Catalog.GetString("Select All"), null, new EventHandler(this.ClickSelectAll));
+
+            this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
+
+            // event is fired just before the contextmenustrip is displayed
+            this.txtAutoPopulated.lblLabel.ContextMenuStrip.Opening += new CancelEventHandler(CustomContextMenuStrip_Opening);
+        }
+
+        /// <summary>
+        /// Adds items to control's ContextMenuStrip
+        /// </summary>
+        /// <param name="AMenuItems">Item name and corresponding EventHandler</param>
+        public void AddCustomContextMenuItems(List <Tuple <string, EventHandler>>AMenuItems)
+        {
+            if (AMenuItems.Count == 0)
+            {
+                return;
+            }
+
+            ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
+            int Index = 1;
+
+            // if a custom ContextMenuIndex has not already been created then do that now (i.e. all textboxes not using Partner Keys)
+            if (CustomContextMenuStrip == null)
+            {
+                AddCustomContextMenuStrip(false);
+                CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
+                Index = 0;
+            }
+
+            foreach (Tuple <string, EventHandler>MenuItem in AMenuItems)
+            {
+                CustomContextMenuStrip.Items.Insert(Index, new ToolStripMenuItem(MenuItem.Item1, null, MenuItem.Item2));
+                Index++;
+            }
+
+            this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
+        }
+
+        /// <summary>
+        /// Changes the visibility of an item in a Custom ContextMenuStrip
+        /// </summary>
+        /// <param name="AItemText"></param>
+        /// <param name="AVisible"></param>
+        public void CustomContextMenuItemsVisibility(string AItemText, bool AVisible)
+        {
+            ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
+
+            if (CustomContextMenuStrip == null)
+            {
+                return;
+            }
+
+            foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
+            {
+                if (Item.Text == AItemText)
+                {
+                    Item.Visible = AVisible;
+                }
+            }
+
+            this.txtAutoPopulated.lblLabel.ContextMenuStrip = CustomContextMenuStrip;
+        }
+
+        private void CustomContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        {
+            ContextMenuStrip CustomContextMenuStrip = this.txtAutoPopulated.lblLabel.ContextMenuStrip;
+
+            // if textbox label is blank then disable each item or vica versa
+            if (string.IsNullOrEmpty(this.txtAutoPopulated.lblLabel.Text))
+            {
+                foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
+                {
+                    Item.Enabled = false;
+                }
+            }
+            else
+            {
+                foreach (ToolStripItem Item in CustomContextMenuStrip.Items)
+                {
+                    Item.Enabled = true;
+                }
+            }
+
+            // Set Cancel to false.
+            e.Cancel = false;
+        }
+
+        // Open's partner's PArtner Edit screen
+        private void OpenPartnerEditScreen(object sender, System.EventArgs e)
+        {
+            TCommonScreensForwarding.OpenPartnerEditScreen(Convert.ToInt64(this.txtAutoPopulated.txtTextBox.Text), this.ParentForm);
+        }
+
+        // Copy selected text
+        private void ClickCopy(Object sender, EventArgs args)
+        {
+            this.txtAutoPopulated.lblLabel.Copy();
+        }
+
+        // Select all text
+        private void ClickSelectAll(Object sender, EventArgs args)
+        {
+            this.txtAutoPopulated.lblLabel.Focus(); this.txtAutoPopulated.lblLabel.SelectAll();
         }
 
         #endregion

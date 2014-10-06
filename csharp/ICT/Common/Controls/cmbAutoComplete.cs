@@ -77,6 +77,7 @@ namespace Ict.Common.Controls
         private bool FCaseSensitiveSearch;
         private bool FSuppressSelectionColor;
         private String FColumnsToSearchDesignTime;
+        private int FSelectedIndexOnDataSourceChange = -1;
 
         /// <summary>
         /// which columns to search
@@ -187,6 +188,17 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Sets the SelectedIndex value that will be applied when the DataSource changes
+        /// </summary>
+        public int SelectedIndexOnDataSourceChange
+        {
+            set
+            {
+                FSelectedIndexOnDataSourceChange = value;
+            }
+        }
+
+        /// <summary>
         /// data source
         /// </summary>
         public new object DataSource
@@ -212,9 +224,18 @@ namespace Ict.Common.Controls
                     throw new Exception("Datasource cannot be assigned with this datatype");
                 }
 
-                // problem to set it here, because the datasource is still being updated, and the indexchanged triggers give trouble
-                this.SelectedIndex = -1;
-                this.Text = string.Empty;
+                if (FSelectedIndexOnDataSourceChange == -1)
+                {
+                    // problem to set it here, because the datasource is still being updated, and the indexchanged triggers give trouble
+                    // Sep 2014:  AlanP commented: It is true that we are already firing a DataSourceChanged event and now we will fire
+                    //   an IndexChanged event - but we at least are not assuming that -1 is what is wanted.
+                    this.SelectedIndex = -1;
+                    this.Text = string.Empty;
+                }
+                else if (((DataView)DataSource).Count > FSelectedIndexOnDataSourceChange)
+                {
+                    this.SelectedIndex = FSelectedIndexOnDataSourceChange;
+                }
             }
         }
 
@@ -684,7 +705,22 @@ namespace Ict.Common.Controls
             {
                 // Text found and identified.
                 // TLogging.Log('Text found and identified. mFoundIndex: ' + mFoundIndex.ToString);
-                this.SelectedIndex = mFoundIndex;
+
+                // Note: AlanP.  Special case in Filter/Find
+                // Some comboBoxes (not many) have empty string as their first item, in which case mFoundIndex will be 0
+                //  but the current SelectedIndex may be -1.
+                // We do not want to fire a SelectedIndexChanged event in this case.  (From -1 to 0)
+                // Just in case this affects the behaviour of non-Filter/Find situations we AND the test with FIgnoreNewValues
+                //   since that is only ever true in Filter/Find (as of July 2014!)
+                // (See Mantis 3117, which gives all sorts of problems when shutting down)
+                if ((this.FIgnoreNewValues == true) && (mFoundIndex == 0) && (mItemString == String.Empty) && (this.SelectedIndex == -1))
+                {
+                    // Do nothing (see above)
+                }
+                else
+                {
+                    this.SelectedIndex = mFoundIndex;
+                }
 
                 if (AcceptNewEntries != null)
                 {
@@ -815,6 +851,12 @@ namespace Ict.Common.Controls
         /// </returns>
         public int FindStringSortedByLength(string SearchString)
         {
+            if ((SearchString == String.Empty) && this.IgnoreNewValues)
+            {
+                // It is in use for Filter/Find and the string is empty
+                return -1;
+            }
+
             if (DataSource == null)
             {
                 // TODO: proper implementation of FindStringSortedByLength for simple string lists

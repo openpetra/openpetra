@@ -160,6 +160,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtPersonFamilyName.TextChanged += new EventHandler(OnAnyDataColumnChanging);
                     this.cmbPersonGender.SelectedValueChanged += new System.EventHandler(this.CmbPersonGender_SelectedValueChanged);
 
+                    txtPartnerClass.BackColor = TCommonControlsHelper.PartnerClassPERSONColour;
+
                     break;
 
                 case TPartnerClass.FAMILY:
@@ -892,6 +894,60 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 throw new EVerificationMissing("FDelegateMaintainGiftDestination");
             }
+        }
+
+        #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        //// Special Handlers for menus and command keys for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.E | Keys.Control | Keys.Shift))
+            {
+                if (pnlPerson.Visible)
+                {
+                    txtPersonTitle.Focus();
+                    return true;
+                }
+                else if (pnlFamily.Visible)
+                {
+                    txtFamilyTitle.Focus();
+                    return true;
+                }
+                else if (pnlChurch.Visible)
+                {
+                    txtChurchName.Focus();
+                    return true;
+                }
+                else if (pnlOrganisation.Visible)
+                {
+                    txtOrganisationName.Focus();
+                    return true;
+                }
+                else if (pnlUnit.Visible)
+                {
+                    txtUnitName.Focus();
+                    return true;
+                }
+                else if (pnlBank.Visible)
+                {
+                    txtBranchName.Focus();
+                    return true;
+                }
+                else if (pnlVenue.Visible)
+                {
+                    txtVenueName.Focus();
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion

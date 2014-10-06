@@ -103,6 +103,18 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.IncomeExpenseTable(AParameters, FDbAdapter);
                     break;
 
+                case "AFO":
+                    ResultTbl = TFinanceReportingWebConnector.AFOTable(AParameters, FDbAdapter);
+                    break;
+
+                case "Executive Summary":
+                    ResultTbl = TFinanceReportingWebConnector.ExecutiveSummaryTable(AParameters, FDbAdapter);
+                    break;
+
+                case "TrialBalance":
+                    ResultTbl = TFinanceReportingWebConnector.TrialBalanceTable(AParameters, FDbAdapter);
+                    break;
+
                 default:
                     TLogging.Log("GetDatatableThread unknown ReportType: " + AReportType);
                     break;
@@ -113,6 +125,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
+        /// The CSV can get several tables and add them to the Dataset.
+        /// Each CSV entry is divided using a slash / like this:
+        /// TableName/Query.
         /// </summary>
         [RequireModulePermission("none")]
         public static GLReportingTDS GetReportingDataSet(String ADataSetFilterCsv)
@@ -126,15 +141,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             {
                 String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
                 String[] part = Tbl.Split('/');
-                String OrderBy = "";
 
-                if (part.Length > 4)
-                {
-                    OrderBy = part[4];
-                }
-
-                String Query = "SELECT " + part[1] + " FROM " + part[2] + " WHERE " + part[3] + OrderBy;
-                MainDs.Tables[part[0]].Merge(FDbAdapter.RunQuery(Query, part[0], Transaction));
+                MainDs.Tables[part[0]].Merge(FDbAdapter.RunQuery(part[1], part[0], Transaction));
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();

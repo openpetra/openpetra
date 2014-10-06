@@ -42,7 +42,17 @@ namespace {#NAMESPACE}
 {
 
   /// auto generated: {#FORMTITLE}
-  public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
+  public partial class {#CLASSNAME}: System.Windows.Forms.Form
+                                     , {#INTERFACENAME}
+{#IFDEF SHOWDETAILS}
+                                     , IDeleteGridRows       
+{#ENDIF SHOWDETAILS}
+{#IFDEF FILTERANDFIND}
+                                     , IFilterAndFind
+{#ENDIF FILTERANDFIND}
+{#IFDEF BUTTONPANEL}
+                                     , IButtonPanel
+{#ENDIF BUTTONPANEL}
   {
 #region Declarations
 
@@ -112,7 +122,8 @@ namespace {#NAMESPACE}
       FinishButtonPanelSetup();
 {#ENDIF BUTTONPANEL}
 {#IFDEF FILTERANDFIND}
-      SetupFilterAndFindControls();
+      FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter, lblRecordCounter);
+      FFilterAndFindObject.SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
 {#IFDEF DETAILTABLE}
       SelectRowInGrid(1);
@@ -190,7 +201,7 @@ namespace {#NAMESPACE}
     {
         if(ValidateAllData(true, true))
         {    
-            {#DETAILTABLE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
+            {#DETAILTABLETYPE}Row NewRow = FMainDS.{#DETAILTABLE}.NewRowTyped();
             {#INITNEWROWMANUAL}
             FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
         
@@ -199,17 +210,17 @@ namespace {#NAMESPACE}
             
             if (!SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1))
             {
-                if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                 {
                     MessageBox.Show(
                         MCommonResourcestrings.StrNewRecordIsFiltered,
                         MCommonResourcestrings.StrAddNewRecordTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
 
-                    if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                    if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
                     {
-                        ApplyFilter();
+                        FFilterAndFindObject.ApplyFilter();
                     }
 
                     SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
@@ -225,7 +236,7 @@ namespace {#NAMESPACE}
             {
                 // Build up a list of controls on this panel that is sorted in true nested tab order
                 SortedList<string, Control> controlsSortedByTabOrder = new SortedList<string, Control>();
-                GetSortedControlList(ref controlsSortedByTabOrder, pnl[0], String.Empty);
+                FPetraUtilsObject.GetSortedControlList(ref controlsSortedByTabOrder, pnl[0], String.Empty);
 
                 if (controlsSortedByTabOrder.Count > 0)
                 {
@@ -256,30 +267,6 @@ namespace {#NAMESPACE}
             return false;
         }
     }
-
-    /// <summary>
-    /// Gets a list of relevant controls, sorted correctly by multi-level TabIndex in exactly the same way that the system uses to determine screen tab order.
-    /// This includes nested controls so the tab order is, say, 100, 110, 120.30, 120.40, 130
-    /// The method calls itself recursively for each contained panel
-    /// </summary>
-    /// <param name="ASortedControlList">Pass in the SortedList that will be the final result</param>
-    /// <param name="AContainerControl">The contianer control (a Panel) that is to be searched for controls and sub-Panels</param>
-    /// <param name="APrefix">A TabIndex prefix - use an empty string for the initial call</param>
-    private void GetSortedControlList(ref SortedList<string, Control> ASortedControlList, Control AContainerControl, string APrefix)
-    {
-        foreach (Control control in AContainerControl.Controls)
-        {
-            if (control is Panel)
-            {
-                // Recursive call with an extended prefix
-                GetSortedControlList(ref ASortedControlList, control, String.Format("{0}{1}.", APrefix, control.TabIndex.ToString("0000")));
-            }
-            else if (control is TextBox || control is ComboBox || control is TCmbAutoPopulated)
-            {
-                ASortedControlList.Add(String.Format("{0}{1}", APrefix, control.TabIndex.ToString("0000")), control);
-            }
-        }
-    }
 #endregion
 
 #region Grid Row Selection and Discovery
@@ -294,7 +281,7 @@ namespace {#NAMESPACE}
     ///    otherwise the details are shown for the row that has been highlighted.
     /// </summary>
     /// <param name="ARowIndex">The row index to select.  Data rows start at 1</param>
-    private void SelectRowInGrid(int ARowIndex)
+    public void SelectRowInGrid(int ARowIndex)
     {
         grdDetails.SelectRowInGrid(ARowIndex, true);
     }
@@ -308,29 +295,12 @@ namespace {#NAMESPACE}
     /// <returns>True if the record is displayed in the grid, False otherwise</returns>
     private bool SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
     {
-        Int32 RowNumberGrid = -1;
-        for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
-        {
-            bool found = true;
-            foreach (DataColumn myColumn in FMainDS.{#DETAILTABLE}.PrimaryKey)
-            {
-                string value1 = FMainDS.{#DETAILTABLE}.Rows[ARowNumberInTable][myColumn].ToString();
-                string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[Counter][myColumn.Ordinal].ToString();
-                if (value1 != value2)
-                {
-                    found = false;
-                }
-            }
-            if (found)
-            {
-                RowNumberGrid = Counter + 1;
-                break;
-            }
-        }
+        DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+        Int32 RowNumberGrid = DataUtilities.GetDataViewIndexByDataTableIndex(dv, FMainDS.{#DETAILTABLE}, ARowNumberInTable) + 1;
 
         SelectRowInGrid(RowNumberGrid);
 
-        return RowNumberGrid >= 0;
+        return RowNumberGrid > 0;
     }
 
     /// <summary>
@@ -340,41 +310,13 @@ namespace {#NAMESPACE}
     private int GetDetailGridRowDataTableIndex()
     {
         Int32 RowNumberInData = -1;
-        
+
         if (FPrevRowChangedRow > 0 && FPreviouslySelectedDetailRow != null)
         {
-            int dataRowIndex = 0;
-            
-            foreach ({#DETAILTABLETYPE}Row myRow in FMainDS.{#DETAILTABLETYPE}.Rows)
-            {
-                bool found = true;
-                foreach (DataColumn myColumn in FMainDS.{#DETAILTABLETYPE}.PrimaryKey)
-                {
-                    if (myRow.RowState != DataRowState.Deleted)
-                    {
-                        string value1 = myRow[myColumn].ToString();
-                        string value2 = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[FPrevRowChangedRow - 1][myColumn.Ordinal].ToString();
-                        if (value1 != value2)
-                        {
-                            found = false;
-                        }
-                    }
-                    else
-                    {
-                        found = false;
-                    }
-                }
-                
-                if (found)
-                {
-                    RowNumberInData = dataRowIndex;
-                    break;
-                }
-                
-                dataRowIndex++;
-            }
+            DataRowView drv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView[FPrevRowChangedRow - 1];
+            RowNumberInData = DataUtilities.GetDataTableIndexByDataRowView(FMainDS.{#DETAILTABLE}, drv);
         }
-        
+
         return RowNumberInData;
     }
 
@@ -385,6 +327,15 @@ namespace {#NAMESPACE}
     /// </summary>
     /// <returns>The selected row - or null if no row is selected</returns>
     public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
+    {
+        return FPreviouslySelectedDetailRow;
+    }
+
+    /// <summary>
+    /// Gets the selected grid row as a generic DataRow for use by interfaces
+    /// </summary>
+    /// <returns>The selected row - or null if no row is selected</returns>
+    public DataRow GetSelectedDataRow()
     {
         return FPreviouslySelectedDetailRow;
     }
@@ -438,7 +389,7 @@ namespace {#NAMESPACE}
 
             if (rowView != null)
             {
-                FPreviouslySelectedDetailRow = ({#DETAILTABLE}Row)(rowView.Row);
+                FPreviouslySelectedDetailRow = ({#DETAILTABLETYPE}Row)(rowView.Row);
             }
 
             FPrevRowChangedRow = ARowNumberInGrid;
@@ -470,7 +421,7 @@ namespace {#NAMESPACE}
     /// IMPORTANT: Do not call this method from manual code because the internal variables will no longer match.
     /// </summary>
     /// <param name="ARow">The row for which details will be shown</param>
-    private void ShowDetails({#DETAILTABLE}Row ARow)
+    private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
 
@@ -501,7 +452,7 @@ namespace {#NAMESPACE}
     ///   ShowDetails(NewRow)
     /// so that the reference to the row object is updated automatically.
     /// </summary>
-    private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
+    private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
     
     /// <summary>
     /// This variable may become obsolete in future.  It used to hold the most recent row passed as the parameter to the FocusedRowChanged event.
@@ -576,369 +527,93 @@ namespace {#NAMESPACE}
     /// </summary>
     private void Delete{#DETAILTABLE}()
     {
-        string CompletionMessage = String.Empty;
-        
-        if ((FPreviouslySelectedDetailRow == null) || (FPrevRowChangedRow == -1))
-        {
-            return;
-        }
-
-        DataRowView[] HighlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
-
-        if (HighlightedRows.Length == 1)
-        {
-{#IFDEF DELETEREFERENCECOUNT}
-            TVerificationResultCollection VerificationResults = null;
-
-            if (TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
-            {
-                int RefCountLimit = FPetraUtilsObject.MaxReferenceCountOnDelete;
-                {#DELETEREFERENCECOUNT}
-            }
-
-            if ((VerificationResults != null)
-                && (VerificationResults.Count > 0))
-            {
-                TCascadingReferenceCountHandler countHandler = new TCascadingReferenceCountHandler();
-                TFrmExtendedMessageBox.TResult result = countHandler.HandleReferences(FPetraUtilsObject, VerificationResults, true);
-                if (result == TFrmExtendedMessageBox.TResult.embrYes)
-                {
-                    // repeat the count but with no limit to the number of references
-                    int RefCountLimit = 0;
-                    {#DELETEREFERENCECOUNT}
-
-                    countHandler.HandleReferences(FPetraUtilsObject, VerificationResults, false);
-                }
-
-                return;
-            }
-{#ENDIF DELETEREFERENCECOUNT}
-
-            string DeletionQuestion = MCommonResourcestrings.StrDefaultDeletionQuestion;
-            if ((FPrimaryKeyControl != null) && (FPrimaryKeyLabel != null))
-            {
-                DeletionQuestion += String.Format("{0}{0}({1} {2})",
-                    Environment.NewLine,
-                    FPrimaryKeyLabel.Text.Replace("&", ""),
-                    TControlExtensions.GetDisplayTextForControl(FPrimaryKeyControl));
-            }
-
-            bool AllowDeletion = true;
-            bool DeletionPerformed = false;
-
-            {#PREDELETEMANUAL}
-            if(AllowDeletion)
-            {
-                if ((MessageBox.Show(DeletionQuestion,
-                         MCommonResourcestrings.StrConfirmDeleteTitle,
-                         MessageBoxButtons.YesNo,
-                         MessageBoxIcon.Question,
-                         MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
-                {
-{#IFDEF DELETEROWMANUAL}
-                    try
-                    {
-                        {#DELETEROWMANUAL}
-{#ENDIF DELETEROWMANUAL}
-{#IFNDEF DELETEROWMANUAL}               
-                    try
-                    {
-                        FPreviouslySelectedDetailRow.Delete();
-                        DeletionPerformed = true;
-{#ENDIFN DELETEROWMANUAL}               
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(String.Format(MCommonResourcestrings.StrErrorWhileDeleting,
-                            Environment.NewLine, ex.Message),
-                            MCommonResourcestrings.StrGenericError,
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Warning);
-                    }
-            
-                    if (DeletionPerformed)
-                    {
-                        FPetraUtilsObject.SetChangedFlag();
-                    }
-            
-                    // Select and display the details of the nearest row to the one previously selected
-                    SelectRowInGrid(FPrevRowChangedRow);
-                    // Clear any errors left over from  the deleted row
-                    FPetraUtilsObject.VerificationResultCollection.Clear();
+{#IFNDEF BUTTONPANEL}
+        TDeleteGridRows.DeleteRows(this, grdDetails, FPetraUtilsObject, null);
+{#ENDIFN BUTTONPANEL}
 {#IFDEF BUTTONPANEL}
-                    UpdateRecordNumberDisplay();
+        TDeleteGridRows.DeleteRows(this, grdDetails, FPetraUtilsObject, this);
 {#ENDIF BUTTONPANEL}
-                }
-            }
+    }
 
-{#IFDEF POSTDELETEMANUAL}
-            {#POSTDELETEMANUAL}
-{#ENDIF POSTDELETEMANUAL}
-{#IFNDEF POSTDELETEMANUAL}
-            if(DeletionPerformed && CompletionMessage.Length > 0)
-            {
-                MessageBox.Show(CompletionMessage, MCommonResourcestrings.StrDeletionCompletedTitle);
-            }
-{#ENDIFN POSTDELETEMANUAL}
-        }
-        else
-        {
-            string DeletionQuestion = String.Format(MCommonResourcestrings.StrMultiRowDeletionQuestion, HighlightedRows.Length, Environment.NewLine);
-            DeletionQuestion += MCommonResourcestrings.StrMultiRowDeletionCheck;
-            if (MessageBox.Show(DeletionQuestion,
-                    MCommonResourcestrings.StrConfirmDeleteTitle,
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
-            {
-                int recordsDeleted = 0;
-                int recordsUndeletable = 0;
-                int recordsDeleteDisallowed = 0;
-                List<TMultiDeleteResult> listConflicts = new List<TMultiDeleteResult>();
-                List<TMultiDeleteResult> listExceptions = new List<TMultiDeleteResult>();
-
-                this.Cursor = Cursors.WaitCursor;
-
-                foreach (DataRowView drv in HighlightedRows)
-                {
-                    {#DETAILTABLE}Row rowToDelete = ({#DETAILTABLE}Row)(drv.Row);
-                    string rowDetails = MakePKValuesString(rowToDelete);
-
-                    {#MULTIDELETEDELETABLE}
-
+	#region IDeleteGridRows implementation
+	
+    /// <summary>
+    /// Perform the reference count
+    /// </summary>
+    public void GetReferenceCount(DataRow ADataRow, int AMaxReferenceCount, out TVerificationResultCollection AVerificationResults)
+    {
 {#IFDEF DELETEREFERENCECOUNT}
-                    TVerificationResultCollection VerificationResults = null;
-                    int RefCountLimit = FPetraUtilsObject.MaxReferenceCountOnDelete;
-                    {#DELETEREFERENCECOUNT}
-
-                    if ((VerificationResults != null) && (VerificationResults.Count > 0))
-                    {
-                        TMultiDeleteResult result = new TMultiDeleteResult(rowDetails,
-                            Messages.BuildMessageFromVerificationResult(String.Empty, VerificationResults));
-                        listConflicts.Add(result);
-                        continue;
-                    }
+        {#DELETEREFERENCECOUNT}
 {#ENDIF DELETEREFERENCECOUNT}
-
-                    bool AllowDeletion = true;
-                    bool DeletionPerformed = false;
-
-                    {#PREMULTIDELETEMANUAL}
-{#IFDEF DELETEROWMANUAL}
-                    if (!AllowDeletion)
-                    {
-                        recordsDeleteDisallowed++;
-                    }
-
-                    try
-                    {
-                        {#DELETEMULTIROWMANUAL}
-                    }
-                    catch (Exception ex)
-                    {
-                        TMultiDeleteResult result = new TMultiDeleteResult(rowDetails, ex.Message);
-                        listExceptions.Add(result);
-                    }
-{#ENDIF DELETEROWMANUAL}
-{#IFNDEF DELETEROWMANUAL}               
-
-                    if (AllowDeletion)
-                    {
-                        try
-                        {
-                            rowToDelete.Delete();
-                            DeletionPerformed = true;
-                        }
-                        catch (Exception ex)
-                        {
-                            TMultiDeleteResult result = new TMultiDeleteResult(rowDetails, ex.Message);
-                            listExceptions.Add(result);
-                        }
-                    }
-                    else
-                    {
-                        recordsDeleteDisallowed++;
-                    }
-{#ENDIFN DELETEROWMANUAL}               
-
-                    if (DeletionPerformed)
-                    {
-                        FPetraUtilsObject.SetChangedFlag();
-                        recordsDeleted++;
-                    }
-
-                    {#POSTMULTIDELETEMANUAL}
-                }
-
-                this.Cursor = Cursors.Default;
-                SelectRowInGrid(FPrevRowChangedRow);
-{#IFDEF BUTTONPANEL}
-                UpdateRecordNumberDisplay();
-{#ENDIF BUTTONPANEL}
-
-                if (recordsDeleted > 0 && CompletionMessage.Length > 0)
-                {
-                    MessageBox.Show(CompletionMessage, MCommonResourcestrings.StrDeletionCompletedTitle);
-                }
-
-                //  Show the results of the multi-deletion
-                string results = null;
-                
-                if (recordsDeleted > 0)
-                {
-                    results = String.Format(
-                            Catalog.GetPluralString(MCommonResourcestrings.StrRecordSuccessfullyDeleted, MCommonResourcestrings.StrRecordsSuccessfullyDeleted, recordsDeleted),
-                            recordsDeleted);
-                }
-                else
-                {
-                    results = MCommonResourcestrings.StrNoRecordsWereDeleted;
-                }
-                
-                if (recordsUndeletable > 0)
-                {
-                    results += String.Format(
-                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseNonDeletable,
-                                                MCommonResourcestrings.StrRowsNotDeletedBecauseNonDeletable,
-                                                recordsUndeletable),
-                        Environment.NewLine,
-                        recordsUndeletable);
-                }
-
-                if (recordsDeleteDisallowed > 0)
-                {
-                    results += String.Format(
-                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseDeleteNotAllowed,
-                                                MCommonResourcestrings.StrRowsNotDeletedBecauseDeleteNotAllowed,
-                                                recordsDeleteDisallowed),
-                        Environment.NewLine,
-                        recordsDeleteDisallowed);
-                }
-
-                bool showCancel = false;
-                
-                if (listConflicts.Count > 0)
-                {
-                    showCancel = true;
-                    results += String.Format(
-                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseReferencedElsewhere,
-                                                MCommonResourcestrings.StrRowsNotDeletedBecauseReferencedElsewhere,
-                                                listConflicts.Count),
-                        Environment.NewLine,
-                        listConflicts.Count);
-                }
-                
-                if (listExceptions.Count > 0)
-                {
-                    showCancel = true;
-                    results += String.Format(
-                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
-                                                MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
-                                                listExceptions.Count),
-                        Environment.NewLine,
-                        listExceptions.Count);
-                }
-                
-                if (showCancel)
-                {
-                    results += String.Format(MCommonResourcestrings.StrClickToReviewDeletionOrCancel, Environment.NewLine);
-
-                    if (MessageBox.Show(results,
-                            MCommonResourcestrings.StrDeleteActionSummaryTitle,
-                            MessageBoxButtons.OKCancel,
-                            MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.OK)
-                    {
-                        ReviewMultiDeleteResults(listConflicts, MCommonResourcestrings.StrRowsReferencedByOtherTables);
-                        ReviewMultiDeleteResults(listExceptions, MCommonResourcestrings.StrExceptions);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show(results,
-                        MCommonResourcestrings.StrDeleteActionSummaryTitle,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-            }
-        }
+{#IFNDEF DELETEREFERENCECOUNT}
+        AVerificationResults = null;
+{#ENDIFN DELETEREFERENCECOUNT}
     }
 
-    private string MakePKValuesString({#DETAILTABLE}Row ARow)
+    /// <summary>
+    /// Specifies the default deletion question
+    /// </summary>
+    public string GetDefaultDeletionQuestion()
     {
-        string ReturnValue = String.Empty;
-        object[] items = DataUtilities.GetPKValuesFromDataRow(ARow);
-
-        for (int i = 0; i < items.Length; i++)
+        string DeletionQuestion = MCommonResourcestrings.StrDefaultDeletionQuestion;
+        if ((FPrimaryKeyControl != null) && (FPrimaryKeyLabel != null))
         {
-            if (i > 0)
-            {
-                ReturnValue += ", ";
-            }
-
-            ReturnValue += items[i].ToString();
+            DeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine,
+                FPrimaryKeyLabel.Text.Replace("&", ""),
+                TControlExtensions.GetDisplayTextForControl(FPrimaryKeyControl));
         }
-
-        return ReturnValue;
+        return DeletionQuestion;
     }
 
-    private class TMultiDeleteResult
+    /// <summary>
+    /// Handler for optional Pre-Delete manual code
+    /// </summary>
+    public void HandlePreDelete(DataRow ARowToDelete, ref bool AAllowDeletion, ref string ADeletionQuestion)
     {
-        private string FRecordID;
-        private string FResult;
-
-        public TMultiDeleteResult(string ARecordID, string AResult)
-        {
-            FRecordID = ARecordID;
-            FResult = AResult;
-        }
-
-        public string RecordID
-        {
-            get
-            {
-                return FRecordID;
-            }
-        }
-
-        public string Result
-        {
-            get
-            {
-                return FResult;
-            }
-        }
-
+{#IFDEF HASPREDELETEMANUAL}
+		AAllowDeletion = PreDeleteManual(({#DETAILTABLE}Row)ARowToDelete, ref ADeletionQuestion);
+{#ENDIF HASPREDELETEMANUAL}
     }
 
-    private void ReviewMultiDeleteResults(List<TMultiDeleteResult> AList, string ATitle)
+    /// <summary>
+    /// Handler for optional manual deletion code.  Return True if manual code handles deletion or false to use the default processing
+    /// </summary>
+    public bool HandleDeleteRow(DataRow ARowToDelete, ref bool ADeletionPerformed, ref string ACompletionMessage)
     {
-        int allItemsCount = AList.Count;
-        int item = 0;
-
-        foreach (TMultiDeleteResult result in AList)
-        {
-            item++;
-            string s1 = result.RecordID;
-            string s2 = result.Result;
-
-            string details = String.Format(MCommonResourcestrings.StrItemXofYRecordColon,
-                ATitle, item, allItemsCount, Environment.NewLine, s1, s2);
-
-            if (item < allItemsCount)
-            {
-                details += String.Format(MCommonResourcestrings.StrViewNextDetailOrCancel, Environment.NewLine);
-                if (MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OKCancel)
-                    == System.Windows.Forms.DialogResult.Cancel)
-                {
-                    break;
-                }
-            }
-            else
-            {
-                MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OK);
-            }
-        }
+{#IFDEF HASDELETEROWMANUAL}
+        ADeletionPerformed = DeleteRowManual(({#DETAILTABLE}Row)ARowToDelete, ref ACompletionMessage);
+		return true;
+{#ENDIF HASDELETEROWMANUAL}
+{#IFNDEF HASDELETEROWMANUAL}
+		return false;
+{#ENDIFN HASDELETEROWMANUAL}
     }
+
+    /// <summary>
+    /// Handler for optional Post-Delete manual code.  Return True if manual code handles post-deletion or false to use the default processing
+    /// </summary>
+    public bool HandlePostDelete(DataRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+    {
+{#IFDEF HASPOSTDELETEMANUAL}
+		PostDeleteManual(({#DETAILTABLE}Row)ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);
+		return true;
+{#ENDIF HASPOSTDELETEMANUAL}
+{#IFNDEF HASPOSTDELETEMANUAL}
+		return false;
+{#ENDIFN HASPOSTDELETEMANUAL}
+    }
+
+    /// <summary>
+    /// Return False if special reasons exist to disallow deletion of the specified row (eg the row contains 'system' data)
+    /// </summary>
+    public bool IsRowDeletable(DataRow ARowToDelete)
+    {
+        {#CANDELETEROW}
+    }
+	
+	#endregion
+
 #endregion
 {#ENDIF SHOWDETAILS}
 
@@ -986,7 +661,7 @@ namespace {#NAMESPACE}
     /// <param name="ARow">Do not use</param>
     /// <param name="AIsNewRow">Do not use</param>
     /// <param name="AControl">Do not use</param>
-    private void GetDetailsFromControls({#DETAILTABLE}Row ARow, bool AIsNewRow = false, Control AControl=null)
+    private void GetDetailsFromControls({#DETAILTABLETYPE}Row ARow, bool AIsNewRow = false, Control AControl=null)
     {
         if (ARow != null && !grdDetails.Sorting)
         {            
@@ -1056,13 +731,14 @@ namespace {#NAMESPACE}
         UpdateRecordNumberDisplay();
     }
     
-    private void UpdateRecordNumberDisplay()
+    ///<summary>
+    /// Update the text in the button panel indicating details of the record count
+    /// </summary>
+    public void UpdateRecordNumberDisplay()
     {
-        int RecordCount;
-        
         if (grdDetails.DataSource != null) 
         {
-            RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            int RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
             lblRecordCounter.Text = String.Format(
                 Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
                 RecordCount);
@@ -1152,21 +828,21 @@ namespace {#NAMESPACE}
             {
 {#IFDEF FILTERANDFIND}
                 // The row is no longer in the view - probably because the new data values are being filtered out
-                if ((FCurrentActiveFilter != FFilterPanelControls.BaseFilter) || !FFilterPanelControls.BaseFilterShowsAllRecords)
+                if (!FFilterAndFindObject.IsActiveFilterEqualToBase || !FFilterAndFindObject.IsBaseFilterShowingAllRecords)
                 {
                     // Remember the control with the focus
                     Control c = FPetraUtilsObject.GetFocusedControl(pnlDetails);
 
                     // Clear the filters without selecting a new row
-                    FClearingDiscretionaryFilters = true;
-                    FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    FFilterAndFindObject.ClearingDiscretionaryFilters = true;
+                    FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
 
-                    if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                    if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
                     {
-                        ApplyFilter();
+                        FFilterAndFindObject.ApplyFilter();
                     }
 
-                    FClearingDiscretionaryFilters = false;
+                    FFilterAndFindObject.ClearingDiscretionaryFilters = false;
 
                     // Now find the row again - this time we should succeed.  If not some other piece of code will have to do the selection
                     newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
@@ -1236,6 +912,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
+        {#GRIDHEADERTOOLTIP}
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
         {#USERCONTROLSRUNONCEONACTIVATION}
@@ -1259,7 +936,7 @@ namespace {#NAMESPACE}
     /// auto generated
     public bool CanClose()
     {
-        return FPetraUtilsObject.CanClose();
+        return FPetraUtilsObject.CanClose(){#CANCLOSEMANUAL};
     }
 
     /// auto generated
@@ -1275,6 +952,13 @@ namespace {#NAMESPACE}
     }
 
 {#IFDEF DETAILTABLE OR MASTERTABLE}
+    /// auto generated
+	public int GetChangedRecordCount(out string AMessage)
+	{
+	    // Optionally return GetChangedRecordCountManual(out string AMessage)
+	    {#GETCHANGEDRECORDCOUNT}
+	}
+
     /// <summary>
     /// save the changes on the screen
     /// </summary>
@@ -1489,15 +1173,15 @@ namespace {#NAMESPACE}
             }
         }
 {#IFDEF FILTERANDFIND}
-        else if (FFailedValidation_CtrlChangeEventArgsInfo != null)
+        else if (FFilterAndFindObject.FailedValidation_CtrlChangeEventArgsInfo != null)
         {
             // The validation is all ok...  But we do have an outstanding filter update that we did not show due to previous invalid data
             //  So we can call that now and update the display.
-            FucoFilterAndFind_ArgumentCtrlValueChanged(FFailedValidation_CtrlChangeEventArgsInfo.Sender,
-                (TUcoFilterAndFind.TContextEventExtControlValueArgs)FFailedValidation_CtrlChangeEventArgsInfo.EventArgs);
+            FFilterAndFindObject.FucoFilterAndFind_ArgumentCtrlValueChanged(FFilterAndFindObject.FailedValidation_CtrlChangeEventArgsInfo.Sender,
+                (TUcoFilterAndFind.TContextEventExtControlValueArgs)FFilterAndFindObject.FailedValidation_CtrlChangeEventArgsInfo.EventArgs);
             
             // Reset our cached change event
-            FFailedValidation_CtrlChangeEventArgsInfo = null;
+            FFilterAndFindObject.FailedValidation_CtrlChangeEventArgsInfo = null;
         }
 {#ENDIF FILTERANDFIND}    
     }
@@ -1511,7 +1195,7 @@ namespace {#NAMESPACE}
     }
 {#ENDIF MASTERTABLE}
 {#IFDEF DETAILTABLE}
-    private void ValidateDataDetails({#DETAILTABLE}Row ARow)
+    private void ValidateDataDetails({#DETAILTABLETYPE}Row ARow)
     {
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
@@ -1539,7 +1223,7 @@ namespace {#NAMESPACE}
         // and initialise the 'prime' primary key control on pnlDetails.
         // This is the last control in the tab order that matches a key
         int lastTabIndex = -1;
-        DataRow row = (new {#DETAILTABLE}Table()).NewRow();
+        DataRow row = (new {#DETAILTABLETYPE}Table()).NewRow();
         for (int i = 0; i < row.Table.PrimaryKey.Length; i++)
         {
             DataColumn column = row.Table.PrimaryKey[i];
@@ -1571,20 +1255,22 @@ namespace {#NAMESPACE}
 {#INCLUDE findandfilter.cs}
 
 {##SNIPDELETEREFERENCECOUNT}
+bool previousCursorIsDefault = this.Cursor.Equals(Cursors.Default);
 this.Cursor = Cursors.WaitCursor;
+
 TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
     FMainDS.{#NONCACHEABLETABLENAME},
-    DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
-    RefCountLimit,
-    out VerificationResults);
-this.Cursor = Cursors.Default;
+    DataUtilities.GetPKValuesFromDataRow(ADataRow),
+    AMaxReferenceCount,
+    out AVerificationResults);
 
-{##SNIPMULTIDELETEDELETABLE}
-if (!rowToDelete.{#DELETEABLEFLAG})
+if (previousCursorIsDefault)
 {
-    recordsUndeletable++;
-    continue;
+    this.Cursor = Cursors.Default;
 }
+
+{##SNIPCANDELETEROW}
+return (({#DETAILTABLE}Row)ARowToDelete).{#DELETEABLEFLAG};
 
 {##SNIPCANDELETESELECTION}
 

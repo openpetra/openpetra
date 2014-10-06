@@ -48,12 +48,14 @@
                     SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
                     PUB_p_partner.p_partner_short_name_c AS ShortName,
                     PUB_p_partner.p_partner_class_c AS PartnerClass
-                    FROM   PUB_p_partner, PUB_p_subscription as psub
+                    FROM   PUB_p_partner, pub_p_partner_location, pub_p_location, PUB_p_subscription as psub, PUB_p_postcode_region_range, PUB_p_postcode_range
                     WHERE psub.p_partner_key_n = PUB_p_partner.p_partner_key_n
                       AND NOT PUB_p_partner.p_partner_key_n = 0
                       AND psub.p_start_date_d &lt;= {#param_date_effective#}
                       AND (psub.p_date_cancelled_d IS NULL OR psub.p_date_cancelled_d &gt; {#param_date_effective#})
                       AND (psub.p_expiry_date_d IS NULL OR psub.p_expiry_date_d &gt; {#param_date_effective#})
+					  AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n
+					  AND pub_p_partner_location.p_location_key_i = pub_p_location.p_location_key_i
                 </value></queryDetail>
                 <queryDetail condition="gt(length({param_exclude_publication}), 1)">
                     <value> AND NOT </value>
@@ -62,6 +64,18 @@
                 <queryDetail condition="gt(length({param_explicit_publication}), 1)">
                     <value> AND </value>
                     <value function="csv" text="psub.p_publication_code_c" variable="param_explicit_publication"/>
+                </queryDetail>
+                <queryDetail condition="eq({param_only_addresses_valid_on},true)"><value>
+						AND pub_p_partner_location.p_send_mail_l = true
+						AND {#param_today#} &gt;= pub_p_partner_location.p_date_effective_d 
+						AND ({#param_today#} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
+                </value></queryDetail>
+                <queryDetail condition="gt(length({param_city}), 1)">
+                    <value> AND LOWER(pub_p_location.p_city_c) = LOWER({param_city})</value>
+                </queryDetail>
+                <queryDetail condition="gt(length({param_country}), 1)">
+                    <value> AND </value>
+                    <value function="csv" text="pub_p_location.p_country_code_c" variable="param_country"/>
                 </queryDetail>
             </query>
         </calculation> <!-- Select Partners -->
@@ -75,24 +89,33 @@
                     <value function="assign(TelephoneNumber, concatenate({TelephoneNumber},{Extension}))"/>
                     <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))"/>
                     <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
+					<value function="ConditionRow(1)"/>
                 </queryDetail>
             </query>
         </calculation>
     
-        <calculation id="CleanUp" returns="PartnerClassShort, TelephoneNumber, FaxNumber, Field" returnsFormat="text">
+        <calculation id="CleanUp" returns="PartnerClassShort, TelephoneNumber, FaxNumber, Field, PostcodeCheck" returnsFormat="text">
             <query>
-                <queryDetail>
+                <!--<queryDetail>
                     <value text="NO-SQL"/>
                     <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
                     <value function="assign(TelephoneNumber, concatenate({TelephonePre},{TelephoneExtension}))"/>
                     <value function="assign(FaxNumber, concatenate({FaxPre}, {FaxExtension}))"/>
                     <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
-                </queryDetail>
+                </queryDetail>-->
+				<queryDetail>
+					<value text="NO-SQL"/>
+					<value function="assign(PostcodeCheck, AddressMeetsPostCodeCriteriaOrEmpty(true,{param_region},{param_postcode_from},{param_postcode_to}))"/>
+				</queryDetail>
+				<queryDetail condition="eq({PostcodeCheck}, false)">
+					<value text="NO-SQL"/>
+					<value function="ConditionRow(0)"/>
+				</queryDetail>
             </query>
         </calculation>
 
-        <calculation align="left" id="Short Name" returns="text" returnsFormat="text">
-            <caption><value text="Short name"></value></caption>
+        <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+            <caption><value text="Partner name"></value></caption>
             <query>
                 <queryDetail>
                     <value variable="ShortName"></value>
@@ -100,14 +123,14 @@
             </query>
         </calculation>
 
-        <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <!-- <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
             <caption><value text="Partner Name"></value></caption>
             <query>
                 <queryDetail>
                     <value variable="NameWithTitle"></value>
                 </queryDetail>
             </query>
-        </calculation>
+        </calculation> -->
         
         <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
             <caption><value text="Partner Key"></value></caption>
@@ -374,6 +397,7 @@
             </header>
             <detail>
                 <field whichfield="Columns" calculation="GetBestAddressDetails"></field>
+				<field calculation="CleanUp"  whichfield="Columns"></field>
             </detail>
         </level><!-- Partner Details -->
     </levels>

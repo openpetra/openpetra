@@ -24,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
@@ -36,6 +37,7 @@ using SourceGrid;
 using Owf.Controls;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Gui;
@@ -55,6 +57,25 @@ namespace Ict.Petra.Client.CommonForms
         public static readonly string StrFormCaptionPrefixNew = Catalog.GetString("NEW: ");
 
 // TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
+
+        ///
+        public static readonly string StrSingleRecordToSave = Catalog.GetString("There is 1 record that needs to be saved.");
+
+        ///
+        public static readonly string StrPluralRecordsToSave = Catalog.GetString("There are {0} records that need to be saved.");
+
+        ///
+        public static readonly string StrConsequenceIfNotSaved = Catalog.GetString(
+            "{0}If you close this window without saving, you will lose all the changes that you have made.");
+
+        ///
+        public static readonly string StrSingleTableToSave = Catalog.GetString("The following table has data that needs to be saved:");
+
+        ///
+        public static readonly string StrPluralTablesToSave = Catalog.GetString("The following tables have data that needs to be saved:");
+
+        ///
+        public static readonly string StrRecordsInTable = Catalog.GetString("{0}   {1} {2} in the '{3}' table.");
 
         #endregion
 
@@ -256,7 +277,11 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     ((ComboBox)ctrl).SelectedValueChanged += new EventHandler(this.MultiEventHandler);
                 }
-                else if (ctrl.GetType() == typeof(CheckBox))
+                else if (ctrl.GetType() == typeof(CheckBox)) // This could be removed here to prevent its explicit use in forms.
+                {
+                    ((CheckBox)ctrl).CheckedChanged += new EventHandler(this.MultiEventHandler);
+                }
+                else if (ctrl.GetType() == typeof(TchkVisibleFocus))
                 {
                     ((CheckBox)ctrl).CheckedChanged += new EventHandler(this.MultiEventHandler);
                 }
@@ -443,6 +468,7 @@ namespace Ict.Petra.Client.CommonForms
         public bool ClearControl(Control AControlToClear)
         {
             bool ReturnValue = false;
+            bool prevSuppressChangeDetection = FSuppressChangeDetection;
 
             DisableDataChangedEvent();
 
@@ -522,8 +548,101 @@ namespace Ict.Petra.Client.CommonForms
                     ex.Message);
             }
 
-            EnableDataChangedEvent();
+            if (prevSuppressChangeDetection == false)
+            {
+                // when we started we were tracking changes, so we need to reset that
+                // Note we only enable this if it was enabled at the start!!!
+                EnableDataChangedEvent();
+            }
+
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// This is the default method for counting the number of changed records and specifying a message that can be displayed
+        ///   as part of the 'Do you want to save changes' dialog.
+        /// </summary>
+        /// <param name="ADataSet">The DataSet that is to be examined for changes</param>
+        /// <param name="AMessage">The message that will be displayed</param>
+        /// <returns>The total number of changed records in all tables of the DataSet</returns>
+        public int GetChangedRecordCount(DataSet ADataSet, out string AMessage)
+        {
+            List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
+            int allChangesCount = 0;
+
+            foreach (DataTable dt in ADataSet.Tables)
+            {
+                if (dt != null)
+                {
+                    int tableChangesCount = 0;
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        if (dr.RowState != DataRowState.Unchanged)
+                        {
+                            tableChangesCount++;
+                            allChangesCount++;
+                        }
+                    }
+
+                    if (tableChangesCount > 0)
+                    {
+                        TableAndCountList.Add(new Tuple <string, int>(((TTypedDataTable)dt).TableDBLabel, tableChangesCount));
+                    }
+                }
+            }
+
+            AMessage = String.Empty;
+
+            if (TableAndCountList.Count > 0)
+            {
+                if (ADataSet.Tables.Count == 1)
+                {
+                    // single table DataSet so we are only interested in the count
+                    Tuple <string, int>TableAndCount = TableAndCountList[0];
+
+                    if (TableAndCount.Item2 > 0)
+                    {
+                        if (TableAndCount.Item2 == 1)
+                        {
+                            AMessage = TFrmPetraEditUtils.StrSingleRecordToSave;
+                        }
+                        else
+                        {
+                            AMessage = String.Format(
+                                TFrmPetraEditUtils.StrPluralRecordsToSave,
+                                TableAndCount.Item2);
+                        }
+
+                        AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, "  ");
+                    }
+                }
+                else
+                {
+                    // multi-table DataSet
+                    if (TableAndCountList.Count == 1)
+                    {
+                        AMessage = TFrmPetraEditUtils.StrSingleTableToSave;
+                    }
+                    else
+                    {
+                        AMessage = TFrmPetraEditUtils.StrPluralTablesToSave;
+                    }
+
+                    foreach (Tuple <string, int>TableAndCount in TableAndCountList)
+                    {
+                        AMessage += String.Format(TFrmPetraEditUtils.StrRecordsInTable,
+                            Environment.NewLine,
+                            TableAndCount.Item2,
+                            Catalog.GetPluralString("record", "records", TableAndCount.Item2),
+                            TableAndCount.Item1);
+                    }
+
+                    AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
+                }
+            }
+
+            return allChangesCount;
         }
 
         /// <summary>
@@ -542,6 +661,30 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     // Clear these controls as well
                     ClearControls(ctrl);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of relevant controls, sorted correctly by multi-level TabIndex in exactly the same way that the system uses to determine screen tab order.
+        /// This includes nested controls so the tab order is, say, 100, 110, 120.30, 120.40, 130
+        /// The method calls itself recursively for each contained panel
+        /// </summary>
+        /// <param name="ASortedControlList">Pass in the SortedList that will be the final result</param>
+        /// <param name="AContainerControl">The contianer control (a Panel) that is to be searched for controls and sub-Panels</param>
+        /// <param name="APrefix">A TabIndex prefix - use an empty string for the initial call</param>
+        public void GetSortedControlList(ref SortedList <string, Control>ASortedControlList, Control AContainerControl, string APrefix)
+        {
+            foreach (Control control in AContainerControl.Controls)
+            {
+                if (control is Panel)
+                {
+                    // Recursive call with an extended prefix
+                    GetSortedControlList(ref ASortedControlList, control, String.Format("{0}{1}.", APrefix, control.TabIndex.ToString("0000")));
+                }
+                else if (control is TextBox || control is ComboBox || control is TCmbAutoPopulated)
+                {
+                    ASortedControlList.Add(String.Format("{0}{1}", APrefix, control.TabIndex.ToString("0000")), control);
                 }
             }
         }
@@ -839,9 +982,40 @@ namespace Ict.Petra.Client.CommonForms
                 }
 
                 // still unsaved data in the DataSet
-                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(MCommonResourcestrings.StrFormHasUnsavedChanges +
-                    Environment.NewLine + Environment.NewLine +
-                    MCommonResourcestrings.StrFormHasUnsavedChangesQuestion,
+                string SaveQuestion = MCommonResourcestrings.StrFormHasUnsavedChanges + Environment.NewLine + Environment.NewLine;
+                string alternativeMessage;
+
+                // Do we know how many rows have been changed?
+                int changedRecordCount = ((IFrmPetraEdit)FTheForm).GetChangedRecordCount(out alternativeMessage);
+
+                if (changedRecordCount > 0)
+                {
+                    if (alternativeMessage == String.Empty)
+                    {
+                        // Construct a default message
+                        if (changedRecordCount == 1)
+                        {
+                            SaveQuestion += TFrmPetraEditUtils.StrSingleRecordToSave;
+                        }
+                        else
+                        {
+                            SaveQuestion += String.Format(TFrmPetraEditUtils.StrPluralRecordsToSave, changedRecordCount);
+                        }
+
+                        SaveQuestion += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, "  ");
+                    }
+                    else
+                    {
+                        // Use the alternative message supplied
+                        SaveQuestion += alternativeMessage;
+                    }
+
+                    SaveQuestion += Environment.NewLine + Environment.NewLine;
+                }
+
+                SaveQuestion += MCommonResourcestrings.StrFormHasUnsavedChangesQuestion;
+
+                System.Windows.Forms.DialogResult SaveQuestionAnswer = MessageBox.Show(SaveQuestion,
                     MCommonResourcestrings.StrGenericWarning,
                     MessageBoxButtons.YesNoCancel,
                     MessageBoxIcon.Warning,
@@ -997,7 +1171,16 @@ namespace Ict.Petra.Client.CommonForms
 
 // TODO?        void EnableDataChangedEvent();
 
-        /// <summary>Save the changes</summary>
+        /// <summary>
+        /// Save the changes
+        /// </summary>
         bool SaveChanges();
+
+        /// <summary>
+        /// Get the number of changed records and specify a message to incorporate into the 'Do you want to save?' message box
+        /// </summary>
+        /// <param name="AMessage">An optional message to display.  If the parameter is an empty string a default message will be used</param>
+        /// <returns>The number of changed records.  Return -1 to imply 'unknown'.</returns>
+        int GetChangedRecordCount(out string AMessage);
     }
 }

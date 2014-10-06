@@ -38,6 +38,7 @@ RootNode:
             Columns: [DetailLanguageLevel, DetailLanguageLevelDescr, DetailLanguageComment, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
             CustomColumns:
                 DetailLanguageLevel: {Label=Language Level, Type=Integer}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
                 DetailLanguageComment: {Label=Language Comment}
             SortOrder: DetailLanguageLevel ASC

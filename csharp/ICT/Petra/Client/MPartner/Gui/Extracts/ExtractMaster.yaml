@@ -25,6 +25,7 @@ RootNode:
         actCreatePartnerByCityExtract: {ActionClick=CreatePartnerByCityExtract}     
         actCreatePartnerBySubscriptionExtract: {ActionClick=CreatePartnerBySubscriptionExtract}     
         actCreatePartnerBySpecialTypeExtract: {ActionClick=CreatePartnerBySpecialTypeExtract}     
+        actCreatePartnerByRelationshipExtract: {ActionClick=CreatePartnerByRelationshipExtract}     
         actCreateFamilyMembersExtract: {ActionClick=CreateFamilyMembersExtract}     
         actCreateFamilyExtractForPersons: {ActionClick=CreateFamilyExtractForPersons}     
         actCreatePartnerByEventExtract: {ActionClick=CreatePartnerByEventExtract}     
@@ -48,40 +49,9 @@ RootNode:
         
     Controls:
         pnlContent:
-            Controls: [pnlFilter, pnlExtractMasterList]
-            Dock: Fill
-        pnlFilter: {ControlsOrientation=horizontal}
-            Dock: Top
-            NoLabel: true
-            Controls: [grpNameFilter, rgrUserFilter]
-        grpNameFilter:
-            Label: Filter by Extract Name
-            Controls: 
-                Row0: [txtExtractNameFilter]
-                Row1: [btnActivateFilter, btnClearFilter]
-        pnlExtractMasterList:
             Dock: Fill
             Controls: [ucoExtractMasterList]
                
-        txtExtractNameFilter:
-            NoLabel: true
-            ColSpan: 2
-            Width: 250
-        btnActivateFilter:
-            Label: Filter
-            Action: actActivateFilter
-        btnClearFilter:
-            Label: Clear Filter
-            Action: actClearFilter
-        rgrUserFilter: {Label=Filter by User}
-            Controls: [rbtAll, rbtCreatedBy, rbtModifiedBy]
-        rbtAll: {Label=All, Action=actUserFilterSelectionChanged}
-        rbtCreatedBy: {Label=Created by, Action=actUserFilterSelectionChanged}
-            Controls:[cmbUserCreatedBy]
-        rbtModifiedBy: {Label=Modified by, Action=actUserFilterSelectionChanged}
-            Controls:[cmbUserModifiedBy]
-        cmbUserCreatedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
-        cmbUserModifiedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
         ucoExtractMasterList:
             Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
@@ -97,6 +67,7 @@ RootNode:
             mniCreatePartnerByCityExtract: {Label=Partner by City, Action=actCreatePartnerByCityExtract}
             mniCreatePartnerBySubscriptionExtract: {Label=Partner by Subscription, Action=actCreatePartnerBySubscriptionExtract}
             mniCreatePartnerBySpecialTypeExtract: {Label=Partner by Special Type, Action=actCreatePartnerBySpecialTypeExtract}
+            mniCreatePartnerByRelationshipExtract: {Label=Partner by Relationship, Action=actCreatePartnerByRelationshipExtract}
             mniSeparator:
             mniCreateFamilyMembersExtract: {Label=Family Members Extract, Action=actCreateFamilyMembersExtract}
             mniCreateFamilyExtractForPersons: {Label=Family Extract for Persons, Action=actCreateFamilyExtractForPersons}

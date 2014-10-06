@@ -48,6 +48,6 @@ RootNode:
                 Row0: [txtDetailMotivationGroupCode, txtDetailMotivationGroupDescription]
                 Row1: [chkDetailGroupStatus, txtDetailMotivationGroupDescLocal]
         txtDetailMotivationGroupCode: {Label=Group Code, CharacterCasing=Upper, Width=110}
-        txtDetailMotivationGroupDescription: {Label=Description, Width=290}
+        txtDetailMotivationGroupDescription: {Label=Description, Width=290, OnChange=DescriptionTyped}
         chkDetailGroupStatus: {Label=Assignable}
         txtDetailMotivationGroupDescLocal: {Label=Description (local), Width=290}

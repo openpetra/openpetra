@@ -46,7 +46,6 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
-using Ict.Petra.Client.MFinance.Gui.Gift;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Client.MPartner.Logic;
 using Ict.Petra.Client.MReporting.Gui;
@@ -81,6 +80,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>Tells whether the last search operation was done with 'Detailed Results' enabled</summary>
         private Boolean FLastSearchWasDetailedSearch;
+
+        /// <summary>Tells whether the grid contains columns for detailed search (0=no result columns, 1=small set of result columns, 2=detailed set of result columns)</summary>
+        private int FResultListIncludesDetailedResultColumns = 0;
 
         /// <summary>Tells whether any change occured in the Search Criteria since the last search operation</summary>
         private Boolean FCriteriaContentChanged;
@@ -430,18 +432,26 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (chkDetailedResults.Checked == false)
                     {
                         // Reduce the columns that are shown in the Grid
-                        FLogic.CreateColumns(FPagedDataTable, false, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
-                        SetupDataGridVisualAppearance(false);
-                        grdResult.Selection.SelectRow(FCurrentGridRow, true);
+                        if (FResultListIncludesDetailedResultColumns <= 0)
+                        {
+                            FLogic.CreateColumns(FPagedDataTable, false, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+                            FResultListIncludesDetailedResultColumns = 1;
+                            SetupDataGridVisualAppearance(false);
+                            grdResult.Selection.SelectRow(FCurrentGridRow, true);
+                        }
                     }
                     else
                     {
                         if (FLastSearchWasDetailedSearch)
                         {
                             // Show all columns in the Grid
-                            FLogic.CreateColumns(FPagedDataTable, true, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
-                            SetupDataGridVisualAppearance(false);
-                            grdResult.Selection.SelectRow(FCurrentGridRow, true);
+                            if (FResultListIncludesDetailedResultColumns < 2)
+                            {
+                                FLogic.CreateColumns(FPagedDataTable, true, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+                                FResultListIncludesDetailedResultColumns = 2;
+                                SetupDataGridVisualAppearance(false);
+                                grdResult.Selection.SelectRow(FCurrentGridRow, true);
+                            }
                         }
                         else
                         {
@@ -626,7 +636,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileDeletePartner")
             {
-                TPartnerMain.DeletePartner(FLogic.PartnerKey);
+                if (TPartnerMain.DeletePartner(FLogic.PartnerKey, this.FindForm()))
+                {
+                    BtnSearch_Click(this, new EventArgs());
+                }
             }
             else if (AToolStripItem.Name == "mniFileWorkWithLastPartner")
             {
@@ -773,14 +786,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (ClickedMenuItemName == "mniMaintainDonorHistory")
             {
 //              TMenuFunctions.OpenDonorGiftHistory(this);
-                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainDonorHistory",
+                TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
                     PartnerKey,
                     FPetraUtilsObject.GetForm());
             }
             else if (ClickedMenuItemName == "mniMaintainRecipientHistory")
             {
 //              TMenuFunctions.OpenRecipientGiftHistory(this);
-                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory("mniMaintainRecipientHistory",
+                TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
                     PartnerKey,
                     FPetraUtilsObject.GetForm());
             }
@@ -816,6 +829,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (ClickedMenuItemName == "mniMailingGenerateExtract")
             {
                 CreateNewExtractFromFoundPartners();
+            }
+            else if (ClickedMenuItemName == "mniMailingSubscriptionCancellation")
+            {
+                TPartnerMain.CancelExpiredSubscriptions(this.FindForm());
             }
             else
             {
@@ -1212,7 +1229,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (AAutoSizeCells)
             {
-                grdResult.AutoSizeCells();
+                grdResult.AutoResizeGrid();
             }
         }
 
@@ -1304,7 +1321,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 this.Cursor = Cursors.AppStarting;
                 FKeepUpSearchFinishedCheck = true;
                 EnableDisableUI(false);
-                Application.DoEvents();
+
+                // DoEvents() should not be run if search has been initiated by pressing the enter key
+                KeyEventArgs eTemp = e as KeyEventArgs;
+
+                if ((eTemp == null) || (eTemp.KeyCode != Keys.Enter))
+                {
+                    Application.DoEvents();
+                }
 
 /*
  *              // If ctrl held down, show the dataset
@@ -1329,6 +1353,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Reset internal status variables
                 FLastSearchWasDetailedSearch = chkDetailedResults.Checked;
+
+                if (chkDetailedResults.Checked)
+                {
+                    FResultListIncludesDetailedResultColumns = 2;
+                }
+                else
+                {
+                    FResultListIncludesDetailedResultColumns = 1;
+                }
+
                 FCriteriaContentChanged = false;
                 FLastPartnerKeyInfoPanelOpened = -1;
                 FLastLocationPKInfoPanelOpened = new TLocationPK(-1, -1);
@@ -2174,6 +2208,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FLogic.CreateColumns(FPagedDataTable, chkDetailedResults.Checked,
                             FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+
+                        if (chkDetailedResults.Checked)
+                        {
+                            FResultListIncludesDetailedResultColumns = 2;
+                        }
+                        else
+                        {
+                            FResultListIncludesDetailedResultColumns = 1;
+                        }
                     }
                     else if (FBankDetailsTab)
                     {
@@ -2320,6 +2363,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoPartnerFindCriteria.SetupRandomTestSearchCriteria();
 
             BtnSearch_Click(this, null);
+        }
+
+        /// <summary>
+        /// Set a default partner class
+        /// </summary>
+        /// <param name="ADefaultClass"></param>
+        public void SetDefaultPartnerClass(TPartnerClass ? ADefaultClass)
+        {
+            ucoPartnerFindCriteria.SetDefaultPartnerClass(ADefaultClass);
         }
     }
 }

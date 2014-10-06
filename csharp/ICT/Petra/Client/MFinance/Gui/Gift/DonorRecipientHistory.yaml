@@ -1,52 +1,94 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Donor Recipient History
+    FormTitle: Donor / Recipient History
     Namespace: Ict.Petra.Client.MFinance.Gui.Gift
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     TempTableName: DonorRecipientHistoryTempTable
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
     FormType: browse
     Template: windowSingleUntypedTempTable
-    WindowWidth: 850
+    WindowWidth: 1000
     WindowHeight: 650
     Actions:
         actSearch: {Label=Search, ActionClick=BtnSearchClick}
+        actClear: {Label=Clear, ActionClick=BtnClearClick}
+        actView: {Label=View, ActionClick=ViewTransaction}
+        actRecipientGiftStatement: {ActionClick=RecipientGiftStatement}
+        actDonorGiftStatement: {ActionClick=DonorGiftStatement}
     Controls:
         pnlContent:
-            Controls: [pnlSelect, pnlSelect2, pnlGrid, pnlDetails]
+            Controls: [pnlSelect, pnlGrid, pnlDetails]
             Dock: Fill
         pnlSelect:
             Dock: Top
+            Controls: [grpSeacrch, pnlFilter]
+        grpSeacrch:
+            Label: Search
+            Stretch: horizontally
             Controls:
                 Row0: [cmbLedger]
-                Row1: [txtDonor]
-                Row2: [txtRecipient]
-        pnlSelect2:
-            Dock: Top
-            Controls:
-                Row3: [dtpDateFrom,dtpDateTo]
-                Row4: [txtMotivationGroup, txtMotivationDetail]
-                Row5: [btnSearch]
-        cmbLedger: {Label=Ledger, ReadOnly=true, List=LedgerNameList, OnChange=OnCmbLedgerChange}
-        txtDonor: {Label=Donor, Type=PartnerKey}
-        txtRecipient: {Label=Recipient, Type=PartnerKey}
-        dtpDateFrom: {Label=Date from}
-        dtpDateTo: {Label=To}  
-        txtMotivationGroup: {Label=Motivation Group}
-        txtMotivationDetail: {Label=Detail}  
-        btnSearch:
-            Action: actSearch        
+                Row1: [txtDonor, dtpDateFrom]
+                Row2: [txtRecipient, dtpDateTo]
+                Row3: [btnSearch, Empty, btnClear]
+        pnlFilter:
+            Controls: 
+                Row0: [cmbMotivationGroup, cmbMotivationDetail]
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails]
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnView]
+            ControlsOrientation: horizontal
         grdDetails:
             Dock: Fill
-            ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: ViewTransaction
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtNumberOfGifts, txtGiftTotal]
+                Row0: [txtNumberOfGifts, txtGiftTotal, pnlGiftStatement]
             ColWidths: [1=Fixed:85]
+        pnlGiftStatement:
+            Align: right
+            Controls:
+                Row0: [btnDonorGiftStatement, btnRecipientGiftStatement]
+ 
+        cmbLedger: {ReadOnly=true, List=LedgerNameList, OnChange=OnCmbLedgerChange}
+        txtDonor: {Type=PartnerKey}
+        txtRecipient: {Type=PartnerKey}
+        dtpDateFrom:
+        dtpDateTo:
+        cmbMotivationGroup: {List=UserDefinedList, Width=100, OnChange=OnCmbMotivationChange, Enabled=false}
+        cmbMotivationDetail: {List=UserDefinedList, Width=100, OnChange=OnCmbMotivationChange, Enabled=false}
         txtGiftTotal: {Label=Total, Format=Currency, Width=180, ReadOnly=true}
-        txtNumberOfGifts: {Label=Number of Gifts, Width=65, ReadOnly=true}
+        txtNumberOfGifts: {Width=65, ReadOnly=true}
 
+        btnSearch:
+            Action: actSearch
+        btnClear:
+            Action: actClear
+            Align: right
+        btnView:
+            Action: actView
+            Width: 80
+            Enabled: false
+        btnDonorGiftStatement:
+            Action: actDonorGiftStatement
+            Enabled: false
+            Width: 170
+        btnRecipientGiftStatement:
+            Action: actRecipientGiftStatement
+            Enabled: false
+            Width: 170
+
+    Menu:
+        mniFile:
+            mniFileDonorGiftStatement: {Label=&Donor Gift Statement}
+                Action: actDonorGiftStatement
+                Enabled: false
+            mniFileRecipientGiftStatement: {Label=&Recipient Gift Statement}
+                Action: actRecipientGiftStatement
+                Enabled: false
+            mniSeparator: {Label=-}
+
+    Empty:

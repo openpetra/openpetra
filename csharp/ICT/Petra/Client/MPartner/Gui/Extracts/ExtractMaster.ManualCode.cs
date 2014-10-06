@@ -22,23 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
-using Ict.Common.Controls;
-using Ict.Common.Data;
-using Ict.Common.Remoting.Client;
-using Ict.Common.Remoting.Shared;
-using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
@@ -53,6 +44,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private ExtractTDS FMainDS = null;
 
         #region Public Methods
+
+        #region Public Static Methods
 
         /// <summary>
         /// Verify and if necessary update partner data in an extract
@@ -280,15 +273,30 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             AForm.Cursor = Cursors.Default;
         }
 
-        /// <summary>
-        /// Loads Partner Types Data from Petra Server into FMainDS.
-        /// </summary>
-        /// <returns>true if successful, otherwise false.</returns>
-        public Boolean LoadData()
-        {
-            Boolean ReturnValue = true;
+        #endregion
 
-            return ReturnValue;
+        #region Public Non-Static Methods
+
+        ///// <summary>
+        ///// Loads Partner Types Data from Petra Server into FMainDS.
+        ///// </summary>
+        ///// <returns>true if successful, otherwise false.</returns>
+        //public Boolean LoadData()
+        //{
+        //    Boolean ReturnValue = true;
+
+        //    return ReturnValue;
+        //}
+
+        /// <summary>
+        /// Get the number of changed records and specify a message to incorporate into the 'Do you want to save?' message box
+        /// </summary>
+        /// <param name="AMessage">An optional message to display.  If the parameter is an empty string a default message will be used</param>
+        /// <returns>The number of changed records.  Return -1 to imply 'unknown'.</returns>
+        public int GetChangedRecordCount(out string AMessage)
+        {
+            AMessage = String.Empty;
+            return -1;
         }
 
         /// <summary>
@@ -310,6 +318,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         #endregion
 
+        #endregion
+
         #region Private Methods
 
         /// <summary>
@@ -320,41 +330,35 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ucoExtractMasterList.DelegateRefreshExtractList = @RefreshExtractList;
         }
 
-        private void RunOnceOnActivationManual()
+        /// <summary>
+        /// Open a new screen to show details and maintain the currently selected extract
+        /// </summary>
+        public bool RefreshExtractList()
         {
-            // unhook filter controls so save button does not get enabled when they are used
-            FPetraUtilsObject.UnhookControl(pnlFilter, true);
+            // Do not allow refresh of the extract list if the user has made changes to any of the records
+            // as otherwise their changes will be overwritten by reloading of the data.
+            if (FPetraUtilsObject.HasChanges)
+            {
+                if (MessageBox.Show(Catalog.GetString(
+                            "Before refreshing the list you need to save changes made in this screen. " + "\r\n" + "\r\n" +
+                            "Would you like to save changes now?"),
+                        Catalog.GetString("Refresh List"),
+                        MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    SaveChanges();
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            ucoExtractMasterList.RefreshExtractList("", true, "", "");
+
+            return true;
         }
 
-        /// <summary>
-        /// Export partners in selected extract
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ExportPartnersInExtract(System.Object sender, EventArgs e)
-        {
-            ucoExtractMasterList.ExportPartnersInExtract(sender, e);
-        }
-
-        /// <summary>
-        /// Open screen to maintain contents of an extract
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MaintainExtract(System.Object sender, EventArgs e)
-        {
-            ucoExtractMasterList.MaintainExtract(sender, e);
-        }
-
-        /// <summary>
-        /// Verify and if necessary update partner data in an extract
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
-        {
-            ucoExtractMasterList.VerifyAndUpdateExtract(sender, e);
-        }
+        #region Purge, Combine, Intersect and Subtract
 
         /// <summary>
         /// Purge Extracts (open a screen for user to set parameters)
@@ -548,64 +552,40 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
-        /// Open a new screen to show details and maintain the currently selected extract
+        /// Override of Form.Show(IWin32Window owner) Method. Caters for singleton Forms. Does not actually display the form.
         /// </summary>
-        public void RefreshExtractList()
+        /// <param name="owner">Any object that implements <see cref="IWin32Window" /> and represents the top-level window that will own this Form. </param>
+        public void ShowInvisible(IWin32Window owner)
         {
-            // Do not allow refresh of the extract list if the user has made changes to any of the records
-            // as otherwise their changes will be overwritten by reloading of the data.
-            if (FPetraUtilsObject.HasChanges)
+            Form OpenScreen = TFormsList.GFormsList[this.GetType().FullName];
+            bool OpenSelf = true;
+
+            if ((OpenScreen != null)
+                && (OpenScreen.Modal != true))
             {
-                MessageBox.Show(Catalog.GetString(
-                        "Before refreshing the list you need to save changes made in this screen! " + "\r\n" + "\r\n" +
-                        "If you don't want to save changes then please exit and reopen this screen."),
-                    Catalog.GetString("Refresh List"),
-                    MessageBoxButtons.OK);
+                if (TFormsList.GSingletonForms.Contains(this.GetType().Name))
+                {
+//                      MessageBox.Show("Activating singleton screen of Type '" + this.GetType().FullName + "'.");
+
+                    OpenSelf = false;
+                    this.Visible = false;       // needed as this.Close() would otherwise bring this Form to the foreground and OpenScreen.BringToFront() would not help...
+                    this.Close();
+                }
             }
-            else
+
+            if (OpenSelf)
             {
-                // now refresh extract list in user control
-                String UserCreated = "";
-                String UserModified = "";
-                Boolean AllUsers = false;
+                // add Form to TFormsList.GFormsList but do not show it
+                FPetraUtilsObject.TFrmPetra_Load(this, null);
 
-                if (rbtAll.Checked)
-                {
-                    AllUsers = true;
-                }
-                else if (rbtCreatedBy.Checked)
-                {
-                    UserCreated = cmbUserCreatedBy.GetSelectedString();
-                }
-                else if (rbtModifiedBy.Checked)
-                {
-                    UserModified = cmbUserModifiedBy.GetSelectedString();
-                }
-
-                ucoExtractMasterList.RefreshExtractList(txtExtractNameFilter.Text, AllUsers, UserCreated, UserModified);
+                // removing this event stops the above command be called when the Form is eventually shown
+                this.Load -= new System.EventHandler(this.TFrmPetra_Load);
             }
         }
 
-        /// <summary>
-        /// Filter extracts according to given criteria
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FilterExtracts(System.Object sender, EventArgs e)
-        {
-            RefreshExtractList();
-        }
+        #endregion
 
-        /// <summary>
-        /// Filter extracts according to given criteria
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ClearFilterExtracts(System.Object sender, EventArgs e)
-        {
-            this.txtExtractNameFilter.Text = "";
-            RefreshExtractList();
-        }
+        #region Create Various Extracts
 
         /// <summary>
         /// Create General Extract
@@ -645,6 +625,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void CreatePartnerBySubscriptionExtract(System.Object sender, EventArgs e)
         {
             TPartnerExtractsMain.PartnerBySubscriptionExtract(FindForm());
+        }
+
+        /// <summary>
+        /// Create Partner By Relationship Extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CreatePartnerByRelationshipExtract(System.Object sender, EventArgs e)
+        {
+            TPartnerExtractsMain.PartnerByRelationshipExtract(FindForm());
         }
 
         /// <summary>
@@ -799,6 +789,40 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             frm.Show();
         }
 
+        #endregion
+
+        #region Simple tasks performed by user control
+
+        /// <summary>
+        /// Export partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExportPartnersInExtract(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.ExportPartnersInExtract(sender, e);
+        }
+
+        /// <summary>
+        /// Open screen to maintain contents of an extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MaintainExtract(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.MaintainExtract(sender, e);
+        }
+
+        /// <summary>
+        /// Verify and if necessary update partner data in an extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.VerifyAndUpdateExtract(sender, e);
+        }
+
         /// <summary>
         /// Add subscription for Partners in selected Extract
         /// </summary>
@@ -880,6 +904,60 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         #endregion
+
+        #endregion
+
+        #region Keyboard and Filter/Find Menu
+
+        /// ///////////  These methods just delegate to the user control to handle
+
+        private void MniFilterFind_Click(object sender, EventArgs e)
+        {
+            ucoExtractMasterList.MniFilterFind_Click(sender, e);
+        }
+
+        /// <summary>
+        /// Handler for shortcuts
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.S | Keys.Control))
+            {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    SaveChanges();
+                }
+
+                return true;
+            }
+
+            if (ucoExtractMasterList.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            return ucoExtractMasterList.ProcessFormsMessage(AFormsMessage);
+        }
     }
 
     /// <summary>
@@ -894,6 +972,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public static void OpenForm(Form AParentForm)
         {
             new TFrmExtractMaster(AParentForm).Show();
+        }
+
+        /// <summary>
+        /// Opens an instance of the Extract Master screen but keep it hidden.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void OpenFormHidden(Form AParentForm)
+        {
+            new TFrmExtractMaster(AParentForm).ShowInvisible(null);
         }
     }
 }

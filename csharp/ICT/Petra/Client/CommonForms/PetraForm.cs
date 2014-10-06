@@ -230,7 +230,8 @@ namespace Ict.Petra.Client.CommonForms
                 if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
                 {
                     // (Note: Nant tests do not have a caller so we need to allow for this possibility)
-                    if ((FWinForm.Name == "TFrmMainWindowNew") || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
+                    if ((FWinForm.Name == "TFrmMainWindowNew") || (FWinForm.Name == "TFrmPartnerEdit")
+                        || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                     {
                         // Either we are loading the main window or we have been opened by the main window
                         // Now that the window has been activated we are ok to restore things like splitter distances
@@ -599,11 +600,20 @@ namespace Ict.Petra.Client.CommonForms
                     break;
 
                 case eActionId.eHelpAbout:
-                    System.Type dialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmAboutDialog");
+                    System.Type aboutDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmAboutDialog");
 
-                    using (Form aboutDialog = (Form)Activator.CreateInstance(dialogType, new object[] { this.FWinForm }))
+                    using (Form aboutDialog = (Form)Activator.CreateInstance(aboutDialogType, new object[] { this.FWinForm }))
                     {
                         aboutDialog.ShowDialog();
+                    }
+                    break;
+
+                case eActionId.eKeyboardShortcuts:
+                    System.Type shortcutsDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmKeyboardShortcutsDialog");
+
+                    using (Form shortcutsDialog = (Form)Activator.CreateInstance(shortcutsDialogType, new object[] { this.FWinForm }))
+                    {
+                        shortcutsDialog.ShowDialog();
                     }
                     break;
 
@@ -831,7 +841,10 @@ namespace Ict.Petra.Client.CommonForms
         eHelpAbout,
 
         /// <summary>todoComment</summary>
-        eBugReport
+        eBugReport,
+
+        /// <summary>todoComment</summary>
+        eKeyboardShortcuts
     };
 
     /// <summary>

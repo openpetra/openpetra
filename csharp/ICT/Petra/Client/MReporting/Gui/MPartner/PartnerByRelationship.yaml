@@ -1,0 +1,205 @@
+﻿RootNode:
+    BaseYaml: PartnerReportingForm.yaml
+    FormType: report
+    FormTitle: Partner By Relationship
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    TemplateParameters:
+        CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByRelationship.CalculateExtract  
+        ISOLATIONLEVEL: serializable
+        XMLFILES: [Partner\\\\relationshipreport.xml,Partner\\\\printpartner.xml]
+        REPORTNAME: Partner By Relationship
+        CURRENTREPORT: Relationship Report
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [PTNRUSER]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: 
+                Row0: [ucoPartnerSelection]
+                Row1: [grpSelectRelationship]
+                Row2: [pnlRelationshipOptionsBottom]
+            Order: AlwaysFirst
+        ucoPartnerSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerOrExtractSelection
+            Height: 90
+        grpSelectRelationship:
+            Label: Select Relationship
+            Controls: 
+                Row1: [chkCategoryFilter, cmbRelationCategory]
+                Row2: [rbtDirectRelationship, rbtReciprocalRelationship]
+                Row3: [lblSelectDirectRelationship, lblSelectReciprocalRelationship]
+                Row4: [grdDirectRelationship, grdReciprocalRelationship]
+		
+        pnlRelationshipOptionsBottom:
+            Controls: 
+                Row0: [ucoChkFilter]
+        chkCategoryFilter:
+            Label: Filter List by Relation Category:
+            CheckBoxAttachedLabel: Right
+            OnChange: FilterRelationCategoryChanged
+            Width: 300
+        cmbRelationCategory:
+            NoLabel: true
+        rbtDirectRelationship:
+            Label: Use Relationship
+            OnChange: rbtRelationshipDirectionChanged
+        rbtReciprocalRelationship:
+            Label: Use Reciprocal Relationship
+        lblSelectDirectRelationship:
+            Label: (Select from list below)
+        lblSelectReciprocalRelationship:
+            Label: (Select from list below)
+        grdDirectRelationship:
+            Width: 300
+            Height: 200
+        grdReciprocalRelationship:
+            Width: 300
+            Height: 200
+			
+        ucoChkFilter:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
+            Width: 300
+            Height: 100
+        tpgReportSorting:
+            Label: Sorting
+            Controls: [ucoReportSorting]
+        ucoReportSorting:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
+            Dock: Fill
+    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
+        Para1:
+            Name: Partner 1 Partner Class
+            Parameter: 1.0
+        Para2:
+            Name: Partner 1 Partner Key
+            Parameter: 2.0
+        Para3:
+            Name: Partner 1 Partner Name
+            Parameter: 4.0
+        Para4:
+            Name: Partner 1 Prefered Name
+            Parameter: 3.0
+        Para5:
+            Name: Partner 1 First Name
+            Parameter: 3.0
+        Para6:
+            Name: Partner 1 Family Name
+            Parameter: 3.0
+        Para7:
+            Name: Partner 1 Title
+            Parameter: 3.0
+        Para8:
+            Name: Partner 1 Date Of Birth
+            Parameter: 3.0
+        Para9:
+            Name: Partner 1 Address Street
+            Parameter: 3.0
+        Para10:
+            Name: Partner 1 Address Line 1
+            Parameter: 3.0
+        Para11:
+            Name: Partner 1 Address Line 3
+            Parameter: 3.0
+        Para12:
+            Name: Partner 1 Address City
+            Parameter: 3.0
+        Para13:
+            Name: Partner 1 Address Post Code
+            Parameter: 2.0
+        Para14:
+            Name: Partner 1 Address Country
+            Parameter: 1.5
+        Para15:
+            Name: Partner 1 Address State / County / Province
+            Parameter: 2.0
+        Para16:
+            Name: Partner 1 Address E-Mail
+            Parameter: 4.0
+        Para17:
+            Name: Partner 1 Address Telephone
+            Parameter: 3.0
+        Para18:
+            Name: Partner 1 Address Mobile
+            Parameter: 3.0
+        Para19:
+            Name: Partner 1 Contact Person
+            Parameter: 3.0
+        Para20:
+            Name: Partner 1 Contact Partner Key
+            Parameter: 3.0
+#        Para21:
+#            Name: Partner 1 Worker Field
+#            Parameter: 3.0
+            
+        Para22:
+            Name: Relationship
+            Parameter: 3.0
+            
+        Para23:
+            Name: Partner 2 Partner Class
+            Parameter: 1.0
+        Para24:
+            Name: Partner 2 Partner Key
+            Parameter: 2.0
+        Para25:
+            Name: Partner 2 Partner Name
+            Parameter: 4.0
+        Para26:
+            Name: Partner 2 Prefered Name
+            Parameter: 3.0
+        Para27:
+            Name: Partner 2 First Name
+            Parameter: 3.0
+        Para28:
+            Name: Partner 2 Family Name
+            Parameter: 3.0
+        Para29:
+            Name: Partner 2 Title
+            Parameter: 3.0
+        Para30:
+            Name: Partner 2 Date Of Birth
+            Parameter: 3.0
+        Para31:
+            Name: Partner 2 Address Street
+            Parameter: 3.0
+        Para32:
+            Name: Partner 2 Address Line 1
+            Parameter: 3.0
+        Para33:
+            Name: Partner 2 Address Line 3
+            Parameter: 3.0
+        Para34:
+            Name: Partner 2 Address City
+            Parameter: 3.0
+        Para35:
+            Name: Partner 2 Address Post Code
+            Parameter: 2.0
+        Para36:
+            Name: Partner 2 Address Country
+            Parameter: 1.5
+        Para37:
+            Name: Partner 2 Address State / County / Province
+            Parameter: 2.0
+        Para38:
+            Name: Partner 2 Address E-Mail
+            Parameter: 4.0
+        Para39:
+            Name: Partner 2 Address Telephone
+            Parameter: 3.0
+        Para40:
+            Name: Partner 2 Address Mobile
+            Parameter: 3.0
+        Para41:
+            Name: Partner 2 Contact Person
+            Parameter: 3.0
+        Para42:
+            Name: Partner 2 Contact Partner Key
+            Parameter: 3.0
+#        Para43:
+#            Name: Partner 2 Worker Field
+#            Parameter: 3.0

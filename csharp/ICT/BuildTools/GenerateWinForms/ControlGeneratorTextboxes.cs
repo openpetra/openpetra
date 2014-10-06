@@ -243,6 +243,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     writer.SetControlProperty(ctrl, "ScrollBars", "ScrollBars." + TYml2Xml.GetAttribute(ctrl.xmlNode, "ScrollBars"));
                 }
+
+                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "MinimumSize"))
+                {
+                    writer.SetControlProperty(ctrl, "MinimumSize", "new System.Drawing.Size(" + TYml2Xml.GetAttribute(ctrl.xmlNode,
+                            "MinimumSize") + ")");
+                }
             }
 
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "TextAlign"))

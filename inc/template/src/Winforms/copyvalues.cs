@@ -174,6 +174,13 @@ if (keyData == (Keys.L | Keys.Control))
     return true;
 }
 
+{##PROCESSCMDKEYCTRLE}
+if (keyData == (Keys.E | Keys.Control))
+{
+    FocusFirstEditableControl();
+    return true;
+}
+
 {##PROCESSCMDKEYSELECTROW}
 if (keyData == (Keys.Home | Keys.Control))
 {
@@ -203,7 +210,7 @@ if (keyData == ((Keys.End | Keys.Control)))
 {##FOCUSFIRSTDETAILSPANELCONTROL}
 // Build up a list of controls on this panel that is sorted in true nested tab order
 SortedList<string, Control> controlsSortedByTabOrder = new SortedList<string, Control>();
-GetSortedControlList(ref controlsSortedByTabOrder, pnlDetails, String.Empty);
+FPetraUtilsObject.GetSortedControlList(ref controlsSortedByTabOrder, pnlDetails, String.Empty);
 
 int index;
 for (index = 0; index < controlsSortedByTabOrder.Count; index++)

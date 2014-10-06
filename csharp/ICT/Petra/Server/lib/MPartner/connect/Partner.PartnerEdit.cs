@@ -98,6 +98,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         private TPartnerClass FPartnerClass;
         private TPartnerClass FNewPartnerPartnerClass;
         private PartnerEditTDS FSubmissionDS;
+        private bool FTaxDeductiblePercentageEnabled = false;
 
         #region TPartnerEditUIConnector
 
@@ -275,9 +276,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // p_banking_details
             try
             {
+                FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                    SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    PPartnerTaxDeductiblePctAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                }
             }
             catch (Exception)
             {
@@ -305,6 +313,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return localDS;
         }
 
+        /// <summary>
+        /// gets system default TaxDeduct%OnRecipient (default false)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsTaxDeductiblePercentageEnabled()
+        {
+            return FTaxDeductiblePercentageEnabled;
+        }
+
         #endregion
 
         /// <summary>
@@ -317,7 +334,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <param name="ATabPage">Tab Page the Client wants to display initially.
         /// </param>
         /// <returns>void</returns>
-        [RequireModulePermission("CONFERENCE")]
         public PartnerEditTDS GetData(Boolean ADelayedDataLoading, TPartnerEditTabPageEnum ATabPage)
         {
             LoadData(ADelayedDataLoading, ATabPage);
@@ -531,11 +547,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     // Partner Types
                     FPartnerEditScreenDS.Merge(GetPartnerTypesInternal(out ItemsCountPartnerTypes, false));
 
-                    // Determine whether the Partner has a 'EX-WORKER*' Partner Type
-                    HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.HasPartnerType(MPartnerConstants.PARTNERTYPE_EX_WORKER,
-                        FPartnerEditScreenDS.PPartnerType,
-                        false);
-
                     if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpPartnerTypes))
                     {
                         // Empty Tables again, we don't want to transfer the data contained in them
@@ -667,6 +678,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             FPartnerEditScreenDS.PPerson[0].FamilyKey,
                             ReadTransaction);
 
+                            // Determine whether the Partner has a 'EX-WORKER*' Partner Type
+                            HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
+
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                             {
                                 // Load data for Family Members
@@ -686,6 +700,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                             // Gift Destination
                             PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+
+                            // Determine whether the Partner has a 'EX-WORKER*' Partner Type
+                            HasEXWORKERPartnerType = Ict.Petra.Shared.MPartner.Checks.PartnerIsExWorker(FPartnerEditScreenDS.PPartnerGiftDestination);
 
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                             {
@@ -1566,6 +1583,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// todoComment
         /// </summary>
         /// <returns></returns>
+        public PartnerEditTDSPPartnerLocationTable GetDataPartnerLocations(ref PLocationTable ALocations)
+        {
+            Int32 LocationsCount;
+
+            return GetPartnerLocationsInternal(out LocationsCount, false, ref ALocations);
+        }
+
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
         public PDataLabelValuePartnerTable GetDataLocalPartnerDataValues()
         {
             Boolean LabelsAvailable;
@@ -1966,7 +1994,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PartnerAddressAggregateTDS TmpResponseDS = null;
             DataSet ResponseDS = AResponseDS;
             PartnerEditTDS InspectDS = AInspectDS;
-            
+
             AVerificationResult = null;
 
             if (AInspectDS != null)
@@ -2002,164 +2030,210 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 #endregion
 
                 TVerificationResultCollection SingleVerificationResultCollection;
-                AVerificationResult = new TVerificationResultCollection(); 
+                AVerificationResult = new TVerificationResultCollection();
                 TVerificationResultCollection VerificationResult = AVerificationResult;
-                
+
                 FSubmissionDS = AInspectDS;
-                
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, 
-			         ref SubmissionResult, 
-                delegate
-                {
-                    PrepareBankingDetailsForSaving(ref InspectDS, ref VerificationResult, SubmitChangesTransaction);
-    
-                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult))
+
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                    ref SubmissionResult,
+                    delegate
                     {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                            
-                        return;
-                    }
-    
-                    try
-                    {                           
-                        if (SubmitChangesOther(ref FSubmissionDS, SubmitChangesTransaction, out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
+                        PrepareBankingDetailsForSaving(ref InspectDS, ref VerificationResult, SubmitChangesTransaction);
+
+                        if (!TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult))
                         {
                             SubmissionResult = TSubmitChangesResult.scrError;
+
+                            return;
                         }
-                                
-                        VerificationResult.AddCollection(SingleVerificationResultCollection);
-    
-                        if (SubmissionResult != TSubmitChangesResult.scrError)
+
+                        try
                         {
-                            TSubmitChangesResult SubmitChangesAddressResult = SubmitChangesAddresses(ref FSubmissionDS,
-                                SubmitChangesTransaction,
-                                ref TmpResponseDS,
-                                out SingleVerificationResultCollection);
-    
-                            if (SubmitChangesAddressResult == TSubmitChangesResult.scrOK)
-                            {
-                                // don't need to do anything here; SubmissionResult is set already
-                            }
-                            else
-                            {
-                                SubmissionResult = SubmitChangesAddressResult;
-    
-                                if (SubmitChangesAddressResult == TSubmitChangesResult.scrInfoNeeded)
-                                {
-                                    ResponseDS = (DataSet)TmpResponseDS;
-    //                              TLogging.LogAtLevel(8, "ResponseDS.Tables.Count: " + ResponseDS.Tables.Count.ToString());
-    
-                                    if (ResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
-                                    {
-    //                                  TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-    //                                      ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            if (ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
-                                            {
-                                                Console.WriteLine(
-                                                    MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + "[0].AnswerProcessedClientSide: " +
-                                                    ((PartnerAddressAggregateTDSSimilarLocationParametersTable)(ResponseDS.Tables[MPartnerConstants.
-                                                                                                                                   EXISTINGLOCATIONPARAMETERS_TABLENAME
-                                                                                                                ]))[0].AnswerProcessedClientSide.ToString());
-                                            }
-                                        }
-                                    }
-    
-                                    if (ResponseDS.Tables.Contains(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME))
-                                    {
-    //                                  TLogging.LogAtLevel(8,  MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
-    //                                      ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
-                                        if (TLogging.DL >= 8)
-                                        {
-                                            if (ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count > 0)
-                                            {
-                                                Console.WriteLine(
-                                                    MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + "[0].AnswerProcessedClientSide: " +
-                                                    ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)(ResponseDS.Tables[MPartnerConstants
-                                                                                                                                        .
-                                                                                                                                        ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME
-                                                                                                                     ]))[0].AnswerProcessedClientSide.
-                                                    ToString());
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-    
-                            VerificationResult.AddCollection(SingleVerificationResultCollection);
-                        }
-    
-                        if (SubmissionResult == TSubmitChangesResult.scrOK)
-                        {
-                            // all tables in the dataset will be stored.
-                            // there are exceptions: for example cascading delete of foundations, change of unique key of family id
-                            // those tables need to have run AcceptChanges
-                            PartnerEditTDSAccess.SubmitChanges(InspectDS);
-                        }
-    
-                        if (SubmissionResult == TSubmitChangesResult.scrOK)
-                        {
-                            // Save data from the Personnel Data part (needs to be done here towards the end of saving
-                            // as p_person record needs to be saved earlier in the process and is referenced from data saved here.
-                            if (SubmitChangesPersonnelData(ref FSubmissionDS, SubmitChangesTransaction, out SingleVerificationResultCollection))
+                            if (SubmitChangesOther(ref FSubmissionDS, SubmitChangesTransaction, out SingleVerificationResultCollection))
                             {
                                 SubmissionResult = TSubmitChangesResult.scrOK;
                             }
                             else
                             {
                                 SubmissionResult = TSubmitChangesResult.scrError;
+                            }
+
+                            VerificationResult.AddCollection(SingleVerificationResultCollection);
+
+                            if (SubmissionResult != TSubmitChangesResult.scrError)
+                            {
+                                TSubmitChangesResult SubmitChangesAddressResult = SubmitChangesAddresses(ref FSubmissionDS,
+                                    SubmitChangesTransaction,
+                                    ref TmpResponseDS,
+                                    out SingleVerificationResultCollection);
+
+                                if (SubmitChangesAddressResult == TSubmitChangesResult.scrOK)
+                                {
+                                    // don't need to do anything here; SubmissionResult is set already
+                                }
+                                else
+                                {
+                                    SubmissionResult = SubmitChangesAddressResult;
+
+                                    if (SubmitChangesAddressResult == TSubmitChangesResult.scrInfoNeeded)
+                                    {
+                                        ResponseDS = (DataSet)TmpResponseDS;
+                                        //                              TLogging.LogAtLevel(8, "ResponseDS.Tables.Count: " + ResponseDS.Tables.Count.ToString());
+
+                                        if (ResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
+                                        {
+                                            //                                  TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                                            //                                      ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
+                                            if (TLogging.DL >= 8)
+                                            {
+                                                if (ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
+                                                {
+                                                    Console.WriteLine(
+                                                        MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + "[0].AnswerProcessedClientSide: " +
+                                                        ((PartnerAddressAggregateTDSSimilarLocationParametersTable)(ResponseDS.Tables[
+                                                                                                                        MPartnerConstants.
+                                                                                                                        EXISTINGLOCATIONPARAMETERS_TABLENAME
+                                                                                                                    ]))[0].AnswerProcessedClientSide.
+                                                        ToString());
+                                                }
+                                            }
+                                        }
+
+                                        if (ResponseDS.Tables.Contains(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME))
+                                        {
+                                            //                                  TLogging.LogAtLevel(8,  MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
+                                            //                                      ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
+                                            if (TLogging.DL >= 8)
+                                            {
+                                                if (ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count > 0)
+                                                {
+                                                    Console.WriteLine(
+                                                        MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME +
+                                                        "[0].AnswerProcessedClientSide: " +
+                                                        ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable)(ResponseDS.Tables[
+                                                                                                                             MPartnerConstants
+                                                                                                                             .
+                                                                                                                             ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME
+                                                                                                                         ]))[0].
+                                                        AnswerProcessedClientSide.
+                                                        ToString());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
                                 VerificationResult.AddCollection(SingleVerificationResultCollection);
                             }
-                        }
-    
-                        if (SubmissionResult == TSubmitChangesResult.scrOK)
-                        {
-                            TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Before check for new Partner for Recent Partner handling...");
-    
-                            // Check if this is a new Partner
-                            if ((InspectDS.Tables.Contains(PPartnerTable.GetTableName()))
-                                && ((InspectDS.PPartner.Rows.Count != 0) && ((!InspectDS.PPartner[0].HasVersion(DataRowVersion.Original)))))
+
+                            if (SubmissionResult == TSubmitChangesResult.scrOK)
                             {
-                                // Partner is new Partner > add to list of recent partners. (If the
-                                // Partner was not new then this was already done in LoadData.)
-                                TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true, TLastPartnerUse.lpuMailroomPartner);
-                                TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Set Partner as Recent Partner.");
+                                // all tables in the dataset will be stored.
+                                // there are exceptions: for example cascading delete of foundations, change of unique key of family id
+                                // those tables need to have run AcceptChanges
+                                PartnerEditTDSAccess.SubmitChanges(InspectDS);
                             }
-    
-                            if (TLogging.DebugLevel >= 4)
+
+                            if (SubmissionResult == TSubmitChangesResult.scrOK)
                             {
-                                LogAfterSaving(InspectDS);
+                                // Save data from the Personnel Data part (needs to be done here towards the end of saving
+                                // as p_person record needs to be saved earlier in the process and is referenced from data saved here.
+                                if (SubmitChangesPersonnelData(ref FSubmissionDS, SubmitChangesTransaction, out SingleVerificationResultCollection))
+                                {
+                                    SubmissionResult = TSubmitChangesResult.scrOK;
+                                }
+                                else
+                                {
+                                    SubmissionResult = TSubmitChangesResult.scrError;
+                                    VerificationResult.AddCollection(SingleVerificationResultCollection);
+                                }
                             }
-    
-                            // Must call AcceptChanges so that DataSet.Merge on Client side works
-                            // properly if Primary Keys have been changed!
-                            InspectDS.AcceptChanges();
-                                
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-    
-                            /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('Location[0] LocationKey: ' + FSubmissionDS.PLocation[0].LocationKey.ToString + '; PartnerLocation[0] LocationKey: ' +
-                             *FSubmissionDS.PPartnerLocation[0].LocationKey.ToString);$ENDIF */
-                            TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges: Transaction will get committed!");
+
+                            // now remove temporary records from PPartnerLocation that were used for propagation of addresses to family members
+                            // (otherwise those address records for family members would show up on client where they are not needed)
+                            if (SubmissionResult == TSubmitChangesResult.scrOK)
+                            {
+                                if (InspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                                {
+                                    Int64 ThisPartnerKey = FPartnerKey;
+
+                                    if (ThisPartnerKey == 0)
+                                    {
+                                        // if FPartnerKey is not set then check if there is just one partner record in the dataset and take that key
+                                        if (InspectDS.Tables.Contains(PPartnerTable.GetTableName())
+                                            && (InspectDS.PPartner.Count == 1))
+                                        {
+                                            ThisPartnerKey = ((PPartnerRow)InspectDS.PPartner.Rows[0]).PartnerKey;
+
+                                            if (ThisPartnerKey == 0)
+                                            {
+                                                // only bring up this message if there is just one partner record in the dataset
+                                                Console.WriteLine("FPartnerKey in TPartnerEditUIConnector should not be 0!");
+                                            }
+                                        }
+                                    }
+
+                                    if (ThisPartnerKey != 0)
+                                    {
+                                        DataView OtherPartnerLocationsDV =
+                                            new DataView(InspectDS.PPartnerLocation, PPartnerLocationTable.GetPartnerKeyDBName() + " <> " +
+                                                ThisPartnerKey.ToString(), "", DataViewRowState.CurrentRows);
+                                        int NumberOfOtherPartnerLocationRows = OtherPartnerLocationsDV.Count;
+
+                                        for (int Counter = NumberOfOtherPartnerLocationRows - 1; Counter >= 0; Counter--)
+                                        {
+                                            OtherPartnerLocationsDV[Counter].Row.Delete();
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (SubmissionResult == TSubmitChangesResult.scrOK)
+                            {
+                                TLogging.LogAtLevel(6,
+                                    "TPartnerEditUIConnector.SubmitChanges: Before check for new Partner for Recent Partner handling...");
+
+                                // Check if this is a new Partner
+                                if ((InspectDS.Tables.Contains(PPartnerTable.GetTableName()))
+                                    && ((InspectDS.PPartner.Rows.Count != 0) && ((!InspectDS.PPartner[0].HasVersion(DataRowVersion.Original)))))
+                                {
+                                    // Partner is new Partner > add to list of recent partners. (If the
+                                    // Partner was not new then this was already done in LoadData.)
+                                    TRecentPartnersHandling.AddRecentlyUsedPartner(FPartnerKey, FPartnerClass, true,
+                                        TLastPartnerUse.lpuMailroomPartner);
+                                    TLogging.LogAtLevel(6, "TPartnerEditUIConnector.SubmitChanges: Set Partner as Recent Partner.");
+                                }
+
+                                if (TLogging.DebugLevel >= 4)
+                                {
+                                    LogAfterSaving(InspectDS);
+                                }
+
+                                // Must call AcceptChanges so that DataSet.Merge on Client side works
+                                // properly if Primary Keys have been changed!
+                                InspectDS.AcceptChanges();
+
+                                SubmissionResult = TSubmitChangesResult.scrOK;
+
+                                /* $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine('Location[0] LocationKey: ' + FSubmissionDS.PLocation[0].LocationKey.ToString + '; PartnerLocation[0] LocationKey: ' +
+                                 *FSubmissionDS.PPartnerLocation[0].LocationKey.ToString);$ENDIF */
+                                TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges: Transaction will get committed!");
+                            }
+                            else
+                            {
+                                TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges: Transaction will get ROLLED BACK!");
+                            }
                         }
-                        else
+                        catch (Exception e)
                         {
-                            TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges: Transaction will get ROLLED BACK!");
+                            TLogging.Log(e.Message);
+                            TLogging.Log(e.StackTrace);
+
+                            throw;
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log(e.Message);
-                        TLogging.Log(e.StackTrace);
-    
-                        throw;
-                    }
-                });
-            }                    
+                    });
+            }
             else
             {
                 TLogging.LogAtLevel(8, "TPartnerEditUIConnector.SubmitChanges: AInspectDS = nil!");
@@ -2167,8 +2241,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             AInspectDS = FSubmissionDS;
-            AResponseDS = ResponseDS;                
-            
+            AResponseDS = ResponseDS;
+
             return SubmissionResult;
         }
 
@@ -2917,6 +2991,84 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
             return RelationshipDT;
+        }
+
+        private PartnerEditTDSPPartnerLocationTable GetPartnerLocationsInternal(out Int32 ACount, Boolean ACountOnly, ref PLocationTable ALocations)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction = false;
+            PartnerEditTDSPPartnerLocationTable LocationDT;
+            PLocationTable LocationTable;
+            PLocationRow LocationRow;
+
+            LocationDT = new PartnerEditTDSPPartnerLocationTable();
+            try
+            {
+                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                if (ACountOnly)
+                {
+                    ACount = PPartnerLocationAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
+                }
+                else
+                {
+                    // Logging.LogAtLevel(7,  "TPartnerEditUIConnector.GetPartnerLocationsInternal: loading Locations for Partner " + FPartnerKey.ToString() + "...");
+                    try
+                    {
+                        ALocations = PLocationAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
+
+                        LocationDT.Merge(PPartnerLocationAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
+
+                        foreach (PartnerEditTDSPPartnerLocationRow row in LocationDT.Rows)
+                        {
+                            LocationTable = PLocationAccess.LoadByPrimaryKey(row.SiteKey, row.LocationKey, ReadTransaction);
+
+                            if (LocationTable.Count > 0)
+                            {
+                                LocationRow = (PLocationRow)LocationTable.Rows[0];
+
+                                row.LocationLocality = LocationRow.Locality;
+                                row.LocationStreetName = LocationRow.StreetName;
+                                row.LocationAddress3 = LocationRow.Address3;
+                                row.LocationCity = LocationRow.City;
+                                row.LocationCounty = LocationRow.County;
+                                row.LocationPostalCode = LocationRow.PostalCode;
+                                row.LocationCountryCode = LocationRow.CountryCode;
+
+                                row.LocationCreatedBy = LocationRow.CreatedBy;
+
+                                if (!LocationRow.IsDateCreatedNull())
+                                {
+                                    row.LocationDateCreated = (DateTime)LocationRow.DateCreated;
+                                }
+
+                                row.LocationModifiedBy = LocationRow.ModifiedBy;
+
+                                if (!LocationRow.IsDateModifiedNull())
+                                {
+                                    row.LocationDateModified = (DateTime)LocationRow.DateModified;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    ACount = LocationDT.Rows.Count;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerLocationsInternal: committed own transaction.");
+                }
+            }
+            return LocationDT;
         }
 
         private PDataLabelValuePartnerTable GetDataLocalPartnerDataValuesInternal(out Boolean ALabelsAvailable, Boolean ACountOnly)

@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PmShortTermApplicationRow NewRowShortTermApp = FMainDS.PmShortTermApplication.NewRowTyped(true);
 
                 NewRowGeneralApp.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-                NewRowGeneralApp.ApplicationKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_application));
+                NewRowGeneralApp.ApplicationKey = GetNextApplicationKey();
                 NewRowGeneralApp.RegistrationOffice = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
                 NewRowGeneralApp.GenAppDate = DateTime.Today;
                 NewRowGeneralApp.ApplicationForEventOrField = Catalog.GetString("Event");
@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 //TODO temp, needs to be changed
                 NewRowShortTermApp.StApplicationType = "A";
-                NewRowShortTermApp.StBasicOutreachId = "0";
+                NewRowShortTermApp.StBasicOutreachId = NewRowGeneralApp.OldLink;
 
                 FMainDS.PmGeneralApplication.Rows.Add(NewRowGeneralApp);
                 FMainDS.PmShortTermApplication.Rows.Add(NewRowShortTermApp);
@@ -201,7 +201,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PmYearProgramApplicationRow NewRowLongTermApp = FMainDS.PmYearProgramApplication.NewRowTyped(true);
 
                 NewRowGeneralApp.PartnerKey = FMainDS.PPerson[0].PartnerKey;
-                NewRowGeneralApp.ApplicationKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_application));
+                NewRowGeneralApp.ApplicationKey = GetNextApplicationKey();
                 NewRowGeneralApp.RegistrationOffice = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
                 NewRowGeneralApp.GenAppDate = DateTime.Today;
                 NewRowGeneralApp.ApplicationForEventOrField = Catalog.GetString("Field");
@@ -230,6 +230,27 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 SelectDetailRowByDataTableIndex(FMainDS.PmGeneralApplication.Rows.Count - 1);
             }
+        }
+
+        private int GetNextApplicationKey()
+        {
+            int ApplicationKey = 0;
+
+            // if a new row has already been added then it will have the latest sequence number
+            foreach (PmGeneralApplicationRow Row in FMainDS.PmGeneralApplication.Rows)
+            {
+                if ((Row.RowState == DataRowState.Added) && (Row.ApplicationKey >= ApplicationKey))
+                {
+                    ApplicationKey = Row.ApplicationKey + 1;
+                }
+            }
+
+            if (ApplicationKey == 0)
+            {
+                ApplicationKey = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_application));
+            }
+
+            return ApplicationKey;
         }
 
         private void NewRowManual(ref IndividualDataTDSPmGeneralApplicationRow ARow)

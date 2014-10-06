@@ -179,11 +179,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Returns the PLocation DataRow of the currently selected Address.
+        /// Returns the PartnerEditTDSPPartnerLocationRow DataRow of the currently selected Address.
         /// </summary>
         /// <remarks>Performs all necessary initialisations in case the Partner TabGroup and/or
         /// the Address Tab haven't been initialised before.</remarks>
-        public PLocationRow LocationDataRowOfCurrentlySelectedAddress
+        public PartnerEditTDSPPartnerLocationRow PartnerLocationDataRowOfCurrentlySelectedAddress
         {
             get
             {
@@ -192,7 +192,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     InitChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
 
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 return ucoPartnerTabSet.LocationDataRowOfCurrentlySelectedAddress;
@@ -357,18 +357,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
         public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
         {
-            bool ReturnValue = false;
+            bool ReturnValue = true;
 
             ReturnValue = ucoPartnerTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
 
-            if (ReturnValue)
+            if (!ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors))
             {
-                ReturnValue = ucoPersonnelTabSet.ValidateAllData(AProcessAnyDataValidationErrors);
-            }
-
-            if (ReturnValue)
-            {
-                // TODO Other TabSets (Finance Data)
+                ReturnValue = false;
             }
 
             return ReturnValue;
@@ -426,23 +421,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void DisableNewButtonOnAutoCreatedAddress()
-        {
-            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
-            {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
-                {
-                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
-                }
-
-                ucoPartnerTabSet.DisableNewButtonOnAutoCreatedAddress();
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
         public void CleanupAddressesBeforeMerge()
         {
             if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
@@ -450,7 +428,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 ucoPartnerTabSet.CleanupRecordsBeforeMerge();
@@ -467,7 +445,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 ucoPartnerTabSet.RefreshRecordsAfterMerge();
@@ -485,7 +463,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 ucoPartnerTabSet.ProcessServerResponseSimilarLocations(AParameterDT);
@@ -505,7 +483,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
                 {
                     // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddress();
+                    ucoPartnerTabSet.SetUpPartnerAddressTab();
                 }
 
                 ucoPartnerTabSet.ProcessServerResponseAddressAddedOrChanged(AAddedOrChangedPromotionDT, AParameterDT);
@@ -526,6 +504,41 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void RefreshFamilyMembersList(TFormsMessage AFormsMessage)
         {
             ucoPartnerTabSet.RefreshFamilyMembersList(AFormsMessage);
+        }
+
+        /// <summary>
+        /// Refreshes position in Uni Hierarchy
+        /// </summary>
+        public void RefreshUnitHierarchy(Tuple <string, Int64, Int64>AUnitHierarchyChange)
+        {
+            ucoPartnerTabSet.RefreshUnitHierarchy(AUnitHierarchyChange);
+        }
+
+        #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        //// Special Handlers for menus and command keys for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if ((FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
+                && this.ucoPartnerTabSet.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            if ((FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel)
+                && this.ucoPersonnelTabSet.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

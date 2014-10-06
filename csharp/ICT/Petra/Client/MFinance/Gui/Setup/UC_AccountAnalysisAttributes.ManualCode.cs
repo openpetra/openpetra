@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FLedgerNumber = value;
                 FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
                 cmbDetailAnalTypeCode.SelectedValueChanged += new System.EventHandler(OnDetailAnalysisTypeCodeChange);
+                grdDetails.Selection.EnableMultiSelection = false;
             }
         }
 
@@ -90,6 +91,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         /// <summary>
         /// Loads all available AnalTypeCodes into the Combo, ensuring that the current value is allowed!
+        ///
+        /// Any types for which there are currently no values are already excluded.
         /// </summary>
         private void LoadCmbAnalType(String AalwaysAllow)
         {
@@ -139,9 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FAccountCode);
                 FMainDS.AAnalysisAttribute.DefaultView.Sort = AAnalysisAttributeTable.GetAnalysisTypeCodeDBName();
 
-                pnlDetails.Enabled = false;
-                btnDelete.Enabled = (grdDetails.Rows.Count > 1);
-                SelectByIndex(1);
+                grdDetails.SelectRowWithoutFocus(1);
                 UpdateRecordNumberDisplay();
             }
         }
@@ -161,7 +162,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             RemoveUnassignedRecords();
             CreateNewAAnalysisAttribute();
-            pnlDetails.Enabled = true;
             btnDelete.Enabled = true;
 
             SelectRowInGrid(grdDetails.Rows.Count);
@@ -180,16 +180,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ARow.AccountCode,
                     ARow.AnalysisTypeCode,
                     out ServerMessage);
-                pnlDetails.Enabled = CanBeChanged;
-
-                if (!CanBeChanged)
-                {
-                    if (ShowStatus != null)
-                    {
-                        ShowStatus(ServerMessage);
-                    }
-                }
-
+                btnDelete.Enabled = CanBeChanged;
+                cmbDetailAnalTypeCode.Enabled = CanBeChanged;
                 FIamUpdating = false;
             }
         }
@@ -252,15 +244,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
         {
-            if (!FIamUpdating && (FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
+            if (FIamUpdating || (FPreviouslySelectedDetailRow == null))
             {
-                FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
+                return;
+            }
 
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Detached)
+                || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted))
+            {
+                FPreviouslySelectedDetailRow = null;
+            }
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+/*
+ *              // This code in comments addresses a strange problem where
+ *              // the dataset returned from SaveGLSetupTDS on the server causes
+ *              // a consraints exception when merged with the local dataset.
+ *              // The problem has been addressed on the server instead, by calling AcceptChanges
+ *              // on the AAnalysisAttributes table after the call to SubmitChanges.
+ *
+ *              AAnalysisAttributeRow NewRow = FMainDS.AAnalysisAttribute.NewRowTyped();
+ *              NewRow.LedgerNumber = FPreviouslySelectedDetailRow.LedgerNumber;
+ *              NewRow.AccountCode = FPreviouslySelectedDetailRow.AccountCode;
+ *              FPreviouslySelectedDetailRow.Delete();
+ *              NewRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
+ *              FMainDS.AAnalysisAttribute.Rows.Add(NewRow);
+ */
+                FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
                 //
                 // The change may have altered the ordering of the list,
                 // so now I need to re-select the item, wherever it's gone!
                 Int32 RowIdx = FMainDS.AAnalysisAttribute.DefaultView.Find(cmbDetailAnalTypeCode.Text);
-                SelectByIndex(RowIdx + 1);
+                grdDetails.SelectRowInGrid(RowIdx + 1);
             }
         }
 
@@ -280,33 +296,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            grdDetails.Selection.ResetSelection(true);
-
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-                chkDetailActive.Checked = false;
-            }
         }
     }
 }

@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MCommon.Validation;
@@ -43,7 +44,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
     /// Prototype for handler of reassign event
     /// (Used by Unit tab of Partner edit)
     /// </summary>
-    /// <param name="ChildKey"></param>
+    /// <param name="ChildKey"></param>UnitReassignHandler
     /// <param name="ParentKey"></param>
     public delegate void UnitReassignHandler (Int64 ChildKey, Int64 ParentKey);
 
@@ -55,10 +56,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private String FStatus = "";
         private TreeNode FChildNodeReference;
         private TreeNode FParentNodeReference;
-        private SortedList <Int64, Int64>ChangedParents = new SortedList <Int64, Int64>();
-
-        /// <summary>Event raise on re-assign</summary>
-        public event UnitReassignHandler ReassignEvent;
+        private List <Tuple <string, Int64, Int64>>FChangedParents = new List <Tuple <string, long, long>>();
 
         private UnitHierarchyNode FindNodeWithThisParent(Int64 ParentKey, ArrayList UnitNodes)
         {
@@ -260,10 +258,17 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 NewNode.Expand();
                 NewParent.Expand();
                 NewParent.BackColor = Color.White;
-                ChangedParents[((UnitHierarchyNode)NewNode.Tag).MyUnitKey] = ((UnitHierarchyNode)NewNode.Tag).ParentUnitKey;
+                FChangedParents.Add(new Tuple <string, long, long>(
+                        ((UnitHierarchyNode)NewParent.Tag).Description,
+                        ((UnitHierarchyNode)NewNode.Tag).MyUnitKey,
+                        ((UnitHierarchyNode)NewNode.Tag).ParentUnitKey));
                 FStatus += String.Format(Catalog.GetString("{0} was moved from {1} to {2}.\r\n"),
                     Child.Text, PrevParent, NewParent.Text);
                 txtStatus.Text = FStatus;
+
+                //Select the New Node in the tree view
+                SelectNode(NewNode);
+                trvUnits.SelectedNode = NewNode;
 
                 //Remove Original Node
                 Child.Remove();
@@ -416,6 +421,17 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         }
 
         /// <summary>
+        /// Get the number of changed records and specify a message to incorporate into the 'Do you want to save?' message box
+        /// </summary>
+        /// <param name="AMessage">An optional message to display.  If the parameter is an empty string a default message will be used</param>
+        /// <returns>The number of changed records.  Return -1 to imply 'unknown'.</returns>
+        public int GetChangedRecordCount(out string AMessage)
+        {
+            AMessage = String.Empty;
+            return -1;
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <returns></returns>
@@ -432,14 +448,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             GetAllChildren(trvUnits.Nodes[0], ref UnitNodes);
 
             TRemote.MPersonnel.WebConnectors.SaveUnitHierarchy(UnitNodes);
-
-            if (ReassignEvent != null)
-            {
-                foreach (Int64 Child in ChangedParents.Keys)
-                {
-                    ReassignEvent(Child, ChangedParents[Child]);
-                }
-            }
 
             FStatus = "";
             FPetraUtilsObject.HasChanges = false;
@@ -464,7 +472,22 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         /// <param name="e"></param>
         public void FileSave(object sender, EventArgs e)
         {
-            SaveChanges();
+            this.Cursor = Cursors.WaitCursor;
+
+            if (SaveChanges())
+            {
+                // Broadcast message to update partner's Partner Edit screen if open
+                TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcUnitHierarchyChanged);
+                BroadcastMessage.SetMessageDataUnitHierarchy(FChangedParents);
+                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
+                FChangedParents = new List <Tuple <string, long, long>>();
+
+                FPetraUtilsObject.HasChanges = false;
+                FPetraUtilsObject.DisableSaveButton();
+            }
+
+            this.Cursor = Cursors.Default;
         }
     }
 }

@@ -200,6 +200,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            if (File.Exists(txtFilename.Text))
+            {
+                if (MessageBox.Show(Catalog.GetString("The file already exists. Is it OK to overwrite it?"),
+                        Catalog.GetString("Export Batches"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                {
+                    return;
+                }
+            }
+
             StreamWriter sw1 = null;
             try
             {
@@ -220,7 +231,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FMainDS == null)
             {
                 FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS();
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, -1, -1));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, -1, -1));
             }
 
             Int32 ALedgerNumber = 0;

@@ -87,6 +87,9 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Gift Batch View Options</summary>
         public const String GIFT_BATCH_VIEW_ALL = "All";
 
+        /// <summary>Default value for forward posting periods</summary>
+        public const int GL_DEFAULT_FWD_POSTING_PERIODS = 8;
+
         /// <summary>Gift Batch View Options</summary>
         public const String MARKED_FOR_DELETION = "<<<DELETE>>>";
 
@@ -189,8 +192,14 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Unit-Type is key-min</summary>
         public const String UNIT_TYPE_CODE_KEY_MIN = "KEY-MIN";
 
-        /// <summary>Unit-Type is key-min</summary>
+        /// <summary>Motivation Detail is key-min</summary>
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
+
+        /// <summary>Motivation Detail is field</summary>
+        public const String GROUP_DETAIL_FIELD = "FIELD";
+
+        /// <summary>Motivation Detail is support</summary>
+        public const String GROUP_DETAIL_SUPPORT = "SUPPORT";
 
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
         public const string ADMIN_FEE_INCOME_ACCT = "3400";
@@ -364,6 +373,13 @@ namespace Ict.Petra.Shared.MFinance
         public const string NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH = "Gifts received - Gift Batch";
         /// Narratives
         public const string NARRATIVE_GB_GIFT_BATCH = "GB - Gift Batch";
+
+        /// Summary account
+        public const string PERSONNEL_EXPENSES = "4300S";
+        /// Summary account
+        public const string SUPPORT_GIFTS_LOCAL = "0100S";
+        /// Summary account
+        public const string SUPPORT_GIFTS_FOREIGN = "1100S";
     }
 
     /// <summary>

@@ -91,7 +91,7 @@ namespace Ict.Petra.Shared.MPersonnel
                         ("WARNING: This change will affect the information visible to person \"" +
                         "{0}" +
                         "\" (" +
-                        "{1}" + ") in Caleb." + "\r\n" + "\r\n" +
+                        "{1}" + ") in The Intranet." + "\r\n" + "\r\n" +
                         "\"" +
                         "{2}" +
                         "\" will no longer be able to see any personal support that previously came" +
@@ -102,7 +102,7 @@ namespace Ict.Petra.Shared.MPersonnel
                         "\r\n" + "\r\n" +
                         "Other persons of family \"" +
                         "{5}" +
-                        "\" will continue to be able to see in Caleb all previously received" +
+                        "\" will continue to be able to see in The Intranet all previously received" +
                         " support and any future donations to their family." +
                         "\r\n" + "\r\n" +
                         "Do you want to continue?"),

@@ -8,6 +8,7 @@ RootNode:
     Template: usercontrolUnbound
     Controls:
         grpAddress: {NoLabel=true}
+            Dock: Fill
             Controls:
                 Row0: [chkCurrentAddressesOnly]
                 Row1: [txtCity]

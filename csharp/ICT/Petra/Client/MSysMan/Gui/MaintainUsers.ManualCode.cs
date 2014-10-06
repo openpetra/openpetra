@@ -76,8 +76,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             // Event to reload the grid after every save.
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
-
-            FPetraUtilsObject.SetStatusBarText(txtDetailPasswordHash, Catalog.GetString("Enter a password for the user"));
         }
 
         private void LoadAvailableModulesIntoCheckedListBox()
@@ -114,6 +112,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
             AVerificationResult = null;
 
             TSubmitChangesResult Result = TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS);
+
+            if (Result == TSubmitChangesResult.scrOK)
+            {
+                MessageBox.Show(Catalog.GetString("Changes to users will take effect at next login."),
+                    Catalog.GetString("Maintain Users"));
+            }
 
             return Result;
         }

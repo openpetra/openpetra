@@ -41,6 +41,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
 		bool FDataSavingInUserControlRequiredFirst = false;
 		
+		/// <summary>
+		/// Index of Row that is to be deleted.
+		/// </summary>
+		int FIndexOfDeletedRow = -1;
+		
 		// Instance of a 'Helper Class' for handling the Indexes of the DataRows. (The Grid is sorted by the Index.)
 		TSgrdDataGrid.IndexedGridRowsHelper FIndexedGridRowsHelper;
 		
@@ -160,6 +165,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 //                return false;        
 //            }
 
+            FIndexOfDeletedRow = grdDetails.DataSourceRowToIndex2(ARowToDelete);
+            
             return true;
         }
         
@@ -173,14 +180,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void PostDeleteManual(PPartnerAttributeCategoryRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
         {         
             if (ADeletionPerformed) 
-            {
-                // TODO Check that the condition-check below works if A) the last row in the grid gets deleted; B) if the row that comes before the last row in the grid gets deleted
-                // - once current trunk has been merged into this Branch!                
-                int IndexOfDeletedRow = grdDetails.DataSourceRowToIndex2(ARowToDelete);
-                
+            {                
                 // If the Row that got selected for deletion wasn't the last Row then we need to adjust the
                 // Index of the following Rows
-                if (IndexOfDeletedRow != grdDetails.Rows.Count - 2)
+                if (FIndexOfDeletedRow != grdDetails.Rows.Count - 1)
                 {
                     FIndexedGridRowsHelper.AdjustIndexesOfFollowingRows(GetSelectedRowIndex(), false);
                 }

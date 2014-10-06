@@ -11,7 +11,6 @@
   <Parameter id="param_chkAddress" value="eString:true" />
   <Parameter id="param_chkPassport" value="eString:true" />
   <Parameter id="param_chkPersonalDocuments" value="eString:true" />
-  <Parameter id="param_chkDriverLicense" value="eString:true" />
   <Parameter id="param_chkOtherEmergencyData" value="eString:true" />
   <Parameter id="param_chkSpecialNeeds" value="eString:true" />
   <Parameter id="param_chkAbilities" value="eString:true" />

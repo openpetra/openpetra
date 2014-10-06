@@ -617,7 +617,7 @@ namespace Ict.Common.Printing
         /// </summary>
         /// <param name="ASender"></param>
         /// <param name="AEv"></param>
-        protected override void PrintPage(object ASender, PrintPageEventArgs AEv)
+        protected override void PrintPage(Object ASender, PrintPageEventArgs AEv)
         {
             // only use the AEv.Graphics if we display on screen
             if (FEv != AEv)

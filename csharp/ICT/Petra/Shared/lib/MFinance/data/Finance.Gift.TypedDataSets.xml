@@ -20,6 +20,7 @@
             <CustomField name="MethodOfGivingCode" type="String"/>
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
+            <CustomField name="TaxDeductibleAccountCode" type="String"/>
             <CustomField name="Reference" type="String"/>
         </Table>
 
@@ -38,6 +39,7 @@
             <CustomField name="MethodOfGivingCode" type="String"/>
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
+            <CustomField name="CostCentreCode" type="String"/>
         </Table>
 
         <Table sqltable="a_motivation_group"/>
@@ -52,6 +54,7 @@
         <Table sqltable="p_person" name="RecipientPerson"/>
         <Table sqltable="p_unit" name="RecipientUnit"/>
         <Table sqltable="p_partner_type" name="LedgerPartnerTypes"/>
+		<Table sqltable="p_partner_tax_deductible_pct"/>
         <Table sqltable="um_unit_structure"/>
     </DataSet>
 
@@ -95,35 +98,6 @@
             <CustomField name="MotivationDetailCode" type="string"/>
         </Table>
         <Table customtable="BestAddressTDSLocation" name="BestAddress"/>
-    </DataSet>
-    
-    <DataSet name="DonorHistoryTDS">
-        <CustomTable name="Gift">
-            <CustomField name="DonorKey" type="Int64"/>
-            <CustomField name="DonorShortName" type="string"/>
-            <CustomField name="RecipientDescription" type="string"/>
-            <CustomField name="DateOfGift" type="DateTime"/>
-            <CustomField name="GiftAmount" type="Decimal"/>
-            <CustomField name="MotivationGroupCode" type="string"/>
-            <CustomField name="MotivationDetailCode" type="string"/>
-        </CustomTable>
-        <CustomTable name="Donor">
-            <CustomField name="DonorKey" type="Int64"/>
-            <CustomField name="DonorShortName" type="string"/>
-            <CustomField name="GiftTotalCount" type="Int32"/>
-            <CustomField name="GiftTotalAmount" type="Decimal"/>
-            <CustomField name="Email" type="string"/>
-            <CustomField name="ValidAddress" type="bool"/>
-            <CustomField name="Locality" type="string"/>
-            <CustomField name="StreetName" type="string"/>
-            <CustomField name="Building1" type="string"/>
-            <CustomField name="Building2" type="string"/>
-            <CustomField name="Address3" type="string"/>
-            <CustomField name="CountryCode" type="string"/>
-            <CustomField name="CountryName" type="string"/>
-            <CustomField name="PostalCode" type="string"/>
-            <CustomField name="City" type="string"/>            
-        </CustomTable>
     </DataSet>
 
 </PetraDataSets>

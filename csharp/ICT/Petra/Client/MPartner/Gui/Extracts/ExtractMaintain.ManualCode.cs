@@ -82,6 +82,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Get the number of changed records and specify a message to incorporate into the 'Do you want to save?' message box
+        /// </summary>
+        /// <param name="AMessage">An optional message to display.  If the parameter is an empty string a default message will be used</param>
+        /// <returns>The number of changed records.  Return -1 to imply 'unknown'.</returns>
+        public int GetChangedRecordCount(out string AMessage)
+        {
+            AMessage = String.Empty;
+            return -1;
+        }
+
+        /// <summary>
         /// save the changes on the screen (code is copied from auto-generated code)
         /// </summary>
         /// <returns></returns>
@@ -143,6 +154,40 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
         {
             ucoExtractMaintain.VerifyAndUpdateExtract(sender, e);
+        }
+
+        #endregion
+
+        #region Keyboard and Filter/Find Menu
+
+        /// ///////////  These methods just delegate to the user control to handle
+
+        private void MniFilterFind_Click(object sender, EventArgs e)
+        {
+            ucoExtractMaintain.MniFilterFind_Click(sender, e);
+        }
+
+        /// <summary>
+        /// Handler for shortcuts
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.S | Keys.Control))
+            {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    SaveChanges();
+                }
+
+                return true;
+            }
+
+            if (ucoExtractMaintain.ProcessParentCmdKey(ref msg, keyData))
+            {
+                return true;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion

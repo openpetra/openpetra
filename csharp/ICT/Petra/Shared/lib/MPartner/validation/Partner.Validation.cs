@@ -131,12 +131,14 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="ACacheRetriever">Delegate that returns the specified DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>void</returns>
-        public static void ValidatePartnerPersonManual(object AContext, PPersonRow ARow,
+        public static void ValidatePartnerPersonManual(object AContext, PPersonRow ARow, TGetCacheableDataTableFromCache ACacheRetriever,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -167,6 +169,44 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 }
             }
 
+            // 'Marital Status' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnMaritalStatusId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PtMaritalStatusTable TypeTable;
+                PtMaritalStatusRow TypeRow;
+
+                VerificationResult = null;
+
+                if ((!ARow.IsMaritalStatusNull())
+                    && (ARow.MaritalStatus != String.Empty))
+                {
+                    TypeTable = (PtMaritalStatusTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.MaritalStatusList);
+                    TypeRow = (PtMaritalStatusRow)TypeTable.Rows.Find(ARow.MaritalStatus);
+
+                    // 'Marital Status' must not be unassignable
+                    if ((TypeRow != null)
+                        && !TypeRow.AssignableFlag
+                        && (TypeRow.IsAssignableDateNull()
+                            || (TypeRow.AssignableDate <= DateTime.Today)))
+                    {
+                        // if 'Marital Status' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PPersonTable.GetMaritalStatusDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.MaritalStatus })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
             // 'MaritalStatusSince' must be valid
             ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnMaritalStatusSinceId];
 
@@ -178,6 +218,32 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'OccupationCode' must be valid
+            ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnOccupationCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!string.IsNullOrEmpty(ARow.OccupationCode))
+                {
+                    Type tmp;
+                    DataTable CachedDT = ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum),
+                            TCacheablePartnerTablesEnum.OccupationList), out tmp);
+                    DataRow FoundDR = CachedDT.Rows.Find(new object[] { ARow.OccupationCode });
+
+                    if (FoundDR == null)
+                    {
+                        VerificationResult = new TVerificationResult(ValidationControlsData.ValidationControl, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_OCCUPATIONCODE_INVALID, new string[] { ARow.OccupationCode }));
+                        VerificationResult = new TScreenVerificationResult(VerificationResult,
+                            ValidationColumn,
+                            ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
             }
         }
 
@@ -202,6 +268,44 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (ARow.RowState == DataRowState.Deleted)
             {
                 return;
+            }
+
+            // 'Marital Status' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PFamilyTable.ColumnMaritalStatusId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PtMaritalStatusTable TypeTable;
+                PtMaritalStatusRow TypeRow;
+
+                VerificationResult = null;
+
+                if ((!ARow.IsMaritalStatusNull())
+                    && (ARow.MaritalStatus != String.Empty))
+                {
+                    TypeTable = (PtMaritalStatusTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.MaritalStatusList);
+                    TypeRow = (PtMaritalStatusRow)TypeTable.Rows.Find(ARow.MaritalStatus);
+
+                    // 'Marital Status' must not be unassignable
+                    if ((TypeRow != null)
+                        && !TypeRow.AssignableFlag
+                        && (TypeRow.IsAssignableDateNull()
+                            || (TypeRow.AssignableDate <= DateTime.Today)))
+                    {
+                        // if 'Marital Status' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PFamilyTable.GetMaritalStatusDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.MaritalStatus })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
             // 'MaritalStatusSince' must be valid
@@ -899,6 +1003,54 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
+        /// Checks whether a Partner with Field 0 has a non-gift Motivation Group code.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey.</param>
+        /// <param name="APartnerField">The field associated with the partner key</param>
+        /// <param name="AMotivationGroup">The current motivation group</param>
+        /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
+        /// <param name="AResultContext">ResultContext (Default: null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null). (Default: null).</param>
+        /// <returns>Null if the Partner Field is non-zero or Motivation Group code is not Gift.
+        ///   If the Partner Field is zero and Motivation Group is Gift, a TVerificationResult
+        ///   with details about the error is returned.
+        /// </returns>
+        public static TVerificationResult IsValidRecipientFieldForMotivationGroup(Int64 APartnerKey, Int64 APartnerField,
+            string AMotivationGroup, string AErrorMessageText = "", object AResultContext = null,
+            System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+
+            if ((APartnerField == 0) && (AMotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            {
+                if (AErrorMessageText == String.Empty)
+                {
+                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_RECIPIENT_FIELD_MOTIVATION_GROUP, new string[] { APartnerKey.ToString() }));
+                }
+                else
+                {
+                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_RECIPIENT_FIELD_MOTIVATION_GROUP));
+                    ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
+                }
+            }
+            else
+            {
+                return null;
+            }
+
+            if ((ReturnValue != null)
+                && (AResultColumn != null))
+            {
+                ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Checks that a Partner with a certain PartnerKey exists and is a Partner of PartnerClass UNIT.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey.</param>
@@ -959,6 +1111,68 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
+        /// Validates the MPartner Relationship Setup screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateRelationshipSetupManual(object AContext, PRelationRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'Relationship Category' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PRelationTable.ColumnRelationCategoryId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PRelationCategoryTable RelationCategoryTable;
+                PRelationCategoryRow RelationCategoryRow;
+
+                VerificationResult = null;
+
+                if ((!ARow.IsRelationCategoryNull())
+                    && (ARow.RelationCategory != String.Empty))
+                {
+                    RelationCategoryTable = (PRelationCategoryTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.RelationCategoryList);
+                    RelationCategoryRow = (PRelationCategoryRow)RelationCategoryTable.Rows.Find(ARow.RelationCategory);
+
+                    // 'Relationship Category' must not be unassignable
+                    if ((RelationCategoryRow != null)
+                        && RelationCategoryRow.UnassignableFlag
+                        && (RelationCategoryRow.IsUnassignableDateNull()
+                            || (RelationCategoryRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        // if 'Relationship Category' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PRelationTable.GetRelationCategoryDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.RelationCategory })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
         /// Validates the Banking Details screen data.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
@@ -988,15 +1202,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                // more specific error message if a bank has not been selected
-                if (ARow.BankKey == 0)
-                {
-                    VerificationResult = new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
-                            PetraErrorCodes.ERR_BANKINGDETAILS_NO_BANK_SELECTED, new string[] { ARow.BankKey.ToString() }));
-
-                    VerificationResult = new TScreenVerificationResult(VerificationResult, ValidationColumn, ValidationControlsData.ValidationControl);
-                }
-                else
+                if (ARow.BankKey != 0)
                 {
                     VerificationResult = IsValidPartner(
                         ARow.BankKey, new TPartnerClass[] { TPartnerClass.BANK }, false, string.Empty,
@@ -1009,10 +1215,11 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 // ResultText!
 
                 AVerificationResultCollection.Remove(ValidationColumn);
-                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
             // validate that there are not multiple main accounts
+            ValidationColumn = ARow.Table.Columns[PartnerEditTDSPBankingDetailsTable.ColumnMainAccountId];
             int countMainAccount = 0;
 
             foreach (PartnerEditTDSPBankingDetailsRow bdrow in ABankingDetails.Rows)
@@ -1039,43 +1246,102 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         ));
             }
 
-            // Account Number and IBAN cannot both be empty
-            if (((ARow.BankAccountNumber == null) || (ARow.BankAccountNumber == ""))
-                && ((ARow.Iban == null) || (ARow.Iban == "")))
-            {
-                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
-                    ValidationColumn, ValidationControlsData.ValidationControl);
-
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
-                    AContext, VerificationResult, ARow.Table.Columns[PartnerEditTDSPBankingDetailsTable.ColumnBankAccountNumberId]);
-            }
+            VerificationResult = null;
 
             // validate the account number (if validation exists for bank's country)
-            CommonRoutines Routines = new CommonRoutines();
+            ValidationColumn = ARow.Table.Columns[PBankingDetailsTable.ColumnBankAccountNumberId];
 
-            if ((ARow.BankAccountNumber != null) && (Routines.CheckAccountNumber(ARow.BankAccountNumber, ACountryCode) == 0))
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                AVerificationResultCollection.Add(
-                    new TScreenVerificationResult(
+                CommonRoutines Routines = new CommonRoutines();
+
+                if (!string.IsNullOrEmpty(ARow.BankAccountNumber) && (Routines.CheckAccountNumber(ARow.BankAccountNumber, ACountryCode) <= 0))
+                {
+                    VerificationResult = new TScreenVerificationResult(
                         new TVerificationResult(
                             AContext,
                             ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ACCOUNTNUMBER_INVALID)),
                         ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
-                        ValidationControlsData.ValidationControl
-                        ));
+                        ValidationControlsData.ValidationControl);
+                }
+
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
+            VerificationResult = null;
+
             // validate the IBAN (if it exists)
-            if ((ARow.Iban != "") && (CommonRoutines.CheckIBAN(ARow.Iban, out VerificationResult) == false))
+            ValidationColumn = ARow.Table.Columns[PBankingDetailsTable.ColumnIbanId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                AVerificationResultCollection.Add(
-                    new TScreenVerificationResult(
-                        VerificationResult,
-                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnIban,
-                        ValidationControlsData.ValidationControl
-                        ));
+                AVerificationResultCollection.Remove(ValidationColumn);
+
+                if (!string.IsNullOrEmpty(ARow.Iban) && (CommonRoutines.CheckIBAN(ARow.Iban, out VerificationResult) == false))
+                {
+                    VerificationResult = new TScreenVerificationResult(
+                        new TVerificationResult(AContext, VerificationResult.ResultText, VerificationResult.ResultCode,
+                            VerificationResult.ResultSeverity),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Extra Validatation for the Banking Details screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateBankingDetailsExtra(object AContext, PBankingDetailsRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'BankKey' must be included
+            ValidationColumn = ARow.Table.Columns[PBankingDetailsTable.ColumnBankKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.BankKey == 0)
+                {
+                    VerificationResult = new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_BANKINGDETAILS_NO_BANK_SELECTED, new string[] { ARow.BankKey.ToString() }));
+
+                    VerificationResult = new TScreenVerificationResult(VerificationResult, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
+            VerificationResult = null;
+
+            // Account Number and IBAN cannot both be empty
+            ValidationColumn = ARow.Table.Columns[PBankingDetailsTable.ColumnBankAccountNumberId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (string.IsNullOrEmpty(ARow.BankAccountNumber) && string.IsNullOrEmpty(ARow.Iban))
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
 
@@ -1337,6 +1603,76 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                         ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_MORETHANONE_OPEN_GIFTDESTINATION)),
                     ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Address screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidatePartnerAddressManual(object AContext, PartnerEditTDSPPartnerLocationRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'Email' must be in correct format
+            ValidationColumn = ARow.Table.Columns[PartnerEditTDSPPartnerLocationTable.ColumnEmailAddressId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TStringChecks.ValidateEmail(ARow.EmailAddress, true,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Interest Setup screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateInterestSetupManual(object AContext, PInterestRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'Category' must not be null
+            ValidationColumn = ARow.Table.Columns[PInterestTable.ColumnCategoryId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.Category, Catalog.GetString("Category"),
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);

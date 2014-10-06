@@ -39,9 +39,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
     public partial class TFrmIntranetExportSettingsDialog
     {
         private string FPswd;
+        private string FServerAddress;
         private string FExtra;
         private string FReplyToEmail;
         private int FGiftDays;
+
 
         /// <summary>
         ///
@@ -51,6 +53,17 @@ namespace Ict.Petra.Client.MSysMan.Gui
             get
             {
                 return FPswd;
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public string ServerEmailAddress
+        {
+            get
+            {
+                return FServerAddress;
             }
         }
 
@@ -98,6 +111,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
 
             FReplyToEmail = TUserDefaults.GetStringDefault("ReplyToEmail");
+            FServerAddress = TUserDefaults.GetStringDefault("IntranetServerAddress");
         }
 
         private void RunOnceOnActivationManual()
@@ -105,6 +119,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             txtDonationDays.NumberValueInt = FGiftDays;
             txtOptionalMetadata.Text = FExtra;
             txtReplyToEmail.Text = FReplyToEmail;
+            txtServerEmailAddress.Text = FServerAddress;
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)
@@ -122,6 +137,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 FReplyToEmail = txtReplyToEmail.Text;
                 TUserDefaults.SetDefault("ReplyToEmail", FReplyToEmail);
+            }
+
+            if (txtServerEmailAddress.Text != "")
+            {
+                FServerAddress = txtServerEmailAddress.Text;
+                TUserDefaults.SetDefault("IntranetServerAddress", FServerAddress);
             }
 
             if (txtOldPassword.Text != "")

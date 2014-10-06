@@ -171,6 +171,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
+
+            if (ARow != null)
+            {
+                txtUnitKey.Enabled = (ARow.RowState == DataRowState.Added);
+            }
         }
 
         /// <summary>

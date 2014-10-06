@@ -1146,28 +1146,27 @@ namespace Ict.Common.Testing
             ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Petra.Shared.PetraErrorCodes().GetType());
             ErrorCodeInventory.BuildErrorCodeInventory(new Ict.Common.Verification.TStringChecks().GetType());
         }
-        
 
         /// <summary>
         /// Tests the Catalog.GetPluralString Method to ensure that it always returns either the correct
         /// singluar or plural string - irrespective of the language resource file being loaded, or not.
-        /// </summary>                
+        /// </summary>
         [Test]
         public void TestGettext_GetPluralString_ExpectSingularPluralToWork()
         {
             const string SINGULARTEXT = "*** DO NOT TRANSLATE! ***   test   *** DO NOT TRANSLATE! ***";
             const string PLURALTEXT = "*** DO NOT TRANSLATE! ***   testS   *** DO NOT TRANSLATE! ***";
-            
+
             string GettextResult;
-            
+
             //
             // With non-initialised Catalog!
             //
-            
+
             // Zero number
             GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 0, false);
             Assert.IsTrue(String.Compare(GettextResult, SINGULARTEXT) == 0);
-                
+
             GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 0, true);
             Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);
 
@@ -1184,7 +1183,7 @@ namespace Ict.Common.Testing
             GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 2, true);
             Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);
 
-            // Negative numbers    
+            // Negative numbers
             GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, -1, false);
             Assert.IsTrue(String.Compare(GettextResult, SINGULARTEXT) == 0);
 
@@ -1196,48 +1195,48 @@ namespace Ict.Common.Testing
 
             GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, -2, true);
             Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);
-            
-            
+
+
             //
-            // And now the same with a Catalog that is initialised 
+            // And now the same with a Catalog that is initialised
             // (That will be different to the tests above ONLY IF the resource file for "de-DE" exists: \bin\de-DE\OpenPetra.resources.dll!)
             //
             Catalog.Init("de-DE", "de-DE");
-            
-            if (Catalog.ResourceManagerInitialisedWithGivenLanguage) 
+
+            if (Catalog.ResourceManagerInitialisedWithGivenLanguage)
             {
                 // Zero number
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 0, false);
                 Assert.IsTrue(String.Compare(GettextResult, SINGULARTEXT) == 0);
-                    
+
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 0, true);
                 Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);
-        
+
                 // Positive numbers
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 1, false);
                 Assert.IsTrue(String.Compare(GettextResult, SINGULARTEXT) == 0);
-        
+
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 1, true);
                 Assert.IsTrue(String.Compare(GettextResult, SINGULARTEXT) == 0);
-        
+
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 2, false);
                 Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);
-        
+
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, 2, true);
                 Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);
-        
-                // Negative numbers    
+
+                // Negative numbers
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, -1, false);
                 Assert.IsTrue(String.Compare(GettextResult, SINGULARTEXT) == 0);
-        
+
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, -1, true);
                 Assert.IsTrue(String.Compare(GettextResult, SINGULARTEXT) == 0);
-        
+
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, -2, false);
                 Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);
-        
+
                 GettextResult = Catalog.GetPluralString(SINGULARTEXT, PLURALTEXT, -2, true);
-                Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);                                
+                Assert.IsTrue(String.Compare(GettextResult, PLURALTEXT) == 0);
             }
         }
     }
@@ -1272,5 +1271,5 @@ namespace Ict.Common.Testing
         {
             ErrorCodes.GetErrorInfo("TEST.77777V");
         }
-    }   
+    }
 }

@@ -175,11 +175,18 @@ namespace Ict.Common.IO
         {
             ProcessTemplate snippetTemplate = new ProcessTemplate();
 
-            snippetTemplate.FTemplateCode = new StringBuilder(FSnippets[ASnippetName]);
+            if (FSnippets.ContainsKey(ASnippetName))
+            {
+                snippetTemplate.FTemplateCode = new StringBuilder(FSnippets[ASnippetName]);
+            }
+            else
+            {
+                snippetTemplate.FTemplateCode = null;
+            }
 
             if (snippetTemplate.FTemplateCode == null)
             {
-                throw new Exception("cannot find snippet with name " + ASnippetName);
+                throw new Exception("Cannot find snippet with name " + ASnippetName);
             }
 
             snippetTemplate.FSnippets = this.FSnippets;
@@ -493,7 +500,7 @@ namespace Ict.Common.IO
         /// <summary>
         /// this helps to distinguish codelets when nesting codelets
         /// </summary>
-        protected String FCodeletPostfix = "";
+        public String FCodeletPostfix = "";
 
         /// <summary>
         /// set the postfix for codelets. this helps to distinguish codelets when nesting codelets

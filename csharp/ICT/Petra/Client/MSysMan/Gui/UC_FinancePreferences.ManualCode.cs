@@ -22,19 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Globalization;
-using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using Ict.Common;
 using Ict.Common.Controls;
-using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
@@ -42,11 +33,25 @@ namespace Ict.Petra.Client.MSysMan.Gui
     public partial class TUC_FinancePreferences
     {
         private int FCurrentLedger;
+        private bool FNewDonorWarning = true;
 
         private void InitializeManualCode()
         {
+            int DefaultLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER);
+
             FCurrentLedger = TLstTasks.CurrentLedger;
-            cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
+
+            if (DefaultLedger > 0)
+            {
+                cmbDefaultLedger.SetSelectedInt32(DefaultLedger);
+            }
+            else
+            {
+                cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
+            }
+
+            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
+            chkNewDonorWarning.Checked = FNewDonorWarning;
         }
 
         /// <summary>
@@ -77,20 +82,13 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 return true;
             }
 
-            return false;
-        }
+            if (FNewDonorWarning != chkNewDonorWarning.Checked)
+            {
+                FNewDonorWarning = chkNewDonorWarning.Checked;
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+            }
 
-        /// <summary>
-        /// Performs data validation.
-        /// </summary>
-        /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
-        /// to another record, otherwise set it to false.</param>
-        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
-        /// user, otherwise set it to false.</param>
-        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
-        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
-        {
-            return true;
+            return false;
         }
     }
 }

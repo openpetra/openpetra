@@ -11,7 +11,7 @@ RootNode:
     WindowWidth: 760
     WindowHeight: 500
     Actions:
-        cndDiscountEnabled: {InitialValue=false}
+#        cndDiscountEnabled: {InitialValue=false}
     Controls:
         pnlContent:
             Controls: [pnlPartnerInfo, pnlDefaults, grpAccountInformation]
@@ -32,7 +32,7 @@ RootNode:
             Width: 360
         grpMiscDefaults:
             Label: Misc Defaults
-            Controls: [nudInvoiceAging, nudCreditTerms, cmbDefaultPaymentType, nudDiscountDays, txtDiscountValue]
+            Controls: [nudInvoiceAging, nudCreditTerms, cmbDefaultPaymentType]                #, nudDiscountDays, txtDiscountValue]
         grpAccountInformation:
             Label: Account Information
             Controls: [cmbAPAccount, cmbDefaultBankAccount, cmbCostCentre, cmbExpenseAccount]
@@ -53,5 +53,5 @@ RootNode:
             DataField: AApSupplier.PaymentType
             OptionalValues: [Cash, Cheque, Debit Card, Credit Card, Transfer]
             Width: 90
-        nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays, PositiveValueActivates=cndDiscountEnabled, Width=90}
-        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled, Format=PercentDecimal(2), Width=90}
+#        nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays, PositiveValueActivates=cndDiscountEnabled, Width=90}
+#        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled, Format=PercentDecimal(2), Width=90}

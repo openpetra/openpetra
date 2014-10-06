@@ -273,3 +273,30 @@ msgstr "do not translate"
 
 msgid "n records"
 msgstr "do not translate"
+
+msgid "toolStrip1"
+msgstr "do not translate"
+
+msgid "500%"
+msgstr "do not translate"
+
+msgid "200%"
+msgstr "do not translate"
+
+msgid "150%"
+msgstr "do not translate"
+
+msgid "100%"
+msgstr "do not translate"
+
+msgid "75%"
+msgstr "do not translate"
+
+msgid "50%"
+msgstr "do not translate"
+
+msgid "25%"
+msgstr "do not translate"
+
+msgid "10%"
+msgstr "do not translate"

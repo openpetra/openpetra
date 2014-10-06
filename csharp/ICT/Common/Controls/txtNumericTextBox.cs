@@ -73,6 +73,11 @@ namespace Ict.Common.Controls
         /// </summary>
         public bool FNullValueAllowed = false;
 
+        /// <summary>
+        /// Is a negative value allowed? Default true.
+        /// </summary>
+        public bool FNegativeValueAllowed = true;
+
         private string FNumberDecimalSeparator = ".";
         private string FCurrencyDecimalSeparator = ".";
         private CultureInfo FCurrentCulture;
@@ -264,6 +269,27 @@ namespace Ict.Common.Controls
             set
             {
                 FNullValueAllowed = value;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the control allows a negative value, or not. Default = true.
+        /// </summary>
+        [Category("NumericTextBox"),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         DefaultValue(true),
+         Browsable(true),
+         Description("Determines whether the control allows a negative value, or not. Default = true.")]
+        public bool NegativeValueAllowed
+        {
+            get
+            {
+                return FNegativeValueAllowed;
+            }
+
+            set
+            {
+                FNegativeValueAllowed = value;
             }
         }
 
@@ -877,7 +903,8 @@ namespace Ict.Common.Controls
                             {
                                 // allow negative sign only in front of all digits, and only if it isn't there yet
                                 if ((intSelStart == 0)
-                                    && (!this.Text.Contains(FNumberNegativeSign)))
+                                    && (!this.Text.Contains(FNumberNegativeSign))
+                                    && NegativeValueAllowed)
                                 {
                                     e.Handled = false;
                                 }

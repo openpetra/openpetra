@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.MSysMan.Gui;
 using System.Collections;
 using Ict.Common;
 using System.Reflection;
@@ -33,6 +34,9 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Data;
+using Ict.Petra.Client.App.Core;
+using System.IO;
+using Ict.Common.IO;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -52,6 +56,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TDataGetter FDataGetter;
         private Assembly FastReportsDll;
         private object FfastReportInstance;
+        private String FReportName;
 
         Type FFastReportType;
         /// <summary>
@@ -61,6 +66,12 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private SReportTemplateRow FSelectedTemplate = null;
 
+        private enum TInitState
+        {
+            Unknown, LoadDll, LoadTemplate, InitSystem, LoadedOK
+        };
+        private TInitState FInitState;
+
         /// <summary>
         /// Use This template for the report
         /// </summary>
@@ -68,7 +79,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void SetTemplate(SReportTemplateRow ATemplate)
         {
             FSelectedTemplate = ATemplate;
-            FPetraUtilsObject.SetWindowTitle();
+
+            if (FPetraUtilsObject != null)
+            {
+                FPetraUtilsObject.SetWindowTitle();
+            }
         }
 
         /// <summary>The Template Name will be written to the UI title bar</summary>
@@ -93,11 +108,67 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="DataGetter"></param>
         public void SetDataGetter(TDataGetter DataGetter)
         {
-            FDataGetter = DataGetter;
+            if (LoadedOK)
+            {
+                FDataGetter = DataGetter;
+            }
+            else
+            {
+                ShowErrorPopup();
+            }
+        }
+
+        private Boolean LoadDll()
+        {
+            try
+            {
+                FInitState = TInitState.LoadDll;
+                FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
+
+                FInitState = TInitState.InitSystem;
+
+
+                FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
+                FFastReportType = FfastReportInstance.GetType();
+                FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
+
+                //
+                // I want to set the Utils.Config.EmailSettings
+                // to our SMTP server settings.
+                //
+                object EmailSettings = FastReportsDll.GetType("FastReport.Utils.Config").GetProperty("EmailSettings").GetValue(null, null);
+
+                Type EmailSettingsType = EmailSettings.GetType();
+                EmailSettingsType.GetProperty("Host").SetValue(EmailSettings, "TimHost.com", null);
+            }
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
+            {
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+                return false;
+            }
+            return true;
+        }
+
+        private Boolean LoadDefaultTemplate()
+        {
+            FInitState = TInitState.LoadTemplate;
+            SReportTemplateTable TemplateTable = TRemote.MReporting.WebConnectors.GetTemplateVariants(FReportName,
+                UserInfo.GUserInfo.UserID,
+                true);
+
+            if (TemplateTable.Rows.Count == 0)
+            {
+//              TLogging.Log("No FastReports template for " + FReportName);
+                return false;
+            }
+
+            SetTemplate(TemplateTable[0]);
+            FInitState = TInitState.LoadedOK;
+            return true;
         }
 
         /// <summary>
-        /// Instance this object and it changes the behaviour to use FastReports if the DLL is installed.
+        /// Instance this object and it changes the behaviour of the ReportForm UI to use FastReports if the DLL is installed.
         /// </summary>
         /// <param name="PetraUtilsObject"></param>
         public FastReportsWrapper(TFrmPetraReportingUtils PetraUtilsObject)
@@ -107,32 +178,122 @@ namespace Ict.Petra.Client.MReporting.Gui
                 LoadedOK = false;
                 FDataGetter = null;
                 FPetraUtilsObject = PetraUtilsObject;
-                FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
-                SReportTemplateTable TemplateTable = TRemote.MReporting.WebConnectors.GetTemplateVariants(FPetraUtilsObject.FReportName,
-                    UserInfo.GUserInfo.UserID,
-                    true);
 
-                if (TemplateTable.Rows.Count == 0)
+                if (!LoadDll())
                 {
-                    TLogging.Log("No FastReports template for " + FPetraUtilsObject.FReportName);
                     return;
                 }
 
-                FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
-                FFastReportType = FfastReportInstance.GetType();
-                FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
-                SetTemplate(TemplateTable[0]);
+                FReportName = FPetraUtilsObject.FReportName;
+
+                if (!LoadDefaultTemplate())
+                {
+                    return;
+                }
 
                 FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReport;
                 FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
                 FPetraUtilsObject.DelegateCancelReportOverride = CancelReportGeneration;
 
                 FPetraUtilsObject.EnableDisableSettings(false);
+                FInitState = TInitState.LoadedOK;
                 LoadedOK = true;
             }
-            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
             {
-                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Constructor used when there's no Reporting UI
+        /// </summary>
+        /// <param name="AReportName"></param>
+        public FastReportsWrapper(String AReportName)
+        {
+            try
+            {
+                LoadedOK = false;
+                FDataGetter = null;
+
+                if (!LoadDll())
+                {
+                    return;
+                }
+
+                FReportName = AReportName;
+
+                if (!LoadDefaultTemplate())
+                {
+                    return;
+                }
+
+                LoadedOK = true;
+            }
+            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
+            {
+//              TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// If the wrapper didn't initialise, the caller can call this.
+        /// </summary>
+        public void ShowErrorPopup()
+        {
+            // Note from AlanP: This method will show an appropriate Fast Reports error message box depending on the InitState
+            // We want to show this error if FastReports is supposed to be used but is not installed.
+            // We do not want to show it if FastReports is NOT supposed to be used....
+            // If FastReports is not supposed to be used the database will have an entry: USEXMLREPORTS (in system defaults table)
+            // However the only quirk to this simple arrangement is that in OM we do want to use FastReports - but it does not HAVE to be installed
+            //   in many circumstances.  It may well not be installed on our continuous integration server for example.
+            // When the CI server runs the test suite, one of the tests is to open all the main screens from the main menu.
+            // It does this on a 'new', 'blank' database which will not have 'USEXMLREPORTS' in the defaults table.
+            // As a result the test fails because an unexpected modal dialog appears that is not dealt with
+            // So we would like to know if the method is being run in the context of a test or not.
+            // We achieve this by the first line of code in the method.
+            // If FPetraUtilsObject is null, this wrapper has been created using the constructor that specifies the ReportName.
+            //   This is never used (at present anyway) in the context of a test.
+            // If FPetraUtilsObject is non-null, we can always (at present) detect the difference between a screen opened from the main menu and a screen opened for a test
+            //   because, in the latter case, the CallerForm will be null.
+            // If, in the future, this 'workaround' can no longer be used (because we start to use a FastReports test?), we will have to do things differently.
+
+            Boolean IsTestContext = (FPetraUtilsObject != null) && (FPetraUtilsObject.GetCallerForm() == null);
+
+            if ((TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified") && !IsTestContext)
+            {
+                String Msg = "";
+
+                switch (FInitState)
+                {
+                    case TInitState.LoadDll:
+                    {
+                        Msg = "failed to load FastReport Dll.";
+                        break;
+                    }
+
+                    case TInitState.LoadTemplate:
+                    {
+                        Msg = String.Format("no reporting template found for {0}.", FReportName);
+                        break;
+                    }
+
+                    case TInitState.InitSystem:
+                    {
+                        Msg = "the DLL failed to initialise.";
+                        break;
+                    }
+
+                    default:
+                    {
+                        return;     // Anything else is not an error...
+                    }
+                }
+
+                MessageBox.Show("The FastReports plugin did not initialise:\r\n" +
+                    Msg +
+                    "\r\n(To suppress this message, set USEXMLREPORTS in SystemDefaults.)",
+                    "Reporting engine");
             }
         }
 
@@ -169,10 +330,33 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
-        private void DesignReport(TRptCalculator ACalc)
+        /// <summary>
+        /// Called from a delegate set up by my constructor.
+        /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        public void DesignReport(TRptCalculator ACalc)
         {
-            if ((FSelectedTemplate != null) && (FDataGetter != null) && FDataGetter(ACalc))
+            ACalc.GetParameters().Add("param_design_template", true);
+
+            // add parameters for the report's heading
+            ACalc.GetParameters().Add("param_requested_by", UserInfo.GUserInfo.UserID);
+            Version ClientVersion = Assembly.GetAssembly(typeof(FastReportsWrapper)).GetName().Version;
+            ACalc.GetParameters().Add("param_version", ClientVersion.Major.ToString() + "." +
+                ClientVersion.Minor.ToString() + "." +
+                ClientVersion.Build.ToString() + "." +
+                ClientVersion.Revision.ToString());
+
+            if (FSelectedTemplate != null)
             {
+                if (FDataGetter != null)
+                {
+                    if (!FDataGetter(ACalc))
+                    {
+                        return;
+                    }
+                }
+
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                     new object[] { FSelectedTemplate.XmlText });
 
@@ -256,20 +440,181 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
             }
 
-            FPetraUtilsObject.UpdateParentFormEndOfReport();
+            if (FPetraUtilsObject != null)
+            {
+                FPetraUtilsObject.UpdateParentFormEndOfReport();
+            }
         }
 
-        private void GenerateReport(TRptCalculator ACalc)
+        /// <summary>
+        /// Must be specified for ExportToStream
+        /// </summary>
+        public enum ReportExportType
         {
-            if ((FSelectedTemplate != null) && (FDataGetter != null) && FDataGetter(ACalc))
+            /// <summary>
+            /// Allows text formatting but not external assets
+            /// </summary>
+            Html,
+            /// <summary>
+            /// Plain text
+            /// </summary>
+            Text
+        };
+
+        /// <summary>
+        /// The report will be generated, but not shown to the user.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        /// <param name="Format"></param>
+        public MemoryStream ExportToStream(TRptCalculator ACalc, ReportExportType Format)
+        {
+            object HtmlExport = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
+            Type ExporterType = HtmlExport.GetType();
+            MemoryStream HtmlStream = new MemoryStream();
+
+            FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
+                new object[] { FSelectedTemplate.XmlText });
+            LoadReportParams(ACalc);
+            FFastReportType.GetMethod("Prepare", new Type[0]).Invoke(FfastReportInstance, null);
+            FFastReportType.GetMethod("Export", new Type[] { ExporterType, HtmlStream.GetType() }).Invoke(FfastReportInstance,
+                new Object[] { HtmlExport, HtmlStream });
+            return HtmlStream;
+        }
+
+        /// <summary>
+        /// Called from a delegate set up by me.
+        /// Or if you're not using a reporting UI, you can call this directly, once the data and params have been set up.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        public void GenerateReport(TRptCalculator ACalc)
+        {
+            ACalc.GetParameters().Add("param_design_template", false);
+
+            // add parameters for the report's heading
+            ACalc.GetParameters().Add("param_requested_by", UserInfo.GUserInfo.UserID);
+            Version ClientVersion = Assembly.GetAssembly(typeof(FastReportsWrapper)).GetName().Version;
+            ACalc.GetParameters().Add("param_version", ClientVersion.Major.ToString() + "." +
+                ClientVersion.Minor.ToString() + "." +
+                ClientVersion.Build.ToString() + "." +
+                ClientVersion.Revision.ToString());
+
+            if (FSelectedTemplate != null)
             {
+                if (FDataGetter != null)
+                {
+                    if (!FDataGetter(ACalc))
+                    {
+                        return;
+                    }
+                }
+
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                     new object[] { FSelectedTemplate.XmlText });
                 LoadReportParams(ACalc);
                 FFastReportType.GetMethod("Show", new Type[0]).Invoke(FfastReportInstance, null);
             }
 
-            FPetraUtilsObject.UpdateParentFormEndOfReport();
+            if (FPetraUtilsObject != null)
+            {
+                FPetraUtilsObject.UpdateParentFormEndOfReport();
+            }
+        }
+
+        /// <summary>
+        /// The report will be sent to a list of email addresses derived from the Cost Centres in the supplied CostCentreFilter.
+        /// </summary>
+        /// <param name="ACalc"></param>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACostCentreFilter"></param>
+        public void AutoEmailReports(TRptCalculator ACalc, Int32 ALedgerNumber, String ACostCentreFilter)
+        {
+            Int32 SuccessfulCount = 0;
+            String NoEmailAddr = "";
+            String FailedAddresses = "";
+
+            //
+            // I need to find the email addresses for the linked partners I'm sending to.
+
+            DataTable LinkedPartners = TRemote.MFinance.Setup.WebConnectors.GetLinkedPartners(ALedgerNumber, ACostCentreFilter);
+
+            LinkedPartners.DefaultView.Sort = "CostCentreCode";
+
+            foreach (DataRowView rv in LinkedPartners.DefaultView)
+            {
+                DataRow LinkedPartner = rv.Row;
+
+                if (LinkedPartner["EmailAddress"].ToString() != "")
+                {
+                    ACalc.AddStringParameter("param_linked_partner_cc", LinkedPartner["CostCentreCode"].ToString());
+                    FPetraUtilsObject.WriteToStatusBar("Generate " + FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
+                    MemoryStream ReportStream = FPetraUtilsObject.FFastReportsPlugin.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
+                    ReportStream.Position = 0;
+
+                    TUC_EmailPreferences.LoadEmailDefaults();
+                    TSmtpSender EmailSender = new TSmtpSender(
+                        TUserDefaults.GetStringDefault("SmtpHost"),
+                        TUserDefaults.GetInt16Default("SmtpPort"),
+                        TUserDefaults.GetBooleanDefault("SmtpUseSsl"),
+                        TUserDefaults.GetStringDefault("SmtpUser"),
+                        TUserDefaults.GetStringDefault("SmtpPassword"),
+                        "");
+                    EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                    EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+
+                    String EmailBody = "";
+
+                    if (TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment"))
+                    {
+                        EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
+                        EmailSender.AttachFromStream(ReportStream, FReportName + ".html");
+                    }
+                    else
+                    {
+                        StreamReader sr = new StreamReader(ReportStream);
+                        EmailBody = sr.ReadToEnd();
+                    }
+
+                    Boolean SentOk = EmailSender.SendEmail(
+                        TUserDefaults.GetStringDefault("SmtpFromAccount"),
+                        TUserDefaults.GetStringDefault("SmtpDisplayName"),
+                        "tim.ingham@om.org", //LinkedPartner["EmailAddress"]
+                        FReportName + " Report for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
+                        EmailBody);
+
+                    if (SentOk)
+                    {
+                        SuccessfulCount++;
+                    }
+                    else // Email didn't send for some reason
+                    {
+                        FailedAddresses += ("\r\n" + LinkedPartner["EmailAddress"]);
+                    }
+                }
+                else // No Email Address for this Partner
+                {
+                    NoEmailAddr += ("\r\n" + LinkedPartner["PartnerKey"] + " " + LinkedPartner["PartnerShortName"]);
+                }
+            }
+
+            String SendReport = "";
+
+            if (SuccessfulCount > 0)
+            {
+                SendReport += String.Format(Catalog.GetString("Reports emailed to {0} addresses."), SuccessfulCount) + "\r\n\r\n";
+            }
+
+            if (NoEmailAddr != "")
+            {
+                SendReport += (Catalog.GetString("These Partners have no email addresses:") + NoEmailAddr + "\r\n\r\n");
+            }
+
+            if (FailedAddresses != "")
+            {
+                SendReport += (Catalog.GetString("Failed to send email to these addresses:") + FailedAddresses + "\r\n\r\n");
+            }
+
+            MessageBox.Show(SendReport, Catalog.GetString("Auto-email to linked partners"));
+            FPetraUtilsObject.WriteToStatusBar("");
         }
     }
 }

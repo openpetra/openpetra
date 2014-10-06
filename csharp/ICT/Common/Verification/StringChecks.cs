@@ -217,21 +217,28 @@ namespace Ict.Common.Verification
         {
             TVerificationResult ReturnValue;
 
-            DataRow foundRow = ADataTable.Rows.Find(new object[] { ALedgerNumber, AKeyValue });
-
-            if (foundRow != null)
+            if (ADataTable != null)
             {
-                bool isActive = (bool)foundRow[AActiveColumn];
+                DataRow foundRow = ADataTable.Rows.Find(new object[] { ALedgerNumber, AKeyValue });
 
-                if (!isActive)
+                if (foundRow != null)
                 {
-                    ReturnValue = new TVerificationResult(AResultContext,
-                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDVALUE,
-                            StrStringInvalidValue, new string[] { AKeyValue }));
+                    bool isActive = (bool)foundRow[AActiveColumn];
 
-                    if (AResultColumn != null)
+                    if (!isActive)
                     {
-                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        ReturnValue = new TVerificationResult(AResultContext,
+                            ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDVALUE,
+                                StrStringInvalidValue, new string[] { AKeyValue }));
+
+                        if (AResultColumn != null)
+                        {
+                            ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                        }
+                    }
+                    else
+                    {
+                        ReturnValue = null;
                     }
                 }
                 else
@@ -402,7 +409,8 @@ namespace Ict.Common.Verification
                 }
             }
 
-            if (AResultColumn != null)
+            if ((AResultColumn != null)
+                && (ReturnValue != null))
             {
                 ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
             }
