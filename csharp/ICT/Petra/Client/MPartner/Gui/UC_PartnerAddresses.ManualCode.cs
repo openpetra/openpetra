@@ -340,13 +340,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (((int)PartnerLocationRow[2, DataRowVersion.Original]) == 0)
                     {
                         DeletedPartnerLocation0Row = PartnerLocationRow;
-
-                        DeletedLocation0Rows = FMainDS.PLocation.Select(PLocationTable.GetLocationKeyDBName() + " = 0", "", DataViewRowState.Deleted);
-
-                        if (DeletedLocation0Rows.Length != 0)
-                        {
-                            DeletedLocation0Row = (PLocationRow)DeletedLocation0Rows[0];
-                        }
                     }
                 }
             }
@@ -356,9 +349,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPartnerLocation.Rows.Remove(DeletedPartnerLocation0Row);
             }
 
-            if (DeletedLocation0Row != null)
+            // make sure that Location Key 0 is not transferred to server if it is deleted
+            DeletedLocation0Rows = FMainDS.PLocation.Select(PLocationTable.GetLocationKeyDBName() + " = 0", "", DataViewRowState.Deleted);
+
+            if (DeletedLocation0Rows.Length != 0)
             {
-                FMainDS.PLocation.Rows.Remove(DeletedLocation0Row);
+                DeletedLocation0Row = (PLocationRow)DeletedLocation0Rows[0];
+
+                if (DeletedLocation0Row != null)
+                {
+                    FMainDS.PLocation.Rows.Remove(DeletedLocation0Row);
+                }
             }
         }
 

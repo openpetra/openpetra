@@ -64,6 +64,11 @@ namespace Ict.Petra.Client.MFinance.Logic
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
+            bool RetVal = false;
+
+            AStartDateCurrentPeriod = DateTime.MinValue;
+            AEndDateLastForwardingPeriod = DateTime.MinValue;
+
             if (!FValidPostingDates.ContainsKey(ALedgerNumber))
             {
                 ResetValidDates(ALedgerNumber);
@@ -74,12 +79,10 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AStartDateCurrentPeriod = FValidPostingDates[ALedgerNumber][0];
                 AEndDateLastForwardingPeriod = FValidPostingDates[ALedgerNumber][1];
 
-                return true;
+                RetVal = true;
             }
 
-            AStartDateCurrentPeriod = DateTime.MinValue;
-            AEndDateLastForwardingPeriod = DateTime.MinValue;
-            return false;
+            return RetVal;
         }
 
         /// <summary>

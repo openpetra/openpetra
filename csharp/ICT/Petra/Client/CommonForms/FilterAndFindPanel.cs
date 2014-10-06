@@ -646,10 +646,19 @@ namespace Ict.Petra.Client.CommonForms
                 if (!FCallerFormOrControl.DoValidation(true, true))
                 {
                     // Remember who called us and why, so we can replay the event when the data becomes valid again
-                    FFailedValidation_CtrlChangeEventArgsInfo = new TEventArgsInfo(sender, e);
+                    Control senderAsControl = (sender as Control);
+
+                    if ((senderAsControl != null) && (senderAsControl.CanFocus))
+                    {
+                        FFailedValidation_CtrlChangeEventArgsInfo = new TEventArgsInfo(sender, e);
+                    }
+
                     return;
                 }
             }
+
+            Cursor prevCursor = FPetraUtilsObject.GetForm().Cursor;
+            FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
 
             // Do we need to update the filter?
             // Yes if
@@ -700,6 +709,8 @@ namespace Ict.Petra.Client.CommonForms
                     ((Control)sender).Focus();
                 }
             }
+
+            FPetraUtilsObject.GetForm().Cursor = prevCursor;
         }
 
         /// <summary>
