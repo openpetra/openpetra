@@ -1384,6 +1384,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
 
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
             batch.BatchDescription = Catalog.GetString("Gift Batch " + giftBatch.BatchNumber.ToString());
             batch.DateEffective = giftBatch.GlEffectiveDate;
             batch.BatchPeriod = giftBatch.BatchPeriod;
@@ -1410,43 +1413,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
-                ATransactionRow transaction = null;
-
-                // do we have already a transaction for this costcentre&account?
-                GLDataset.ATransaction.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'",
-                    ATransactionTable.GetAccountCodeDBName(),
-                    giftdetail.AccountCode,
-                    ATransactionTable.GetCostCentreCodeDBName(),
-                    giftdetail.CostCentreCode);
-
-                if (GLDataset.ATransaction.DefaultView.Count == 0)
-                {
-                    transaction = GLDataset.ATransaction.NewRowTyped();
-                    transaction.LedgerNumber = journal.LedgerNumber;
-                    transaction.BatchNumber = journal.BatchNumber;
-                    transaction.JournalNumber = journal.JournalNumber;
-                    transaction.TransactionNumber = ++journal.LastTransactionNumber;
-                    transaction.AccountCode = giftdetail.AccountCode;
-                    transaction.CostCentreCode = giftdetail.CostCentreCode;
-                    transaction.Narrative = "GB - Gift Batch " + giftBatch.BatchNumber.ToString();
-                    transaction.Reference = "GB" + giftBatch.BatchNumber.ToString();
-                    transaction.DebitCreditIndicator = false;
-                    transaction.TransactionAmount = 0;
-                    transaction.AmountInBaseCurrency = 0;
-                    transaction.AmountInIntlCurrency = 0;
-                    transaction.SystemGenerated = true;
-                    transaction.TransactionDate = giftBatch.GlEffectiveDate;
-
-                    GLDataset.ATransaction.Rows.Add(transaction);
-                }
-                else
-                {
-                    transaction = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
-                }
-
-                transaction.TransactionAmount += giftdetail.GiftTransactionAmount;
-                transaction.AmountInBaseCurrency += giftdetail.GiftAmount;
-                transaction.AmountInIntlCurrency += giftdetail.GiftAmountIntl;
+            	if (!TaxDeductiblePercentageEnabled)
+            	{
+            		AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.AccountCode,
+                   		giftdetail.GiftTransactionAmount, giftdetail.GiftAmount, giftdetail.GiftAmountIntl, journal, giftBatch);
+            	}
+            	else
+            	{
+            		// if tax deductible pct is enabled then the gift detail needs split in two: tax-deductible and non-deductible
+            		if (giftdetail.TaxDeductiblePct > 0)
+            		{
+            			// tax deductible
+            			AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.TaxDeductibleAccountCode,
+                   			giftdetail.TaxDeductibleAmount, giftdetail.TaxDeductibleAmountBase, giftdetail.TaxDeductibleAmountIntl, journal, giftBatch);
+            		}
+            		
+            		if (giftdetail.TaxDeductiblePct < 100)
+            		{
+            			// non deductible
+            			AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.AccountCode,
+                   			giftdetail.NonDeductibleAmount, giftdetail.NonDeductibleAmountBase, giftdetail.NonDeductibleAmountIntl, journal, giftBatch);
+            		}
+            	}
 
                 // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c ???
 
@@ -1503,6 +1491,49 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             batch.LastJournal = 1;
 
             return GLDataset;
+        }
+        
+        private static void AddGiftDetailToGLBatch(ref GLBatchTDS AGLDataset,
+            string ACostCentre, string AAccountCode, decimal ATransactionAmount, decimal AAmountInBaseCurrency, decimal AAmountInIntlCurrency,
+            AJournalRow AJournal, AGiftBatchRow AGiftBatch)
+        {
+        	ATransactionRow transaction = null;
+
+            // do we have already a transaction for this costcentre&account?
+            AGLDataset.ATransaction.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'",
+                ATransactionTable.GetAccountCodeDBName(),
+                AAccountCode,
+                ATransactionTable.GetCostCentreCodeDBName(),
+                ACostCentre);
+
+            if (AGLDataset.ATransaction.DefaultView.Count == 0)
+            {
+                transaction = AGLDataset.ATransaction.NewRowTyped();
+                transaction.LedgerNumber = AJournal.LedgerNumber;
+                transaction.BatchNumber = AJournal.BatchNumber;
+                transaction.JournalNumber = AJournal.JournalNumber;
+                transaction.TransactionNumber = ++AJournal.LastTransactionNumber;
+                transaction.AccountCode = AAccountCode;
+                transaction.CostCentreCode = ACostCentre;
+                transaction.Narrative = "GB - Gift Batch " + AGiftBatch.BatchNumber.ToString();
+                transaction.Reference = "GB" + AGiftBatch.BatchNumber.ToString();
+                transaction.DebitCreditIndicator = false;
+                transaction.TransactionAmount = 0;
+                transaction.AmountInBaseCurrency = 0;
+                transaction.AmountInIntlCurrency = 0;
+                transaction.SystemGenerated = true;
+                transaction.TransactionDate = AGiftBatch.GlEffectiveDate;
+
+                AGLDataset.ATransaction.Rows.Add(transaction);
+            }
+            else
+            {
+                transaction = (ATransactionRow)AGLDataset.ATransaction.DefaultView[0].Row;
+            }
+
+            transaction.TransactionAmount += ATransactionAmount;
+            transaction.AmountInBaseCurrency += AAmountInBaseCurrency;
+            transaction.AmountInIntlCurrency += AAmountInIntlCurrency;
         }
 
         private static void LoadGiftRelatedData(GiftBatchTDS AGiftDS,
