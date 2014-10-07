@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Constructor
         /// </summary>
-        public TUC_GiftBatches_Cancel(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, GiftBatchTDS AMainDS, IUC_GiftBatches AUserControl)
+        public TUC_GiftBatches_Cancel(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, GiftBatchTDS AMainDS)
         {
             FPetraUtilsObject = APetraUtilsObject;
             FLedgerNumber = ALedgerNumber;
