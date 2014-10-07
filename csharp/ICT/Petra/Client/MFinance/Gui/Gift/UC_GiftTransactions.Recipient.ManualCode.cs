@@ -316,7 +316,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Set RecipientLedgerNumber
                 if (APartnerKey > 0)
                 {
-                    ACurrentDetailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey);
+                    ACurrentDetailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, null);
                 }
                 else
                 {
