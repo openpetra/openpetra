@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Constructor
         /// </summary>
-        public TUC_GLBatches_Cancel(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, GLBatchTDS AMainDS, IUC_GLBatches AUserControl)
+        public TUC_GLBatches_Cancel(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, GLBatchTDS AMainDS)
         {
             FPetraUtilsObject = APetraUtilsObject;
             FLedgerNumber = ALedgerNumber;
