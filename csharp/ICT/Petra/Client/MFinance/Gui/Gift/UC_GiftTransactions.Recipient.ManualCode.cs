@@ -204,12 +204,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            AMotivationDetailRow motivationDetail = null;
+            Int64 MotivationRecipientKey = 0;
             AMotivationDetail = ACmbMotivationDetailCode.GetSelectedString();
 
             if (AMotivationDetail.Length > 0)
             {
-                motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
+                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
                     new object[] { ALedgerNumber, AMotivationGroup, AMotivationDetail });
 
                 ACmbMotivationDetailCode.RefreshLabel();
@@ -218,6 +218,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RetrieveMotivationDetailAccountCode(AMainDS, ALedgerNumber, ATxtDetailAccountCode, ATxtDeductibleAccount,
                         AMotivationGroup, AMotivationDetail, ATaxDeductiblePercentageEnabledFlag);
+                	
+                	MotivationRecipientKey = motivationDetail.RecipientKey;
 
                     // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
                     if (!APetraUtilsObject.SuppressChangeDetection || ARecipientKeyChangingFlag)
@@ -238,16 +240,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ADoTaxUpdate = true;
                     }
                 }
+                else
+                {
+                    AChkDetailTaxDeductible.Checked = false;
+                }
             }
 
-            if (!ACreatingNewGiftFlag && (motivationDetail.RecipientKey > 0))
+            if (!ACreatingNewGiftFlag && (MotivationRecipientKey > 0))
             {
                 AMotivationDetailChangedFlag = true;
                 PopulateKeyMinistry(ACurrentDetailRow,
                     ACmbKeyMinistries,
                     ATxtDetailRecipientKey,
                     ATxtDetailRecipientLedgerNumber,
-                    motivationDetail.RecipientKey);
+                    MotivationRecipientKey);
                 AMotivationDetailChangedFlag = false;
             }
             else

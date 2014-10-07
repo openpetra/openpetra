@@ -1863,7 +1863,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
                 {
-                    giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
+                    giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
 
@@ -2259,7 +2259,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
                 {
                     // TODO make sure the correct costcentres and accounts are used, recipient ledger number
-                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
+                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
                 }
 
                 if (giftDetail.RecipientLedgerNumber != 0)
@@ -2625,9 +2625,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// get the recipient ledger partner for a unit
         /// </summary>
         /// <param name="APartnerKey"></param>
+        /// <param name="AGiftDate">Gift Date (needed for getting a families Gift Destination)</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int64 GetRecipientFundNumber(Int64 APartnerKey)
+        public static Int64 GetRecipientFundNumber(Int64 APartnerKey, DateTime? AGiftDate = null)
         {
             bool DataLoaded = false;
 
@@ -2662,7 +2663,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (DataLoaded)
             {
-                return GetRecipientFundNumberSub(MainDS, APartnerKey);
+                return GetRecipientFundNumberSub(MainDS, APartnerKey, AGiftDate);
             }
             else
             {
