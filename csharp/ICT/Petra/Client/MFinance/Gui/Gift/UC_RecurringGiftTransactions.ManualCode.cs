@@ -62,6 +62,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private ARecurringGiftRow FGift = null;
         private string FMotivationGroup = string.Empty;
         private string FMotivationDetail = string.Empty;
+        private bool FMotivationDetailChangedFlag = false;
+        private bool FCreatingNewGiftFlag = false;
         private string FFilterAllDetailsOfGift = string.Empty;
         private DataView FGiftDetailView = null;
 
@@ -541,7 +543,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
                 }
 
-                if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                if (!FMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
                 {
                     if (FMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
@@ -1054,6 +1056,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            Int64 MotivationRecipientKey = 0;
             FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
             if (FMotivationDetail.Length > 0)
@@ -1066,12 +1069,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (motivationDetail != null)
                 {
                     RetrieveMotivationDetailAccountCode();
-                }
 
-                // set tax deductible checkbox
-                if (motivationDetail.TaxDeductible)
-                {
-                    chkDetailTaxDeductible.Checked = true;
+                    MotivationRecipientKey = motivationDetail.RecipientKey;
+
+                    chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
                 }
                 else
                 {
@@ -1079,17 +1080,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            long PartnerKey = 0;
-            Int64.TryParse(txtDetailRecipientKey.Text, out PartnerKey);
-
-            if (PartnerKey > 0)
+            if (!FCreatingNewGiftFlag && (MotivationRecipientKey > 0))
             {
-                PopulateKeyMinistry(PartnerKey);
+                FMotivationDetailChangedFlag = true;
+                PopulateKeyMinistry(MotivationRecipientKey);
             }
             else
             {
                 RetrieveMotivationDetailCostCentreCode();
                 UpdateRecipientKeyText(0);
+                FMotivationDetailChangedFlag = false;
             }
         }
 
@@ -1801,7 +1801,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Set the default motivation Group. This needs to happen after focus has returned
                 //  to the pnlDetails to ensure FInEditMode is correct.
+                FCreatingNewGiftFlag = true;
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                FCreatingNewGiftFlag = false;
+
                 UpdateRecipientKeyText(0);
                 cmbKeyMinistries.Clear();
                 mniRecipientHistory.Enabled = false;
