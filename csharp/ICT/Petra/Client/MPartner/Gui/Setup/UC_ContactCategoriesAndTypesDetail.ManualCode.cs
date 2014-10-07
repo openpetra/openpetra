@@ -56,6 +56,32 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
         }
         
+        /// <summary>
+        /// The number of values in the grid for the current Contact Category.  This may not be the full number if the grid is filtered.
+        /// </summary>
+        public int GridCount
+        {
+            get
+            {
+                return grdDetails.Rows.Count - 1;
+            }
+        }
+
+        /// <summary>
+        /// The unfiltered number of values for the current Contact Category.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                // Need to create our own view because the grid may be filtered
+                return new DataView(FMainDS.PPartnerAttributeType, 
+                                 PPartnerAttributeTypeTable.GetAttributeCategoryDBName() + 
+                                 " = '" + FContactCategory + "'",
+                                 "", DataViewRowState.CurrentRows).Count;
+            }
+        }
+        
         private void InitializeManualCode()
         {
             // Initialize 'Helper Class' for handling the Indexes of the DataRows.
@@ -200,7 +226,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (ADeletionPerformed) 
             {
                 // If we have no Contact Types anymore: Inform the Form
-                if (grdDetails.Rows.Count - 1 == 0) 
+                if (this.Count == 0)
                 {
                     OnNoMoreDetailRecords(null);
                 }    

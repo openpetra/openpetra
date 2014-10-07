@@ -31,6 +31,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPartner.Mailroom.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -42,6 +43,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 		bool FDataSavedInNoMasterDataToSaveEvent = false;
 		
 		bool FDataSavingInUserControlRequiredFirst = false;
+		
+        System.Windows.Forms.Timer ShowMessageBoxTimer = new System.Windows.Forms.Timer();
 		
         private void InitializeManualCode()
         {
@@ -60,9 +63,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             ucoContactDetail.PetraUtilsObject = FPetraUtilsObject;
             
+            grdDetails.Selection.FocusRowLeaving += HandleFocusRowLeaving;
+            
             // We capture the Leave event of the Code TextBox (This is more consistent than LostFocus. - it always occurs 
             // before validation, whereas LostFocus occurs before or after depending on mouse or keyboard.)
             txtDetailContactAttributeCode.Leave += new EventHandler(txtDetailContactAttributeCode_Leave);
+            
+            // Set up Timer that is needed for showing MessageBoxes from a Grid Event
+            ShowMessageBoxTimer.Tick += new EventHandler(ShowTimerDrivenMessageBox);
+            ShowMessageBoxTimer.Interval = 100;            
         }
 
         private void RunOnceOnActivationManual()
@@ -93,6 +102,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void NewRecord(Object sender, EventArgs e)
         {
+            if (FDataSavingInUserControlRequiredFirst)
+            {
+                MessageBox.Show(Catalog.GetString(
+                    "You need to press 'Save' first before you can create a new Contact Attribute."), 
+                    Catalog.GetString("Saving of Data Required"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                
+                return;
+            }
+                        
             if(CreateNewPContactAttribute())
             {
                 // Create the required initial detail attribute. This will automatically fire the event that updates our details count column
@@ -123,51 +141,40 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ARow.ContactAttributeCode = NewName;
         }
 
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(PContactAttributeRow ARowToDelete, ref string ADeletionQuestion)
+        private void DeleteRecord(object sender, EventArgs e)
         {
-            DataView DependentRecordsDV;
-                
-//            if (!FDataSavingInUserControlRequiredFirst) 
-//            {
-                DependentRecordsDV = new DataView(FMainDS.PContactAttribute);
+            if (ucoContactDetail.Count > 0)
+            {
+                string msg = string.Empty;
 
-                DependentRecordsDV.RowStateFilter = DataViewRowState.CurrentRows;
-                DependentRecordsDV.RowFilter = String.Format("{0} = '{1}'",
-                    PContactAttributeTable.GetContactAttributeCodeDBName(),
-                    ARowToDelete.ContactAttributeCode);
-    
-                if (DependentRecordsDV.Count > 0)
+                if (ucoContactDetail.GridCount == 0)
                 {
-                    // Tell the user that we cannot allow deletion if any rows exist in the DataView
-                    TMessages.MsgRecordCannotBeDeletedDueToDependantRecordsError(
-                        "Contact Attribute", "a Contact Attribute", "Contact Attributes", "Contact Detail", "a Contact Detail", 
-                        "Contact Details", ARowToDelete.ContactAttributeCode, DependentRecordsDV.Count);
-                        
-                    return false;
+                    // The grid must be filtered because it has no rows!
+                    msg += Catalog.GetString(
+                        "The selected Contact Attribute has Contact Details associated with it, but they are being filtered out of the display.");
+                    msg += "  ";
                 }
 
-//            }
-//            else
-//            {
-//              TODO We are too late here as the cascading delete check runs first - fix by changing TDeleteGridRows.DeleteRows to allow for an Action<T> to be optionally called instead of showing the standard MessageBox!
-//                MessageBox.Show(
-//                    Catalog.GetString(
-//                        "You need to press 'Save' first before deleting the Category (to avoid getting a warning about Contact Types that still depend on that Category)."),
-//                        Catalog.GetString("Deletion of Category: Information"), 
-//                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-//                
-//                return false;        
-//            }
+                msg += Catalog.GetString("You must delete all the Contact Details for the selected Contact Attribute before you can delete this record.");
 
-            return true;
+                MessageBox.Show(msg, MCommon.MCommonResourcestrings.StrRecordDeletionTitle,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                return;
+            }
+
+            if (FDataSavingInUserControlRequiredFirst)
+            {
+                MessageBox.Show(Catalog.GetString(
+                    "You need to press 'Save' first before deleting the Contact Attribute."), 
+                    Catalog.GetString("Saving of Data Required"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                
+                return;
+            }
+            
+            DeletePContactAttribute();
         }
-
+                
         private void ShowDetailsManual(PContactAttributeRow ARow)
         {
             if (ARow == null)
@@ -281,37 +288,69 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         
         /// <summary>
         /// Raised when the Values UserControl holds no more detail records after all detail records
-		/// have been deleted
+		/// have been deleted.
+		/// <para>
+		/// We need to check in this Event Hanlder whether the deleted records exist in the DB; if so we  
+		/// need to prevent a few actions that the user could take to ensure that the UserControls' data 
+		/// gets saved first (signalised by the FDataSavingInUserControlRequiredFirst flag). This is necessary  
+		/// so that the deleted Rows are no longer in the DB. That in turn is necessary for the user to be able  
+		/// to delete the Category as well, as otherwise the reference count on the Category would not be null 
+		/// and a deletion of the Category could not go ahead.
+		/// </para>
         /// </summary>
         /// <param name="sender">Ignored.</param>
         /// <param name="e">Ignored.</param>
 		private void Uco_NoMoreDetailRecords(object sender, EventArgs e)
 		{
 			TVerificationResultCollection VerificationResults = null;
-            int RefCountLimit = FPetraUtilsObject.MaxReferenceCountOnDelete;
-            
-            this.Cursor = Cursors.WaitCursor;
-            
-            TRemote.MPartner.ReferenceCount.WebConnectors.GetCacheableRecordReferenceCount(
-                "ContactAttributeList",
-                DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
-                RefCountLimit,
-                out VerificationResults);
-            this.Cursor = Cursors.Default;
 
+			GetReferenceCount(GetSelectedDataRow(), FPetraUtilsObject.MaxReferenceCountOnDelete, out VerificationResults);
+			
             if ((VerificationResults != null)
                 && (VerificationResults.Count > 0))
             {            
-//                MessageBox.Show(
-//                    Catalog.GetString(String.Format(
-//                        "In case you want to delete the Attribute '{0}' as well then you need to press 'Save' first before deleting the Attribute (to avoid getting a warning about Details that still depend on that Attribute)",
-//                        txtDetailContactAttributeCode.Text)),
-//                        Catalog.GetString("Deletion of Attribute: Information"), 
-//                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                 FDataSavingInUserControlRequiredFirst = true;
+                
+                // Need to disable Filter Button to prevent user from potentially changing to different Rows 
+                // as that could happen if the user would apply a Filter!
+                chkToggleFilter.Enabled = false;                
             }
 		}
+		
+		private void HandleFocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+		{
+		    if (FDataSavingInUserControlRequiredFirst)
+            {
+                ShowMessageBoxTimer.Start();
+                
+                e.Cancel = true;                                    
+            }		    
+		}
+		
+		/// <summary>
+		/// Called from a timer, ShowMessageBoxTimer, so that the FocusRowLeaving Event processing can
+        /// complete before the MessageBox is show (would the MessageBox be shown while the Event gets
+        /// processed the Grid would get into a strange state in which mouse moves would cause the Grid
+        /// to scroll!).
+		/// </summary>
+		/// <param name="Sender">Gets evaluated to make sure a Timer is calling this Method.</param>
+		/// <param name="e">Ignored.</param>
+		private void ShowTimerDrivenMessageBox(Object Sender, EventArgs e)        
+        {            
+            System.Windows.Forms.Timer SendingTimer = Sender as System.Windows.Forms.Timer;
+            
+            if (SendingTimer != null)
+            {
+                // I got called from a Timer: stop that now so that the following MessageBox gets shown only once!
+                SendingTimer.Stop();
+                
+                MessageBox.Show(
+                    Catalog.GetString(
+                        "You need to press 'Save' first before you can change to a different Contact Attribute."),
+                        Catalog.GetString("Saving of Data Required"), 
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);                
+            }
+		}				
 		
         private void Uco_ContactDetail_CountChanged(object Sender, CountEventArgs e)
         {

@@ -41,6 +41,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
 		bool FDataSavingInUserControlRequiredFirst = false;
 		
+        System.Windows.Forms.Timer ShowMessageBoxTimer = new System.Windows.Forms.Timer();
+
 		/// <summary>
 		/// Index of Row that is to be deleted.
 		/// </summary>
@@ -50,7 +52,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 		TSgrdDataGrid.IndexedGridRowsHelper FIndexedGridRowsHelper;
 		
         private void InitializeManualCode()
-        {            
+        {                        
             // Initialize 'Helper Class' for handling the Indexes of the DataRows.
             FIndexedGridRowsHelper = new TSgrdDataGrid.IndexedGridRowsHelper(
                 grdDetails, PPartnerAttributeCategoryTable.ColumnIndexId, btnDemoteCategory, btnPromoteCategory,
@@ -69,9 +71,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             
             ucoValues.PetraUtilsObject = FPetraUtilsObject;
             
+            grdDetails.Selection.FocusRowLeaving += HandleFocusRowLeaving;
+
             // We capture the Leave event of the Code TextBox (This is more consistent than LostFocus. - it always occurs 
             // before validation, whereas LostFocus occurs before or after depending on mouse or keyboard.)
             txtDetailCategoryCode.Leave += new EventHandler(txtDetailCategoryCode_Leave);
+            
+            // Set up Timer that is needed for showing MessageBoxes from a Grid Event
+            ShowMessageBoxTimer.Tick += new EventHandler(ShowTimerDrivenMessageBox);
+            ShowMessageBoxTimer.Interval = 100;
         }
         
         private void RunOnceOnActivationManual()
@@ -87,6 +95,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         
         private void NewRecord(System.Object sender, EventArgs e)
         {
+            if (FDataSavingInUserControlRequiredFirst)
+            {
+                MessageBox.Show(Catalog.GetString(
+                    "You need to press 'Save' first before you can create a new Category."), 
+                    Catalog.GetString("Saving of Data Required"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                
+                return;
+            }
+            
             if(CreateNewPPartnerAttributeCategory())
             {
                 // Create the required initial detail attribute.
@@ -130,44 +147,43 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(PPartnerAttributeCategoryRow ARowToDelete, ref string ADeletionQuestion)
         {
-            DataView DependentRecordsDV;
-                
-//            if (!FDataSavingInUserControlRequiredFirst) 
-//            {
-                DependentRecordsDV = new DataView(FMainDS.PPartnerAttributeType);
-
-                DependentRecordsDV.RowStateFilter = DataViewRowState.CurrentRows;
-                DependentRecordsDV.RowFilter = String.Format("{0} = '{1}'",
-                    PPartnerAttributeTypeTable.GetAttributeCategoryDBName(),
-                    ARowToDelete.CategoryCode);
-    
-                if (DependentRecordsDV.Count > 0)
-                {
-                    // Tell the user that we cannot allow deletion if any rows exist in the DataView
-                    TMessages.MsgRecordCannotBeDeletedDueToDependantRecordsError(
-                        "Contact Category", "a Contact Category", "Contact Categories", "Contact Type", "a Contact Type", 
-                        "Contact Types", ARowToDelete.CategoryCode, DependentRecordsDV.Count);
-                        
-                    return false;
-                }
-
-//            }
-//            else
-//            {
-//              TODO We are too late here as the cascading delete check runs first - fix by changing TDeleteGridRows.DeleteRows to allow for an Action<T> to be optionally called instead of showing the standard MessageBox
-//                   - once current trunk has been merged into this Branch!
-//                MessageBox.Show(
-//                    Catalog.GetString(
-//                        "You need to press 'Save' first before deleting the Category (to avoid getting a warning about Contact Types that still depend on that Category)."),
-//                        Catalog.GetString("Deletion of Category: Information"), 
-//                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-//                
-//                return false;        
-//            }
-
             FIndexOfDeletedRow = grdDetails.DataSourceRowToIndex2(ARowToDelete);
             
             return true;
+        }
+        
+        private void DeleteRecord(object sender, EventArgs e)
+        {
+            if (ucoValues.Count > 0)
+            {
+                string msg = string.Empty;
+
+                if (ucoValues.GridCount == 0)
+                {
+                    // The grid must be filtered because it has no rows!
+                    msg += Catalog.GetString(
+                        "The selected Contact Category has Contact Types associated with it, but they are being filtered out of the display.");
+                    msg += "  ";
+                }
+
+                msg += Catalog.GetString("You must delete all the Contact Types for the selected Contact Category before you can delete this record.");
+
+                MessageBox.Show(msg, MCommon.MCommonResourcestrings.StrRecordDeletionTitle,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                return;
+            }
+
+            if (FDataSavingInUserControlRequiredFirst)
+            {
+                MessageBox.Show(Catalog.GetString(
+                    "You need to press 'Save' first before deleting the Category."), 
+                    Catalog.GetString("Saving of Data Required"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                
+                return;
+            }
+            
+            DeletePPartnerAttributeCategory();
         }
         
         /// <summary>
@@ -189,7 +205,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 }
             }            
         }
-        
+
         private void ShowDetailsManual(PPartnerAttributeCategoryRow ARow)
         {
             if (ARow == null)
@@ -205,6 +221,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 // Pass the category code to the user control - it will then update itself
                 ucoValues.SetCategoryCode(txtDetailCategoryCode.Text);                                
             }
+         
+            // Need to do the enabling/disabling of the Delete button manually as no auto-generated code 
+            // gets created since we have our own Delete handling ('DeleteRecord' Method in ManualCode file)
+            btnDelete.Enabled = pnlDetails.Enabled && chkDetailDeletable.Checked;
             
             FIndexedGridRowsHelper.UpdateButtons(GetSelectedRowIndex());
         }
@@ -280,7 +300,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             
                 ucoValues.SaveChanges(out ChildDTWhoseDataGotSaved);
                                 
-                FPetraUtilsObject.DisableSaveButton();                                    
+                FPetraUtilsObject.DisableSaveButton();      
+
+                // Ensure Filter Button is enabled (might have been disabled in Method 'Uco_NoMoreDetailRecords')
+                chkToggleFilter.Enabled = true;                
             }
         }
         
@@ -300,35 +323,32 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         /// <summary>
         /// Raised when the Values UserControl holds no more detail records after all detail records
-		/// have been deleted
+		/// have been deleted.
+		/// <para>
+		/// We need to check in this Event Hanlder whether the deleted records exist in the DB; if so we  
+		/// need to prevent a few actions that the user could take to ensure that the UserControls' data 
+		/// gets saved first (signalised by the FDataSavingInUserControlRequiredFirst flag). This is necessary  
+		/// so that the deleted Rows are no longer in the DB. That in turn is necessary for the user to be able  
+		/// to delete the Category as well, as otherwise the reference count on the Category would not be null 
+		/// and a deletion of the Category could not go ahead.
+		/// </para>
         /// </summary>
         /// <param name="sender">Ignored.</param>
         /// <param name="e">Ignored.</param>
 		private void Uco_NoMoreDetailRecords(object sender, EventArgs e)
 		{
 			TVerificationResultCollection VerificationResults = null;
-            int RefCountLimit = FPetraUtilsObject.MaxReferenceCountOnDelete;
             
-            this.Cursor = Cursors.WaitCursor;
-            
-            TRemote.MPartner.ReferenceCount.WebConnectors.GetCacheableRecordReferenceCount(
-                "ContactCategoryList",
-                DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
-                RefCountLimit,
-                out VerificationResults);
-            this.Cursor = Cursors.Default;
+            GetReferenceCount(GetSelectedDataRow(), FPetraUtilsObject.MaxReferenceCountOnDelete, out VerificationResults);
 
             if ((VerificationResults != null)
                 && (VerificationResults.Count > 0))
             {            
-//                MessageBox.Show(
-//                    Catalog.GetString(String.Format(
-//                        "In case you want to delete the Category '{0}' as well then you need to press 'Save' first before deleting the Category (to avoid getting a warning about Contact Types that still depend on that Category)",
-//                        txtDetailCategoryCode.Text)),
-//                        Catalog.GetString("Deletion of Category: Information"), 
-//                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                 FDataSavingInUserControlRequiredFirst = true;
+                
+                // Need to disable Filter Button to prevent user from potentially changing to different Rows 
+                // as that could happen if the user would apply a Filter!
+                chkToggleFilter.Enabled = false;
             }
 		}
 		
@@ -341,5 +361,48 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             FIndexedGridRowsHelper.DemoteRow();
         }		
+
+		private void HandleFocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+		{
+		    if (FDataSavingInUserControlRequiredFirst)
+            {
+                DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(e.ProposedRow);		
+                var SelectedDR = rowView.Row as PPartnerAttributeCategoryRow;
+                    
+                // This check is needed in case one of the promote/demote Buttons have got clicked: in that case
+                // this Event will be fired, but the Row hasn't changed                
+                if (SelectedDR.CategoryCode != txtDetailCategoryCode.Text) 
+                {
+                    ShowMessageBoxTimer.Start();
+                    
+                    e.Cancel = true;                    
+                }                
+            }		    
+		}
+		
+		/// <summary>
+		/// Called from a timer, ShowMessageBoxTimer, so that the FocusRowLeaving Event processing can
+        /// complete before the MessageBox is show (would the MessageBox be shown while the Event gets
+        /// processed the Grid would get into a strange state in which mouse moves would cause the Grid
+        /// to scroll!).
+		/// </summary>
+		/// <param name="Sender">Gets evaluated to make sure a Timer is calling this Method.</param>
+		/// <param name="e">Ignored.</param>
+		private void ShowTimerDrivenMessageBox(Object Sender, EventArgs e)        
+        {            
+            System.Windows.Forms.Timer SendingTimer = Sender as System.Windows.Forms.Timer;
+            
+            if (SendingTimer != null)
+            {
+                // I got called from a Timer: stop that now so that the following MessageBox gets shown only once!
+                SendingTimer.Stop();
+                
+                MessageBox.Show(
+                    Catalog.GetString(
+                        "You need to press 'Save' first before you can change to a different Category."),
+                        Catalog.GetString("Saving of Data Required"), 
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);                
+            }
+		}		    
     }
 }

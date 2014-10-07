@@ -105,6 +105,32 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
         }
 
+        /// <summary>
+        /// The number of values in the grid for the current Contact Attribute.  This may not be the full number if the grid is filtered.
+        /// </summary>
+        public int GridCount
+        {
+            get
+            {
+                return grdDetails.Rows.Count - 1;
+            }
+        }
+
+        /// <summary>
+        /// The unfiltered number of values for the current Contact Attribute.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                // Need to create our own view because the grid may be filtered
+                return new DataView(FMainDS.PContactAttributeDetail, 
+                                 PContactAttributeDetailTable.GetContactAttributeCodeDBName() + 
+                                 " = '" + FContactAttribute + "'",
+                                 "", DataViewRowState.CurrentRows).Count;
+            }
+        }        
+        
         private void InitializeManualCode()
         {
             // Before we start we set the defaultView RowFilter property to something unlikely.
@@ -174,7 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
                 
                 // If we have no Attribute Details anymore: Inform the Form
-                if (grdDetails.Rows.Count - 1 == 0) 
+                if (this.Count == 0) 
                 {
                     OnNoMoreDetailRecords(null);
                 }                    
@@ -242,15 +268,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// </summary>
         /// <param name="ANewCode">New Code to filter on.</param>
         /// <param name="ACurrentRowIndex">The index of the Row that should get displayed (the 'current' Row).</param>
-	private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
-	{
-	    string FilterStr = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), ANewCode);
- 	    
- 	    FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);			
-	    FFilterAndFindObject.ApplyFilter();
-			
-	    grdDetails.SelectRowWithoutFocus(ACurrentRowIndex);
-	}
+    	private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
+    	{
+    	    string FilterStr = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), ANewCode);
+     	    
+     	    FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);			
+    	    FFilterAndFindObject.ApplyFilter();
+    			
+    	    grdDetails.SelectRowWithoutFocus(ACurrentRowIndex);
+    	}
                 
         /// <summary>
         /// Returns the number of detail code items in the database that use the specified attribute code
