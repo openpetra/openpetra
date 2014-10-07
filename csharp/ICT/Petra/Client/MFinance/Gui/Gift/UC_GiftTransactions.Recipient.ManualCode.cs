@@ -218,8 +218,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RetrieveMotivationDetailAccountCode(AMainDS, ALedgerNumber, ATxtDetailAccountCode, ATxtDeductibleAccount,
                         AMotivationGroup, AMotivationDetail, ATaxDeductiblePercentageEnabledFlag);
-                	
-                	MotivationRecipientKey = motivationDetail.RecipientKey;
+
+                    MotivationRecipientKey = motivationDetail.RecipientKey;
 
                     // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
                     if (!APetraUtilsObject.SuppressChangeDetection || ARecipientKeyChangingFlag)

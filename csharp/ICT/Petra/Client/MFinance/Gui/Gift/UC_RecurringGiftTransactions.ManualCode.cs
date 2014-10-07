@@ -1069,8 +1069,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (motivationDetail != null)
                 {
                     RetrieveMotivationDetailAccountCode();
-                	
-                	MotivationRecipientKey = motivationDetail.RecipientKey;
+
+                    MotivationRecipientKey = motivationDetail.RecipientKey;
 
                     chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
                 }
@@ -1082,7 +1082,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!FCreatingNewGiftFlag && (MotivationRecipientKey > 0))
             {
-            	FMotivationDetailChangedFlag = true;
+                FMotivationDetailChangedFlag = true;
                 PopulateKeyMinistry(MotivationRecipientKey);
             }
             else
