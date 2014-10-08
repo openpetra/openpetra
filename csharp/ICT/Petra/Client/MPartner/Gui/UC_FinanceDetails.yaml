@@ -106,6 +106,7 @@ RootNode:
         cmbReceiptLetterFrequency: 
             List: FrequencyList
             Width: 105
+            AllowDbNull: true
         chkReceiptEachGift:
             Label: Printed Receipt for Each Gift
         chkAnonymousDonor:
