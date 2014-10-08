@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Load the batches for the current financial year (used in particular when the screen starts up).
         /// </summary>
-        void LoadBatchesForCurrentYear();
+        void LoadBatchesForCurrentYear(bool ARefreshDataSetOnly = false);
 
         /// <summary>
         /// Create a new Gift Batch
@@ -290,8 +290,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// load the batches into the grid
         /// </summary>
-        public void LoadBatchesForCurrentYear()
+        /// <param name="ARefreshDataSetOnly"></param>
+        public void LoadBatchesForCurrentYear(bool ARefreshDataSetOnly = false)
         {
+            if (ARefreshDataSetOnly)
+            {
+                //Only need to refresh FMainDS to include imported batch
+                FLoadAndFilterLogicObject.YearIndex = 0;
+                FLoadAndFilterLogicObject.PeriodIndex = 0;
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchesForCurrentYearPeriod(FLedgerNumber));
+                return;
+            }
+
             //TLogging.Log("Starting LoadBatches()");
 
             InitialiseLogicObjects();
@@ -849,6 +859,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
+            if (!FLoadAndFilterLogicObject.StatusEditing)
+            {
+                FLoadAndFilterLogicObject.StatusEditing = true;
+            }
+
             FImportLogicObject.ImportBatches();
         }
 
