@@ -22,23 +22,19 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
+
+using Ict.Common;
 using Ict.Common.Verification;
-using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MReporting;
-using GNU.Gettext;
-using Ict.Common;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
     public partial class TFrmTotalGiftsThroughField
     {
         private Int32 FLedgerNumber;
+        private bool FTaxDeductiblePercentageEnabled = false;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -49,6 +45,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
+
+                FTaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                    TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
+                // use a different xml file if tax deductible pct is enabled
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    FPetraUtilsObject.FXMLFiles = "Finance\\\\totalgiftsthroughfieldtaxdeduct.xml,Finance\\\\finance.xml,common.xml";
+                }
             }
         }
 
@@ -69,6 +74,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalc.AddParameter("param_YearBlock", DateTime.Today.Year);
 
+            ACalc.AddParameter("param_NumberOfYears", Convert.ToInt32(txtYears.Text));
+
             int ColumnCounter = 0;
 //            ACalc.AddParameter("param_calculation", "MonthName", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2, ColumnCounter);
@@ -76,18 +83,42 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 //            ACalc.AddParameter("param_calculation", "MonthWorker", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
+
+            // MonthWorkerTaxDeduct
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
+                ++ColumnCounter;
+            }
+
 //            ACalc.AddParameter("param_calculation", "MonthWorkerCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;
 //            ACalc.AddParameter("param_calculation", "MonthField", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
+
+            // MonthFieldTaxDeduct
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
+                ++ColumnCounter;
+            }
+
 //            ACalc.AddParameter("param_calculation", "MonthFieldCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;
 //            ACalc.AddParameter("param_calculation", "MonthTotal", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
+
+            // MonthTotalTaxDeduct
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
+                ++ColumnCounter;
+            }
+
 //            ACalc.AddParameter("param_calculation", "MonthTotalCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;

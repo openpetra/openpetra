@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="currentReport" value="eString:Recipient Tax Deduct Pct" />
+  <Parameter id="param_recipient_selection" value="eString:one_partner" />
+  <Parameter id="param_recipient_key" value="eInteger:0" />
+  <Parameter id="param_extract_name" value="eString:" />
+</Parameters>

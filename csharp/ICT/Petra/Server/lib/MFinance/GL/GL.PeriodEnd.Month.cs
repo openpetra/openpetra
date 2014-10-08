@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;

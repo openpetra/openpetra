@@ -70,6 +70,8 @@ namespace Ict.Petra.Client.App.PetraClient
         private static Int64 FConferenceKey = 0;
         private PetraClient_AutomatedAppTest.TAutomatedAppTest TestRunner;
 
+        private bool FTaxDeductiblePercentageEnabled = false;
+
         /// <summary>
         /// The currently selected Ledger
         /// </summary>
@@ -109,6 +111,10 @@ namespace Ict.Petra.Client.App.PetraClient
             // doesn't go with normal Forms at the moment as pnlContent's BackColor [and UserControls] is white
             // in colour and that doesn't look that good with an 'OpenPetra styled' StatusBar at the bottom).
             stbMain.UseOpenPetraToolStripRenderer = true;
+
+            // this is needed for one screen which should only be displayed if tax deductibility is enabled
+            FTaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
             InitialiseTopPanel();
 
@@ -579,7 +585,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 UpdateFinanceSubsystemLinkStatus();
             };
 
-            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission);
+            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission, FTaxDeductiblePercentageEnabled);
 
             while (DepartmentNode != null)
             {

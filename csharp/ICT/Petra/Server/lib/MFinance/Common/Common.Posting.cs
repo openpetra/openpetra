@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MFinance.Common
             // erm - this is done already? I don't want to do it here, since my journal may contain forex-reval elements.
 
             // Calculate the credit and debit totals
-            GLRoutines.UpdateTotalsOfBatch(ref AGLBatchDS, ABatchToPost, false);
+            GLRoutines.UpdateTotalsOfBatch(ref AGLBatchDS, ABatchToPost);
 
             if (ABatchToPost.BatchCreditTotal != ABatchToPost.BatchDebitTotal)
             {

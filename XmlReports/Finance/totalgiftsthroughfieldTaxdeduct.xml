@@ -80,6 +80,16 @@
         </query>
       </calculation>
 
+      <calculation id="MonthWorkerTaxDeduct" returnsFormat="currency" returns="amount">
+        <caption> <value text="Tax Ded."/></caption>
+        <query> 
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthWorkerTaxDeduct" />
+          </queryDetail>
+        </query>
+      </calculation>
+
       <calculation id="MonthWorkerCount" returnsFormat="text" returns="text" align="right">
         <caption><value text="Qty"/></caption>
         <query>
@@ -100,6 +110,16 @@
         </query>
       </calculation>
 
+      <calculation id="MonthFieldTaxDeduct" returnsFormat="currency" returns="amount">
+        <caption><value text="Tax Ded."/></caption>
+        <query> 
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthFieldTaxDeduct"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
       <calculation id="MonthFieldCount" returnsFormat="text" returns="text" align="right">
         <caption><value text="Qty"/></caption>
         <query>
@@ -116,6 +136,16 @@
           <queryDetail>
             <value text="NO-SQL"/>
             <value variable="MonthTotal"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthTotalTaxDeduct" returnsFormat="currency" returns="amount">
+        <caption><value text="Tax Ded."/></caption>
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthTotalTaxDeduct"/> 
           </queryDetail>
         </query>
       </calculation>
@@ -197,19 +227,28 @@
             <value function="div(getSumLowerReport({{lineId}}, 1), 12)"/>
           </field>
           <field whichfield="column 2">
-            <value function="round(div(getSumLowerReport({{lineId}}, 2), 12))"/>
+            <value function="div(getSumLowerReport({{lineId}}, 2), 12)"/>
           </field>
           <field whichfield="column 3">
-            <value function="div(getSumLowerReport({{lineId}}, 3), 12)"/>
+            <value function="round(div(getSumLowerReport({{lineId}}, 3), 12))"/>
           </field>
           <field whichfield="column 4">
-            <value function="round(div(getSumLowerReport({{lineId}}, 4), 12))"/>
+            <value function="div(getSumLowerReport({{lineId}}, 4), 12)"/>
           </field>
           <field whichfield="column 5">
             <value function="div(getSumLowerReport({{lineId}}, 5), 12)"/>
           </field>
           <field whichfield="column 6">
             <value function="round(div(getSumLowerReport({{lineId}}, 6), 12))"/>
+          </field>
+          <field whichfield="column 7">
+            <value function="div(getSumLowerReport({{lineId}}, 7), 12)"/>
+          </field>
+          <field whichfield="column 8">
+            <value function="div(getSumLowerReport({{lineId}}, 8), 12)"/>
+          </field>
+          <field whichfield="column 9">
+            <value function="round(div(getSumLowerReport({{lineId}}, 9), 12))"/>
           </field>
         </footer>
       </level>
@@ -246,6 +285,15 @@
           <field whichfield="column 6" align="right">
             <value function="getSumLowerReport({{lineId}}, 6)"/>
           </field>
+          <field whichfield="column 7">
+            <value function="getSumLowerReport({{lineId}}, 7)"/>
+          </field>
+          <field whichfield="column 8" align="right">
+            <value function="getSumLowerReport({{lineId}}, 8)"/>
+          </field>
+          <field whichfield="column 9" align="right">
+            <value function="getSumLowerReport({{lineId}}, 9)"/>
+          </field>
         </footer>
       </level>
 
@@ -258,18 +306,27 @@
             <value variable="MonthWorker" />
           </field>
           <field whichfield="column 2">
-            <value variable="MonthWorkerCount" />
+            <value variable="MonthWorkerTaxDeduct" />
           </field>
           <field whichfield="column 3">
-            <value variable="MonthField" />
+            <value variable="MonthWorkerCount" />
           </field>
           <field whichfield="column 4">
-            <value variable="MonthFieldCount" />
+            <value variable="MonthField" />
           </field>
           <field whichfield="column 5">
-            <value variable="MonthTotal" />
+            <value variable="MonthFieldTaxDeduct" />
           </field>
           <field whichfield="column 6">
+            <value variable="MonthFieldCount" />
+          </field>
+          <field whichfield="column 7">
+            <value variable="MonthTotal" />
+          </field>
+          <field whichfield="column 8">
+            <value variable="MonthTotalTaxDeduct" />
+          </field>
+          <field whichfield="column 9">
             <value variable="MonthTotalCount" />
           </field>
         </detail>
@@ -306,25 +363,34 @@
           <field whichfield="column 1">
             <value variable="YearWorker" />
           </field>
-          <field whichfield="column 2" align="right">
+          <field whichfield="column 2">
+            <value variable="YearWorkerTaxDeduct" />
+          </field>
+          <field whichfield="column 3" align="right">
             <value variable="YearWorkerCount" />
           </field>
-          <field whichfield="column 3">
+          <field whichfield="column 4">
             <value variable="YearField" />
           </field>
-          <field whichfield="column 4" align="right">
-            <value variable="YearFieldCount" />
-          </field>
           <field whichfield="column 5">
-            <value variable="YearTotal" />
+            <value variable="YearFieldTaxDeduct" />
           </field>
           <field whichfield="column 6" align="right">
+            <value variable="YearFieldCount" />
+          </field>
+          <field whichfield="column 7">
+            <value variable="YearTotal" />
+          </field>
+          <field whichfield="column 8">
+            <value variable="YearTotalTaxDeduct" />
+          </field>
+          <field whichfield="column 9" align="right">
             <value variable="YearTotalCount" />
           </field>
-          <field whichfield="column 7" width="5cm">
+          <field whichfield="column 10" width="5cm">
             <value function="YearMonthlyAverage"/>
           </field>
-          <field whichfield="column 8" align="right">
+          <field whichfield="column 11" align="right">
             <value function="YearMonthlyAverageCount"/>
           </field>
         </detail>

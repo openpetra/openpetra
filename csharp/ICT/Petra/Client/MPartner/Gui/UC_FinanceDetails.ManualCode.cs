@@ -21,9 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-using SourceGrid;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
@@ -431,7 +429,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                             FMainDS.InitVars();
                         }
 
-                        if (FMainDS.PPartnerTaxDeductiblePct.Count == 0)
+                        bool CreateNewRow = true;
+
+                        // check if previous row can be edited otherwise create a new row
+                        foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
+                        {
+                            if (Row.RowState != DataRowState.Deleted)
+                            {
+                                Row.DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
+                                Row.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
+                                CreateNewRow = false;
+                            }
+                        }
+
+                        if (CreateNewRow)
                         {
                             PPartnerTaxDeductiblePctRow NewRow = FMainDS.PPartnerTaxDeductiblePct.NewRowTyped(true);
                             NewRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
@@ -439,17 +450,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                             NewRow.PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
                             FMainDS.PPartnerTaxDeductiblePct.Rows.Add(NewRow);
                         }
-                        else
-                        {
-                            FMainDS.PPartnerTaxDeductiblePct[0].DateValidFrom = Convert.ToDateTime(dtpTaxDeductibleValidFrom.Text);
-                            FMainDS.PPartnerTaxDeductiblePct[0].PercentageTaxDeductible = (decimal)txtTaxDeductiblePercentage.NumberValueDecimal;
-                        }
                     }
                     else
                     {
                         if ((FMainDS.PPartnerTaxDeductiblePct != null) && (FMainDS.PPartnerTaxDeductiblePct.Count > 0))
                         {
-                            FMainDS.PPartnerTaxDeductiblePct[0].Delete();
+                            // every row in table should be deleted
+                            foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
+                            {
+                                if (Row.RowState != DataRowState.Deleted)
+                                {
+                                    Row.Delete();
+                                }
+                            }
                         }
                     }
                 }
@@ -695,6 +708,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void ShareExistingBankAccount(System.Object sender, EventArgs e)
         {
+            FValidateBankingDetailsExtra = true;
+
+            // first validate the currently selected row (if it exists)
+            if (!ValidateAllData(true, true))
+            {
+                return;
+            }
+
             PPartnerBankingDetailsRow NewRow;
 
             long PartnerKey = 0;
