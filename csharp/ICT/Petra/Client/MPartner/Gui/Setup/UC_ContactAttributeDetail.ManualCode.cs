@@ -25,6 +25,7 @@ using System;
 using System.Data;
 
 using Ict.Common;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
@@ -34,6 +35,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         // Keeps track of the current value of the Contact Attribute
         private string FContactAttribute = String.Empty;
 
+		PContactAttributeTable FContactAttributeDT;
+		
         /// <summary>
         /// Raised when there are no more detail records held after the last
         /// detail record has beend deleted.
@@ -125,6 +128,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         public void GetDetailsFromControls()
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        }
+        
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(PContactAttributeDetailRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            // If the last Row in the Grid is to be deleted: check if there are added 'Detail' Rows in *other* 'Master' Rows,
+            // and if any of those 'Master' Rows was added too, tell the user that data needs to be saved first before deletion 
+            // of the present 'Detail' Row can go ahead.
+            // The reason for that is that the deletion of that last 'Detail' Row will cause the OnNoMoreDetailRecords Event to 
+            // be raised by the UserControl, which in turn will cause the Form to call the 'SaveChanges' Method of the 
+            // UserControl before the Form saves its own data. While this in itself is OK, saving in the 'SaveChanges' Method 
+            // of the UserControl would fail as a 'Master' Row itself was newly added AND it wouldn't be in the DB yet!            
+            return TDeleteGridRows.MasterDetailFormsSpecialPreDeleteCheck(this.Count, 
+                FContactAttributeDT, FMainDS.PContactAttributeDetail,
+                PContactAttributeTable.GetContactAttributeCodeDBName(), PContactAttributeDetailTable.GetContactAttrDetailCodeDBName());
         }
         
         /// <summary>
@@ -221,9 +244,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// Creates an initial Attribute Detail for a new Contact Attribute.  Call this when a new Contact Attribute is created.
         /// </summary>
         /// <param name="AttributeCode">The Attribute Code associated with the new Contact Attribute.</param>
-        public void CreateFirstAttributeDetail(string AttributeCode)
+        /// <param name="AContactAttributeDT">The ContactAttribute Table held in the Form's FMainDS DataSet.</param>
+        public void CreateFirstAttributeDetail(string AttributeCode, PContactAttributeTable AContactAttributeDT)
         {
             FContactAttribute = AttributeCode;
+            
+            // We need to know about the Contact Attribute Table for a check in PreDeleteManual! 
+            FContactAttributeDT = AContactAttributeDT;
             
             NewRecord(null, null);
         }

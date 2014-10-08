@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if(CreateNewPPartnerAttributeCategory())
             {
                 // Create the required initial detail attribute.
-                ucoValues.CreateFirstContactType(txtDetailCategoryCode.Text);            
+                ucoValues.CreateFirstContactType(txtDetailCategoryCode.Text, FMainDS.PPartnerAttributeCategory);            
                 
                 ucoValues.Enabled = true;
                 txtDetailCategoryCode.ReadOnly = false;

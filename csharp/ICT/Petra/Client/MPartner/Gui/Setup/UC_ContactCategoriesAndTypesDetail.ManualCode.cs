@@ -25,8 +25,10 @@ using System;
 using System.Drawing;
 using System.Data;
 
+using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
@@ -35,7 +37,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     {
         // Keeps track of the current value of the Contact Category
         private String FContactCategory;
-             
+
+		PPartnerAttributeCategoryTable FPartnerAttributeCategoryDT;
+		
         // Instance of a 'Helper Class' for handling the Indexes of the DataRows. (The Grid is sorted by the Index.)
         TSgrdDataGrid.IndexedGridRowsHelper FIndexedGridRowsHelper;
                 
@@ -218,6 +222,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }            
         }
 
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(PPartnerAttributeTypeRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            // If the last Row in the Grid is to be deleted: check if there are added 'Detail' Rows in *other* 'Master' Rows,
+            // and if any of those 'Master' Rows was added too, tell the user that data needs to be saved first before deletion 
+            // of the present 'Detail' Row can go ahead.
+            // The reason for that is that the deletion of that last 'Detail' Row will cause the OnNoMoreDetailRecords Event to 
+            // be raised by the UserControl, which in turn will cause the Form to call the 'SaveChanges' Method of the 
+            // UserControl before the Form saves its own data. While this in itself is OK, saving in the 'SaveChanges' Method 
+            // of the UserControl would fail as a 'Master' Row itself was newly added AND it wouldn't be in the DB yet!
+            return TDeleteGridRows.MasterDetailFormsSpecialPreDeleteCheck(this.Count, 
+                FPartnerAttributeCategoryDT, FMainDS.PPartnerAttributeType,
+                PPartnerAttributeCategoryTable.GetCategoryCodeDBName(), PPartnerAttributeTypeTable.GetAttributeCategoryDBName());
+        }
+        
         private void PostDeleteManual(PPartnerAttributeTypeRow ARowToDelete, 
             bool AAllowDeletion, 
             bool ADeletionPerformed, 
@@ -305,9 +329,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// Creates an initial Contact Type for a new Contact Category.  Call this when a new Contact Category is created.
         /// </summary>
         /// <param name="ACategoryCode">The Category Code associated with the new Contact Category.</param>
-        public void CreateFirstContactType(string ACategoryCode)
+        /// <param name="APartnerAttributeCategoryDT">The PartnerAttributeCategory Table held in the Form's FMainDS DataSet.</param>
+        public void CreateFirstContactType(string ACategoryCode, PPartnerAttributeCategoryTable APartnerAttributeCategoryDT)
         {
             FContactCategory = ACategoryCode;
+            
+            // We need to know about the Partner Attribute Category Table for a check in PreDeleteManual! 
+            FPartnerAttributeCategoryDT = APartnerAttributeCategoryDT;
             
             NewRecord(null, null);
         }

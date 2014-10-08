@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if(CreateNewPContactAttribute())
             {
                 // Create the required initial detail attribute. This will automatically fire the event that updates our details count column
-                ucoContactDetail.CreateFirstAttributeDetail(txtDetailContactAttributeCode.Text);
+                ucoContactDetail.CreateFirstAttributeDetail(txtDetailContactAttributeCode.Text, FMainDS.PContactAttribute);
                 
                 ucoContactDetail.Enabled = true;
                 txtDetailContactAttributeCode.ReadOnly = false;
