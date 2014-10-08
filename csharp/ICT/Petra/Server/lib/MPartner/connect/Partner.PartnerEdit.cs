@@ -1574,14 +1574,19 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetSubscriptionsInternal(out SubscriptionsCount, false);
         }
 
-        public PPartnerContactTable GetDataContacts()
+        /// <summary>
+        /// todoComment
+        /// </summary>
+        /// <returns></returns>
+        public PContactLogTable GetDataContacts()
         {
             Int32 ContactsCount;
             DateTime LastContact;
             return GetContactsInternal(out ContactsCount,out LastContact);
         }
 
-        /// <summary>
+        
+
         /// todoComment
         /// </summary>
         /// <returns></returns>
@@ -2875,13 +2880,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return SubscriptionDT;
         }
 
-        private PPartnerContactTable GetContactsInternal(out int ACount, out DateTime ALastContact)
+        private PContactLogTable GetContactsInternal(out int ACount, out DateTime ALastContact)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
-            PPartnerContactTable ContactDT;
+            PContactLogTable ContactDT;
             ALastContact = DateTime.MinValue;
-            ContactDT = new PPartnerContactTable();
+            ContactDT = new PContactLogTable();
             try
             {
                 ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
@@ -2890,18 +2895,20 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 try
                 {
-                    ContactDT = PPartnerContactAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
-                        
-                    foreach (PPartnerContactRow row in ContactDT.Rows)
+                    var foo = PPartnerContactAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
+                    ACount = foo.Rows.Count;
+                    ContactDT = PContactLogAccess.LoadViaPPartnerPPartnerContact(FPartnerKey, ReadTransaction);
+                    
+                    foreach (PContactLogRow row in ContactDT.Rows)
                     {
-                        //ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
+                        ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
                     }
                 }
                 catch (Exception)
                 {
                     throw;
                 }
-                ACount = ContactDT.Rows.Count;
+                
             }
             finally
             {

@@ -6427,7 +6427,7 @@
 
         <primarykey name="p_partner_contact_pk"
                     descr=""
-                    thisFields="p_partner_contact_id_i"/>
+                    thisFields="p_partner_contact_id_i, p_partner_key_n, p_contact_log_id_i"/>
         
         <foreignkey name="p_partner_contact_fk1"
                     descr=""

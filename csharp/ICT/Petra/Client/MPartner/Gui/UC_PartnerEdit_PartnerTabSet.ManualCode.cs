@@ -1075,9 +1075,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Contacts))
             {
-                if (FMainDS.Tables.Contains(Ict.Petra.Shared.MPartner.Mailroom.Data.PPartnerContactTable.GetTableName()))
+                if (FMainDS.Tables.Contains(PContactLogTable.GetTableName()))
                 {
-                    Calculations.CalculateTabCountsContacts(FMainDS.PPartnerContact, out CountAll);
+                    Calculations.CalculateTabCountsContacts(FMainDS.PContactLog, out CountAll);
                     tpgContacts.Text = String.Format(StrContactsTabHeader + " ({0})", CountAll);
                 }
                 else

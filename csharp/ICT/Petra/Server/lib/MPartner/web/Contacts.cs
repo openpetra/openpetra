@@ -240,26 +240,26 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return contacts;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="partnerKey"></param>
+        /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PPartnerContactTable FindContactsForPartner(long partnerKey)
+        public static PContactLogTable FindContactsForPartner(long partnerKey)
         {
             Boolean NewTransaction;
-            PPartnerContactTable contacts = new PPartnerContactTable();
+            PContactLogTable contacts = new PContactLogTable();
 
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
-                PPartnerContactTable TempTable = new PPartnerContactTable();
-                PPartnerContactRow TemplateRow = TempTable.NewRowTyped(false);
+                PContactLogTable TempTable = new PContactLogTable();
+                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
 
-                if (partnerKey > 0)
-                {
-                    TemplateRow.PartnerKey = partnerKey;
-                }
-
-                contacts = PPartnerContactAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
+                contacts = PContactLogAccess.LoadViaPPartnerPPartnerContact(partnerKey, WriteTransaction);
 
             }
             catch (Exception e)

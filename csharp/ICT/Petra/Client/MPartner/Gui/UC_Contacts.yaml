@@ -33,7 +33,7 @@ RootNode:
             Action: actDelete
         grdDetails:
             Dock: Fill
-            TableName: PPartnerContact
+            TableName: PContactLog
             Columns: [ContactDate, ContactCode, Contactor, ContactComment, MailingCode]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank, petrih
+//       christiank, petrih, andreww
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,12 +61,11 @@ namespace Ict.Petra.Server.MPartner.Common
             PContactLogRow ContactDR;
 
             LastContactDS = new DataSet("LastContactDate");
-            LastContactDS.Tables.Add(new PPartnerContactTable());
             LastContactDS.Tables.Add(new PContactLogTable());
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            PContactLogAccess.LoadViaPPartner(LastContactDS, APartnerKey,
+            PContactLogAccess.LoadViaPPartnerPPartnerContact(LastContactDS, APartnerKey,
                 StringHelper.InitStrArr(new String[] { PContactLogTable.GetContactDateDBName() }), ReadTransaction,
                 StringHelper.InitStrArr(new String[] { "ORDER BY " + PContactLogTable.GetContactDateDBName() + " DESC" }), 0, 1);
 

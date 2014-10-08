@@ -144,13 +144,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
-            //if (!FMainDS.Tables.Contains(PPartnerContactTable.GetTableName()))
-            //{
-            //    FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactsForPartner(FMainDS.PPartner[0].PartnerKey));
+            if (!FMainDS.Tables.Contains(PContactLogTable.GetTableName()))
+            {
 
-            //    FMainDS.PPartnerContact.DefaultView.AllowNew = false;
-            //    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PPartnerContact.DefaultView);
-            //}
+                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactsForPartner(FMainDS.PPartner[0].PartnerKey));
+
+                FMainDS.PContactLog.DefaultView.AllowNew = false;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PContactLog.DefaultView);
+            }
 
             FMainDS.InitVars();
             
@@ -163,32 +164,38 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Load Partner Types, if not already loaded
             try
             {
-                //// Make sure that Typed DataTables are already there at Client side
+                // Make sure that Typed DataTables are already there at Client side
                 //if (FMainDS.PPartnerContact == null)
                 //{
                 //    FMainDS.Tables.Add(new PPartnerContactTable());
-                //    FMainDS.InitVars();
+                 
                 //}
+                if (FMainDS.PContactLog == null)
+                {
+                    FMainDS.Tables.Add(new PContactLogTable());
+                    FMainDS.InitVars();
+                }
 
-                //if (TClientSettings.DelayedDataLoading)
-                //{
-                //    FMainDS.Merge(FPartnerEditUIConnector.GetDataContacts());
 
-                //    // Make DataRows unchanged
-                //    if (FMainDS.PPartnerContact.Rows.Count > 0)
-                //    {
-                //        FMainDS.PPartnerContact.AcceptChanges();
-                //    }
-                //}
+                if (TClientSettings.DelayedDataLoading)
+                {
+                    FMainDS.Merge(FPartnerEditUIConnector.GetDataContacts());
 
-                //if (FMainDS.PPartnerContact.Rows.Count != 0)
-                //{
-                //    ReturnValue = true;
-                //}
-                //else
-                //{
-                //    ReturnValue = false;
-                //}
+                    // Make DataRows unchanged
+                    if (FMainDS.PContactLog.Rows.Count > 0)
+                    {
+                        FMainDS.PContactLog.AcceptChanges();
+                    }
+                }
+
+                if (FMainDS.PContactLog.Rows.Count != 0)
+                {
+                    ReturnValue = true;
+                }
+                else
+                {
+                    ReturnValue = false;
+                }
             }
             catch (System.NullReferenceException)
             {

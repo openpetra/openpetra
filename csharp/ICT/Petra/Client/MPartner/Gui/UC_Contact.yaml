@@ -29,7 +29,7 @@ RootNode:
                 Row4: [txtNotes]
         grpAttributes: {Label=Contact Attributes, ControlsOrientation=horizontal} 
             Dock: Top
-            Row0:[clbAttributes, clbAttributeValues, clbSelectedAttributeValues]
+            Row0:[txtSelectedAttributes]
         txtContactor:
             Label: Contactor
             Type: Contactor
@@ -44,11 +44,5 @@ RootNode:
         txtNotes:
             Label: Notes
             Type: ContactComment
-        clbAttributes:
-            Label: Attributes
-            Type: PartnerContactAttribute
-        clbAttributeValues:
-            Label: Attribute Values
-            Type: ContactAttributeDetail
-        clbSelectedAttributeValues:
-            Label: Selected
+        txtSelectedAttributes:
+            Label: Selected Attributes
