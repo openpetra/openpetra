@@ -57,6 +57,7 @@ namespace Ict.Petra.Server.MPartner.Import
             PPartnerCommentAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
             PPartnerTypeAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
             PPartnerInterestAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
+            PPartnerGiftDestinationAccess.LoadViaPPartner(MainDS, APartnerKey, Transaction);
 
             PInterestAccess.LoadAll(MainDS, Transaction);
 

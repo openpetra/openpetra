@@ -876,6 +876,12 @@ namespace Ict.Petra.Client.MPartner.Gui
  *              PmPersonVisionTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey);
  *      }
  */
+        private void AddGiftDestination(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
+        {
+            ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerGiftDestination, FMainDS.PPartnerGiftDestination,
+                PPartnerGiftDestinationTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+        }
+
         private void AddUnitstructure(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
             bool recordAlreadyExists = false;
@@ -1174,6 +1180,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             AddInterest(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
 //          AddVision(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
+            AddGiftDestination(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
 
             AddUnitstructure(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddBuilding(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);

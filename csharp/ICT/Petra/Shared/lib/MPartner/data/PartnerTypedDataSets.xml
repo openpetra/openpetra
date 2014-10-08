@@ -457,6 +457,7 @@
     <Table sqltable="p_partner_interest">
       <CustomField name="Category" type="string"/>
     </Table>
+    <Table sqltable="p_partner_gift_destination"/>
 
     <Table sqltable="pt_position"/>
     <Table sqltable="um_job"/>

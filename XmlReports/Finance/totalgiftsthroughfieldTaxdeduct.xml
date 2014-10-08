@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+  <report id="TotalGiftsThroughField">
+    <description>
+      This report gives a summary of all gifts which have been entered through your gift processing system,
+      both for your own field and for other fields. The report shows the gifts for workers and the gifts for
+      Fields, analysed by month, by amount and quantity, with totals. You can produce this report for up to
+      the last 12 years.
+    </description>
+    <reportparameters>
+      <reportparameter name="param_ledger_number_i"/>
+      <reportparameter name="param_currency"/>
+      <reportparameter name="param_currency_format"/>
+      <reportparameter name="param_txtYears"/>
+      <reportparameter name="param_Year0"/>
+    </reportparameters>
+
+    <reportheader/>
+    <pageheader>
+      <field whichfield="title1">
+        <value text="Total Gifts through Field" />
+      </field>
+
+      <field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+      <field whichfield="descr1">
+        <value text="Ledger "/>
+        <value variable="param_ledger_number_i"/>
+        <value text="   "/>
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+
+      <field whichfield="period3">
+        <value text="Currency: "/>
+        <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+      </field>
+
+    </pageheader>
+
+    <calculations>
+
+      <calculation id="SelectMonthGifts" returns="automatic" returnsFormat="row">
+        <query>
+          <queryDetail><value>Ict.Petra.Server.MFinance.queries.QueryFinanceReport.TotalGiftsThroughFieldMonth</value></queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectYearGifts" returns="automatic" returnsFormat="row">
+        <query>
+            <queryDetail><value>Ict.Petra.Server.MFinance.queries.QueryFinanceReport.TotalGiftsThroughFieldYear</value></queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SubYear" returns="param_YearBlock" returnsFormat="internal">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="assign(param_YearBlock, sub({param_YearBlock}, 1))"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthName" returnsFormat="text" returns="text">
+        <caption><value text="Month"/></caption>
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthName"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthWorker" returnsFormat="currency" returns="amount">
+        <caption> <value text="Worker Amount"/></caption>
+        <query> 
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthWorker"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthWorkerTaxDeduct" returnsFormat="currency" returns="amount">
+        <caption> <value text="Tax Ded."/></caption>
+        <query> 
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthWorkerTaxDeduct" />
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthWorkerCount" returnsFormat="text" returns="text" align="right">
+        <caption><value text="Qty"/></caption>
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthWorkerCount"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthField" returnsFormat="currency" returns="amount">
+        <caption><value text="Field Amount"/></caption>
+        <query> 
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthField"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthFieldTaxDeduct" returnsFormat="currency" returns="amount">
+        <caption><value text="Tax Ded."/></caption>
+        <query> 
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthFieldTaxDeduct"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthFieldCount" returnsFormat="text" returns="text" align="right">
+        <caption><value text="Qty"/></caption>
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthFieldCount"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthTotal" returnsFormat="currency" returns="amount">
+        <caption><value text="Total Amount"/></caption>
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthTotal"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthTotalTaxDeduct" returnsFormat="currency" returns="amount">
+        <caption><value text="Tax Ded."/></caption>
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthTotalTaxDeduct"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="MonthTotalCount" returnsFormat="text" returns="text" align="right">
+        <caption><value text="Qty"/></caption>
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value variable="MonthTotalCount"/> 
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="YearMonthlyAverage" returnsFormat="currency" returns="amount">
+        <caption><value text="Av/Mnth"/></caption>
+        <query> 
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="div(round(div(mul({YearTotal}, 100), 12)),100)"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="YearMonthlyAverageCount" returnsFormat="text" returns="text" align="right" >
+        <caption><value text="Qty/Mnth"/></caption>
+        <query> 
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="round(div({YearTotalCount}, 12))"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+    </calculations>
+
+    <levels>
+      <level name="main">
+        <detail>
+          <lowerLevelReport level="Year0Level"></lowerLevelReport> 
+          <lowerLevelReport level="Year1Level"></lowerLevelReport>
+          <lowerLevelReport level="Year2Level"></lowerLevelReport>
+          <lowerLevelReport level="Year3Level"></lowerLevelReport>
+          <lowerLevelReport level="EndSummary"></lowerLevelReport>
+        </detail>
+      </level>
+
+
+      <level name="Year0Level">
+        <detail>
+          <lowerLevelReport level="YearWith2Summaries" ></lowerLevelReport>
+        </detail>
+      </level>
+      <level name="Year1Level">
+        <detail>
+          <lowerLevelReport level="YearWith2Summaries" calculation="SubYear" condition="gt({param_txtYears}, 1)"></lowerLevelReport>
+        </detail>
+      </level>
+      <level name="Year2Level">
+        <detail>
+          <lowerLevelReport level="YearWith2Summaries" calculation="SubYear" condition="gt({param_txtYears}, 2)"></lowerLevelReport>
+        </detail>
+      </level>
+      <level name="Year3Level">
+        <detail>
+          <lowerLevelReport level="YearWith2Summaries" calculation="SubYear" condition="gt({param_txtYears}, 3)"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="YearWith2Summaries">
+        <detail>
+          <lowerLevelReport level="YearWithSummaries" />
+        </detail>
+        <footer line="below">
+          <field whichfield="column 0">
+            <value text="Av/Mnth"/>
+          </field>
+          <field whichfield="column 1">
+            <value function="div(getSumLowerReport({{lineId}}, 1), 12)"/>
+          </field>
+          <field whichfield="column 2">
+            <value function="div(getSumLowerReport({{lineId}}, 2), 12)"/>
+          </field>
+          <field whichfield="column 3">
+            <value function="round(div(getSumLowerReport({{lineId}}, 3), 12))"/>
+          </field>
+          <field whichfield="column 4">
+            <value function="div(getSumLowerReport({{lineId}}, 4), 12)"/>
+          </field>
+          <field whichfield="column 5">
+            <value function="div(getSumLowerReport({{lineId}}, 5), 12)"/>
+          </field>
+          <field whichfield="column 6">
+            <value function="round(div(getSumLowerReport({{lineId}}, 6), 12))"/>
+          </field>
+          <field whichfield="column 7">
+            <value function="div(getSumLowerReport({{lineId}}, 7), 12)"/>
+          </field>
+          <field whichfield="column 8">
+            <value function="div(getSumLowerReport({{lineId}}, 8), 12)"/>
+          </field>
+          <field whichfield="column 9">
+            <value function="round(div(getSumLowerReport({{lineId}}, 9), 12))"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="YearWithSummaries">
+        <header>
+          <field whichfield="header 1" pos="0cm" width="3cm">
+            <value text="Year: "/>
+            <value variable="param_YearBlock"/> 
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="OneYearLevel" calculation="SelectMonthGifts"></lowerLevelReport>
+        </detail>
+        <footer space="above">
+          <field whichfield="column 0">
+            <value text="Total"/>
+          </field>
+          <field whichfield="column 1">
+            <value function="getSumLowerReport({{lineId}}, 1)"/>
+          </field>
+          <field whichfield="column 2" align="right">
+            <value function="getSumLowerReport({{lineId}}, 2)"/>
+          </field>
+          <field whichfield="column 3">
+            <value function="getSumLowerReport({{lineId}}, 3)"/>
+          </field>
+          <field whichfield="column 4" align="right">
+            <value function="getSumLowerReport({{lineId}}, 4)"/>
+          </field>
+          <field whichfield="column 5">
+            <value function="getSumLowerReport({{lineId}}, 5)"/>
+          </field>
+          <field whichfield="column 6" align="right">
+            <value function="getSumLowerReport({{lineId}}, 6)"/>
+          </field>
+          <field whichfield="column 7">
+            <value function="getSumLowerReport({{lineId}}, 7)"/>
+          </field>
+          <field whichfield="column 8" align="right">
+            <value function="getSumLowerReport({{lineId}}, 8)"/>
+          </field>
+          <field whichfield="column 9" align="right">
+            <value function="getSumLowerReport({{lineId}}, 9)"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="OneYearLevel">
+        <detail>
+          <field whichfield="column 0" pos="0cm">
+            <value variable="MonthName"/>
+          </field>
+          <field whichfield="column 1">
+            <value variable="MonthWorker" />
+          </field>
+          <field whichfield="column 2">
+            <value variable="MonthWorkerTaxDeduct" />
+          </field>
+          <field whichfield="column 3">
+            <value variable="MonthWorkerCount" />
+          </field>
+          <field whichfield="column 4">
+            <value variable="MonthField" />
+          </field>
+          <field whichfield="column 5">
+            <value variable="MonthFieldTaxDeduct" />
+          </field>
+          <field whichfield="column 6">
+            <value variable="MonthFieldCount" />
+          </field>
+          <field whichfield="column 7">
+            <value variable="MonthTotal" />
+          </field>
+          <field whichfield="column 8">
+            <value variable="MonthTotalTaxDeduct" />
+          </field>
+          <field whichfield="column 9">
+            <value variable="MonthTotalCount" />
+          </field>
+        </detail>
+      </level>
+
+      <level name="EndSummary">
+        <detail>
+          <lowerLevelReport level="EndSummary2"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="EndSummary2">
+        <detail>
+          <lowerLevelReport level="YearSummaryWithHeader"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="YearSummaryWithHeader">
+        <header>
+          <field whichfield="header 1" pos="0cm" width="4cm">
+            <value text="Summary by year"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport calculation="SelectYearGifts" level="YearSummaryLevel"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="YearSummaryLevel">
+        <detail>
+          <field whichfield="column 0" pos="0cm">
+            <value variable="SummaryYear"/>
+          </field>
+          <field whichfield="column 1">
+            <value variable="YearWorker" />
+          </field>
+          <field whichfield="column 2">
+            <value variable="YearWorkerTaxDeduct" />
+          </field>
+          <field whichfield="column 3" align="right">
+            <value variable="YearWorkerCount" />
+          </field>
+          <field whichfield="column 4">
+            <value variable="YearField" />
+          </field>
+          <field whichfield="column 5">
+            <value variable="YearFieldTaxDeduct" />
+          </field>
+          <field whichfield="column 6" align="right">
+            <value variable="YearFieldCount" />
+          </field>
+          <field whichfield="column 7">
+            <value variable="YearTotal" />
+          </field>
+          <field whichfield="column 8">
+            <value variable="YearTotalTaxDeduct" />
+          </field>
+          <field whichfield="column 9" align="right">
+            <value variable="YearTotalCount" />
+          </field>
+          <field whichfield="column 10" width="5cm">
+            <value function="YearMonthlyAverage"/>
+          </field>
+          <field whichfield="column 11" align="right">
+            <value function="YearMonthlyAverageCount"/>
+          </field>
+        </detail>
+      </level>
+
+    </levels>
+
+  </report>
+
+</reports>

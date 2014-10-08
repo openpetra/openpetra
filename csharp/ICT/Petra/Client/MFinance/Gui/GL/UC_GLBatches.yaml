@@ -29,7 +29,7 @@ RootNode:
             Dock: Left
             ExpandedWidth: 180
             InitiallyExpanded: true     
-            ShowApplyFilterButton: FilterContext.ExtraFilterOnly
+            #ShowApplyFilterButton: FilterContext.ExtraFilterOnly
             ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.ExtraFilterOnly
             FilterControls: [pnlBatchFilter]
@@ -51,11 +51,11 @@ RootNode:
                         ClearButton: false
                         OptionalValues: [Posting, =Editing, All]
                         
-                    cmbYearEnding: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
-                    cmbPeriod: {OnChange=RefreshFilter, Width=250}
-                    rbtPosting: {OnChange=RefreshFilter}
-                    rbtEditing: {OnChange=RefreshFilter}
-                    rbtAll: {OnChange=RefreshFilter}
+                    cmbYearEnding: {ClearButton=false, Width=140}
+                    cmbPeriod: {ClearButton=false, Width=140}
+                    rbtPosting:
+                    rbtEditing:
+                    rbtAll:
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]

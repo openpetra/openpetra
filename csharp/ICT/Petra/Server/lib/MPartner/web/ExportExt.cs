@@ -1030,6 +1030,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
             }
 
+            foreach (PPartnerGiftDestinationRow GiftDestinationRow in AMainDS.PPartnerGiftDestination.Rows)
+            {
+                Write("GIFTDESTINATION");
+                WriteLine();
+                Write(GiftDestinationRow.IsFieldKeyNull() ? 0 : GiftDestinationRow.FieldKey);
+                Write(GiftDestinationRow.IsDateEffectiveNull() ? "?" : GiftDestinationRow.DateEffective.ToString(DATEFORMAT));
+                Write(GiftDestinationRow.IsDateExpiresNull() ? "?" : GiftDestinationRow.DateExpires.Value.ToString(DATEFORMAT));
+                Write(GiftDestinationRow.IsActiveNull() ? false : GiftDestinationRow.Active);
+                Write(GiftDestinationRow.IsDefaultGiftDestinationNull() ? false : GiftDestinationRow.DefaultGiftDestination);
+                Write(GiftDestinationRow.IsPartnerClassNull() ? "" : GiftDestinationRow.PartnerClass);
+                Write(GiftDestinationRow.IsCommentNull() ? "" : GiftDestinationRow.Comment);
+                WriteLine();
+            }
+
             if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
             {
                 WritePersonnelData(AMainDS);

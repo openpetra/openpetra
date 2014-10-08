@@ -41,9 +41,8 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
         /// <param name="AMainDS">ATransactions are filtered on current journal</param>
         /// <param name="ACurrentJournal"></param>
-        /// <param name="AUpdateLastTransNumber"></param>
         public static void UpdateTotalsOfJournal(ref GLBatchTDS AMainDS,
-            ref GLBatchTDSAJournalRow ACurrentJournal, bool AUpdateLastTransNumber = false)
+            ref GLBatchTDSAJournalRow ACurrentJournal)
         {
             if (ACurrentJournal == null)
             {
@@ -52,49 +51,160 @@ namespace Ict.Petra.Shared.MFinance
 
             int LastTransactionNumber = 0;
 
-            ACurrentJournal.JournalDebitTotal = 0.0M;
-            ACurrentJournal.JournalDebitTotalBase = 0.0M;
-            ACurrentJournal.JournalCreditTotal = 0.0M;
-            ACurrentJournal.JournalCreditTotalBase = 0.0M;
+            decimal JournalDebitTotal = 0.0M;
+            decimal JournalDebitTotalBase = 0.0M;
+            decimal JournalCreditTotal = 0.0M;
+            decimal JournalCreditTotalBase = 0.0M;
 
-            DataView trnsDataView = new DataView(AMainDS.ATransaction);
+            if (DBNull.Value.Equals(ACurrentJournal[GLBatchTDSAJournalTable.ColumnJournalDebitTotalBaseId]))
+            {
+                ACurrentJournal.JournalDebitTotalBase = 0;
+            }
 
-            trnsDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+            if (DBNull.Value.Equals(ACurrentJournal[GLBatchTDSAJournalTable.ColumnJournalCreditTotalBaseId]))
+            {
+                ACurrentJournal.JournalCreditTotalBase = 0;
+            }
+
+            DataView TransDataView = new DataView(AMainDS.ATransaction);
+
+            TransDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
                 ATransactionTable.GetBatchNumberDBName(),
                 ACurrentJournal.BatchNumber,
                 ATransactionTable.GetJournalNumberDBName(),
                 ACurrentJournal.JournalNumber);
 
-            trnsDataView.Sort = string.Format("{0} DESC",
+            TransDataView.Sort = string.Format("{0} DESC",
                 ATransactionTable.GetTransactionNumberDBName());
 
             // transactions are filtered for this journal; add up the total amounts
-            foreach (DataRowView v in trnsDataView)
+            foreach (DataRowView drv in TransDataView)
             {
-                ATransactionRow r = (ATransactionRow)v.Row;
+                ATransactionRow transRow = (ATransactionRow)drv.Row;
 
                 //on first recursion
-                if (AUpdateLastTransNumber && (LastTransactionNumber == 0))
+                if (transRow.TransactionNumber > LastTransactionNumber)
                 {
-                    //Sort order will ensure this is the highest trans number
-                    LastTransactionNumber = r.TransactionNumber;
+                    //Sort order will ensure this is the highest trans number on first pass
+                    LastTransactionNumber = transRow.TransactionNumber;
                 }
 
-                if (r.DebitCreditIndicator)
+                if (transRow.DebitCreditIndicator)
                 {
-                    ACurrentJournal.JournalDebitTotal += r.TransactionAmount;
-                    ACurrentJournal.JournalDebitTotalBase += r.AmountInBaseCurrency;
+                    JournalDebitTotal += transRow.TransactionAmount;
+                    JournalDebitTotalBase += transRow.AmountInBaseCurrency;
                 }
                 else
                 {
-                    ACurrentJournal.JournalCreditTotal += r.TransactionAmount;
-                    ACurrentJournal.JournalCreditTotalBase += r.AmountInBaseCurrency;
+                    JournalCreditTotal += transRow.TransactionAmount;
+                    JournalCreditTotalBase += transRow.AmountInBaseCurrency;
                 }
             }
 
-            if (AUpdateLastTransNumber)
+            if ((ACurrentJournal.JournalDebitTotal != JournalDebitTotal)
+                || (ACurrentJournal.JournalDebitTotalBase != JournalDebitTotalBase)
+                || (ACurrentJournal.JournalCreditTotal != JournalCreditTotal)
+                || (ACurrentJournal.JournalCreditTotalBase != JournalCreditTotalBase))
+            {
+                ACurrentJournal.JournalDebitTotal = JournalDebitTotal;
+                ACurrentJournal.JournalDebitTotalBase = JournalDebitTotalBase;
+                ACurrentJournal.JournalCreditTotal = JournalCreditTotal;
+                ACurrentJournal.JournalCreditTotalBase = JournalCreditTotalBase;
+            }
+
+            if (ACurrentJournal.LastTransactionNumber != LastTransactionNumber)
             {
                 ACurrentJournal.LastTransactionNumber = LastTransactionNumber;
+            }
+        }
+
+        /// <summary>
+        /// Update the totals for the current journal (no exchange rate calculation at this point)
+        ///   and set LastTransactionNumber
+        /// </summary>
+        /// <param name="AMainDS">ATransactions are filtered on current journal</param>
+        /// <param name="ACurrentJournal"></param>
+        /// <param name="AJournalUpdated"></param>
+        public static void UpdateTotalsOfJournal(ref GLBatchTDS AMainDS,
+            ref GLBatchTDSAJournalRow ACurrentJournal, out bool AJournalUpdated)
+        {
+            AJournalUpdated = false;
+
+            if (ACurrentJournal == null)
+            {
+                return;
+            }
+
+            int LastTransactionNumber = 0;
+
+            decimal JournalDebitTotal = 0.0M;
+            decimal JournalDebitTotalBase = 0.0M;
+            decimal JournalCreditTotal = 0.0M;
+            decimal JournalCreditTotalBase = 0.0M;
+
+            if (DBNull.Value.Equals(ACurrentJournal[GLBatchTDSAJournalTable.ColumnJournalDebitTotalBaseId]))
+            {
+                ACurrentJournal.JournalDebitTotalBase = 0;
+            }
+
+            if (DBNull.Value.Equals(ACurrentJournal[GLBatchTDSAJournalTable.ColumnJournalCreditTotalBaseId]))
+            {
+                ACurrentJournal.JournalCreditTotalBase = 0;
+            }
+
+            DataView TransDataView = new DataView(AMainDS.ATransaction);
+
+            TransDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                ATransactionTable.GetBatchNumberDBName(),
+                ACurrentJournal.BatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                ACurrentJournal.JournalNumber);
+
+            TransDataView.Sort = string.Format("{0} DESC",
+                ATransactionTable.GetTransactionNumberDBName());
+
+            // transactions are filtered for this journal; add up the total amounts
+            foreach (DataRowView drv in TransDataView)
+            {
+                ATransactionRow transRow = (ATransactionRow)drv.Row;
+
+                //on first recursion
+                if (transRow.TransactionNumber > LastTransactionNumber)
+                {
+                    //Sort order will ensure this is the highest trans number on first pass
+                    LastTransactionNumber = transRow.TransactionNumber;
+                }
+
+                if (transRow.DebitCreditIndicator)
+                {
+                    JournalDebitTotal += transRow.TransactionAmount;
+                    JournalDebitTotalBase += transRow.AmountInBaseCurrency;
+                }
+                else
+                {
+                    JournalCreditTotal += transRow.TransactionAmount;
+                    JournalCreditTotalBase += transRow.AmountInBaseCurrency;
+                }
+            }
+
+            if ((ACurrentJournal.JournalDebitTotal != JournalDebitTotal)
+                || (ACurrentJournal.JournalDebitTotalBase != JournalDebitTotalBase)
+                || (ACurrentJournal.JournalCreditTotal != JournalCreditTotal)
+                || (ACurrentJournal.JournalCreditTotalBase != JournalCreditTotalBase))
+            {
+                ACurrentJournal.JournalDebitTotal = JournalDebitTotal;
+                ACurrentJournal.JournalDebitTotalBase = JournalDebitTotalBase;
+                ACurrentJournal.JournalCreditTotal = JournalCreditTotal;
+                ACurrentJournal.JournalCreditTotalBase = JournalCreditTotalBase;
+
+                AJournalUpdated = true;
+            }
+
+            if (ACurrentJournal.LastTransactionNumber != LastTransactionNumber)
+            {
+                ACurrentJournal.LastTransactionNumber = LastTransactionNumber;
+
+                AJournalUpdated = true;
             }
         }
 
@@ -160,12 +270,49 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
         /// <param name="AMainDS"></param>
         /// <param name="ACurrentBatch"></param>
-        /// <param name="AUpdateJournalLastTransNumber"></param>
         public static void UpdateTotalsOfBatch(ref GLBatchTDS AMainDS,
-            ABatchRow ACurrentBatch, bool AUpdateJournalLastTransNumber = false)
+            ABatchRow ACurrentBatch)
         {
-            ACurrentBatch.BatchDebitTotal = 0.0m;
-            ACurrentBatch.BatchCreditTotal = 0.0m;
+            decimal BatchDebitTotal = 0.0m;
+            decimal BatchCreditTotal = 0.0m;
+
+            DataView jnlDataView = new DataView(AMainDS.AJournal);
+
+            jnlDataView.RowFilter = String.Format("{0}={1}",
+                AJournalTable.GetBatchNumberDBName(),
+                ACurrentBatch.BatchNumber);
+
+            foreach (DataRowView journalView in jnlDataView)
+            {
+                GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)journalView.Row;
+
+                UpdateTotalsOfJournal(ref AMainDS, ref journalRow);
+
+                BatchDebitTotal += journalRow.JournalDebitTotal;
+                BatchCreditTotal += journalRow.JournalCreditTotal;
+            }
+
+            if ((ACurrentBatch.BatchDebitTotal != BatchDebitTotal)
+                || (ACurrentBatch.BatchCreditTotal != BatchCreditTotal))
+            {
+                ACurrentBatch.BatchDebitTotal = BatchDebitTotal;
+                ACurrentBatch.BatchCreditTotal = BatchCreditTotal;
+            }
+        }
+
+        /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ACurrentBatch"></param>
+        /// <param name="AAmountsChanged"></param>
+        public static void UpdateTotalsOfBatch(ref GLBatchTDS AMainDS,
+            ABatchRow ACurrentBatch, out bool AAmountsChanged)
+        {
+            AAmountsChanged = false;
+
+            decimal BatchDebitTotal = 0.0m;
+            decimal BatchCreditTotal = 0.0m;
 
             DataView jnlDataView = new DataView(AMainDS.AJournal);
             jnlDataView.RowFilter = String.Format("{0}={1}",
@@ -176,10 +323,23 @@ namespace Ict.Petra.Shared.MFinance
             {
                 GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)journalView.Row;
 
-                UpdateTotalsOfJournal(ref AMainDS, ref journalRow, AUpdateJournalLastTransNumber);
+                bool journalUpdated;
+                UpdateTotalsOfJournal(ref AMainDS, ref journalRow, out journalUpdated);
 
-                ACurrentBatch.BatchDebitTotal += journalRow.JournalDebitTotal;
-                ACurrentBatch.BatchCreditTotal += journalRow.JournalCreditTotal;
+                if (journalUpdated && !AAmountsChanged)
+                {
+                    AAmountsChanged = true;
+                }
+
+                BatchDebitTotal += journalRow.JournalDebitTotal;
+                BatchCreditTotal += journalRow.JournalCreditTotal;
+            }
+
+            if ((ACurrentBatch.BatchDebitTotal != BatchDebitTotal)
+                || (ACurrentBatch.BatchCreditTotal != BatchCreditTotal))
+            {
+                ACurrentBatch.BatchDebitTotal = BatchDebitTotal;
+                ACurrentBatch.BatchCreditTotal = BatchCreditTotal;
             }
         }
 
@@ -193,15 +353,23 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfBatchForJournal(ref GLBatchTDS AMainDS,
             ABatchRow ACurrentBatch, GLBatchTDSAJournalRow ACurrentJournal)
         {
-            //Subtract existing journal totals amounts
-            ACurrentBatch.BatchDebitTotal -= ACurrentJournal.JournalDebitTotal;
-            ACurrentBatch.BatchCreditTotal -= ACurrentJournal.JournalCreditTotal;
+            //Save current values
+            decimal JournalDebitTotal = ACurrentJournal.JournalDebitTotal;
+            decimal JournalCreditTotal = ACurrentJournal.JournalCreditTotal;
 
-            UpdateTotalsOfJournal(ref AMainDS, ref ACurrentJournal);
+            bool JournalUpdated;
 
-            //Add updated Journals amounts
-            ACurrentBatch.BatchDebitTotal += ACurrentJournal.JournalDebitTotal;
-            ACurrentBatch.BatchCreditTotal += ACurrentJournal.JournalCreditTotal;
+            UpdateTotalsOfJournal(ref AMainDS, ref ACurrentJournal, out JournalUpdated);
+
+            if (JournalUpdated)
+            {
+                //Subtract old amounts
+                ACurrentBatch.BatchDebitTotal -= JournalDebitTotal;
+                ACurrentBatch.BatchCreditTotal -= JournalCreditTotal;
+                //Add updated Journals amounts
+                ACurrentBatch.BatchDebitTotal += ACurrentJournal.JournalDebitTotal;
+                ACurrentBatch.BatchCreditTotal += ACurrentJournal.JournalCreditTotal;
+            }
         }
 
         /// <summary>

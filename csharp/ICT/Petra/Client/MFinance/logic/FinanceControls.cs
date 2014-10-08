@@ -959,14 +959,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.DisplayMember = "display";
             AControl.ValueMember = "value";
+            AControl.SelectedIndexOnDataSourceChange = AInitialSelectedIndex;
             AControl.DataSource = periods.DefaultView;
-
-            // If the initial index is -1 we don't need to do anything (which saves an event)
-            // The code used to always select the first item, which we do not want it to do if we are happy with an empty box.
-            if ((periods.DefaultView.Count > 0) && (AInitialSelectedIndex >= 0))
-            {
-                AControl.SelectedIndex = AInitialSelectedIndex;
-            }
         }
 
         /// <summary>
@@ -1024,7 +1018,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             DataRow period;
 
             period = periods.NewRow();
-            period[ValueMember] = -2;
+            period[ValueMember] = 0;
             period[DisplayMember] = "All";
             period[DescrMember] = Catalog.GetString("(All periods)");
             periods.Rows.Add(period);
@@ -1034,7 +1028,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 if (AShowCurrentAndForwarding)
                 {
                     period = periods.NewRow();
-                    period[ValueMember] = 0;
+                    period[ValueMember] = -1;
                     period[DisplayMember] = "Current";
                     period[DescrMember] = Catalog.GetString("(Current and forwarding periods)");
                     periods.Rows.Add(period);

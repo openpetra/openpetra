@@ -192,8 +192,14 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>Unit-Type is key-min</summary>
         public const String UNIT_TYPE_CODE_KEY_MIN = "KEY-MIN";
 
-        /// <summary>Unit-Type is key-min</summary>
+        /// <summary>Motivation Detail is key-min</summary>
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
+
+        /// <summary>Motivation Detail is field</summary>
+        public const String GROUP_DETAIL_FIELD = "FIELD";
+
+        /// <summary>Motivation Detail is support</summary>
+        public const String GROUP_DETAIL_SUPPORT = "SUPPORT";
 
         /// <summary>Used in Admin Grants Payable and Receivable</summary>
         public const string ADMIN_FEE_INCOME_ACCT = "3400";

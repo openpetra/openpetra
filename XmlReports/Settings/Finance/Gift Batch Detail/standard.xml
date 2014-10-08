@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="currentReport" value="eString:Gift Batch Detail" />
+  <Parameter id="param_currency" value="eString:Transaction" />
+</Parameters>

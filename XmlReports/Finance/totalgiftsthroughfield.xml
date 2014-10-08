@@ -71,7 +71,7 @@
       </calculation>
 
       <calculation id="MonthWorker" returnsFormat="currency" returns="amount">
-        <caption> <value text="Amount Worker"/></caption>
+        <caption> <value text="Worker Amount"/></caption>
         <query> 
           <queryDetail>
             <value text="NO-SQL"/>
@@ -91,7 +91,7 @@
       </calculation>
 
       <calculation id="MonthField" returnsFormat="currency" returns="amount">
-        <caption><value text="Amount Field"/></caption>
+        <caption><value text="Field Amount"/></caption>
         <query> 
           <queryDetail>
             <value text="NO-SQL"/>
@@ -111,7 +111,7 @@
       </calculation>
 
       <calculation id="MonthTotal" returnsFormat="currency" returns="amount">
-        <caption><value text="Total"/></caption>
+        <caption><value text="Total Amount"/></caption>
         <query>
           <queryDetail>
             <value text="NO-SQL"/>
@@ -135,17 +135,17 @@
         <query> 
           <queryDetail>
             <value text="NO-SQL"/>
-            <value function="div({YearTotal}, 12)"/>
+            <value function="div(round(div(mul({YearTotal}, 100), 12)),100)"/>
           </queryDetail>
         </query>
       </calculation>
 
-      <calculation id="YearMonthlyAverageCount" returnsFormat="text" returns="text" >
+      <calculation id="YearMonthlyAverageCount" returnsFormat="text" returns="text" align="right" >
         <caption><value text="Qty/Mnth"/></caption>
         <query> 
           <queryDetail>
             <value text="NO-SQL"/>
-            <value function="div({YearTotalCount}, 12)"/>
+            <value function="round(div({YearTotalCount}, 12))"/>
           </queryDetail>
         </query>
       </calculation>
@@ -196,11 +196,20 @@
           <field whichfield="column 1">
             <value function="div(getSumLowerReport({{lineId}}, 1), 12)"/>
           </field>
+          <field whichfield="column 2">
+            <value function="round(div(getSumLowerReport({{lineId}}, 2), 12))"/>
+          </field>
           <field whichfield="column 3">
             <value function="div(getSumLowerReport({{lineId}}, 3), 12)"/>
           </field>
+          <field whichfield="column 4">
+            <value function="round(div(getSumLowerReport({{lineId}}, 4), 12))"/>
+          </field>
           <field whichfield="column 5">
             <value function="div(getSumLowerReport({{lineId}}, 5), 12)"/>
+          </field>
+          <field whichfield="column 6">
+            <value function="round(div(getSumLowerReport({{lineId}}, 6), 12))"/>
           </field>
         </footer>
       </level>
