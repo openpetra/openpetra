@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Load the batches for the current financial year (used in particular when the screen starts up).
         /// </summary>
-        void LoadBatchesForCurrentYear();
+        void LoadBatchesForCurrentYear(bool ARefreshDataSetOnly = false);
 
         /// <summary>
         /// Create a new Gift Batch
@@ -150,9 +150,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FLoadAndFilterLogicObject = new TUC_GiftBatches_LoadAndFilter(FLedgerNumber, FMainDS, FFilterAndFindObject);
             FImportLogicObject = new TUC_GiftBatches_Import(FPetraUtilsObject, FLedgerNumber, this);
-            FPostingLogicObject = new TUC_GiftBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
+            FPostingLogicObject = new TUC_GiftBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS);
             FReceiptingLogicObject = new TUC_GiftBatches_Receipt();
-            FCancelLogicObject = new TUC_GiftBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
+            FCancelLogicObject = new TUC_GiftBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
             FAccountAndCostCentreLogicObject = new TUC_GiftBatches_AccountAndCostCentre(FLedgerNumber,
                 FMainDS,
                 cmbDetailBankAccountCode,
@@ -290,8 +290,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// load the batches into the grid
         /// </summary>
-        public void LoadBatchesForCurrentYear()
+        /// <param name="ARefreshDataSetOnly"></param>
+        public void LoadBatchesForCurrentYear(bool ARefreshDataSetOnly = false)
         {
+            if (ARefreshDataSetOnly)
+            {
+                //Only need to refresh FMainDS to include imported batch
+                FLoadAndFilterLogicObject.YearIndex = 0;
+                FLoadAndFilterLogicObject.PeriodIndex = 0;
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchesForCurrentYearPeriod(FLedgerNumber));
+                return;
+            }
+
             //TLogging.Log("Starting LoadBatches()");
 
             InitialiseLogicObjects();
@@ -849,6 +859,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
+            if (!FLoadAndFilterLogicObject.StatusEditing)
+            {
+                FLoadAndFilterLogicObject.StatusEditing = true;
+            }
+
             FImportLogicObject.ImportBatches();
         }
 
@@ -933,8 +948,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
-            txtDetailExchangeRateToBase.BackColor =
-                (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
+            txtDetailExchangeRateToBase.Enabled =
+                (FPreviouslySelectedDetailRow.ExchangeRateToBase != DEFAULT_CURRENCY_EXCHANGE);
 
             if ((FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
             {

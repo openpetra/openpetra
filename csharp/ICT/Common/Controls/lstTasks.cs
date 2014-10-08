@@ -44,6 +44,7 @@ namespace Ict.Common.Controls
         private static TLstFolderNavigation.CheckAccessPermissionDelegate FHasAccessPermission;
         private static int FCurrentLedger = -1;
         private static TOpenNewOrExistingForm FOpenNewOrExistingForm;
+        private static bool FTaxDeductiblePercentageEnabled = false;
 
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
         private TaskAppearance FTaskAppearance;
@@ -134,26 +135,41 @@ namespace Ict.Common.Controls
 
                         while (TaskNode != null)
                         {
-                            TUcoSingleTask SingleTask = new TUcoSingleTask();
-                            SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskNode);
-                            SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
-                                "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
-                            SingleTask.Name = TaskNode.Name;
-                            SingleTask.TaskGroup = TaskGroup;
-                            SingleTask.Tag = TaskNode;
-                            SingleTask.TaskAppearance = ATaskAppearance;
-                            SingleTask.TaskImagePath = DetermineIconForTask(TaskNode);
-                            SingleTask.TaskImage = TIconCache.IconCache.AddOrGetExistingIcon(
-                                SingleTask.TaskImagePath, IconSize);
-                            SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
-
-                            if (TTaskList.IsDisabled(TaskNode) || !FHasAccessPermission(TaskNode, FUserId, false))
+                            try
                             {
-                                SingleTask.Enabled = false;
-                            }
+                                // this item should only be displayed if Tax Deductible Percentage is enable
+                                if (TaskNode.Name == "RecipientTaxDeductiblePercentages")
+                                {
+                                    if (!FTaxDeductiblePercentageEnabled)
+                                    {
+                                        continue;
+                                    }
+                                }
 
-                            TaskGroup.Add(SingleTask.Name, SingleTask);
-                            TaskNode = TaskNode.NextSibling;
+                                TUcoSingleTask SingleTask = new TUcoSingleTask();
+                                SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskNode);
+                                SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
+                                    "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
+                                SingleTask.Name = TaskNode.Name;
+                                SingleTask.TaskGroup = TaskGroup;
+                                SingleTask.Tag = TaskNode;
+                                SingleTask.TaskAppearance = ATaskAppearance;
+                                SingleTask.TaskImagePath = DetermineIconForTask(TaskNode);
+                                SingleTask.TaskImage = TIconCache.IconCache.AddOrGetExistingIcon(
+                                    SingleTask.TaskImagePath, IconSize);
+                                SingleTask.RequestForDifferentIconSize += new TRequestForDifferentIconSize(SingleTask_RequestForDifferentIconSize);
+
+                                if (TTaskList.IsDisabled(TaskNode) || !FHasAccessPermission(TaskNode, FUserId, false))
+                                {
+                                    SingleTask.Enabled = false;
+                                }
+
+                                TaskGroup.Add(SingleTask.Name, SingleTask);
+                            }
+                            finally
+                            {
+                                TaskNode = TaskNode.NextSibling;
+                            }
                         }
                     }
 
@@ -388,10 +404,14 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AUserId"></param>
         /// <param name="AHasAccessPermission"></param>
-        public static void Init(string AUserId, TLstFolderNavigation.CheckAccessPermissionDelegate AHasAccessPermission)
+        /// <param name="TaxDeductiblePercentageEnabled"></param>
+        public static void Init(string AUserId,
+            TLstFolderNavigation.CheckAccessPermissionDelegate AHasAccessPermission,
+            bool TaxDeductiblePercentageEnabled = false)
         {
             FUserId = AUserId;
             FHasAccessPermission = AHasAccessPermission;
+            FTaxDeductiblePercentageEnabled = TaxDeductiblePercentageEnabled;
         }
 
         /// <summary>

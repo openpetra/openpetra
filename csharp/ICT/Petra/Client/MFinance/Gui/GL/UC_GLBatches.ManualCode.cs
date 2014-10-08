@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FLoadAndFilterLogicObject = new TUC_GLBatches_LoadAndFilter(FLedgerNumber, FMainDS, FFilterAndFindObject);
             FImportLogicObject = new TUC_GLBatches_Import(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
-            FCancelLogicObject = new TUC_GLBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
+            FCancelLogicObject = new TUC_GLBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
             FPostingLogicObject = new TUC_GLBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
             FReverseLogicObject = new TUC_GLBatches_Reverse(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
         }
@@ -155,29 +155,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateRecordNumberDisplay();
             SelectRowInGrid(1);
         }
-
-        ///// No longer used?  It has disappeared inside the load and filter object
-        ///// Reset the control
-        //public void ClearCurrentSelection()
-        //{
-        //    if (FPetraUtilsObject.HasChanges)
-        //    {
-        //        GetDataFromControls();
-        //    }
-
-        //    this.FPreviouslySelectedDetailRow = null;
-        //    ShowData();
-        //}
-
-        ///// No longer used?
-        ///// <summary>
-        ///// Returns FMainDS
-        ///// </summary>
-        ///// <returns></returns>
-        //public GLBatchTDS BatchFMainDS()
-        //{
-        //    return FMainDS;
-        //}
 
         /// <summary>
         /// Enable the transaction tab
@@ -491,6 +468,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FCurrentEffectiveDate = dateValue;
                         FPreviouslySelectedDetailRow.DateEffective = dateValue;
                     }
+                    else
+                    {
+                        return;
+                    }
 
                     //Check if new date is in a different Batch period to the current one
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
@@ -519,7 +500,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals("BATCH", UpdateTransactionDates);
-                    FPetraUtilsObject.HasChanges = true;
+                    FPetraUtilsObject.SetChangedFlag();
                 }
             }
             catch (Exception ex)
