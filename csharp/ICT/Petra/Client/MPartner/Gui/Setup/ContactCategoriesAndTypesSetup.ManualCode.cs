@@ -268,15 +268,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             TTypedDataTable ChildDTWhoseDataGotSaved;
 
             FDataSavedInNoMasterDataToSaveEvent = false;            
-            
-            // Trigger a Leave Event on the Category Code in case we have a new Category.
-            // This is needed to ensure that any change in the Category Code is for sure
-            // passed on the ucoValues UserControl - as the Leave Event doesn't fire if
-            // the user pressed the 'Save' button!
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                && (txtDetailCategoryCode.Focused))
-            {
-                txtDetailCategoryCode_Leave(this, null);                
+        
+            if (FPreviouslySelectedDetailRow != null) 
+            {            
+                // Trigger a Leave Event on the Category Code in case we have a new Category.
+                // This is needed to ensure that any change in the Category Code is for sure
+                // passed on the ucoValues UserControl - as the Leave Event doesn't fire if
+                // the user pressed the 'Save' button!
+                if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                    && (txtDetailCategoryCode.Focused))
+                {
+                    txtDetailCategoryCode_Leave(this, null);                
+                }
             }
             
             if (FDataSavingInUserControlRequiredFirst) 
