@@ -32,13 +32,13 @@ RootNode:
                 Row4: [txtParentKey, lblParentName, btnOrganise]
             ColWidths: [0=Fixed:120]
             
-        cmbCountryCode: {List=CountryList}
+        cmbCountryCode: {List=CountryList, AllowDbNull=true}
         
-        cmbUnitTypeCode: {List=UnitTypeList}
+        cmbUnitTypeCode: {List=UnitTypeList, AllowDbNull=true}
         
-        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, AllowDbNull=true}
         
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, Width=450}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, AllowDbNull=true, Width=450}
 
         txtParentKey:
             Width: 100
