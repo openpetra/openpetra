@@ -29,43 +29,6 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
-    /*************************************************************************************************
-     *
-     * An EventArgs subclass we can use to notify our parent of changes in our grid
-     *
-     * **********************************************************************************************/
-
-    /// <summary>
-    /// An eventargs class that knows the current number of items
-    /// </summary>
-    public class CountEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Returns the new item count.
-        /// </summary>
-        public int NewCount = 0;
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="Count">New item count.</param>
-        public CountEventArgs(int Count)
-        {
-            NewCount = Count;
-        }
-    }
-
-    /// <summary>
-    /// A Delegate that can be used to handle a change in the number of items
-    /// </summary>
-    public delegate void CountChangedEventHandler(object Sender, CountEventArgs e);
-
-    /****************************************************************************************************
-    *
-    * Our main class methods for Contact Attribute Details
-    *
-    * **************************************************************************************************/
-
     public partial class TUC_ContactAttributeDetail
     {
         // Keeps track of the current value of the Contact Attribute
@@ -75,24 +38,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// Raised when there are no more detail records held after the last
         /// detail record has beend deleted.
         /// </summary>
-        public event EventHandler<EventArgs> NoMoreDetailRecords;
-        
-        /// <summary>
-        /// An event that will be fired when the number of rows in the details grid changes
-        /// </summary>
-        public event CountChangedEventHandler CountChanged;
-
-        /// <summary>
-        /// Call this method when the number of rows in the details grid changes
-        /// </summary>
-        /// <param name="e">A CountEventArgs that has 'NewCount' specified</param>
-        protected virtual void OnCountChanged(CountEventArgs e)
-        {
-            if (CountChanged != null)
-            {
-                CountChanged(this, e);
-            }
-        }
+        public event EventHandler<EventArgs> NoMoreDetailRecords;        
 
         /// <summary>
         /// The Contact Details maintained in this UserControl are for this Contact Attribute.
@@ -141,14 +87,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             FMainDS.PContactAttributeDetail.DefaultView.RowFilter = FilterStr;
         }
 
-        private void NewRow(Object sender, EventArgs e)
+        private void NewRecord(Object sender, EventArgs e)
         {
             if (CreateNewPContactAttributeDetail())
             {
                 SetContactAttribute(FContactAttribute);
 
-                OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
-                
                 txtDetailContactAttrDetailCode.ReadOnly = false;
                 
                 txtDetailContactAttrDetailCode.Focus();
@@ -197,8 +141,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             if (ADeletionPerformed)
             {
-                OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
-                
                 // If we have no Attribute Details anymore: Inform the Form
                 if (this.Count == 0) 
                 {
@@ -258,9 +200,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // Now we need to display the grid again based on the modified code
             FilterOnCode(ANewCode, CurrentRowIndex);
-            
-            // The number of rows should be the same as before, so this should be unnecessary!
-            OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
         }
 
         /// <summary>
@@ -279,27 +218,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     	}
                 
         /// <summary>
-        /// Returns the number of detail code items in the database that use the specified attribute code
-        /// </summary>
-        /// <param name="AForCode">The attribute code for which to return the number of detail codes</param>
-        /// <returns></returns>
-        public int NumberOfDetails(string AForCode)
-        {
-            if (FMainDS.PContactAttributeDetail != null)
-            {
-                // specify the filter, create a view, and return the number of items
-                string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), AForCode);
-                DataView myDataView = new DataView(FMainDS.PContactAttributeDetail, filter, "", DataViewRowState.CurrentRows);
-                
-                return myDataView.Count;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        /// <summary>
         /// Creates an initial Attribute Detail for a new Contact Attribute.  Call this when a new Contact Attribute is created.
         /// </summary>
         /// <param name="AttributeCode">The Attribute Code associated with the new Contact Attribute.</param>
@@ -307,7 +225,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             FContactAttribute = AttributeCode;
             
-            NewRow(null, null);
+            NewRecord(null, null);
         }
         
         /// <summary>

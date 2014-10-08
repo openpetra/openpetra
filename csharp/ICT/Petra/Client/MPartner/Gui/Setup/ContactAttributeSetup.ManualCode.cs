@@ -37,9 +37,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmContactAttributeSetup
     {
-        // A local variable that saves the column ordinal for our additional column in the main data table
-        private int NumDetailCodesColumnOrdinal = 0;
-
 		bool FDataSavedInNoMasterDataToSaveEvent = false;
 		
 		bool FDataSavingInUserControlRequiredFirst = false;
@@ -58,8 +55,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             
             // We also want to know if the UserControl holds no more detail records
             ucoContactDetail.NoMoreDetailRecords += Uco_NoMoreDetailRecords;
-            // ...and if the number of rows in our UserControl changes
-            ucoContactDetail.CountChanged += new CountChangedEventHandler(Uco_ContactDetail_CountChanged);
 
             ucoContactDetail.PetraUtilsObject = FPetraUtilsObject;
             
@@ -81,21 +76,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 ucoContactDetail.SetContactAttribute(txtDetailContactAttributeCode.Text);
             }
-
-            // Add an extra column to our main data set that contains the number of sub-details for a given code
-            NumDetailCodesColumnOrdinal = FMainDS.PContactAttribute.Columns.Add("NumDetails", typeof(int)).Ordinal;
-
-            for (int i = 0; i < FMainDS.PContactAttribute.Rows.Count; i++)
-            {
-                string code = FMainDS.PContactAttribute.Rows[i][FMainDS.PContactAttribute.ColumnContactAttributeCode.Ordinal].ToString();
-                FMainDS.PContactAttribute.Rows[i][NumDetailCodesColumnOrdinal] = ucoContactDetail.NumberOfDetails(code);
-            }
-
-            // add a column to the grid and bind it to our new data set column
-            grdDetails.AddTextColumn(Catalog.GetString("Number of Detail Codes"), FMainDS.PContactAttribute.Columns[NumDetailCodesColumnOrdinal]);
-
-            // After the above modifications we need to make the DataTable 'unchanged' again so the screen doesn't start with all its DetailTables' DataRows modified!
-            FMainDS.PContactAttribute.AcceptChanges();
             
             SelectRowInGrid(1);
         }
@@ -200,11 +180,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void txtDetailContactAttributeCode_Leave(object sender, EventArgs e)
         {
-            if (NumDetailCodesColumnOrdinal == 0)
-            {
-                return;                                                 // No problem if we have no details yet
-            }
-
             string NewCode = txtDetailContactAttributeCode.Text;
 
             if (NewCode.CompareTo(ucoContactDetail.ContactAttribute) == 0)
@@ -237,14 +212,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             FDataSavedInNoMasterDataToSaveEvent = false;            
             
-            // Trigger a Leave Event on the Attribute Code in case we have a new Attribute.
-            // This is needed to ensure that any change in the Attribute Code is for sure
-            // passed on the ucoContactDetail UserControl - as the Leave Event doesn't fire if
-            // the user pressed the 'Save' button!
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                && (txtDetailContactAttributeCode.Focused))
+            if (FPreviouslySelectedDetailRow != null) 
             {
-                txtDetailContactAttributeCode_Leave(this, null);                
+                // Trigger a Leave Event on the Attribute Code in case we have a new Attribute.
+                // This is needed to ensure that any change in the Attribute Code is for sure
+                // passed on the ucoContactDetail UserControl - as the Leave Event doesn't fire if
+                // the user pressed the 'Save' button!
+                if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                    && (txtDetailContactAttributeCode.Focused))
+                {
+                    txtDetailContactAttributeCode_Leave(this, null);                
+                }                
             }
             
             if (FDataSavingInUserControlRequiredFirst) 
@@ -351,11 +329,5 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);                
             }
 		}				
-		
-        private void Uco_ContactDetail_CountChanged(object Sender, CountEventArgs e)
-        {
-            // something has changed in our user control (add/delete rows)
-            FPreviouslySelectedDetailRow[NumDetailCodesColumnOrdinal] = e.NewCount;
-        }
     }
 }

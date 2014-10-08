@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainCachableTable
     Actions:
-        actNew: {Label=&New, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
