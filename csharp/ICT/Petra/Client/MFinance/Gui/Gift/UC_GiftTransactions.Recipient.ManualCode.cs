@@ -259,7 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
-                UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
+                UpdateRecipientKeyText(Convert.ToInt64(ATxtDetailRecipientKey.Text), ACurrentDetailRow, ACmbMotivationDetailCode);
             }
         }
 

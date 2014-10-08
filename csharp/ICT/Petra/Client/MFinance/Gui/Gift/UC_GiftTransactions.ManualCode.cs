@@ -2027,6 +2027,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     chkDetailConfidentialGiftFlag.Checked = GiftDetailTable[CurrentTransaction].ConfidentialGiftFlag;
                     chkDetailChargeFlag.Checked = GiftDetailTable[CurrentTransaction].ChargeFlag;
                     chkDetailTaxDeductible.Checked = GiftDetailTable[CurrentTransaction].TaxDeductible;
+                    ToggleTaxDeductible(this, null);
                     cmbDetailMailingCode.SetSelectedString(GiftDetailTable[CurrentTransaction].MailingCode, -1);
                     KeyMinistryChanged(this, null);
 
