@@ -43,9 +43,9 @@ RootNode:
         txtEPFormatFile:
             ReadOnly: true
             
-        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, AllowDbNull=true}
         
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, Width=450}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, AllowDbNull=true, Width=450}
         
         txtContactPartnerKey:
             Label: Contact Partner
