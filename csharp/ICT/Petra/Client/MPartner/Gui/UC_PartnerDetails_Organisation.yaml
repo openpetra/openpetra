@@ -33,8 +33,8 @@ RootNode:
         pnlCheckBoxes:
             Controls: 
                 Row0: [chkReligious, chkFoundation]
-            ColWidths: [0=Fixed:250]    
-            Margin: 110,0,0,5        
+            ColWidths: [0=Fixed:100]    
+            Margin: 110,0,0,5
                             
         chkReligious:
             Label: Religious Organisation
@@ -44,11 +44,11 @@ RootNode:
             CheckBoxAttachedLabel: right
             OnChange: ShowHideFoundationTab
              
-        cmbBusinessCode: {BusinessCode, List=BusinessCodeList}
+        cmbBusinessCode: {BusinessCode, List=BusinessCodeList, AllowDbNull=true}
 
-        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, AllowDbNull=true}
 
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, Width=450}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, AllowDbNull=true, Width=450}
             
         txtContactPartnerKey:
             Label: Contact Partner

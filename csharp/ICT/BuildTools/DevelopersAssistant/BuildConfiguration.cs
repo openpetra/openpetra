@@ -139,6 +139,22 @@ namespace Ict.Tools.DevelopersAssistant
         }
 
         /// <summary>
+        /// Return the active database name (or an empty string)
+        /// </summary>
+        public string CurrentDBName
+        {
+            get
+            {
+                if (_branchLocation == String.Empty)
+                {
+                    return "";
+                }
+
+                return _DBName;
+            }
+        }
+
+        /// <summary>
         /// Method to populate a list box with favourite configurations.  The first item is selected, if it exists
         /// </summary>
         /// <param name="listBox">The ListBox control to populate</param>

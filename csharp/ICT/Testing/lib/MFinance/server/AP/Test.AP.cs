@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Data.Odbc;
 using NUnit.Framework;
@@ -243,7 +244,17 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         private void GetLedgerInfo(out DateTime APeriodStartDate, out DateTime APeriodEndDate,
             out string AForexGainsLossesAccount)
         {
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, null);
+            ALedgerTable LedgerTable = null;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction);
+                });
 
             AForexGainsLossesAccount = LedgerTable[0].ForexGainsLossesAccount;
 
@@ -277,8 +288,16 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             TVerificationResultCollection VerificationResult;
 
             AMainDS = TAPTransactionWebConnector.CreateAApDocument(FLedgerNumber, APartnerKey, false);
+            AccountsPayableTDS MainDS = AMainDS;
 
-            AApSupplierAccess.LoadByPrimaryKey(AMainDS, APartnerKey, null);
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                });
 
             AMainDS.AApDocument[0].DocumentCode = ADocumentCode + DateTime.Now.Ticks.ToString();
 

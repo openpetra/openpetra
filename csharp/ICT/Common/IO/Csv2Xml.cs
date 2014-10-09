@@ -504,6 +504,25 @@ namespace Ict.Common.IO
                     attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, ' ', false, false).Substring(1);
                 }
 
+                // some characters are not allowed in the name of an XmlAttribute
+                attrName = attrName.Replace("%", "percent");
+                attrName = attrName.Replace("-", "hyphen");
+                attrName = attrName.Replace("/", "slash");
+                attrName = attrName.Replace(" ", "space");
+
+                try
+                {
+                    myDoc.CreateAttribute(attrName);
+                }
+                catch (Exception)
+                {
+                    char[] arr = attrName.ToCharArray();
+
+                    // filter only letters and digits
+                    arr = Array.FindAll <char>(arr, (c => (char.IsLetterOrDigit(c))));
+                    attrName = new string(arr);
+                }
+
                 AllAttributes.Add(attrName);
             }
 

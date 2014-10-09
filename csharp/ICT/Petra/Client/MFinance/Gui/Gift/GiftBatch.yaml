@@ -12,6 +12,7 @@ RootNode:
         Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
     Actions:
         actNewDonorWarning: {ActionClick=mniNewDonorWarning_Click}
+        actPrintGiftBatchDetail: {ActionClick=PrintGiftBatchDetail}
 
     Controls:
         pnlContent:
@@ -34,6 +35,8 @@ RootNode:
     Menu:
         mniFile:
             mniSeparator: {Label=-, Visible=false}
+            mniPrintGiftBatchDetail: {Label=Print &Gift Batch Detail Report}
+                Action: actPrintGiftBatchDetail
             mniNewDonorWarning: {Label=&New Donor Warning}
                 Action: actNewDonorWarning
             mniSeparator: {Label=-}

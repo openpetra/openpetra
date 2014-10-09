@@ -137,8 +137,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception Ex)
             {
-                TLogging.Log("GetLedgerDatePostingPeriod: " + Ex.Message);
-                Console.WriteLine("GetLedgerDatePostingPeriod: " + Ex.Message);
+                TLogging.Log("Error in GetLedgerDatePostingPeriod: " + Ex.Message);
                 throw;
             }
 

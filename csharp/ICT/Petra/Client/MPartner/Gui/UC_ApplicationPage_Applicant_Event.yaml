@@ -36,15 +36,15 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
             
-        cmbApplicationStatus: {Label=Application Status, List=ApplicantStatusList, OnChange=ApplicationStatusChanged, DataField=PmGeneralApplication.GenApplicationStatus, ColSpan=2}
+        cmbApplicationStatus: {Label=Application Status, List=ApplicantStatusList, OnChange=ApplicationStatusChanged, DataField=PmGeneralApplication.GenApplicationStatus, AllowDbNull=true, ColSpan=2}
         txtReason: {Label=Reason, DataField=PmGeneralApplication.GenApplicationHoldReason, ColSpan=2, Stretch=horizontally}
         dtpCancellationDate: {Label= Cancellation Date, DataField=PmGeneralApplication.GenAppCancelled}
         dtpAcceptanceDate: {Label=Sending Field Acceptance Date, DataField=PmGeneralApplication.GenAppSendFldAcceptDate}
         chkAcceptedByReceivingField: {Label=Accepted by Receiving Field, DataField=PmGeneralApplication.GenAppSrvFldAccept, OnChange=ReceivingFieldAcceptanceChanged}
         dtpFieldAcceptance: {Label=Receiving Field Acceptance Date, DataField=PmGeneralApplication.GenAppRecvgFldAccept, Validation=true}
         
-        cmbConferenceRole: {Label=Conference Role, List=EventRoleList, DataField=PmShortTermApplication.StCongressCode, ColSpan=2}
-        cmbConferenceLanguage: {Label=Conference Language, List=LanguageCodeList, DataField=PmShortTermApplication.StCongressLanguage, ColSpan=2}
+        cmbConferenceRole: {Label=Conference Role, List=EventRoleList, DataField=PmShortTermApplication.StCongressCode, ColSpan=2, AllowDbNull=true}
+        cmbConferenceLanguage: {Label=Conference Language, List=LanguageCodeList, DataField=PmShortTermApplication.StCongressLanguage, ColSpan=2, AllowDbNull=true}
         txtFellowshipGroup: {Label=Fellowship Group, DataField=PmShortTermApplication.StFgCode}
         chkFellowshipGroupLeader: {Label=Fellowship Group Leader, CheckBoxAttachedLabel=right, DataField=PmShortTermApplication.StFgLeader}
         

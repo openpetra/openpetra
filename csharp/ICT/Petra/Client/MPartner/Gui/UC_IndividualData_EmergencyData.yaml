@@ -38,15 +38,15 @@ RootNode:
         cmbEyeColour:
             Label: Eye Colour
             Width: 160
-            OptionalValues: [=Unknown, Amber, Blue, Brown, Gray, Green, Hazel, Red, Violet]
+            OptionalValues: [=, Amber, Blue, Brown, Gray, Green, Hazel, Red, Violet]
         cmbHairColour:
             Label: Hair Colour
             Width: 160
-            OptionalValues: [=Unknown, Black, Blond, Brown, Gray, Red]
+            OptionalValues: [=, Black, Light Blond, Blond, Brown, Dark Brown, Gray, Red, White, No Hair]
         cmbFacialHair:
             Label: Facial Hair
             Width: 160
-            OptionalValues: [=Unknown, None, Moustache, Beard, Goatee, Sideburns]
+            OptionalValues: [=, None, Moustache, Beard, Goatee, Sideburns]
         lblIdentMarks:
             Label:Scars, Marks, Tattoos, Piercings
         txtIdentifyingMarks:
@@ -61,7 +61,7 @@ RootNode:
             Controls: [cmbBloodType]
         
         cmbBloodType: 
-            OptionalValues: [=Unknown, A Pos, A Neg, A Unknown, B Pos, B Neg, B Unknown, AB Pos, AB Neg, AB Unknown, O Pos, O Neg, O Unknown]
+            OptionalValues: [=, A Pos, A Neg, A Unknown, B Pos, B Neg, B Unknown, AB Pos, AB Neg, AB Unknown, O Pos, O Neg, O Unknown]
             
         grpProofOfLifeQuestions:
             Controls: [txtQuestion1, txtAnswer1, txtQuestion2, txtAnswer2, txtQuestion3, txtAnswer3]

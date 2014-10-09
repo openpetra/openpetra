@@ -51,6 +51,7 @@ namespace Tests.MFinance.Server.Gift
     {
         const string SMTH = "GIFT"; // "SMTH"; // Means Something
         const string KMIN = "KEYMIN"; // Special Result ...
+        const string SUPT = "SUPPORT"; // Special Result ...
 
         /// <summary>
         /// ...
@@ -119,14 +120,14 @@ namespace Tests.MFinance.Server.Gift
             Int64 partnerKey = CreateNewPartnerKey();
             Boolean partnerKeyIsValid;
             String motivationGroup = SMTH;
-            String motivationDetail = KMIN;
+            String motivationDetail = SUPT;
 
             partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
                 partnerKey, ref motivationGroup, ref motivationDetail);
 
             Assert.IsTrue(partnerKeyIsValid, "Check if partnerKey=" + partnerKey.ToString() + "  does not exist");
             Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
-            Assert.AreEqual(KMIN, motivationDetail, "motivationDetail must not be changed");
+            Assert.AreEqual(SUPT, motivationDetail, "motivationDetail must not be changed");
         }
 
         /// <summary>

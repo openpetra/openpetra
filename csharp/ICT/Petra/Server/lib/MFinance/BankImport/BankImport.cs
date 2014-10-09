@@ -425,10 +425,17 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             OdbcParameter param = new OdbcParameter("statementkey", OdbcType.Int);
             param.Value = AStatementKey;
 
-            DBAccess.GDBAccessObj.SelectDT(ResultDataset.AEpMatch,
-                sqlLoadMatchesOfStatement,
-                null,
-                new OdbcParameter[] { param }, -1, -1);
+            Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    DBAccess.GDBAccessObj.SelectDT(ResultDataset.AEpMatch,
+                        sqlLoadMatchesOfStatement,
+                        Transaction,
+                        new OdbcParameter[] { param }, -1, -1);
+                });
 
             // update the custom field for cost centre name for each match
             foreach (BankImportTDSAEpMatchRow row in ResultDataset.AEpMatch.Rows)
@@ -664,7 +671,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             // try to retrieve the current costcentre for this recipient
                             if (detail.RecipientKey != 0)
                             {
-                                detail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(detail.RecipientKey);
+                                detail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(detail.RecipientKey,
+                                    BatchDateEffective);
 
                                 detail.CostCentreCode = TGiftTransactionWebConnector.IdentifyPartnerCostCentre(detail.LedgerNumber,
                                     detail.RecipientLedgerNumber);

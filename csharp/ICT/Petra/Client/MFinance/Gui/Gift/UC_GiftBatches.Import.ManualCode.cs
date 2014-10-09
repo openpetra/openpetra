@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash, timop, dougm
+//       matthiash, timop, dougm, alanP
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,17 +34,41 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
-    public partial class TUC_GiftBatches
+    /// <summary>
+    /// A business logic class that handles importing of batches
+    /// </summary>
+    public class TUC_GiftBatches_Import
     {
         private TDlgSelectCSVSeparator FdlgSeparator;
+
+        private TFrmPetraEditUtils FPetraUtilsObject = null;
+        private Int32 FLedgerNumber = 0;
+        private IUC_GiftBatches FMyUserControl = null;
+
+        #region Constructor
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public TUC_GiftBatches_Import(TFrmPetraEditUtils APetraUtilsObject, Int32 ALedgerNumber, IUC_GiftBatches AUserControl)
+        {
+            FPetraUtilsObject = APetraUtilsObject;
+            FLedgerNumber = ALedgerNumber;
+            FMyUserControl = AUserControl;
+        }
+
+        #endregion
+
+        #region Public methods
+
         /// <summary>
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
-        private void ImportBatches(System.Object sender, System.EventArgs e)
+        public void ImportBatches()
         {
             bool ok = false;
 
@@ -124,11 +148,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBoxIcon.Information);
 
                     SaveUserDefaults(dialog, impOptions);
-                    LoadBatches(FLedgerNumber);
+                    FMyUserControl.LoadBatchesForCurrentYear(true);
                     FPetraUtilsObject.DisableSaveButton();
                 }
             }
         }
+
+        #endregion
+
+        #region Helper methods
 
         /// <summary>
         /// Wrapper method to handle returned bool value from remoting call to ImportGiftBatches
@@ -179,5 +207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+        #endregion
     }
 }

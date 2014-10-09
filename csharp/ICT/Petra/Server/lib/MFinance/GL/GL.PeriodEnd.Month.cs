@@ -52,7 +52,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     public partial class TPeriodIntervalConnector
     {
         /// <summary>
-        /// Month end master routine ...
+        /// MonthEnd master routine ...
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AInfoMode"></param>
@@ -65,11 +65,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             out TVerificationResultCollection AVerificationResults)
         {
 
-            bool NewTransaction;
-            Boolean ShouldCommit = false;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
             try
             {
                 TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
@@ -78,7 +73,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 if (!res && !AInfoMode)
                 {
-                    AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod, null);
+                    TDBTransaction Transaction = null;
+                    AAccountingPeriodTable PeriodTbl = null;
+
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted, ref Transaction,
+                        delegate
+                        {
+                            PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod, Transaction);
+                        });
 
                     if (PeriodTbl.Rows.Count > 0)
                     {
@@ -90,7 +92,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 TResultSeverity.Resv_Status));
                     }
                 }
-                ShouldCommit = true;
                 return res;
             }
             catch (Exception e)
@@ -105,20 +106,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
 
                 return true;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    if (ShouldCommit)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
             }
         }
     }
@@ -195,21 +182,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             FInfoMode = AInfoMode;
             FverificationResults = new TVerificationResultCollection();
-
-            if (AInfoMode)
-            {
-                AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod, null);
-
-                if (PeriodTbl.Rows.Count > 0)
-                {
-                    FverificationResults.Add(
-                        new TVerificationResult(
-                            Catalog.GetString("Month End"),
-                            String.Format(Catalog.GetString("Current period is {0} - {1}"),
-                                PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
-                            TResultSeverity.Resv_Status));
-                }
-            }
+            AVRCollection = FverificationResults;
 
             if (FledgerInfo.ProvisionalYearEndFlag)
             {
@@ -221,6 +194,28 @@ namespace Ict.Petra.Server.MFinance.GL
                         TResultSeverity.Resv_Critical);
                 FverificationResults.Add(tvt);
                 FHasCriticalErrors = true;
+                return true;
+            }
+
+            if (AInfoMode)
+            {
+                AAccountingPeriodTable PeriodTbl = null;
+                TDBTransaction Transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted, ref Transaction,
+                    delegate
+                    {
+                        PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod, Transaction);
+                    });
+
+                if (PeriodTbl.Rows.Count > 0)
+                {
+                    FverificationResults.Add(
+                        new TVerificationResult(
+                            Catalog.GetString("Month End"),
+                            String.Format(Catalog.GetString("Current period is {0} - {1}"),
+                                PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
+                            TResultSeverity.Resv_Status));
+                }
             }
 
             RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), FverificationResults);
@@ -264,7 +259,6 @@ namespace Ict.Petra.Server.MFinance.GL
             //     AFO report.
             //     Executive Summary Report.
             //
-            AVRCollection = FverificationResults;
             return FHasCriticalErrors;
         }
     }
@@ -550,7 +544,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class GetSuspenseAccountInfo
     {
-        ASuspenseAccountTable table;
+        ASuspenseAccountTable FSuspenseAccountTable;
 
         /// <summary>
         /// Constructor to define ...
@@ -558,17 +552,12 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber">the ledger Number</param>
         public GetSuspenseAccountInfo(int ALedgerNumber)
         {
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            table = ASuspenseAccountAccess.LoadViaALedger(ALedgerNumber, transaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    FSuspenseAccountTable = ASuspenseAccountAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                });
         }
 
         /// <summary>
@@ -578,7 +567,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                return table.Rows.Count;
+                return FSuspenseAccountTable.Rows.Count;
             }
         }
 
@@ -589,7 +578,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <returns></returns>
         public ASuspenseAccountRow Row(int index)
         {
-            return table[index];
+            return FSuspenseAccountTable[index];
         }
 
         /// <summary>
@@ -607,14 +596,11 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             else
             {
-                strH = table[0].SuspenseAccountCode;
+                strH = FSuspenseAccountTable[0].SuspenseAccountCode;
 
-                if (RowCount > 1)
+                for (int i = 1; i < RowCount; ++i)
                 {
-                    for (int i = 1; i < RowCount; ++i)
-                    {
-                        strH += ", " + table[i].SuspenseAccountCode;
-                    }
+                    strH += ", " + FSuspenseAccountTable[i].SuspenseAccountCode;
                 }
             }
 

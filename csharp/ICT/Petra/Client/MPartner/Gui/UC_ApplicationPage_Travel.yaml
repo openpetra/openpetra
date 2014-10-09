@@ -30,8 +30,8 @@ RootNode:
                 Row4: [txtDepartureComment]
             Dock: Top
                 
-        cmbArrivalTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeToCongCode, ColSpan=3, Validation=true}
-        cmbArrivalPoint: {Label=Arrival Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.ArrivalPointCode, ColSpan=3, Stretch=horizontally}
+        cmbArrivalTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeToCongCode, AllowDbNull=true, ColSpan=3, Validation=true}
+        cmbArrivalPoint: {Label=Arrival Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.ArrivalPointCode, AllowDbNull=true, ColSpan=3, Stretch=horizontally}
         dtpArrival: {Label=Arrival Date, DataField=PmShortTermApplication.Arrival, Validation=true}
         txtArrivalTimeHour: {Label=Time, Width=25, Format=Integer, DataField=PmShortTermApplication.ArrivalHour, Validation=true}
         txtArrivalTimeMinute: {Label=, Width=25, Format=Integer, DataField=PmShortTermApplication.ArrivalMinute, Validation=Pair(txtArrivalTimeHour)}
@@ -42,8 +42,8 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
 
-        cmbDepartureTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeFromCongCode,ColSpan=3, Validation=true}
-        cmbDeparturePoint: {Label=Departure Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.DeparturePointCode, ColSpan=3, Stretch=horizontally}
+        cmbDepartureTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeFromCongCode, AllowDbNull=true, ColSpan=3, Validation=true}
+        cmbDeparturePoint: {Label=Departure Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.DeparturePointCode, AllowDbNull=true, ColSpan=3, Stretch=horizontally}
         dtpDeparture: {Label=Departure Date, DataField=PmShortTermApplication.Departure, Validation=Pair(dtpArrival)}
         txtDepartureTimeHour: {Label=Time, Width=25, Format=Integer, DataField=PmShortTermApplication.DepartureHour, Validation=true}
         txtDepartureTimeMinute: {Label=, Width=25, Format=Integer,DataField=PmShortTermApplication.DepartureMinute, Validation=Pair(txtDepartureTimeHour)}
