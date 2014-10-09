@@ -29,8 +29,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
@@ -304,10 +303,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 ucoValues.SaveChanges(out ChildDTWhoseDataGotSaved);
                                 
                 FPetraUtilsObject.DisableSaveButton();      
-
-                // Ensure Filter Button is enabled (might have been disabled in Method 'Uco_NoMoreDetailRecords')
-                chkToggleFilter.Enabled = true;                
             }
+            
+            // Ensure Filter functionality is enabled (might have been disabled in Method 'Uco_NoMoreDetailRecords')
+            ActionEnabledEvent(null, new ActionEventArgs("cndFindFilterAvailable", true));
         }
         
 		private void NoMasterDataToSave(object Sender, Ict.Common.TNoMasterDataToSaveEventArgs e)
@@ -349,9 +348,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {            
                 FDataSavingInUserControlRequiredFirst = true;
                 
-                // Need to disable Filter Button to prevent user from potentially changing to different Rows 
+                // Need to disable Filter functionality to prevent user from potentially changing to different Rows 
                 // as that could happen if the user would apply a Filter!
-                chkToggleFilter.Enabled = false;
+                ActionEnabledEvent(null, new ActionEventArgs("cndFindFilterAvailable", false));
+                
+                // Need to set Focus to btnNew as otherwise the 'Filter' button of the UserControl gets the Focus, which isn't helpful
+                btnNew.Focus();  
             }
 		}
 		
