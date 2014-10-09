@@ -260,15 +260,26 @@ namespace Ict.Common
     }
 
     /// <summary>
-    /// Class for HyperLink handling
+    /// Class for HyperLink handling. Used by the 'TtxtLinkTextBox' and 'TRtbHyperlinks' Controls.
     /// </summary>
     public static class THyperLinkHandling
     {
+        /// <summary>Prefix for an Email Link.</summary>
         public const string HYPERLINK_PREFIX_EMAILLINK = "||email||";
+        
+        /// <summary>Prefix for a HTTP Link.</summary>
         public const string HYPERLINK_PREFIX_URLLINK = "||hyperlink||";
+        
+        /// <summary>Prefix for a HTTP Link where a part of that link gets constructed by supplying a value.</summary>
         public const string HYPERLINK_PREFIX_URLWITHVALUELINK = "||hyperlink_with_value||";
+        
+        /// <summary>Prefix for a HTTPS Link.</summary>
         public const string HYPERLINK_PREFIX_SECUREDURL = "||securehyperlink||";
+        
+        /// <summary>Prefix for a FTP Link.</summary>
         public const string HYPERLINK_PREFIX_FTPLINK = "||FTP||";
+        
+        /// <summary>Prefix for a Skype Link.</summary>
         public const string HYPERLINK_PREFIX_SKYPELINK = "||skype||";
         
         #region THyperLinkType Enum
