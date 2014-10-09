@@ -43,8 +43,8 @@ RootNode:
         chkAcceptedByReceivingField: {Label=Accepted by Receiving Field, DataField=PmGeneralApplication.GenAppSrvFldAccept, OnChange=ReceivingFieldAcceptanceChanged}
         dtpFieldAcceptance: {Label=Receiving Field Acceptance Date, DataField=PmGeneralApplication.GenAppRecvgFldAccept, Validation=true}
         
-        cmbConferenceRole: {Label=Conference Role, List=EventRoleList, DataField=PmShortTermApplication.StCongressCode, ColSpan=2}
-        cmbConferenceLanguage: {Label=Conference Language, List=LanguageCodeList, DataField=PmShortTermApplication.StCongressLanguage, ColSpan=2}
+        cmbConferenceRole: {Label=Conference Role, List=EventRoleList, DataField=PmShortTermApplication.StCongressCode, ColSpan=2, AllowDbNull=true}
+        cmbConferenceLanguage: {Label=Conference Language, List=LanguageCodeList, DataField=PmShortTermApplication.StCongressLanguage, ColSpan=2, AllowDbNull=true}
         txtFellowshipGroup: {Label=Fellowship Group, DataField=PmShortTermApplication.StFgCode}
         chkFellowshipGroupLeader: {Label=Fellowship Group Leader, CheckBoxAttachedLabel=right, DataField=PmShortTermApplication.StFgLeader}
         

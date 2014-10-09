@@ -512,6 +512,70 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of batches for the given ledger's current year
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadAGiftBatchesForCurrentYear(Int32 ALedgerNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                    string SelectClause = String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2} AND PUB_{0}.{3} = {4}",
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetLedgerNumberDBName(),
+                        ALedgerNumber,
+                        AGiftBatchTable.GetBatchYearDBName(),
+                        MainDS.ALedger[0].CurrentFinancialYear);
+
+                    DBAccess.GDBAccessObj.Select(MainDS, SelectClause, MainDS.AGiftBatch.TableName, Transaction);
+                });
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// loads a list of batches for the given ledger's current year and current plus forwarding periods
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDS LoadAGiftBatchesForCurrentYearPeriod(Int32 ALedgerNumber)
+        {
+            GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                    string SelectClause = String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2} AND PUB_{0}.{3} = {4} AND PUB_{0}.{5} >= {6}",
+                        AGiftBatchTable.GetTableDBName(),
+                        AGiftBatchTable.GetLedgerNumberDBName(),
+                        ALedgerNumber,
+                        AGiftBatchTable.GetBatchYearDBName(),
+                        MainDS.ALedger[0].CurrentFinancialYear,
+                        AGiftBatchTable.GetBatchPeriodDBName(),
+                        MainDS.ALedger[0].CurrentPeriod);
+
+                    DBAccess.GDBAccessObj.Select(MainDS, SelectClause, MainDS.AGiftBatch.TableName, Transaction);
+                });
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a GiftBatchTDS for a single transaction
         /// </summary>
         /// <param name="ALedgerNumber"></param>
