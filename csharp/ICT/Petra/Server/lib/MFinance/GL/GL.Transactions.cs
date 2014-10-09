@@ -500,7 +500,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
                 }
 
-                transRow.AnalysisAttributes = strAnalAttr;
+                if (transRow.AnalysisAttributes != strAnalAttr)
+                {
+                    transRow.AnalysisAttributes = strAnalAttr;
+                }
 
                 //reset the attributes string
                 strAnalAttr = string.Empty;
@@ -512,6 +515,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
+
+            MainDS.AcceptChanges();
 
             return MainDS;
         }

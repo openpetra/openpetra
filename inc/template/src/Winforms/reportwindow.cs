@@ -204,10 +204,12 @@ namespace {#NAMESPACE}
         if (CalledFromExtracts)
         {
             tbbGenerateReport.Visible = false;
+            mniGenerateReport.Visible = false;
         }
         else
         {
             tbbGenerateExtract.Visible = false;
+            mniGenerateExtract.Visible = false;
         }
         
         {#RUNONCEONACTIVATIONMANUAL}

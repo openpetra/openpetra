@@ -30,7 +30,7 @@ RootNode:
         txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey, PartnerClass=UNIT, Validation=true, Stretch=horizontally}
 
         cmbApplicationType: {Label=Application Type, List=EventApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true, Stretch=horizontally}
-        cmbContact1: {Label=Organization Contact 1, List=ContactList, DataField=PmGeneralApplication.GenContact1, Width=500}
-        cmbContact2: {Label=Organization Contact 2, List=ContactList, DataField=PmGeneralApplication.GenContact2, Width=500}
+        cmbContact1: {Label=Organization Contact 1, List=ContactList, DataField=PmGeneralApplication.GenContact1, Width=500, AllowDbNull=true}
+        cmbContact2: {Label=Organization Contact 2, List=ContactList, DataField=PmGeneralApplication.GenContact2, Width=500, AllowDbNull=true}
         txtPlacementPerson: {Label=Placement Person, DataField=PmGeneralApplication.PlacementPartnerKey, Type=PartnerKey, PartnerClass=PERSON, Stretch=horizontally}
         

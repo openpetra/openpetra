@@ -32,12 +32,12 @@ RootNode:
                 Row4: [cmbLanguageCode]
                 Row5: [cmbAcquisitionCode]
             
-        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Validation=true}
+        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Validation=true, AllowDbNull=true}
         dtpMaritalStatusSince: {Validation=true}
         txtMaritalStatusComment:
             Multiline: true
             ScrollBars: Vertical
             Width: 345
             Height: 46
-        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList}
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, Width=450}
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, AllowDbNull=true}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, AllowDbNull=true, Width=450}

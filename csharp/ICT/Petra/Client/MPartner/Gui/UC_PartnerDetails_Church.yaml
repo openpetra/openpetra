@@ -33,7 +33,7 @@ RootNode:
                 Row4: [txtContactPartnerKey]
                 Row5: [chkAccomodation, pnlAccomodationDetails]
 
-        cmbDenominationCode: {List=DenominationList, ColSpan=3}
+        cmbDenominationCode: {List=DenominationList, AllowDbNull=true, ColSpan=3}
         
         txtApproximateSize:
             Width: 45
@@ -47,7 +47,7 @@ RootNode:
             CheckBoxAttachedLabel: right
             Padding: 105,0,0,0
             
-        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, ColSpan=3}
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, AllowDbNull=true, ColSpan=3}
             
         chkAccomodation:
             OnChange: ShowHideAccomodationData
@@ -55,7 +55,7 @@ RootNode:
         txtAccomodationSize:
             Width: 45
 
-        cmbAccomodationType: {DataField=AccomodationType, List=AccommodationCodeList}
+        cmbAccomodationType: {DataField=AccomodationType, List=AccommodationCodeList, AllowDbNull=true}
             Width: 100
         
         pnlAccomodationDetails:
@@ -65,7 +65,7 @@ RootNode:
             Margin: 0,0,0,0
             ColSpan: 2
             
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, ColSpan=3, Width=450}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, AllowDbNull=true, ColSpan=3, Width=450}
             
         txtContactPartnerKey:
             ColSpan: 3
