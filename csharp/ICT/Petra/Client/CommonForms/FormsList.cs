@@ -531,8 +531,8 @@ namespace Ict.Petra.Client.CommonForms
                 // System.Windows.Forms.Form callerForm = GetFormByHandle(callerHandle);
 
                 // set focus to the caller window
-                WindowHandling.SetForegroundWindowWrapper(callerHandle);
-                WindowHandling.ShowWindowWrapper(callerHandle, WindowHandling.SW_SHOW);
+                TWindowHandling.SetForegroundWindowWrapper(callerHandle);
+                TWindowHandling.ShowWindowWrapper(callerHandle, TWindowHandling.SW_SHOW);
 
                 // remove from list
                 WindowRelationship.Remove((System.Object)AClosingWindowHandle.ToInt64());

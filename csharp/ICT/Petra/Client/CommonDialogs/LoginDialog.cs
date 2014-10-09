@@ -207,7 +207,7 @@ namespace Ict.Petra.Client.CommonDialogs
             /* The following commands are needed to get the input focus after having
              * displayed the Splash Screen...
              */
-            WindowHandling.SetForegroundWindowWrapper(this.Handle);
+            TWindowHandling.SetForegroundWindowWrapper(this.Handle);
         }
 
         #region ENTER Key Handlers
