@@ -60,24 +60,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <returns>false if there's no problem</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodMonthEnd(
-            int ALedgerNumber,
+            Int32 ALedgerNumber,
             bool AInfoMode,
             out TVerificationResultCollection AVerificationResults)
         {
-            TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
 
             bool NewTransaction;
+            Boolean ShouldCommit = false;
 
             DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
-                bool res = new TMonthEnd().RunMonthEnd(ALedgerNumber, AInfoMode,
+                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+                bool res = new TMonthEnd(ledgerInfo).RunMonthEnd(AInfoMode,
                     out AVerificationResults);
 
                 if (!res && !AInfoMode)
                 {
-                    AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ledgerInfo.CurrentPeriod, null);
+                    AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod, null);
 
                     if (PeriodTbl.Rows.Count > 0)
                     {
@@ -89,12 +90,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 TResultSeverity.Resv_Status));
                     }
                 }
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-
+                ShouldCommit = true;
                 return res;
             }
             catch (Exception e)
@@ -107,9 +103,22 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         Catalog.GetString("Uncaught Exception: ") + e.Message,
                         TResultSeverity.Resv_Critical));
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
 
                 return true;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    if (ShouldCommit)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
             }
         }
     }
@@ -150,20 +159,27 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// 
         /// </summary>
-        /// <param name="carryForward"></param>
-        public override void SetNextPeriod(TCarryForward carryForward)
+        /// <param name="ALedgerInfo"></param>
+        public TMonthEnd(TLedgerInfo ALedgerInfo)
         {
-            if (carryForward.FledgerInfo.CurrentPeriod == carryForward.FledgerInfo.NumberOfAccountingPeriods)
+            FledgerInfo = ALedgerInfo;
+        }
+
+        /// <summary>
+        /// Go to next month - unless you're already at the last month!
+        /// </summary>
+        public override void SetNextPeriod()
+        {
+            if (FledgerInfo.CurrentPeriod == FledgerInfo.NumberOfAccountingPeriods)
             {
                 // Set the YearEndFlag to Switch between the months...
-                carryForward.SetProvisionalYearEndFlag(true);
+                FledgerInfo.ProvisionalYearEndFlag = true;
             }
             else
             {
                 // Conventional Month->Month Switch ...
-                carryForward.SetNewFwdPeriodValue(carryForward.FledgerInfo.CurrentPeriod + 1);
+                FledgerInfo.CurrentPeriod = FledgerInfo.CurrentPeriod + 1;
             }
         }
 
@@ -171,20 +187,18 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Main Entry point. The parameters are the same as in
         /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <param name="AInfoMode"></param>
         /// <param name="AVRCollection"></param>
         /// <returns>false if it went OK</returns>
-        public bool RunMonthEnd(int ALedgerNumber, bool AInfoMode,
+        public bool RunMonthEnd(bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
-            FledgerInfo = new TLedgerInfo(ALedgerNumber);
             FverificationResults = new TVerificationResultCollection();
 
             if (AInfoMode)
             {
-                AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, FledgerInfo.CurrentPeriod, null);
+                AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod, null);
 
                 if (PeriodTbl.Rows.Count > 0)
                 {
@@ -197,9 +211,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            TCarryForward carryForward = new TCarryForward(FledgerInfo, this);
-
-            if (carryForward.GetPeriodType != TCarryForwardENum.Month)
+            if (FledgerInfo.ProvisionalYearEndFlag)
             {
                 // we want to run a month end, but the provisional year end flag has been set
                 TVerificationResult tvt =
@@ -217,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 TVerificationResultCollection IchVerificationReults;
 
-                if (!StewardshipCalculationDelegate(ALedgerNumber, FledgerInfo.CurrentPeriod,
+                if (!StewardshipCalculationDelegate(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod,
                         out IchVerificationReults))
                 {
                     FHasCriticalErrors = true;
@@ -233,7 +245,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (!FHasCriticalErrors)
                 {
-                    carryForward.SetNextPeriod();
+                    SetNextPeriod();
                     // refresh cached ledger table, so that the client will know the current period
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                         TCacheableFinanceTablesEnum.LedgerDetails.ToString());

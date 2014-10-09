@@ -154,11 +154,12 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     TLogging.Log("closing period at " + AccountingPeriodInfo.PeriodEndDate.ToShortDateString());
 
                     // run month end
-                    TCarryForward carryForward = new TCarryForward(LedgerInfo);
-                    carryForward.SetNextPeriod();
+                    TMonthEnd MonthEndOperator = new TMonthEnd(LedgerInfo);
+                    MonthEndOperator.SetNextPeriod();
 
                     if (period == 12)
                     {
+                        TYearEnd YearEndOperator = new TYearEnd(LedgerInfo);
                         // run year end
                         TVerificationResultCollection verificationResult = new TVerificationResultCollection();
                         TReallocation reallocation = new TReallocation(LedgerInfo);
@@ -166,7 +167,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                         reallocation.IsInInfoMode = false;
                         reallocation.RunOperation();
 
-                        TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(LedgerInfo, yearCounter, null);
+                        TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(LedgerInfo, yearCounter, YearEndOperator);
                         glmNewYearInit.VerificationResultCollection = verificationResult;
                         glmNewYearInit.IsInInfoMode = false;
                         glmNewYearInit.RunOperation();

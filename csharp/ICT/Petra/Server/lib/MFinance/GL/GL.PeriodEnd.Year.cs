@@ -25,6 +25,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using Ict.Petra.Server.App.Core.Security;
 
 
@@ -74,7 +75,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode, out AVerificationResult);
+                TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNum);
+                bool res = new TYearEnd(LedgerInfo).RunYearEnd(AIsInInfoMode, out AVerificationResult);
 
                 if (!res)
                 {
@@ -142,38 +144,42 @@ namespace Ict.Petra.Server.MFinance.GL
         TLedgerInfo FledgerInfo;
 
         /// <summary>
+        /// Go to period 1 of next year.
         /// </summary>
-        /// <param name="carryForward"></param>
-        public override void SetNextPeriod(TCarryForward carryForward)
+        public override void SetNextPeriod()
         {
             // Set to the first month of the "next year".
-            carryForward.SetProvisionalYearEndFlag(false);
-            carryForward.SetNewFwdPeriodValue(1);
-            carryForward.FledgerInfo.CurrentFinancialYear = carryForward.FledgerInfo.CurrentFinancialYear + 1;
+            FledgerInfo.ProvisionalYearEndFlag = false;
+            FledgerInfo.CurrentPeriod = 1;
+            FledgerInfo.CurrentFinancialYear = FledgerInfo.CurrentFinancialYear + 1;
 
-            TAccountPeriodToNewYear accountPeriodOperator = new TAccountPeriodToNewYear(carryForward.FledgerInfo.LedgerNumber);
+            TAccountPeriodToNewYear accountPeriodOperator = new TAccountPeriodToNewYear(FledgerInfo.LedgerNumber);
             accountPeriodOperator.IsInInfoMode = false;
             accountPeriodOperator.RunOperation();
         }
 
         /// <summary>
+        /// </summary>
+        /// <param name="ALedgerInfo"></param>
+        public TYearEnd(TLedgerInfo ALedgerInfo)
+        {
+            FledgerInfo = ALedgerInfo;
+        }
+
+        /// <summary>
         /// Master routine ...
         /// </summary>
-        /// <param name="ALedgerNum"></param>
         /// <param name="AInfoMode"></param>
         /// <param name="AVRCollection"></param>
         /// <returns>True if an error occurred</returns>
-        public bool RunYearEnd(int ALedgerNum, bool AInfoMode,
+        public bool RunYearEnd(bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
-            FledgerInfo = new TLedgerInfo(ALedgerNum);
             AVRCollection = new TVerificationResultCollection();
             FverificationResults = AVRCollection;
 
-            TCarryForward carryForward = new TCarryForward(FledgerInfo, this);
-
-            if (carryForward.GetPeriodType != TCarryForwardENum.Year)
+            if (!FledgerInfo.ProvisionalYearEndFlag)
             {
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("Month End is required!"),
@@ -202,12 +208,26 @@ namespace Ict.Petra.Server.MFinance.GL
             RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo),
                 Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
 
+            RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
+                Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
+
+            if (!FInfoMode && !FHasCriticalErrors)
+            {
+                FledgerInfo.ProvisionalYearEndFlag = false;
+            }
+
             return FHasCriticalErrors;
         }
     } // TYearEnd
 
     /// <summary>
     /// If the oldest year of data is now beyond the retention period, archive it to file and delete those records.
+    /// This includes:
+    ///   Gifts,
+    ///   GL Records,
+    ///   Exchange rates (these are multi-ledger, so can only be archived if all ledgers allow it.)
+    ///
+    /// NOTE CURRENTLY NOT IMPLEMENTED!
     /// </summary>
     public class TArchive : AbstractPeriodEndOperation
     {
@@ -337,7 +357,6 @@ namespace Ict.Petra.Server.MFinance.GL
         public override int GetJobSize()
         {
             bool blnHelp = FInfoMode;
-
             FInfoMode = true;
             FCountJobs = 0;
             RunOperation();
@@ -358,6 +377,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public override void RunOperation()
         {
+//          MessageBox.Show("Run End of year Reallocation (" + DoExecuteableCode.ToString() + ")");
             if (FAccountList == null)
             {
                 CalculateAccountList();
@@ -579,15 +599,17 @@ namespace Ict.Petra.Server.MFinance.GL
         int FNextYear;
         TLedgerInfo FLedgerInfo;
         int intEntryCount;
+        TYearEnd FYearEndOperator;
 
 
         /// <summary>
         /// </summary>
-        public TGlmNewYearInit(TLedgerInfo ALedgerInfo, int AYear)
+        public TGlmNewYearInit(TLedgerInfo ALedgerInfo, int AYear, TYearEnd AYearEndOperator)
         {
             FCurrentYear = AYear;
             FNextYear = FCurrentYear + 1;
             FLedgerInfo = ALedgerInfo;
+            FYearEndOperator = AYearEndOperator;
 
             bool NewTransaction;
             TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -613,7 +635,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            return new TGlmNewYearInit(FLedgerInfo, FCurrentYear);
+            return new TGlmNewYearInit(FLedgerInfo, FCurrentYear, FYearEndOperator);
         }
 
         /// <summary>
@@ -650,7 +672,7 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Next-Year records will be created, and the will be Ledger moved to the new year.
+        /// Next-Year records will be created, and the Ledger will be moved to the new year.
         /// </summary>
         public override void RunOperation()
         {
@@ -661,8 +683,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (!FInfoMode)
             {
-                TCarryForward carryForward = new TCarryForward(FLedgerInfo, FPeriodEndOperator);
-                carryForward.SetNextPeriod();
+                FYearEndOperator.SetNextPeriod();
             }
 
             FPostingToDS.AGeneralLedgerMaster.DefaultView.Sort =
@@ -792,13 +813,15 @@ namespace Ict.Petra.Server.MFinance.GL
             private TLedgerInfo FLedgerInfo;
             private Int32 JobSize = 0;
 
+            /// <summary>
+            /// </summary>
+            /// <param name="ALedgerInfo"></param>
             public TResetForwardPeriodBatches(TLedgerInfo ALedgerInfo)
             {
                 FLedgerInfo = ALedgerInfo;
             }
 
             /// <summary>
-            ///
             /// </summary>
             public override AbstractPeriodEndOperation GetActualizedClone()
             {
@@ -832,15 +855,23 @@ namespace Ict.Petra.Server.MFinance.GL
                         "a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
                         " AND a_batch_year_i=" + (FLedgerInfo.CurrentFinancialYear - 1) +
                         " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                    ABatchTable BatchTbl = (ABatchTable)DBAccess.GDBAccessObj.SelectDT(Query, "ABatch", Transaction);
-
-                    JobSize = BatchTbl.Rows.Count;
-                    foreach (ABatchRow BatchRow in BatchTbl.Rows)
+                    DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "ABatch", Transaction);
+                    if (Tbl.Rows.Count > 0)
                     {
-                        BatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
-                        BatchRow.BatchYear += 1;
+                        ABatchTable BatchTbl = (ABatchTable)Tbl;
+
+                        JobSize = BatchTbl.Rows.Count;
+                        foreach (ABatchRow BatchRow in BatchTbl.Rows)
+                        {
+                            BatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                            BatchRow.BatchYear += 1;
+                        }
+                        if (!FInfoMode)
+                        {
+                            ABatchAccess.SubmitChanges(BatchTbl, Transaction);
+                            ShouldCommit = true;
+                        }
                     }
-                    ABatchAccess.SubmitChanges(BatchTbl, Transaction);
 
                     Query =
                         "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
@@ -848,32 +879,45 @@ namespace Ict.Petra.Server.MFinance.GL
                         " AND PUB_a_batch.a_batch_number_i= PUB_a_journal.a_batch_number_i" +
                         " AND PUB_a_batch.a_batch_year_i=" + (FLedgerInfo.CurrentFinancialYear - 1) +
                         " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                    AJournalTable JournalTbl = (AJournalTable)DBAccess.GDBAccessObj.SelectDT(Query, "AJournal", Transaction);
-
-                    foreach (AJournalRow JournalRow in JournalTbl.Rows)
+                    Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AJournal", Transaction);
+                    if (Tbl.Rows.Count > 0)
                     {
-                        JournalRow.JournalPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                        AJournalTable JournalTbl = (AJournalTable)Tbl;
+
+                        foreach (AJournalRow JournalRow in JournalTbl.Rows)
+                        {
+                            JournalRow.JournalPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                        }
+                        if (!FInfoMode)
+                        {
+                            AJournalAccess.SubmitChanges(JournalTbl, Transaction);
+                            ShouldCommit = true;
+                        }
                     }
-                    AJournalAccess.SubmitChanges(JournalTbl, Transaction);
 
                     Query =
                         "SELECT * FROM PUB_a_gift_batch WHERE " +
                         " a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
                         " AND a_batch_year_i=" + (FLedgerInfo.CurrentFinancialYear - 1) +
                         " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                    AGiftBatchTable GiftBatchTbl = (AGiftBatchTable)DBAccess.GDBAccessObj.SelectDT(Query, "AGiftBatch", Transaction);
-
-                    JobSize += GiftBatchTbl.Rows.Count;
-
-                    foreach (AGiftBatchRow GiftBatchRow in GiftBatchTbl.Rows)
+                    Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AGiftBatch", Transaction);
+                    if (Tbl.Rows.Count > 0)
                     {
-                        GiftBatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
-                        GiftBatchRow.BatchYear += 1;
-                    }
-                    if (!FInfoMode)
-                    {
-                        AGiftBatchAccess.SubmitChanges(GiftBatchTbl, Transaction);
-                        ShouldCommit = true;
+                        AGiftBatchTable GiftBatchTbl = (AGiftBatchTable)Tbl;
+
+                        JobSize += GiftBatchTbl.Rows.Count;
+
+                        foreach (AGiftBatchRow GiftBatchRow in GiftBatchTbl.Rows)
+                        {
+                            GiftBatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                            GiftBatchRow.BatchYear += 1;
+                        }
+
+                        if (!FInfoMode)
+                        {
+                            AGiftBatchAccess.SubmitChanges(GiftBatchTbl, Transaction);
+                            ShouldCommit = true;
+                        }
                     }
                 }
                 finally
@@ -893,7 +937,99 @@ namespace Ict.Petra.Server.MFinance.GL
 
             }
 
-        } // TNewYearBudgets
+        } // TResetForwardPeriodBatches
+
+        /// <summary>
+        /// Delete old year and update periods for those in new year (eg. 13 becomes 1, 14 becomes 2, etc)
+        /// </summary>
+        public class TResetForwardPeriodICH : AbstractPeriodEndOperation
+        {
+            private TLedgerInfo FLedgerInfo;
+            private Int32 JobSize = 0;
+
+            /// <summary>
+            /// </summary>
+            /// <param name="ALedgerInfo"></param>
+            public TResetForwardPeriodICH(TLedgerInfo ALedgerInfo)
+            {
+                FLedgerInfo = ALedgerInfo;
+            }
+
+            /// <summary>
+            /// </summary>
+            public override AbstractPeriodEndOperation GetActualizedClone()
+            {
+                return new TResetForwardPeriodICH(FLedgerInfo);
+            }
+
+            /// <summary>
+            ///
+            /// </summary>
+            public override int GetJobSize()
+            {
+                RunOperation();
+                return JobSize;
+            }
+
+            /// <summary>
+            /// Delete old year and update periods for those in new year (eg. 13 becomes 1, 14 becomes 2, etc)
+            /// </summary>
+            public override void RunOperation()
+            {
+                bool NewTransaction;
+                Boolean ShouldCommit = false;
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                try
+                {
+                    String Query =
+                        "SELECT * FROM PUB_a_ich_stewardship WHERE " +
+                        "a_ledger_number_i=" + FLedgerInfo.LedgerNumber;
+                    DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AIchStewardship", Transaction);
+                    if (Tbl.Rows.Count > 0)
+                    {
+                        AIchStewardshipTable StewardshipTbl = (AIchStewardshipTable)Tbl;
+
+                        JobSize = StewardshipTbl.Rows.Count;
+                        for (Int32 Idx = StewardshipTbl.Rows.Count - 1; Idx >= 0; Idx--)
+                        {
+                            AIchStewardshipRow StewardshipRow = StewardshipTbl[Idx];
+                            if (StewardshipRow.PeriodNumber > FLedgerInfo.NumberOfAccountingPeriods)
+                            {
+                                StewardshipRow.PeriodNumber -= FLedgerInfo.NumberOfAccountingPeriods;
+                            }
+                            else
+                            {
+                                StewardshipRow.Delete();
+                            }
+                        }
+                        if (!FInfoMode)
+                        {
+                            AIchStewardshipAccess.SubmitChanges(StewardshipTbl, Transaction);
+                            ShouldCommit = true;
+                        }
+                    }
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        if (ShouldCommit)
+                        {
+                            DBAccess.GDBAccessObj.CommitTransaction();
+                        }
+                        else
+                        {
+                            DBAccess.GDBAccessObj.RollbackTransaction();
+                        }
+                    }
+                }
+
+            }
+
+        } // TResetForwardPeriodICH
 
 
 } // Ict.Petra.Server.MFinance.GL

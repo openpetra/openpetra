@@ -85,7 +85,7 @@ namespace Tests.MReporting.Tools
                 strAccountBank, StandardCostCentre, "Expense Example", "Credit", MFinanceConstants.IS_CREDIT, 20);
             commonAccountingTool.AddBaseCurrencyTransaction(
                 "4200", StandardCostCentre, "Expense Example", "Debit", MFinanceConstants.IS_DEBIT, 20);
-            commonAccountingTool.CloseSaveAndPost();
+            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
 
             return LedgerNumber;
         }

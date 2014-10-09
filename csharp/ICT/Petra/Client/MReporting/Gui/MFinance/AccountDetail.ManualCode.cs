@@ -97,7 +97,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String LedgerFilter = "a_ledger_number_i=" + parameters.Get("param_ledger_number_i").ToInt32();
 
             String AccountCodeFilter = ""; // Account Filter, as range or list:
-            String TranctAccountCodeFilter = "";
+            String GlmAccountCodeFilter = "";
             DataTable Balances = new DataTable();
 
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this later, for auto_email, but usually it's unused.
@@ -106,34 +106,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 String Filter = "'" + parameters.Get("param_account_codes") + "'";
                 Filter = Filter.Replace(",", "','");
-                AccountCodeFilter = "a_account_code_c in (" + Filter + ")";
-                TranctAccountCodeFilter = " AND a_account_code_c in (" + Filter + ")";
+                AccountCodeFilter = "AND a_account_code_c in (" + Filter + ")";
+                GlmAccountCodeFilter = " AND glm.a_account_code_c in (" + Filter + ")";
             }
 
             if (parameters.Get("param_rgrAccounts").ToString() == "AccountRange")
             {
-                AccountCodeFilter = "a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
+                AccountCodeFilter = "AND a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
                                     parameters.Get("param_account_code_end") + "'";
-                TranctAccountCodeFilter = " AND a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") +
-                                          "' AND '" + parameters.Get("param_account_code_end") + "'";
+                GlmAccountCodeFilter = " AND glm.a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" + 
+                                    parameters.Get("param_account_code_end") + "'";
             }
 
             String CostCentreFilter = ""; // Cost Centre Filter, as range or list:
-            String TranctCostCentreFilter = "";
+            String GlmCostCentreFilter = "";
 
             if (parameters.Get("param_rgrCostCentres").ToString() == "CostCentreList")
             {
                 String Filter = "'" + parameters.Get("param_cost_centre_codes") + "'";
                 Filter = Filter.Replace(",", "','");
                 CostCentreFilter = " AND a_cost_centre_code_c in (" + Filter + ")";
-                TranctCostCentreFilter = " AND a_cost_centre_code_c in (" + Filter + ")";
+                GlmCostCentreFilter = " AND glm.a_cost_centre_code_c in (" + Filter + ")";
             }
 
             if (parameters.Get("param_rgrCostCentres").ToString() == "CostCentreRange")
             {
                 CostCentreFilter = " AND a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
                                    "' AND  '" + parameters.Get("param_cost_centre_code_end") + "'";
-                TranctCostCentreFilter = " AND a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
+                GlmCostCentreFilter = " AND glm.a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
                                          "' AND '" + parameters.Get("param_cost_centre_code_end") + "'";
             }
 
@@ -192,7 +192,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Csv = StringHelper.AddCSV(Csv, "ALedger/SELECT * FROM a_ledger WHERE " + LedgerFilter);
             Csv = StringHelper.AddCSV(
                 Csv,
-                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + " AND " + AccountCodeFilter +
+                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + AccountCodeFilter +
                 " AND a_posting_status_l=true AND a_account_active_flag_l=true");
             Csv = StringHelper.AddCSV(
                 Csv,
@@ -225,7 +225,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     " AND a_trans_anal_attrib.a_transaction_number_i = a_transaction.a_transaction_number_i" +
                     " AND a_trans_anal_attrib.a_analysis_type_code_c = a_analysis_type.a_analysis_type_code_c" +
                     AnalysisTypeFilter +
-                    TranctAccountCodeFilter + TranctCostCentreFilter + " AND " + TranctDateFilter +
+                    AccountCodeFilter + CostCentreFilter + " AND " + TranctDateFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
                     " ORDER BY " + GroupField + ", a_transaction_date_d");
             }
@@ -242,9 +242,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "'' AS AnalysisTypeCode," +
                     "'' AS AnalysisTypeDescr," +
                     "'' AS AnalysisValue" +
-                    " FROM a_transaction WHERE " + 
-                    LedgerFilter + TranctAccountCodeFilter +
-                    TranctCostCentreFilter + " AND " + 
+                    " FROM a_transaction WHERE " +
+                    LedgerFilter + AccountCodeFilter +
+                    CostCentreFilter + " AND " + 
                     TranctDateFilter + ReferenceFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
                     " ORDER BY " + GroupField + ", a_transaction_date_d");
@@ -265,8 +265,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Int32 Year = parameters.Get("param_year_i").ToInt32();
             Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
                 LedgerFilter,
-                AccountCodeFilter,
-                CostCentreFilter,
+                GlmAccountCodeFilter,
+                GlmCostCentreFilter,
                 Year,
                 Sortby,
                 ReportDs.Tables["Transactions"],

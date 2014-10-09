@@ -1066,7 +1066,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// write all changes to the database; on failure the whole transaction is rolled back
         /// </summary>
         /// <param name="AMainDS"></param>
-        /// <returns></returns>
+        /// <returns>true</returns>
         private static bool SubmitChanges(GLPostingTDS AMainDS)
         {
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
@@ -1246,6 +1246,14 @@ namespace Ict.Petra.Server.MFinance.Common
         private static Boolean CheckPostIsAllowed(Int32 ALedgerNumber, out TVerificationResultCollection AVerifications)
         {
             AVerifications = null;
+            /*
+             * As far as I can work out, we should not be doing this here:
+             * It's supposed to be impossible to create a new Batch after the final MonthEnd, and this may be adequate.
+             * 
+             * If this check is required, we need to deal with the fact that the YearEnd process calls here, 
+             * and its reallocation batch should succeed!
+             */
+            /*
             TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNumber);
             if (LedgerInfo.ProvisionalYearEndFlag)
             {
@@ -1257,6 +1265,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Critical));
                 return false;
             }
+            */
             return true;
         }
 
@@ -1318,7 +1327,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// only used for precalculating the new balances before the user actually posts the batch
+        /// Only used for precalculating the new balances before the user actually posts the batch
         /// </summary>
         public static bool TestPostGLBatch(Int32 ALedgerNumber,
             Int32 ABatchNumber,

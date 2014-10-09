@@ -386,7 +386,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " AND glm.a_year_i = " + AFinancialYear +
                         " AND glm.a_account_code_c = a_account.a_account_code_c " +
                         " AND glm.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c " +
-                        " AND glm." + AAccountCodeFilter +
+                        AAccountCodeFilter +
                         ACostCentreFilter +
                         " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
                         " AND glmp.a_period_number_i BETWEEN " + AStartPeriod + " AND " + AEndPeriod +

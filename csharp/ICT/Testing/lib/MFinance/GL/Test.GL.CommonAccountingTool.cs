@@ -89,7 +89,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit-Test 10", "NUNIT",
                 MFinanceConstants.IS_CREDIT, 10);
-            commonAccountingTool.CloseSaveAndPost(); // returns intBatchNumber
+            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
 
             TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
@@ -112,7 +112,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountEnd, strCostCentre, "Credit-Test 5", "NUNIT",
                 MFinanceConstants.IS_DEBIT, 5);
-            commonAccountingTool.CloseSaveAndPost(); // returns intBatchNumber
+            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
 
             getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);
@@ -179,7 +179,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 strAccountEnd, strCostCentre, "Credit GBP 100", "NUNIT",
                 MFinanceConstants.IS_CREDIT, AmountInEUR, AmountInGBP);
 
-            commonAccountingTool.CloseSaveAndPost(); // returns intBatchNumber
+            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
 
             TGet_GLM_Info getGLM_InfoAfterStart = new TGet_GLM_Info(LedgerNumber, strAccountStart, strCostCentre);
             TGet_GLM_Info getGLM_InfoAfterEnd = new TGet_GLM_Info(LedgerNumber, strAccountEnd, strCostCentre);

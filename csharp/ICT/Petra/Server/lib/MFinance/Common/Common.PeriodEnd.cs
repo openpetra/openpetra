@@ -65,8 +65,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// The operator is going to set 1, (period + 1).
         /// </summary>
-        /// <param name="carryForward"></param>
-        public abstract void SetNextPeriod(TCarryForward carryForward);
+        public abstract void SetNextPeriod();
 
         /// <summary>
         /// This is for all info only routines that means JobSize has no definition
@@ -200,6 +199,9 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
+        /// <summary>
+        /// The parent operator (TMonthEnd or TYearEnd) that requests this operation
+        /// </summary>
         public TPeriodEndOperations FPeriodEndOperator;
 
         /// <summary>
@@ -249,6 +251,7 @@ namespace Ict.Petra.Server.MFinance.Common
         Year
     }
 
+/*
     /// <summary>
     /// Central object to switch to the next accounting period
     /// </summary>
@@ -277,7 +280,14 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public void SetNextPeriod()
         {
-            FPeriodEndOperator.SetNextPeriod(this);
+            if (GetPeriodType == TCarryForwardENum.Month)
+            {
+                TMonthEnd.SetNextPeriod(this);
+            }
+            else
+            {
+                TYearEnd.SetNextPeriod(this);
+            }
 
             new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
                 TLedgerInitFlagEnum.Revaluation).Flag = false;  // ( "A Revaluation has not been done.")
@@ -301,93 +311,9 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-        /// <summary>
-        /// Set or unset the "End of Year" state in he Ledger Table
-        /// </summary>
-        /// <param name="AFlagValue"></param>
-        public void SetProvisionalYearEndFlag(bool AFlagValue)
-        {
-            OdbcParameter[] ParametersArray;
-            ParametersArray = new OdbcParameter[3];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Bit);
-            ParametersArray[0].Value = !AFlagValue;
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Bit);
-            ParametersArray[1].Value = AFlagValue;
-            ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[2].Value = FledgerInfo.LedgerNumber;
 
-            bool NewTransaction = false;
-            bool ShouldCommit = false;
-            try
-            {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
-                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
-                strSQL += "SET " + ALedgerTable.GetYearEndFlagDBName() + " = ? ";
-                strSQL += ", " + ALedgerTable.GetProvisionalYearEndFlagDBName() + " = ? ";
-                strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    strSQL, transaction, ParametersArray);
-                ShouldCommit = true;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    if (ShouldCommit)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Set the new period number
-        /// </summary>
-        /// <param name="ANewPeriodNum"></param>
-        public void SetNewFwdPeriodValue(int ANewPeriodNum)
-        {
-            OdbcParameter[] ParametersArray;
-            ParametersArray = new OdbcParameter[2];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = ANewPeriodNum;
-            ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[1].Value = FledgerInfo.LedgerNumber;
-
-            bool NewTransaction = false;
-            bool ShouldCommit = false;
-            try
-            {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName()
-                    + " SET " + ALedgerTable.GetCurrentPeriodDBName() + " = ? "
-                    + " WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ?";
-
-                DBAccess.GDBAccessObj.ExecuteNonQuery(strSQL, transaction, ParametersArray);
-                ShouldCommit = true;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    if (ShouldCommit)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
-            }
-        }
     } // TCarryForward
-
+*/
     /// <summary>
     /// This is the actual list of the different error status codes of the GL Module ...
     /// </summary>

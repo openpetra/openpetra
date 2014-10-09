@@ -410,9 +410,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         /// <param name="AVerifications">A TVerificationResultCollection can defined to
         /// accept the error messages and warnings - if necessary.</param>
-        /// <returns>The routine writes back the batch number and so you can access to the
-        /// batch directly (if necessary)</returns>
-        public int CloseSaveAndPost(TVerificationResultCollection AVerifications)
+        /// <returns>True if it seemed to work</returns>
+        public Boolean CloseSaveAndPost(TVerificationResultCollection AVerifications)
         {
             return CloseSaveAndPost_(AVerifications);
         }
@@ -421,13 +420,13 @@ namespace Ict.Petra.Server.MFinance.Common
         /// The net-syntax checker reqires a clause "using Ict.Common.Verification;" in the routine which
         /// calls CloseSaveAndPost(null). The only way to avoid this is the use of CloseSaveAndPost().
         /// </summary>
-        /// <returns></returns>
-        public int CloseSaveAndPost()
+        /// <returns>true if posting seemed to go OK</returns>
+        public Boolean CloseSaveAndPost()
         {
             return CloseSaveAndPost_(null);
         }
 
-        private int CloseSaveAndPost_(TVerificationResultCollection AVerifications)
+        private Boolean CloseSaveAndPost_(TVerificationResultCollection AVerifications)
         {
             if (intJournalCount != 0)
             {
@@ -437,15 +436,14 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLBatchTDSAccess.SubmitChanges(FBatchTDS);
 
-            TGLPosting.PostGLBatch(
+            Boolean PostedOk = TGLPosting.PostGLBatch(
                 FBatchRow.LedgerNumber, FBatchRow.BatchNumber, out AVerifications);
 
-            int returnValue = FBatchRow.BatchNumber;
             // Make sure that this object cannot be used for another posting ...
             FBatchTDS = null;
             FBatchRow = null;
             FJournalRow = null;
-            return returnValue;
+            return PostedOk;
         }
     }
 }
