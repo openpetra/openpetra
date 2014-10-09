@@ -5,6 +5,7 @@ RootNode:
     #don't generate this file with designer code, because it should not have the menuitems and toolbar
     FormType: abstract
     Actions:
+        cndFindFilterAvailable:  {InitialValue=true}
         actSave: 
             Label:&Save
             ActionClick:FileSave
@@ -15,20 +16,24 @@ RootNode:
             Label:Find Ne&xt
             ActionClick:MniFilterFind_Click
             Tooltip: Find the next record that matches the current 'Find' criteria
+            Enabled: cndFindFilterAvailable
         actEditFindPrevious:
             Label:Find Pre&vious
             ActionClick:MniFilterFind_Click
             Tooltip: Find the previous record that matches the current 'Find' criteria
+            Enabled: cndFindFilterAvailable
         actEditFilter: 
             Label:Filte&r...
             ActionClick:MniFilterFind_Click
             Tooltip: Filter the displayed records by one or more criteria
             Image: FilterActive.ico
+            Enabled: cndFindFilterAvailable
         actEditFind: 
             Label:&Find...
             ActionClick:MniFilterFind_Click
             Tooltip: Find a record that matches one or more criteria
             Image: Find.ico
+            Enabled: cndFindFilterAvailable
     Menu:
         mniFile:
             mniFileSave: {Action=actSave}
