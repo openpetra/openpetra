@@ -615,7 +615,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool AActiveOnly)
         {
             DataTable Table = TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.MailingList);
-            
+
             // We need to add a row to the table that has a NULL value
             // We don't want to change the 'real' data table so we make a copy first
             Table = Table.Copy();

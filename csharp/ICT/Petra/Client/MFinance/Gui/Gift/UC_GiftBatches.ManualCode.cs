@@ -168,6 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AMotivationDetailTable motivationDetail = (AMotivationDetailTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                 TCacheableFinanceTablesEnum.MotivationList,
                 FLedgerNumber);
+
             motivationDetail.TableName = FMainDS.AMotivationDetail.TableName;
             FMainDS.Merge(motivationDetail);
 
@@ -357,7 +358,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // Set up for current year with current and forwarding periods (on initial load this will already be set so will not fire a change)
             FLoadAndFilterLogicObject.YearIndex = 0;
             FLoadAndFilterLogicObject.PeriodIndex = 0;
-            
+
             // Get the data, populate the grid and re-select the current row (or first row if none currently selected) ...
             RefreshAllData();
 

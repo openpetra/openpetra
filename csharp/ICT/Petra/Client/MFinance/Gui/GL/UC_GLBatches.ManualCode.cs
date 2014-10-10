@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //        if you know updates are available, you need to merge them afterwards or clear the data table first
             UpdateDisplay();
 
-            if (((TFrmGLBatch)this.ParentForm).LoadForImport)
+            if (((TFrmGLBatch) this.ParentForm).LoadForImport)
             {
                 // We have been launched from the Import Batches main menu screen as opposed to the regular GL Batches menu
                 // Call the logic object to import:  this will request a CSV file and merge the batches on the server.
@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FImportLogicObject.ImportBatches();
 
                 // Reset the flag
-                ((TFrmGLBatch)this.ParentForm).LoadForImport = false;
+                ((TFrmGLBatch) this.ParentForm).LoadForImport = false;
             }
 
             FBatchesLoaded = true;
