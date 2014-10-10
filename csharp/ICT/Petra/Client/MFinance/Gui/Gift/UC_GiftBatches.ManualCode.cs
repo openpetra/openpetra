@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Load the batches for the current financial year (used in particular when the screen starts up).
         /// </summary>
-        void LoadBatchesForCurrentYear(bool ARefreshDataSetOnly = false);
+        void LoadBatchesForCurrentYear();
 
         /// <summary>
         /// Create a new Gift Batch
@@ -115,6 +115,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = value;
 
+                InitialiseLogicObjects();
+                InitialiseLedgerControls();
+
                 LoadBatchesForCurrentYear();
             }
         }
@@ -159,6 +162,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailBankCostCentre);
         }
 
+        private void InitialiseLedgerControls()
+        {
+            // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
+            AMotivationDetailTable motivationDetail = (AMotivationDetailTable)TDataCache.TMFinance.GetCacheableFinanceTable(
+                TCacheableFinanceTablesEnum.MotivationList,
+                FLedgerNumber);
+            motivationDetail.TableName = FMainDS.AMotivationDetail.TableName;
+            FMainDS.Merge(motivationDetail);
+
+            FMainDS.AcceptChanges();
+
+            FMainDS.AGiftBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
+                AGiftBatchTable.GetLedgerNumberDBName(),
+                AGiftBatchTable.GetBatchNumberDBName()
+                );
+
+            SetupExtraGridFunctionality();
+            FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreData(FLoadAndFilterLogicObject);
+
+            // if this form is readonly, then we need all codes, because old codes might have been used
+            bool ActiveOnly = this.Enabled;
+            SetupAccountAndCostCentreCombos(ActiveOnly);
+
+            cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
+            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
+
+            TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
+                out FStartDateCurrentPeriod,
+                out FEndDateLastForwardingPeriod,
+                out FDefaultDate);
+            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
+                FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
+        }
+
         private void RunOnceOnParentActivationManual()
         {
             FLoadAndFilterLogicObject.OnMainScreenActivation(cmbDetailBankCostCentre, cmbDetailBankAccountCode);
@@ -171,22 +208,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         /// <summary>
         /// Refresh the data in the grid and the details after the database content was changed on the server
+        /// The current filter is not changed.  The highlighted row index remains the same (if possible) after the refresh.
         /// </summary>
-        public void RefreshAll()
+        public void RefreshAllData()
         {
+            // Remember our current row position
+            int nCurrentRowIndex = GetSelectedRowIndex();
+
             if ((FMainDS != null) && (FMainDS.AGiftBatch != null))
             {
+                // Remove all data from our DataSet object - the grid will go empty!
                 FMainDS.AGiftBatch.Rows.Clear();
             }
 
             try
             {
                 FPetraUtilsObject.DisableDataChangedEvent();
-                LoadBatchesForCurrentYear();
+
+                // Calling ApplyFilter() will automatically load the data for the currently selected year
+                //  because our ApplyFilterManual() code will do that for us
+                FFilterAndFindObject.ApplyFilter();
+
+                // Now we can select the row index we had before (if it exists)
+                SelectRowInGrid(nCurrentRowIndex);
+                UpdateRecordNumberDisplay();
 
                 if (((TFrmGiftBatch)ParentForm).GetTransactionsControl() != null)
                 {
-                    ((TFrmGiftBatch)ParentForm).GetTransactionsControl().RefreshAll();
+                    ((TFrmGiftBatch)ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
+
+                    // This will update the transactions to match the current batch
+                    ((TFrmGiftBatch)ParentForm).GetTransactionsControl().RefreshAllData();
                 }
             }
             finally
@@ -290,24 +342,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// load the batches into the grid
         /// </summary>
-        /// <param name="ARefreshDataSetOnly"></param>
-        public void LoadBatchesForCurrentYear(bool ARefreshDataSetOnly = false)
+        public void LoadBatchesForCurrentYear()
         {
-            if (ARefreshDataSetOnly)
-            {
-                //Only need to refresh FMainDS to include imported batch
-                FLoadAndFilterLogicObject.YearIndex = 0;
-                FLoadAndFilterLogicObject.PeriodIndex = 0;
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchesForCurrentYearPeriod(FLedgerNumber));
-                return;
-            }
-
-            //TLogging.Log("Starting LoadBatches()");
-
-            InitialiseLogicObjects();
-            //TLogging.Log("Filter/Find logic object has been created...");
-
-            //FLedgerNumber = ALedgerNumber;
             FDateEffective = FDefaultDate;
 
             ((TFrmGiftBatch)ParentForm).ClearCurrentSelections();
@@ -318,50 +354,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLoadAndFilterLogicObject.DisableYearAndPeriod(true);
             }
 
-            ////////  Initialise the Details Controls
-
-            // Load Motivation detail in this central place; it will be used by UC_GiftTransactions
-            AMotivationDetailTable motivationDetail = (AMotivationDetailTable)TDataCache.TMFinance.GetCacheableFinanceTable(
-                TCacheableFinanceTablesEnum.MotivationList,
-                FLedgerNumber);
-            motivationDetail.TableName = FMainDS.AMotivationDetail.TableName;
-            FMainDS.Merge(motivationDetail);
-
-            FMainDS.AcceptChanges();
-
-            FMainDS.AGiftBatch.DefaultView.Sort = String.Format("{0}, {1} DESC",
-                AGiftBatchTable.GetLedgerNumberDBName(),
-                AGiftBatchTable.GetBatchNumberDBName()
-                );
-
-            SetupExtraGridFunctionality();
-            FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreData(FLoadAndFilterLogicObject);
-
-            // if this form is readonly, then we need all codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
-            SetupAccountAndCostCentreCombos(ActiveOnly);
-
-            cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
-            TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
-
-            TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
-                out FStartDateCurrentPeriod,
-                out FEndDateLastForwardingPeriod,
-                out FDefaultDate);
-            lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
-                FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
-
-            //////////  Populate the Grid Data and show it
-
-            // Now populate the grid...
-            //TLogging.Log("Batch initialisation complete... Applying filter to populate grid");
-            FFilterAndFindObject.ApplyFilter();
-
-            ((TFrmGiftBatch) this.ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
-            ShowData();
-
-            UpdateRecordNumberDisplay();
-            SelectRowInGrid(1);
+            // Set up for current year with current and forwarding periods (on initial load this will already be set so will not fire a change)
+            FLoadAndFilterLogicObject.YearIndex = 0;
+            FLoadAndFilterLogicObject.PeriodIndex = 0;
+            
+            // Get the data, populate the grid and re-select the current row (or first row if none currently selected) ...
+            RefreshAllData();
 
             FBatchLoaded = true;
         }
@@ -718,36 +716,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
-        {
-            if (!ASelectOnly)
-            {
-                FFilterAndFindObject.ApplyFilter();
-            }
-
-            if (grdDetails.Rows.Count < 2)
-            {
-                ShowDetails(null);
-                ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
-            }
-            else if (FBatchLoaded == true)
-            {
-                //Select same row after refilter
-                int newRowToSelectAfterFilter =
-                    (ABatchNumber > 0) ? GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, ABatchNumber) : FPrevRowChangedRow;
-
-                if (ANoFocusChange)
-                {
-                    SelectRowInGrid(newRowToSelectAfterFilter);
-                }
-                else
-                {
-                    //TODO this can't be right. Ask Alan
-                    SelectRowInGrid(newRowToSelectAfterFilter);
-                }
-            }
-        }
-
         private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
         {
             int rowPos = 0;
@@ -876,13 +844,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow))
             {
-                //AGiftBatchRow giftBatchRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FSelectedBatchNumber });
-
+                // Posting succeeded so now deal with gift receipting ...
                 GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(FLedgerNumber, FSelectedBatchNumber);
                 FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
 
-                RefreshAll();
-                RefreshGridData(FSelectedBatchNumber, false, true);
+                // Now we need to get the data back from the server to pick up all the changes
+                RefreshAllData();
 
                 if (FPetraUtilsObject.HasChanges)
                 {

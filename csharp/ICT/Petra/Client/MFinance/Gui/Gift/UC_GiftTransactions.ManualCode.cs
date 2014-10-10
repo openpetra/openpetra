@@ -273,8 +273,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        /// <returns>True if new gift transactions were loaded, false if transactions had been loaded already.</returns>
-        public bool LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus)
+        /// <param name="AForceLoadFromServer">Set to true to get data from the server even though it is apparently the current batch number and status</param>
+        /// <returns>True if gift transactions were loaded from server, false if transactions had been loaded already.</returns>
+        public bool LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus, bool AForceLoadFromServer = false)
         {
             FBatchRow = GetCurrentBatchRow();
 
@@ -297,9 +298,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateCurrencySymbols(FBatchRow.CurrencyCode);
 
             //Check if the same batch is selected, so no need to apply filter
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer)
             {
-                //Same as previously selected
+                //Same as previously selected and we have not been asked to force a full refresh
                 if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
                     if (FGLEffectivePeriodChanged)
@@ -1548,18 +1549,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Refresh the dataset for this form
         /// </summary>
-        public void RefreshAll()
+        public void RefreshAllData()
         {
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
             {
                 FMainDS.AGiftDetail.Rows.Clear();
             }
 
+            // Get the current batch row from the batch tab
             FBatchRow = GetCurrentBatchRow();
 
             if (FBatchRow != null)
             {
-                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+                // Be sure to pass the true parameter because we definitely need to update FMainDS.AGiftDetail as it is now empty!
+                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus, true);
             }
         }
 
