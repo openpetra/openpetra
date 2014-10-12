@@ -1522,6 +1522,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 && (FPreviouslySelectedDetailRow.RecipientKey != 0)
                 && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                && (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
                 && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +
                         FPreviouslySelectedDetailRow.RecipientDescription +
                         " (" + FPreviouslySelectedDetailRow.RecipientKey + ").\n\n" +
