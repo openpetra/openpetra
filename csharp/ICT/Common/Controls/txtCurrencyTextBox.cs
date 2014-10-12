@@ -45,7 +45,7 @@ namespace Ict.Common.Controls
         private static DataTable GCurrencyList;
         string FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
 
-		bool FSuppressTextChangeDetection = false;
+        bool FSuppressTextChangeDetection = false;
         #region Properties (handed through to TTxtNumericTextBox!)
 
         /// <summary>
@@ -138,29 +138,29 @@ namespace Ict.Common.Controls
             get
             {
                 string NumericStr;
-                
+
                 if (!DesignMode)
                 {
                     NumericStr = FTxtNumeric.Text;
-                    
+
                     if (NumericStr != String.Empty)
                     {
                         decimal? Ret = null;
-                        
-                        if ((NumericStr.Length == 1 && NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)) 
+
+                        if (((NumericStr.Length == 1) && (NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)))
                         {
                             NumericStr = "0";
-                            
-                            if (!NegativeValueAllowed) 
+
+                            if (!NegativeValueAllowed)
                             {
                                 FSuppressTextChangeDetection = true;
-                                
+
                                 FTxtNumeric.SetCurrencyValue(0, FCurrencyDisplayFormat);
-                                
-                                FSuppressTextChangeDetection = false;                                
+
+                                FSuppressTextChangeDetection = false;
                             }
                         }
-                        
+
                         try
                         {
                             Decimal LocalCultureVersion;
@@ -220,29 +220,29 @@ namespace Ict.Common.Controls
             get
             {
                 string NumericStr;
-                
+
                 if (!DesignMode)
                 {
                     NumericStr = FTxtNumeric.Text;
-                    
+
                     if (NumericStr != String.Empty)
                     {
                         double? Ret = null;
-                        
-                        if ((NumericStr.Length == 1 && NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)) 
+
+                        if (((NumericStr.Length == 1) && (NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)))
                         {
                             NumericStr = "0";
-                            
-                            if (!NegativeValueAllowed) 
+
+                            if (!NegativeValueAllowed)
                             {
                                 FSuppressTextChangeDetection = true;
-                                
+
                                 FTxtNumeric.NumberValueDouble = 0;
-                                
-                                FSuppressTextChangeDetection = false;                                
+
+                                FSuppressTextChangeDetection = false;
                             }
                         }
-                        
+
                         try
                         {
                             double LocalCultureVersion;
