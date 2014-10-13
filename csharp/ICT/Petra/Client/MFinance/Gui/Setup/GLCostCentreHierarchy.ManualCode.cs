@@ -682,7 +682,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     this.Refresh();
 
                     FRecentlyUpdatedDetailCostCentreCode = strNewDetailCostCentreCode;
-                    ProtectedChangeOfPrimaryKey(FCurrentCostCentre);
+                    changeAccepted = ProtectedChangeOfPrimaryKey(FCurrentCostCentre);
 
                     if (changeAccepted)
                     {
@@ -723,6 +723,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FPetraUtilsObject.SuppressChangeDetection = false;
                                 FCurrentCostCentre = null;
                                 ucoCostCentreTree.PopulateTreeView(FMainDS);
+                                ucoCostCentreList.PopulateListView(FMainDS, FLedgerNumber);
                                 FIAmUpdating--;
                                 ucoCostCentreTree.SelectNodeByName(FRecentlyUpdatedDetailCostCentreCode);
                                 ClearStatus();

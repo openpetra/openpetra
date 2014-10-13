@@ -1036,6 +1036,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 strOldDetailAccountCode = "";
                                 FPetraUtilsObject.SuppressChangeDetection = true;
                                 ucoAccountsTree.PopulateTreeView(FMainDS, FLedgerNumber, FSelectedHierarchy);
+                                ucoAccountsList.PopulateListView(FMainDS, FLedgerNumber, FSelectedHierarchy);
                                 ShowDetailsManual(null);
                                 ClearStatus();
                                 FIAmUpdating--;
