@@ -1140,6 +1140,11 @@ namespace Ict.Common.Controls
             if (AValue != String.Empty)
             {
 //MessageBox.Show("FormatValue input string AValue: " + AValue);
+                if (((AValue.Length == 1) && (AValue.IndexOfAny(new char[] { '-', '.', ',' }) != -1)))
+                {
+                    AValue = "0";
+                }
+
                 try
                 {
                     switch (FControlMode)

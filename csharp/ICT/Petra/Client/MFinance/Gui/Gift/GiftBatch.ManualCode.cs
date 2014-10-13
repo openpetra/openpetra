@@ -115,7 +115,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-            ucoBatches.RefreshAll();
+            ucoBatches.RefreshAllData();
         }
         
         private void FileSaveManual(object sender, EventArgs e)

@@ -37,7 +37,7 @@ RootNode:
         dtpDateOfBirth: {Validation=true}
         txtDecorations:
             Padding: 45,0,0,0
-        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, Width:200, Validation=true}
+        cmbMaritalStatus: {DataField=MaritalStatus, List=MaritalStatusList, AllowDbNull=true, Width:200, Validation=true}
         txtAcademicTitle:
             Padding: 45,0,0,0
         dtpMaritalStatusSince: {Validation=true}
@@ -47,6 +47,6 @@ RootNode:
             Height: 46
             Multiline: true
             ScrollBars: Vertical            
-        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, ColSpan=2, Width=450}
-        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, ColSpan=2}
+        cmbLanguageCode: {DataField=PPartner.LanguageCode, List=LanguageCodeList, AllowDbNull=true, ColSpan=2, Width=450}
+        cmbAcquisitionCode: {DataField=PPartner.AcquisitionCode, List=AcquisitionCodeList, AllowDbNull=true, ColSpan=2}
         txtOccupationCode: {Label=Occupation, Type=Occupation, ColSpan=2, Width=200}

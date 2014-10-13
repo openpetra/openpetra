@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPetraUtilsObject.HasChanges)
             {
-                // saving failed, therefore do not try to post
+                // saving failed, therefore do not try to import
                 MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
                         "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -338,7 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxIcon.Information);
 
                 SaveUserDefaults(null, impOptions);
-                FMyUserControl.LoadBatchesForCurrentYear();
+                FMyUserControl.ReloadBatches();
                 FPetraUtilsObject.DisableSaveButton();
             }
         }

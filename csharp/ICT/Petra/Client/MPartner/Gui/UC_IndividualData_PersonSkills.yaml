@@ -74,6 +74,7 @@ RootNode:
             Width: 380
             ColSpan: 2
             Validation: true
+            #AllowDbNull: true  Problem with integers at the moment
         txtDescriptEnglish: {Label=Description, DataField=PmPersonSkill.DescriptionEnglish, Width=380, ColSpan=2}
         cmbLocalLanguage: 
             Label: Local Language
@@ -81,6 +82,7 @@ RootNode:
             List: LanguageCodeList
             Width: 380
             ColSpan: 2
+            AllowDbNull: true
         txtDescriptInLocalLanguage: {Label=Description in local language, DataField=PmPersonSkill.DescriptionLocal, Width=380, ColSpan=2}
         txtYearsOfExperience: {DataField=PmPersonSkill.YearsOfExperience, Width=25, Format=Integer, OnLeave=ProcessYearsOfExperience}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonSkill.YearsOfExperienceAsOf}

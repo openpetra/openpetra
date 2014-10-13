@@ -65,6 +65,7 @@ RootNode:
             DataField: PmJobAssignment.AssignmentTypeCode
             ColSpan: 2
             Validation: true
+            AllowDbNull: true
         
         dtpFromDate:
             Label: From Date

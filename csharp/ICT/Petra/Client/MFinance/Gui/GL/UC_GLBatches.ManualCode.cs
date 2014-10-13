@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Load the batches for the current financial year (used in particular when the screen starts up).
         /// </summary>
-        void LoadBatchesForCurrentYear();
+        void UpdateDisplay();
 
         /// <summary>
         /// Reload the batches
@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private TUC_GLBatches_LoadAndFilter FLoadAndFilterLogicObject = null;
         private TUC_GLBatches_Import FImportLogicObject = null;
         private TUC_GLBatches_Cancel FCancelLogicObject = null;
-        private TUC_GLBatches_Post FPostingLogicObject = null;
+        private TUC_GLBatches_Post FPostLogicObject = null;
         private TUC_GLBatches_Reverse FReverseLogicObject = null;
 
         private DateTime FDefaultDate;
@@ -90,6 +90,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FLedgerNumber = value;
 
+                InitialiseLogicObjects();
+                InitialiseLedgerControls();
+
                 LoadBatchesForCurrentYear();
             }
         }
@@ -99,18 +102,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FLoadAndFilterLogicObject = new TUC_GLBatches_LoadAndFilter(FLedgerNumber, FMainDS, FFilterAndFindObject);
             FImportLogicObject = new TUC_GLBatches_Import(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
             FCancelLogicObject = new TUC_GLBatches_Cancel(FPetraUtilsObject, FLedgerNumber, FMainDS);
-            FPostingLogicObject = new TUC_GLBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
+            FPostLogicObject = new TUC_GLBatches_Post(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
             FReverseLogicObject = new TUC_GLBatches_Reverse(FPetraUtilsObject, FLedgerNumber, FMainDS, this);
         }
 
-        /// <summary>
-        /// load the batches into the grid
-        /// </summary>
-        public void LoadBatchesForCurrentYear()
+        private void InitialiseLedgerControls()
         {
-            FBatchesLoaded = false;
-            InitialiseLogicObjects();
-
             //Set the valid date range label
             TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
                 out FStartDateCurrentPeriod,
@@ -127,33 +124,52 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FLoadAndFilterLogicObject.CurrentLedgerYear = LedgerRow.CurrentFinancialYear;
             FLoadAndFilterLogicObject.CurrentLedgerPeriod = LedgerRow.CurrentPeriod;
+        }
+
+        /// <summary>
+        /// load the batches into the grid
+        /// </summary>
+        public void LoadBatchesForCurrentYear()
+        {
+            FBatchesLoaded = false;
+
+            // Set up for current year with current and forwarding periods (on initial load this will already be set so will not fire a change)
+            FLoadAndFilterLogicObject.YearIndex = 0;
+            FLoadAndFilterLogicObject.PeriodIndex = 0;
+
+            // This call will get the first year's data and update the display.
+            // Note: If the first year data has already been loaded once there will be no trip to the server to get any updates.
+            //        if you know updates are available, you need to merge them afterwards or clear the data table first
+            UpdateDisplay();
+
+            if (((TFrmGLBatch) this.ParentForm).LoadForImport)
+            {
+                // We have been launched from the Import Batches main menu screen as opposed to the regular GL Batches menu
+                // Call the logic object to import:  this will request a CSV file and merge the batches on the server.
+                // Finally it will call back to ReloadBatches() in this class, which merges the server data into FMainDS and selects the first row
+                FImportLogicObject.ImportBatches();
+
+                // Reset the flag
+                ((TFrmGLBatch) this.ParentForm).LoadForImport = false;
+            }
+
+            FBatchesLoaded = true;
+        }
+
+        /// <summary>
+        /// Updates the data display.  Call this after the DataSet has changed.
+        /// </summary>
+        public void UpdateDisplay()
+        {
+            // Remember our current row position
+            int nCurrentRowIndex = GetSelectedRowIndex();
 
             // This single call will fire the event that loads data and populates the grid
             FFilterAndFindObject.ApplyFilter();
 
-            if (grdDetails.Rows.Count > 1)
-            {
-                ((TFrmGLBatch) this.ParentForm).EnableJournals();
-                AutoEnableTransTabForBatch();
-            }
-            else
-            {
-                ClearControls();
-                ((TFrmGLBatch) this.ParentForm).DisableJournals();
-                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
-            }
-
-            ShowData();
-
-            FBatchesLoaded = true;
-
-            if (((TFrmGLBatch) this.ParentForm).LoadForImport)
-            {
-                FImportLogicObject.ImportBatches();
-            }
-
+            // Now we can select the row index we had before (if it exists)
+            SelectRowInGrid(nCurrentRowIndex);
             UpdateRecordNumberDisplay();
-            SelectRowInGrid(1);
         }
 
         /// <summary>
@@ -546,7 +562,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //get index position of row to post
             int newCurrentRowPos = GetSelectedRowIndex();
 
-            if (FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
+            if (FPostLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
                     FEndDateLastForwardingPeriod))
             {
                 // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
@@ -580,7 +596,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void TestPostBatch(System.Object sender, EventArgs e)
         {
-            FPostingLogicObject.TestPostBatch(FPreviouslySelectedDetailRow);
+            FPostLogicObject.TestPostBatch(FPreviouslySelectedDetailRow);
         }
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)
