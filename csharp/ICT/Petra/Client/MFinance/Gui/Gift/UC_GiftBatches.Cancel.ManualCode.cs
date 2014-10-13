@@ -134,7 +134,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.HasChanges = true;
 
                 // save first, then post
-                if (!FMyForm.SaveChanges())
+                if (!FMyForm.SaveChangesManual())
                 {
                     ACurrentBatchRow.BeginEdit();
                     //Should normally be Unposted, but allow for other status values in future

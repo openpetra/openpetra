@@ -183,10 +183,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.DisableDataChangedEvent();
                 LoadBatchesForCurrentYear();
+                
+                TUC_GiftTransactions TransactionForm = ((TFrmGiftBatch)ParentForm).GetTransactionsControl();
 
-                if (((TFrmGiftBatch)ParentForm).GetTransactionsControl() != null)
+                // if the batch number = -1 then this is not a valid instance of TUC_GiftTransactions and we do not need to refresh
+                if (TransactionForm != null && TransactionForm.FBatchNumber != -1)
                 {
-                    ((TFrmGiftBatch)ParentForm).GetTransactionsControl().RefreshAll();
+                    TransactionForm.RefreshAll();
                 }
             }
             finally
@@ -511,6 +514,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+        	if (!((TFrmGiftBatch)ParentForm).CanContinueWithAnyExWorkers("NewBatch"))
+        	{
+        		return;
+        	}
+        		
             //If viewing posted batches only, show list of editing batches
             //  instead before adding a new batch
             if (!FLoadAndFilterLogicObject.StatusEditing)
@@ -871,7 +879,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    ((TFrmGiftBatch)ParentForm).SaveChanges();
+                    ((TFrmGiftBatch)ParentForm).SaveChangesManual();
                 }
             }
         }

@@ -9,7 +9,7 @@ RootNode:
     WindowHeight: 772
 
     Events:
-        Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
+        Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}
     Actions:
         actNewDonorWarning: {ActionClick=mniNewDonorWarning_Click}
         actPrintGiftBatchDetail: {ActionClick=PrintGiftBatchDetail}

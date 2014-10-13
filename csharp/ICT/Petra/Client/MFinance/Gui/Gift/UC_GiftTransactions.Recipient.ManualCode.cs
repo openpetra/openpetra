@@ -181,6 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbKeyMinistries,
             TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            Int64 ARecipientKey,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode,
@@ -256,10 +257,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MotivationRecipientKey);
                 AMotivationDetailChangedFlag = false;
             }
-            else
+            else if (ARecipientKey == 0)
             {
                 RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
-                UpdateRecipientKeyText(Convert.ToInt64(ATxtDetailRecipientKey.Text), ACurrentDetailRow, ACmbMotivationDetailCode);
+                UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
             }
         }
 
@@ -308,6 +309,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+            	ATxtDetailRecipientKey.Text = APartnerKey.ToString();
                 ACurrentDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 ACurrentDetailRow.RecipientDescription = APartnerShortName;
 
@@ -417,6 +419,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbMotivationGroupCode,
             ref TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            Int64 ARecipientKey,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode,
@@ -450,6 +453,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACmbKeyMinistries,
                 ref ACmbMotivationDetailCode,
                 ATxtDetailRecipientKey,
+                ARecipientKey,
                 ATxtDetailRecipientLedgerNumber,
                 ATxtDetailCostCentreCode,
                 ATxtDetailAccountCode,
@@ -533,6 +537,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbKeyMinistries,
             ref TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            Int64 ARecipientKey,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode,
@@ -559,6 +564,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ACmbKeyMinistries,
                     ref ACmbMotivationDetailCode,
                     ATxtDetailRecipientKey,
+                    ARecipientKey,
                     ATxtDetailRecipientLedgerNumber,
                     ATxtDetailCostCentreCode,
                     ATxtDetailAccountCode,
@@ -902,6 +908,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbKeyMinistries,
             ref TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            Int64 ARecipientKey,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode,
@@ -944,6 +951,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ACmbKeyMinistries,
                     ACmbMotivationDetailCode,
                     ATxtDetailRecipientKey,
+                    ARecipientKey,
                     ATxtDetailRecipientLedgerNumber,
                     ATxtDetailCostCentreCode,
                     ATxtDetailAccountCode,
@@ -971,6 +979,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ACmbKeyMinistries,
                     ACmbMotivationDetailCode,
                     ATxtDetailRecipientKey,
+                    ARecipientKey,
                     ATxtDetailRecipientLedgerNumber,
                     ATxtDetailCostCentreCode,
                     ATxtDetailAccountCode,

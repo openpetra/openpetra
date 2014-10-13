@@ -546,9 +546,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!FMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
                 {
-                    if (FMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
+                    if (FMotivationGroup != cmbDetailMotivationGroupCode.GetSelectedString())
                     {
-                        cmbDetailMotivationDetailCode.SetSelectedString(MFinanceConstants.GROUP_DETAIL_KEY_MIN);
+                        cmbDetailMotivationGroupCode.SetSelectedString(FMotivationGroup);
+                    }
+
+                    if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
+                    {
+                        cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
                     }
                 }
 

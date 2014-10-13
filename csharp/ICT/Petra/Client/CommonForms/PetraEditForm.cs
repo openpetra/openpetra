@@ -982,7 +982,9 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     try
                     {
-                        if (((IFrmPetraEdit)FTheForm).SaveChanges() == false)
+                    	// An exception is made for TFrmGiftBatch. We want to use a custom save method for this form.
+                    	if ((FTheForm.GetType().Name == "TFrmGiftBatch" && ((IFrmPetraEditManual)FTheForm).SaveChangesManual() == false)
+                    	    || ((IFrmPetraEdit)FTheForm).SaveChanges() == false)
                         {
                             // Form contains invalid data that hasn't been corrected yet
                             CloseFormCheckRun = false;
@@ -1139,5 +1141,14 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AMessage">An optional message to display.  If the parameter is an empty string a default message will be used</param>
         /// <returns>The number of changed records.  Return -1 to imply 'unknown'.</returns>
         int GetChangedRecordCount(out string AMessage);
+    }
+
+    /// <summary>todoComment</summary>
+    public interface IFrmPetraEditManual : IFrmPetra
+    {
+        /// <summary>
+        /// Save the changes
+        /// </summary>
+        bool SaveChangesManual();
     }
 }

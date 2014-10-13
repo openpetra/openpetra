@@ -1247,6 +1247,45 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //TODO
             return true;
         }
+        
+        /// <summary>
+        /// Returns a table of gifts with Ex-Worker recipients
+        /// </summary>
+        /// <param name="AGiftDetailsToCheck">GiftDetails to check for ExWorker recipients</param>
+        /// <param name="ANotInBatchNumber">Used to exclude gift from a particular batch</param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GiftBatchTDSAGiftDetailTable FindGiftRecipientExWorker(GiftBatchTDSAGiftDetailTable AGiftDetailsToCheck, int ANotInBatchNumber = -1)
+        {
+        	GiftBatchTDSAGiftDetailTable ReturnValue = new GiftBatchTDSAGiftDetailTable();
+        	
+        	TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+		        	foreach (GiftBatchTDSAGiftDetailRow Row in AGiftDetailsToCheck.Rows)
+		            {
+		                // check changed data is either added or modified and that it is by a new donor
+		                if (Row.RowState != DataRowState.Deleted && Row.BatchNumber != ANotInBatchNumber)
+		                {
+		                	PPartnerTypeTable PartnerTypeTable = PPartnerTypeAccess.LoadViaPPartner(Row.RecipientKey, Transaction);
+		                	
+		                	foreach (PPartnerTypeRow TypeRow in PartnerTypeTable.Rows)
+		                	{
+		                		if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER")))
+		                		{
+		                			ReturnValue.Rows.Add((object[]) Row.ItemArray.Clone());
+		                			break;
+		                		}
+		                	}
+		                }
+		            }
+                });
+        	
+        	return ReturnValue;
+        }
 
         /// <summary>
         /// this will store all new and modified recurring batches, recurring gift transactions and recurring details

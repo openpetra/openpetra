@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FMotivationDetail = string.Empty;
         string FFilterAllDetailsOfGift = string.Empty;
         private DataView FGiftDetailView = null;
+        private Int64 FRecipientKey = 0;
 
         private string FBatchStatus = string.Empty;
         private bool FBatchUnposted = false;
@@ -236,7 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             bool DoTaxUpdate;
             TUC_GiftTransactions_Recipient.SetKeyMinistryTextBoxInvisible(FPreviouslySelectedDetailRow, FMainDS, FLedgerNumber, FPetraUtilsObject,
-                cmbKeyMinistries, ref cmbDetailMotivationDetailCode, txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode,
+                cmbKeyMinistries, ref cmbDetailMotivationDetailCode, txtDetailRecipientKey, FRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode,
                 txtDetailAccountCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible, txtDeductibleAccount,
                 FMotivationGroup, ref FMotivationDetail, ref FMotivationDetailChanged, FActiveOnly,
                 FInRecipientKeyChanging, FCreatingNewGift, FInEditMode, FBatchUnposted, FTaxDeductiblePercentageEnabled, out DoTaxUpdate);
@@ -421,6 +422,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool? DoEnableRecipientHistory;
             bool DoValidateGiftDestination;
             bool DoTaxUpdate;
+            
+            FRecipientKey = APartnerKey;
 
             TUC_GiftTransactions_Recipient.OnRecipientKeyChanged(APartnerKey, APartnerShortName, AValidSelection, FPreviouslySelectedDetailRow,
                 FMainDS, FLedgerNumber, FPetraUtilsObject, ref cmbKeyMinistries, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode,
@@ -633,6 +636,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMotivationGroupCode,
                 ref cmbDetailMotivationDetailCode,
                 txtDetailRecipientKey,
+                FRecipientKey,
                 txtDetailRecipientLedgerNumber,
                 txtDetailCostCentreCode,
                 txtDetailAccountCode,
@@ -670,6 +674,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbKeyMinistries,
                 cmbDetailMotivationDetailCode,
                 txtDetailRecipientKey,
+                FRecipientKey,
                 txtDetailRecipientLedgerNumber,
                 txtDetailCostCentreCode,
                 txtDetailAccountCode,
@@ -1586,7 +1591,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool reverseWholeBatch = (AFunctionName == "Reverse Gift Batch");
 
-            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            if (!((TFrmGiftBatch)ParentForm).SaveChangesManual())
             {
                 return;
             }

@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // temporarily disable  New Donor Warning
             ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = false;
 
-            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChanges())
+            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
                 return deletionSuccessful;
@@ -249,7 +249,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 //Try to save changes
-                if (((TFrmGiftBatch) this.ParentForm).SaveChanges())
+                if (((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     //Clear current batch's gift data and reload from server
                     if (RefreshCurrentBatchGiftData(FBatchNumber))
@@ -311,7 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateTotals();
 
-                ((TFrmGiftBatch) this.ParentForm).SaveChanges();
+                ((TFrmGiftBatch) this.ParentForm).SaveChangesManual();
 
                 //message to user
                 MessageBox.Show(ACompletionMessage,
@@ -382,7 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPetraUtilsObject.HasChanges = true;
 
                     // save first, then post
-                    if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+                    if (!((TFrmGiftBatch)ParentForm).SaveChangesManual())
                     {
                         SelectRowInGrid(1);
 
