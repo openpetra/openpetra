@@ -148,7 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBoxIcon.Information);
 
                     SaveUserDefaults(dialog, impOptions);
-                    FMyUserControl.LoadBatchesForCurrentYear(true);
+                    FMyUserControl.LoadBatchesForCurrentYear();
                     FPetraUtilsObject.DisableSaveButton();
                 }
             }

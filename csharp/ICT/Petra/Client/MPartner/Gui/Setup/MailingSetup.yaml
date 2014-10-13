@@ -3,9 +3,10 @@ RootNode:
     FormTitle: Maintain Mailings
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PMailing
+    CacheableTable: MailingList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation, Ict.Petra.Shared.Interfaces.MCommon]
     FormType: edit
-    Template: windowMaintainTable
+    Template: windowMaintainCacheableTable
     WindowWidth: 800
     WindowHeight: 575
     Actions:

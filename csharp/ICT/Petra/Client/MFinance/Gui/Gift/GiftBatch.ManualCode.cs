@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-            ucoBatches.RefreshAll();
+            ucoBatches.RefreshAllData();
         }
 
         // Before the dataset is saved, check for correlation between batch and transactions
