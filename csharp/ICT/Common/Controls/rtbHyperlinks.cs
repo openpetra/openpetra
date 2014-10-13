@@ -525,7 +525,7 @@ namespace Ict.Common.Controls
                                 }
                                 else
                                 {
-                                    throw new EProblemLaunchingHyperlinkException("Link is a Hyperlink that asks for a replacement of {VALUE}, but the Delegate 'BuildLinkWithValue' has not been set up");
+                                    throw new EProblemLaunchingHyperlinkException("Link is a Hyperlink that asks for a replacement of " + THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER + ", but the Delegate 'BuildLinkWithValue' has not been set up");
                                 }
                                 
                                 break;

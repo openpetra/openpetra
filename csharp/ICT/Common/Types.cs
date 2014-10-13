@@ -282,6 +282,8 @@ namespace Ict.Common
         /// <summary>Prefix for a Skype Link.</summary>
         public const string HYPERLINK_PREFIX_SKYPELINK = "||skype||";
         
+        public const string HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER = "{VALUE}";
+        
         #region THyperLinkType Enum
 
         /// <summary>

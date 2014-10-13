@@ -357,14 +357,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(btnDemote, Catalog.GetString("Click this button to re-arrange a contact detail record within records of the same Contact Type."));
             
             FPetraUtilsObject.SetStatusBarText(cmbContactCategory, Catalog.GetString("Contact Category to which the Contact Type belongs to (narrows down available Contact Types)."));
-            FPetraUtilsObject.SetStatusBarText(cmbContactType, Catalog.GetString("Contact Type of this record. Describes what the Value is (e.g. Phone Number, E-Mail Address, etc)."));
+            FPetraUtilsObject.SetStatusBarText(cmbContactType, Catalog.GetString("Describes what the Value is (e.g. Phone Number, E-Mail Address, etc)."));
             FPetraUtilsObject.SetStatusBarText(chkSpecialised, Catalog.GetString("Tick this if the Value designates a business-related Contact Detail (e.g. business telephone number)."));
             FPetraUtilsObject.SetStatusBarText(rtbValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
             FPetraUtilsObject.SetStatusBarText(txtComment, Catalog.GetString("Comment for this Contact Detail record."));
             FPetraUtilsObject.SetStatusBarText(chkCurrent, Catalog.GetString("Untick this if the Contact Detail record is no longer current."));
             FPetraUtilsObject.SetStatusBarText(dtpNoLongerCurrentFrom, Catalog.GetString("Date from which the Contact Detail record is no longer current."));
            
-            FPetraUtilsObject.SetStatusBarText(chkConfidential, Catalog.GetString("Tick this if the Contact Detail record is confidential."));
+            FPetraUtilsObject.SetStatusBarText(chkConfidential, Catalog.GetString("Tick this if the Contact Detail record is confidential. Please refer to the User Guide what effect this setting has!"));
             
             // By default only valid Contact Details should be shown
 //            chkValidContactDetailsOnly.Checked = true;  // TODO - work on Action, then uncomment this line
@@ -968,8 +968,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Constructs a valid URL string from a Value that is of a Contact Type that has got a Hyperlink Format set up.
         /// </summary>
-        /// <param name="AValue">Value that should replace '{VALUE}' in the Hyperlink Format strin</param>
-        /// <returns>URL with the Value replacing '{VALUE}'.</returns>
+        /// <param name="AValue">Value that should replace THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER in the Hyperlink Format strin</param>
+        /// <returns>URL with the Value replacing THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER.</returns>
         private string BuildLinkWithValue(string AValue)
         {
             string HyperlinkFormat;
