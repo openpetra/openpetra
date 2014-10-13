@@ -28,8 +28,10 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -99,11 +101,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             string FilterStr = String.Format("{0}='@#~?!()'", FMainDS.PPartnerAttributeType.ColumnAttributeCategory.ColumnName);
 
             FMainDS.PPartnerAttributeType.DefaultView.RowFilter = FilterStr;
-            
-// TODO Check why this line is commented:           lblLinkFormatTip.Text = "Enter the URL that should be launched\r\nfor the Contact Type ( e.g.\r\nhttp://www.facebook.com/{VALUE} ).";
+        
+            lblLinkFormatTip.Text = Catalog.GetString("Enter the URL that should be launched for the Contact Type ( e.g. http://www.facebook.com/" + 
+                                                      THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER + " ).");
             lblLinkFormatTip.Font = new System.Drawing.Font(lblLinkFormatTip.Font.FontFamily, 7, FontStyle.Regular);
             lblLinkFormatTip.Top -= 5;
-        
+            
             pnlDetails.MinimumSize = new Size(700, 145);              // To prevent shrinkage!
         }
         
@@ -152,7 +155,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (ARow == null)
             {
 				cmbDetailAttributeTypeValueKind.SelectedIndex = 0;
-                txtDetailHyperlinkFormat.Enabled = false;
 
                 return;
             }
@@ -161,27 +163,21 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     			switch (ARow.AttributeTypeValueKind) {
     				case "CONTACTDETAIL_GENERAL":
     					cmbDetailAttributeTypeValueKind.SelectedIndex = 0;
-                        txtDetailHyperlinkFormat.Enabled = false;
     					break;
     				case "CONTACTDETAIL_HYPERLINK":
     					cmbDetailAttributeTypeValueKind.SelectedIndex = 2;
-                        txtDetailHyperlinkFormat.Enabled = false;
     					break;
     				case "CONTACTDETAIL_HYPERLINK_WITHVALUE":
     					cmbDetailAttributeTypeValueKind.SelectedIndex = 3;
-                        txtDetailHyperlinkFormat.Enabled = true;
     					break;
     				case "CONTACTDETAIL_EMAILADDRESS":
     					cmbDetailAttributeTypeValueKind.SelectedIndex = 1;
-                        txtDetailHyperlinkFormat.Enabled = false;
     					break;
     				case "CONTACTDETAIL_SKYPEID":
     					cmbDetailAttributeTypeValueKind.SelectedIndex = 4;
-                        txtDetailHyperlinkFormat.Enabled = false;
     					break;
                     default:
     					cmbDetailAttributeTypeValueKind.SelectedIndex = 0;
-                        txtDetailHyperlinkFormat.Enabled = false;
     					break;                    
     			}       
             }
@@ -203,21 +199,37 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 case 0:
                     ARow.AttributeTypeValueKind = "CONTACTDETAIL_GENERAL";
+                    // Remove any HyperlinkFormat that might have been set if the record previously held AttributeTypeValueKind "CONTACTDETAIL_HYPERLINK_WITHVALUE" 
+                    ARow.HyperlinkFormat = String.Empty;
+                    
                     break;
                 case 1:
                     ARow.AttributeTypeValueKind = "CONTACTDETAIL_EMAILADDRESS";
+                    // Remove any HyperlinkFormat that might have been set if the record previously held AttributeTypeValueKind "CONTACTDETAIL_HYPERLINK_WITHVALUE" 
+                    ARow.HyperlinkFormat = String.Empty;
+                    
                     break;
                 case 2:
                     ARow.AttributeTypeValueKind = "CONTACTDETAIL_HYPERLINK";
+                    // Remove any HyperlinkFormat that might have been set if the record previously held AttributeTypeValueKind "CONTACTDETAIL_HYPERLINK_WITHVALUE" 
+                    ARow.HyperlinkFormat = String.Empty;
+                    
                     break;
                 case 3:
                     ARow.AttributeTypeValueKind = "CONTACTDETAIL_HYPERLINK_WITHVALUE";
+                    
                     break;
                 case 4:
                     ARow.AttributeTypeValueKind = "CONTACTDETAIL_SKYPEID";
+                    // Remove any HyperlinkFormat that might have been set if the record previously held AttributeTypeValueKind "CONTACTDETAIL_HYPERLINK_WITHVALUE" 
+                    ARow.HyperlinkFormat = String.Empty;
+                    
                     break;                    
                 default:
                     ARow.AttributeTypeValueKind = "CONTACTDETAIL_GENERAL";
+                    // Remove any HyperlinkFormat that might have been set if the record previously held AttributeTypeValueKind "CONTACTDETAIL_HYPERLINK_WITHVALUE" 
+                    ARow.HyperlinkFormat = String.Empty;
+                    
                     break;                    
             }            
         }
@@ -340,6 +352,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             NewRecord(null, null);
         }
 
+        private void ValidateDataDetailsManual(PPartnerAttributeTypeRow ARow)
+        {
+            var VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidateContactTypesSetupManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
+        }
+        
         /// <summary>
         /// Raises the 'NoMoreDetailRecords' Event.
         /// </summary>
@@ -364,6 +384,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             FIndexedGridRowsHelper.DemoteRow();            
         }        
         
+        /// <summary>
+        /// Updates the enabled/disabled state of the dtpDetailUnassignableDate TextBox.
+        /// </summary>
+        /// <param name="sender">Ignored.</param>
+        /// <param name="e">Ignored.</param>
         private void EnableDisableUnassignableDate(Object sender, EventArgs e)
         {
             dtpDetailUnassignableDate.Enabled = chkDetailUnassignable.Checked;
@@ -371,11 +396,46 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (!chkDetailUnassignable.Checked)
             {
                 dtpDetailUnassignableDate.Date = null;
+                
+                // Hide any shown Data Validation ToolTip as the Data Validation ToolTip for an 
+                // empty Unassignable Date might otherwise be left shown
+                FPetraUtilsObject.ValidationToolTip.RemoveAll();
             }
             else
             {
                 dtpDetailUnassignableDate.Date = DateTime.Now.Date;
+                dtpDetailUnassignableDate.Focus();
             }
         }
+
+        /// <summary>
+        /// Updates the enabled/disabled state of the txtDetailHyperlinkFormat TextBox.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e">Ignored.</param>
+		private void EnableDisableDetailHyperlinkFormatTextBox(object sender, EventArgs e)
+		{
+		    var SelectedDetailRow = GetSelectedDetailRow();
+		    string SelectedAttributeTypeValueKind;
+		    var SenderAsComboBox = sender as ComboBox;
+		    
+		    if (SenderAsComboBox != null) 
+		    {
+		        SelectedAttributeTypeValueKind = SenderAsComboBox.Text;
+		    
+    		    if (SelectedAttributeTypeValueKind == "Hyperlink With Value")
+    		    {
+    		        txtDetailHyperlinkFormat.Visible = true;
+    		        lblDetailHyperlinkFormat.Visible = true;
+    		        lblLinkFormatTip.Visible = true;
+    		    }
+    		    else
+    		    {
+                    txtDetailHyperlinkFormat.Visible = false;
+                    lblDetailHyperlinkFormat.Visible = false;
+                    lblLinkFormatTip.Visible = false;
+    			}
+		    }
+		}
     }
 }

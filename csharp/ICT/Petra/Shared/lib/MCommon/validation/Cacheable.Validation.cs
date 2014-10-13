@@ -1015,7 +1015,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 return;
             }
 
-            // 'AssignableDate' must not be empty if the flag is set
+            // 'Unssignable Date' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PmDocumentCategoryTable.ColumnUnassignableDateId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))

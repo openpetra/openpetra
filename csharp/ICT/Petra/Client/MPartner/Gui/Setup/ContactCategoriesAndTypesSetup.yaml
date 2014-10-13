@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Contact Categories and Types
+    FormTitle: Maintain Partner Contact Categories and Types
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerContactSetupTDS
     DetailTable: PPartnerAttributeCategory
@@ -44,19 +44,30 @@ RootNode:
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
         btnNew:
+            Label: Ne&w Category
+            Tooltip: Click to create a new Partner Contact Category.
             Action: actNew
-            Width: 80
+            Width: 130
         btnDelete:
+            Label: Dele&te Category
+            Tooltip: Click to delete the highlighted Partner Contact Category.
             Action: actDelete
-            Width: 80
+            Width: 130
         pnlPromoteDemoteCategory:
             Dock: Right
             Controls: [btnDemoteCategory, btnPromoteCategory]            
-        btnPromoteCategory: {NoLabel=true, Width=15}
+        btnPromoteCategory: 
+            NoLabel: true
+            Tooltip: Move the selected Partner Contact Category down in the list.
+            Width: 15
             Padding: 0,50,0,0
-        btnDemoteCategory: {NoLabel=true, Width=15}
+        btnDemoteCategory: 
+            NoLabel: true
+            Tooltip: Move the selected Partner Contact Category up in the list.
+            Width: 15
             Padding: 0,50,0,0
         grdDetails:
+            Tooltip: Use the mouse or navigation keys to select a Partner Contact Category to view or edit.
             Dock: Fill
             TableName: PPartnerAttributeCategory
             Columns: [CategoryCode, CategoryDesc, Deletable, Index]
@@ -81,6 +92,14 @@ RootNode:
             Dock: Fill
             Padding: 3,2,0,3
           
-        txtDetailCategoryCode: {Label=Contact Category, Width=200, Validation=true}
-        txtDetailCategoryDesc: {Label=Description, Width=400, Validation=true}
+        txtDetailCategoryCode: 
+            Label: Contact Category
+            Tooltip: Enter the code for the Partner Contact Category. It should describe a group of Partner Contact Types.
+            Width: 200
+            Validation: true
+        txtDetailCategoryDesc:
+            Label: Description
+            Tooltip: Enter a description for the Partner Contact Category.
+            Width: 400
+            Validation: true
         chkDetailDeletable: {Label=Deletable, ReadOnly=true}

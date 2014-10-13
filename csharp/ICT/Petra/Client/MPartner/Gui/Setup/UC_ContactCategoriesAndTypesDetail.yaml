@@ -29,20 +29,31 @@ RootNode:
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
         btnNew:
+            Label: &New Type
+            Tooltip: Click to create a new Partner Contact Type.
             Action: actNew
-            Width: 80
+            Width: 130
         btnDelete:
+            Label: &Delete Type
+            Tooltip: Click to delete the highlighted Partner Contact Type.
             Action: actDelete
-            Width: 80
+            Width: 130
         pnlPromoteDemote:
             Dock: Right
             Controls: [btnDemote, btnPromote]            
-        btnPromote: {NoLabel=true, Width=15}
+        btnPromote: 
+            NoLabel: true
+            Tooltip: Move the selected Partner Contact Type down in the list.
+            Width: 15
             Padding: 0,40,0,0
-        btnDemote: {NoLabel=true, Width=15}
+        btnDemote: 
+            NoLabel: true
+            Tooltip: Move the selected Partner Contact Type up in the list.
+            Width: 15
             Padding: 0,40,0,0
         grdDetails:
             Dock: Fill
+            Tooltip: Use the mouse or navigation keys to select a Partner Contact Type to view or edit.
             TableName: PPartnerAttributeType
             Columns: [Code, Description, Unassignable, UnassignableDate, Deletable, Index]
             CustomColumns:
@@ -79,19 +90,37 @@ RootNode:
             Margin: 0,12,0,0
             Width: 311
             Height: 109
-        txtDetailCode: {Label=Contact Type, Width=255}
-        txtDetailSpecialLabel: {Label=Label When for Business, Width=255}
-        txtDetailDescription: {Width=255}
-        chkDetailUnassignable: {OnChange=EnableDisableUnassignableDate}
+        txtDetailCode:
+            Label: Contact Type
+            Tooltip: This can be anything really: Phone Number, Mobile Phone Number, Email Address, etc. Use singular words/phrases (e.g. 'Mobile Phone').
+            Width: 255
+        txtDetailSpecialLabel:
+            Label: Label When for Business
+            Tooltip: Label that should be displayed/printed instead of the value of 'Contact Type' if a Partners' Contact Detail record is designated 'for Business'.
+            Width: 255
+        txtDetailDescription:
+            Tooltip: Description of what this Contact Type is all about.
+            Width: 255
+        chkDetailUnassignable: 
+            Tooltip: Can this Contact Type be assigned?
+            OnChange: EnableDisableUnassignableDate
         dtpDetailUnassignableDate:
         chkDetailDeletable: {ReadOnly=true}
-        cmbDetailAttributeTypeValueKind: {Label=Value Is, Width=150}
-            OptionalValues: [=Plain Text, E-Mail Address, Hyperlink (Fixed), Hyperlink With Value, Skype ID]  
-        txtDetailHyperlinkFormat: {Label=Link Format, Width=206, Enabled=false}
+        cmbDetailAttributeTypeValueKind: 
+            Label: Value Is
+            Tooltip: Describes the kind (type) of Value that the Partner Contact Detail records hold that are linked to this Contact Type.
+            Width: 150
+            OptionalValues: [=Plain Text, E-Mail Address, Hyperlink (Fixed), Hyperlink With Value, Skype ID]
+            OnChange: EnableDisableDetailHyperlinkFormatTextBox
+        txtDetailHyperlinkFormat:
+            Label: Link Format
+            Tooltip: Specifies how a hyperlink is to be put together where the Value of a Partners' Contact Detail record is to be part of it.
+            Width: 206
+            Visible: false
         lblLinkFormatTip: 
             Text: Enter the URL that should be launched for the Contact Type ( e.g. http://www.facebook.com/{VALUE} ).
             Width: 215
             Height: 37
             Margin: 89,0,0,0
             Enabled: false
-            Visible: true
+            Visible: false
