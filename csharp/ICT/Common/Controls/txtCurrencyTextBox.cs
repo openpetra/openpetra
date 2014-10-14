@@ -45,7 +45,7 @@ namespace Ict.Common.Controls
         private static DataTable GCurrencyList;
         string FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
 
-		bool FSuppressTextChangeDetection = false;
+        bool FSuppressTextChangeDetection = false;
         #region Properties (handed through to TTxtNumericTextBox!)
 
         /// <summary>
@@ -138,30 +138,29 @@ namespace Ict.Common.Controls
             get
             {
                 string NumericStr;
-                
+
                 if (!DesignMode)
                 {
                     NumericStr = FTxtNumeric.Text;
-                    
+
                     if (NumericStr != String.Empty)
                     {
                         decimal? Ret = null;
-                        
-//                        if ((NumericStr == "-"))
-                        if ((NumericStr.Length == 1 && NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)) 
+
+                        if (((NumericStr.Length == 1) && (NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)))
                         {
                             NumericStr = "0";
-                            
-                            if (!NegativeValueAllowed) 
+
+                            if (!NegativeValueAllowed)
                             {
                                 FSuppressTextChangeDetection = true;
-                                
+
                                 FTxtNumeric.SetCurrencyValue(0, FCurrencyDisplayFormat);
-                                
-                                FSuppressTextChangeDetection = false;                                
+
+                                FSuppressTextChangeDetection = false;
                             }
                         }
-                        
+
                         try
                         {
                             Decimal LocalCultureVersion;
@@ -220,14 +219,78 @@ namespace Ict.Common.Controls
         {
             get
             {
-                // TODO: Handle this in the same way as in the 'Getter' of NumberValueDecimal!
-                return FTxtNumeric.NumberValueDouble;
+                string NumericStr;
+
+                if (!DesignMode)
+                {
+                    NumericStr = FTxtNumeric.Text;
+
+                    if (NumericStr != String.Empty)
+                    {
+                        double? Ret = null;
+
+                        if (((NumericStr.Length == 1) && (NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)))
+                        {
+                            NumericStr = "0";
+
+                            if (!NegativeValueAllowed)
+                            {
+                                FSuppressTextChangeDetection = true;
+
+                                FTxtNumeric.NumberValueDouble = 0;
+
+                                FSuppressTextChangeDetection = false;
+                            }
+                        }
+
+                        try
+                        {
+                            double LocalCultureVersion;
+
+                            if (Double.TryParse(NumericStr, out LocalCultureVersion))
+                            {
+                                Ret = LocalCultureVersion;
+                            }
+                            else
+                            {
+                                Ret = Convert.ToDouble(NumericStr, FTxtNumeric.Culture);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        return Ret;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
             }
 
             set
             {
-                // TODO: Handle this in the same way as in the 'Setter' of NumberValueDecimal!
-                FTxtNumeric.NumberValueDouble = value;
+                if (value != null)
+                {
+                    FTxtNumeric.NumberValueDouble = value;
+                }
+                else
+                {
+                    if (FTxtNumeric.FNullValueAllowed)
+                    {
+                        FTxtNumeric.NumberValueDouble = null;
+                        return;
+                    }
+                    else
+                    {
+                        throw new ArgumentNullException(
+                            "The 'NumberValueDouble' Property must not be set to null if the 'NullValueAllowed' Property is false.");
+                    }
+                }
             }
         }
 

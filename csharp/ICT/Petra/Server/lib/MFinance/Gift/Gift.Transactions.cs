@@ -2960,7 +2960,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             AFieldNumber = 0;
             Int64 FieldNumber = AFieldNumber;
-            
+
             PUnitTable UnitTable = null;
 
             TDBTransaction Transaction = null;

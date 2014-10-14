@@ -500,6 +500,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (ACmbKeyMinistries.Count == 0)
                 {
                     ACmbKeyMinistries.SelectedIndex = -1;
+
                     if (ATxtDetailRecipientKeyMinistry.Text != string.Empty)
                     {
                         ATxtDetailRecipientKeyMinistry.Text = string.Empty;
@@ -507,8 +508,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    if (ATxtDetailRecipientKeyMinistry.Text != KeyMinistry
-                    || ACurrentDetailRow.RecipientKeyMinistry != KeyMinistry)
+                    if ((ATxtDetailRecipientKeyMinistry.Text != KeyMinistry)
+                        || (ACurrentDetailRow.RecipientKeyMinistry != KeyMinistry))
                     {
                         ATxtDetailRecipientKeyMinistry.Text = KeyMinistry;
                         ACurrentDetailRow.RecipientKeyMinistry = KeyMinistry;
@@ -688,7 +689,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
 
-                if (row.RecipientKey == 0 && row.RecipientDescription != row.MotivationDetailCode)
+                if ((row.RecipientKey == 0) && (row.RecipientDescription != row.MotivationDetailCode))
                 {
                     row.RecipientDescription = row.MotivationDetailCode;
                 }

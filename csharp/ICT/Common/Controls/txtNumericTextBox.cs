@@ -1140,7 +1140,7 @@ namespace Ict.Common.Controls
             if (AValue != String.Empty)
             {
 //MessageBox.Show("FormatValue input string AValue: " + AValue);
-                if ((AValue.Length == 1 && AValue.IndexOfAny(new char[] { '-', '.', ',' }) != -1))
+                if (((AValue.Length == 1) && (AValue.IndexOfAny(new char[] { '-', '.', ',' }) != -1)))
                 {
                     AValue = "0";
                 }
@@ -1151,7 +1151,7 @@ namespace Ict.Common.Controls
                     {
                         case TNumericTextBoxMode.Decimal:
                         case TNumericTextBoxMode.Currency:
-                            
+
                             if (FNumberPrecision == TNumberPrecision.Double)
                             {
                                 NumberValueDouble = Convert.ToDouble(AValue, FCurrentCulture);
@@ -1163,7 +1163,7 @@ namespace Ict.Common.Controls
                                 //                this.Text = strnumformat.Remove(0, 1);
                             }
                             else if (FNumberPrecision == TNumberPrecision.Decimal)
-                            {                                
+                            {
                                 NumberValueDecimal = Convert.ToDecimal(AValue, FCurrentCulture);
                                 //                CultureInfo ci = CultureInfo.CreateSpecificCulture("en-US");
                                 //                NumberFormatInfo ni = ci.NumberFormat;

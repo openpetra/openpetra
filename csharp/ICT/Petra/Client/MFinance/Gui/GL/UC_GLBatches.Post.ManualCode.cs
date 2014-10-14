@@ -138,12 +138,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // otherwise the next save would try to modify the posted batch, even though no values have been changed
                     FMainDS.AcceptChanges();
 
-                    // AlanP: You must not set FPreviouslySelectedDetailRow = null because it is owned by grid events
-                    //this.FPreviouslySelectedDetailRow = null;
+                    // Ensure these tabs will ask the server for updates
                     FMyForm.GetJournalsControl().ClearCurrentSelection();
                     FMyForm.GetTransactionsControl().ClearCurrentSelection();
 
-                    FMyUserControl.LoadBatchesForCurrentYear();
+                    FMyUserControl.UpdateDisplay();
 
                     return true;
                 }
