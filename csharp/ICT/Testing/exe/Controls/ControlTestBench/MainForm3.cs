@@ -52,7 +52,7 @@ public partial class MainForm3 : Form
         // TODO: Add constructor code after the InitializeComponent() call.
         //
 
-        tabControlTypes.SelectedIndex = 1;
+        tabControlTypes.SelectedIndex = 2;
     }
 
     void TestShepherd(object sender, EventArgs e)
@@ -117,10 +117,21 @@ public partial class MainForm3 : Form
 
     void TabControlTypesSelectedIndexChanged(object sender, EventArgs e)
     {
-        if (tabControlTypes.SelectedIndex == 1)
+        if (tabControlTypes.SelectedIndex == 1) 
         {
             btnOpenFilterFindUCTestForm.Focus();
         }
+        else if (tabControlTypes.SelectedIndex == 2) 
+        {
+            btnOpenRTBHyperlinksUCTestForm.Focus();
+        }     
     }
+    
+    void BtnOpenRTBHyperlinksUCTestFormClick(object sender, System.EventArgs e)
+    {
+        RTBwithHyperlinksUCTest RtbHlTest = new RTBwithHyperlinksUCTest();
+        
+        RtbHlTest.Show();        
+    }    
 }
 }

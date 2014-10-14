@@ -1678,5 +1678,91 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
+        
+        /// <summary>
+        /// Validates the Partner Contact Types Setup usercontrol data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateContactTypesSetupManual(object AContext, PPartnerAttributeTypeRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'HyperLink Format' must be correct if ARow.AttributeTypeValueKind is "CONTACTDETAIL_HYPERLINK_WITHVALUE"
+            ValidationColumn = ARow.Table.Columns[PPartnerAttributeTypeTable.ColumnHyperlinkFormatId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.AttributeTypeValueKind == "CONTACTDETAIL_HYPERLINK_WITHVALUE") 
+                {
+                    // Remove any Data Validation errors that might have been recorded
+                    AVerificationResultCollection.Remove(ValidationColumn);
+                    
+                    // 'HyperLink Format' must not be empty string 
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.HyperlinkFormat, Catalog.GetString("Link Format"),
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    
+                    if ((VerificationResult == null)
+                        && (ARow.HyperlinkFormat == THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER))
+                    {
+                        // 'HyperLink Format' must contain more than just THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_HYPERLINK_WITH_VALUE_JUST_CONTAINING_PLACEHOLDER, 
+                                    new string[] { THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);                            
+                    }
+                    
+                    if ((VerificationResult == null)
+                        && (ARow.HyperlinkFormat.IndexOf(THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER, 
+                                                         StringComparison.InvariantCulture) == -1))
+                    {
+                        // 'HyperLink Format' must contain THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER,
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_HYPERLINK_WITH_VALUE_NOT_CONTAINING_PLACEHOLDER, 
+                                    new string[] { THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }                            
+                                    
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);                    
+                }
+                else
+                {
+                    // Remove any Data Validation errors that might have been recorded
+                    AVerificationResultCollection.Remove(ValidationColumn);
+                }
+            }
+            
+            VerificationResult = null;
+            
+            // 'Unssignable Date' must not be empty if the flag is set
+            ValidationColumn = ARow.Table.Columns[PPartnerAttributeTypeTable.ColumnUnassignableDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.Unassignable)
+                {
+                    VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.UnassignableDate,
+                        ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }           
+        }        
     }
 }

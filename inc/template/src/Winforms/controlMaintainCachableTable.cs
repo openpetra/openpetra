@@ -383,7 +383,8 @@ namespace {#NAMESPACE}
 
 #region Show and Undo Data
 
-    private void SetPrimaryKeyReadOnly(bool AReadOnly)
+    /// make sure that the primary key cannot be edited anymore
+    public void SetPrimaryKeyReadOnly(bool AReadOnly)
     {
         {#PRIMARYKEYCONTROLSREADONLY}
     }
@@ -436,7 +437,7 @@ namespace {#NAMESPACE}
     /// UserControl's ValidateAllData Method doesn't change a recorded DataValidationRun that was set from the 
     /// Form/UserControl that embeds this UserControl! (Default=true).</param>
     /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>    
-    private bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, bool ADontRecordNewDataValidationRun = true)
+    public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors, bool ADontRecordNewDataValidationRun = true)
     {
         bool ReturnValue = false;
         if (!ADontRecordNewDataValidationRun)
@@ -878,7 +879,8 @@ namespace {#NAMESPACE}
 {#ENDIF MASTERTABLE}
 {#IFNDEF MASTERTABLE}
 
-    private void GetDataFromControls()
+    /// get the data from the controls and store in the currently selected detail row
+    public void GetDataFromControls()
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
@@ -1045,15 +1047,15 @@ namespace {#NAMESPACE}
 	}
 
     /// <summary>
-    /// save the changes on the screen
+    /// save the changes in the usercontrol
     /// </summary>
-    /// <returns>True if data was saved successfully, otherwise false.</returns>    
-    public bool SaveChanges()
+    /// <param name="AChildDataTableWhoseDataGetsSaved">The Typed DataTable whose data gets saved in this Method.</param>
+    /// <remarks>Be sure to have called ValidateAllData or ValidateBeforeSave() before calling this method as this Method DOES NOT
+    /// run data validation on its own!!!</remarks>
+    /// <returns>True if data was saved successfully, otherwise false.</returns>
+    public bool SaveChanges(out TTypedDataTable AChildDataTableWhoseDataGetsSaved)
     {
-        // Be sure to have called ValidateBeforeSave() before calling this method
-
-        // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
-        FPetraUtilsObject.VerificationResultCollection.Clear();
+        AChildDataTableWhoseDataGetsSaved = FMainDS.{#DETAILTABLE};
 
         foreach (DataRow InspectDR in FMainDS.{#DETAILTABLE}.Rows)
         {
@@ -1066,9 +1068,6 @@ namespace {#NAMESPACE}
         }
         else
         {
-            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
-            this.Cursor = Cursors.WaitCursor;
-
             TSubmitChangesResult SubmissionResult;
             TVerificationResultCollection VerificationResult;
 
@@ -1079,7 +1078,14 @@ namespace {#NAMESPACE}
                 // nothing to be saved, so it is ok to close the screen etc
                 return true;
             }
-                
+
+            // Compared to other YAML Templates, the following two commands are run only AFTER the 
+            // 'if (SubmitDT == null)' check was negative. This is so that the UserControl doesn't
+            // interfere with the screen in an unwanted manner in case the check is positive, ie. 
+            // there was nothing to be saved.
+            FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataInProgress);
+            FPetraUtilsObject.ShowWaitCursor();
+
             // Submit changes to the PETRAServer
             try
             {
@@ -1088,7 +1094,7 @@ namespace {#NAMESPACE}
             catch (ESecurityDBTableAccessDeniedException Exp)
             {
                 FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                this.Cursor = Cursors.Default;
+                FPetraUtilsObject.ShowDefaultCursor();
 
                 TMessages.MsgSecurityException(Exp, this.GetType());
                     
@@ -1097,7 +1103,7 @@ namespace {#NAMESPACE}
             catch (EDBConcurrencyException Exp)
             {
                 FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                this.Cursor = Cursors.Default;
+                FPetraUtilsObject.ShowDefaultCursor();
 
                 TMessages.MsgDBConcurrencyException(Exp, this.GetType());
                     
@@ -1106,7 +1112,7 @@ namespace {#NAMESPACE}
             catch (Exception)
             {
                 FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataException);
-                this.Cursor = Cursors.Default;
+                FPetraUtilsObject.ShowDefaultCursor();
                     
                 throw;
             }
@@ -1114,27 +1120,13 @@ namespace {#NAMESPACE}
             switch (SubmissionResult)
             {
                 case TSubmitChangesResult.scrOK:
-
-                    // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                    FMainDS.{#DETAILTABLE}.AcceptChanges();
-
-                    // Merge back with data from the Server (eg. for getting Sequence values)
-                    SubmitDT.AcceptChanges();
-                    FMainDS.{#DETAILTABLE}.Merge(SubmitDT, false);
-
-                    // need to accept the new modification ID
-                    FMainDS.{#DETAILTABLE}.AcceptChanges();
-
-                    // Update UI
-                    FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
-                    this.Cursor = Cursors.Default;
-
-                    SetPrimaryKeyReadOnly(true);
+                    TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS.{#DETAILTABLE}, SubmitDT,
+                        FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, true, true);
 
                     return true;
 
                 case TSubmitChangesResult.scrError:
-                    this.Cursor = Cursors.Default;
+                    FPetraUtilsObject.ShowDefaultCursor();
                     FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataErrorOccured);
 
                     MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult), 
@@ -1145,13 +1137,14 @@ namespace {#NAMESPACE}
                     return false;
 
                 case TSubmitChangesResult.scrNothingToBeSaved:
-                    this.Cursor = Cursors.Default;
+                    TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, true);
+
                     return true;
 
                 case TSubmitChangesResult.scrInfoNeeded:
-
                     // TODO scrInfoNeeded
-                    this.Cursor = Cursors.Default;
+                    FPetraUtilsObject.ShowDefaultCursor();
+                    
                     break;
             }
         }
@@ -1169,6 +1162,12 @@ namespace {#NAMESPACE}
     {
         {#ACTIONENABLING}
         {#ACTIONENABLINGDISABLEMISSINGFUNCS}
+{#IFDEF FILTERANDFIND}
+        if (e.ActionName == "cndFindFilterAvailable")
+        {
+            chkToggleFilter.Enabled = e.Enabled;
+        }
+{#ENDIF FILTERANDFIND}        
     }
 
     {#ACTIONHANDLERS}
@@ -1332,7 +1331,7 @@ namespace {#NAMESPACE}
 
 {##SNIPDELETEREFERENCECOUNT}
 bool previousCursorIsDefault = FPetraUtilsObject.GetForm().Cursor.Equals(Cursors.Default);
-FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
+FPetraUtilsObject.ShowWaitCursor();
 
 TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetCacheableRecordReferenceCount(
     "{#CACHEABLETABLENAME}",
@@ -1342,7 +1341,7 @@ TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetCacheableRecordRef
 
 if (previousCursorIsDefault)
 {
-	FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
+    FPetraUtilsObject.ShowDefaultCursor();
 }
 
 {##SNIPCANDELETEROW}

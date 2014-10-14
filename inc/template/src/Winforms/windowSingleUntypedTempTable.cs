@@ -258,6 +258,12 @@ namespace {#NAMESPACE}
     {
         {#ACTIONENABLING}
         {#ACTIONENABLINGDISABLEMISSINGFUNCS}
+{#IFDEF FILTERANDFIND}
+        if (e.ActionName == "cndFindFilterAvailable")
+        {
+            chkToggleFilter.Enabled = e.Enabled;
+        }
+{#ENDIF FILTERANDFIND}        
     }
 
     {#ACTIONHANDLERS}

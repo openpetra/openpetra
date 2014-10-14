@@ -106,7 +106,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 labelText = ctrl.Label + ":";
             }
-
+            
             if (ctrl.HasAttribute("Width"))
             {
                 ctrl.SetAttribute("Width", ctrl.GetAttribute("Width"));
@@ -120,7 +120,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 ctrl.SetAttribute("Height", ctrl.GetAttribute("Height"));
             }
-
+            
             writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");
             writer.SetControlProperty(ctrl, "Padding", "new System.Windows.Forms.Padding(0, 5, 0, 0)");
 

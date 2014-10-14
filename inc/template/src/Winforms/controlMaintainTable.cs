@@ -1070,6 +1070,12 @@ namespace {#NAMESPACE}
     {
         {#ACTIONENABLING}
         {#ACTIONENABLINGDISABLEMISSINGFUNCS}
+{#IFDEF FILTERANDFIND}
+        if (e.ActionName == "cndFindFilterAvailable")
+        {
+            chkToggleFilter.Enabled = e.Enabled;
+        }
+{#ENDIF FILTERANDFIND}        
     }
 
     {#ACTIONHANDLERS}
@@ -1232,7 +1238,7 @@ namespace {#NAMESPACE}
 
 {##SNIPDELETEREFERENCECOUNT}
 bool previousCursorIsDefault = FPetraUtilsObject.GetForm().Cursor.Equals(Cursors.Default);
-FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
+FPetraUtilsObject.ShowWaitCursor();
 
 TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
     FMainDS.{#NONCACHEABLETABLENAME},
@@ -1242,7 +1248,7 @@ TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecord
 
 if (previousCursorIsDefault)
 {
-	FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
+    FPetraUtilsObject.ShowDefaultCursor();
 }
 
 {##SNIPCANDELETEROW}
