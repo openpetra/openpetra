@@ -21,6 +21,7 @@ RootNode:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlPromoteDemote]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 175
             FilterControls: [chkDetailUnassignable, chkDetailDeletable]
             FindControls: [chkDetailUnassignable, chkDetailDeletable]

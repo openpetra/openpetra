@@ -36,6 +36,7 @@ RootNode:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlPromoteDemoteCategory]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 175
             FilterControls: [txtDetailCategoryCode, chkDetailDeletable]
             FindControls: [txtDetailCategoryCode, chkDetailDeletable]

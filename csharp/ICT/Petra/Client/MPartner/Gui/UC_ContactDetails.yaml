@@ -57,6 +57,7 @@ RootNode:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlPromoteDemote]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 175
             FilterControls: [chkCurrent, chkSpecialised, chkConfidential]   #, cmbContactType
             FindControls: [chkCurrent, chkSpecialised, chkConfidential]     #, cmbContactType
