@@ -97,6 +97,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailReference.Validated += new EventHandler(ControlValidatedHandler);
             dtpDetailTransactionDate.Validated += new EventHandler(ControlValidatedHandler);
             grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
+
+            //Disallow the entry of the minus sign as no negative amounts allowed.
+            //Instead, the user is expected to follow accounting riles and apply a positive amount
+            //  to debit or credit accordingly to achieve the same effect
+            txtDebitAmount.NegativeValueAllowed = false;
+            txtCreditAmount.NegativeValueAllowed = false;
         }
 
         /// <summary>

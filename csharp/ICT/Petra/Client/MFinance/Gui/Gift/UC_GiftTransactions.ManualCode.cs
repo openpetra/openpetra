@@ -294,7 +294,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 InitialiseControls();
             }
 
-            UpdateCurrencySymbols(FBatchRow.CurrencyCode);
+            //UpdateCurrencySymbols(FBatchRow.CurrencyCode);
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
@@ -1255,10 +1255,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
-            txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
-            txtGiftTotal.CurrencyCode = ACurrencyCode;
-            txtBatchTotal.CurrencyCode = ACurrencyCode;
-            txtHashTotal.CurrencyCode = ACurrencyCode;
+            if (txtDetailGiftTransactionAmount.CurrencyCode != ACurrencyCode)
+            {
+                txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
+            }
+
+            if (txtGiftTotal.CurrencyCode != ACurrencyCode
+                || txtBatchTotal.CurrencyCode != ACurrencyCode
+                || txtHashTotal.CurrencyCode != ACurrencyCode)
+            {
+                txtGiftTotal.CurrencyCode = ACurrencyCode;
+                txtBatchTotal.CurrencyCode = ACurrencyCode;
+                txtHashTotal.CurrencyCode = ACurrencyCode;
+            }
         }
 
         /// <summary>

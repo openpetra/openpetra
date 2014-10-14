@@ -45,6 +45,7 @@ namespace Ict.Common.Controls
         private static DataTable GCurrencyList;
         string FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
 
+		bool FSuppressTextChangeDetection = false;
         #region Properties (handed through to TTxtNumericTextBox!)
 
         /// <summary>
@@ -136,22 +137,42 @@ namespace Ict.Common.Controls
         {
             get
             {
+                string NumericStr;
+                
                 if (!DesignMode)
                 {
-                    if (FTxtNumeric.Text != String.Empty)
+                    NumericStr = FTxtNumeric.Text;
+                    
+                    if (NumericStr != String.Empty)
                     {
                         decimal? Ret = null;
+                        
+//                        if ((NumericStr == "-"))
+                        if ((NumericStr.Length == 1 && NumericStr.IndexOfAny(new char[] { '-', '.', ',' }) != -1)) 
+                        {
+                            NumericStr = "0";
+                            
+                            if (!NegativeValueAllowed) 
+                            {
+                                FSuppressTextChangeDetection = true;
+                                
+                                FTxtNumeric.SetCurrencyValue(0, FCurrencyDisplayFormat);
+                                
+                                FSuppressTextChangeDetection = false;                                
+                            }
+                        }
+                        
                         try
                         {
                             Decimal LocalCultureVersion;
 
-                            if (Decimal.TryParse(FTxtNumeric.Text, out LocalCultureVersion))
+                            if (Decimal.TryParse(NumericStr, out LocalCultureVersion))
                             {
                                 Ret = LocalCultureVersion;
                             }
                             else
                             {
-                                Ret = Convert.ToDecimal(FTxtNumeric.Text, FTxtNumeric.Culture);
+                                Ret = Convert.ToDecimal(NumericStr, FTxtNumeric.Culture);
                             }
                         }
                         catch (Exception)
@@ -199,11 +220,13 @@ namespace Ict.Common.Controls
         {
             get
             {
+                // TODO: Handle this in the same way as in the 'Getter' of NumberValueDecimal!
                 return FTxtNumeric.NumberValueDouble;
             }
 
             set
             {
+                // TODO: Handle this in the same way as in the 'Setter' of NumberValueDecimal!
                 FTxtNumeric.NumberValueDouble = value;
             }
         }
@@ -409,9 +432,12 @@ namespace Ict.Common.Controls
 
         private void OnTextChanged(object sender, EventArgs e)
         {
-            if (TextChanged != null)
+            if (!FSuppressTextChangeDetection)
             {
-                TextChanged(sender, e);
+                if (TextChanged != null)
+                {
+                    TextChanged(sender, e);
+                }
             }
         }
 

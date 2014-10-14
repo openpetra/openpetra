@@ -769,6 +769,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
+            MainDS.AcceptChanges();
+
             return MainDS;
         }
 
@@ -2833,7 +2835,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 APartnerKey,
                 AGiftDate);
 
-            DataSet tempDataSet = new DataSet();
+            DataSet GiftDestDS = new DataSet();
 
             TDBTransaction Transaction = null;
 
@@ -2844,19 +2846,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     try
                     {
-                        DBAccess.GDBAccessObj.Select(tempDataSet, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
+                        DBAccess.GDBAccessObj.Select(GiftDestDS, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
                             Transaction,
                             0, 0);
 
-                        if (tempDataSet.Tables[PartnerGiftDestinationTable] != null)
+                        if (GiftDestDS.Tables[PartnerGiftDestinationTable] != null)
                         {
-                            if (tempDataSet.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
+                            if (GiftDestDS.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
                             {
-                                DataRow row = tempDataSet.Tables[PartnerGiftDestinationTable].Rows[0];
+                                DataRow row = GiftDestDS.Tables[PartnerGiftDestinationTable].Rows[0];
                                 PartnerField = (Int64)row[0];
                             }
 
-                            tempDataSet.Clear();
+                            GiftDestDS.Clear();
                         }
                     }
                     catch (Exception e)
@@ -2864,6 +2866,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         TLogging.Log("Error in GetGiftDestinationForRecipient: " + e.Message);
                     }
                 });
+
+            GiftDestDS.AcceptChanges();
 
             return PartnerField;
         }
@@ -2948,31 +2952,31 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Load key Ministry
         /// </summary>
-        /// <param name="partnerKey">Partner Key </param>
-        /// <param name="fieldNumber">Field Number </param>
+        /// <param name="APartnerKey">Partner Key </param>
+        /// <param name="AFieldNumber">Field Number </param>
         /// <returns>ArrayList for loading the key ministry combobox</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static PUnitTable LoadKeyMinistry(Int64 partnerKey, out Int64 fieldNumber)
+        public static PUnitTable LoadKeyMinistry(Int64 APartnerKey, out Int64 AFieldNumber)
         {
+            AFieldNumber = 0;
+            Int64 FieldNumber = AFieldNumber;
+            
+            PUnitTable UnitTable = null;
+
             TDBTransaction Transaction = null;
-
-            PUnitTable unitTable = null;
-
-            try
-            {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-                unitTable = LoadKeyMinistries(partnerKey, Transaction);
-                fieldNumber = GetRecipientFundNumber(partnerKey);
-            }
-            finally
-            {
-                if (Transaction != null)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            return unitTable;
+                    UnitTable = LoadKeyMinistries(APartnerKey, Transaction);
+                    FieldNumber = GetRecipientFundNumber(APartnerKey);
+                });
+
+            AFieldNumber = FieldNumber;
+
+            UnitTable.AcceptChanges();
+
+            return UnitTable;
         }
 
         /// <summary>
