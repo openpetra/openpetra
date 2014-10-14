@@ -209,7 +209,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
 
             RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
-                Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
+                Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
 
             if (!FInfoMode && !FHasCriticalErrors)
             {
@@ -861,12 +861,13 @@ namespace Ict.Petra.Server.MFinance.GL
                     String Query =
                         "SELECT * FROM PUB_a_batch WHERE " +
                         "a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
-                        " AND a_batch_year_i=" + (FLedgerInfo.CurrentFinancialYear - 1) +
+                        " AND a_batch_year_i=" + FLedgerInfo.CurrentFinancialYear +
                         " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                     DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "ABatch", Transaction);
                     if (Tbl.Rows.Count > 0)
                     {
-                        ABatchTable BatchTbl = (ABatchTable)Tbl;
+                        ABatchTable BatchTbl = new ABatchTable();
+                        BatchTbl.Merge(Tbl);
 
                         JobSize = BatchTbl.Rows.Count;
                         foreach (ABatchRow BatchRow in BatchTbl.Rows)
@@ -885,12 +886,13 @@ namespace Ict.Petra.Server.MFinance.GL
                         "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
                         " PUB_a_journal.a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
                         " AND PUB_a_batch.a_batch_number_i= PUB_a_journal.a_batch_number_i" +
-                        " AND PUB_a_batch.a_batch_year_i=" + (FLedgerInfo.CurrentFinancialYear - 1) +
+                        " AND PUB_a_batch.a_batch_year_i=" + FLedgerInfo.CurrentFinancialYear +
                         " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                     Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AJournal", Transaction);
                     if (Tbl.Rows.Count > 0)
                     {
-                        AJournalTable JournalTbl = (AJournalTable)Tbl;
+                        AJournalTable JournalTbl = new AJournalTable();
+                        JournalTbl.Merge(Tbl);
 
                         foreach (AJournalRow JournalRow in JournalTbl.Rows)
                         {
@@ -906,12 +908,13 @@ namespace Ict.Petra.Server.MFinance.GL
                     Query =
                         "SELECT * FROM PUB_a_gift_batch WHERE " +
                         " a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
-                        " AND a_batch_year_i=" + (FLedgerInfo.CurrentFinancialYear - 1) +
+                        " AND a_batch_year_i=" + FLedgerInfo.CurrentFinancialYear +
                         " AND a_batch_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
                     Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AGiftBatch", Transaction);
                     if (Tbl.Rows.Count > 0)
                     {
-                        AGiftBatchTable GiftBatchTbl = (AGiftBatchTable)Tbl;
+                        AGiftBatchTable GiftBatchTbl = new AGiftBatchTable();
+                        GiftBatchTbl.Merge(Tbl);
 
                         JobSize += GiftBatchTbl.Rows.Count;
 
@@ -998,15 +1001,16 @@ namespace Ict.Petra.Server.MFinance.GL
                     DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AIchStewardship", Transaction);
                     if (Tbl.Rows.Count > 0)
                     {
-                        AIchStewardshipTable StewardshipTbl = (AIchStewardshipTable)Tbl;
+                        AIchStewardshipTable StewardshipTbl = new AIchStewardshipTable();
+                        StewardshipTbl.Merge(Tbl);
 
-                        JobSize = StewardshipTbl.Rows.Count;
                         for (Int32 Idx = StewardshipTbl.Rows.Count - 1; Idx >= 0; Idx--)
                         {
                             AIchStewardshipRow StewardshipRow = StewardshipTbl[Idx];
                             if (StewardshipRow.PeriodNumber > FLedgerInfo.NumberOfAccountingPeriods)
                             {
                                 StewardshipRow.PeriodNumber -= FLedgerInfo.NumberOfAccountingPeriods;
+                                JobSize++;
                             }
                             else
                             {

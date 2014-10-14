@@ -69,6 +69,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             try
             {
                 TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+                Int32 PeriodClosing = ledgerInfo.CurrentPeriod;
                 bool res = new TMonthEnd(ledgerInfo).RunMonthEnd(AInfoMode,
                     out AVerificationResults);
 
@@ -80,7 +81,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted, ref Transaction,
                         delegate
                         {
-                            PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ledgerInfo.LedgerNumber, ledgerInfo.CurrentPeriod, Transaction);
+                            PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ledgerInfo.LedgerNumber, PeriodClosing, Transaction);
                         });
 
                     if (PeriodTbl.Rows.Count > 0)
@@ -296,34 +297,44 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckIfRevaluationIsDone()
         {
-            // TODO: could also check for the balance in this month of the foreign currency account. if balance is zero, no revaluation is needed.
-            string testForForeignKeyAccount =
-                String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
-                    AAccountTable.GetLedgerNumberDBName(),
-                    FledgerInfo.LedgerNumber,
-                    AAccountTable.GetForeignCurrencyFlagDBName());
-
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, transaction)) == 0)
+            if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
+                        TLedgerInitFlagEnum.Revaluation).Flag))
             {
-                // no revaluation is needed
-                return;
+                return; // Revaluation has been performed for the current period.
             }
 
-            if (!(new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
-                      TLedgerInitFlagEnum.Revaluation).Flag))
+            bool NewTransaction = false;
+            TDBTransaction transaction;
+            try
             {
-                TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("Ledger revaluation"),
-                    Catalog.GetString("Please run a ledger revaluation first."), "",
-                    TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
-                // Error is critical but additional checks shall be done
-                verificationResults.Add(tvr);
-                FHasCriticalErrors = true;
+                transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
+                string testForForeignKeyAccount =
+                    String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
+                        AAccountTable.GetLedgerNumberDBName(),
+                        FledgerInfo.LedgerNumber,
+                        AAccountTable.GetForeignCurrencyFlagDBName());
+
+                if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, transaction)) != 0)
+                {
+                    TVerificationResult tvr = new TVerificationResult(
+                        Catalog.GetString("Ledger revaluation"),
+                        Catalog.GetString("Please run a foreign currency revaluation first."), "",
+                        TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
+                    // Error is critical but additional checks can still be done
+                    verificationResults.Add(tvr);
+                    FHasCriticalErrors = true;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
         }
 

@@ -97,13 +97,12 @@ namespace Ict.Petra.Server.MFinance.Common
             if (AOperation.GetJobSize() == 0)
             {
                 // Non Critical Problem but the user shall be informed ...
-                String strTitle = Catalog.GetString("Periodic end routine hint");
-                String strMessage = Catalog.GetString("There is nothing to be done for the module: [{0}]");
-                strMessage = String.Format(strMessage, AOperationName);
+                String strTitle = Catalog.GetString("Period end status");
+                String strMessage = String.Format(Catalog.GetString("Nothing to be done for \"{0}\""), AOperationName);
                 TVerificationResult tvt =
                     new TVerificationResult(strTitle, strMessage, "",
                         TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
-                        TResultSeverity.Resv_Noncritical);
+                        TResultSeverity.Resv_Info);
                 FverificationResults.Add(tvt);
             }
             else if (FInfoMode == false)
@@ -142,7 +141,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
     /// <summary>
     /// The period end classes inherit and complete this abstract class. The constructor of the
-    /// inhereting class handles all parameters which are necessary for the RunEndOfPeriodOperation and
+    /// inheriting class handles all parameters which are necessary for the RunEndOfPeriodOperation and
     /// RunEndOfPeriodOperation handles the database operations.
     /// </summary>
     public abstract class AbstractPeriodEndOperation
@@ -320,45 +319,45 @@ namespace Ict.Petra.Server.MFinance.Common
     public enum TPeriodEndErrorAndStatusCodes
     {
         /// <summary>
-        /// If a periodic end operation shall be done at least on one database record
-        /// (something like the calculation of the admin fees) this error is shown to indicate
-        /// tha no database records were affected.
+        /// If a period end operation shall be done at least on one database record
+        /// (something like the calculation of admin fees) this error is shown to indicate
+        /// that no database records were affected.
         /// </summary>
         PEEC_01,
 
         /// <summary>
-        /// Afte a specific period end operation has been done, the programm calculates again the
-        /// number of database records which shall be changed. If this value is non zero,
-        /// there's a problem.
+        /// After a specific period end operation has been done, the programm calculates again the
+        /// number of database records which should be changed.
+        /// If this value is non zero, there's a problem.
         /// Type: Critical.
         /// </summary>
-            PEEC_02,
+        PEEC_02,
 
         /// <summary>The user has required a month end but a year end should be done first.</summary>
-            PEEC_03,
+        PEEC_03,
 
         /// <summary>The user has required a year end but a month end should be done first.</summary>
-            PEEC_04,
+        PEEC_04,
 
         /// <summary>A revaluation should be done before the month end.</summary>
-            PEEC_05,
+        PEEC_05,
 
         /// <summary>Unposted batches prevent period close.</summary>
-            PEEC_06,
+        PEEC_06,
 
         /// <summary>Suspense accounts prevent period close.</summary>
-            PEEC_07,
+        PEEC_07,
 
         /// <summary>Unposted gift batches are found prevent period close.</summary>
-            PEEC_08,
+        PEEC_08,
 
         /// <summary>No income accounts have been found.</summary>
-            PEEC_09,
+        PEEC_09,
 
         /// <summary>No expense accounts have been found.</summary>
-            PEEC_10,
+        PEEC_10,
 
         /// <summary>No ICH_ACCT Account is defined.</summary>
-            PEEC_11,
+        PEEC_11,
     }
 }
