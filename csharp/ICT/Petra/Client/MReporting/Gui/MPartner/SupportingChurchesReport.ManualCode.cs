@@ -42,7 +42,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
     {
         private void InitializeManualCode()
         {
-            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON,FAMILY,ORGANISATION,BANK,UNIT,VENUE");
+            ucoPartnerSelection.SetRestrictedPartnerClasses("CHURCH");
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

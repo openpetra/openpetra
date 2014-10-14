@@ -305,6 +305,16 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Duplicate Family IDs not allowed within one Family: More than one Person has been assigned Family ID {0}.")]
         public const String ERR_DUPLICATE_FAMILY_ID = "PARTN.00032V";
 
+        /// <summary>Hyperlink with Value Format must contain THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER.</summary>
+        [ErrCodeAttribute("Invalid Hyperlink with Value Format",
+             ErrorMessageText = "The 'Link Format' must contain a hyperlink that contains the text '{0}' (without apostrophies and all captials) somewhere in the hyperlink.")]
+        public const String ERR_INVALID_HYPERLINK_WITH_VALUE_NOT_CONTAINING_PLACEHOLDER = "PARTN.00033V";
+
+        /// <summary>Hyperlink with Value Format must not consist of just THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER.</summary>
+        [ErrCodeAttribute("Invalid Hyperlink with Value Format",
+             ErrorMessageText = "The 'Link Format' must contain a hyperlink that contains the text '{0}' (without apostrophies and all captials) somewhere in the hyperlink, and not be just '{0}'.")]
+        public const String ERR_INVALID_HYPERLINK_WITH_VALUE_JUST_CONTAINING_PLACEHOLDER = "PARTN.00034V";
+        
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

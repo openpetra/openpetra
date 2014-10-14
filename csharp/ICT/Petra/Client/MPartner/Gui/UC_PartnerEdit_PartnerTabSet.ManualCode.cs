@@ -65,6 +65,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrAddressesTabHeader = Catalog.GetString("Addresses");
 
+//        private static readonly string StrContactDetailsTabHeader = Catalog.GetString("Contact Details");
+
         private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
         private static readonly string StrContactsTabHeader = Catalog.GetString("Contacts");
@@ -80,7 +82,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
-
+        
         private static readonly string StrFinanceDetailsTabHeader = Catalog.GetString("Finance Details");
 
         private static readonly string StrAddressesSingular = Catalog.GetString("Address");
@@ -306,6 +308,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // for the time being, we always hide these Tabs that don't do anything yet...
 #if  SHOWUNFINISHEDTABS
 #else
+            TabsToHide.Add("tpgContactDetails"); 
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
 #endif
@@ -465,6 +468,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     (TUC_PartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
 
                 if (!UCPartnerAddresses.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
+            {
+                TUC_ContactDetails UCContactDetails =
+                    (TUC_ContactDetails)FTabSetup[TDynamicLoadableUserControls.dlucContactDetails];
+
+                if (!UCContactDetails.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
                 {
                     ReturnValue = false;
                 }
@@ -694,6 +708,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FUcoAddresses.CleanupRecordsBeforeMerge();
+            
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucContactDetails);'
+                SetupUserControlContactDetails();
+            }
+
+            FUcoContactDetails.CleanupRecordsBeforeMerge();
         }
 
         /// <summary>
@@ -969,12 +991,34 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FUcoFinanceDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
 
-                FUcoFinanceDetails.SpecialInitUserControl(FMainDS);
+                FUcoFinanceDetails.PreInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
+            }
+            else if (AUserControl is TUC_ContactDetails)
+            {
+                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
+
+                FUcoContactDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
 
                 CorrectDataGridWidthsAfterDataChange();
             }
         }
 
+        /// <summary>
+        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *before*
+        /// InitUserControl() gets called.
+        /// </summary>
+        partial void PostInitUserControl(UserControl AUserControl)
+        {
+            if (AUserControl is TUC_ContactDetails)
+            {
+                FUcoContactDetails.PostInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
+            }
+        }
+        
         private void RecalculateTabHeaderCounters(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
             // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.RecalculateTabHeaderCounters');
@@ -1206,6 +1250,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FUcoAddresses.AdjustAfterResizing();
                 }
 
+                if (FUcoContactDetails != null)
+                {
+                    FUcoContactDetails.AdjustAfterResizing();
+                }
+
                 if (FUcoSubscriptions != null)
                 {
                     FUcoSubscriptions.AdjustAfterResizing();
@@ -1336,6 +1385,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     case TPartnerEditTabPageEnum.petpDetails:
                         tabPartners.SelectedTab = tpgPartnerDetails;
+                        break;
+
+                    case TPartnerEditTabPageEnum.petpContactDetails:
+                        tabPartners.SelectedTab = tpgContactDetails;
                         break;
 
                     case TPartnerEditTabPageEnum.petpFoundationDetails:

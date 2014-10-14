@@ -23,11 +23,17 @@ RootNode:
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerAddresses
             SeparateDynamicControlSetupMethod: true
             
+        tpgContactDetails: {LoadPageDynamically=true}
+            Label: Contact Details         
+            Image: Details.ico
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_ContactDetails
+            SeparateDynamicControlSetupMethod: true
+            
         tpgPartnerDetails: {LoadPageDynamically=true}
             Label: Partner Details         
             Image: Details.ico
             DynamicControlTypes: [Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Family, Family, Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Person, Person, Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Bank, Bank, Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Church, Church, Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Unit, Unit, Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Organisation, Organisation, Ict.Petra.Client.MPartner.Gui.TUC_PartnerDetails_Venue, Venue]
-            
+
         tpgFoundationDetails:
 # TODO {LoadPageDynamically=true}
             Label: Foundation Details

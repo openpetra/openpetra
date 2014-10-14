@@ -272,6 +272,36 @@ namespace Ict.Tools.CodeGeneration.CachedTables
                                 {
                                     ServerTemplate.InsertSnippet("LOADTABLESANDLISTS", snippetLoadList);
                                 }
+                                
+                                if (TYml2Xml.GetAttributeRecursive(enumElement, "IsStorableToDBTable") != String.Empty)
+                                {
+                                    ProcessTemplate snippetSaveTable = ServerTemplate.GetSnippet("SAVETABLE");
+                                    snippetSaveTable.SetCodelet("ENUMNAME", enumName);
+                                    snippetSaveTable.SetCodelet("SUBMODULE", subModule.Name);
+                                    snippetSaveTable.SetCodelet("DATATABLENAME", TYml2Xml.GetAttributeRecursive(enumElement, "IsStorableToDBTable"));
+    
+                                    if (DependsOnLedger)
+                                    {
+                                        snippetLedgerSaveTable.InsertSnippet("SAVETABLE", snippetSaveTable);
+                                    }
+                                    else
+                                    {
+                                        ServerTemplate.InsertSnippet("SAVETABLE", snippetSaveTable);
+                                    }
+    
+                                    ProcessTemplate snippetDataValidation = ServerTemplate.GetSnippet("DATAVALIDATION");
+                                    snippetDataValidation.SetCodelet("ENUMNAME", enumName);
+                                    snippetDataValidation.SetCodelet("DATATABLENAME", TYml2Xml.GetAttributeRecursive(enumElement, "IsStorableToDBTable"));
+    
+                                    if (DependsOnLedger)
+                                    {
+                                        snippetLedgerSaveTable.InsertSnippet("DATAVALIDATION", snippetDataValidation);
+                                    }
+                                    else
+                                    {
+                                        ServerTemplate.InsertSnippet("DATAVALIDATION", snippetDataValidation);
+                                    }
+                                }
                             }
 
                             enumElement = enumElement.NextSibling;

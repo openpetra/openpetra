@@ -24,12 +24,12 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Ict.Petra.Client.CommonForms
+namespace Ict.Common
 {
     /// <summary>
     /// Contains Windows API (WinAPI) calls that are necessary for getting window positions right
     /// </summary>
-    public class WindowHandling
+    public static class TWindowHandling
     {
         /// <summary>todoComment</summary>
         public const Int32 SW_HIDE = 0;

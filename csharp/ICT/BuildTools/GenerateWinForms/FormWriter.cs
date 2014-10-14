@@ -142,6 +142,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new TTxtAutoPopulatedButtonLabelGenerator());
                 AddControlGenerator(new TTxtCurrencyTextBoxGenerator());
                 AddControlGenerator(new TTxtNumericTextBoxGenerator());
+                AddControlGenerator(new TTxtLinkTextBoxGenerator());
+                AddControlGenerator(new TRichTextBoxGenerator());
+                AddControlGenerator(new TRichTextBoxWithHyperlinksGenerator());
                 AddControlGenerator(new ComboBoxGenerator());
                 AddControlGenerator(new TcmbAutoPopulatedGenerator());
                 AddControlGenerator(new TcmbAutoCompleteGenerator());

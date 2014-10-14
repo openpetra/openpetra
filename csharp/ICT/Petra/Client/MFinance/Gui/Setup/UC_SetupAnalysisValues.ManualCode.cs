@@ -48,8 +48,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FLedgerNumber = value;
                 txtHeaderLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+                
+                /* fix tab order */
+                pnlButtons.TabIndex = grdDetails.TabIndex + 1;                
             }
         }
+        
         private String FTypeCode;
         /// <summary>
         /// these values are for this TypeCode

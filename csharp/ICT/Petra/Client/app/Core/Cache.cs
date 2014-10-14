@@ -105,7 +105,23 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableCommonTable(TCacheableCommonTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+                return GetCacheableCommonTable2(ACacheableTable, String.Empty);
+            }
+
+            /**
+             * Returns the chosen DataTable for the Common Namespace from the Cache.
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableCommonTable2(TCacheableCommonTablesEnum ACacheableTable, string ACustomTableName)
+            {
+                return TDataCache.GetCacheableDataTableFromCache2(ACacheableTable.ToString(), ACustomTableName);
             }
         }
 
@@ -132,7 +148,23 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableConferenceTable(TCacheableConferenceTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+                return GetCacheableConferenceTable2(ACacheableTable, String.Empty);
+            }
+            
+            /**
+             * Returns the chosen DataTable for the Conference Namespace from the Cache.
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableConferenceTable2(TCacheableConferenceTablesEnum ACacheableTable, string ACustomTableName)
+            {
+                return TDataCache.GetCacheableDataTableFromCache2(ACacheableTable.ToString(), ACustomTableName);
             }
         }
 
@@ -159,8 +191,26 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheablePartnerTable(TCacheablePartnerTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+                return GetCacheablePartnerTable2(ACacheableTable, String.Empty);
             }
+            
+            /**
+             * Returns the chosen DataTable for the Petra Partner Module, Partner Sub-Module
+             * from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheablePartnerTable2(TCacheablePartnerTablesEnum ACacheableTable, string ACustomTableName)
+            {
+                return TDataCache.GetCacheableDataTableFromCache2(ACacheableTable.ToString(), ACustomTableName);
+            }
+            
 
             /**
              * Returns the chosen DataTable for the Petra Partner Module, Subscriptions
@@ -176,7 +226,24 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable));
+                return GetCacheableSubscriptionsTable2(ACacheableTable, String.Empty);
+            }            
+
+            /**
+             * Returns the chosen DataTable for the Petra Partner Module, Subscriptions
+             * Sub-Module from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableSubscriptionsTable2(TCacheableSubscriptionsTablesEnum ACacheableTable, string ACustomTableName)
+            {
+                return TDataCache.GetCacheableDataTableFromCache2(Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable), ACustomTableName);
             }
 
             /**
@@ -212,7 +279,24 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableMailingTable(TCacheableMailingTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable));
+                return GetCacheableMailingTable2(ACacheableTable, String.Empty);
+            }
+            
+            /**
+             * Returns the chosen DataTable for the Petra Partner Module, Mailing
+             * Sub-Module from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableMailingTable2(TCacheableMailingTablesEnum ACacheableTable, string ACustomTableName)
+            {
+                return TDataCache.GetCacheableDataTableFromCache2(Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable), ACustomTableName);
             }
 
             /**
@@ -277,10 +361,26 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableFinanceTable(TCacheableFinanceTablesEnum ACacheableTable)
             {
+                return GetCacheableFinanceTable2(ACacheableTable, String.Empty);
+            }
+            
+            /**
+             * Returns the chosen DataTable for the Petra Finance Module from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableFinanceTable2(TCacheableFinanceTablesEnum ACacheableTable, string ACustomTableName)
+            {
                 try
                 {
                     string CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
-                    return TDataCache.GetCacheableDataTableFromCache(CacheableTableName);
+                    return TDataCache.GetCacheableDataTableFromCache2(CacheableTableName, ACustomTableName);
                 }
                 catch (System.Runtime.Remoting.RemotingException Exc)
                 {
@@ -307,6 +407,27 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableFinanceTable(TCacheableFinanceTablesEnum ACacheableTable, System.Int32 ALedgerNumber)
             {
+                return GetCacheableFinanceTable2(ACacheableTable, ALedgerNumber, String.Empty);
+            }
+            
+            /**
+             * Returns the chosen DataTable for the Petra Finance Module from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * This overload of GetCacheableFinanceTable also considers the Ledger Number,
+             * and only retrieves the rows based on the given Ledger Number.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @param ALedgerNumber The number of the current ledger that the data should be
+             * from
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableFinanceTable2(TCacheableFinanceTablesEnum ACacheableTable, System.Int32 ALedgerNumber, string ACustomTableName)
+            {
                 DataTable ReturnValue;
                 Type DataTableType;
 
@@ -315,58 +436,58 @@ namespace Ict.Petra.Client.App.Core
                 switch (ACacheableTable)
                 {
                     case TCacheableFinanceTablesEnum.AccountHierarchyList:
-                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.AccountHierarchyList, AAccountHierarchyTable.GetLedgerNumberDBName(
-                            ), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.AccountHierarchyList, AAccountHierarchyTable.GetLedgerNumberDBName(
+                            ), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.CostCentreList:
-                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.CostCentreList,
-                        ACostCentreTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.CostCentreList,
+                        ACostCentreTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.AccountList:
-                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.AccountList, AAccountTable.GetLedgerNumberDBName(), ALedgerNumber,
-                        out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.AccountList, AAccountTable.GetLedgerNumberDBName(), ALedgerNumber,
+                            out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.AccountingPeriodList:
-                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.AccountingPeriodList, AAccountingPeriodTable.GetLedgerNumberDBName(
-                            ), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.AccountingPeriodList, AAccountingPeriodTable.GetLedgerNumberDBName(), 
+                            ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.LedgerDetails:
-                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber,
-                        out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber,
+                            out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.MotivationGroupList:
-                        ReturnValue = GetBasedOnLedger(ACacheableTable,
-                        AMotivationGroupTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(ACacheableTable,
+                            AMotivationGroupTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.MotivationList:
-                        ReturnValue = GetBasedOnLedger(ACacheableTable,
-                        AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(ACacheableTable,
+                            AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.FeesPayableList:
-                        ReturnValue = GetBasedOnLedger(ACacheableTable,
-                        AFeesPayableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(ACacheableTable,
+                            AFeesPayableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.FeesReceivableList:
-                        ReturnValue = GetBasedOnLedger(ACacheableTable,
-                        AFeesReceivableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(ACacheableTable,
+                            AFeesReceivableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.SuspenseAccountList:
-                        ReturnValue = GetBasedOnLedger(ACacheableTable,
-                        ASuspenseAccountTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(ACacheableTable,
+                            ASuspenseAccountTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.ICHStewardshipList:
-                        ReturnValue = GetBasedOnLedger(TCacheableFinanceTablesEnum.ICHStewardshipList,
-                        AIchStewardshipTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.ICHStewardshipList,
+                            AIchStewardshipTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     default:
@@ -435,11 +556,34 @@ namespace Ict.Petra.Client.App.Core
                 System.Int32 ALedgerNumber,
                 out Type ADataTableType)
             {
+                return GetBasedOnLedger2(ACacheableTable, ALedgerColumnDBName, ALedgerNumber, out ADataTableType, String.Empty);
+            }
+            
+            /**
+             * Get rows from a table that are based on a ledger; (e.g. Costcentres, Accounts)
+             * The cache will only retrieve data for the one ledger, and check the next time
+             * if the data is already there for another ledger
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @param ALedgerColumnDBName The name of the column in this table that has the
+             * ledger number
+             * @param ALedgerNumber The number of the current ledger that the data should be
+             * from
+             * @return The table in the cache with data from all ledgers requested till now
+             *
+             */
+            public static DataTable GetBasedOnLedger2(TCacheableFinanceTablesEnum ACacheableTable,
+                String ALedgerColumnDBName,
+                System.Int32 ALedgerNumber,
+                out Type ADataTableType, 
+                string ACustomTableName)
+            {
                 try
                 {
                     String CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
                     String FilterCriteria = ALedgerColumnDBName + " = " + ALedgerNumber.ToString();
-                    return TDataCache.GetCacheableDataTableFromCache(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType);
+                    return TDataCache.GetCacheableDataTableFromCache2(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType, ACustomTableName);
                 }
                 catch (System.Runtime.Remoting.RemotingException Exc)
                 {
@@ -478,7 +622,25 @@ namespace Ict.Petra.Client.App.Core
             public static DataTable GetCacheablePersonnelTable(TCacheablePersonTablesEnum ACacheableTable)
             {
                 //return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
-                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheablePersonTablesEnum), ACacheableTable));
+                return GetCacheablePersonnelTable2(ACacheableTable, String.Empty);
+            }
+
+            /**
+             * Returns the chosen DataTable for the Petra Partner Module, Partner Sub-Module
+             * from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheablePersonnelTable2(TCacheablePersonTablesEnum ACacheableTable, string ACustomTableName)
+            {
+                //return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+                return TDataCache.GetCacheableDataTableFromCache2(Enum.GetName(typeof(TCacheablePersonTablesEnum), ACacheableTable), ACustomTableName);
             }
 
             /**
@@ -516,7 +678,24 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableUnitsTable(TCacheableUnitTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(Enum.GetName(typeof(TCacheableUnitTablesEnum), ACacheableTable));
+                return GetCacheableUnitsTable2(ACacheableTable, String.Empty);
+            }
+            
+            /**
+             * Returns the chosen DataTable for the Petra Partner Module, Subscriptions
+             * Sub-Module from the
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableUnitsTable2(TCacheableUnitTablesEnum ACacheableTable, string ACustomTableName)
+            {
+                return TDataCache.GetCacheableDataTableFromCache2(Enum.GetName(typeof(TCacheableUnitTablesEnum), ACacheableTable), ACustomTableName);
             }
 
             /**
@@ -562,7 +741,23 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableSysManTable(TCacheableSysManTablesEnum ACacheableTable)
             {
-                return TDataCache.GetCacheableDataTableFromCache(ACacheableTable.ToString());
+                return GetCacheableSysManTable2(ACacheableTable, String.Empty);
+            }
+            
+            /**
+             * Returns the chosen DataTable for the Petra SysMan Module
+             *
+             * If the DataTable is not available on the Client side, it is automatically
+             * retrieved from the Petra Server.
+             *
+             * @param ACacheableTable The cached DataTable that should be returned in the
+             * DataSet
+             * @return Chosen DataTable
+             *
+             */
+            public static DataTable GetCacheableSysManTable2(TCacheableSysManTablesEnum ACacheableTable, string ACustomTableName)
+            {
+                return TDataCache.GetCacheableDataTableFromCache2(ACacheableTable.ToString(), ACustomTableName);
             }
 
             /**
@@ -942,6 +1137,27 @@ namespace Ict.Petra.Client.App.Core
         /// DataTable is retrieved once from the Petra Server and persisted in a file
         /// (as Binary Serialized DataTable) before giving it to the caller.
         /// </summary>
+        /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
+        /// DataTable</param>
+        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should 
+        /// not be the name of the CacheableDataTable as it is in the Cache.</param>
+        /// <returns>Chosen DataTable.</returns>
+        public static DataTable GetCacheableDataTableFromCache2(String ACacheableTableName, string ACustomTableName = "")
+        {
+            Type DataTableType;
+
+            return GetCacheableDataTableFromCache2(ACacheableTableName, "", null, out DataTableType, ACustomTableName);
+        }
+        
+        /// <summary>
+        /// Returns the chosen DataTable from the Client-side Cache.
+        ///
+        /// If the DataTable is not available on the Client side, this procedure checks
+        /// whether it available from a file and whether this file contains up-to-date
+        /// data. If it isn't available from file or the file is out of date, the
+        /// DataTable is retrieved once from the Petra Server and persisted in a file
+        /// (as Binary Serialized DataTable) before giving it to the caller.
+        /// </summary>
         /// <remarks>Can be used with the TGetCacheableDataTableFromCache delegate.</remarks>
         /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
         /// DataTable</param>
@@ -949,9 +1165,30 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>Chosen DataTable.</returns>
         public static DataTable GetCacheableDataTableFromCache(String ACacheableTableName, out System.Type AType)
         {
-            return GetCacheableDataTableFromCache(ACacheableTableName, "", null, out AType);
+            return GetCacheableDataTableFromCache2(ACacheableTableName, "", null, out AType, String.Empty);
         }
 
+        /// <summary>
+        /// Returns the chosen DataTable from the Client-side Cache.
+        ///
+        /// If the DataTable is not available on the Client side, this procedure checks
+        /// whether it available from a file and whether this file contains up-to-date
+        /// data. If it isn't available from file or the file is out of date, the
+        /// DataTable is retrieved once from the Petra Server and persisted in a file
+        /// (as Binary Serialized DataTable) before giving it to the caller.
+        /// </summary>
+        /// <remarks>Can be used with the TGetCacheableDataTableFromCache delegate.</remarks>
+        /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
+        /// DataTable</param>
+        /// <param name="AType"><see cref="System.Type" /> of the returned <see cref="DataTable" />.</param>
+        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should 
+        /// not be the name of the CacheableDataTable as it is in the Cache.</param>
+        /// <returns>Chosen DataTable.</returns>
+        public static DataTable GetCacheableDataTableFromCache2(String ACacheableTableName, out System.Type AType, string ACustomTableName = "")
+        {
+            return GetCacheableDataTableFromCache2(ACacheableTableName, "", null, out AType, ACustomTableName);
+        }
+        
         /// <summary>
         /// Returns the chosen DataTable from the Client-side Cache.
         ///
@@ -979,6 +1216,39 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>Chosen DataTable.</returns>
         public static DataTable GetCacheableDataTableFromCache(String ACacheableTableName, String AFilterCriteriaString, object AFilterCriteria,
             out Type ADataTableType)
+        {
+            return GetCacheableDataTableFromCache2(ACacheableTableName, AFilterCriteriaString, AFilterCriteria, out ADataTableType, String.Empty);
+        }
+        
+        /// <summary>
+        /// Returns the chosen DataTable from the Client-side Cache.
+        ///
+        /// If the DataTable is not available on the Client side, this procedure checks
+        /// whether it available from a file and whether this file contains up-to-date
+        /// data. If it isn't available from file or the file is out of date, the
+        /// DataTable is retrieved once from the Petra Server and persisted in a file
+        /// (as Binary Serialized DataTable) before giving it to the caller.
+        /// </summary>
+        /// <remarks>
+        /// This overload needs to be used for cacheable DataTables that are
+        /// returned not containing all DataRows that are available in the DB, but
+        /// only some DataRows based on specified criteria (eg. some cacheable Finance
+        /// DataTables).
+        /// </remarks>
+        /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
+        /// DataSet</param>
+        /// <param name="AFilterCriteriaString">A criteria string that can be passed to the
+        /// 'Select' method of a DataTable</param>
+        /// <param name="AFilterCriteria">An Object containing the filter criteria value that is
+        /// used by the server-side function that retrieves the data for the cacheable
+        /// DataTable</param>
+        /// <param name="ADataTableType"> The Type of the DataTable (useful in case it's a
+        /// Typed DataTable).</param>
+        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should 
+        /// not be the name of the CacheableDataTable as it is in the Cache.</param>
+        /// <returns>Chosen DataTable.</returns>
+        public static DataTable GetCacheableDataTableFromCache2(String ACacheableTableName, String AFilterCriteriaString, object AFilterCriteria,
+            out Type ADataTableType, string ACustomTableName = "")
         {
             DataTable ReturnValue;
             DataTable CacheableDataTableFromCache;
@@ -1234,6 +1504,11 @@ namespace Ict.Petra.Client.App.Core
                 ReturnValue.AcceptChanges();
             }
 
+            if (ACustomTableName != String.Empty) 
+            {
+                ReturnValue.TableName = ACustomTableName;    
+            }
+            
             return ReturnValue;
         }
 

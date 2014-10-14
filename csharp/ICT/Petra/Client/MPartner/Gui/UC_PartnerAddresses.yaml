@@ -83,7 +83,7 @@ RootNode:
         txtLocationCity: {Label=City, Width=250}
         txtLocationCounty: {Label=County/State, Stretch=horizontally}
         txtLocationPostalCode: {Label=Post Code, Width=100}
-        cmbLocationCountryCode: {Label=Country, List=CountryList, OnChange=CountryCodeChanged}
+        cmbLocationCountryCode: {Label=Country, List=CountryList, OnChange=CountryCodeChanged, AllowDbNull=true}
 
         txtPPartnerLocationTelephoneNumber: {Label=Phone, Width=130}
         txtPPartnerLocationFaxNumber: {Label=Fax, Width=130}

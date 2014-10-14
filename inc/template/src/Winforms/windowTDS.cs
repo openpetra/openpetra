@@ -547,7 +547,6 @@ namespace {#NAMESPACE}
         
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
-//TODO?  still needed?      FMainDS.AApDocument.Rows[0].BeginEdit();
 {#IFDEF MASTERTABLE}
         GetDataFromControls(FMainDS.{#MASTERTABLE}[0]);
 {#ENDIF MASTERTABLE}
@@ -635,34 +634,10 @@ namespace {#NAMESPACE}
                 switch (SubmissionResult)
                 {
                     case TSubmitChangesResult.scrOK:
-
-                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AcceptChanges();
-
-                        // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.Merge(SubmitDS, false);
-
-                        // need to accept the new modification ID
-                        FMainDS.AcceptChanges();
-
-                        // Update UI
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
-                        this.Cursor = Cursors.Default;
-
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-
-                        SetPrimaryKeyReadOnly(true);
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS, SubmitDS,
+                            FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, true, false);
 
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-
-                        if((VerificationResult != null)
-                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
-                        {
-                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
-                                this.GetType(), null);
-                        }
 
                         break;
 
@@ -680,15 +655,10 @@ namespace {#NAMESPACE}
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
-
-                        this.Cursor = Cursors.Default;
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
-
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
                         
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+
                         break;
 
                     case TSubmitChangesResult.scrInfoNeeded:

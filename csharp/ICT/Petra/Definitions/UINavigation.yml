@@ -95,6 +95,7 @@ OpenPetra:
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     Partner-related:           
+                        ContactAttributesAndDetails: {Label=Contact Attributes And Details, Description=Maintain Contact Attributes and Details, ActionOpenScreen=TFrmContactAttributeSetup}
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
                         Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
                         Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Frequencies, Description=Maintain Frequencies, ActionOpenScreen=TFrmFrequencySetup}              
@@ -107,6 +108,7 @@ OpenPetra:
                         MaritalStatus: {Label=Marital Statuses, Description=Maintain Marital Statuses, ActionOpenScreen=TFrmMaritalStatusSetup}   
                         RelationshipCategory: {Label=Relationship Categories, Description=Maintain Relationship Categories, ActionOpenScreen=TFrmRelationCategorySetup}   
                         Relationship:  {Label=Relationships, Description=Maintain Relationships, ActionOpenScreen=TFrmRelationshipSetup} 
+                        PartnerContactCategoriesAndTypes: {Label=Partner Contact Categories and Types, Description=Maintain Partner Contact Categories and Types, ActionOpenScreen=TFrmContactCategoriesAndTypesSetup}   
                         InterestCategory: {Label=Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}   
                         Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}   
 
@@ -258,7 +260,7 @@ OpenPetra:
 
                       # We shouldn't allow users to edit Cost Centre Types, but a non-OM application might want to...
                       # CostCentreTypes: {Description=Maintain Cost Centres Types, ActionOpenScreen=TFrmSetupCostCentreTypes}
-                        AnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
+                        AnalysisTypesAndValues: {Description=Maintain Analysis Types and Values, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
                         DeleteLedger: {Description="Careful: Delete the ledger with all finance data", ActionClick=TDeleteLedger.DeleteLedger}
                         #Accounts:
                         #AddPostingAccount:

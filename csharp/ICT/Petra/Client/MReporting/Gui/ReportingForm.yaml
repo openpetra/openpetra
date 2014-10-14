@@ -62,6 +62,7 @@ RootNode:
             mniWrapColumn:
             mniSeparator: {Label=-}
             mniGenerateReport:
+            mniGenerateExtract:
             mniSeparator: {Label=-}
     Toolbar:
         tbbGenerateReport:

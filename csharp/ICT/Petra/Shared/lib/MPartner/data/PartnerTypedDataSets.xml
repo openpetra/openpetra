@@ -27,6 +27,9 @@
       <CustomField name="LocationModifiedBy" type="string"/>
       <CustomField name="LocationDateModified" type="DateTime"/>
     </Table>
+    <Table sqltable="p_partner_attribute_category"/>
+    <Table sqltable="p_partner_attribute_type"/>
+    <Table sqltable="p_partner_attribute"/>
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
     </Table>
@@ -123,6 +126,14 @@
         parentTable="PPartnerLocation" parentFields="SiteKey,LocationKey"
         childTable="PLocation" childFields="SiteKey,LocationKey"
         createConstraints="false"/>
+    <CustomRelation name="ContactDetails1"
+        parentTable="PPartnerAttributeCategory" parentFields="CategoryCode"
+        childTable="PPartnerAttributeType" childFields="AttributeCategory"
+        createConstraints="false"/>        
+    <CustomRelation name="ContactDetails2"
+        parentTable="PPartnerAttributeType" parentFields="Code"
+        childTable="PPartnerAttribute" childFields="AttributeType"
+        createConstraints="false"/>                
     <CustomRelation name="PartnerInterestCategory"
             childTable="PPartnerInterest" childFields="Interest"
             parentTable="PInterest" parentFields="Interest"
@@ -543,5 +554,10 @@
   	  <PrimaryKey thisFields="p_partner_key_n, SiteKey, LocationKey"/>
     </Table>
   </DataSet>
-  
+
+
+  <DataSet name="PartnerContactSetupTDS">
+      <Table sqltable="p_partner_attribute_category"/>
+      <Table sqltable="p_partner_attribute_type"/>
+  </DataSet>
 </PetraDataSets>
