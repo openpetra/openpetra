@@ -426,6 +426,74 @@ namespace Ict.Petra.Client.CommonForms
                 return recordsDeleted > 0;
             }
         }
+        
+        /// <summary>
+        /// Called only by Setup screens (Maintain Table screens) that feature Master/Detail record maintenance.
+        /// Such screens call this Method from within their 'PreDeleteManual' Method to determine whether the 
+        /// last 'Detail' record can be deleted, or if the user needs to press 'Save' before that is allowed.
+        /// </summary>
+        /// <param name="ACurrentRowCount">Unfiltered number of values for the current 'Master'</param>
+        /// <param name="AMasterDT">'Master' DataTable.</param>
+        /// <param name="ADetailDT">'Detail' DataTable.</param>
+        /// <param name="AMasterCodeColumnName">Name of the 'Code' Column in the 'Master' DataTable.</param>
+        /// <param name="ADetailCodeColumnName">Name of the 'Code' Column in the 'Detail' DataTable.</param>
+        /// <returns>true if user is permitted and able to delete the current row, otherwise false. (Hence that
+        /// return value can be returned directly from the callers' 'PreDeleteManual' Method.)</returns>
+        public static bool MasterDetailFormsSpecialPreDeleteCheck(int ACurrentRowCount,  
+            DataTable AMasterDT, DataTable ADetailDT, string AMasterCodeColumnName, string ADetailCodeColumnName)
+        {
+            DataView AddedTypeRows;
+            DataView AddedCategoryRows;
+            bool NeedToPreventDeletion = false;
+            
+            // If the last Row in the Grid is to be deleted...
+            if (ACurrentRowCount == 1) 
+            {
+                // Create a DataView that contains all added 'Detail' Rows of *ALL* 'Master' Rows
+                AddedTypeRows = new DataView(ADetailDT, "", "",  DataViewRowState.Added);
+                    
+                // If there are such Rows then we must not allow the user to go ahead with the deletion if any of 
+                // those 'Master' Rows was added.
+                // The reason for that is that the deletion of that last 'Detail' Row will cause the 
+                // OnNoMoreDetailRecords Event to be raised by the UserControl that calls this Method, which in turn 
+                // will cause the Form to call the 'SaveChanges' Method of the UserControl before the Form saves its 
+                // own data. While this in itself is OK, saving in the 'SaveChanges' Method of the UserControl would 
+                // fail as a 'Master' Row itself was newly added AND it wouldn't be in the DB yet!
+                if (AddedTypeRows.Count != 0) 
+                {
+                    // Create a DataView that contains all *added 'Master' Rows*
+                    AddedCategoryRows = new DataView(AMasterDT, "", "", DataViewRowState.Added);
+                                        
+                    // Check whether any newly added 'Detail' Row is for a newly added 'Master' Row
+                    foreach (DataRowView NewCategoryRow in AddedCategoryRows) 
+                    {
+                        foreach (DataRowView  NewTypeRow in AddedTypeRows) 
+                        {
+                            if ((NewCategoryRow.Row)[AMasterCodeColumnName].ToString() ==
+                                (NewTypeRow.Row)[ADetailCodeColumnName].ToString())
+                            {
+                                // Found a newly added 'Detail' Row that is for a newly added 'Master' Row:
+                                // Need to prevent deletion of the last Contact Type Row in the Grid!
+                                NeedToPreventDeletion = true;
+                                
+                                break;
+                            }                                
+                        }
+                    }                        
+                  
+                    if (NeedToPreventDeletion) 
+                    {
+                        MessageBox.Show(Catalog.GetString(
+                            "You need to press 'Save' first before deleting the record."), 
+                            Catalog.GetString("Saving of Data Required"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        
+                        return false;                        
+                    }                
+                }
+            }
+            
+            return true;
+        }        
     }
 
 

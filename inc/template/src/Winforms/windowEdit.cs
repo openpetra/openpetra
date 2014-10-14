@@ -320,33 +320,6 @@ namespace {#NAMESPACE}
         return RowNumberInData;
     }
 
-    private void MniEditGoto_Click(object sender, EventArgs e)
-    {
-        string senderName = ((ToolStripMenuItem)sender).Name;
-
-        switch (senderName)
-        {
-            case "mniEditTop":
-                SelectRowInGrid(1);
-                break;
-            case "mniEditPrevious":
-                SelectRowInGrid(GetSelectedRowIndex() - 1);
-                break;
-            case "mniEditNext":
-                SelectRowInGrid(GetSelectedRowIndex() + 1);
-                break;
-            case "mniEditBottom":
-                SelectRowInGrid(grdDetails.Rows.Count - 1);
-                break;
-            default:
-                return;
-        }
-
-{#IFDEF SHOWDETAILS}
-        FocusFirstEditableControl();
-{#ENDIF SHOWDETAILS}
-    }
-
 {#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// <summary>
@@ -464,8 +437,8 @@ namespace {#NAMESPACE}
         }
         
         {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
-{#CANDELETESELECTION}
     }
+{#CANDELETESELECTION}    
 #endregion
 
 #region Grid events
@@ -993,6 +966,7 @@ namespace {#NAMESPACE}
     public bool SaveChanges()
     {
         bool ReturnValue = false;
+
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
@@ -1034,7 +1008,6 @@ namespace {#NAMESPACE}
                 // Submit changes to the PETRAServer
                 try
                 {
-                    // SubmissionResult = WEBCONNECTORMASTER.Save{#DETAILTABLE}(ref SubmitDS, out VerificationResult);
                     {#STOREMANUALCODE}
                 }
                 catch (ESecurityDBTableAccessDeniedException Exp)
@@ -1071,37 +1044,16 @@ namespace {#NAMESPACE}
                 switch (SubmissionResult)
                 {
                     case TSubmitChangesResult.scrOK:
-
-                        // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
-                        FMainDS.AcceptChanges();
-
-                        // Merge back with data from the Server (eg. for getting Sequence values)
-                        FMainDS.Merge(SubmitDS, false);
-
-                        // need to accept the new modification ID
-                        FMainDS.AcceptChanges();
-
-                        // Update UI
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
-                        this.Cursor = Cursors.Default;
-
-
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
-
 {#IFDEF PRIMARYKEYCONTROLSREADONLY}
-                        SetPrimaryKeyReadOnly(true);
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS, SubmitDS,
+                            FPetraUtilsObject, VerificationResult, SetPrimaryKeyReadOnly, true, false);
 {#ENDIF PRIMARYKEYCONTROLSREADONLY}
+{#IFNDEF PRIMARYKEYCONTROLSREADONLY}
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultOK(this, FMainDS, SubmitDS,
+                            FPetraUtilsObject, VerificationResult, null, true, false);
+{#ENDIFN PRIMARYKEYCONTROLSREADONLY}
 
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-
-                        if((VerificationResult != null)
-                            && (VerificationResult.HasCriticalOrNonCriticalErrors))
-                        {
-                            TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResult,
-                                this.GetType(), null);
-                        }
 
                         break;
 
@@ -1119,13 +1071,10 @@ namespace {#NAMESPACE}
                         break;
 
                     case TSubmitChangesResult.scrNothingToBeSaved:
+                        TCommonSaveChangesFunctions.ProcessSubmitChangesResultNothingToBeSaved(this, FPetraUtilsObject, false);
 
-                        this.Cursor = Cursors.Default;
-                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataNothingToSave);
-                        // We don't have unsaved changes anymore
-                        FPetraUtilsObject.DisableSaveButton();
                         ReturnValue = true;
-                        FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+
                         break;
 
                     case TSubmitChangesResult.scrInfoNeeded:
@@ -1169,31 +1118,15 @@ namespace {#NAMESPACE}
     {
         {#ACTIONENABLING}
         {#ACTIONENABLINGDISABLEMISSINGFUNCS}
+{#IFDEF FILTERANDFIND}
+        if (e.ActionName == "cndFindFilterAvailable")
+        {
+            chkToggleFilter.Enabled = e.Enabled;
+        }
+{#ENDIF FILTERANDFIND}        
     }
 
     {#ACTIONHANDLERS}
-
-#endregion
-
-#region Keyboard handler
-
-    /// Our main keyboard handler
-    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-    {
-{#IFDEF FILTERANDFIND}
-        {#PROCESSCMDKEYCTRLF}
-        {#PROCESSCMDKEYCTRLR}
-{#ENDIF FILTERANDFIND}
-        {#PROCESSCMDKEY}    
-        {#PROCESSCMDKEYMANUAL}    
-
-        return base.ProcessCmdKey(ref msg, keyData);
-    }
-
-    private void FocusFirstEditableControl()
-    {
-        {#FOCUSFIRSTEDITABLEDETAILSPANELCONTROL}
-    }
 
 #endregion
 

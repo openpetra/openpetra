@@ -58,6 +58,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoValues.LedgerNumber = value;
                 ucoValues.LoadValues(FLedgerNumber);
 
+                /* fix tab order */
+                pnlButtons.TabIndex = grdDetails.TabIndex + 1;
+                
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
             }

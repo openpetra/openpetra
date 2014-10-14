@@ -1,0 +1,125 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PPartnerAttribute
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actPromote: {ActionClick=ContactTypePromote, Image: MoveDownArrow.ico}
+        actDemote: {ActionClick=ContactTypeDemote, Image: MoveUpArrow.ico}
+        actLaunchHyperlinkPrefEMail: {ActionClick=LaunchHyperlinkPrefEMail, Image: Email.ico}
+        actLaunchHyperlinkEMailWithinOrg: {ActionClick=LaunchHyperlinkEMailWithinOrg, Image: Email.ico}
+
+    Controls:
+        pnlContent:
+            Controls: [grpOverallContactSettings, grpContactDetails]
+            Dock: Fill
+
+        grpOverallContactSettings:
+            Controls: [pnlOverallLeft, pnlOverallRight]        
+            ControlsOrientation: horizontal
+            Dock: Top
+        pnlOverallLeft:
+            Controls:
+                Row0: [cmbPrimaryWayOfContacting]
+                Row1: [cmbPrimaryPhoneForContacting]
+                Row2: [cmbPrimaryEMail, btnLaunchHyperlinkPrefEMail]
+        pnlOverallRight:
+            Controls: [grpWithinTheOrganisation]
+            Height: 90
+        grpWithinTheOrganisation:
+            Controls:
+                Row1: [cmbPhoneWithinTheOrganisation]
+                Row2: [cmbEMailWithinTheOrganisation, btnLaunchHyperlinkEMailWithinOrg]
+            Margin: 0,16,0,0
+            Height: 70
+        cmbPrimaryWayOfContacting:
+            Label: Primary Contact Method
+            Width: 147
+            OptionalValues: [=,Phone, E-Mail, Letter, Skype, Instant Messaging, Social Network]
+            Validation: true
+        cmbPrimaryPhoneForContacting: {Label=Primary Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
+        cmbPhoneWithinTheOrganisation: {Label=Office Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
+        cmbPrimaryEMail: {Label=Primary E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
+        cmbEMailWithinTheOrganisation: {Label=Office E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
+        btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
+        btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
+       
+        grpContactDetails:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill        
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlPromoteDemote]
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 175
+            FilterControls: [chkCurrent, chkSpecialised, chkConfidential]   #, cmbContactType
+            FindControls: [chkCurrent, chkSpecialised, chkConfidential]     #, cmbContactType
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        pnlPromoteDemote:
+            Dock: Right
+            Controls: [btnDemote, btnPromote]
+        btnPromote: {NoLabel=true, Width=15}
+            Padding: 0,70,0,0
+        btnDemote: {NoLabel=true, Width=15}
+            Padding: 0,70,0,0
+            
+        grdDetails:
+            Dock: Fill
+            TableName: PPartnerAttributeType
+            Columns: [AttributeType, Comment, Value, Current, Confidential]
+            CustomColumns:
+                AttributeType: {Label=Contact Type}               
+                Comment: {Label=Comment}
+                Value: {Label=Value}
+                Current: {Label=Current, Type=Boolean}
+                Confidential: {Label=Confidential, Type=Boolean}
+            # NOTE: These columns get discarded and replaced with more and 'calculated' Columns in ManualCode (Method 'CreateGridColumns')!
+            ActionFocusRow: FocusedRowChanged
+
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbContactCategory, cmbContactType, chkSpecialised]
+                Row1: [rtbValue, txtComment]
+                Row2: [pnlCurrentGrouping]
+                Row3: [chkConfidential]
+            Height: 115
+
+        cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true, OnChange=FilterContactTypeCombo}
+        cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true, OnChange=OnContactTypeChanged}
+        chkSpecialised: 
+           Label: Business
+           Validation: true   # only to cause data to be updated on-the-fly...
+        rtbValue:
+            Label: Value
+            Width: 290
+            Type: Hyperlink
+        txtComment: {Label=Comment, Multiline=true, Width=245, Height=73, ColSpan=2, RowSpan=3, ScrollBars=Vertical, DataField=PPartnerAttribute.Comment}
+
+        pnlCurrentGrouping:
+            ControlsOrientation: horizontal
+            Controls: [chkCurrent, dtpNoLongerCurrentFrom]
+            Padding: 52,0,0,0
+        chkCurrent:
+            OnChange: EnableDisableNoLongerCurrentFromDate
+        dtpNoLongerCurrentFrom:
+            Validation: true
+            Enabled: false
+
+        chkConfidential:

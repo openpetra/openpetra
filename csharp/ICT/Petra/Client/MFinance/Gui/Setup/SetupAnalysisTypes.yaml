@@ -42,13 +42,17 @@ RootNode:
             Controls: [btnNewType, btnDelete]
             ControlsOrientation: horizontal
         btnNewType:
+            Label: Ne&w Analysis Type
+            Tooltip: Click to create a new Analysis Type.                
             Action: actNew
-            Width: 80
-            Tooltip: Click to create a new Analysis Type record
+            Width: 160
         btnDelete:
+            Label: Dele&te Analysis Type
+            Tooltip: Click to delete the highlighted Analysis Type(s).                
             Action: actDelete
-            Width: 80
+            Width: 160
         grdDetails:
+            Tooltip: Use the mouse or navigation keys to select an Analysis Type to view or edit.        
             Dock: Fill
             Height: 148
             Columns: [AAnalysisType.AnalysisTypeCode, AAnalysisType.AnalysisTypeDescription]
@@ -70,8 +74,5 @@ RootNode:
             Dock: Fill
           
         txtDetailAnalysisTypeCode: {Label=&Analysis Type Code, CharacterCasing=Upper}
-        txtDetailAnalysisTypeDescription: {Label=Description, Width=400, Validation=true}
+        txtDetailAnalysisTypeDescription: {Label=De&scription, Width=400, Validation=true}
         chkDetailSystemAnalysisType: {Label=System Analysis Type, ReadOnly=true}
-    Menu:
-        mniAnalysisTypes:
-

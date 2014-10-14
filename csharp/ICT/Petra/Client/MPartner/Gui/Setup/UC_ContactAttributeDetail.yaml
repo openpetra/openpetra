@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: controlMaintainCachableTable
     Actions:
-        actNew: {Label=&New, ActionClick=NewRow}
+        actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
@@ -26,12 +26,17 @@ RootNode:
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
         btnNew:
+            Label: &New Detail
+            Tooltip: Click to create a new Contact Detail.        
             Action: actNew
-            Width: 80
+            Width: 130
         btnDelete:
+            Label: &Delete Detail
+            Tooltip: Click to delete the highlighted Contact Detail(s).        
             Action: actDelete
-            Width: 80
+            Width: 130
         grdDetails:
+            Tooltip: Use the mouse or navigation keys to select a Contact Detail to view or edit.        
             Dock: Fill
             Columns: [DetailContactAttrDetailCode, DetailContactAttrDetailDescr, DetailActive]
             CustomColumns:
@@ -39,7 +44,6 @@ RootNode:
                 DetailContactAttrDetailDescr: {Label=Description}
                 DetailActive: {Label=Active, Type=Boolean}
             SortOrder: DetailContactAttrDetailCode ASC
-            ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Height: 85
             Dock: Bottom
@@ -47,8 +51,8 @@ RootNode:
                 Row0: [txtDetailContactAttrDetailCode]
                 Row1: [txtDetailContactAttrDetailDescr]
                 Row2: [chkDetailActive]
-        txtDetailContactAttrDetailCode: {Label=Detail Code, CharacterCasing=Upper}
-        txtDetailContactAttrDetailDescr: {Label=Description, Width=475}
-        chkDetailActive: {Label=Active}
+        txtDetailContactAttrDetailCode: {Label=Deta&il Code, CharacterCasing=Upper}
+        txtDetailContactAttrDetailDescr: {Label=Descri&ption, Width=475}
+        chkDetailActive: {Label=Acti&ve}
     Menu:
         mniAnalysisValues:
