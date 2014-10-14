@@ -257,7 +257,7 @@ OpenPetra:
 
                       # We shouldn't allow users to edit Cost Centre Types, but a non-OM application might want to...
                       # CostCentreTypes: {Description=Maintain Cost Centres Types, ActionOpenScreen=TFrmSetupCostCentreTypes}
-                        AnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
+                        AnalysisTypesAndValues: {Description=Maintain Analysis Types and Values, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
                         DeleteLedger: {Description="Careful: Delete the ledger with all finance data", ActionClick=TDeleteLedger.DeleteLedger}
                         #Accounts:
                         #AddPostingAccount:

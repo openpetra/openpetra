@@ -26,13 +26,17 @@ RootNode:
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
         btnNew:
+            Label: &New Analysis Value
+            Tooltip: Click to create a new Analysis Value.                
             Action: actNew
-            Width: 80
-            Tooltip: Click to create a new analysis value record
+            Width: 160
         btnDelete:
+            Label: &Delete Analysis Value
+            Tooltip: Click to delete the highlighted Analysis Value(s).                        
             Action: actDelete
-            Width: 80
+            Width: 160
         grdDetails:
+            Tooltip: Use the mouse or navigation keys to select an Analysis Value to view or edit.                
             Dock: Fill
             Columns: [AFreeformAnalysis.AnalysisValue, AFreeformAnalysis.Active]
             SortOrder: AFreeformAnalysis.AnalysisValue ASC
@@ -43,11 +47,9 @@ RootNode:
             Controls:
                 Row0: [txtDetailAnalysisValue]
                 Row1: [chkDetailActive]
-        txtDetailAnalysisValue: {Label=Value, Width=400}
-        chkDetailActive: {Label=Active}
+        txtDetailAnalysisValue: {Label=&Value, Width=400}
+        chkDetailActive: {Label=A&ctive}
         pnlDetailTop:
             Dock: Top
             Controls: [txtHeaderLedgerNumber]
         txtHeaderLedgerNumber: {Label=Values for this Type and Ledger Number,ReadOnly=true}
-    Menu:
-        mniAnalysisValues:

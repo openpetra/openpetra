@@ -108,6 +108,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             lblLinkFormatTip.Top -= 5;
             
             pnlDetails.MinimumSize = new Size(700, 145);              // To prevent shrinkage!
+            
+            /* fix tab order */
+            pnlButtons.TabIndex = grdDetails.TabIndex + 1;            
         }
         
         private void NewRecord(Object sender, EventArgs e)

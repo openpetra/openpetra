@@ -88,6 +88,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             string FilterStr = String.Format("{0}='@#~?!()'", FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.ColumnName);
 
             FMainDS.PContactAttributeDetail.DefaultView.RowFilter = FilterStr;
+            
+            /* fix tab order */
+            pnlButtons.TabIndex = grdDetails.TabIndex + 1;                        
         }
 
         private void NewRecord(Object sender, EventArgs e)

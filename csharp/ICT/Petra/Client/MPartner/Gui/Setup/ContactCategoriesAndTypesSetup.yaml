@@ -93,13 +93,13 @@ RootNode:
             Padding: 3,2,0,3
           
         txtDetailCategoryCode: 
-            Label: Contact Category
+            Label: &Contact Category
             Tooltip: Enter the code for the Partner Contact Category. It should describe a group of Partner Contact Types.
             Width: 200
             Validation: true
         txtDetailCategoryDesc:
-            Label: Description
+            Label: De&scription
             Tooltip: Enter a description for the Partner Contact Category.
             Width: 400
             Validation: true
-        chkDetailDeletable: {Label=Deletable, ReadOnly=true}
+        chkDetailDeletable: {Label=De&letable, ReadOnly=true}

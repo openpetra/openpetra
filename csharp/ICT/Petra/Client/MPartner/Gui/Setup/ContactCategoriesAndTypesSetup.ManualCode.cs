@@ -79,6 +79,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Set up Timer that is needed for showing MessageBoxes from a Grid Event
             ShowMessageBoxTimer.Tick += new EventHandler(ShowTimerDrivenMessageBox);
             ShowMessageBoxTimer.Interval = 100;
+            
+            /* fix tab order */
+            pnlButtons.TabIndex = grdDetails.TabIndex + 1;
         }
         
         private void RunOnceOnActivationManual()
