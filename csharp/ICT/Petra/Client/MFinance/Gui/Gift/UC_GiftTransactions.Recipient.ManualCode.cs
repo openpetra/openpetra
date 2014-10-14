@@ -280,8 +280,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
+            TextBox ATxtDetailAccountCode,
             TextBox ATxtDetailRecipientKeyMinistry,
             CheckBox AChkDetailTaxDeductible,
+            TextBox ATxtDeductibleAccount,
             ref string AMotivationGroup,
             ref string AMotivationDetail,
             bool AShowingDetailsFlag,
@@ -291,6 +293,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool ABatchUnpostedFlag,
             bool AMotivationDetailChangedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
+            bool AActiveOnly,
             out bool? AEnableRecipientHistory,
             out bool ADoValidateGiftDestination,
             out bool ADoTaxUpdate)
@@ -337,6 +340,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
                     }
+		
+		            ApplyMotivationDetailCodeFilter(ACurrentDetailRow,
+		                AMainDS,
+		                ALedgerNumber,
+		                APetraUtilsObject,
+		                ACmbKeyMinistries,
+		                ref ACmbMotivationDetailCode,
+		                ATxtDetailRecipientKey,
+		                APartnerKey,
+		                ATxtDetailRecipientLedgerNumber,
+		                ATxtDetailCostCentreCode,
+		                ATxtDetailAccountCode,
+		                ATxtDetailRecipientKeyMinistry,
+		                AChkDetailTaxDeductible,
+		                ATxtDeductibleAccount,
+		                AMotivationGroup,
+		                ref AMotivationDetail,
+		                ref AMotivationDetailChangedFlag,
+		                AActiveOnly,
+		                ARecipientKeyChangingFlag,
+		                false,
+		                AInEditModeFlag,
+		                ABatchUnpostedFlag,
+		                ATaxDeductiblePercentageEnabledFlag,
+		                out ADoTaxUpdate);
                 }
 
                 if (APartnerKey > 0)

@@ -428,9 +428,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TUC_GiftTransactions_Recipient.OnRecipientKeyChanged(APartnerKey, APartnerShortName, AValidSelection, FPreviouslySelectedDetailRow,
                 FMainDS, FLedgerNumber, FPetraUtilsObject, ref cmbKeyMinistries, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode,
-                txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible,
-                ref FMotivationGroup, ref FMotivationDetail, FShowingDetails, ref FInRecipientKeyChanging, FInKeyMinistryChanging, FInEditMode,
-                FBatchUnposted, FMotivationDetailChanged, FTaxDeductiblePercentageEnabled,
+                txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible,
+                txtDeductibleAccount, ref FMotivationGroup, ref FMotivationDetail, FShowingDetails, ref FInRecipientKeyChanging, FInKeyMinistryChanging, FInEditMode,
+                FBatchUnposted, FMotivationDetailChanged, FTaxDeductiblePercentageEnabled, FActiveOnly,
                 out DoEnableRecipientHistory, out DoValidateGiftDestination, out DoTaxUpdate);
 
             if (DoTaxUpdate)

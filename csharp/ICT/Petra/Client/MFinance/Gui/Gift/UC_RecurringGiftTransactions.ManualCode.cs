@@ -528,6 +528,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+            	txtDetailRecipientKey.Text = APartnerKey.ToString();
                 FPreviouslySelectedDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
 
@@ -555,6 +556,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
                     }
+		
+		            ApplyMotivationDetailCodeFilter();
                 }
 
                 if (!FInKeyMinistryChanging)
@@ -736,14 +739,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
-            string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
-            string RecipientKey = cmbKeyMinistries.GetSelectedInt64().ToString();
-
             if ((FPreviouslySelectedDetailRow == null) || FInKeyMinistryChanging || FInRecipientKeyChanging
                 || FPetraUtilsObject.SuppressChangeDetection || txtDetailRecipientKeyMinistry.Visible)
             {
                 return;
             }
+
+        	string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+            string RecipientKey = cmbKeyMinistries.GetSelectedInt64().ToString();
 
             try
             {
@@ -1077,24 +1080,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     MotivationRecipientKey = motivationDetail.RecipientKey;
 
-                    chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
+                    // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
+                    if (!FPetraUtilsObject.SuppressChangeDetection || FInRecipientKeyChanging)
+                    {
+                        chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
+                    }
                 }
-                else
-                {
-                    chkDetailTaxDeductible.Checked = false;
-                }
+            }
+            else
+            {
+                chkDetailTaxDeductible.Checked = false;
             }
 
             if (!FCreatingNewGiftFlag && (MotivationRecipientKey > 0))
             {
                 FMotivationDetailChangedFlag = true;
                 PopulateKeyMinistry(MotivationRecipientKey);
+                FMotivationDetailChangedFlag = false;
             }
-            else
+            else if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
             {
                 RetrieveMotivationDetailCostCentreCode();
                 UpdateRecipientKeyText(0);
-                FMotivationDetailChangedFlag = false;
             }
         }
 
