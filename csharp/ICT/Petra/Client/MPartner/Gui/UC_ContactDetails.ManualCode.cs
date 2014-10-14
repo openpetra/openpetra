@@ -796,7 +796,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void ValidateDataDetailsManual(PPartnerAttributeRow ARow)
         {
-            bool NewPartner = (FMainDS.PPartner.Rows[0].RowState == DataRowState.Added);
+//            bool NewPartner = (FMainDS.PPartner.Rows[0].RowState == DataRowState.Added);
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
@@ -912,7 +912,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             
             string Value = CurrentRow.Value;
-            string ValueText = String.Empty;
+//            string ValueText = String.Empty;
             
             switch (FValueKind) 
             {

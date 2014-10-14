@@ -418,7 +418,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// <param name="e">Ignored.</param>
 		private void EnableDisableDetailHyperlinkFormatTextBox(object sender, EventArgs e)
 		{
-		    var SelectedDetailRow = GetSelectedDetailRow();
 		    string SelectedAttributeTypeValueKind;
 		    var SenderAsComboBox = sender as ComboBox;
 		    

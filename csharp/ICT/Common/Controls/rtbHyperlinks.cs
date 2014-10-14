@@ -166,7 +166,7 @@ namespace Ict.Common.Controls
             int NextFoundPos = 0;
             string Tmp;
             string TmpRepl;
-            int NewlinePos;
+//            int NewlinePos;
             
 //MessageBox.Show(ARTFBox.Text);            
             foreach (string SupportedLinkType in SupportedLinkTypes) 
@@ -181,7 +181,7 @@ namespace Ict.Common.Controls
                     {
                         for (int CounterForward = FoundPos; CounterForward < ARTFBox.Text.Length; CounterForward++) 
                         {
-                            int AsciiCode = Convert.ToInt32(ARTFBox.Text[CounterForward]);
+//                            int AsciiCode = Convert.ToInt32(ARTFBox.Text[CounterForward]);
                             if (Convert.ToInt32(ARTFBox.Text[CounterForward]) == 10) 
                             {
                                 TextPos = CounterForward;
@@ -199,8 +199,8 @@ namespace Ict.Common.Controls
                         for (int CounterBackwards = TextPos; CounterBackwards > FoundPos; CounterBackwards--) 
                         {
                             char TmpChar = ARTFBox.Text[CounterBackwards];
-                            int TmpCharAscii = Convert.ToInt32(TmpChar);
-                            NewlinePos = ARTFBox.Text.IndexOf("\\n", 0);
+//                            int TmpCharAscii = Convert.ToInt32(TmpChar);
+//                            NewlinePos = ARTFBox.Text.IndexOf("\\n", 0);
 
                             if (Convert.ToInt32(ARTFBox.Text[CounterBackwards]) == 10)
                             {
