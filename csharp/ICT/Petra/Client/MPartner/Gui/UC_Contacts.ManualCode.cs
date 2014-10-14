@@ -68,63 +68,24 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
+        //private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
+        //{
+        //    OnRecalculateScreenParts(e);
+        //}
 
-        private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
-        {
-            if (HookupDataChange != null)
-            {
-                HookupDataChange(this, e);
-            }
-        }
+        //private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
+        //{
+        //    if (HookupDataChange != null)
+        //    {
+        //        HookupDataChange(this, e);
+        //    }
+        //}
 
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
         {
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
-            }
-        }
-
-        /// <summary>
-        /// This Procedure will get called from the SaveChanges procedure before it
-        /// actually performs any saving operation.
-        /// </summary>
-        /// <param name="sender">The Object that throws this Event</param>
-        /// <param name="e">Event Arguments.
-        /// </param>
-        /// <returns>void</returns>
-        private void DataSavingStarted(System.Object sender, System.EventArgs e)
-        {
-        }
-        
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void SpecialInitUserControl()
-        {
-            LoadDataOnDemand();
-
-            grdDetails.Columns.Clear();
-            grdDetails.AddTextColumn("Category", FMainDS.PPartnerInterest.ColumnInterestCategory);
-            grdDetails.AddTextColumn("Interest", FMainDS.PPartnerInterest.ColumnInterest);
-            grdDetails.AddTextColumn("Country", FMainDS.PPartnerInterest.ColumnCountry);
-            grdDetails.AddPartnerKeyColumn("Field", FMainDS.PPartnerInterest.ColumnFieldKey);
-            grdDetails.AddTextColumn("Level", FMainDS.PPartnerInterest.ColumnLevel);
-            grdDetails.AddTextColumn("Comment", FMainDS.PPartnerInterest.ColumnComment);
-
-            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpInterests));
-
-            // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
-            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
-
-            if (grdDetails.Rows.Count > 1)
-            {
-                grdDetails.SelectRowInGrid(1);
-                ShowDetails(1); // do this as for some reason details are not automatically show here at the moment
             }
         }
 

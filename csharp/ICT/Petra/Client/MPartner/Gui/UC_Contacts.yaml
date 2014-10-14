@@ -9,9 +9,9 @@ RootNode:
     Template: controlMaintainTable   
     Controls:
         pnlContent:
-            Controls: [sptInterests]
+            Controls: [sptContacts]
             Dock: Fill
-        sptInterests:
+        sptContacts:
             SplitterOrientation: Horizontal
             SplitterDistance: 240
             Height: 600

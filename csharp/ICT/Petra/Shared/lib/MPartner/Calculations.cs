@@ -668,7 +668,8 @@ namespace Ict.Petra.Shared.MPartner
                 PSubscriptionTable.GetSubscriptionStatusDBName() + " <> '" + MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED + "'", "",
                 DataViewRowState.CurrentRows).Count;
         }
-
+        
+        /// <summary>
         /// Count the subscriptions
         /// </summary>
         /// <param name="ATable">table with contacts</param>

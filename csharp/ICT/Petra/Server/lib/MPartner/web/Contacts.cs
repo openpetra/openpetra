@@ -49,6 +49,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     /// </summary>
     public class TContactsWebConnector
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="contactId"></param>
+        /// <param name="APartnerKeys"></param>
+        /// <param name="attributeCode"></param>
+        /// <param name="attributeDetailCode"></param>
         [RequireModulePermission("PTNRUSER")]
         public static void AddContactAttributeToContacts(int contactId, List<Int64> APartnerKeys, List<int> attributeCode, List<int> attributeDetailCode)
         {
@@ -93,67 +100,70 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="APartnerKeys"></param>
         /// <param name="AContactDate"></param>
+        /// <param name="AContactor"></param>
         /// <param name="AMethodOfContact"></param>
         /// <param name="AComment"></param>
         /// <param name="AModuleID"></param>
-        /// <param name="AMailingCode">can be empty string</param>
+        /// <param name="AMailingCode"></param>
         [RequireModulePermission("PTNRUSER")]
         public static void AddContact(List<Int64> APartnerKeys,
             DateTime AContactDate,
+            string AContactor,
             string AMethodOfContact,
             string AComment,
             string AModuleID,
             string AMailingCode)
         {
-            //Boolean NewTransaction;
+            Boolean NewTransaction;
 
-            //TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-            //    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            //try
-            //{
-            //    PPartnerContactTable contacts = new PPartnerContactTable();
+            try
+            {
+                PContactLogTable contacts = new PContactLogTable();
 
-            //    foreach (Int64 partnerKey in APartnerKeys)
-            //    {
-            //        PPartnerContactRow contact = contacts.NewRowTyped();
-            //        contact.ContactId = (contacts.Count + 1) * -1;
-            //        contact.PartnerKey = partnerKey;
-            //        contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
-            //        contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
-            //        contact.ContactCode = AMethodOfContact;
-            //        contact.ContactComment = AComment;
-            //        contact.ModuleId = AModuleID;
-            //        contact.Contactor = UserInfo.GUserInfo.UserID;
+                foreach (Int64 partnerKey in APartnerKeys)
+                {
+                    PContactLogRow contact = contacts.NewRowTyped();
+                    //contact.ContactId = (contacts.Count + 1) * -1;
+                    //contact.PartnerKey = partnerKey;
+                    contact.ContactDate = new DateTime(AContactDate.Year, AContactDate.Month, AContactDate.Day);
+                    //contact.ContactTime = AContactDate.Hour * 60 + AContactDate.Minute;
+                    contact.ContactCode = AMethodOfContact;
+                    contact.ContactComment = AComment;
+                    contact.ModuleId = AModuleID;
+                    contact.Contactor = AContactor;
+                    contact.UserId = UserInfo.GUserInfo.UserID;
 
-            //        if (AMailingCode.Length > 0)
-            //        {
-            //            contact.MailingCode = AMailingCode;
-            //        }
+                    if (AMailingCode.Length > 0)
+                    {
+                        contact.MailingCode = AMailingCode;
+                    }
 
-            //        // TODO: restrictions implemented via p_restricted_l or s_user_id_c
+                    // TODO: restrictions implemented via p_restricted_l or s_user_id_c
 
-            //        contacts.Rows.Add(contact);
-            //    }
+                    contacts.Rows.Add(contact);
+                }
 
-            //    PPartnerContactAccess.SubmitChanges(contacts, WriteTransaction);
+                PContactLogAccess.SubmitChanges(contacts, WriteTransaction);
 
-            //    if (NewTransaction)
-            //    {
-            //        DBAccess.GDBAccessObj.CommitTransaction();
-            //    }
-            //}
-            //catch (Exception Exc)
-            //{
-            //    TLogging.Log("An Exception occured during the adding of a Contact:" + Environment.NewLine + Exc.ToString());
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the adding of a Contact:" + Environment.NewLine + Exc.ToString());
 
-            //    if (NewTransaction)
-            //    {
-            //        DBAccess.GDBAccessObj.RollbackTransaction();
-            //    }
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
 
-            //    throw;
-            //}
+                throw;
+            }
         }
 
         /// <summary>
@@ -167,75 +177,75 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AMailingCode">can be an empty string</param>
         /// <returns>the contacts table with all contacts that match</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PPartnerContactTable FindContacts(string AContactor,
+        public static PContactLogTable FindContacts(string AContactor,
             DateTime? AContactDate,
             string ACommentContains,
             string AMethodOfContact,
             string AModuleID,
             string AMailingCode)
         {
-            //Boolean NewTransaction;
-            PPartnerContactTable contacts = new PPartnerContactTable();
+            Boolean NewTransaction;
+            PContactLogTable contacts = new PContactLogTable();
 
-            //TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-            //    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-            //try
-            //{
-            //    PPartnerContactTable TempTable = new PPartnerContactTable();
-            //    PPartnerContactRow TemplateRow = TempTable.NewRowTyped(false);
+            try
+            {
+                PContactLogTable TempTable = new PContactLogTable();
+                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
 
-            //    if (AContactor.Length > 0)
-            //    {
-            //        TemplateRow.Contactor = AContactor;
-            //    }
+                if (AContactor.Length > 0)
+                {
+                    TemplateRow.Contactor = AContactor;
+                }
 
-            //    if (AContactDate.HasValue)
-            //    {
-            //        TemplateRow.ContactDate = new DateTime(AContactDate.Value.Year, AContactDate.Value.Month, AContactDate.Value.Day);
-            //    }
+                if (AContactDate.HasValue)
+                {
+                    TemplateRow.ContactDate = new DateTime(AContactDate.Value.Year, AContactDate.Value.Month, AContactDate.Value.Day);
+                }
 
-            //    if (AMethodOfContact.Length > 0)
-            //    {
-            //        TemplateRow.ContactCode = AMethodOfContact;
-            //    }
+                if (AMethodOfContact.Length > 0)
+                {
+                    TemplateRow.ContactCode = AMethodOfContact;
+                }
 
-            //    if (AModuleID.Length > 0)
-            //    {
-            //        TemplateRow.ModuleId = AModuleID;
-            //    }
+                if (AModuleID.Length > 0)
+                {
+                    TemplateRow.ModuleId = AModuleID;
+                }
 
-            //    if (AMailingCode.Length > 0)
-            //    {
-            //        TemplateRow.MailingCode = AMailingCode;
-            //    }
+                if (AMailingCode.Length > 0)
+                {
+                    TemplateRow.MailingCode = AMailingCode;
+                }
 
-            //    contacts = PPartnerContactAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
+                contacts = PContactLogAccess.LoadUsingTemplate(TemplateRow, WriteTransaction);
 
-            //    Int32 Counter = 0;
+                Int32 Counter = 0;
 
-            //    while (Counter < contacts.Rows.Count)
-            //    {
-            //        if ((ACommentContains.Length > 0) && !StringHelper.ContainsI(contacts[Counter].ContactComment, ACommentContains))
-            //        {
-            //            contacts.Rows.RemoveAt(Counter);
-            //        }
-            //        else
-            //        {
-            //            Counter++;
-            //        }
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    TLogging.Log(e.Message);
-            //    TLogging.Log(e.StackTrace);
-            //}
+                while (Counter < contacts.Rows.Count)
+                {
+                    if ((ACommentContains.Length > 0) && !StringHelper.ContainsI(contacts[Counter].ContactComment, ACommentContains))
+                    {
+                        contacts.Rows.RemoveAt(Counter);
+                    }
+                    else
+                    {
+                        Counter++;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+            }
 
-            //if (NewTransaction)
-            //{
-            //    DBAccess.GDBAccessObj.RollbackTransaction();
-            //}
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return contacts;
         }

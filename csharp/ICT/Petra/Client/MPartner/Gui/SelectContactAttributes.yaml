@@ -1,0 +1,40 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraEditForm.yaml
+    FormTitle: Select Contact Attributes and Details
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DetailTable: PContactAttribute
+    CacheableTable: ContactAttributeList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 780
+    WindowHeight: 600
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailContactAttributeCode, DetailContactAttributeDescr, DetailActive]
+            CustomColumns:
+                DetailContactAttributeCode: {Label=Attribute Code}
+                DetailContactAttributeDescr: {Label=Description}
+                DetailActive: {Label=Active, Type=Boolean}
+            SortOrder: DetailContactAttributeCode ASC
+            ActionFocusRow: FocusedRowChanged

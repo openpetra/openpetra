@@ -1586,8 +1586,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetContactsInternal(out ContactsCount,out LastContact);
         }
 
-        
-
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <returns></returns>
@@ -2894,22 +2893,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
-                try
-                {
-                    var foo = PPartnerContactAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
-                    ACount = foo.Rows.Count;
-                    ContactDT = PContactLogAccess.LoadViaPPartnerPPartnerContact(FPartnerKey, ReadTransaction);
+                var PartnerContacts = PPartnerContactAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
+                ACount = PartnerContacts.Rows.Count;
+
+                ContactDT = PContactLogAccess.LoadViaPPartnerPPartnerContact(FPartnerKey, ReadTransaction);
                     
-                    foreach (PContactLogRow row in ContactDT.Rows)
-                    {
-                        ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
-                    }
-                }
-                catch (Exception)
+                foreach (PContactLogRow row in ContactDT.Rows)
                 {
-                    throw;
+                    ALastContact = row.ContactDate > ALastContact ? row.ContactDate : ALastContact;
                 }
-                
             }
             finally
             {

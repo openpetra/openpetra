@@ -1022,8 +1022,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void AddContacts(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
-            //ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerContact, FMainDS.PPartnerContact,
-            //    PPartnerContactTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+            ImportRecordsByPartnerKey(ANewPartnerDS.PPartnerContact, FMainDS.PPartnerContact,
+                PPartnerContactTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
         /// <summary>

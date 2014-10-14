@@ -6279,6 +6279,7 @@
            label="Contact Log"
            dumpname="p_con"
            group="mailroom">
+        
         <tablefield name="p_contact_log_id_i"
                     type="number"
                     length="10"
@@ -6289,7 +6290,6 @@
                     help="identifying key for p_contact_log"
                     notnull="yes"
                     initial="0"/>
-
         <tablefield name="s_contact_date_d"
                     type="date"
                     descr="Date of contact"
@@ -6297,12 +6297,6 @@
                     label="Contact Date"
                     help="Enter the date the contact was made"
                     notnull="yes"/>
-        <tablefield name="s_contact_time_i"
-                    type="integer"
-                    descr="Time of contact"
-                    format="99999"
-                    notnull="yes"
-                    initial="0"/>
         <tablefield name="p_contact_code_c"
                     type="varchar"
                     descr="Contact code"

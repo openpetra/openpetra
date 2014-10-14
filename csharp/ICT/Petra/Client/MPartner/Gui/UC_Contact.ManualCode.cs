@@ -58,27 +58,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FInitializationRunning = true;
 
-            // show controls if not visible yet
-            //MakeScreenInvisible(false);
-
             // set member
             FContactDR = ARow;
 
-            //ShowData(ARow);
+            ShowData(ARow);
             
-            // for every record initially disable issue group box, but enable button in the same group box
-            //if (FAllowEditIssues)
-            //{
-            //    this.btnEditIssues.Visible = true;
-            //    this.btnEditIssues.Enabled = true;
-            //}
-
-            //EnableDisableIssuesGroupBox(false);
-
+            
             //txtPublicationCost.ReadOnly = true;
-
-            // make sure initialization happens
-            //PublicationStatusChanged(null, null);
 
             FInitializationRunning = false;
         }
@@ -89,8 +75,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARow"></param>
         public void GetDetails(PContactLogRow ARow)
         {
-            //ValidateAllData(false);
-            //GetDataFromControls(ARow);
+            ValidateAllData(false);
+            GetDataFromControls(ARow);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void SelectAttributes(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
         
     }
