@@ -95,7 +95,7 @@ OpenPetra:
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     Partner-related:           
-                        ContactAttributes: {Label=Contact Attributes, Description=Maintain Contact Attributes, ActionOpenScreen=TFrmContactAttributeSetup}
+                        ContactAttributesAndDetails: {Label=Contact Attributes And Details, Description=Maintain Contact Attributes and Details, ActionOpenScreen=TFrmContactAttributeSetup}
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
                         Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
                         Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Frequencies, Description=Maintain Frequencies, ActionOpenScreen=TFrmFrequencySetup}              
