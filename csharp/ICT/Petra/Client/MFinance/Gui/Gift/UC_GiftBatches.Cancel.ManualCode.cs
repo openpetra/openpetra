@@ -28,6 +28,7 @@ using Ict.Common;
 
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -90,6 +91,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return false;
             }
+            	
+            // first save any changes
+            if (!FMyForm.SaveChangesManual(TExWorkerWarning.GiftBatchAction.CANCELLING))
+            {
+            	return false;
+            }
 
             try
             {
@@ -116,13 +123,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Delete gift details
                 for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
                 {
-                    FMainDS.AGiftDetail[i].Delete();
+                	FMainDS.AGiftDetail[i].Delete();
                 }
 
                 //Delete gifts
                 for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
                 {
-                    FMainDS.AGift[i].Delete();
+                	FMainDS.AGift[i].Delete();
                 }
 
                 //Batch is only cancelled and never deleted
@@ -134,7 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.HasChanges = true;
 
                 // save first, then post
-                if (!FMyForm.SaveChangesManual())
+                if (!FMyForm.SaveChanges())
                 {
                     ACurrentBatchRow.BeginEdit();
                     //Should normally be Unposted, but allow for other status values in future

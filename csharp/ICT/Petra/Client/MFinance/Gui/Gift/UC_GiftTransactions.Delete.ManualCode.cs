@@ -91,7 +91,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return allowDeletion;
         }
 
-        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
+        private bool OnDeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
             string originatingDetailRef = string.Empty;

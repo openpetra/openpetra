@@ -526,7 +526,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-        	if (!((TFrmGiftBatch)ParentForm).CanContinueWithAnyExWorkers("NewBatch"))
+        	GetDataFromControls();
+
+        	if (!TExWorkerWarning.CanContinueWithAnyExWorkers(TExWorkerWarning.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
         	{
         		return;
         	}

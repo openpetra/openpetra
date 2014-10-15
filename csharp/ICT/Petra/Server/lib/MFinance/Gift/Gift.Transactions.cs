@@ -171,6 +171,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];
             Decimal AExchangeRateIntlToBase = (Decimal)requestParams["AExchangeRateIntlToBase"];
 
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
             bool TransactionInIntlCurrency = false;
 
             GiftBatchTDS RMainDS = LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
@@ -298,6 +301,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.ChargeFlag = recGiftDetail.ChargeFlag;
                                         detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
                                         detail.TaxDeductible = recGiftDetail.TaxDeductible;
+                                        
+                                        // Tax deductibility is not currently used in recurring but the TaxDeductiblePct field must still be set.
+                                        // It must be 0 as we do not know if this gift's motivation detail has a tax deductible account.
+                                        if (TaxDeductiblePercentageEnabled)
+                                        {
+                                        	detail.TaxDeductiblePct = 0;
+                                        	detail.NonDeductibleAmount = detail.GiftTransactionAmount;
+                                        	detail.NonDeductibleAmountBase = detail.GiftAmount;
+                                        	detail.NonDeductibleAmountIntl = detail.GiftAmountIntl;
+                                        }
                                         detail.MailingCode = recGiftDetail.MailingCode;
 
                                         if (detail.MailingCode.Length == 0)
@@ -1319,9 +1332,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ANotInBatchNumber">Used to exclude gift from a particular batch</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDSAGiftDetailTable FindGiftRecipientExWorker(GiftBatchTDSAGiftDetailTable AGiftDetailsToCheck, int ANotInBatchNumber = -1)
+        public static DataTable FindGiftRecipientExWorker(DataTable AGiftDetailsToCheck, int ANotInBatchNumber = -1)
         {
-        	GiftBatchTDSAGiftDetailTable ReturnValue = new GiftBatchTDSAGiftDetailTable();
+        	DataTable ReturnValue = AGiftDetailsToCheck.Copy();
+        	ReturnValue.Clear();
         	
         	TDBTransaction Transaction = null;
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -1329,12 +1343,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-		        	foreach (GiftBatchTDSAGiftDetailRow Row in AGiftDetailsToCheck.Rows)
+		        	foreach (DataRow Row in AGiftDetailsToCheck.Rows)
 		            {
 		                // check changed data is either added or modified and that it is by a new donor
-		                if (Row.RowState != DataRowState.Deleted && Row.BatchNumber != ANotInBatchNumber)
+		                if (Row.RowState != DataRowState.Deleted && ((Int32) Row[GiftBatchTDSAGiftDetailTable.GetBatchNumberDBName()]) != ANotInBatchNumber)
 		                {
-		                	PPartnerTypeTable PartnerTypeTable = PPartnerTypeAccess.LoadViaPPartner(Row.RecipientKey, Transaction);
+		                	PPartnerTypeTable PartnerTypeTable = PPartnerTypeAccess.LoadViaPPartner((Int64) Row[GiftBatchTDSAGiftDetailTable.GetRecipientKeyDBName()], Transaction);
 		                	
 		                	foreach (PPartnerTypeRow TypeRow in PartnerTypeTable.Rows)
 		                	{

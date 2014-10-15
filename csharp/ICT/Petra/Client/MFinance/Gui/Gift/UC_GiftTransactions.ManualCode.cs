@@ -803,6 +803,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ClearCurrentSelection()
         {
             this.FPreviouslySelectedDetailRow = null;
+            FBatchNumber = -1;
         }
 
         /// <summary>
@@ -2129,6 +2130,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //    txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
             //    mniRecipientGiftDestination.Enabled = true;
             //}
+        }
+        
+        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
+        {
+        	return OnDeleteRowManual(ARowToDelete, ref ACompletionMessage);
         }
 
         /// <summary>

@@ -1233,6 +1233,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ClearCurrentSelection()
         {
             this.FPreviouslySelectedDetailRow = null;
+            FBatchNumber = -1;
         }
 
         /// <summary>
@@ -1352,7 +1353,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return deletionSuccessful;
             }
 
-            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
                 return deletionSuccessful;
@@ -1476,7 +1477,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 //Try to save changes
-                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     //Clear current batch's gift data and reload from server
                     if (RefreshCurrentRecurringBatchGiftData(FBatchNumber))
@@ -1538,7 +1539,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateTotals();
 
-                ((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges();
+                ((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual();
 
                 //message to user
                 MessageBox.Show(ACompletionMessage,

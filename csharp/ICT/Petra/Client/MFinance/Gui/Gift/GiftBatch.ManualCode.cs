@@ -129,8 +129,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if Save is successful</returns>
         public bool SaveChangesManual()
         {
+        	return SaveChangesManual(TExWorkerWarning.GiftBatchAction.SAVING);
+        }
+        
+        /// <summary>
+        /// Check for ExWorkers before saving or cancelling
+        /// </summary>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual(TExWorkerWarning.GiftBatchAction AAction)
+        {
+        	GetDataFromControls();
+        	
         	// first alert the user to any recipients who are Ex-Workers
-        	if (CanContinueWithAnyExWorkers("Saving"))
+        	if (TExWorkerWarning.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
         	{
         		return SaveChanges();
         	}
@@ -144,11 +155,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
         /// <param name="ACancelledDueToExWorker">True if batch posting has been cancelled by the user because of an Ex-Worker recipient</param>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesForPosting(GiftBatchTDSAGiftDetailTable APostingGiftDetails, out bool ACancelledDueToExWorker)
+        public bool SaveChangesForPosting(DataTable APostingGiftDetails, out bool ACancelledDueToExWorker)
         {
+        	GetDataFromControls();
+
         	// first alert the user to any recipients who are Ex-Workers
-        	
-        	ACancelledDueToExWorker = !CanContinueWithAnyExWorkers("Posting", APostingGiftDetails);
+        	ACancelledDueToExWorker = !TExWorkerWarning.CanContinueWithAnyExWorkers(TExWorkerWarning.GiftBatchAction.POSTING, FMainDS, FPetraUtilsObject, APostingGiftDetails);
         	
         	if (!ACancelledDueToExWorker)
         	{
@@ -157,121 +169,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         	}
             
         	return false;
-        }
-        
-        // 
-        
-        /// <summary>
-        /// Looks for gifts where the recipient is an ExWorker and asks the user if they want to continue
-        /// </summary>
-        /// <param name="AAction">"Saving", "NewBatch" or "Posting"</param>
-        /// <param name="APostingGiftDetails">Only used when being called in order to carry out a batch posting</param>
-        /// <returns>Returns true if saving/posting can continue</returns>
-        public bool CanContinueWithAnyExWorkers(string AAction, GiftBatchTDSAGiftDetailTable APostingGiftDetails = null)
-        {
-        	GiftBatchTDSAGiftDetailTable ExWorkers = null;
-        	string Msg = string.Empty;
-        	int BatchNumber = -1;
-        	
-        	string ExWorkerSpecialType = TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER");
-        	
-        	if (APostingGiftDetails != null && APostingGiftDetails.Rows.Count > 0)
-        	{
-        		ExWorkers = TRemote.MFinance.Gift.WebConnectors.FindGiftRecipientExWorker(APostingGiftDetails, BatchNumber);
-        		Msg = GetExWorkersString(AAction, ExWorkerSpecialType, ExWorkers);
-        		
-        		if (ExWorkers.Rows.Count > 0)
-        		{
-        			BatchNumber = APostingGiftDetails[0].BatchNumber;
-        		}
-        	}
-        	
-            GetDataFromControls();
-
-        	if (FPetraUtilsObject.HasChanges)
-        	{
-        		GiftBatchTDSAGiftDetailTable Changes = FMainDS.AGiftDetail.GetChangesTyped();
-        		
-        		if (Changes != null && Changes.Rows.Count > 0)
-        		{
-        			ExWorkers = TRemote.MFinance.Gift.WebConnectors.FindGiftRecipientExWorker(FMainDS.AGiftDetail.GetChangesTyped(), BatchNumber);
-        			Msg += GetExWorkersString(string.Empty, ExWorkerSpecialType, ExWorkers);
-        		}
-        	}
-            
-        	// first alert the user to any recipients who are Ex-Workers
-            if (Msg != string.Empty)
-            {
-            	if (AAction == "Posting")
-            	{
-            		Msg += Catalog.GetString("Do you want to continue with saving changes and posting anyway?");
-            	}
-            	else if (AAction == "Saving")
-            	{
-            		Msg += Catalog.GetString("Do you want to continue with saving anyway?");
-            	}
-            	if (AAction == "NewBatch")
-            	{
-            		Msg += Catalog.GetString("Do you want to continue with saving changes and creating a new batch anyway?");
-            	}
-            	
-            	if (MessageBox.Show(
-            		Msg, string.Format(Catalog.GetString("{0} Warning"), ExWorkerSpecialType), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) 
-            		== DialogResult.No)
-            	{
-            		return false;
-            	}
-            }
-            
-            return true;
-        }
-        
-        private static string GetExWorkersString(string AAction, string AExWorkerSpecialType, GiftBatchTDSAGiftDetailTable AExWorkers)
-        {
-        	string ReturnValue = string.Empty;
-        	
-        	if (AExWorkers.Rows.Count == 0)
-        	{
-        		return ReturnValue;
-        	}
-        	
-        	if (AAction == "Posting")
-        	{
-        		if (AExWorkers.Rows.Count == 1)
-	        	{
-	        		ReturnValue = string.Format(Catalog.GetString(
-        				"The gift listed below in this batch is for a recipient who has Special Type beginning with {0}:"), AExWorkerSpecialType);
-	        	}
-	        	else
-	        	{
-	        		ReturnValue = string.Format(Catalog.GetString(
-	        			"The gifts listed below in this batch are for recipients who have Special Type beginning with {0}:"), AExWorkerSpecialType);
-	        	}
-        	}
-        	else 
-        	{
-        		if (AExWorkers.Rows.Count == 1)
-	        	{
-	        		ReturnValue = string.Format(Catalog.GetString(
-        				"The unsaved gift listed below is for a recipient who has Special Type beginning with {0}:"), AExWorkerSpecialType);
-	        	}
-	        	else
-	        	{
-	        		ReturnValue = string.Format(Catalog.GetString(
-	        			"The unsaved gifts listed below are for recipients who have Special Type beginning with {0}:"), AExWorkerSpecialType);
-	        	}
-        	}
-        	
-        	ReturnValue += "\n\n";
-        	
-        	foreach (GiftBatchTDSAGiftDetailRow Row in AExWorkers.Rows)
-        	{
-        		ReturnValue += Catalog.GetString("Batch: ") + Row.BatchNumber + ", " +
-        			Catalog.GetString("Gift: ") + Row.GiftTransactionNumber + ", " +
-        			Catalog.GetString("Recipient: ") + Row.RecipientDescription + " (" + Row.RecipientKey + ")\n";
-        	}
-        	
-        	return ReturnValue += "\n";
         }
 
         // Before the dataset is saved, check for correlation between batch and transactions
