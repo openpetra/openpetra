@@ -2740,6 +2740,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerEditTabPageEnum.petpAddresses:
                 case TPartnerEditTabPageEnum.petpDetails:
+                case TPartnerEditTabPageEnum.petpContactDetails:
                 case TPartnerEditTabPageEnum.petpSubscriptions:
                 case TPartnerEditTabPageEnum.petpPartnerTypes:
                 case TPartnerEditTabPageEnum.petpPartnerRelationships:

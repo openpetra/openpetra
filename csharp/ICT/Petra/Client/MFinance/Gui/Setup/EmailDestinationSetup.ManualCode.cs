@@ -148,7 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     if (addressData != String.Empty)
                     {
                         // There can be multiple addresses, separated by comma or semicolon
-                        string[] addresses = addressData.Split(",;".ToCharArray());
+                        string[] addresses = StringHelper.SplitEmailAddresses(addressData);
 
                         for (int i = 0; i < addresses.Length; i++)
                         {

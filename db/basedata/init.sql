@@ -40,6 +40,8 @@ COPY pm_commitment_status FROM '{#ABSOLUTEBASEDATAPATH}/pm_commitment_status.csv
 COPY pt_travel_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_travel_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_assignment_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_assignment_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_position FROM '{#ABSOLUTEBASEDATAPATH}/pt_position.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_partner_attribute_category FROM '{#ABSOLUTEBASEDATAPATH}/p_partner_attribute_category.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_partner_attribute_type FROM '{#ABSOLUTEBASEDATAPATH}/p_partner_attribute_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY p_denomination FROM '{#ABSOLUTEBASEDATAPATH}/p_denomination.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pc_discount_criteria FROM '{#ABSOLUTEBASEDATAPATH}/pc_discount_criteria.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pc_cost_type FROM '{#ABSOLUTEBASEDATAPATH}/pc_cost_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
