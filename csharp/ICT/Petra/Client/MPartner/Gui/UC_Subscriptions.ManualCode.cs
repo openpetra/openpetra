@@ -79,16 +79,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         ///
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
         /// <param name="e"></param>
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {

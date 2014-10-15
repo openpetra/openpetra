@@ -98,11 +98,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FDelegateCheckEventApplicationDuplicate = ADelegateFunction;
         }
 
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
-
         /// <summary>
         /// Display data in control based on data from ARow
         /// </summary>

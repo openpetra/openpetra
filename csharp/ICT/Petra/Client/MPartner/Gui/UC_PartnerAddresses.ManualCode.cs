@@ -113,11 +113,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
-
         /// <summary>
         /// Iterates through all PPartnerLocation DataRows and checks whether any has a
         /// SiteKey and LocationKey with the Original values that we are looking for to
