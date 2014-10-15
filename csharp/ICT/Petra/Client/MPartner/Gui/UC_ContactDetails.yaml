@@ -96,7 +96,8 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [cmbContactCategory, cmbContactType, chkSpecialised]
-                Row1: [rtbValue, txtComment]
+# TODO SHORTCUTS:                Row1: [rtbValue, txtComment]
+                Row1: [txtValue, txtComment]                
                 Row2: [pnlCurrentGrouping]
                 Row3: [chkConfidential]
             Height: 115
@@ -106,10 +107,12 @@ RootNode:
         chkSpecialised: 
            Label: Business
            Validation: true   # only to cause data to be updated on-the-fly...
-        rtbValue:
+# TODO SHORTCUTS: rtbValue:           
+        txtValue:
             Label: Value
             Width: 290
-            Type: Hyperlink
+# TODO SHORTCUTS:             Type: Hyperlink
+
         txtComment: {Label=Comment, Multiline=true, Width=245, Height=73, ColSpan=2, RowSpan=3, ScrollBars=Vertical, DataField=PPartnerAttribute.Comment}
 
         pnlCurrentGrouping:

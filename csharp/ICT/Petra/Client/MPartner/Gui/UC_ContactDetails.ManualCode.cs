@@ -267,7 +267,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
             
-            rtbValue.LinkClicked += new Ict.Common.Controls.TRtbHyperlinks.THyperLinkClickedArgs(rtbValue.Helper.LaunchHyperLink);
+            // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+            // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
+//            rtbValue.LinkClicked += new Ict.Common.Controls.TRtbHyperlinks.THyperLinkClickedArgs(rtbValue.Helper.LaunchHyperLink);
    
             // TODO ApplySecurity();            
         }
@@ -359,17 +361,34 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(cmbContactCategory, Catalog.GetString("Contact Category to which the Contact Type belongs to (narrows down available Contact Types)."));
             FPetraUtilsObject.SetStatusBarText(cmbContactType, Catalog.GetString("Describes what the Value is (e.g. Phone Number, E-Mail Address, etc)."));
             FPetraUtilsObject.SetStatusBarText(chkSpecialised, Catalog.GetString("Tick this if the Value designates a business-related Contact Detail (e.g. business telephone number)."));
-            FPetraUtilsObject.SetStatusBarText(rtbValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
+
             FPetraUtilsObject.SetStatusBarText(txtComment, Catalog.GetString("Comment for this Contact Detail record."));
             FPetraUtilsObject.SetStatusBarText(chkCurrent, Catalog.GetString("Untick this if the Contact Detail record is no longer current."));
             FPetraUtilsObject.SetStatusBarText(dtpNoLongerCurrentFrom, Catalog.GetString("Date from which the Contact Detail record is no longer current."));
            
             FPetraUtilsObject.SetStatusBarText(chkConfidential, Catalog.GetString("Tick this if the Contact Detail record is confidential. Please refer to the User Guide what effect this setting has!"));
+
+            // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+            // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!           
+            FPetraUtilsObject.SetStatusBarText(txtValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
+//            FPetraUtilsObject.SetStatusBarText(rtbValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
             
             // By default only valid Contact Details should be shown
 //            chkValidContactDetailsOnly.Checked = true;  // TODO - work on Action, then uncomment this line
 
-           rtbValue.BuildLinkWithValue = BuildLinkWithValue;
+            // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+            // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
+//            rtbValue.BuildLinkWithValue = BuildLinkWithValue;
+           
+           
+           // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+           // Hide all Controls in the 'Overall Contact Settings' GroupBox except 'Primary E-Mail' for the time being - their implementation will follow
+           cmbPrimaryWayOfContacting.Visible = false;
+           lblPrimaryWayOfContacting.Visible = false;
+           cmbPrimaryPhoneForContacting.Visible = false;
+           lblPrimaryPhoneForContacting.Visible = false;
+           grpWithinTheOrganisation.Visible = false;          
+           pnlPromoteDemote.Visible = false;
         }
 
         /// <summary>
@@ -922,29 +941,35 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
             
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
-                    rtbValue.Helper.DisplayURL(Value);
+                    // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+                    // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!                    
+//                    rtbValue.Helper.DisplayURL(Value);
 
                     break;
                     
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
-                    rtbValue.Helper.DisplayURLWithValue(Value);
+                    // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+                    // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!                                        
+//                    rtbValue.Helper.DisplayURLWithValue(Value);
                                         
                     break;
             
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
-            
-                    rtbValue.Helper.DisplayEmailAddress(Value);
+                    // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+                    // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!                               
+//                    rtbValue.Helper.DisplayEmailAddress(Value);
                                                 
                     break;
                     
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
-                    rtbValue.Helper.DisplaySkypeID(Value);                                          
+                    // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+                    // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!                                        
+//                    rtbValue.Helper.DisplaySkypeID(Value);                                          
 
                     break;           
             
                 default:
-                    throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");
-                    
+                    throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");                    
             }
         }
         
@@ -985,8 +1010,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if ((HyperlinkFormat.Contains("{"))
                        && HyperlinkFormat.Contains("}")) 
                     {
-                        ReturnValue = HyperlinkFormat.Substring(0, HyperlinkFormat.IndexOf('{')) + 
-                            rtbValue.Text;
+                        ReturnValue = HyperlinkFormat.Substring(0, HyperlinkFormat.IndexOf('{')) +
+                            // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
+                            // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!                           
+//                            rtbValue.Text;
+                            txtValue.Text;
                         ReturnValue += HyperlinkFormat.Substring(HyperlinkFormat.LastIndexOf('}') + 1);    
                     }
                     else
