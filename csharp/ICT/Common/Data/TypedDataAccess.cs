@@ -2140,7 +2140,7 @@ namespace Ict.Common.Data
                     GetParametersForWhereClause(ATableId, ASearchCriteria)))
             {
                 throw new EDBSubmitException(
-                    "[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row",
+                    "[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row: no rows were deleted.  Hint: If this can be a valid case, run one of the *Access.Count* Methods before to ensure that you don't call the present Method if there are no records to be expected!",
                     eSubmitChangesOperations.eDelete);
             }
         }
