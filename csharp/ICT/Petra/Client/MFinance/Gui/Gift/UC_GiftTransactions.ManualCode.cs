@@ -1838,7 +1838,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FTaxDeductiblePercentageEnabled)
             {
-                UpdateTaxDeductibiltyBaseAmounts(CurrentBatchRow, AUpdateCurrentRowOnly, IsTransactionInIntlCurrency, BatchExchangeRateToBase,
+                UpdateTaxDeductibiltyCurrencyAmounts(CurrentBatchRow, AUpdateCurrentRowOnly, IsTransactionInIntlCurrency, BatchExchangeRateToBase,
                     IntlToBaseCurrencyExchRate, TransactionsFromCurrentBatch);
             }
         }

@@ -157,37 +157,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
         private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
         {
-            txtTaxDeductAmount.NumberValueDecimal =
-                txtDetailGiftTransactionAmount.NumberValueDecimal * (txtDeductiblePercentage.NumberValueDecimal / 100);
-            txtNonDeductAmount.NumberValueDecimal =
-                txtDetailGiftTransactionAmount.NumberValueDecimal * (1 - (txtDeductiblePercentage.NumberValueDecimal / 100));
-
-            // correct rounding errors
-            while (txtTaxDeductAmount.NumberValueDecimal + txtNonDeductAmount.NumberValueDecimal
-                   < txtDetailGiftTransactionAmount.NumberValueDecimal)
-            {
-                if (txtDeductiblePercentage.NumberValueDecimal >= 50)
-                {
-                    txtTaxDeductAmount.NumberValueDecimal += (decimal)0.01;
-                }
-                else
-                {
-                    txtNonDeductAmount.NumberValueDecimal += (decimal)0.01;
-                }
-            }
-
-            while (txtTaxDeductAmount.NumberValueDecimal + txtNonDeductAmount.NumberValueDecimal
-                   > txtDetailGiftTransactionAmount.NumberValueDecimal)
-            {
-                if (txtDeductiblePercentage.NumberValueDecimal >= 50)
-                {
-                    txtTaxDeductAmount.NumberValueDecimal -= (decimal)0.01;
-                }
-                else
-                {
-                    txtNonDeductAmount.NumberValueDecimal -= (decimal)0.01;
-                }
-            }
+        	decimal TaxDeductAmount = (decimal) txtTaxDeductAmount.NumberValueDecimal;
+        	decimal NonDeductAmount = (decimal) txtNonDeductAmount.NumberValueDecimal;
+        	
+            TaxDeductibility.UpdateTaxDeductibilityAmounts(
+            	ref TaxDeductAmount, ref NonDeductAmount, 
+            	(decimal) txtDetailGiftTransactionAmount.NumberValueDecimal, (decimal) txtDeductiblePercentage.NumberValueDecimal);
+        	
+        	txtTaxDeductAmount.NumberValueDecimal = TaxDeductAmount;
+        	txtNonDeductAmount.NumberValueDecimal = NonDeductAmount;
 
             if (sender == txtDeductiblePercentage)
             {
@@ -241,56 +219,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void UpdateTaxDeductibiltyBaseAmounts(AGiftBatchRow ACurrentBatchRow, bool AUpdateCurrentRowOnly, bool AIsTransactionInIntlCurrency,
+        private void UpdateTaxDeductibiltyCurrencyAmounts(AGiftBatchRow ACurrentBatchRow, bool AUpdateCurrentRowOnly, bool AIsTransactionInIntlCurrency,
             decimal ABatchExchangeRateToBase, decimal AIntlToBaseCurrencyExchRate, bool ATransactionsFromCurrentBatch)
         {
             //If only updating the currency active row
             if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
             {
-                FPreviouslySelectedDetailRow.TaxDeductibleAmountBase = GLRoutines.Divide((decimal)txtTaxDeductAmount.NumberValueDecimal,
-                    ABatchExchangeRateToBase);
-                FPreviouslySelectedDetailRow.NonDeductibleAmountBase = GLRoutines.Divide((decimal)txtNonDeductAmount.NumberValueDecimal,
-                    ABatchExchangeRateToBase);
-
-                if (!AIsTransactionInIntlCurrency)
-                {
-                    FPreviouslySelectedDetailRow.TaxDeductibleAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
-                        FPreviouslySelectedDetailRow.TaxDeductibleAmountBase,
-                        AIntlToBaseCurrencyExchRate);
-                    FPreviouslySelectedDetailRow.NonDeductibleAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
-                        FPreviouslySelectedDetailRow.NonDeductibleAmountBase,
-                        AIntlToBaseCurrencyExchRate);
-                }
-                else
-                {
-                    FPreviouslySelectedDetailRow.TaxDeductibleAmountIntl = (decimal)txtTaxDeductAmount.NumberValueDecimal;
-                    FPreviouslySelectedDetailRow.NonDeductibleAmountIntl = (decimal)txtNonDeductAmount.NumberValueDecimal;
-                }
+                TaxDeductibility.UpdateTaxDeductibiltyCurrencyAmounts(
+                	ref FPreviouslySelectedDetailRow, ABatchExchangeRateToBase, AIntlToBaseCurrencyExchRate, AIsTransactionInIntlCurrency);
             }
             else
             {
                 if (ATransactionsFromCurrentBatch && (FPreviouslySelectedDetailRow != null))
                 {
-                    //Rows already active in transaction tab. Need to set current row as code further below will not update selected row
-                    FPreviouslySelectedDetailRow.TaxDeductibleAmountBase = GLRoutines.Divide((decimal)txtTaxDeductAmount.NumberValueDecimal,
-                        ABatchExchangeRateToBase);
-                    FPreviouslySelectedDetailRow.NonDeductibleAmountBase = GLRoutines.Divide((decimal)txtNonDeductAmount.NumberValueDecimal,
-                        ABatchExchangeRateToBase);
-
-                    if (!AIsTransactionInIntlCurrency)
-                    {
-                        FPreviouslySelectedDetailRow.TaxDeductibleAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
-                            FPreviouslySelectedDetailRow.TaxDeductibleAmountBase,
-                            AIntlToBaseCurrencyExchRate);
-                        FPreviouslySelectedDetailRow.NonDeductibleAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
-                            FPreviouslySelectedDetailRow.NonDeductibleAmountBase,
-                            AIntlToBaseCurrencyExchRate);
-                    }
-                    else
-                    {
-                        FPreviouslySelectedDetailRow.TaxDeductibleAmountIntl = (decimal)txtTaxDeductAmount.NumberValueDecimal;
-                        FPreviouslySelectedDetailRow.NonDeductibleAmountIntl = (decimal)txtNonDeductAmount.NumberValueDecimal;
-                    }
+                    //Rows already active in transaction tab. Need to set current row first as code further below will not update selected row
+                    TaxDeductibility.UpdateTaxDeductibiltyCurrencyAmounts(
+                		ref FPreviouslySelectedDetailRow, ABatchExchangeRateToBase, AIntlToBaseCurrencyExchRate, AIsTransactionInIntlCurrency);
                 }
 
                 //Update all transactions
@@ -304,9 +248,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchRow"></param>
         /// <param name="AIntlToBaseCurrencyExchRate"></param>
         /// <param name="ATransactionInIntlCurrency"></param>
-        public void RecalcTransactionsTaxDeductibleCurrencyAmounts(AGiftBatchRow ABatchRow,
+        private void RecalcTransactionsTaxDeductibleCurrencyAmounts(AGiftBatchRow ABatchRow,
             Decimal AIntlToBaseCurrencyExchRate,
-            Boolean ATransactionInIntlCurrency)
+            Boolean AIsTransactionInIntlCurrency)
         {
             int LedgerNumber = ABatchRow.LedgerNumber;
             int BatchNumber = ABatchRow.BatchNumber;
@@ -321,23 +265,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             foreach (DataRowView drvTrans in transDV)
             {
-                AGiftDetailRow gdr = (AGiftDetailRow)drvTrans.Row;
+                GiftBatchTDSAGiftDetailRow gdr = (GiftBatchTDSAGiftDetailRow)drvTrans.Row;
 
-                gdr.TaxDeductibleAmountBase = GLRoutines.Divide(gdr.TaxDeductibleAmount, BatchExchangeRateToBase);
-                gdr.NonDeductibleAmountBase = GLRoutines.Divide(gdr.NonDeductibleAmount, BatchExchangeRateToBase);
-
-                if (!ATransactionInIntlCurrency)
-                {
-                    gdr.TaxDeductibleAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(gdr.TaxDeductibleAmountBase,
-                        AIntlToBaseCurrencyExchRate);
-                    gdr.NonDeductibleAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(gdr.NonDeductibleAmountBase,
-                        AIntlToBaseCurrencyExchRate);
-                }
-                else
-                {
-                    gdr.TaxDeductibleAmountIntl = gdr.TaxDeductibleAmount;
-                    gdr.NonDeductibleAmountIntl = gdr.NonDeductibleAmount;
-                }
+                TaxDeductibility.UpdateTaxDeductibiltyCurrencyAmounts(
+                	ref gdr, BatchExchangeRateToBase, AIntlToBaseCurrencyExchRate, AIsTransactionInIntlCurrency);
             }
         }
 
