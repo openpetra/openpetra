@@ -152,14 +152,14 @@ namespace Ict.Petra.Client.App.Core
 
             if ((AEventArgs.Exception is NotImplementedException))
             {
-                if(AEventArgs.Exception.Message != String.Empty)
+                if (AEventArgs.Exception.Message != String.Empty)
                 {
                     FunctionalityNotImplementedMsg = AEventArgs.Exception.Message;
                 }
-            
+
                 TLogging.Log(FunctionalityNotImplementedMsg);
                 TLogging.Log(AEventArgs.Exception.StackTrace);
-                
+
                 MessageBox.Show(FunctionalityNotImplementedMsg,
                     Catalog.GetString("Not Yet Implemented in OpenPetra"),
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -192,7 +192,6 @@ namespace Ict.Petra.Client.App.Core
                 UEDialogue.TheException = AEventArgs.Exception;
                 UEDialogue.ShowDialog();
             }
-
         }
 
         #endregion

@@ -909,14 +909,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return writer.FTemplate;
         }
     }
-    
+
     /// <summary>
     /// generator for a Hyperlink Textbox
     /// </summary>
     public class TTxtLinkTextBoxGenerator : TControlGenerator
     {
         private string FLinkType = "None";
-        
+
         /// <summary>constructor</summary>
         public TTxtLinkTextBoxGenerator()
             : base("txt", "Ict.Common.Controls.TTxtLinkTextBox")
@@ -935,40 +935,41 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     return false;
                 }
+
 //Console.WriteLine("TTxtLinkTextBoxGenerator ControlFitsNode");
                 if (TYml2Xml.GetAttribute(curNode, "Type") == "Hyperlink")
                 {
-                    if(TYml2Xml.HasAttribute(curNode, "LinkType"))
+                    if (TYml2Xml.HasAttribute(curNode, "LinkType"))
                     {
-//Console.WriteLine("TTxtLinkTextBoxGenerator: LinkType=" + TYml2Xml.GetAttribute(curNode, "LinkType"));                        
+//Console.WriteLine("TTxtLinkTextBoxGenerator: LinkType=" + TYml2Xml.GetAttribute(curNode, "LinkType"));
                         string LinkTypeStr = TYml2Xml.GetAttribute(curNode, "LinkType").ToLower();
-                        
-                        if (LinkTypeStr == "http") 
+
+                        if (LinkTypeStr == "http")
                         {
-                            FLinkType = "Http";    
+                            FLinkType = "Http";
                         }
-                        else if (LinkTypeStr == "ftp") 
+                        else if (LinkTypeStr == "ftp")
                         {
-                            FLinkType = "Ftp";    
+                            FLinkType = "Ftp";
                         }
-                        else if (LinkTypeStr == "email") 
+                        else if (LinkTypeStr == "email")
                         {
-                            FLinkType = "Email";    
+                            FLinkType = "Email";
                         }
-                        else if (LinkTypeStr == "ftp") 
+                        else if (LinkTypeStr == "ftp")
                         {
-                            FLinkType = "Ftp";    
+                            FLinkType = "Ftp";
                         }
-                        else if (LinkTypeStr == "skype") 
+                        else if (LinkTypeStr == "skype")
                         {
-                            FLinkType = "Skype";    
-                        }                        
+                            FLinkType = "Skype";
+                        }
                     }
 
                     return true;
                 }
             }
-            
+
             return false;
         }
 
@@ -994,7 +995,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 return ctrl.controlName + ".Text = String.Empty;";
             }
-            
+
             return ctrl.controlName + ".Text = " + AFieldOrNull + ";";
         }
 
@@ -1016,7 +1017,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public TRichTextBoxGenerator()
-            : base("rtb", typeof(RichTextBox))        
+            : base("rtb", typeof(RichTextBox))
         {
             FChangeEventName = "TextChanged";
             FHasReadOnlyProperty = true;
@@ -1033,7 +1034,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if ((TYml2Xml.GetAttribute(curNode, "Type") == "Hyperlink"))
                     {
                         return false;
-                    }                  
+                    }
                 }
 
                 return true;
@@ -1106,7 +1107,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return writer.FTemplate;
         }
     }
-    
+
     /// <summary>
     /// generator for a RichTextBox With Hyperlinks
     /// </summary>
@@ -1114,7 +1115,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public TRichTextBoxWithHyperlinksGenerator()
-            : base("rtb", "Ict.Common.Controls.TRtbHyperlinks")        
+            : base("rtb", "Ict.Common.Controls.TRtbHyperlinks")
         {
             FChangeEventName = "TextChanged";
             FHasReadOnlyProperty = true;
@@ -1131,7 +1132,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if ((TYml2Xml.GetAttribute(curNode, "Type") == "Hyperlink"))
                     {
                         return true;
-                    }                  
+                    }
                 }
 
                 return false;
@@ -1203,5 +1204,5 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             return writer.FTemplate;
         }
-    }    
+    }
 }

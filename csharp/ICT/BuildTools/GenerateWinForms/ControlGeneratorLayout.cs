@@ -963,5 +963,5 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             FCurrentTabIndex = 0;
         }
-    }    
+    }
 }

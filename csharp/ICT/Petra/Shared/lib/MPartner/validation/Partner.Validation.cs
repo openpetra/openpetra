@@ -1678,7 +1678,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
-        
+
         /// <summary>
         /// Validates the Partner Contact Types Setup usercontrol data.
         /// </summary>
@@ -1706,38 +1706,38 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (ARow.AttributeTypeValueKind == "CONTACTDETAIL_HYPERLINK_WITHVALUE") 
+                if (ARow.AttributeTypeValueKind == "CONTACTDETAIL_HYPERLINK_WITHVALUE")
                 {
                     // Remove any Data Validation errors that might have been recorded
                     AVerificationResultCollection.Remove(ValidationColumn);
-                    
-                    // 'HyperLink Format' must not be empty string 
+
+                    // 'HyperLink Format' must not be empty string
                     VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.HyperlinkFormat, Catalog.GetString("Link Format"),
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-    
+
                     if ((VerificationResult == null)
                         && (ARow.HyperlinkFormat == THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER))
                     {
                         // 'HyperLink Format' must contain more than just THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_HYPERLINK_WITH_VALUE_JUST_CONTAINING_PLACEHOLDER, 
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_HYPERLINK_WITH_VALUE_JUST_CONTAINING_PLACEHOLDER,
                                     new string[] { THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER })),
-                            ValidationColumn, ValidationControlsData.ValidationControl);                            
+                            ValidationColumn, ValidationControlsData.ValidationControl);
                     }
-                    
+
                     if ((VerificationResult == null)
-                        && (ARow.HyperlinkFormat.IndexOf(THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER, 
-                                                         StringComparison.InvariantCulture) == -1))
+                        && (ARow.HyperlinkFormat.IndexOf(THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER,
+                                StringComparison.InvariantCulture) == -1))
                     {
                         // 'HyperLink Format' must contain THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER,
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_HYPERLINK_WITH_VALUE_NOT_CONTAINING_PLACEHOLDER, 
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_HYPERLINK_WITH_VALUE_NOT_CONTAINING_PLACEHOLDER,
                                     new string[] { THyperLinkHandling.HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER })),
                             ValidationColumn, ValidationControlsData.ValidationControl);
-                    }                            
-                                    
+                    }
+
                     // Handle addition to/removal from TVerificationResultCollection
-                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);                    
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
                 else
                 {
@@ -1745,9 +1745,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     AVerificationResultCollection.Remove(ValidationColumn);
                 }
             }
-            
+
             VerificationResult = null;
-            
+
             // 'Unssignable Date' must not be empty if the flag is set
             ValidationColumn = ARow.Table.Columns[PPartnerAttributeTypeTable.ColumnUnassignableDateId];
 
@@ -1762,7 +1762,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
-            }           
-        }        
+            }
+        }
     }
 }

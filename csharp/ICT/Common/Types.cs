@@ -266,26 +266,26 @@ namespace Ict.Common
     {
         /// <summary>Prefix for an Email Link.</summary>
         public const string HYPERLINK_PREFIX_EMAILLINK = "||email||";
-        
+
         /// <summary>Prefix for a HTTP Link.</summary>
         public const string HYPERLINK_PREFIX_URLLINK = "||hyperlink||";
-        
+
         /// <summary>Prefix for a HTTP Link where a part of that link gets constructed by supplying a value.</summary>
         public const string HYPERLINK_PREFIX_URLWITHVALUELINK = "||hyperlink_with_value||";
-        
+
         /// <summary>Prefix for a HTTPS Link.</summary>
         public const string HYPERLINK_PREFIX_SECUREDURL = "||securehyperlink||";
-        
+
         /// <summary>Prefix for a FTP Link.</summary>
         public const string HYPERLINK_PREFIX_FTPLINK = "||FTP||";
-        
+
         /// <summary>Prefix for a Skype Link.</summary>
         public const string HYPERLINK_PREFIX_SKYPELINK = "||skype||";
-        
-        /// <summary>Identifier for a Value that will get replaced in a Link that is prefixed with 
+
+        /// <summary>Identifier for a Value that will get replaced in a Link that is prefixed with
         /// <see cref="HYPERLINK_PREFIX_URLWITHVALUELINK"/>.</summary>
         public const string HYPERLINK_WITH_VALUE_VALUE_PLACEHOLDER_IDENTIFIER = "{VALUE}";
-        
+
         #region THyperLinkType Enum
 
         /// <summary>
@@ -297,35 +297,35 @@ namespace Ict.Common
             /// Act as a regular TextBox
             /// </summary>
             None,
-    
+
             /// <summary>
             /// Act as a http:// or https:// hyperlink
             /// </summary>
             Http,
-    
+
             /// <summary>
             /// Act as a http:// or https:// hyperlink where a part of the URL is replaced with a custom value.
             /// </summary>
             Http_With_Value_Replacement,
-            
+
             /// <summary>
             /// Act as a ftp:// hyperlink
             /// </summary>
             Ftp,
-    
+
             /// <summary>
             /// Act as a mailto: hyperlink
             /// </summary>
             Email,
-            
+
             /// <summary>
             /// Get the Skype.exe application to start a call to the supplied Skype ID
             /// </summary>
             Skype
         }
-    
+
         #endregion
-        
+
         /// <summary>
         /// Parses a string to a <see cref="THyperLinkType" />.
         /// </summary>
@@ -367,9 +367,9 @@ namespace Ict.Common
             }
 
             return ReturnValue;
-        }        
+        }
     }
-    
+
     /// <summary>
     /// some functions that are useful for operating with the enums defined in Ict.Common
     /// </summary>
@@ -404,7 +404,7 @@ namespace Ict.Common
 
             throw new Exception(Catalog.GetString("invalid database system"));
         }
-        
+
         /// <summary>
         /// convert the enum to string for the Operating System
         /// </summary>
@@ -513,7 +513,7 @@ namespace Ict.Common
         {
         }
     }
-    
+
     /// <summary>
     /// some static methods for the save conversion of dates to objects and objects to dates
     /// </summary>

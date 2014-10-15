@@ -475,44 +475,57 @@ namespace Ict.Common.Testing
         public void TestStringHelperStrArrayToString()
         {
             string[] TestStrArr0 = { }; // empty on purpose!`
-            string[] TestStrArr1 = { "one" };
-            string[] TestStrArr3 = { "one", "two", "three" };
-            
+            string[] TestStrArr1 =
+            {
+                "one"
+            };
+            string[] TestStrArr3 =
+            {
+                "one", "two", "three"
+            };
+
             Assert.AreEqual("", StringHelper.StrArrayToString(TestStrArr0), "Zero string[] elements with no delimiter");
             Assert.AreEqual("", StringHelper.StrArrayToString(TestStrArr0, ","), "Zero string[] elements with a one-character delimiter");
             Assert.AreEqual("", StringHelper.StrArrayToString(TestStrArr0, "; "), "Zero string[] elements with a two-character delimiter");
-            
-            Assert.AreEqual("one", StringHelper.StrArrayToString(TestStrArr1), "One string[] element with no delimiter");            
+
+            Assert.AreEqual("one", StringHelper.StrArrayToString(TestStrArr1), "One string[] element with no delimiter");
             Assert.AreEqual("one", StringHelper.StrArrayToString(TestStrArr1, ","), "One string[] element with a one-character delimiter");
             Assert.AreEqual("one", StringHelper.StrArrayToString(TestStrArr1, "; "), "One string[] element with a two-character delimiter");
 
             Assert.AreEqual("onetwothree", StringHelper.StrArrayToString(TestStrArr3), "Three string[] elements with no delimiter");
-            Assert.AreEqual("one,two,three", StringHelper.StrArrayToString(TestStrArr3, ","), "Three string[] elements with a one-character delimiter");
-            Assert.AreEqual("one; two; three", StringHelper.StrArrayToString(TestStrArr3, "; "), "Three string[] elements with a two-character delimiter");
+            Assert.AreEqual("one,two,three", StringHelper.StrArrayToString(TestStrArr3,
+                    ","), "Three string[] elements with a one-character delimiter");
+            Assert.AreEqual("one; two; three", StringHelper.StrArrayToString(TestStrArr3,
+                    "; "), "Three string[] elements with a two-character delimiter");
         }
-        
+
         /// test the StrCollToString Method
         [Test]
         public void TestStringHelperStrCollToString()
         {
             StringCollection TestStrColl0 = new StringCollection(); // empty on purpose!`
-            StringCollection TestStrColl1 = new StringCollection() { "one" };
-            StringCollection TestStrColl3 = new StringCollection() { "one", "two", "three" };
-            
+            StringCollection TestStrColl1 = new StringCollection() {
+                "one"
+            };
+            StringCollection TestStrColl3 = new StringCollection() {
+                "one", "two", "three"
+            };
+
             Assert.AreEqual("", StringHelper.StrCollToString(TestStrColl0), "Zero StringCollection elements with no delimiter");
             Assert.AreEqual("", StringHelper.StrCollToString(TestStrColl0, ","), "Zero StringCollection elements with a one-character delimiter");
             Assert.AreEqual("", StringHelper.StrCollToString(TestStrColl0, "; "), "Zero StringCollection elements with a two-character delimiter");
-            
-            Assert.AreEqual("one", StringHelper.StrCollToString(TestStrColl1), "One StringCollection element with no delimiter");            
+
+            Assert.AreEqual("one", StringHelper.StrCollToString(TestStrColl1), "One StringCollection element with no delimiter");
             Assert.AreEqual("one", StringHelper.StrCollToString(TestStrColl1, ","), "One StringCollection element with a one-character delimiter");
             Assert.AreEqual("one", StringHelper.StrCollToString(TestStrColl1, "; "), "One StringCollection element with a two-character delimiter");
 
             Assert.AreEqual("onetwothree", StringHelper.StrCollToString(TestStrColl3), "Three StringCollection elements with no delimiter");
-            Assert.AreEqual("one,two,three", StringHelper.StrCollToString(TestStrColl3, ","), "Three StringCollection elements with a one-character delimiter");
-            Assert.AreEqual("one; two; three", StringHelper.StrCollToString(TestStrColl3, "; "), "Three StringCollection elements with a two-character delimiter");
+            Assert.AreEqual("one,two,three", StringHelper.StrCollToString(TestStrColl3,
+                    ","), "Three StringCollection elements with a one-character delimiter");
+            Assert.AreEqual("one; two; three", StringHelper.StrCollToString(TestStrColl3,
+                    "; "), "Three StringCollection elements with a two-character delimiter");
         }
 
-        
         /// test TVariant and dates
         [Test]
         public void TestVariantDates()

@@ -123,7 +123,7 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>todoComment</summary>
         public event TNoNoMasterDataToSaveHandler NoMasterDataToSave;
-        
+
         /// <summary>Controls whether the SaveChanges function saves the changes or continues a begun save operation.</summary>
         public bool SubmitChangesContinue
         {
@@ -337,7 +337,7 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel))
                          || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))
                          || ((ctrl.GetType() == typeof(System.Windows.Forms.RichTextBox))
-                         || (ctrl.GetType() == typeof(Owf.Controls.A1Panel))))
+                             || (ctrl.GetType() == typeof(Owf.Controls.A1Panel))))
                 {
                     // nothing to do
                 }
@@ -898,7 +898,7 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         /// <remarks>
         /// When called from a UserControl, the Default Cursor will be shown
-        /// on the Form, not the UserControl (different to calling this.Cursor = ... 
+        /// on the Form, not the UserControl (different to calling this.Cursor = ...
         /// in a UserControl, which sets the Cursor on the UserControl, not the Form)!
         /// </remarks>
         public void ShowDefaultCursor()
@@ -911,14 +911,14 @@ namespace Ict.Petra.Client.CommonForms
         /// </summary>
         /// <remarks>
         /// When called from a UserControl, the Wait Cursor will be shown
-        /// on the Form, not the UserControl (different to calling this.Cursor = ... 
+        /// on the Form, not the UserControl (different to calling this.Cursor = ...
         /// in a UserControl, which sets the Cursor on the UserControl, not the Form)!
         /// </remarks>
         public void ShowWaitCursor()
         {
             GetForm().Cursor = Cursors.WaitCursor;
         }
-        
+
         #endregion
 
         /**

@@ -490,9 +490,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 if (ResultValue)
                 {
-                    TSearchCriteria[] PartnerAttributeAccessSC = new TSearchCriteria[]{ new TSearchCriteria(PPartnerAttributeTable.GetPartnerKeyDBName(),
-                                                                                                            APartnerKey) };
-                    if(PPartnerAttributeAccess.CountUsingTemplate(PartnerAttributeAccessSC, Transaction) > 0)
+                    TSearchCriteria[] PartnerAttributeAccessSC = new TSearchCriteria[] {
+                        new TSearchCriteria(PPartnerAttributeTable.GetPartnerKeyDBName(),
+                            APartnerKey)
+                    };
+
+                    if (PPartnerAttributeAccess.CountUsingTemplate(PartnerAttributeAccessSC, Transaction) > 0)
                     {
                         PPartnerAttributeAccess.DeleteUsingTemplate(PartnerAttributeAccessSC, Transaction);
                     }
