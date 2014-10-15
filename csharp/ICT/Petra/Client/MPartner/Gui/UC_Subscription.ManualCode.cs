@@ -119,9 +119,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>todoComment</summary>
-        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-
-        /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
         /// <summary>
@@ -222,14 +219,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (HookupDataChange != null)
             {
                 HookupDataChange(this, e);
-            }
-        }
-
-        private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
-        {
-            if (RecalculateScreenParts != null)
-            {
-                RecalculateScreenParts(this, e);
             }
         }
 
