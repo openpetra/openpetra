@@ -101,20 +101,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-        private void RecalculateTabHeaderCounter()
-        {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
-            /* Fire OnRecalculateScreenParts event to update the Tab Counters */
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
-        }
-
-        /// <summary>
         /// Loads Partner Subscription Data from Petra Server into FMainDS.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>
@@ -281,7 +267,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // reset counter in tab header
-            RecalculateTabHeaderCounter();
+            DoRecalculateScreenParts();
         }
 
         /// <summary>
@@ -412,7 +398,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     grdDetails.SelectRowInGrid(1);
 
                     /* reset counter in tab header */
-                    RecalculateTabHeaderCounter();
+                    DoRecalculateScreenParts();
 
                     /* Tell the user that cancelling of Subscriptions was succesful */
                     MessageBox.Show(String.Format(Catalog.GetString("The following {0} Subscription(s) was/were cancelled:" + "\r\n" + "{1}" +
