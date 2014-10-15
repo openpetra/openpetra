@@ -110,7 +110,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             pnlDetails.MinimumSize = new Size(700, 145);              // To prevent shrinkage!
             
             /* fix tab order */
-            pnlButtons.TabIndex = grdDetails.TabIndex + 1;            
+            pnlButtons.TabIndex = grdDetails.TabIndex + 1;
+        }
+        
+        private void RunOnceOnParentActivationManual()
+        {
+            // Hide 'Index' Grid Column - it is only used for debugging 
+            grdDetails.Columns.HideColumn(5);            
         }
         
         private void NewRecord(Object sender, EventArgs e)

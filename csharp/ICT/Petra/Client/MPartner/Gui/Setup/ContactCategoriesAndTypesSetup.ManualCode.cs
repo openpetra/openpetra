@@ -81,11 +81,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ShowMessageBoxTimer.Interval = 100;
             
             /* fix tab order */
-            pnlButtons.TabIndex = grdDetails.TabIndex + 1;
+            pnlButtons.TabIndex = grdDetails.TabIndex + 1;            
         }
         
         private void RunOnceOnActivationManual()
         {
+            // Hide 'Index' Grid Column - it is only used for debugging 
+            grdDetails.Columns.HideColumn(3);
+            
             // Set up the correct filter for the bottom grid, based on our initial contact attribute
             if (FMainDS.PPartnerAttributeCategory.Rows.Count > 0)
             {
