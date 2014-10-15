@@ -875,8 +875,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
             if (CreateNewPPartnerLocation())
             {
                 txtLocationLocality.Focus();
@@ -890,9 +888,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             SetAddressFieldOrder();
 
             // Fire OnRecalculateScreenParts event: reset counter in tab header
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+            DoRecalculateScreenParts();
         }
 
         /// <summary>
