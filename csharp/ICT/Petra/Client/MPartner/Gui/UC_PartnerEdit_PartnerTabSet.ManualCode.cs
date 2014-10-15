@@ -303,8 +303,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // for the time beeing, we always hide these Tabs that don't do anything yet...
 #if  SHOWUNFINISHEDTABS
-#else
-            TabsToHide.Add("tpgContactDetails"); 
+#else 
             TabsToHide.Add("tbpContacts");
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
