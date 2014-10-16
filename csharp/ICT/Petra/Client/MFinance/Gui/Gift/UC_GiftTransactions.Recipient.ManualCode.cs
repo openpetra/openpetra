@@ -54,6 +54,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ref string AMotivationDetail, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool AReadComboValue = false)
         {
             ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AActiveOnly);
+            
+            // Always enabled initially. Combobox may be diabled later once populated.
+            ACmbKeyMinistries.Enabled = true;
 
             ATxtDetailRecipientKeyMinistry.Visible = true;
             ATxtDetailRecipientKeyMinistry.BringToFront();
@@ -637,6 +640,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref ACmbKeyMinistries, ref ATxtDetailRecipientLedgerNumber, APartnerKey, true);
+                
+            // enable / disable combo box depending on whether it contains any key ministries
+            if (ACmbKeyMinistries.Table.Rows.Count == 0)
+            {
+            	ACmbKeyMinistries.Enabled = false;
+            }
+            else
+            {
+            	ACmbKeyMinistries.Enabled = true;
+            }
 
             if ((Convert.ToInt64(ATxtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))
             {

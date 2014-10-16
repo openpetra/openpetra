@@ -208,6 +208,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void SetTextBoxOverlayOnKeyMinistryCombo(bool AReadComboValue = false)
         {
             ResetMotivationDetailCodeFilter();
+            
+            // Always enabled initially. Combobox may be diabled later once populated.
+            cmbKeyMinistries.Enabled = true;
 
             txtDetailRecipientKeyMinistry.Visible = true;
             txtDetailRecipientKeyMinistry.BringToFront();
@@ -1131,6 +1134,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
+                
+            // enable / disable combo box depending on whether it contains any key ministries
+            if (cmbKeyMinistries.Table.Rows.Count == 0)
+            {
+            	cmbKeyMinistries.Enabled = false;
+            }
+            else
+            {
+            	cmbKeyMinistries.Enabled = true;
+            }
 
             if ((Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))
             {

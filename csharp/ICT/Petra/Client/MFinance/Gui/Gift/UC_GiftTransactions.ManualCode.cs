@@ -389,12 +389,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateTotals();
 
-            if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
-            {
-                TUC_GiftTransactions_Recipient.GetRecipientData(FPreviouslySelectedDetailRow, FPreviouslySelectedDetailRow.RecipientKey,
-                    ref cmbKeyMinistries, txtDetailRecipientKey, ref txtDetailRecipientLedgerNumber);
-            }
-
             FTransactionsLoaded = true;
             return true;
         }
