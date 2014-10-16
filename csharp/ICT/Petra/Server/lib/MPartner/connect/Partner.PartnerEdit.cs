@@ -22,44 +22,40 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
-using System.Threading;
-using GNU.Gettext;
+
 using Ict.Common;
-using Ict.Common.Exceptions;
 using Ict.Common.DB;
 using Ict.Common.Data;
-using Ict.Common.Verification;
-using Ict.Common.Remoting.Shared;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
+using Ict.Common.Verification;
+using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MCommon.Data.Cascading;
+using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Server.MFinance.Gift;
+using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.DataAggregates;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Partner;
+using Ict.Petra.Server.MPartner.Partner.Cacheable;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
+using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon;
-using Ict.Petra.Server.MCommon.Data.Cascading;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
-using Ict.Petra.Shared.MPartner.Mailroom.Data;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Server.MCommon;
-using Ict.Petra.Server.MFinance.Gift;
-using Ict.Petra.Server.MPartner.Partner;
-using Ict.Petra.Shared.MPersonnel.Person;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.MCommon.UIConnectors;
-using Ict.Petra.Server.MPartner.Common;
-using Ict.Petra.Server.MPartner;
-using Ict.Petra.Server.MPartner.DataAggregates;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
-using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
-using Ict.Petra.Server.MFinance.Common;
-using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Person;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
@@ -493,8 +489,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             Boolean OfficeSpecificDataLabelsAvailable = false;
             Int32 ItemsCountAddresses = 0;
             Int32 ItemsCountAddressesActive = 0;
+            Int32 ItemsCountContactDetails = -1;
+            Int32 ItemsCountContactDetailsActive = -1;
             Int32 ItemsCountSubscriptions = 0;
-            Int32 ItemsCountContactDetails = 0;
             Int32 ItemsCountSubscriptionsActive = 0;
             Int32 ItemsCountPartnerTypes = 0;
             Int32 ItemsCountPartnerRelationships = 0;
@@ -568,17 +565,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         FPartnerEditScreenDS.PSubscription.Rows.Clear();
                     }
 
+                    // Partner Attributes - those always need to get loaded!
+                    FPartnerEditScreenDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
+                    
                     // Contact Details
-                    FPartnerEditScreenDS.Merge(GetContactDetailsInternal(out ItemsCountContactDetails, false));
+                    GetPartnerContactDetailsInternal(out ItemsCountContactDetails);                    
 
                     if ((ADelayedDataLoading) && (ATabPage != TPartnerEditTabPageEnum.petpContactDetails))
                     {
-                        // Only count Contact Details
-                        Calculations.CalculateTabCountsPartnerRelationships(FPartnerEditScreenDS.PPartnerRelationship,
-                            out ItemsCountPartnerRelationships);
-
-                        // Empty Tables again, we don't want to transfer the data contained in them
-                        FPartnerEditScreenDS.PPartnerRelationship.Rows.Clear();
+                        // Count Contact Details
+                        Calculations.CalculateTabCountsPartnerContactDetails(FPartnerEditScreenDS.PPartnerAttribute,
+                            out ItemsCountContactDetails, out ItemsCountContactDetailsActive);
                     }
 
                     // Partner Relationships
@@ -927,7 +924,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     MiscellaneousDataDR.LastGiftInfo = LastGiftInfo;
                     MiscellaneousDataDR.ItemsCountAddresses = ItemsCountAddresses;
-                    MiscellaneousDataDR.ItemsCountAddressesActive = ItemsCountAddressesActive;
+                    MiscellaneousDataDR.ItemsCountAddressesActive = ItemsCountAddressesActive;                  
+                    MiscellaneousDataDR.ItemsCountContactDetails = ItemsCountContactDetails;
+                    MiscellaneousDataDR.ItemsCountContactDetailsActive = ItemsCountContactDetailsActive;
                     MiscellaneousDataDR.ItemsCountSubscriptions = ItemsCountSubscriptions;
                     MiscellaneousDataDR.ItemsCountSubscriptionsActive = ItemsCountSubscriptionsActive;
                     MiscellaneousDataDR.ItemsCountPartnerTypes = ItemsCountPartnerTypes;
@@ -2876,55 +2875,52 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             int ContactDetailsCount;
 
-            return GetContactDetailsInternal(out ContactDetailsCount, false);
+            return GetPartnerContactDetailsInternal(out ContactDetailsCount);
         }
         
-        private PPartnerAttributeTable GetContactDetailsInternal(out Int32 ACount, Boolean ACountOnly)
+        private PartnerEditTDSPPartnerAttributeTable GetPartnerContactDetailsInternal(out Int32 ACount)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
-            PPartnerAttributeTable AttributeDT;
+            TPartnerCacheable PartnerCacheable = new TPartnerCacheable();            
+            TDBTransaction ReadTransaction = null;
+            PPartnerAttributeTypeTable AttributeTypeDT;
+            var PartnerAttributesThatArentPartnerContactAttributes = new List<PPartnerAttributeRow>();
+            int NonPartnerContactAttributesCount = 0;
+            
+            // Get the Partner Attribute Types that represent Partner Contact Types.
+            AttributeTypeDT = Calculations.DeterminePartnerContactTypes(@PartnerCacheable.GetCacheableTable);
 
-            AttributeDT = new PPartnerAttributeTable();
-            try
+            // Partner Contact Details are kept in PPartnerAttribute, among other attributes (!), so we need to ensure that
+            // PPartnerAttribute data for this Partner is loaded already (this will be the case when called from LoadData).
+            if (FPartnerEditScreenDS.PPartnerAttribute == null) 
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-
-                if (ACountOnly)
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
+                    TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate 
                 {
-                    // count Partner Attributes
-                    // TODO: filter on Attribute Types that constitute a Contact Attribute Type (p_is_contact_detail_l = true!)
-                    ACount = PPartnerAttributeAccess.CountViaPPartner(FPartnerKey, ReadTransaction);
+                   TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerContactDetailsInternal: loading Partner Contact Details for Partner " + FPartnerKey.ToString() + "...");
+                   FPartnerEditScreenDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
+                });
+            }
+                           
+            // Find out which Partner Attributes *are* and which *aren't* Partner Contact Attributes:
+            // Partner Attributes whose AttributeType is not a PartnerAttributeType whose PartnerAttributeCategory is a Partner Contact one 
+            // (their PPartnerAttributeCategory.PartnerContactCategory Column holds 'false') aren't!
+            for (int Counter = 0; Counter < FPartnerEditScreenDS.PPartnerAttribute.Rows.Count; Counter++) 
+            {
+                if(AttributeTypeDT.Select(PPartnerAttributeTypeTable.GetCodeDBName() + " = '" + FPartnerEditScreenDS.PPartnerAttribute[Counter].AttributeType + "'").Length == 0)
+                {
+                    NonPartnerContactAttributesCount++;
                 }
                 else
                 {
-                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetContactDetailsInternal: loading Contact Details for Partner " + FPartnerKey.ToString() + "...");
-                    try
-                    {
-                        // load relationships where partner is involved with partner key or reciprocal
-                        AttributeDT.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
-
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
-
-                    ACount = AttributeDT.Rows.Count;
+                    // Mark every Partner Attribute that *is* a Partner Contact Attribute
+                    FPartnerEditScreenDS.PPartnerAttribute[Counter].PartnerContactDetail = true;
                 }
             }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetContactDetailsInternal: committed own transaction.");
-                }
-            }
-            
-            return AttributeDT;
+
+            ACount = FPartnerEditScreenDS.PPartnerAttribute.Rows.Count - NonPartnerContactAttributesCount;
+                    
+            return FPartnerEditScreenDS.PPartnerAttribute;
         }
         
         private PartnerEditTDSPPartnerRelationshipTable GetPartnerRelationshipsInternal(out Int32 ACount, Boolean ACountOnly)

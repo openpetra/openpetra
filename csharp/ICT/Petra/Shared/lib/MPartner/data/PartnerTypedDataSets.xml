@@ -29,7 +29,9 @@
     </Table>
     <Table sqltable="p_partner_attribute_category"/>
     <Table sqltable="p_partner_attribute_type"/>
-    <Table sqltable="p_partner_attribute"/>
+    <Table sqltable="p_partner_attribute">
+        <CustomField name="PartnerContactDetail" type="Boolean"/>
+    </Table>    
     <Table sqltable="p_family">
       <Field sqltable="p_unit" sqlfield="p_unit_name_c"/>
     </Table>
@@ -81,6 +83,8 @@
       <CustomField name="LastContactDate" type="DateTime"/>
       <CustomField name="ItemsCountAddresses" type="Int32"/>
       <CustomField name="ItemsCountAddressesActive" type="Int32"/>
+      <CustomField name="ItemsCountContactDetails" type="Int32"/>
+      <CustomField name="ItemsCountContactDetailsActive" type="Int32"/>
       <CustomField name="ItemsCountSubscriptions" type="Int32"/>
       <CustomField name="ItemsCountSubscriptionsActive" type="Int32"/>
       <CustomField name="ItemsCountPartnerTypes" type="Int32"/>

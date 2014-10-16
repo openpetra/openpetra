@@ -79,16 +79,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         /// <summary>todoComment</summary>
 
-        public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
-
-        private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
-        {
-            if (HookupDataChange != null)
-            {
-                HookupDataChange(this, e);
-            }
-        }
-
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
         {
             if (RecalculateScreenParts != null)
@@ -126,8 +116,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             // disable change event while controls are being initialized as otherwise save button might get enabled
             FPetraUtilsObject.DisableDataChangedEvent();
-
-            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpContactDetails));
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
@@ -195,27 +183,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Create custom data columns on-the-fly
             CreateCustomDataColumns();
             
-            
             /* Create SourceDataGrid columns */
             CreateGridColumns();
 
             /* Setup the DataGrid's visual appearance */
 //            SetupDataGridVisualAppearance();
 
-            /* Prepare the Demote and Promote buttons first time */
-//            PrepareArrowButtons();
-
-            /* Hook up event that fires when a different Row is selected */
-//            grdDetails.Selection.FocusRowEntered += new RowEventHandler(this.DataGrid_FocusRowEntered);
-            
             // Set up special sort order of Rows in Grid:
             // PPartnerAttributeCategory.Index followed by PPartnerAttributeType.Index followed by PPartnerAttribute.Index!
             DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
             gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
                 PPartnerAttributeTable.GetIndexDBName() + " ASC";
             
-            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpFamilyMembers));
-
+			string FilterStr = String.Format("{0}='{1}'", PartnerEditTDSPPartnerAttributeTable.GetPartnerContactDetailDBName(), true);
+			
+			FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);			
+            FFilterAndFindObject.ApplyFilter();
+            
+            // The Filter Panel should be shown expanded
+            FFilterAndFindObject.ToggleFilter();
+            
             if (!FPartnerAttributesExist)
             {
                 // TODO PostInitUserControl - if (!FPartnerAttributesExist) 
@@ -269,6 +256,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO ApplySecurity();            
         }
 
+        private void CreateFilterFindPanelsManual()
+        {
+            // By default only 'current' Contact Details should be shown
+// TODO Make initial checking of 'Current' Filter CheckBox work          ((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByClonedFrom(chkCurrent)).Checked = true;
+        }
+        
         /// <summary>
         /// Performs necessary actions to make the Merging of rows that were changed on
         /// the Server side into the Client-side DataSet possible.
@@ -309,7 +302,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
-        #endregion
+        #endregion  
 
         #region Private Methods
 
@@ -368,9 +361,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(txtValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
 //            FPetraUtilsObject.SetStatusBarText(rtbValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
             
-            // By default only valid Contact Details should be shown
-//            chkValidContactDetailsOnly.Checked = true;  // TODO - work on Action, then uncomment this line
-
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
             // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //            rtbValue.BuildLinkWithValue = BuildLinkWithValue;
@@ -430,6 +420,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // raise;
             }
 
+            // Fire OnRecalculateScreenParts event
+            DoRecalculateScreenParts();
+            
             return ReturnValue;
         }
         
@@ -512,24 +505,20 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
             if (CreateNewPPartnerAttribute())
             {
                 cmbContactCategory.Focus();
             }
 
             // Fire OnRecalculateScreenParts event: reset counter in tab header
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+            DoRecalculateScreenParts();
         }
 
         /// <summary>
         /// manual code when adding new row
         /// </summary>
         /// <param name="ARow"></param>
-        private void NewRowManual(ref PPartnerAttributeRow ARow)
+        private void NewRowManual(ref PartnerEditTDSPPartnerAttributeRow ARow)
         {
             int LeastSequence = 0;
             int HighestIndex = 0;
@@ -589,6 +578,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.Specialised = false;
             ARow.Confidential = false;
             ARow.Current = true;
+            ARow.PartnerContactDetail = true;
         }
 
         private void DeleteRecord(Object sender, EventArgs e)
@@ -669,13 +659,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            DoRecalculateScreenParts();
-
-            if (grdDetails.Rows.Count <= 1)
-            {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
+            if (ADeletionPerformed)
+            {            
+                DoRecalculateScreenParts();
+    
+                if (grdDetails.Rows.Count <= 1)
+                {
+                    // hide details part and disable buttons if no record in grid (first row for headings)
+                    btnDelete.Enabled = false;
+                    pnlDetails.Visible = false;
+                }
             }
         }
 

@@ -617,6 +617,22 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
+        /// Gets the Partner Attribute Types that represent Partner Contact Types.
+        /// </summary>
+        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
+        /// <returns>DataTable containing only Partner Attribute Types that represent Partner Contact Types.</returns>
+        public static PPartnerAttributeTypeTable DeterminePartnerContactTypes(TGetCacheableDataTableFromCache ACacheRetriever)
+        {
+            var ReturnValue = new PPartnerAttributeTypeTable();
+            Type tmp;
+            
+            ReturnValue.Merge(ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), TCacheablePartnerTablesEnum.ContactTypeList), out tmp));
+
+            return ReturnValue;
+        }
+        
+        /// <summary>
         /// count the available current addresses and the total number of addresses
         /// </summary>
         /// <param name="ATable">table with locations</param>
@@ -651,6 +667,26 @@ namespace Ict.Petra.Shared.MPartner
             // MessageBox.Show('ACurrentAddresses: ' + ACurrentAddresses.ToString);
         }
 
+        /// <summary>
+        /// Count the Partner Contact Details.
+        /// </summary>
+        /// <param name="ATable">Table with Partner Contact Details. This will be the PPartnerAttribute Table.</param>        
+        /// <param name="ATotalPartnerContactDetails">returns the total number of Partner Contact Details.</param>
+        /// <param name="AActivePartnerContactDetails">returns the number of current Partner Contact Details.</param>
+        public static void CalculateTabCountsPartnerContactDetails(PartnerEditTDSPPartnerAttributeTable ATable,  
+            out Int32 ATotalPartnerContactDetails, out Int32 AActivePartnerContactDetails)
+        {
+            // Inspect only CurrentRows (this excludes Deleted DataRows)
+            ATotalPartnerContactDetails = new DataView(ATable, 
+                "PartnerContactDetail = true", "", DataViewRowState.CurrentRows).Count;
+
+            // Inspect only CurrentRows (this excludes Deleted DataRows)
+            AActivePartnerContactDetails = new DataView(ATable,
+                "PartnerContactDetail = true AND " +
+                PPartnerAttributeTable.GetCurrentDBName() + " = true", "",
+                DataViewRowState.CurrentRows).Count;
+        }
+        
         /// <summary>
         /// Count the subscriptions
         /// </summary>

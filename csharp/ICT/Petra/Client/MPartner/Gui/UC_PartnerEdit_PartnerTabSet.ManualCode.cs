@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrAddressesTabHeader = Catalog.GetString("Addresses");
 
-//        private static readonly string StrContactDetailsTabHeader = Catalog.GetString("Contact Details");
+        private static readonly string StrContactDetailsTabHeader = Catalog.GetString("Contact Details");
 
         private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
@@ -85,6 +85,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrAddressesSingular = Catalog.GetString("Address");
 
+        private static readonly string StrContactDetailsSingular = Catalog.GetString("Contact Detail");
+        
         private static readonly string StrSubscriptionsSingular = Catalog.GetString("Subscription");
 
         private static readonly string StrTabHeaderCounterTipSingular = Catalog.GetString("{0} {2}, of which {1} is ");
@@ -995,6 +997,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
 
+                // Hook up RecalculateScreenParts Event
+                FUcoContactDetails.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+                
                 FUcoContactDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
 
                 CorrectDataGridWidthsAfterDataChange();
@@ -1002,7 +1007,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *before*
+        /// This Method *CAN* be implemented in ManualCode to perform special initialisations *after*
         /// InitUserControl() gets called.
         /// </summary>
         partial void PostInitUserControl(UserControl AUserControl)
@@ -1076,6 +1081,43 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_ContactDetails))
+            {
+                if (FMainDS.MiscellaneousData[0].ItemsCountContactDetails == -1)
+                {
+                    Calculations.CalculateTabCountsPartnerContactDetails(FMainDS.PPartnerAttribute, out CountAll, out CountActive);
+                    tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
+                }
+                else
+                {
+                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountContactDetails;
+                    CountActive = FMainDS.MiscellaneousData[0].ItemsCountContactDetailsActive;
+                }
+
+                if ((CountAll == 0) || (CountAll > 1))
+                {
+                    DynamicToolTipPart1 = StrContactDetailsTabHeader;
+                }
+                else
+                {
+                    DynamicToolTipPart1 = StrContactDetailsSingular;
+                }
+
+                tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
+
+                if ((CountActive == 0) || (CountActive > 1))
+                {
+                    tpgContactDetails.ToolTipText = String.Format(StrTabHeaderCounterTipPlural + "current", CountAll, CountActive, DynamicToolTipPart1);
+                }
+                else
+                {
+                    tpgContactDetails.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "current",
+                        CountAll,
+                        CountActive,
+                        DynamicToolTipPart1);
+                }
+            }
+            
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Subscriptions))
             {
                 if (FMainDS.Tables.Contains(PSubscriptionTable.GetTableName()))
