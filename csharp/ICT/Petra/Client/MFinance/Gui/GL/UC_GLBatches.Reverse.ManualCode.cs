@@ -142,15 +142,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
 
-                        // refresh the grid, to reflect that the batch has been posted
+                        // refresh the grid, to reflect that the batch has been reversed
                         FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ReversalGLBatch));
 
-                        // AlanP: You must not set FPreviouslySelectedDetailRow = null because it is owned by grid events
-                        //this.FPreviouslySelectedDetailRow = null;
+                        // make sure that the current dataset is clean,
+                        // otherwise the next save would try to modify the posted batch, even though no values have been changed
+                        FMainDS.AcceptChanges();
+
+                        // Ensure these tabs will ask the server for updates
                         FMyForm.GetJournalsControl().ClearCurrentSelection();
                         FMyForm.GetTransactionsControl().ClearCurrentSelection();
 
-                        FMyUserControl.LoadBatchesForCurrentYear();
+                        FMyUserControl.UpdateDisplay();
 
                         return true;
                     }

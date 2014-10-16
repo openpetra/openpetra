@@ -616,6 +616,21 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             DataTable Table = TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.MailingList);
 
+            // We need to add a row to the table that has a NULL value
+            // We don't want to change the 'real' data table so we make a copy first
+            Table = Table.Copy();
+
+            // Allow NULL for the code in this table
+            Table.Columns[PMailingTable.ColumnMailingCodeId].AllowDBNull = true;
+
+            // Now add the row
+            DataRow Dr = Table.NewRow();
+            Dr[PMailingTable.GetMailingCodeDBName()] = DBNull.Value;
+            Dr[PMailingTable.GetMailingDescriptionDBName()] = String.Empty;
+
+            Table.Rows.InsertAt(Dr, 0);
+
+            // Now use this table for the ComboBox data source
             AControl.InitialiseUserControl(Table,
                 PMailingTable.GetMailingCodeDBName(),
                 PMailingTable.GetMailingDescriptionDBName(),
@@ -624,7 +639,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (AActiveOnly)
             {
-                AControl.Filter = PMailingTable.GetViewableDBName() + " = true";
+                AControl.Filter = String.Format("({0}=true) OR ({1} IS NULL)", PMailingTable.GetViewableDBName(), PMailingTable.GetMailingCodeDBName());
                 //TODO Add viewable until and date comparison
             }
             else
@@ -667,18 +682,21 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey
         /// </summary>
-        /// <param name="cmbMinistry"></param>
-        /// <param name="txtField"></param>
+        /// <param name="ACmbMinistry"></param>
+        /// <param name="ATxtField"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="ARefreshData"></param>
-        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry,
-            ref TtxtAutoPopulatedButtonLabel txtField,
+        public static void GetRecipientData(ref TCmbAutoPopulated ACmbMinistry,
+            ref TtxtAutoPopulatedButtonLabel ATxtField,
             System.Int64 APartnerKey,
             Boolean ARefreshData = false)
         {
-            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber, ARefreshData);
+            GetRecipientData(ref ACmbMinistry, APartnerKey, out FFieldNumber, ARefreshData);
 
-            txtField.Text = FFieldNumber.ToString();
+            if (Convert.ToInt64(ATxtField.Text) != FFieldNumber)
+            {
+                ATxtField.Text = FFieldNumber.ToString();
+            }
         }
 
         /// <summary>
@@ -694,11 +712,11 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey
         /// </summary>
-        /// <param name="cmbMinistry"></param>
+        /// <param name="ACmbKeyMinistry"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="AFieldNumber"></param>
         /// <param name="ARefreshData"></param>
-        private static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry,
+        private static void GetRecipientData(ref TCmbAutoPopulated ACmbKeyMinistry,
             Int64 APartnerKey,
             out Int64 AFieldNumber,
             Boolean ARefreshData = false)
@@ -709,7 +727,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if ((FKeyMinTable != null) && !ARefreshData)
             {
-                if (FindAndSelect(ref cmbMinistry, APartnerKey))
+                if (FindAndSelect(ref ACmbKeyMinistry, APartnerKey))
                 {
                     return;
                 }
@@ -726,6 +744,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             try
             {
                 FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
+
                 AFieldNumber = FFieldNumber;
 
                 CurrentRowFilter = FKeyMinTable.DefaultView.RowFilter;
@@ -737,17 +756,17 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 DataTable dt = FKeyMinTable.DefaultView.ToTable();
 
-                cmbMinistry.InitialiseUserControl(dt,
+                ACmbKeyMinistry.InitialiseUserControl(dt,
                     ValueMember,
                     DisplayMember,
                     DisplayMember,
                     null);
-                cmbMinistry.AppearanceSetup(new int[] { 250 }, -1);
+                ACmbKeyMinistry.AppearanceSetup(new int[] { 250 }, -1);
 
-                if (!FindAndSelect(ref cmbMinistry, APartnerKey))
+                if (!FindAndSelect(ref ACmbKeyMinistry, APartnerKey))
                 {
                     //Clear the combobox
-                    cmbMinistry.SelectedIndex = -1;
+                    ACmbKeyMinistry.SelectedIndex = -1;
                 }
             }
             finally

@@ -22,93 +22,61 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
-using System.Windows.Forms;
 using System.Data;
-using Ict.Petra.Shared;
-using System.Resources;
-using System.Collections.Specialized;
-using GNU.Gettext;
+
 using Ict.Common;
-using Ict.Common.Data;
-using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
-    /*************************************************************************************************
-     *
-     * An EventArgs subclass we can use to notify our parent of changes in our grid
-     *
-     * **********************************************************************************************/
-
-    /// <summary>
-    /// An eventargs class that knows the current number of items
-    /// </summary>
-    public class CountEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Returns the new item count
-        /// </summary>
-        public int NewCount = 0;
-
-        /// <summary>
-        /// Standard Constructor
-        /// </summary>
-        /// <param name="Count">The new item count</param>
-        public CountEventArgs(int Count)
-        {
-            NewCount = Count;
-        }
-    }
-
-    /// <summary>
-    /// A delegate that can be used to handle a change in the number of items
-    /// </summary>
-    public delegate void CountChangedEventHandler(object Sender, CountEventArgs e);
-
-    /****************************************************************************************************
-    *
-    * Our main class methods for Contact Attribute Details
-    *
-    * **************************************************************************************************/
-
     public partial class TUC_ContactAttributeDetail
     {
+        // Keeps track of the current value of the Contact Attribute
+        private string FContactAttribute = String.Empty;
+
+        PContactAttributeTable FContactAttributeDT;
+
         /// <summary>
-        /// An event that will be fired when the number of rows in the details grid changes
+        /// Raised when there are no more detail records held after the last
+        /// detail record has beend deleted.
         /// </summary>
-        public event CountChangedEventHandler CountChanged;
+        public event EventHandler <EventArgs>NoMoreDetailRecords;
 
         /// <summary>
-        /// Call this method when the number of rows in the details grid changes
-        /// </summary>
-        /// <param name="e">A CountEventArgs that has 'NewCount' specified</param>
-        protected virtual void OnCountChanged(CountEventArgs e)
-        {
-            if (CountChanged != null)
-            {
-                CountChanged(this, e);
-            }
-        }
-
-        // A variable that keeps track of the current value of the contact code
-        private string _currentContactAttribute = String.Empty;
-
-        /// <summary>
-        /// Returns the string value for the current Contact Attribute used by the control.
+        /// The Contact Details maintained in this UserControl are for this Contact Attribute.
         /// </summary>
         public string ContactAttribute
         {
             get
             {
-                return _currentContactAttribute;
+                return FContactAttribute;
+            }
+        }
+
+        /// <summary>
+        /// The number of values in the grid for the current Contact Attribute.  This may not be the full number if the grid is filtered.
+        /// </summary>
+        public int GridCount
+        {
+            get
+            {
+                return grdDetails.Rows.Count - 1;
+            }
+        }
+
+        /// <summary>
+        /// The unfiltered number of values for the current Contact Attribute.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                // Need to create our own view because the grid may be filtered
+                return new DataView(FMainDS.PContactAttributeDetail,
+                    PContactAttributeDetailTable.GetContactAttributeCodeDBName() +
+                    " = '" + FContactAttribute + "'",
+                    "", DataViewRowState.CurrentRows).Count;
             }
         }
 
@@ -117,40 +85,72 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Before we start we set the defaultView RowFilter property to something unlikely.
             // The manual code gets a chance to populate the grid before we get our chance to set the correct rowFilter.
             // So this ensures that the grid does not flicker with the wrong rows before we put the right ones in.
-            string filter = String.Format("{0}='@#~?!()'", FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.ColumnName);
+            string FilterStr = String.Format("{0}='@#~?!()'", FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.ColumnName);
 
-            FMainDS.PContactAttributeDetail.DefaultView.RowFilter = filter;
+            FMainDS.PContactAttributeDetail.DefaultView.RowFilter = FilterStr;
+
+            /* fix tab order */
+            pnlButtons.TabIndex = grdDetails.TabIndex + 1;
+        }
+
+        private void NewRecord(Object sender, EventArgs e)
+        {
+            if (CreateNewPContactAttributeDetail())
+            {
+                SetContactAttribute(FContactAttribute);
+
+                txtDetailContactAttrDetailCode.ReadOnly = false;
+
+                txtDetailContactAttrDetailCode.Focus();
+            }
         }
 
         private void NewRowManual(ref PContactAttributeDetailRow ARow)
         {
-            string newCode = Catalog.GetString("NEWCODE");
-            Int32 countNewCode = 1;
+            string NewName = Catalog.GetString("NEWDETAIL");
+            Int32 CountNewDetail = 0;
 
-            if (FMainDS.PContactAttributeDetail.Rows.Find(new object[] { _currentContactAttribute, newCode }) != null)
+            if (FMainDS.PContactAttributeDetail.Rows.Find(new object[] { FContactAttribute, NewName }) != null)
             {
-                while (FMainDS.PContactAttributeDetail.Rows.Find(new object[] { _currentContactAttribute,
-                                                                                newCode + countNewCode.ToString() }) != null)
+                while (FMainDS.PContactAttributeDetail.Rows.Find(new object[] { FContactAttribute,
+                                                                                NewName + CountNewDetail.ToString() }) != null)
                 {
-                    countNewCode++;
+                    CountNewDetail++;
                 }
 
-                newCode += countNewCode.ToString();
+                NewName += CountNewDetail.ToString();
             }
 
-            ARow.ContactAttrDetailCode = newCode;
-            ARow.ContactAttributeCode = _currentContactAttribute;
+            ARow.ContactAttrDetailCode = NewName;
+            ARow.ContactAttributeCode = FContactAttribute;
         }
 
-        private void NewRow(Object sender, EventArgs e)
+        /// <summary>
+        /// Call this method from the parent page's GetDetailDataFromControls Manual method. This will trigger a call to this control's method below
+        /// </summary>
+        public void GetDetailsFromControls()
         {
-            if (CreateNewPContactAttributeDetail())
-            {
-                SetContactAttribute(_currentContactAttribute);
-                SelectDetailRowByDataTableIndex(FMainDS.PContactAttributeDetail.Rows.Count - 1);
-                OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
-                txtDetailContactAttrDetailCode.Focus();
-            }
+            GetDetailsFromControls(FPreviouslySelectedDetailRow);
+        }
+
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(PContactAttributeDetailRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            // If the last Row in the Grid is to be deleted: check if there are added 'Detail' Rows in *other* 'Master' Rows,
+            // and if any of those 'Master' Rows was added too, tell the user that data needs to be saved first before deletion
+            // of the present 'Detail' Row can go ahead.
+            // The reason for that is that the deletion of that last 'Detail' Row will cause the OnNoMoreDetailRecords Event to
+            // be raised by the UserControl, which in turn will cause the Form to call the 'SaveChanges' Method of the
+            // UserControl before the Form saves its own data. While this in itself is OK, saving in the 'SaveChanges' Method
+            // of the UserControl would fail as a 'Master' Row itself was newly added AND it wouldn't be in the DB yet!
+            return TDeleteGridRows.MasterDetailFormsSpecialPreDeleteCheck(this.Count,
+                FContactAttributeDT, FMainDS.PContactAttributeDetail,
+                PContactAttributeTable.GetContactAttributeCodeDBName(), PContactAttributeDetailTable.GetContactAttrDetailCodeDBName());
         }
 
         /// <summary>
@@ -167,45 +167,33 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             if (ADeletionPerformed)
             {
-                OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
+                // If we have no Attribute Details anymore: Inform the Form
+                if (this.Count == 0)
+                {
+                    OnNoMoreDetailRecords(null);
+                }
             }
         }
 
         /// <summary>
-        /// Call this method from the parent page's GetDetailDataFromControlsManual method. This will trigger a call to this control's method below
+        /// Call this method when the Contact Attribute changes in the Contact Attribute grid on the parent Form.
         /// </summary>
-        public void GetDetailsFromControls()
-        {
-            GetDetailsFromControls(FPreviouslySelectedDetailRow);
-        }
-
-        private void GetDetailDataFromControlsManual(PContactAttributeDetailRow ARow)
-        {
-        }
-
-        /// <summary>
-        /// Call this method when the Contact Attribute changes in the Contact Attribute grid on the parent page
-        /// </summary>
-        /// <param name="NewValue">New value for the contact attribute</param>
-        public void SetContactAttribute(string NewValue)
+        /// <param name="ANewCode">The Contact Attribute code as in the parent Form.</param>
+        public void SetContactAttribute(string ANewCode)
         {
             // Save the current data
             ValidateAllData(true, false);
 
             // Save the current contact attribute in our member variable
-            _currentContactAttribute = NewValue;
+            FContactAttribute = ANewCode;
 
-            // Use our standard auto-code to create a dataset and bind it to the grid using the correct filter
             FPetraUtilsObject.DisableDataChangedEvent();
+
             pnlDetails.Enabled = false;
 
             if (FMainDS.PContactAttributeDetail != null)
             {
-                // specify the filter and bind  the data
-                string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewValue);
-                FFilterAndFindObject.FilterPanelControls.SetBaseFilter(filter, true);
-                FFilterAndFindObject.ApplyFilter();
-                grdDetails.SelectRowWithoutFocus(FPrevRowChangedRow);
+                FilterOnCode(ANewCode, GetSelectedRowIndex());
             }
 
             FPetraUtilsObject.EnableDataChangedEvent();
@@ -214,81 +202,74 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         }
 
         /// <summary>
-        /// Returns the number of detail code items in the database that use the specified attribute code
+        /// Call this method to change the Contact Attribute code for all Contact Details that are presently held in this UserControl
         /// </summary>
-        /// <param name="ForCode">The attribute code for which to return the number of detail codes</param>
-        /// <returns></returns>
-        public int NumberOfDetails(string ForCode)
+        /// <param name="ANewCode">New value for the Contact Attribute.</param>
+        public void ModifyAttributeCode(string ANewCode)
         {
-            if (FMainDS.PContactAttributeDetail != null)
+            if (ANewCode.CompareTo(FContactAttribute) == 0)  // should not happen
             {
-                // specify the filter, create a view, and return the number of items
-                string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), ForCode);
-                DataView myDataView = new DataView(FMainDS.PContactAttributeDetail, filter, "", DataViewRowState.CurrentRows);
-                return myDataView.Count;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        /// <summary>
-        /// Deletes all the attributes associated with the current contact attribute
-        /// </summary>
-        public void DeleteAll()
-        {
-            DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
-
-            for (int i = dv.Count - 1; i >= 0; i--)
-            {
-                dv[i].Delete();
+                return;
             }
 
-            SelectRowInGrid(1);
-            OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
-        }
+            DataView UpdateRowsDV = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
 
-        /// <summary>
-        /// Call this method to change the attribute code for the current collection of details
-        /// </summary>
-        /// <param name="NewCode">The new contact attribute code</param>
-        public void ModifyAttributeCode(string NewCode)
-        {
-            if (NewCode.CompareTo(_currentContactAttribute) == 0)
+            // We go round a loop where, as we change the column value, the number of rows in the dataview becomes zero
+            int CurrentRowIndex = GetSelectedRowIndex();
+
+            while (UpdateRowsDV.Count > 0)
             {
-                return;                                                         // should not happen
+                UpdateRowsDV[0][FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.Ordinal] = ANewCode;
             }
 
-            DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
-
-            // we go round a loop where, as we change the column value, the number of rows in the dataview becomes zero
-            int curRow = GetSelectedRowIndex();
-
-            while (dv.Count > 0)
-            {
-                dv[0][FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.Ordinal] = NewCode;
-            }
+            FContactAttribute = ANewCode;
 
             // Now we need to display the grid again based on the modified code
-            _currentContactAttribute = NewCode;
-            string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewCode);
-            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(filter, true);
-            FFilterAndFindObject.ApplyFilter();
-            SelectRowInGrid(curRow);
-
-            // The number of rows should be the same as before, so this should be unnecessary!
-            OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
+            FilterOnCode(ANewCode, CurrentRowIndex);
         }
 
         /// <summary>
-        /// Creates an initial attribute detail for a new Attribute.  Call this when a new attribute is created.
+        /// Specifies a new Filter and applies it, then selects the Row passed in with <paramref name="ACurrentRowIndex"/>.
         /// </summary>
-        /// <param name="AttributeCode">The attribute code associated with the new detail code</param>
-        public void CreateFirstAttributeDetail(string AttributeCode)
+        /// <param name="ANewCode">New Code to filter on.</param>
+        /// <param name="ACurrentRowIndex">The index of the Row that should get displayed (the 'current' Row).</param>
+        private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
         {
-            _currentContactAttribute = AttributeCode;
-            NewRow(null, null);
+            string FilterStr = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), ANewCode);
+
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
+            FFilterAndFindObject.ApplyFilter();
+
+            grdDetails.SelectRowWithoutFocus(ACurrentRowIndex);
+        }
+
+        /// <summary>
+        /// Creates an initial Attribute Detail for a new Contact Attribute.  Call this when a new Contact Attribute is created.
+        /// </summary>
+        /// <param name="AttributeCode">The Attribute Code associated with the new Contact Attribute.</param>
+        /// <param name="AContactAttributeDT">The ContactAttribute Table held in the Form's FMainDS DataSet.</param>
+        public void CreateFirstAttributeDetail(string AttributeCode, PContactAttributeTable AContactAttributeDT)
+        {
+            FContactAttribute = AttributeCode;
+
+            // We need to know about the Contact Attribute Table for a check in PreDeleteManual!
+            FContactAttributeDT = AContactAttributeDT;
+
+            NewRecord(null, null);
+        }
+
+        /// <summary>
+        /// Raises the 'NoMoreDetailRecords' Event.
+        /// </summary>
+        /// <param name="e">Event Arguments.</param>
+        protected virtual void OnNoMoreDetailRecords(EventArgs e)
+        {
+            var Eventhandler = NoMoreDetailRecords;
+
+            if (Eventhandler != null)
+            {
+                Eventhandler(this, e);
+            }
         }
     }
 }

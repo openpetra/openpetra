@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-            ucoBatches.RefreshAll();
+            ucoBatches.RefreshAllData();
         }
 
         // Before the dataset is saved, check for correlation between batch and transactions
@@ -659,6 +659,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return allChangesCount;
+        }
+
+        /// <summary>
+        /// Check if batch columns have actually changed
+        /// </summary>
+        /// <param name="ABatchRow"></param>
+        /// <returns></returns>
+        public bool BatchColumnsHaveChanged(AGiftBatchRow ABatchRow)
+        {
+            bool RetVal = false;
+
+            if (ABatchRow.RowState != DataRowState.Unchanged)
+            {
+                bool columnValueChanged = false;
+
+                for (int i = 0; i < FMainDS.AGiftBatch.Columns.Count; i++)
+                {
+                    string originalValue = ABatchRow[i, DataRowVersion.Original].ToString();
+                    string currentValue = ABatchRow[i, DataRowVersion.Current].ToString();
+
+                    if (originalValue != currentValue)
+                    {
+                        columnValueChanged = true;
+                        break;
+                    }
+                }
+
+                if (!columnValueChanged)
+                {
+                    ABatchRow.RejectChanges();
+                }
+
+                RetVal = columnValueChanged;
+            }
+
+            return RetVal;
         }
 
         #region Forms Messaging Interface Implementation

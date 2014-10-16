@@ -232,6 +232,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BeginEditMode(object sender, EventArgs e)
         {
+            bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
             FInEditMode = true;
 
             bool DoTaxUpdate;
@@ -245,6 +247,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
                 EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+            }
+
+            //On populating key muinistry
+            if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+            {
+                FPetraUtilsObject.DisableSaveButton();
             }
         }
 
@@ -273,8 +281,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        /// <returns>True if new gift transactions were loaded, false if transactions had been loaded already.</returns>
-        public bool LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus)
+        /// <param name="AForceLoadFromServer">Set to true to get data from the server even though it is apparently the current batch number and status</param>
+        /// <returns>True if gift transactions were loaded from server, false if transactions had been loaded already.</returns>
+        public bool LoadGifts(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus, bool AForceLoadFromServer = false)
         {
             FBatchRow = GetCurrentBatchRow();
 
@@ -294,12 +303,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 InitialiseControls();
             }
 
-            UpdateCurrencySymbols(FBatchRow.CurrencyCode);
+            //UpdateCurrencySymbols(FBatchRow.CurrencyCode);
 
             //Check if the same batch is selected, so no need to apply filter
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer)
             {
-                //Same as previously selected
+                //Same as previously selected and we have not been asked to force a full refresh
                 if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
                     if (FGLEffectivePeriodChanged)
@@ -389,8 +398,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
+                bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
                 TUC_GiftTransactions_Recipient.GetRecipientData(FPreviouslySelectedDetailRow, FPreviouslySelectedDetailRow.RecipientKey,
                     ref cmbKeyMinistries, txtDetailRecipientKey, ref txtDetailRecipientLedgerNumber);
+
+                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
             }
 
             FTransactionsLoaded = true;
@@ -1255,10 +1271,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
-            txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
-            txtGiftTotal.CurrencyCode = ACurrencyCode;
-            txtBatchTotal.CurrencyCode = ACurrencyCode;
-            txtHashTotal.CurrencyCode = ACurrencyCode;
+            if (txtDetailGiftTransactionAmount.CurrencyCode != ACurrencyCode)
+            {
+                txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
+            }
+
+            if ((txtGiftTotal.CurrencyCode != ACurrencyCode)
+                || (txtBatchTotal.CurrencyCode != ACurrencyCode)
+                || (txtHashTotal.CurrencyCode != ACurrencyCode))
+            {
+                txtGiftTotal.CurrencyCode = ACurrencyCode;
+                txtBatchTotal.CurrencyCode = ACurrencyCode;
+                txtHashTotal.CurrencyCode = ACurrencyCode;
+            }
         }
 
         /// <summary>
@@ -1521,6 +1546,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 && (FPreviouslySelectedDetailRow.RecipientKey != 0)
                 && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                && (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
                 && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +
                         FPreviouslySelectedDetailRow.RecipientDescription +
                         " (" + FPreviouslySelectedDetailRow.RecipientKey + ").\n\n" +
@@ -1548,18 +1574,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Refresh the dataset for this form
         /// </summary>
-        public void RefreshAll()
+        public void RefreshAllData()
         {
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
             {
                 FMainDS.AGiftDetail.Rows.Clear();
             }
 
+            // Get the current batch row from the batch tab
             FBatchRow = GetCurrentBatchRow();
 
             if (FBatchRow != null)
             {
-                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus);
+                // Be sure to pass the true parameter because we definitely need to update FMainDS.AGiftDetail as it is now empty!
+                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus, true);
             }
         }
 

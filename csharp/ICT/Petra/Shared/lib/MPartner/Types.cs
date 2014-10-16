@@ -46,6 +46,11 @@ namespace Ict.Petra.Shared.MPartner
         petpDetails,
 
         /// <summary>
+        /// page for contacts
+        /// </summary>
+        petpContactDetails,
+
+        /// <summary>
         /// detail page for partner class foundations
         /// </summary>
         petpFoundationDetails,
@@ -159,6 +164,37 @@ namespace Ict.Petra.Shared.MPartner
 
         /// firstname lastname
             eReverseWithoutTitle
+    };
+
+    /// <summary>
+    /// 'Value Kinds' of PPartnerAttributeType records. They describe what kind of value the 'Value' of a PPartnerAttribute record represents.
+    /// </summary>
+    public enum TPartnerAttributeTypeValueKind
+    {
+        /// <summary>
+        /// Value which is not a kind of value that the other members of this Enumeration represent.
+        /// </summary>
+        CONTACTDETAIL_GENERAL,
+
+        /// <summary>
+        /// Hyperlink (for various protocols, e.g. HTTP, HTTPS, FTP, etc. )
+        /// </summary>
+        CONTACTDETAIL_HYPERLINK,
+
+        /// <summary>
+        /// Hyperlink that contains a text part that is replaced with a variable value
+        /// </summary>
+        CONTACTDETAIL_HYPERLINK_WITHVALUE,
+
+        /// <summary>
+        /// E-Mail Address
+        /// </summary>
+        CONTACTDETAIL_EMAILADDRESS,
+
+        /// <summary>
+        /// Skype ID
+        /// </summary>
+        CONTACTDETAIL_SKYPEID
     };
 
     #region TLocationPK
