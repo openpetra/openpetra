@@ -16680,7 +16680,7 @@
                 label="Skill Level"
                 columnlabel="Skill Level"
                 help="Numeric representation of level of skill"
-                initial="0"/>
+                notnull="yes"/>
     <tablefield name="pm_years_of_experience_i"
                 type="integer"
                 descr="Years of experience this person has had this skill."
