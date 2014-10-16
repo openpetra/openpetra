@@ -525,9 +525,9 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             Int64 DonorKey = AParameters.Get("PartnerKey").ToInt64();
 
             String StrSql = "SELECT DISTINCT " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetLedgerNumberDBName() + ", " +
-                AGiftTable.GetTableDBName() + "." + AGiftTable.GetBatchNumberDBName() + ", " +
-                AGiftTable.GetTableDBName() + "." + AGiftTable.GetGiftTransactionNumberDBName() + ", " +
-                AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName();
+                            AGiftTable.GetTableDBName() + "." + AGiftTable.GetBatchNumberDBName() + ", " +
+                            AGiftTable.GetTableDBName() + "." + AGiftTable.GetGiftTransactionNumberDBName() + ", " +
+                            AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName();
 
             StrSql = StrSql +
                      " FROM " + AGiftTable.GetTableDBName() +
@@ -553,7 +553,6 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             }
 
             return resultTbl;
-
         }
 
         /// <summary>
