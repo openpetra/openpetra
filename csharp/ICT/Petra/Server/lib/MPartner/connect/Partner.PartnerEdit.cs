@@ -37,6 +37,7 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Server.MCommon.UIConnectors;
+using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
