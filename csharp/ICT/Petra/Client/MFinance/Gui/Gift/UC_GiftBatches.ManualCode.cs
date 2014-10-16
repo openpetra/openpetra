@@ -691,10 +691,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
-            else if (FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber)
+            else if ((FPreviouslySelectedDetailRow.BatchNumber == ABatchNumber) && (FPreviouslySelectedDetailRow.BatchTotal != ABatchTotal))
             {
                 FPreviouslySelectedDetailRow.BatchTotal = ABatchTotal;
-                FPetraUtilsObject.HasChanges = true;
+                FPetraUtilsObject.SetChangedFlag();
             }
         }
 
@@ -775,7 +775,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         return;
                     }
 
-                    FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
+                    if (FPreviouslySelectedDetailRow.GlEffectiveDate != dateValue)
+                    {
+                        FPreviouslySelectedDetailRow.GlEffectiveDate = dateValue;
+                    }
 
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
                     {

@@ -82,8 +82,8 @@ namespace Ict.Common
     /// todoComment
     /// </summary>
     public delegate void TNoNoMasterDataToSaveHandler(System.Object Sender, TNoMasterDataToSaveEventArgs e);
-    
-    
+
+
     /// <summary>
     /// todoComment
     /// </summary>
@@ -279,19 +279,19 @@ namespace Ict.Common
     }
 
     #region TDataSavedEventArgs
-    
+
     /// <summary>
     /// todoComment
     /// </summary>
     public class TDataSavedEventArgs : System.EventArgs
     {
-		/// <summary>
-		/// Whether the saving operation was successful, or not
-		/// </summary>
-		public Boolean Success {
-			get;
-			set;
-		}
+        /// <summary>
+        /// Whether the saving operation was successful, or not
+        /// </summary>
+        public Boolean Success {
+            get;
+            set;
+        }
 
         /// <summary>
         /// Constructor.
@@ -307,41 +307,41 @@ namespace Ict.Common
         public TDataSavedEventArgs(Boolean ASuccess)
         {
             Success = ASuccess;
-        }        
+        }
     }
-    
+
     /// <summary>
     /// todoComment
     /// </summary>
     public class TNoMasterDataToSaveEventArgs : TDataSavedEventArgs
     {
-		/// <summary>
-		/// To be set by the *callee*. Tells the calling 'SaveChanges' Method what the result
+        /// <summary>
+        /// To be set by the *callee*. Tells the calling 'SaveChanges' Method what the result
         /// of the processing of the associated Event was.
-		/// </summary>
-		public TSubmitChangesResult SubmitChangesResult 
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// To be set by the *callee*. Tells the calling 'SaveChanges' Method what the 'child'
-        /// DataTable whose data got saved by the callee was.
-		/// </summary>		
-		public DataTable ChildDataTableWhoseDataGotSaved
-		{
-			get;
-			set;
+        /// </summary>
+        public TSubmitChangesResult SubmitChangesResult
+        {
+            get;
+            set;
         }
-		
+
+        /// <summary>
+        /// To be set by the *callee*. Tells the calling 'SaveChanges' Method what the 'child'
+        /// DataTable whose data got saved by the callee was.
+        /// </summary>
+        public DataTable ChildDataTableWhoseDataGotSaved
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Constructor.
         /// </summary>
         public TNoMasterDataToSaveEventArgs()
         {
         }
-    }    
-    
+    }
+
     #endregion
 }

@@ -364,16 +364,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return FChangeEventHandlerType;
         }
 
-		private static void AddChildUserControlExtraCalls(TFormWriter writer, TControlDef ctrl)
-		{
-			Console.WriteLine("adding to codelet: UserControl-specific extensions");
-			writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
-			writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
-			writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
-			writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
-			writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
-		}
-		
+        private static void AddChildUserControlExtraCalls(TFormWriter writer, TControlDef ctrl)
+        {
+            Console.WriteLine("adding to codelet: UserControl-specific extensions");
+            writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
+            writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
+            writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
+            writer.Template.AddToCodelet("USERCONTROLVALIDATION", ctrl.controlName + ".ValidateAllData(false, false);" + Environment.NewLine);
+            writer.Template.SetCodelet("PERFORMUSERCONTROLVALIDATION", "true");
+        }
+
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public virtual ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
@@ -962,7 +962,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 AddChildUserControlExtraCalls(writer, ctrl);
             }
-            
+
             // the readonly property eg of Textbox still allows tooltips and copy to clipboard, which enable=false would not allow
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "ReadOnly")
                 && (TYml2Xml.GetAttribute(ctrl.xmlNode, "ReadOnly").ToLower() == "true"))

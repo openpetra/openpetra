@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
-        
+
         private static readonly string StrFinanceDetailsTabHeader = Catalog.GetString("Finance Details");
 
         private static readonly string StrAddressesSingular = Catalog.GetString("Address");
@@ -304,7 +304,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // for the time beeing, we always hide these Tabs that don't do anything yet...
 #if  SHOWUNFINISHEDTABS
 #else
-            TabsToHide.Add("tpgContactDetails"); 
+            TabsToHide.Add("tpgContactDetails");
             TabsToHide.Add("tbpContacts");
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
@@ -705,7 +705,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FUcoAddresses.CleanupRecordsBeforeMerge();
-            
+
             if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
             {
                 // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucContactDetails);'
@@ -1015,7 +1015,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 CorrectDataGridWidthsAfterDataChange();
             }
         }
-        
+
         private void RecalculateTabHeaderCounters(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
             // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.RecalculateTabHeaderCounters');

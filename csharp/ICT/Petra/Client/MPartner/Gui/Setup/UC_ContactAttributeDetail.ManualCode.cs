@@ -35,13 +35,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         // Keeps track of the current value of the Contact Attribute
         private string FContactAttribute = String.Empty;
 
-		PContactAttributeTable FContactAttributeDT;
-		
+        PContactAttributeTable FContactAttributeDT;
+
         /// <summary>
         /// Raised when there are no more detail records held after the last
         /// detail record has beend deleted.
         /// </summary>
-        public event EventHandler<EventArgs> NoMoreDetailRecords;        
+        public event EventHandler <EventArgs>NoMoreDetailRecords;
 
         /// <summary>
         /// The Contact Details maintained in this UserControl are for this Contact Attribute.
@@ -73,13 +73,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             get
             {
                 // Need to create our own view because the grid may be filtered
-                return new DataView(FMainDS.PContactAttributeDetail, 
-                                 PContactAttributeDetailTable.GetContactAttributeCodeDBName() + 
-                                 " = '" + FContactAttribute + "'",
-                                 "", DataViewRowState.CurrentRows).Count;
+                return new DataView(FMainDS.PContactAttributeDetail,
+                    PContactAttributeDetailTable.GetContactAttributeCodeDBName() +
+                    " = '" + FContactAttribute + "'",
+                    "", DataViewRowState.CurrentRows).Count;
             }
-        }        
-        
+        }
+
         private void InitializeManualCode()
         {
             // Before we start we set the defaultView RowFilter property to something unlikely.
@@ -88,9 +88,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             string FilterStr = String.Format("{0}='@#~?!()'", FMainDS.PContactAttributeDetail.ColumnContactAttributeCode.ColumnName);
 
             FMainDS.PContactAttributeDetail.DefaultView.RowFilter = FilterStr;
-            
+
             /* fix tab order */
-            pnlButtons.TabIndex = grdDetails.TabIndex + 1;                        
+            pnlButtons.TabIndex = grdDetails.TabIndex + 1;
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 SetContactAttribute(FContactAttribute);
 
                 txtDetailContactAttrDetailCode.ReadOnly = false;
-                
+
                 txtDetailContactAttrDetailCode.Focus();
             }
         }
@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (FMainDS.PContactAttributeDetail.Rows.Find(new object[] { FContactAttribute, NewName }) != null)
             {
                 while (FMainDS.PContactAttributeDetail.Rows.Find(new object[] { FContactAttribute,
-                                                                                  NewName + CountNewDetail.ToString() }) != null)
+                                                                                NewName + CountNewDetail.ToString() }) != null)
                 {
                     CountNewDetail++;
                 }
@@ -132,7 +132,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             GetDetailsFromControls(FPreviouslySelectedDetailRow);
         }
-        
+
         /// <summary>
         /// Performs checks to determine whether a deletion of the current row is permissable
         /// </summary>
@@ -142,17 +142,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private bool PreDeleteManual(PContactAttributeDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
             // If the last Row in the Grid is to be deleted: check if there are added 'Detail' Rows in *other* 'Master' Rows,
-            // and if any of those 'Master' Rows was added too, tell the user that data needs to be saved first before deletion 
+            // and if any of those 'Master' Rows was added too, tell the user that data needs to be saved first before deletion
             // of the present 'Detail' Row can go ahead.
-            // The reason for that is that the deletion of that last 'Detail' Row will cause the OnNoMoreDetailRecords Event to 
-            // be raised by the UserControl, which in turn will cause the Form to call the 'SaveChanges' Method of the 
-            // UserControl before the Form saves its own data. While this in itself is OK, saving in the 'SaveChanges' Method 
-            // of the UserControl would fail as a 'Master' Row itself was newly added AND it wouldn't be in the DB yet!            
-            return TDeleteGridRows.MasterDetailFormsSpecialPreDeleteCheck(this.Count, 
+            // The reason for that is that the deletion of that last 'Detail' Row will cause the OnNoMoreDetailRecords Event to
+            // be raised by the UserControl, which in turn will cause the Form to call the 'SaveChanges' Method of the
+            // UserControl before the Form saves its own data. While this in itself is OK, saving in the 'SaveChanges' Method
+            // of the UserControl would fail as a 'Master' Row itself was newly added AND it wouldn't be in the DB yet!
+            return TDeleteGridRows.MasterDetailFormsSpecialPreDeleteCheck(this.Count,
                 FContactAttributeDT, FMainDS.PContactAttributeDetail,
                 PContactAttributeTable.GetContactAttributeCodeDBName(), PContactAttributeDetailTable.GetContactAttrDetailCodeDBName());
         }
-        
+
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
@@ -168,13 +168,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (ADeletionPerformed)
             {
                 // If we have no Attribute Details anymore: Inform the Form
-                if (this.Count == 0) 
+                if (this.Count == 0)
                 {
                     OnNoMoreDetailRecords(null);
-                }                    
+                }
             }
         }
-        
+
         /// <summary>
         /// Call this method when the Contact Attribute changes in the Contact Attribute grid on the parent Form.
         /// </summary>
@@ -188,7 +188,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             FContactAttribute = ANewCode;
 
             FPetraUtilsObject.DisableDataChangedEvent();
-            
+
             pnlDetails.Enabled = false;
 
             if (FMainDS.PContactAttributeDetail != null)
@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             if (ANewCode.CompareTo(FContactAttribute) == 0)  // should not happen
             {
-                return;                                                         
+                return;
             }
 
             DataView UpdateRowsDV = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
@@ -233,16 +233,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// </summary>
         /// <param name="ANewCode">New Code to filter on.</param>
         /// <param name="ACurrentRowIndex">The index of the Row that should get displayed (the 'current' Row).</param>
-    	private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
-    	{
-    	    string FilterStr = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), ANewCode);
-     	    
-     	    FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);			
-    	    FFilterAndFindObject.ApplyFilter();
-    			
-    	    grdDetails.SelectRowWithoutFocus(ACurrentRowIndex);
-    	}
-                
+        private void FilterOnCode(string ANewCode, int ACurrentRowIndex)
+        {
+            string FilterStr = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), ANewCode);
+
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
+            FFilterAndFindObject.ApplyFilter();
+
+            grdDetails.SelectRowWithoutFocus(ACurrentRowIndex);
+        }
+
         /// <summary>
         /// Creates an initial Attribute Detail for a new Contact Attribute.  Call this when a new Contact Attribute is created.
         /// </summary>
@@ -251,25 +251,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         public void CreateFirstAttributeDetail(string AttributeCode, PContactAttributeTable AContactAttributeDT)
         {
             FContactAttribute = AttributeCode;
-            
-            // We need to know about the Contact Attribute Table for a check in PreDeleteManual! 
+
+            // We need to know about the Contact Attribute Table for a check in PreDeleteManual!
             FContactAttributeDT = AContactAttributeDT;
-            
+
             NewRecord(null, null);
         }
-        
+
         /// <summary>
         /// Raises the 'NoMoreDetailRecords' Event.
         /// </summary>
         /// <param name="e">Event Arguments.</param>
-	protected virtual void OnNoMoreDetailRecords(EventArgs e)
-	{
-		var Eventhandler = NoMoreDetailRecords;
-			
-		if (Eventhandler != null)
-		{
-			Eventhandler(this, e);
-		}
-	}        
+        protected virtual void OnNoMoreDetailRecords(EventArgs e)
+        {
+            var Eventhandler = NoMoreDetailRecords;
+
+            if (Eventhandler != null)
+            {
+                Eventhandler(this, e);
+            }
+        }
     }
 }

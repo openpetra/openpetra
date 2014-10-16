@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
     {
         // Instance of a 'Helper Class' for handling the Indexes of the DataRows. (The Grid is sorted by the Index.)
         TSgrdDataGrid.IndexedGridRowsHelper FIndexedGridRowsHelper;
-        
+
         // This is the extra dataset that we need that gives us the DataLabel information
         private class FExtraDS
         {
@@ -102,8 +102,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // Initialize 'Helper Class' for handling the Indexes of the DataRows.
             FIndexedGridRowsHelper = new TSgrdDataGrid.IndexedGridRowsHelper(
                 grdDetails, PDataLabelUseTable.ColumnIdx1Id, btnDemote, btnPromote,
-                delegate { FPetraUtilsObject.SetChangedFlag(); });    
-            
+                delegate { FPetraUtilsObject.SetChangedFlag(); });
+
             // Load the Extra Data from DataLabel table
             Type DataTableType;
             FExtraDS.PDataLabel = new PDataLabelTable();
@@ -130,7 +130,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.AddTextColumn(Catalog.GetString("Group Heading"), FMainDS.PDataLabelUse.Columns[GroupOrdinal]);
             grdDetails.AddTextColumn(Catalog.GetString("Description"), FMainDS.PDataLabelUse.Columns[DescriptionOrdinal]);
             grdDetails.Selection.SelectionChanged += HandleSelectionChanged;
-            
+
             // Remove the first column.  We added this in the YAML so that the auto-generator had something to do
             grdDetails.Columns.Remove(0);
             grdDetails.SetHeaderTooltip(0, Catalog.GetString("Name"));
@@ -151,10 +151,10 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private PDataLabelUseRow FPreviouslySelectedDetailRow = null;
 
         void HandleSelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
-	{
-            FIndexedGridRowsHelper.UpdateButtons(grdDetails.Selection.ActivePosition.Row);    
-	}
-		
+        {
+            FIndexedGridRowsHelper.UpdateButtons(grdDetails.Selection.ActivePosition.Row);
+        }
+
         private void DataFieldPromote(System.Object sender, System.EventArgs e)
         {
             FIndexedGridRowsHelper.PromoteRow();
