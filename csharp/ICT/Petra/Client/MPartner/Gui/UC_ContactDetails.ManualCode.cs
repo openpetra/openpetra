@@ -46,8 +46,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
-        private Boolean FPartnerAttributesExist;
-        
         private string FDefaultContactType = String.Empty;
         
         private TPartnerAttributeTypeValueKind FValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
@@ -123,12 +121,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
 
-            /* Check if data needs to be retrieved from the PetraServer */
-            if (FMainDS.PPartnerAttribute == null)
-            {
-                FPartnerAttributesExist = LoadDataOnDemand();
-            }
-
             //
             // Ensure we have instances of PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable in FMainDS. They are needed because 
             // the Grid's underlying DataTable has got custom DataColumns with Expressions that reference those DataTables in the DataSet!
@@ -173,8 +165,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
             
-            FPartnerAttributesExist = FMainDS.PPartnerAttribute.Rows.Count > 0;
-            
             // Need to enable Relations as the PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable have not been part of the PartnerEditTDS when transferred from the OpenPetra Server!
             // These Relations are needed in Method 'CreateCustomDataColumns'.
             FMainDS.EnableRelation("ContactDetails1");
@@ -203,20 +193,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // The Filter Panel should be shown expanded
             FFilterAndFindObject.ToggleFilter();
             
-            if (!FPartnerAttributesExist)
-            {
-                // TODO PostInitUserControl - if (!FPartnerAttributesExist) 
-//                /* If Family has no members, these buttons are disabled */
-//                this.btnFamilyMemberDemote.Enabled = false;
-//                this.btnFamilyMemberPromote.Enabled = false;
-//                this.btnMovePersonToOtherFamily.Enabled = false;
-//                this.btnEditPerson.Enabled = false;
-//                this.btnEditFamilyID.Enabled = false;
-
-                /* this.btnAddExistingPersonToThisFamily.enabled := false; */
-                /* this.btnAddNewPersonThisFamily.enabled := false; */
-            }
-
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -374,56 +350,6 @@ namespace Ict.Petra.Client.MPartner.Gui
            lblPrimaryPhoneForContacting.Visible = false;
            grpWithinTheOrganisation.Visible = false;          
            pnlPromoteDemote.Visible = false;
-        }
-
-        /// <summary>
-        /// Loads Partner Types Data from Petra Server into FMainDS.
-        /// </summary>
-        /// <returns>true if successful, otherwise false.</returns>
-        public Boolean LoadDataOnDemand()
-        {
-            Boolean ReturnValue;
-
-            // retrieve Contact Details (stored in PPartnerAttribute Table) from PetraServer
-            // If the Partner has got no Contact Details: returns false
-            try
-            {
-                // Make sure that Typed DataTable is already there at Client side
-                if (FMainDS.PPartnerAttribute == null)
-                {
-                    FMainDS.Tables.Add(new PPartnerAttributeTable(PPartnerAttributeTable.GetTableName()));
-                    FMainDS.InitVars();
-                }
-
-                FMainDS.PPartnerAttribute.Rows.Clear();
-                FMainDS.Merge(FPartnerEditUIConnector.GetDataContactDetails());
-                FMainDS.PPartnerAttribute.AcceptChanges();
-
-                if (FMainDS.PPartnerAttribute.Rows.Count > 0)
-                {
-                    ReturnValue = true;
-                }
-                else
-                {
-                    ReturnValue = false;
-                }
-            }
-            catch (System.NullReferenceException)
-            {
-                ReturnValue = false;
-                return false;
-            }
-            catch (Exception)
-            {
-                ReturnValue = false;
-
-                // raise;
-            }
-
-            // Fire OnRecalculateScreenParts event
-            DoRecalculateScreenParts();
-            
-            return ReturnValue;
         }
         
         private void ShowDataManual()
