@@ -113,6 +113,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             pnlButtons.TabIndex = grdDetails.TabIndex + 1;
         }
 
+        private void RunOnceOnParentActivationManual()
+        {
+            // Hide 'Index' Grid Column - it is only used for debugging
+            grdDetails.Columns.HideColumn(5);
+        }
+
         private void NewRecord(Object sender, EventArgs e)
         {
             if (CreateNewPPartnerAttributeType())
