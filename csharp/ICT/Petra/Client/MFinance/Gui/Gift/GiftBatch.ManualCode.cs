@@ -662,7 +662,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// 
+        /// Check if batch columns have actually changed
         /// </summary>
         /// <param name="ABatchRow"></param>
         /// <returns></returns>

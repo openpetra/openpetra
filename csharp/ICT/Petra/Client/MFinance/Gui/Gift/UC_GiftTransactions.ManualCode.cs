@@ -232,6 +232,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BeginEditMode(object sender, EventArgs e)
         {
+            bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
             FInEditMode = true;
 
             bool DoTaxUpdate;
@@ -245,6 +247,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
                 EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+            }
+
+            //On populating key muinistry
+            if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+            {
+                FPetraUtilsObject.DisableSaveButton();
             }
         }
 
@@ -391,6 +399,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
                 TUC_GiftTransactions_Recipient.GetRecipientData(FPreviouslySelectedDetailRow, FPreviouslySelectedDetailRow.RecipientKey,
                     ref cmbKeyMinistries, txtDetailRecipientKey, ref txtDetailRecipientLedgerNumber);
 
