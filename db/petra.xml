@@ -6538,16 +6538,6 @@
            label="Partner Contact"
            dumpname="p_prtcon"
            group="mailroom">
-        <tablefield name="p_partner_contact_id_i"
-                    type="number"
-                    length="10"
-                    descr="Primary Key of Partner - Contact join table"
-                    format="9999999999"
-                    label="PartnerContact"
-                    help=""
-                    notnull="yes"
-                    initial="0"/>
-        
         <tablefield name="p_partner_key_n"
                     type="number"
                     length="10"
@@ -6567,7 +6557,7 @@
 
         <primarykey name="p_partner_contact_pk"
                     descr=""
-                    thisFields="p_partner_contact_id_i, p_partner_key_n, p_contact_log_id_i"/>
+                    thisFields="p_partner_key_n, p_contact_log_id_i"/>
         
         <foreignkey name="p_partner_contact_fk1"
                     descr=""

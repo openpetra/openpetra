@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb, andreww
+//       andreww
 //
 // Copyright 2004-2014 by OM International
 //
@@ -78,6 +78,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             ValidateAllData(false);
             GetDataFromControls(ARow);
         }
+
+        public string ContactCode { get { return FContactDR.ContactCode; } }
+        public DateTime ContactDate { get { return FContactDR.ContactDate; } }
 
         /// <summary>
         /// 

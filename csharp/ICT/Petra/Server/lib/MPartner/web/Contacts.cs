@@ -256,7 +256,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="partnerKey"></param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static PContactLogTable FindContactsForPartner(long partnerKey)
+        public static PContactLogTable FindContactLogsForPartner(long partnerKey)
         {
             Boolean NewTransaction;
             PContactLogTable contacts = new PContactLogTable();
@@ -286,6 +286,41 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return contacts;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="partnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PPartnerContactTable GetPartnerContacts(long partnerKey)
+        {
+            Boolean NewTransaction;
+            PPartnerContactTable partnerContacts = new PPartnerContactTable();
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+            try
+            {
+                PContactLogTable TempTable = new PContactLogTable();
+                PContactLogRow TemplateRow = TempTable.NewRowTyped(false);
+
+                partnerContacts = PPartnerContactAccess.LoadViaPPartner(partnerKey, WriteTransaction);
+
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.Message);
+                TLogging.Log(e.StackTrace);
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return partnerContacts;
+        }
 
         /// <summary>
         /// delete all contacts that have been marked for deletion.

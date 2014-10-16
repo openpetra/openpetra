@@ -6,7 +6,10 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
     DetailTable: PContactLog
     FormType: edit
-    Template: controlMaintainTable   
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewContactLog}
+        actDelete: {Label=&Delete, ActionClick=DeleteContactLog}
     Controls:
         pnlContent:
             Controls: [sptContacts]

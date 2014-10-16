@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb, andreww
+//       andreww
 //
 // Copyright 2004-2014 by OM International
 //
@@ -65,22 +65,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
-        /// <summary>todoComment</summary>
-        public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
-
-        //private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        //{
-        //    OnRecalculateScreenParts(e);
-        //}
-
-        //private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
-        //{
-        //    if (HookupDataChange != null)
-        //    {
-        //        HookupDataChange(this, e);
-        //    }
-        //}
-
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
         {
             if (RecalculateScreenParts != null)
@@ -108,8 +92,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (!FMainDS.Tables.Contains(PContactLogTable.GetTableName()))
             {
 
-                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactsForPartner(FMainDS.PPartner[0].PartnerKey));
-
+                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactLogsForPartner(FMainDS.PPartner[0].PartnerKey));
+                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPartnerContacts(FMainDS.PPartner[0].PartnerKey));
                 FMainDS.PContactLog.DefaultView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PContactLog.DefaultView);
             }
@@ -126,17 +110,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             try
             {
                 // Make sure that Typed DataTables are already there at Client side
-                //if (FMainDS.PPartnerContact == null)
-                //{
-                //    FMainDS.Tables.Add(new PPartnerContactTable());
-                 
-                //}
+                if (FMainDS.PPartnerContact == null)
+                {
+                    FMainDS.Tables.Add(new PPartnerContactTable());
+                }
+
                 if (FMainDS.PContactLog == null)
                 {
                     FMainDS.Tables.Add(new PContactLogTable());
                     FMainDS.InitVars();
                 }
-
 
                 if (TClientSettings.DelayedDataLoading)
                 {
@@ -175,18 +158,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void NewRowManual(ref PContactLogRow ARow)
         {
-
-            //ARow.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
+            ARow.ContactLogId = TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_contact);
+            
+            PPartnerContactRow PartnerContact = FMainDS.PPartnerContact.NewRowTyped(true);
+            PartnerContact.ContactLogId = ARow.ContactLogId;
+            PartnerContact.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
+            FMainDS.PPartnerContact.Rows.Add(PartnerContact);
         }
 
         private void ShowDetailsManual(PContactLogRow ARow)
         {
             if (ARow != null)
             {
-                //ucoContact.AllowEditIssues = true;
-                
                 ucoContact.ShowDetails(ARow);
-                //btnCancelAllSubscriptions.Enabled = true;
             }
         }
 
@@ -194,7 +178,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
-                Environment.NewLine); //TODO: get public vars from ucoContact to display message correctly
+                Environment.NewLine, ucoContact.ContactDate, ucoContact.ContactCode);
             return true;
         }
 
@@ -222,6 +206,37 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ValidateDataDetailsManual(PContactLogRow FPreviouslySelectedDetailRow)
         {
         }
+
+        private void NewContactLog(object sender, EventArgs e)
+        {
+            if (CreateNewPContactLog())
+            {
+                ucoContact.Focus();
+            }
+
+            // reset counter in tab header
+            RecalculateTabHeaderCounter();
+        }
+
+        private void DeleteContactLog(object sender, EventArgs e)
+        {
+
+        }
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        private void RecalculateTabHeaderCounter()
+        {
+            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
+            /* Fire OnRecalculateScreenParts event to update the Tab Counters */
+            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
+            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
+            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+        }
+    
         #endregion
     }
 }

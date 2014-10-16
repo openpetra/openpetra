@@ -68,8 +68,8 @@
       <CustomField name="DisplayRelationDescription" type="String"/>
     </Table>
     <!-- <Table sqltable="p_relation"/> -->
-    <Table sqltable="p_partner_contact"/>
     <Table sqltable="p_contact_log"/>
+    <Table sqltable="p_partner_contact"/>
     
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>
@@ -449,11 +449,11 @@
     <Table sqltable="p_method_of_contact"/>
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
-    <Table sqltable="p_partner_contact"/>
     <Table sqltable="p_contact_log">
       <CustomField name="ContactAttr" type="string"/>
       <CustomField name="ContactDetail" type="string"/>
-	</Table>
+	  </Table>
+    <Table sqltable="p_partner_contact"/>
     <Table sqltable="p_partner_contact_attribute"/>
 
     <Table sqltable="p_publication"/>
@@ -527,12 +527,12 @@
   </DataSet>   
 
   <DataSet name="ContactTDS">
-    <Table sqltable="p_method_of_contact"/>
-    <Table sqltable="p_partner_contact"/>
     <Table sqltable="p_contact_log"/>
+    <Table sqltable="p_method_of_contact"/>
     <Table sqltable="p_partner_contact_attribute"/>
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
+    <Table sqltable="p_partner_contact"/>
   </DataSet>   
 
   <DataSet name="PostcodeRegionsTDS">

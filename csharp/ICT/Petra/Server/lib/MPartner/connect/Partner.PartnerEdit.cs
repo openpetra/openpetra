@@ -888,6 +888,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     // Determination of Last Contact Date
                     TMailroom.GetLastContactDate(FPartnerKey, out LastContactDate);
+                    GetContactsInternal(out ItemsCountContacts, out LastContactDate);
 
                     // Create 'miscellaneous' DataRow
                     MiscellaneousDataDT = FPartnerEditScreenDS.MiscellaneousData;
@@ -2496,6 +2497,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
                 }
 
+                #endregion
+
+                #region Contact Logs
+
+                if (AInspectDS.Tables.Contains(PContactLogTable.GetTableName()) && AInspectDS.Tables.Contains(PPartnerContactTable.GetTableName()))
+                {
+                    
+                }
+                
                 #endregion
 
                 #region Foundations
