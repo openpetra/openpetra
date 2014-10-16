@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
 
 namespace Ict.Common
@@ -76,6 +77,12 @@ namespace Ict.Common
     /// todoComment
     /// </summary>
     public delegate void TDataSavedHandler(System.Object Sender, TDataSavedEventArgs e);
+
+    /// <summary>
+    /// todoComment
+    /// </summary>
+    public delegate void TNoNoMasterDataToSaveHandler(System.Object Sender, TNoMasterDataToSaveEventArgs e);
+
 
     /// <summary>
     /// todoComment
@@ -271,48 +278,70 @@ namespace Ict.Common
         public TScreenPartEnum ScreenPart;
     }
 
+    #region TDataSavedEventArgs
+
     /// <summary>
     /// todoComment
     /// </summary>
     public class TDataSavedEventArgs : System.EventArgs
     {
-        private Boolean FSuccess;
-
         /// <summary>
-        /// todoComment
+        /// Whether the saving operation was successful, or not
         /// </summary>
-        public Boolean Success
-        {
-            get
-            {
-                return FSuccess;
-            }
-
-            set
-            {
-                FSuccess = value;
-            }
+        public Boolean Success {
+            get;
+            set;
         }
 
-
-        #region TDataSavedEventArgs
-
         /// <summary>
-        /// todoComment
+        /// Constructor.
         /// </summary>
         public TDataSavedEventArgs()
         {
         }
 
         /// <summary>
-        /// todoComment
+        /// Constructor.
         /// </summary>
         /// <param name="ASuccess"></param>
         public TDataSavedEventArgs(Boolean ASuccess)
         {
-            FSuccess = ASuccess;
+            Success = ASuccess;
+        }
+    }
+
+    /// <summary>
+    /// todoComment
+    /// </summary>
+    public class TNoMasterDataToSaveEventArgs : TDataSavedEventArgs
+    {
+        /// <summary>
+        /// To be set by the *callee*. Tells the calling 'SaveChanges' Method what the result
+        /// of the processing of the associated Event was.
+        /// </summary>
+        public TSubmitChangesResult SubmitChangesResult
+        {
+            get;
+            set;
         }
 
-        #endregion
+        /// <summary>
+        /// To be set by the *callee*. Tells the calling 'SaveChanges' Method what the 'child'
+        /// DataTable whose data got saved by the callee was.
+        /// </summary>
+        public DataTable ChildDataTableWhoseDataGotSaved
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public TNoMasterDataToSaveEventArgs()
+        {
+        }
     }
+
+    #endregion
 }

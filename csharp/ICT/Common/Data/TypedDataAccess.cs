@@ -738,14 +738,17 @@ namespace Ict.Common.Data
                 throw new ArgumentException("Argument 'AOtherPKFieldNames' must not be null");
             }
 
-            if (APKFieldNames.Length != AOtherPKFieldNames.Length)
+            if (APKFieldNames.Length > AOtherPKFieldNames.Length)
             {
-                throw new ArgumentException("Argument 'APKFieldNames' and 'AOtherPKFieldNames' must contain the same number of items");
+                throw new ArgumentException(String.Format(
+                        "Argument 'AOtherPKFieldNames' must hold at least as many items as Argument 'APKFieldNames', " +
+                        "but this is not the case: 'AOtherPKFieldNames' holds these items: '{0}' - whereas 'APKFieldNames' holds these items: '{1}'",
+                        StringHelper.StrArrayToString(AOtherPKFieldNames, "; "), StringHelper.StrArrayToString(APKFieldNames, "; ")));
             }
 
             for (int Counter = 0; Counter < APKFieldNames.Length; Counter++)
             {
-                if (ReturnValue.Length == 0)                     //first time around
+                if (ReturnValue.Length == 0)                     // first time round
                 {
                     ReturnValue = " WHERE ";
                 }
@@ -2138,7 +2141,7 @@ namespace Ict.Common.Data
                     GetParametersForWhereClause(ATableId, ASearchCriteria)))
             {
                 throw new EDBSubmitException(
-                    "[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row",
+                    "[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row: no rows were deleted.  Hint: If this can be a valid case, run one of the *Access.Count* Methods before to ensure that you don't call the present Method if there are no records to be expected!",
                     eSubmitChangesOperations.eDelete);
             }
         }

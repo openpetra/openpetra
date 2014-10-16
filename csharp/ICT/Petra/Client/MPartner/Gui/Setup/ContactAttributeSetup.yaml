@@ -3,6 +3,7 @@ RootNode:
     FormTitle: Maintain Contact Attributes and Details
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PContactAttribute
+    DependentChildUserControl: true
     CacheableTable: ContactAttributeList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
@@ -42,12 +43,17 @@ RootNode:
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
         btnNew:
+            Label: Ne&w Category
+            Tooltip: Click to create a new Contact Attribute.        
             Action: actNew
-            Width: 80
+            Width: 130
         btnDelete:
+            Label: Dele&te Category
+            Tooltip: Click to delete the highlighted Contact Attribute(s).        
             Action: actDelete
-            Width: 80
+            Width: 130
         grdDetails:
+            Tooltip: Use the mouse or navigation keys to select a Contact Attribute to view or edit.
             Dock: Fill
             Columns: [DetailContactAttributeCode, DetailContactAttributeDescr, DetailActive]
             CustomColumns:
@@ -55,16 +61,15 @@ RootNode:
                 DetailContactAttributeDescr: {Label=Description}
                 DetailActive: {Label=Active, Type=Boolean}
             SortOrder: DetailContactAttributeCode ASC
-            ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailContactAttributeCode]
                 Row1: [txtDetailContactAttributeDescr]
                 Row2: [chkDetailActive]
-        txtDetailContactAttributeCode: {Label=Attribute Code, CharacterCasing=Upper}
-        txtDetailContactAttributeDescr: {Label=Description, Width=465}
-        chkDetailActive: {Validation=true}
+        txtDetailContactAttributeCode: {Label=&Attribute Code, CharacterCasing=Upper}
+        txtDetailContactAttributeDescr: {Label=De&scription, Width=465}
+        chkDetailActive: {Label=A&ctive, Validation=true}
         pnlExtraDetails:
             Controls: [ucoContactDetail]
             Dock: Fill

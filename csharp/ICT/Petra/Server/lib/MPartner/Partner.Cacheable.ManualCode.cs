@@ -242,5 +242,28 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 
             return TmpTable;
         }
+
+        private DataTable GetContactCategoryListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+            PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
+
+            template.PartnerContactCategory = true;
+            template.SystemCategory = false;
+
+            return PPartnerAttributeCategoryAccess.LoadUsingTemplate(template, null, null, AReadTransaction,
+                StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC" }), 0, 0);
+        }
+
+        private DataTable GetContactTypeListTable(TDBTransaction AReadTransaction, string ATableName)
+        {
+            PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
+
+            template.PartnerContactCategory = true;
+            template.SystemCategory = false;
+
+            return PPartnerAttributeTypeAccess.LoadViaPPartnerAttributeCategoryTemplate(template, null, null, AReadTransaction,
+                StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeTypeTable.GetTableDBName() + "." +
+                                                       PPartnerAttributeTypeTable.GetIndexDBName() + " ASC" }), 0, 0);
+        }
     }
 }

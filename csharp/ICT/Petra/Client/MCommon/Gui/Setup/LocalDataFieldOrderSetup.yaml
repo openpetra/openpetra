@@ -23,13 +23,17 @@ RootNode:
         pnlButtons:
             Dock: Right
             Controls: [btnDemote, btnPromote]
-        btnPromote: {NoLabel=true}
-        btnDemote: {NoLabel=true}
+        btnPromote: {NoLabel=true, Width=15}
+            Tooltip: Move the selected Data Field down in the list.
+            Padding: 0,50,0,0
+        btnDemote: {NoLabel=true, Width=15}
+            Tooltip: Move the selected Data Field up in the list.
+            Padding: 0,50,0,0
         grdDetails:
             Dock: Fill
             Columns: [DetailIdx1]
             CustomColumns:
                 DetailIdx1: {Label=Rank}            
             SortOrder: DetailIdx1 ASC
-            ActionFocusRow: FocusedRowChanged
+            SortableHeaders: false
     Toolbar:

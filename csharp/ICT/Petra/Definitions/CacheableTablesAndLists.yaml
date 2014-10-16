@@ -34,6 +34,8 @@ CachedTables:
                 InstalledSitesList: {Comment=list of installed sites}
                 CountryListFromExistingLocations: {Comment="list of countries that are actually used in the database (smaller than the full country list)"}
                 DataLabelsForPartnerClassesList: {Comment="list of available DataLabels for PartnerClasses"}
+                ContactCategoryList: {Comment=list of Contact Categories (based on p_partner_attribute_category, IsStorableToDBTable=PPartnerAttributeCategory}
+                ContactTypeList: {Comment=list of Contact Types (based on p_partner_attribute_type, IsStorableToDBTable=PPartnerAttributeType}
         Mailing:
             DatabaseTables:
                 PContactAttribute:

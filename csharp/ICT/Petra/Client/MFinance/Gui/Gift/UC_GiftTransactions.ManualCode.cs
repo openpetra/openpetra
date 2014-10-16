@@ -233,6 +233,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BeginEditMode(object sender, EventArgs e)
         {
+            bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
             FInEditMode = true;
 
             bool DoTaxUpdate;
@@ -246,6 +248,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
                 EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+            }
+
+            //On populating key muinistry
+            if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+            {
+                FPetraUtilsObject.DisableSaveButton();
             }
         }
 
@@ -296,7 +304,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 InitialiseControls();
             }
 
-            UpdateCurrencySymbols(FBatchRow.CurrencyCode);
+            //UpdateCurrencySymbols(FBatchRow.CurrencyCode);
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer)
@@ -388,6 +396,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.ResumeLayout();
 
             UpdateTotals();
+
+            if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            {
+                bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
+                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
+            }
 
             FTransactionsLoaded = true;
             return true;
@@ -1252,10 +1270,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
-            txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
-            txtGiftTotal.CurrencyCode = ACurrencyCode;
-            txtBatchTotal.CurrencyCode = ACurrencyCode;
-            txtHashTotal.CurrencyCode = ACurrencyCode;
+            if (txtDetailGiftTransactionAmount.CurrencyCode != ACurrencyCode)
+            {
+                txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
+            }
+
+            if ((txtGiftTotal.CurrencyCode != ACurrencyCode)
+                || (txtBatchTotal.CurrencyCode != ACurrencyCode)
+                || (txtHashTotal.CurrencyCode != ACurrencyCode))
+            {
+                txtGiftTotal.CurrencyCode = ACurrencyCode;
+                txtBatchTotal.CurrencyCode = ACurrencyCode;
+                txtHashTotal.CurrencyCode = ACurrencyCode;
+            }
         }
 
         /// <summary>

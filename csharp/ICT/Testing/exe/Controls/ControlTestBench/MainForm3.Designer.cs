@@ -77,20 +77,24 @@ partial class MainForm3
         this.btnTaskListTest = new System.Windows.Forms.Button();
         this.tabPage4 = new System.Windows.Forms.TabPage();
         this.btnOpenFilterFindUCTestForm = new System.Windows.Forms.Button();
+        this.tabPage1 = new System.Windows.Forms.TabPage();
+        this.btnOpenRTBHyperlinksUCTestForm = new System.Windows.Forms.Button();
         this.tabControlTypes.SuspendLayout();
         this.tabPage3.SuspendLayout();
         this.tabPage4.SuspendLayout();
+        this.tabPage1.SuspendLayout();
         this.SuspendLayout();
         //
         // tabControlTypes
         //
         this.tabControlTypes.Controls.Add(this.tabPage3);
         this.tabControlTypes.Controls.Add(this.tabPage4);
+        this.tabControlTypes.Controls.Add(this.tabPage1);
         this.tabControlTypes.Dock = System.Windows.Forms.DockStyle.Fill;
         this.tabControlTypes.Location = new System.Drawing.Point(10, 10);
         this.tabControlTypes.Name = "tabControlTypes";
         this.tabControlTypes.SelectedIndex = 0;
-        this.tabControlTypes.Size = new System.Drawing.Size(294, 274);
+        this.tabControlTypes.Size = new System.Drawing.Size(437, 274);
         this.tabControlTypes.TabIndex = 11;
         this.tabControlTypes.SelectedIndexChanged += new System.EventHandler(this.TabControlTypesSelectedIndexChanged);
         //
@@ -117,7 +121,7 @@ partial class MainForm3
         this.tabPage3.Location = new System.Drawing.Point(4, 22);
         this.tabPage3.Name = "tabPage3";
         this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-        this.tabPage3.Size = new System.Drawing.Size(286, 248);
+        this.tabPage3.Size = new System.Drawing.Size(429, 248);
         this.tabPage3.TabIndex = 0;
         this.tabPage3.Text = "Collapsible Panels";
         this.tabPage3.UseVisualStyleBackColor = true;
@@ -294,7 +298,7 @@ partial class MainForm3
         this.tabPage4.Location = new System.Drawing.Point(4, 22);
         this.tabPage4.Name = "tabPage4";
         this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-        this.tabPage4.Size = new System.Drawing.Size(286, 248);
+        this.tabPage4.Size = new System.Drawing.Size(429, 248);
         this.tabPage4.TabIndex = 1;
         this.tabPage4.Text = "Filter/Find UserControl";
         this.tabPage4.UseVisualStyleBackColor = true;
@@ -309,12 +313,33 @@ partial class MainForm3
         this.btnOpenFilterFindUCTestForm.UseVisualStyleBackColor = true;
         this.btnOpenFilterFindUCTestForm.Click += new System.EventHandler(this.BtnOpenFilterFindUCTestFormClick);
         //
+        // tabPage1
+        //
+        this.tabPage1.Controls.Add(this.btnOpenRTBHyperlinksUCTestForm);
+        this.tabPage1.Location = new System.Drawing.Point(4, 22);
+        this.tabPage1.Name = "tabPage1";
+        this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+        this.tabPage1.Size = new System.Drawing.Size(429, 248);
+        this.tabPage1.TabIndex = 2;
+        this.tabPage1.Text = "RichTextBox with Hyperlinks Control";
+        this.tabPage1.UseVisualStyleBackColor = true;
+        //
+        // btnOpenRTBHyperlinksUCTestForm
+        //
+        this.btnOpenRTBHyperlinksUCTestForm.Location = new System.Drawing.Point(40, 44);
+        this.btnOpenRTBHyperlinksUCTestForm.Name = "btnOpenRTBHyperlinksUCTestForm";
+        this.btnOpenRTBHyperlinksUCTestForm.Size = new System.Drawing.Size(234, 23);
+        this.btnOpenRTBHyperlinksUCTestForm.TabIndex = 1;
+        this.btnOpenRTBHyperlinksUCTestForm.Text = "RichTextBox with Hyperlinks UC Test Form";
+        this.btnOpenRTBHyperlinksUCTestForm.UseVisualStyleBackColor = true;
+        this.btnOpenRTBHyperlinksUCTestForm.Click += new System.EventHandler(this.BtnOpenRTBHyperlinksUCTestFormClick);
+        //
         // MainForm3
         //
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.AutoSize = true;
-        this.ClientSize = new System.Drawing.Size(314, 294);
+        this.ClientSize = new System.Drawing.Size(457, 294);
         this.Controls.Add(this.tabControlTypes);
         this.Name = "MainForm3";
         this.Padding = new System.Windows.Forms.Padding(10);
@@ -323,9 +348,12 @@ partial class MainForm3
         this.tabPage3.ResumeLayout(false);
         this.tabPage3.PerformLayout();
         this.tabPage4.ResumeLayout(false);
+        this.tabPage1.ResumeLayout(false);
         this.ResumeLayout(false);
     }
 
+    private System.Windows.Forms.Button btnOpenRTBHyperlinksUCTestForm;
+    private System.Windows.Forms.TabPage tabPage1;
     private System.Windows.Forms.Button btnOpenFilterFindUCTestForm;
     private System.Windows.Forms.TabPage tabPage4;
     private System.Windows.Forms.Button button1;

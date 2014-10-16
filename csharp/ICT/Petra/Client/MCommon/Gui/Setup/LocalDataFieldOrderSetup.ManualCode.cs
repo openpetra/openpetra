@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Xml;
 using GNU.Gettext;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
@@ -38,6 +39,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
     public partial class TFrmLocalDataFieldOrderSetup
     {
+        // Instance of a 'Helper Class' for handling the Indexes of the DataRows. (The Grid is sorted by the Index.)
+        TSgrdDataGrid.IndexedGridRowsHelper FIndexedGridRowsHelper;
+
         // This is the extra dataset that we need that gives us the DataLabel information
         private class FExtraDS
         {
@@ -95,6 +99,11 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 this.Text += Catalog.GetString(" For Personnel");
             }
 
+            // Initialize 'Helper Class' for handling the Indexes of the DataRows.
+            FIndexedGridRowsHelper = new TSgrdDataGrid.IndexedGridRowsHelper(
+                grdDetails, PDataLabelUseTable.ColumnIdx1Id, btnDemote, btnPromote,
+                delegate { FPetraUtilsObject.SetChangedFlag(); });
+
             // Load the Extra Data from DataLabel table
             Type DataTableType;
             FExtraDS.PDataLabel = new PDataLabelTable();
@@ -120,7 +129,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.AddTextColumn(Catalog.GetString("Name"), FMainDS.PDataLabelUse.Columns[NameOrdinal]);
             grdDetails.AddTextColumn(Catalog.GetString("Group Heading"), FMainDS.PDataLabelUse.Columns[GroupOrdinal]);
             grdDetails.AddTextColumn(Catalog.GetString("Description"), FMainDS.PDataLabelUse.Columns[DescriptionOrdinal]);
-            grdDetails.Selection.SelectionChanged += new SourceGrid.RangeRegionChangedEventHandler(grdDetails_RowSelected);
+            grdDetails.Selection.SelectionChanged += HandleSelectionChanged;
 
             // Remove the first column.  We added this in the YAML so that the auto-generator had something to do
             grdDetails.Columns.Remove(0);
@@ -136,69 +145,24 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
 
-            // Update the enabled state of the two buttons
-            UpdateButtons((grdDetails.Rows.Count > 1) ? 1 : 0);
+            SelectRowInGrid(1);
         }
 
         private PDataLabelUseRow FPreviouslySelectedDetailRow = null;
-        private void grdDetails_RowSelected(System.Object sender, SourceGrid.RangeRegionChangedEventArgs e)
-        {
-            int gridRow = grdDetails.Selection.ActivePosition.Row;
 
-            UpdateButtons((grdDetails.Rows.Count > 1) ? gridRow : 0);
+        void HandleSelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
+        {
+            FIndexedGridRowsHelper.UpdateButtons(grdDetails.Selection.ActivePosition.Row);
         }
 
         private void DataFieldPromote(System.Object sender, System.EventArgs e)
         {
-            // Move down in the list, i.e. the current row needs a bigger number
-            int nSelectedRow = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
-
-            PDataLabelUseRow currentRow = (PDataLabelUseRow)((DataRowView)grdDetails.Rows.IndexToDataSourceRow(nSelectedRow)).Row;
-            PDataLabelUseRow otherRow = (PDataLabelUseRow)((DataRowView)grdDetails.Rows.IndexToDataSourceRow(nSelectedRow + 1)).Row;
-
-            DoSwap(currentRow, otherRow);
-
-            // Move the selection so it tracks the current row (grid rows start at 1)
-            grdDetails.SelectRowInGrid(nSelectedRow + 1);
-            UpdateButtons(nSelectedRow + 1);
+            FIndexedGridRowsHelper.PromoteRow();
         }
 
         private void DataFieldDemote(System.Object sender, System.EventArgs e)
         {
-            // Move up in the list, i.e. the current row needs a smaller number
-            int nSelectedRow = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
-
-            PDataLabelUseRow currentRow = (PDataLabelUseRow)((DataRowView)grdDetails.Rows.IndexToDataSourceRow(nSelectedRow)).Row;
-            PDataLabelUseRow otherRow = (PDataLabelUseRow)((DataRowView)grdDetails.Rows.IndexToDataSourceRow(nSelectedRow - 1)).Row;
-
-            DoSwap(currentRow, otherRow);
-
-            // Move the selection so it tracks the current row (grid rows start at 1)
-            grdDetails.SelectRowInGrid(nSelectedRow - 1);
-            UpdateButtons(nSelectedRow - 1);
-        }
-
-        private void DoSwap(PDataLabelUseRow Row1, PDataLabelUseRow Row2)
-        {
-            // Actually do the row updates in the table
-            int i = Row1.Idx1;
-
-            Row1.BeginEdit();
-            Row1.Idx1 = Row2.Idx1;
-            Row1.EndEdit();
-            Row2.BeginEdit();
-            Row2.Idx1 = i;
-            Row2.EndEdit();
-
-            FPetraUtilsObject.SetChangedFlag();
-        }
-
-        private void UpdateButtons(int CurrentRow)
-        {
-            // Set the enabled state of our two buttons
-            // The grid rows start at 1 due to the one-row header
-            this.btnDemote.Enabled = CurrentRow > 1;
-            this.btnPromote.Enabled = CurrentRow < grdDetails.Rows.Count - 1;
+            FIndexedGridRowsHelper.DemoteRow();
         }
 
         // These four methods are not used because we do not have a details panel beneath the grid
