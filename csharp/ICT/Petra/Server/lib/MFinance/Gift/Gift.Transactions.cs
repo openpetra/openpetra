@@ -318,65 +318,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.GiftCommentThree = recGiftDetail.GiftCommentThree;
                                         detail.CommentThreeType = recGiftDetail.CommentThreeType;
                                         
-                                        // Tax deductibility amounts need to be calculated for each gift is Tax Deductible Percentage is enabled
                                         if (TaxDeductiblePercentageEnabled)
                                         {
-                                    		bool FoundTaxDeductiblePct = false;
-                                    		
-                                    		// if the gift it tax deductible
-                                        	if (detail.TaxDeductible)
-                                        	{
-                                        		AMotivationDetailRow MotivationDetailRow = AMotivationDetailAccess.LoadByPrimaryKey(
-                                        			detail.LedgerNumber, detail.MotivationGroupCode, detail.MotivationDetailCode, Transaction)[0];
-                                        		
-                                        		// if the gift's motivation detail has a tax-deductible account
-                                        		if (!string.IsNullOrEmpty(MotivationDetailRow.TaxDeductibleAccount))
-                                        		{
-                                        			// default pct is 100
-                                        			detail.TaxDeductiblePct = 100;
-                                					FoundTaxDeductiblePct = true;
-                                        					
-                                        			PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePctTable = 
-                                        				PPartnerTaxDeductiblePctAccess.LoadViaPPartner(detail.RecipientKey, Transaction);
-                                        			
-                                        			// search for tax deductible pct for recipient
-                                        			foreach (PPartnerTaxDeductiblePctRow Row in PartnerTaxDeductiblePctTable.Rows)
-                                        			{
-                                        				if (Row.DateValidFrom <= gift.DateEntered)
-                                        				{
-                                        					detail.TaxDeductiblePct = Row.PercentageTaxDeductible;
-                                        					break;
-                                        				}
-                                        			}
-                                        		}
-                                        	}
-                                        	
-                                        	// if a tax deductible pct is set for the recipient
-                                        	if (FoundTaxDeductiblePct)
-                                        	{
-                                        		// first calculate TaxDeductibleAmount and NonDeductibleAmount
-                                        		decimal TaxDeductAmount = detail.TaxDeductibleAmount;
-        										decimal NonDeductAmount = detail.NonDeductibleAmount;
-                                        		
-                                        		TaxDeductibility.UpdateTaxDeductibilityAmounts(
-                                        			ref TaxDeductAmount, ref NonDeductAmount, detail.GiftTransactionAmount, detail.TaxDeductiblePct);
-        										
-        										detail.TaxDeductibleAmount = TaxDeductAmount;
-        										detail.NonDeductibleAmount = NonDeductAmount;
-        										
-        										// next calculate the base and intl amounts for TaxDeductibleAmount and NonDeductibleAmount
-        										TaxDeductibility.UpdateTaxDeductibiltyCurrencyAmounts(
-        											ref detail, AExchangeRateToBase, AExchangeRateIntlToBase, TransactionInIntlCurrency);
-                                        	}
-                                        	
-                                        	// if gift is not tax deductible or motivation detail does not hace a tax deductible account
-                                        	if (!detail.TaxDeductible || !FoundTaxDeductiblePct)
-                                        	{
-	                                        	detail.TaxDeductiblePct = 0;
-	                                        	detail.NonDeductibleAmount = detail.GiftTransactionAmount;
-	                                        	detail.NonDeductibleAmountBase = detail.GiftAmount;
-	                                        	detail.NonDeductibleAmountIntl = detail.GiftAmountIntl;
-                                        	}
+                                        	// Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                                        	TGift.SetDefaultTaxDeductibilityData(ref detail, gift.DateEntered, Transaction);
                                         }
 
                                         GMainDS.AGiftDetail.Rows.Add(detail);

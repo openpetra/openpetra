@@ -33,22 +33,57 @@ namespace Ict.Petra.Shared.MFinance
     public static class TaxDeductibility
     {
         /// <summary>
-        /// Calculate TaxDeductibleAmount and NonDeductibleAmount for a gift transaction using the tax deductible percentage
+        /// Calculate the Tax-Deductible and Non-Deductible Transaction, Base and Intl amounts for a Gift Detail
+        /// </summary>
+        /// <param name="AGiftDetail"></param>
+        public static void UpdateTaxDeductibiltyAmounts(ref GiftBatchTDSAGiftDetailRow AGiftDetail)
+        {
+        	/* Update transaction amounts */
+
+        	decimal TaxDeductAmount;
+        	decimal NonDeductAmount;
+        	
+        	CalculateTaxDeductibilityAmounts(
+        		out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftTransactionAmount, AGiftDetail.TaxDeductiblePct);
+        	
+        	AGiftDetail.TaxDeductibleAmount = TaxDeductAmount;
+        	AGiftDetail.NonDeductibleAmount = NonDeductAmount;
+        	
+        	/* Update base amounts */
+        	
+        	CalculateTaxDeductibilityAmounts(
+        		out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftAmount, AGiftDetail.TaxDeductiblePct);
+        	
+        	AGiftDetail.TaxDeductibleAmountBase = TaxDeductAmount;
+        	AGiftDetail.NonDeductibleAmountBase = NonDeductAmount;
+        	
+        	/* Update intl amounts */
+        	
+        	CalculateTaxDeductibilityAmounts(
+        		out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftAmountIntl, AGiftDetail.TaxDeductiblePct);
+        	
+        	AGiftDetail.TaxDeductibleAmountIntl = TaxDeductAmount;
+        	AGiftDetail.NonDeductibleAmountIntl = NonDeductAmount;
+        }
+        
+        /// <summary>
+        /// Calculate Tax-Deductible Amount and Non-Deductible Amount for a gift amount using the tax deductible percentage
         /// </summary>
         /// <param name="ATaxDeductAmount"></param>
         /// <param name="ANonDeductAmount"></param>
-        /// <param name="AGiftTransactionAmount"></param>
+        /// <param name="AGiftAmount"></param>
         /// <param name="ADeductiblePercentage"></param>
-        public static void UpdateTaxDeductibilityAmounts(ref decimal ATaxDeductAmount, ref decimal ANonDeductAmount, decimal AGiftTransactionAmount, decimal ADeductiblePercentage)
+        private static void CalculateTaxDeductibilityAmounts(
+        	out decimal ATaxDeductAmount, out decimal ANonDeductAmount, decimal AGiftAmount, decimal ADeductiblePercentage)
         {
             ATaxDeductAmount =
-                AGiftTransactionAmount * (ADeductiblePercentage / 100);
+                AGiftAmount * (ADeductiblePercentage / 100);
             ANonDeductAmount =
-                AGiftTransactionAmount * (1 - (ADeductiblePercentage / 100));
+                AGiftAmount * (1 - (ADeductiblePercentage / 100));
 
             // correct rounding errors
             while (ATaxDeductAmount + ANonDeductAmount
-                   < AGiftTransactionAmount)
+                   < AGiftAmount)
             {
                 if (ADeductiblePercentage >= 50)
                 {
@@ -61,7 +96,7 @@ namespace Ict.Petra.Shared.MFinance
             }
 
             while (ATaxDeductAmount + ANonDeductAmount
-                   > AGiftTransactionAmount)
+                   > AGiftAmount)
             {
                 if (ADeductiblePercentage >= 50)
                 {
@@ -71,33 +106,6 @@ namespace Ict.Petra.Shared.MFinance
                 {
                     ANonDeductAmount -= (decimal)0.01;
                 }
-            }
-        }
-        
-        /// <summary>
-        /// Calculate the Base and Intl amounts for TaxDeductibleAmount and NonDeductibleAmount
-        /// </summary>
-        /// <param name="AGiftDetail"></param>
-        /// <param name="ABatchExchangeRateToBase"></param>
-        /// <param name="AIntlToBaseCurrencyExchRate"></param>
-        /// <param name="AIsTransactionInIntlCurrency"></param>
-        public static void UpdateTaxDeductibiltyCurrencyAmounts(ref GiftBatchTDSAGiftDetailRow AGiftDetail,
-        	decimal ABatchExchangeRateToBase, decimal AIntlToBaseCurrencyExchRate, bool AIsTransactionInIntlCurrency)
-        {
-        	AGiftDetail.TaxDeductibleAmountBase = GLRoutines.Divide(AGiftDetail.TaxDeductibleAmount, ABatchExchangeRateToBase);
-            AGiftDetail.NonDeductibleAmountBase = GLRoutines.Divide(AGiftDetail.NonDeductibleAmount, ABatchExchangeRateToBase);
-
-            if (!AIsTransactionInIntlCurrency)
-            {
-                AGiftDetail.TaxDeductibleAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(AGiftDetail.TaxDeductibleAmountBase,
-                    AIntlToBaseCurrencyExchRate);
-                AGiftDetail.NonDeductibleAmountIntl = (AIntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(AGiftDetail.NonDeductibleAmountBase,
-                    AIntlToBaseCurrencyExchRate);
-            }
-            else
-            {
-                AGiftDetail.TaxDeductibleAmountIntl = AGiftDetail.TaxDeductibleAmount;
-                AGiftDetail.NonDeductibleAmountIntl = AGiftDetail.NonDeductibleAmount;
             }
         }
     }

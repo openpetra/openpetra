@@ -714,13 +714,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (FTaxDeductiblePercentageEnabled)
+            if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-                // this will also call UpdateBaseAmount
-                UpdateTaxDeductibilityAmounts(sender, e);
-            }
-            else if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
-            {
+            	FPreviouslySelectedDetailRow.GiftTransactionAmount = (decimal) txn.NumberValueDecimal;
                 UpdateBaseAmount(true);
             }
 
@@ -1838,8 +1834,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FTaxDeductiblePercentageEnabled)
             {
-                UpdateTaxDeductibiltyCurrencyAmounts(CurrentBatchRow, AUpdateCurrentRowOnly, IsTransactionInIntlCurrency, BatchExchangeRateToBase,
-                    IntlToBaseCurrencyExchRate, TransactionsFromCurrentBatch);
+                UpdateTaxDeductibilityAmounts(this, null);
             }
         }
 
@@ -2021,6 +2016,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((GiftDetailTable != null) && (GiftDetailTable.Rows.Count > 0))
             {
                 int CurrentTransaction = 0;
+                
+                // This stops the recipient key from updating the motivation group and detail. These fields will instead be set here.
+                FMotivationDetailChanged = true;
 
                 while (true)
                 {
@@ -2067,6 +2065,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         break;
                     }
                 }
+                
+                
+                FMotivationDetailChanged = false;
             }
         }
 
@@ -2130,6 +2131,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //    txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
             //    mniRecipientGiftDestination.Enabled = true;
             //}
+        }
+        
+        private bool PreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
+        {
+        	return OnPreDeleteManual(ARowToDelete, ref ADeletionQuestion);
         }
         
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)

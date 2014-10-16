@@ -550,14 +550,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (FMotivationGroup != cmbDetailMotivationGroupCode.GetSelectedString())
                     {
                         cmbDetailMotivationGroupCode.SetSelectedString(FMotivationGroup);
+                        FPreviouslySelectedDetailRow.MotivationGroupCode = FMotivationGroup;
                     }
 
                     if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
                     {
                         cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
+                        FPreviouslySelectedDetailRow.MotivationDetailCode = FMotivationDetail;
                     }
-		
-		            ApplyMotivationDetailCodeFilter();
                 }
 
                 if (!FInKeyMinistryChanging)
@@ -1100,9 +1100,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
             {
-                RetrieveMotivationDetailCostCentreCode();
                 UpdateRecipientKeyText(0);
             }
+            
+            RetrieveMotivationDetailCostCentreCode();
         }
 
         private void PopulateKeyMinistry(long APartnerKey = 0)

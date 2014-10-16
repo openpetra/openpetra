@@ -259,9 +259,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (ARecipientKey == 0)
             {
-                RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
-                UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
+            	UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
             }
+            
+            RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
         }
 
         /// <summary>
@@ -334,37 +335,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
                     {
                         ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
+                        ACurrentDetailRow.MotivationGroupCode = AMotivationGroup;
                     }
 
                     if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
                     {
                         ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
+                        ACurrentDetailRow.MotivationDetailCode = AMotivationDetail;
                     }
-		
-		            ApplyMotivationDetailCodeFilter(ACurrentDetailRow,
-		                AMainDS,
-		                ALedgerNumber,
-		                APetraUtilsObject,
-		                ACmbKeyMinistries,
-		                ref ACmbMotivationDetailCode,
-		                ATxtDetailRecipientKey,
-		                APartnerKey,
-		                ATxtDetailRecipientLedgerNumber,
-		                ATxtDetailCostCentreCode,
-		                ATxtDetailAccountCode,
-		                ATxtDetailRecipientKeyMinistry,
-		                AChkDetailTaxDeductible,
-		                ATxtDeductibleAccount,
-		                AMotivationGroup,
-		                ref AMotivationDetail,
-		                ref AMotivationDetailChangedFlag,
-		                AActiveOnly,
-		                ARecipientKeyChangingFlag,
-		                false,
-		                AInEditModeFlag,
-		                ABatchUnpostedFlag,
-		                ATaxDeductiblePercentageEnabledFlag,
-		                out ADoTaxUpdate);
                 }
 
                 if (APartnerKey > 0)

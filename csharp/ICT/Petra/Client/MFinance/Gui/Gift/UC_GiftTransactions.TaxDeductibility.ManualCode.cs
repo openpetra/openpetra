@@ -157,23 +157,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
         private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
         {
-        	decimal TaxDeductAmount = (decimal) txtTaxDeductAmount.NumberValueDecimal;
-        	decimal NonDeductAmount = (decimal) txtNonDeductAmount.NumberValueDecimal;
+        	if (FCreatingNewGift)
+        	{
+        		return;
+        	}
         	
-            TaxDeductibility.UpdateTaxDeductibilityAmounts(
-            	ref TaxDeductAmount, ref NonDeductAmount, 
-            	(decimal) txtDetailGiftTransactionAmount.NumberValueDecimal, (decimal) txtDeductiblePercentage.NumberValueDecimal);
-        	
-        	txtTaxDeductAmount.NumberValueDecimal = TaxDeductAmount;
-        	txtNonDeductAmount.NumberValueDecimal = NonDeductAmount;
-
             if (sender == txtDeductiblePercentage)
             {
                 FPreviouslySelectedDetailRow.TaxDeductiblePct = (decimal)txtDeductiblePercentage.NumberValueDecimal;
             }
-
-            // Update base and intl amounts
-            UpdateBaseAmount(true);
+            
+            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref FPreviouslySelectedDetailRow);
+            
+            txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
+            txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;
         }
 
         // show tax deductible percentage data in controls
@@ -216,59 +213,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ARow.TaxDeductibleAccountCode = txtDeductibleAccount.Text;
-            }
-        }
-
-        private void UpdateTaxDeductibiltyCurrencyAmounts(AGiftBatchRow ACurrentBatchRow, bool AUpdateCurrentRowOnly, bool AIsTransactionInIntlCurrency,
-            decimal ABatchExchangeRateToBase, decimal AIntlToBaseCurrencyExchRate, bool ATransactionsFromCurrentBatch)
-        {
-            //If only updating the currency active row
-            if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
-            {
-                TaxDeductibility.UpdateTaxDeductibiltyCurrencyAmounts(
-                	ref FPreviouslySelectedDetailRow, ABatchExchangeRateToBase, AIntlToBaseCurrencyExchRate, AIsTransactionInIntlCurrency);
-            }
-            else
-            {
-                if (ATransactionsFromCurrentBatch && (FPreviouslySelectedDetailRow != null))
-                {
-                    //Rows already active in transaction tab. Need to set current row first as code further below will not update selected row
-                    TaxDeductibility.UpdateTaxDeductibiltyCurrencyAmounts(
-                		ref FPreviouslySelectedDetailRow, ABatchExchangeRateToBase, AIntlToBaseCurrencyExchRate, AIsTransactionInIntlCurrency);
-                }
-
-                //Update all transactions
-                RecalcTransactionsTaxDeductibleCurrencyAmounts(ACurrentBatchRow, AIntlToBaseCurrencyExchRate, AIsTransactionInIntlCurrency);
-            }
-        }
-
-        /// <summary>
-        /// Update all single batch transactions tax deductible currency amounts fields
-        /// </summary>
-        /// <param name="ABatchRow"></param>
-        /// <param name="AIntlToBaseCurrencyExchRate"></param>
-        /// <param name="ATransactionInIntlCurrency"></param>
-        private void RecalcTransactionsTaxDeductibleCurrencyAmounts(AGiftBatchRow ABatchRow,
-            Decimal AIntlToBaseCurrencyExchRate,
-            Boolean AIsTransactionInIntlCurrency)
-        {
-            int LedgerNumber = ABatchRow.LedgerNumber;
-            int BatchNumber = ABatchRow.BatchNumber;
-            decimal BatchExchangeRateToBase = ABatchRow.ExchangeRateToBase;
-
-            LoadGiftDataForBatch(LedgerNumber, BatchNumber);
-
-            DataView transDV = new DataView(FMainDS.AGiftDetail);
-            transDV.RowFilter = String.Format("{0}={1}",
-                AGiftDetailTable.GetBatchNumberDBName(),
-                BatchNumber);
-
-            foreach (DataRowView drvTrans in transDV)
-            {
-                GiftBatchTDSAGiftDetailRow gdr = (GiftBatchTDSAGiftDetailRow)drvTrans.Row;
-
-                TaxDeductibility.UpdateTaxDeductibiltyCurrencyAmounts(
-                	ref gdr, BatchExchangeRateToBase, AIntlToBaseCurrencyExchRate, AIsTransactionInIntlCurrency);
             }
         }
 
