@@ -480,6 +480,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ReturnValue = false;
                 }
+                
+                if (!UCContactDetails.GetOverallContactSettingsDataFromControls())
+                {
+                    ReturnValue = false;
+                }                
             }
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucSubscriptions))

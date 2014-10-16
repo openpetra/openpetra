@@ -49,7 +49,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         private string FDefaultContactType = String.Empty;
         
         private TPartnerAttributeTypeValueKind FValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
+
+        System.Windows.Forms.Timer ShowMessageBoxTimer = new System.Windows.Forms.Timer();
         
+        private TTimerDrivenMessageBoxKind FTimerDrivenMessageBoxKind;
+        
+        private enum TTimerDrivenMessageBoxKind
+        {
+            tdmbkNoPrimaryEmailAsNoCurrentAvailable,
+            
+            tdmbkNoPrimaryEmailButNonCurrentAvailable
+        }
+        
+        /// <summary>
+        /// Populated by Method <see cref="DetermineEmailPartnerAttributeTypes"/>.
+        /// </summary>
+		string FEmailAttributesConcatStr;
+		
         #region Properties
         
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -121,55 +137,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
 
-            //
-            // Ensure we have instances of PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable in FMainDS. They are needed because 
-            // the Grid's underlying DataTable has got custom DataColumns with Expressions that reference those DataTables in the DataSet!
-            //
-            // Note 1: When an existing Partner gets opened, FMainDS does not contain instances of PPartnerAttributeCategoryTable or PPartnerAttributeTypeTable
-            // hence we add them throught he following code
-            // Note 2: When a new Partner gets created, FMainDS contains instances of PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable hence they will
-            // not be created by the following code            
-            if (!FMainDS.Tables.Contains(PPartnerAttributeCategoryTable.GetTableName()) 
-                && (!FMainDS.Tables.Contains(PPartnerAttributeTypeTable.GetTableName())))
-            {
-                FMainDS.Tables.Add(new PPartnerAttributeCategoryTable(PPartnerAttributeCategoryTable.GetTableName()));
-                FMainDS.Tables.Add(new PPartnerAttributeTypeTable(PPartnerAttributeTypeTable.GetTableName()));
-                FMainDS.InitVars();
-            }
-            
-            if (FMainDS.PPartnerAttributeCategory.Count == 0)
-            {
-                // Note: If FMainDS contains an instance of the PPartnerAttributeCategoryTable, but it hasn't got any rows
-                // we add them here from the corresponding Cacheable DataTable (that is also the case when a new Partner gets created)
-                FMainDS.Merge((PPartnerAttributeCategoryTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.ContactCategoryList, PPartnerAttributeCategoryTable.GetTableName()));
-
-                if (FMainDS.PPartnerAttributeCategory.Count == 0)
-                {
-                    MessageBox.Show(Catalog.GetString("There are no Partner Contact Categories available. Due to this, this Tab will not work correctly!\r\n\r\nPlease set up at least one Partner Contact Category!"),
-                                    Catalog.GetString("Partner Contact Details Tab: Not Functional"),
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);                                    
-                }                
-            }
-
-            if (FMainDS.PPartnerAttributeType.Count == 0)
-            {
-                // Note: If FMainDS contains an instance of the PPartnerAttributeTypeTable, but it hasn't got any rows
-                // we add them here from the corresponding Cacheable DataTable (that is also the case when a new Partner gets created)
-                FMainDS.Merge((PPartnerAttributeTypeTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.ContactTypeList, PPartnerAttributeTypeTable.GetTableName()));                
-                
-                if (FMainDS.PPartnerAttributeType.Count == 0) 
-                {
-                    MessageBox.Show(Catalog.GetString("There are no Partner Contact Types available. Due to this, this Tab will not work correctly!\r\n\r\nPlease set up at least one Partner Contact Type!"),
-                                    Catalog.GetString("Partner Contact Details Tab: Not Functional"),
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-            
-            // Need to enable Relations as the PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable have not been part of the PartnerEditTDS when transferred from the OpenPetra Server!
-            // These Relations are needed in Method 'CreateCustomDataColumns'.
-            FMainDS.EnableRelation("ContactDetails1");
-            FMainDS.EnableRelation("ContactDetails2");
-            
             // Create custom data columns on-the-fly
             CreateCustomDataColumns();
             
@@ -189,9 +156,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 			
 			FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);			
             FFilterAndFindObject.ApplyFilter();
-            
-            // The Filter Panel should be shown expanded
-            FFilterAndFindObject.ToggleFilter();
             
             if (grdDetails.Rows.Count > 1)
             {
@@ -289,7 +253,62 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.Tables.Add(new PPartnerAttributeTable());
                 FMainDS.InitVars();
             }
+            
+            // Set up Timer that is needed for showing MessageBoxes from a Grid Event
+            ShowMessageBoxTimer.Tick += new EventHandler(ShowTimerDrivenMessageBox);
+            ShowMessageBoxTimer.Interval = 500;
+            
+            //
+            // Ensure we have instances of PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable in FMainDS. They are needed because 
+            // the Grid's underlying DataTable has got custom DataColumns with Expressions that reference those DataTables in the DataSet!
+            //
+            // Note 1: When an existing Partner gets opened, FMainDS does not contain instances of PPartnerAttributeCategoryTable or PPartnerAttributeTypeTable
+            // hence we add them throught he following code
+            // Note 2: When a new Partner gets created, FMainDS contains instances of PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable hence they will
+            // not be created by the following code            
+            if (!FMainDS.Tables.Contains(PPartnerAttributeCategoryTable.GetTableName()) 
+                && (!FMainDS.Tables.Contains(PPartnerAttributeTypeTable.GetTableName())))
+            {
+                FMainDS.Tables.Add(new PPartnerAttributeCategoryTable(PPartnerAttributeCategoryTable.GetTableName()));
+                FMainDS.Tables.Add(new PPartnerAttributeTypeTable(PPartnerAttributeTypeTable.GetTableName()));
+                FMainDS.InitVars();
+            }
+            
+            if (FMainDS.PPartnerAttributeCategory.Count == 0)
+            {
+                // Note: If FMainDS contains an instance of the PPartnerAttributeCategoryTable, but it hasn't got any rows
+                // we add them here from the corresponding Cacheable DataTable (that is also the case when a new Partner gets created)
+                FMainDS.Merge((PPartnerAttributeCategoryTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.ContactCategoryList, PPartnerAttributeCategoryTable.GetTableName()));
 
+                if (FMainDS.PPartnerAttributeCategory.Count == 0)
+                {
+                    MessageBox.Show(Catalog.GetString("There are no Partner Contact Categories available. Due to this, this Tab will not work correctly!\r\n\r\nPlease set up at least one Partner Contact Category!"),
+                                    Catalog.GetString("Partner Contact Details Tab: Not Functional"),
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);                                    
+                }                
+            }
+
+            if (FMainDS.PPartnerAttributeType.Count == 0)
+            {
+                // Note: If FMainDS contains an instance of the PPartnerAttributeTypeTable, but it hasn't got any rows
+                // we add them here from the corresponding Cacheable DataTable (that is also the case when a new Partner gets created)
+                FMainDS.Merge((PPartnerAttributeTypeTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.ContactTypeList, PPartnerAttributeTypeTable.GetTableName()));                
+                
+                if (FMainDS.PPartnerAttributeType.Count == 0) 
+                {
+                    MessageBox.Show(Catalog.GetString("There are no Partner Contact Types available. Due to this, this Tab will not work correctly!\r\n\r\nPlease set up at least one Partner Contact Type!"),
+                                    Catalog.GetString("Partner Contact Details Tab: Not Functional"),
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            
+            // Need to enable Relations as the PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable have not been part of the PartnerEditTDS when transferred from the OpenPetra Server!
+            // These Relations are needed in Method 'CreateCustomDataColumns'.
+            FMainDS.EnableRelation("ContactDetails1");
+            FMainDS.EnableRelation("ContactDetails2");
+
+            DetermineEmailPartnerAttributeTypes();
+            
             // Show the 'Within The Organisation' GroupBox only if the Partner is of Partner Class PERSON
             if (FMainDS.PPartner[0].PartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
@@ -354,6 +373,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void ShowDataManual()
         {
+            UpdatePrimaryEmailCombo();
         }
 
         private void ShowDetailsManual(PPartnerAttributeRow ARow)
@@ -371,6 +391,153 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             OnContactTypeChanged(null, null);
+        }
+        
+        /// <summary>
+        /// Manual way for getting the data that is contained in the 'Overall Contact Settings' GroupBox' Control.
+        /// </summary>
+        /// <returns>True if successful.</returns>
+        public bool GetOverallContactSettingsDataFromControls()
+        {
+            bool ReturnValue = false;
+            string PrimaryEmailChoice; 
+            DataView ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(false);
+            
+            PrimaryEmailChoice = cmbPrimaryEMail.GetSelectedString();
+            
+            if (PrimaryEmailChoice != String.Empty) 
+            {
+                for (int Counter = 0; Counter < ElegibleEmailAddrsDV.Count; Counter++) 
+                {
+                    var TheEmailPartnerAttributeRow = ((PPartnerAttributeRow)ElegibleEmailAddrsDV[Counter].Row);
+                    
+                    // Modify Rows only as necessary
+                    if (TheEmailPartnerAttributeRow.Primary) 
+                    {
+                        if(TheEmailPartnerAttributeRow.Value != PrimaryEmailChoice)
+                        {
+                            TheEmailPartnerAttributeRow.Primary = false;        
+                        }
+                    }
+                    else
+                    {
+                        if(TheEmailPartnerAttributeRow.Value == PrimaryEmailChoice)
+                        {
+                            TheEmailPartnerAttributeRow.Primary = true;        
+                        }                        
+                    }
+                }
+            }
+            else
+            {
+                for (int Counter2 = 0; Counter2 < ElegibleEmailAddrsDV.Count; Counter2++) 
+                {
+                    var TheEmailPartnerAttributeRow = ((PPartnerAttributeRow)ElegibleEmailAddrsDV[Counter2].Row);
+                    
+                    // Modify Rows only as necessary
+                    if (TheEmailPartnerAttributeRow.Primary) 
+                    {
+                        TheEmailPartnerAttributeRow.Primary = false;    
+                    }
+                }
+            }            
+        
+            ReturnValue = ValidatePrimaryEmailAddress((ElegibleEmailAddrsDV.Count > 0) && (PrimaryEmailChoice != String.Empty));
+            
+            return ReturnValue;
+        }
+
+        private DataView DetermineEmailAttributes()
+        {
+			return new DataView(FMainDS.PPartnerAttributeType, 
+                PPartnerAttributeTypeTable.GetAttributeCategoryDBName() + " = 'E-Mail' AND " + 
+                PPartnerAttributeTypeTable.GetUnassignableDBName() + " = false", 
+                "", DataViewRowState.CurrentRows);
+            
+        }
+        
+        private DataView DeterminePartnersEmailAddresses(bool AOnlyCurrentEmailAddresses)
+        {
+            string CurrentCriteria = AOnlyCurrentEmailAddresses ? PPartnerAttributeTable.GetCurrentDBName() + " = true AND " : String.Empty;
+            
+			return new DataView(FMainDS.PPartnerAttribute,
+                CurrentCriteria +
+                String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
+                              FEmailAttributesConcatStr),
+                PPartnerAttributeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);            
+        }
+        
+        /// <summary>
+        /// Determines all Partner Attribute Types that are of Partner Attribute Category 'E-mail' and 
+        /// populates FEmailAttributesConcatStr with the result.
+        /// </summary>
+		private void DetermineEmailPartnerAttributeTypes()
+		{
+		    string EmailAttributesConcatStr = String.Empty;
+		    
+		    DataView EmailAttributesDV = DetermineEmailAttributes();
+			
+			for (int Counter = 0; Counter < EmailAttributesDV.Count; Counter++) 
+			{
+				EmailAttributesConcatStr += ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).Code + "', '";
+			}
+			
+			FEmailAttributesConcatStr = "'" + EmailAttributesConcatStr.Substring(0, EmailAttributesConcatStr.Length - 3);
+		}
+		
+        private void UpdatePrimaryEmailCombo()
+        {
+            object[] PrimaryEmailAddresses;
+            string ThePrimaryEmailAddress = String.Empty;  
+            DataView ElegibleEmailAddrsDV;
+            DataView AllEmailAddrsDV;
+
+            // Determine all Partner Attributes that have a Partner Attribute Type that constitutes an E-Mail
+            // and that are Current.                
+            ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(true);
+
+            PrimaryEmailAddresses = new object[ElegibleEmailAddrsDV.Count + 1];
+            PrimaryEmailAddresses[0] = String.Empty;
+            
+            for (int Counter = 0; Counter < ElegibleEmailAddrsDV.Count; Counter++) 
+            {
+                var TheEmailRow = ((PPartnerAttributeRow)ElegibleEmailAddrsDV[Counter].Row);
+                
+                PrimaryEmailAddresses[Counter + 1] = TheEmailRow.Value;
+                
+                if (TheEmailRow.Primary) 
+                {
+                    ThePrimaryEmailAddress = TheEmailRow.Value;
+                }
+            }
+            
+            // Add the avilable E-Mail addresses to the ComboBox
+            cmbPrimaryEMail.Items.Clear();
+            cmbPrimaryEMail.Items.AddRange(PrimaryEmailAddresses);                    
+
+            // Select the Primay Email Address in the ComboBox
+            if (ThePrimaryEmailAddress != String.Empty) 
+            {
+                cmbPrimaryEMail.SetSelectedString(ThePrimaryEmailAddress);    
+            }
+            else
+            {
+                if (ElegibleEmailAddrsDV.Count > 0) 
+                {
+                    FTimerDrivenMessageBoxKind = TTimerDrivenMessageBoxKind.tdmbkNoPrimaryEmailAsNoCurrentAvailable;
+                    ShowMessageBoxTimer.Start();
+                }
+                else
+                {
+                    AllEmailAddrsDV = DeterminePartnersEmailAddresses(false);
+
+                    if (AllEmailAddrsDV.Count > 0) 
+                    {
+                        FTimerDrivenMessageBoxKind = TTimerDrivenMessageBoxKind.tdmbkNoPrimaryEmailButNonCurrentAvailable;
+                        ShowMessageBoxTimer.Start();
+                    }                    
+                }
+            }
         }
         
         private void BeforeShowDetailsManual(PPartnerAttributeRow ARow)
@@ -949,6 +1116,98 @@ namespace Ict.Petra.Client.MPartner.Gui
             return ReturnValue;
         }
         
+		/// <summary>
+		/// Called from a timer, ShowMessageBoxTimer, so that the FocusRowLeaving Event processing can
+        /// complete before the MessageBox is show (would the MessageBox be shown while the Event gets
+        /// processed the Grid would get into a strange state in which mouse moves would cause the Grid
+        /// to scroll!).
+		/// </summary>
+		/// <param name="Sender">Gets evaluated to make sure a Timer is calling this Method.</param>
+		/// <param name="e">Ignored.</param>
+		private void ShowTimerDrivenMessageBox(Object Sender, EventArgs e)        
+        {            
+            System.Windows.Forms.Timer SendingTimer = Sender as System.Windows.Forms.Timer;
+            
+            if (SendingTimer != null)
+            {
+                // I got called from a Timer: stop that now so that the following MessageBox gets shown only once!
+                SendingTimer.Stop();
+                
+                switch (FTimerDrivenMessageBoxKind) 
+                {
+                    case TUC_ContactDetails.TTimerDrivenMessageBoxKind.tdmbkNoPrimaryEmailAsNoCurrentAvailable:
+                        MessageBox.Show(Catalog.GetString("No Primary Email Address has been chosen for this Partner, although the Partner has at least one current Email Address on record.\r\n\r\n" + 
+                                                          "Please choose an Email Address from the Primary Email Address setting!"), 
+                                         Catalog.GetString("No Primary Email Address Set!"),
+                                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        
+                        cmbPrimaryEMail.Focus();
+                        cmbPrimaryEMail.DroppedDown = true;
+                        
+                        break;
+                    case TUC_ContactDetails.TTimerDrivenMessageBoxKind.tdmbkNoPrimaryEmailButNonCurrentAvailable:
+                        MessageBox.Show(Catalog.GetString("No Primary Email Address has been chosen for this Partner.\r\n\r\nThere are non-current Email Addresses on record. You might want to\r\n" +
+                                        "check whether a current email address is available for this Partner."), 
+                                         Catalog.GetString("No Primary Email Address Set - No Current Email Address"),
+                                         MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        
+                        break;
+                    default:
+                        throw new Exception("Invalid value for TTimerDrivenMessageBoxKind");
+                }
+                    
+            }
+		}		    
+
+        /// <summary>
+        /// Adds validation for cmbPrimaryEmail
+        /// </summary>
+        /// <returns>Returns false if validation error</returns>
+        private bool ValidatePrimaryEmailAddress(bool APrimaryEmailSelected)
+        {
+            const string ResCont = "ContactDetails_PrimaryEmailAddress";
+            
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TScreenVerificationResult VerificationResult = null;            
+
+            if (!APrimaryEmailSelected) 
+            {                
+                VerificationResult = new TScreenVerificationResult(
+                    new TVerificationResult((object)ResCont,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL),
+                        FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID),
+                    null, cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
+//                VerificationResult = new TScreenVerificationResult("ContactDetails_PrimaryEmailAddress", null, 
+//                    "", PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL,
+//                    cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
+
+            }
+            
+//            DataColumn ValidationColumn = FMainDS.PPartnerTaxDeductiblePct.ColumnDateValidFrom;
+            
+//            // validate dtpTaxDeductibleValidFrom
+//            if (!dtpTaxDeductibleValidFrom.ValidDate(false))
+//            {
+//                VerificationResult = new TScreenVerificationResult(dtpTaxDeductibleValidFrom.DateVerificationResult,
+//                    ValidationColumn,
+//                    dtpTaxDeductibleValidFrom);
+//                VerificationResult.OverrideResultContext(this);
+//
+//                ReturnValue = false;
+//            }
+
+            VerificationResultCollection.Remove(ResCont);
+//            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+
+            if(VerificationResult != null)
+            {                
+                VerificationResultCollection.Add(VerificationResult);
+            }
+
+            return true;
+        }
+		
         #endregion
     }
     

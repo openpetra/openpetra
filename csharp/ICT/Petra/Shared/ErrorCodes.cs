@@ -314,6 +314,11 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("Invalid Hyperlink with Value Format",
              ErrorMessageText = "The 'Link Format' must contain a hyperlink that contains the text '{0}' (without apostrophies and all captials) somewhere in the hyperlink, and not be just '{0}'.")]
         public const String ERR_INVALID_HYPERLINK_WITH_VALUE_JUST_CONTAINING_PLACEHOLDER = "PARTN.00034V";
+
+        /// <summary>No Primary Email Address has been set desipite current E-Mail Addresses are available.</summary>
+        [ErrCodeAttribute("Primary Email Address Not Set Desipite E-Mail Addresses on File",
+             ErrorMessageText = "No Primary Email Address has been set desipite current E-Mail Addresses are available.")]
+        public const String ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL = "PARTN.00035N";
         
         #region Subscriptions
 
