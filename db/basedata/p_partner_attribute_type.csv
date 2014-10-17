@@ -14,3 +14,4 @@ Social Networks,LinkedIn,LinkedIn user name,2,CONTACTDETAIL_HYPERLINK_WITHVALUE,
 Social Networks,Twitter,Twitter user name,1,CONTACTDETAIL_HYPERLINK_WITHVALUE,http://www.twitter.com/{VALUE},Twitter (Business),false,?,false,?,?,?,?,?
 Social Networks,Facebook,Facebook user name,0,CONTACTDETAIL_HYPERLINK_WITHVALUE,https://www.facebook.com/{VALUE},Facebook (Business),false,?,false,?,?,?,?,?
 Social Networks,Xing,Xing user name,3,CONTACTDETAIL_HYPERLINK_WITHVALUE,http://www.xing.com/profile/{VALUE},Xing (Business),false,?,false,?,?,?,?,?
+PARTNERS_CONTACTDETAILS_SETTINGS,PARTNERS_PRIMARY_CONTACT_METHOD,"A Partners' Primary Contact Method",0,CONTACTDETAILSETTING_PRIMARY_CONTACT_METH,?,?,false,?,false,?,?,?,?,?

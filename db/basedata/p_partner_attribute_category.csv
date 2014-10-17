@@ -4,3 +4,4 @@ E-Mail,E-Mail addresses,2,yes,false,false,?,?,?,?,?
 Web Sites & Blogs,Internet addresses of Web Sites & Blogs,4,yes,false,false,?,?,?,?,?
 Social Networks,Social Networks on the Internet,5,yes,false,false,?,?,?,?,?
 Internet Voice Comm. & IM,"Internet Voice Communication, Instant Messaging",3,yes,false,false,?,?,?,?,?
+PARTNERS_CONTACTDETAILS_SETTINGS, "A Partners' Contact Details Settings",0,false,true,false,?,?,?,?,?
