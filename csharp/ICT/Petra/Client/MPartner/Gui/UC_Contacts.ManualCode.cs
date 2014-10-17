@@ -38,6 +38,9 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MCommon;
+using Ict.Common.Data;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -91,9 +94,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FMainDS.Tables.Contains(PContactLogTable.GetTableName()))
             {
-
                 FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactLogsForPartner(FMainDS.PPartner[0].PartnerKey));
-                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPartnerContacts(FMainDS.PPartner[0].PartnerKey));
+                FMainDS.Merge(new PPartnerContactTable());//TRemote.MPartner.Partner.WebConnectors.GetPartnerContacts(FMainDS.PPartner[0].PartnerKey));
                 FMainDS.PContactLog.DefaultView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PContactLog.DefaultView);
             }
@@ -220,9 +222,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void DeleteContactLog(object sender, EventArgs e)
         {
-
+            TDeleteGridRows.DeleteRows(this, grdDetails, FPetraUtilsObject, this);
         }
-
 
         /// <summary>
         ///
