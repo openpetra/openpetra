@@ -45,7 +45,7 @@ RootNode:
             Validation: true
         cmbPrimaryPhoneForContacting: {Label=Primary Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
         cmbPhoneWithinTheOrganisation: {Label=Office Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
-        cmbPrimaryEMail: {Label=Primary E-Mail, OptionalValues=[], ComboBoxWidth=147, Width=147, Validation=true}
+        cmbPrimaryEMail: {Label=Primary E-Mail, OptionalValues=[], ComboBoxWidth=147, Width=147, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
         cmbEMailWithinTheOrganisation: {Label=Office E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
         btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
         btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}

@@ -61,6 +61,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private bool FRunningInsideShowDetails = false;
         
+        private bool FPrimaryEmailSelectedValueChangedEvent = false;
+        
         private enum TTimerDrivenMessageBoxKind
         {
             tdmbkNoPrimaryEmailAsNoCurrentAvailable,
@@ -403,7 +405,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDataManual()
         {
+            FPrimaryEmailSelectedValueChangedEvent = true;
+            
             UpdatePrimaryEmailComboItems(false);
+            
+            FPrimaryEmailSelectedValueChangedEvent = false;
         }
 
         private void ShowDetailsManual(PPartnerAttributeRow ARow)
@@ -430,6 +436,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <returns>True if successful.</returns>
         public bool GetOverallContactSettingsDataFromControls()
+        {
+            return UpdatePrimaryEmailAddressRecords(true);
+        }
+
+        /// <summary>
+        /// Updates the records to reflect the 'Primary E-mail Address' setting.
+        /// </summary>
+        /// <param name="ARunValidation">If set to true, various validations are run against
+        /// the 'Primary E-mail Address' setting.</param>
+        /// <returns>True if <paramref name="ARunValidation"/> is false, or when
+        /// <paramref name="ARunValidation"/> is true and validation succeeds, otherwise false.</returns>
+        public bool UpdatePrimaryEmailAddressRecords(bool ARunValidation)
         {
             bool ReturnValue = true;
             string PrimaryEmailChoice;
@@ -475,77 +493,80 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
     
-            DataView CurrentEmailAddrsDV = DeterminePartnersEmailAddresses(true);
-            
-            if (CurrentEmailAddrsDV.Count != 0)
+            if (ARunValidation) 
             {
-                if (PrimaryEmailChoice == String.Empty)
+                DataView CurrentEmailAddrsDV = DeterminePartnersEmailAddresses(true);
+                
+                if (CurrentEmailAddrsDV.Count != 0)
                 {
-                    // Generate a Validation *Warning*, not an error. The user can ignore this if (s)he chooses to do so!
-                    ValidationPrimaryEmailAddrNotSet();    
+                    if (PrimaryEmailChoice == String.Empty)
+                    {
+                        // Generate a Validation *Warning*, not an error. The user can ignore this if (s)he chooses to do so!
+                        ValidationPrimaryEmailAddrNotSet();    
+                    }
+                    else
+                    {
+                        for (int Counter3 = 0; Counter3 < ElegibleEmailAddrsDV.Count; Counter3++) 
+                        {
+                            var TheEmailPartnerAttributeRow = ((PPartnerAttributeRow)ElegibleEmailAddrsDV[Counter3].Row);
+                            
+                            if (TheEmailPartnerAttributeRow.Value == PrimaryEmailChoice) 
+                            {
+                                PrimaryEmailChoiceFoundAmongEligbleEmailAddr = true;
+    
+                                if (!TheEmailPartnerAttributeRow.Current)
+                                {              
+                                    // This condition should not occur, unless the program code that runs when the 'Valid'
+                                    // CheckBox is disabled and which should clear all the Items from cmbPrimaryEMail is 
+                                    // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                                    // that will prevent invalid data going to the DB!
+                                    
+                                    // Generate a Validation *Error*. The user cannot ignore this.
+                                    ValidationPrimaryEmailAddrSetButItIsntCurrent();
+                                    
+                                    UpdatePrimaryEmailComboItems(false);
+                                    
+                                    ReturnValue = false;                                        
+                                }    
+                            }                        
+                        }    
+                        
+                        if (!PrimaryEmailChoiceFoundAmongEligbleEmailAddr) 
+                        {
+                            // This condition should not occur, unless various bits of program code are somehow 
+                            // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                            // that will prevent invalid data going to the DB!
+                            
+                            // Generate a Validation *Error*. The user cannot ignore this.
+                            ValidationPrimaryEmailAddrSetButNotAmongEmailAddrs();
+                            
+                            UpdatePrimaryEmailComboItems(true);
+                            
+                            ReturnValue = false;                                                                    
+                        }
+                    }
                 }
                 else
                 {
-                    for (int Counter3 = 0; Counter3 < ElegibleEmailAddrsDV.Count; Counter3++) 
-                    {
-                        var TheEmailPartnerAttributeRow = ((PPartnerAttributeRow)ElegibleEmailAddrsDV[Counter3].Row);
-                        
-                        if (TheEmailPartnerAttributeRow.Value == PrimaryEmailChoice) 
-                        {
-                            PrimaryEmailChoiceFoundAmongEligbleEmailAddr = true;
-
-                            if (!TheEmailPartnerAttributeRow.Current)
-                            {              
-                                // This condition should not occur, unless the program code that runs when the 'Valid'
-                                // CheckBox is disabled and which should clear all the Items from cmbPrimaryEMail is 
-                                // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop' 
-                                // that will prevent invalid data going to the DB!
-                                
-                                // Generate a Validation *Error*. The user cannot ignore this.
-                                ValidationPrimaryEmailAddrSetButItIsntCurrent();
-                                
-                                UpdatePrimaryEmailComboItems(false);
-                                
-                                ReturnValue = false;                                        
-                            }    
-                        }                        
-                    }    
-                    
-                    if (!PrimaryEmailChoiceFoundAmongEligbleEmailAddr) 
+                    if (PrimaryEmailChoice != String.Empty)
                     {
                         // This condition should not occur, unless various bits of program code are somehow 
                         // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
                         // that will prevent invalid data going to the DB!
+    
+                            // Generate a Validation *Error*. The user cannot ignore this.
+                        ValidationPrimaryEmailAddrSetButNoEmailAddrAvailable();
+    
+                        UpdatePrimaryEmailComboItems(true);                    
                         
-                        // Generate a Validation *Error*. The user cannot ignore this.
-                        ValidationPrimaryEmailAddrSetButNotAmongEmailAddrs();
-                        
-                        UpdatePrimaryEmailComboItems(true);
-                        
-                        ReturnValue = false;                                                                    
+                        ReturnValue = false;                    
                     }
-                }
-            }
-            else
-            {
-                if (PrimaryEmailChoice != String.Empty)
-                {
-                    // This condition should not occur, unless various bits of program code are somehow 
-                    // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
-                    // that will prevent invalid data going to the DB!
-
-                        // Generate a Validation *Error*. The user cannot ignore this.
-                    ValidationPrimaryEmailAddrSetButNoEmailAddrAvailable();
-
-                    UpdatePrimaryEmailComboItems(true);                    
-                    
-                    ReturnValue = false;                    
                 }
             }
             
             return ReturnValue;
         }
-
+        
         private DataView DetermineEmailAttributes()
         {
             return new DataView(FMainDS.PPartnerAttributeType,
@@ -617,7 +638,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Select the Primay Email Address in the ComboBox
             if (ThePrimaryEmailAddress != String.Empty)
             {
+                FPrimaryEmailSelectedValueChangedEvent = true;
+                
                 cmbPrimaryEMail.SetSelectedString(ThePrimaryEmailAddress);
+                
+                FPrimaryEmailSelectedValueChangedEvent = false;
             }
             else
             {
@@ -1149,6 +1174,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
             
+        private void HandlePrimaryEmailSelectedValueChanged(object sender, EventArgs e)
+        {
+            if (!FPrimaryEmailSelectedValueChangedEvent)
+            {
+                UpdatePrimaryEmailAddressRecords(false);
+            }
+        }
+        
         private void CheckThatNonCurrentEmailAddressIsntPrimaryEmailAddr(bool AIsPrimaryEmailAddressIsThisRecord)
         {
             bool NoEmailAddressesAvailableAnymore = false;
