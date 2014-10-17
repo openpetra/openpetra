@@ -2893,6 +2893,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // Partner Contact Details are kept in PPartnerAttribute, among other attributes (!), so we need to ensure that
             // PPartnerAttribute data for this Partner is loaded already (this will be the case when called from LoadData).
             if (FPartnerEditScreenDS.PPartnerAttribute == null)
+
             {
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
                     TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,

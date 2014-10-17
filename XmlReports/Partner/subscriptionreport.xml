@@ -3,19 +3,19 @@
 <reports>
 
   <report id="Subscription Report">
-	<description>
-		Report for Partner Addresses and Subscriptions
-	</description>
-	<reportparameters>
-		<reportparameter name="param_selection">
-			<option name="one partner"></option>
-			<option name="an extract"></option>
-			<option name="all current staff"></option>
-		</reportparameter>
-		<reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
-		<reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
-		<reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
-	</reportparameters>
+    <description>
+        Report for Partner Addresses and Subscriptions
+    </description>
+    <reportparameters>
+        <reportparameter name="param_selection">
+            <option name="one partner"></option>
+            <option name="an extract"></option>
+            <option name="all current staff"></option>
+        </reportparameter>
+        <reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
+        <reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
+        <reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
+    </reportparameters>
 
     <reportheader></reportheader>
     <pageheader>
@@ -38,853 +38,837 @@
         </fielddetail>
       </field>
       <field whichfield="descr2">
-	<fielddetail>
-		<value text="Partner Classes: F - Family, P - Person, C - Church, O - Organisation, U - Unit"/>
-	</fielddetail>
+    <fielddetail>
+        <value text="Partner Classes: F - Family, P - Person, C - Church, O - Organisation, U - Unit"/>
+    </fielddetail>
       </field>
       <field whichfield="descr3">
-	<fielddetail>
-		<value text="Address Flags: * expired,   ^ not yet current,  # no post to this address"/>
-	</fielddetail>
+    <fielddetail>
+        <value text="Address Flags: * expired,   ^ not yet current,  # no post to this address"/>
+    </fielddetail>
       </field>
     </pageheader>
 
     <calculations>
-	<calculation id="Select Partners" returns="PartnerKey, ShortName, PartnerClass, Status, Language, p_acquisition_code_c" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
-						PUB_p_partner.p_partner_short_name_c AS ShortName,
-						PUB_p_partner.p_partner_class_c AS PartnerClass,
-						PUB_p_partner.p_status_code_c AS Status,
-						PUB_p_partner.p_language_code_c AS Language,
-						PUB_p_partner.p_acquisition_code_c
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},one partner)">
-				<value>
-					FROM
-						PUB_p_partner
-					WHERE
-						PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},an extract)">
-				<value>
-					FROM 
-						PUB_p_partner, PUB_m_extract, PUB_m_extract_master
-					WHERE 
-						PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract}
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},all current staff)">
-				<value>
-				FROM
-					PUB_p_partner, PUB_pm_staff_data
-				WHERE
-					PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
-					AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
-					AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
-					OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_order_by_name}, PartnerName)">
-				<value>
-					ORDER BY PUB_p_partner.p_partner_short_name_c
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_order_by_name}, PartnerKey)">
-				<value>
-					ORDER BY PUB_p_partner.p_partner_key_n
-				</value>
-			</queryDetail>
-		</query>
-	</calculation> <!-- Select Partners -->
-	
-	<calculation id="SelectAllAddresses" returns="Automatic" returnsFormat="row">
+    <calculation id="Select Partners" returns="PartnerKey, ShortName, PartnerClass, Status, Language, p_acquisition_code_c" returnsFormat="row">
+        <query>
+            <queryDetail>
+                <value>
+                    SELECT DISTINCT PUB_p_partner.p_partner_key_n AS PartnerKey,
+                        PUB_p_partner.p_partner_short_name_c AS ShortName,
+                        PUB_p_partner.p_partner_class_c AS PartnerClass,
+                        PUB_p_partner.p_status_code_c AS Status,
+                        PUB_p_partner.p_language_code_c AS Language,
+                        PUB_p_partner.p_acquisition_code_c
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_selection},one partner)">
+                <value>
+                    FROM
+                        PUB_p_partner
+                    WHERE
+                        PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_selection},an extract)">
+                <value>
+                    FROM 
+                        PUB_p_partner, PUB_m_extract, PUB_m_extract_master
+                    WHERE 
+                        PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                    AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                    AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_selection},all current staff)">
+                <value>
+                FROM
+                    PUB_p_partner, PUB_pm_staff_data
+                WHERE
+                    PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+                    AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+                    AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+                    OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_order_by_name}, PartnerName)">
+                <value>
+                    ORDER BY PUB_p_partner.p_partner_short_name_c
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_order_by_name}, PartnerKey)">
+                <value>
+                    ORDER BY PUB_p_partner.p_partner_key_n
+                </value>
+            </queryDetail>
+        </query>
+    </calculation> <!-- Select Partners -->
+    
+    <calculation id="SelectAllAddresses" returns="Automatic" returnsFormat="row">
         <query>
           <queryDetail><value> 
-			SELECT DISTINCT 
-					Location.p_street_name_c,
-					Location.p_locality_c,
-					Location.p_city_c,
-					Location.p_postal_code_c,
-					Location.p_country_code_c,
-					Location.p_address_3_c,
-					Location.p_county_c,
-					PartnerLocation.p_date_effective_d,
-					PartnerLocation.p_date_good_until_d,
-					PartnerLocation.p_fax_number_c AS FaxPre,
-					PartnerLocation.p_fax_extension_i AS FaxExtension,
-					PartnerLocation.p_telephone_number_c AS TelephonePre,
-					PartnerLocation.p_extension_i AS TelephoneExtension,
-					PartnerLocation.p_email_address_c,
-					PartnerLocation.p_mobile_number_c,
-					PartnerLocation.p_alternate_telephone_c,
-					PartnerLocation.p_location_type_c,
-					PartnerLocation.p_url_c,
-					PartnerLocation.p_send_mail_l
-			FROM 
-					PUB_p_partner_location AS PartnerLocation,
-					PUB_p_location AS Location,
-					PUB_p_partner
-			WHERE  PUB_p_partner.p_partner_key_n = {{PartnerKey}}
-					AND PartnerLocation.p_partner_key_n ={{PartnerKey}}
-					AND PartnerLocation.p_location_key_i=Location.p_location_key_i
-		</value>
-	</queryDetail>
+            SELECT DISTINCT 
+                    Location.p_street_name_c,
+                    Location.p_locality_c,
+                    Location.p_city_c,
+                    Location.p_postal_code_c,
+                    Location.p_country_code_c,
+                    Location.p_address_3_c,
+                    Location.p_county_c,
+                    PartnerLocation.p_date_effective_d,
+                    PartnerLocation.p_date_good_until_d,
+                    PartnerLocation.p_fax_number_c AS FaxPre,
+                    PartnerLocation.p_fax_extension_i AS FaxExtension,
+                    PartnerLocation.p_telephone_number_c AS TelephonePre,
+                    PartnerLocation.p_extension_i AS TelephoneExtension,
+                    PartnerLocation.p_email_address_c,
+                    PartnerLocation.p_mobile_number_c,
+                    PartnerLocation.p_alternate_telephone_c,
+                    PartnerLocation.p_location_type_c,
+                    PartnerLocation.p_url_c,
+                    PartnerLocation.p_send_mail_l
+            FROM 
+                    PUB_p_partner_location AS PartnerLocation,
+                    PUB_p_location AS Location,
+                    PUB_p_partner
+            WHERE  PUB_p_partner.p_partner_key_n = {{PartnerKey}}
+                    AND PartnerLocation.p_partner_key_n ={{PartnerKey}}
+                    AND PartnerLocation.p_location_key_i=Location.p_location_key_i
+        </value>
+    </queryDetail>
         </query>
       </calculation> <!-- Select Partners All Addresses -->
-	
-	<calculation id="SelectLastGift" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value> 
-				SELECT DISTINCT
-					PUB_a_gift.a_ledger_number_i,
-					PUB_a_gift.a_batch_number_i,
-					PUB_a_gift.a_gift_transaction_number_i,
-					PUB_a_gift.a_date_entered_d
-				FROM
-					PUB_a_gift
-				WHERE
-					PUB_a_gift.p_donor_key_n = PartnerKey
-				ORDER BY
-					PUB_a_gift.a_date_entered_d  DESC
-			</value></queryDetail>
-		</query>
-	</calculation>
-	 
-	 <calculation id="SelectGiftDetails" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail><value> 
-				SELECT DISTINCT
-					PUB_a_gift_detail.a_gift_transaction_amount_n,
-					PUB_a_gift_detail.a_detail_number_i,
-					PUB_a_gift_detail.a_recipient_ledger_number_n,
-					PUB_a_gift_detail.a_comment_one_type_c,
-					PUB_a_gift_detail.a_gift_comment_one_c,
-					PUB_a_gift_detail.p_recipient_key_n,
-					PUB_p_partner.p_partner_short_name_c,
-					PUB_a_gift_batch.a_currency_code_c,
-					
-					PUB_a_motivation_detail.a_motivation_detail_desc_local_c,
-					PUB_a_motivation_group.a_motivation_group_desc_local_c
-				FROM
-					PUB_a_gift_detail, PUB_p_partner, PUB_a_gift_batch, PUB_a_motivation_detail, PUB_a_motivation_group
-				WHERE
-						PUB_a_gift_detail.a_ledger_number_i  = {{a_ledger_number_i}}
-					AND PUB_a_gift_detail.a_gift_transaction_number_i = {{a_gift_transaction_number_i}}
-					AND PUB_a_gift_detail.a_batch_number_i = {{a_batch_number_i}}
-					AND PUB_a_gift_batch.a_batch_number_i = {{a_batch_number_i}}
-					AND PUB_a_gift_batch.a_ledger_number_i = {{a_ledger_number_i}}
-					AND PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
-					
-					AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
-                			AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
-                			AND PUB_a_motivation_detail.a_ledger_number_i = PUB_a_gift_detail.a_ledger_number_i
-					AND PUB_a_motivation_group.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
-                			AND PUB_a_motivation_group.a_ledger_number_i = PUB_ a_gift_detail.a_ledger_number_i
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="CalculateGiftSum" returns="GiftSum" returnsFormat="row">
-		<query>
-			<queryDetail><value> 
-				SELECT SUM ( PUB_a_gift_detail.a_gift_transaction_amount_n ) AS GiftSum
-				FROM
-					PUB_a_gift_detail
-				WHERE
-						PUB_a_gift_detail.a_ledger_number_i  = {{a_ledger_number_i}}
-					AND PUB_a_gift_detail.a_gift_transaction_number_i = {{a_gift_transaction_number_i}}
-					AND PUB_a_gift_detail.a_batch_number_i = {{a_batch_number_i}}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<!-- Info: Value for "DISPLAYGIFT" is a combination of AMOUNT,FIELD,RECIPIENT (with comma as separator)
-		In Petra 2.X the tables s_system_parameter.p_display_gift_amount_l, s_system_parameter.p_display_gift_recipient_l,
-		and s_system_parameter.p_display_gift_field_l  were used to distinguish what gift details were printed. -->
-	<calculation id="SelectSystemParameters" returns="s_default_value_c" returnsFormat="row">
-		<query>
-			<queryDetail><value> 
-				SELECT DISTINCT
-					PUB_s_system_defaults.s_default_value_c
-				FROM
-					PUB_s_system_defaults
-				WHERE
-					PUB_s_system_defaults.s_default_code_c = 'DISPLAYGIFT'
-			</value></queryDetail>
-		</query>
-	</calculation>
+    
+     <calculation id="SelectGiftDetails" returns="Automatic" returnsFormat="row">
+        <query>
+            <queryDetail><value> 
+                SELECT DISTINCT
+                    PUB_a_gift_detail.a_gift_transaction_amount_n,
+                    PUB_a_gift_detail.a_detail_number_i,
+                    PUB_a_gift_detail.a_recipient_ledger_number_n,
+                    PUB_a_gift_detail.a_comment_one_type_c,
+                    PUB_a_gift_detail.a_gift_comment_one_c,
+                    PUB_a_gift_detail.p_recipient_key_n,
+                    PUB_p_partner.p_partner_short_name_c,
+                    PUB_a_gift_batch.a_currency_code_c,
+                    
+                    PUB_a_motivation_detail.a_motivation_detail_desc_local_c,
+                    PUB_a_motivation_group.a_motivation_group_desc_local_c
+                FROM
+                    PUB_a_gift_detail, PUB_p_partner, PUB_a_gift_batch, PUB_a_motivation_detail, PUB_a_motivation_group
+                WHERE
+                        PUB_a_gift_detail.a_ledger_number_i  = {{a_ledger_number_i}}
+                    AND PUB_a_gift_detail.a_gift_transaction_number_i = {{a_gift_transaction_number_i}}
+                    AND PUB_a_gift_detail.a_batch_number_i = {{a_batch_number_i}}
+                    AND PUB_a_gift_batch.a_batch_number_i = {{a_batch_number_i}}
+                    AND PUB_a_gift_batch.a_ledger_number_i = {{a_ledger_number_i}}
+                    AND PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
+                    
+                    AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
+                            AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
+                            AND PUB_a_motivation_detail.a_ledger_number_i = PUB_a_gift_detail.a_ledger_number_i
+                    AND PUB_a_motivation_group.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
+                            AND PUB_a_motivation_group.a_ledger_number_i = PUB_a_gift_detail.a_ledger_number_i
+            </value></queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="CalculateGiftSum" returns="GiftSum" returnsFormat="row">
+        <query>
+            <queryDetail><value> 
+                SELECT SUM ( PUB_a_gift_detail.a_gift_transaction_amount_n ) AS GiftSum
+                FROM
+                    PUB_a_gift_detail
+                WHERE
+                        PUB_a_gift_detail.a_ledger_number_i  = {{a_ledger_number_i}}
+                    AND PUB_a_gift_detail.a_gift_transaction_number_i = {{a_gift_transaction_number_i}}
+                    AND PUB_a_gift_detail.a_batch_number_i = {{a_batch_number_i}}
+            </value></queryDetail>
+        </query>
+    </calculation>
+    
+    <!-- Info: Value for "DISPLAYGIFT" is a combination of AMOUNT,FIELD,RECIPIENT (with comma as separator)
+        In Petra 2.X the tables s_system_parameter.p_display_gift_amount_l, s_system_parameter.p_display_gift_recipient_l,
+        and s_system_parameter.p_display_gift_field_l  were used to distinguish what gift details were printed. -->
+    <calculation id="SelectSystemParameters" returns="s_default_value_c" returnsFormat="row">
+        <query>
+            <queryDetail><value> 
+                SELECT DISTINCT
+                    PUB_s_system_defaults.s_default_value_c
+                FROM
+                    PUB_s_system_defaults
+                WHERE
+                    PUB_s_system_defaults.s_default_code_c = 'DISPLAYGIFT'
+            </value></queryDetail>
+        </query>
+    </calculation>
 
-	<calculation id="SelectRecipientField" returns="RecipientFieldShortName" returnsFormat="row">
-		<query>
-			<queryDetail><value> 
-				SELECT DISTINCT
-					PUB_p_partner.p_partner_short_name_c AS RecipientFieldShortName
-				FROM
-					PUB_p_partner
-				WHERE
-					PUB_p_partner.p_partner_key_n = {{a_recipient_ledger_number_n}}
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="GetLastGift" returns="Automatic" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="GetFirstEntryFromSQLStatement(SelectLastGift, PartnerKey, {PartnerKey})"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="CleanUp" returns="Automatic" returnsFormat="text">
-	<!-- This clean up is for clearing gift detail fields. It's needed so that when the lines of the addresses
-		are printed no gift details are printed. -->
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-				<value function="assign(TelephoneNumber, concatenate({TelephonePre},{TelephoneExtension}))"/>
-				<value function="assign(FaxNumber, concatenate({FaxPre}, {FaxExtension}))"/>
-				<value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
-				<value function="assign(StreetName, {p_street_name_c})"/>
-				<value function="assign(Locality, {p_locality_c})"/>
-				<value function="assign(City, {p_city_c})"/>
-				<value function="assign(PostalCode, {p_postal_code_c})"/>
-				<value function="assign(CountryCode, {p_country_code_c})"/>
-				<value function="assign(Address3, {p_address_3_c})"/>
-				<value function="assign(County, {p_county_c})"/>
-				<value function="assign(DateEffective, {p_date_effective_d})"/>
-				<value function="assign(DateGoodUntil, {p_date_good_until_d})"/>
-				<value function="assign(EMailAddress, {p_email_address_c})"/>
-				<value function="assign(MobileNumber, {p_mobile_number_c})"/>
-				<value function="assign(AlternateTelephone, {p_alternate_telephone_c})"/>
-				<value function="assign(LocationType, {p_location_type_c})"/>
-				<value function="assign(Url, {p_url_c})"/>
-				<value function="assign(SendMail, {p_send_mail_l})"/>
-				<value function="assign(GiftAmount, )"/>
-				<value function="assign(GiftCommentType, )"/>
-				<value function="assign(GiftComment, )"/>
-				<value function="assign(GiftRecipient, )"/>
-				<value function="assign(Currency, )"/>
-				<value function="assign(MotivationDetail, )"/>
-				<value function="assign(MotivationGroup, )"/>
-				<value function="assign(ReceivingField, )"/>
-			</queryDetail>
-			<!-- if fax or telephone number is only 0 then show an empty string -->
-			<queryDetail condition="eq({TelephoneNumber}, 0)">
-				<value text="NO-SQL"/>
-				<value function="assign(TelephoneNumber,  )"/>
-			</queryDetail>
-			<queryDetail condition="eq({FaxNumber}, 0)">
-				<value text="NO-SQL"/>
-				<value function="assign(FaxNumber,  )"/>
-			</queryDetail>
-		</query>
-	</calculation>
+    <calculation id="SelectRecipientField" returns="RecipientFieldShortName" returnsFormat="row">
+        <query>
+            <queryDetail><value> 
+                SELECT DISTINCT
+                    PUB_p_partner.p_partner_short_name_c AS RecipientFieldShortName
+                FROM
+                    PUB_p_partner
+                WHERE
+                    PUB_p_partner.p_partner_key_n = {{a_recipient_ledger_number_n}}
+            </value></queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="GetLastGift" returns="Automatic" returnsFormat="row">
+        <query>
+            <queryDetail>
+                <value>Ict.Petra.Server.MReporting.MFinDev.TRptUserFunctionsFinDev.SelectLatestGiftRow</value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="CleanUp" returns="Automatic" returnsFormat="text">
+    <!-- This clean up is for clearing gift detail fields. It's needed so that when the lines of the addresses
+        are printed no gift details are printed. -->
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
+                <value function="assign(TelephoneNumber, concatenate({TelephonePre},{TelephoneExtension}))"/>
+                <value function="assign(FaxNumber, concatenate({FaxPre}, {FaxExtension}))"/>
+                <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
+                <value function="assign(StreetName, {p_street_name_c})"/>
+                <value function="assign(Locality, {p_locality_c})"/>
+                <value function="assign(City, {p_city_c})"/>
+                <value function="assign(PostalCode, {p_postal_code_c})"/>
+                <value function="assign(CountryCode, {p_country_code_c})"/>
+                <value function="assign(Address3, {p_address_3_c})"/>
+                <value function="assign(County, {p_county_c})"/>
+                <value function="assign(DateEffective, {p_date_effective_d})"/>
+                <value function="assign(DateGoodUntil, {p_date_good_until_d})"/>
+                <value function="assign(EMailAddress, {p_email_address_c})"/>
+                <value function="assign(MobileNumber, {p_mobile_number_c})"/>
+                <value function="assign(AlternateTelephone, {p_alternate_telephone_c})"/>
+                <value function="assign(LocationType, {p_location_type_c})"/>
+                <value function="assign(Url, {p_url_c})"/>
+                <value function="assign(SendMail, {p_send_mail_l})"/>
+                <value function="assign(GiftDateEntered, )"/>
+                <value function="assign(GiftAmount, ')"/> <!-- set ' as dummy value, if left empty then amount will wrongly be shown as 0 -->
+                <value function="assign(GiftCommentType, )"/>
+                <value function="assign(GiftComment, )"/>
+                <value function="assign(GiftRecipient, )"/>
+                <value function="assign(Currency, )"/>
+                <value function="assign(MotivationDetail, )"/>
+                <value function="assign(MotivationGroup, )"/>
+                <value function="assign(ReceivingField, )"/>
+            </queryDetail>
+            <!-- if fax or telephone number is only 0 then show an empty string -->
+            <queryDetail condition="eq({TelephoneNumber}, 0)">
+                <value text="NO-SQL"/>
+                <value function="assign(TelephoneNumber,  )"/>
+            </queryDetail>
+            <queryDetail condition="eq({FaxNumber}, 0)">
+                <value text="NO-SQL"/>
+                <value function="assign(FaxNumber,  )"/>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation id="ClearAddress" returns="Automatic" returnsFormat="text">
-	<!-- This clean up is for clearing all address fields. It's needed so that when the lines of the gift details
-		are printed no address details are printed. -->
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(StreetName, )"/>
-				<value function="assign(Locality, )"/>
-				<value function="assign(City, )"/>
-				<value function="assign(PostalCode, )"/>
-				<value function="assign(CountryCode, )"/>
-				<value function="assign(Address3, )"/>
-				<value function="assign(County, )"/>
-				<value function="assign(DateEffective, )"/>
-				<value function="assign(DateGoodUntil, )"/>
-				<value function="assign(EMailAddress, )"/>
-				<value function="assign(MobileNumber, )"/>
-				<value function="assign(TelephoneNumber, )"/>
-				<value function="assign(AlternateTelephone, )"/>
-				<value function="assign(LocationType, )"/>
-				<value function="assign(Url, )"/>
-				<value function="assign(SendMail, )"/>
-				<value function="assign(GiftAmount, {a_gift_transaction_amount_n})" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
-				<value function="assign(Currency, {a_currency_code_c})" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
-				<value function="assign(GiftCommentType, {a_comment_one_type_c})"/>
-				<value function="assign(GiftComment, {a_gift_comment_one_c})"/>
-				<value function="assign(GiftRecipient, {p_partner_short_name_c})" condition="containsCSV({s_default_value_c}, RECIPIENT)"/>
-				<value function="assign(MotivationDetail, {a_motivation_detail_desc_local_c})" condition="containsCSV({s_default_value_c}, RECIPIENT)"/>
-				<value function="assign(MotivationGroup, {a_motivation_group_desc_local_c})" condition="containsCSV({s_default_value_c}, FIELD)"/>
-				<value function="assign(ReceivingField, {RecipientFieldShortName})" condition="containsCSV({s_default_value_c}, FIELD)"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="MakeHeader" returns="HeaderText" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(HeaderText, {PartnerKey})"/>
-				<value function="assign(HeaderText, concatenateww({HeaderText},  Class:, 2))"/>
-				<value function="assign(HeaderText, concatenateww({HeaderText}, substring({PartnerClass}, 0,  1), 2))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="MakeSubscriptionText" returns="SubscriptionText" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(SubscriptionText, Subscriptions: )"/>
-				<value function="assign(SubscriptionText, concatenateww({SubscriptionText}, GetSubscriptions({PartnerKey}, PROVISIONAL PERMANENT GIFT), 2))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="GetAddressFlag" returns="AddressFlag" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(AddressFlag,  )"/>
-			</queryDetail>
-			<!-- # No mailing address -->
-			<queryDetail condition="eq({SendMail}, 0)">
-				<value text="NO-SQL"/>
-				<value function="assign(AddressFlag, #)"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(AddressFlagStatus, DetermineAddressDateStatus({DateEffective}, {DateGoodUntil}))"/>
-			</queryDetail>
-			<!-- ^ not yet current -->
-			<queryDetail condition="eq({AddressFlagStatus}, 2)">
-				<value text="NO-SQL"/>
-				<value function="assign(AddressFlag, concatenateww({AddressFlag}, ^, 1))"/>
-			</queryDetail>
-			<!-- * expired -->
-			<queryDetail condition="eq({AddressFlagStatus}, 3)">
-				<value text="NO-SQL"/>
-				<value function="assign(AddressFlag, concatenateww({AddressFlag}, *, 1))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="GetPartnerTypes" returns="PartnerTypes" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(PartnerTypes, GetPartnerTypes({PartnerKey}))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
-		<caption><value text="Partner Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ShortName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+    <calculation id="ClearAddress" returns="Automatic" returnsFormat="text">
+    <!-- This clean up is for clearing all address fields. It's needed so that when the lines of the gift details
+        are printed no address details are printed. -->
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(StreetName, )"/>
+                <value function="assign(Locality, )"/>
+                <value function="assign(City, )"/>
+                <value function="assign(PostalCode, )"/>
+                <value function="assign(CountryCode, )"/>
+                <value function="assign(Address3, )"/>
+                <value function="assign(County, )"/>
+                <value function="assign(DateEffective, )"/>
+                <value function="assign(DateGoodUntil, )"/>
+                <value function="assign(EMailAddress, )"/>
+                <value function="assign(MobileNumber, )"/>
+                <value function="assign(TelephoneNumber, )"/>
+                <value function="assign(AlternateTelephone, )"/>
+                <value function="assign(LocationType, )"/>
+                <value function="assign(Url, )"/>
+                <value function="assign(SendMail, )"/>
+                <value function="assign(GiftDateEntered, {a_date_entered_d})" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
+                <value function="assign(GiftAmount, {a_gift_transaction_amount_n})" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
+                <value function="assign(Currency, {a_currency_code_c})" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
+                <value function="assign(GiftCommentType, {a_comment_one_type_c})"/>
+                <value function="assign(GiftComment, {a_gift_comment_one_c})"/>
+                <value function="assign(GiftRecipient, {p_partner_short_name_c})" condition="containsCSV({s_default_value_c}, RECIPIENT)"/>
+                <value function="assign(MotivationDetail, {a_motivation_detail_desc_local_c})" condition="containsCSV({s_default_value_c}, RECIPIENT)"/>
+                <value function="assign(MotivationGroup, {a_motivation_group_desc_local_c})" condition="containsCSV({s_default_value_c}, 'FIELD')"/>
+                <value function="assign(ReceivingField, {RecipientFieldShortName})" condition="containsCSV({s_default_value_c}, 'FIELD')"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="MakeHeader" returns="HeaderText" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(HeaderText, {PartnerKey})"/>
+                <value function="assign(HeaderText, concatenateww({HeaderText},  Class:, 2))"/>
+                <value function="assign(HeaderText, concatenateww({HeaderText}, substring({PartnerClass}, 0,  1), 2))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="MakeSubscriptionText" returns="SubscriptionText" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(SubscriptionText, Subscriptions: )"/>
+                <value function="assign(SubscriptionText, concatenateww({SubscriptionText}, GetSubscriptions({PartnerKey}, PROVISIONAL PERMANENT GIFT), 2))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="GetAddressFlag" returns="AddressFlag" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(AddressFlag,  )"/>
+            </queryDetail>
+            <!-- # No mailing address -->
+            <queryDetail condition="eq({SendMail}, 0)">
+                <value text="NO-SQL"/>
+                <value function="assign(AddressFlag, #)"/>
+            </queryDetail>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(AddressFlagStatus, DetermineAddressDateStatus({DateEffective}, {DateGoodUntil}))"/>
+            </queryDetail>
+            <!-- ^ not yet current -->
+            <queryDetail condition="eq({AddressFlagStatus}, 2)">
+                <value text="NO-SQL"/>
+                <value function="assign(AddressFlag, concatenateww({AddressFlag}, ^, 1))"/>
+            </queryDetail>
+            <!-- * expired -->
+            <queryDetail condition="eq({AddressFlagStatus}, 3)">
+                <value text="NO-SQL"/>
+                <value function="assign(AddressFlag, concatenateww({AddressFlag}, *, 1))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="GetPartnerTypes" returns="PartnerTypes" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(PartnerTypes, GetPartnerTypes({PartnerKey}))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <caption><value text="Partner Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ShortName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Status" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Status"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Status"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Language" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Language"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Language"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	  
-	<calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-		<caption><value text="E-Mail Address"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EMailAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Street Name" returns="text" returnsFormat="text">
-		<caption><value text="Street Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="StreetName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Line 1" returns="text" returnsFormat="text">
-		<caption><value text="Address Line 1"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Locality"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Line 3" returns="text" returnsFormat="text">
-		<caption><value text="Address Line 3"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Address3"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Country" returns="text" returnsFormat="text">
-		<caption><value text="Country"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="CountryCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="County" returns="text" returnsFormat="text">
-		<caption><value text="County"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="County"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="City" returns="text" returnsFormat="text">
-		<caption><value text="City"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="City"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="PostCode" returns="text" returnsFormat="text">
-		<caption><value text="PostCode"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PostalCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="PartnerClass" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="PartnerClass"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Class" returns="text" returnsFormat="text">
-		<caption>
-			<value text="Class"></value>
-		</caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerClassShort"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-		<caption><value text="Telephone"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="TelephoneNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="TelephonePre" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="TelephonePre"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="TelephoneExtension" returns="text" returnsFormat="text">
-		<caption><value text=""></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="TelephoneExtension"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+    <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Partner Key"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Status" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Status"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Status"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Language" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Language"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Language"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+      
+    <calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
+        <caption><value text="E-Mail Address"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="EMailAddress"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Street Name" returns="text" returnsFormat="text">
+        <caption><value text="Street Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="StreetName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Line 1" returns="text" returnsFormat="text">
+        <caption><value text="Address Line 1"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Locality"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Line 3" returns="text" returnsFormat="text">
+        <caption><value text="Address Line 3"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Address3"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Country" returns="text" returnsFormat="text">
+        <caption><value text="Country"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="CountryCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="County" returns="text" returnsFormat="text">
+        <caption><value text="County"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="County"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="City" returns="text" returnsFormat="text">
+        <caption><value text="City"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="City"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="PostCode" returns="text" returnsFormat="text">
+        <caption><value text="PostCode"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PostalCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="PartnerClass" returns="text" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value variable="PartnerClass"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Partner Class" returns="text" returnsFormat="text">
+        <caption>
+            <value text="Class"></value>
+        </caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerClassShort"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Telephone" returns="text" returnsFormat="text">
+        <caption><value text="Telephone"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="TelephoneNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="TelephonePre" returns="text" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value variable="TelephonePre"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="TelephoneExtension" returns="text" returnsFormat="text">
+        <caption><value text=""></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="TelephoneExtension"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
-		<caption><value text="Alternate Telephone"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="AlternateTelephone"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Fax" returns="text" returnsFormat="text">
-		<caption><value text="Fax"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="FaxNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="FaxPre" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="FaxPre"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="FaxExtension" returns="text" returnsFormat="text">
-		<caption><value text=""></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="FaxExtension"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+    <calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
+        <caption><value text="Alternate Telephone"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="AlternateTelephone"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Fax" returns="text" returnsFormat="text">
+        <caption><value text="Fax"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="FaxNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="FaxPre" returns="text" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value variable="FaxPre"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="FaxExtension" returns="text" returnsFormat="text">
+        <caption><value text=""></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="FaxExtension"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation align="left" id="Field" returns="text" returnsFormat="text">
-		<caption><value text="Field"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Field"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Mobile" returns="text" returnsFormat="text">
-		<caption><value text="Mobile"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="MobileNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Url" returns="text" returnsFormat="text">
-		<caption><value text="Url"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Url"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address Type" returns="text" returnsFormat="text">
-		<caption><value text="Address Type"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="LocationType"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Send Mail" returns="text" returnsFormat="text">
-		<caption><value text="Send Mail"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="SendMail"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address valid to" returns="text" returnsFormat="formatteddate">
-		<caption><value text="Valid to"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DateGoodUntil" format="formatteddate"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Address valid from" returns="text" returnsFormat="formatteddate">
-		<caption><value text="Valid from"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="DateEffective" format="formatteddate"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="AddressFlag" returns="text" returnsFormat="text">
-		<caption><value text="AddressFlag"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="AddressFlag"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="AddressFlagStaus" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="AddressFlagStatus"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gift Amount" returns="text" returnsFormat="text">
-		<caption><value text="Gift Amount"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="GiftAmount"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gift Currency" returns="text" returnsFormat="text">
-		<caption><value text="Currency"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Currency"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gift Motivation Detail" returns="text" returnsFormat="text">
-		<caption><value text="Motivation Detail"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="MotivationDetail"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gif Motivation Group" returns="text" returnsFormat="text">
-		<caption><value text="Motivation Group"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="MotivationGroup"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gift Receiving Field" returns="text" returnsFormat="text">
-		<caption><value text="Receiving Field"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ReceivingField"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gift Comment" returns="text" returnsFormat="text">
-		<caption><value text="Gift Comment"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="GiftComment"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gift Comment Type" returns="text" returnsFormat="text">
-		<caption><value text="Gift Comment Type"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="GiftCommentType"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Gift Recipient" returns="text" returnsFormat="text">
-		<caption><value text="Gift Recipient"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="GiftRecipient"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-			
-	<calculation align="left" id="HeaderText" returns="text" returnsFormat="text">
-		<caption><value text=""></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="HeaderText"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="SubscriptionText" returns="text" returnsFormat="text">
-		<caption><value text=""></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="SubscriptionText"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="PartnerTypes" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="PartnerTypes"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+    <calculation align="left" id="Field" returns="text" returnsFormat="text">
+        <caption><value text="Field"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Field"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Mobile" returns="text" returnsFormat="text">
+        <caption><value text="Mobile"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="MobileNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Url" returns="text" returnsFormat="text">
+        <caption><value text="Url"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Url"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address Type" returns="text" returnsFormat="text">
+        <caption><value text="Address Type"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="LocationType"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Send Mail" returns="text" returnsFormat="text">
+        <caption><value text="Send Mail"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="SendMail"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address valid to" returns="text" returnsFormat="formatteddate">
+        <caption><value text="Valid to"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DateGoodUntil" format="formatteddate"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Address valid from" returns="text" returnsFormat="formatteddate">
+        <caption><value text="Valid from"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="DateEffective" format="formatteddate"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="AddressFlag" returns="text" returnsFormat="text">
+        <caption><value text="AddressFlag"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="AddressFlag"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="AddressFlagStaus" returns="text" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value variable="AddressFlagStatus"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gift Amount" returns="currency" returnsFormat="currency">
+        <caption><value text="Gift Amount"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="GiftAmount"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gift Currency" returns="text" returnsFormat="text">
+        <caption><value text="Currency"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Currency"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gift Motivation Detail" returns="text" returnsFormat="text">
+        <caption><value text="Motivation Detail"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="MotivationDetail"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gif Motivation Group" returns="text" returnsFormat="text">
+        <caption><value text="Motivation Group"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="MotivationGroup"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gift Receiving Field" returns="text" returnsFormat="text">
+        <caption><value text="Receiving Field"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ReceivingField"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gift Comment" returns="text" returnsFormat="text">
+        <caption><value text="Gift Comment"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="GiftComment"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gift Comment Type" returns="text" returnsFormat="text">
+        <caption><value text="Gift Comment Type"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="GiftCommentType"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Gift Recipient" returns="text" returnsFormat="text">
+        <caption><value text="Gift Recipient"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="GiftRecipient"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+            
+    <calculation align="left" id="HeaderText" returns="text" returnsFormat="text">
+        <caption><value text=""></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="HeaderText"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="SubscriptionText" returns="text" returnsFormat="text">
+        <caption><value text=""></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="SubscriptionText"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="PartnerTypes" returns="text" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value variable="PartnerTypes"></value>
+            </queryDetail>
+        </query>
+    </calculation>
       
     </calculations>
     
     <levels>    
-	<level name="main">
-		<detail>
-			<lowerLevelReport calculation="Select Partners" level="PartnerLevel"></lowerLevelReport>
-		</detail>
-	</level> <!-- main -->
+    <level name="main">
+        <detail>
+            <lowerLevelReport calculation="Select Partners" level="PartnerLevel"></lowerLevelReport>
+        </detail>
+    </level> <!-- main -->
 
-	 <level name="PartnerLevel" identification="PartnerKey">
-		<detail>
-			<lowerLevelReport level="PartnerTypeLevel"></lowerLevelReport>
-			<lowerLevelReport level="AddressLevel"></lowerLevelReport>
-			<lowerLevelReport level="SubscriptionLevel"></lowerLevelReport>
-			<lowerLevelReport level="DummyLevel" calculation="GetLastGift"/>
-			<lowerLevelReport level="GiftLevel" condition=
-				"and({a_ledger_number_i}, and({a_batch_number_i}, {a_gift_transaction_number_i}))" 
-				calculation="SelectSystemParameters"></lowerLevelReport>
-		</detail>
-		<footer line="below"/>
+     <level name="PartnerLevel" identification="PartnerKey">
+        <detail>
+            <lowerLevelReport level="PartnerTypeLevel"></lowerLevelReport>
+            <lowerLevelReport level="AddressLevel"></lowerLevelReport>
+            <lowerLevelReport level="SubscriptionLevel"></lowerLevelReport>
+            <lowerLevelReport level="DummyLevel" calculation="GetLastGift"/>
+            <lowerLevelReport level="GiftLevel" condition=
+                "and({a_ledger_number_i}, and({a_batch_number_i}, {a_gift_transaction_number_i}))" 
+                calculation="SelectSystemParameters"></lowerLevelReport>
+        </detail>
+        <footer line="below"/>
        </level><!-- PartnerLevel -->
 
-	<level name="PartnerTypeLevel" identification="PartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="20cm" calculation="MakeHeader">
-				<value variable="HeaderText"/>
-				<value text="  Name: "/>
-				<value variable="ShortName"/>
-				<value text="  Acqusition: "/>
-				<value variable="p_acquisition_code_c"/>
-				<value text="  Language: "/>
-				<value variable="Language"/>
-				<value text="  Status: "/>
-				<value variable="Status"/>
-			</field>
-		</header>
-		<detail></detail>
-		<footer>
-			<field whichfield="left 0" pos="0cm" width="1cm">
-				<value text=" "/>
-			</field>
-			<field whichfield="column 0" pos="0cm" width="20cm" calculation="GetPartnerTypes">
-				<value text="Partner Types: " condition="gt(length({PartnerTypes}), 0)"/>
-				<value variable="PartnerTypes"/>
-			</field>
-		</footer>
-	</level><!-- PartnerTypeLevel -->
-	
-	<level name="AddressLevel" identification="PartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="20cm">
-				<value text="Addresses:"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="AddressLowerLevel" calculation="SelectAllAddresses"/>
-		</detail>
-		<footer>
-			<field whichfield="left 0" pos="0cm" width="1cm">
-				<value text=" "/>
-			</field>
-			<field whichfield="column 0" pos="0cm" width="20cm">
-				<value text=" "/>
-			</field>
-		</footer>
-	</level><!-- AddressLevel -->
-	
-	<level name="AddressLowerLevel" identification="PartnerKey">
-		<detail>
-			<field whichfield="Columns" calculation="CleanUp"></field>
-			<field whichfield="left 0" calculation="GetAddressFlag">
-				<value variable="AddressFlag"/>
-			</field>
-		</detail>
-	</level>
-	   
-	<level name="SubscriptionLevel" identification="PartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="20cm" calculation="MakeSubscriptionText">
-				<value variable="SubscriptionText"/>
-			</field>
-		</header>
-		<detail></detail>
-		<footer>
-			<field whichfield="left 0" pos="0cm" width="1cm">
-				<value text=" "/>
-			</field>
-			<field whichfield="column 0" pos="0cm" width="20cm">
-				<value text=" "/>
-			</field>
-		</footer>
-	</level><!-- SubscriptionLevel -->
-	
-	<level name="GiftLevel" identification="PartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="20cm" calculation="CalculateGiftSum" >
-				<value text="Last Gift On: "/>
-				<value variable="a_date_entered_d"/>
-				<value text="   Amount: " condition="containsCSV({s_default_value_c}, AMOUNT)"/>
-				<value variable="GiftSum" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
-				<value text=" "/>
-				<value variable="Currency" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="GiftDetailLevel" calculation="SelectGiftDetails" condition=
-				"or(containsCSV({s_default_value_c}, RECIPIENT), containsCSV({s_default_value_c}, FIELD))"/>
-		</detail>
-		<footer>
-			<field whichfield="left 0" pos="0cm" width="1cm">
-				<value text=" "/>
-			</field>
-			<field whichfield="column 0" pos="0cm" width="20cm">
-				<value text=" "/>
-				<!--value text=" Ledger Number: "/>
-				<value variable="a_ledger_number_i"/>
-				<value text=" BatchNumber: "/>
-				<value variable="a_batch_number_i"/>
-				<value text=" TransactionNumber: "/>
-				<value variable="a_gift_transaction_number_i"/-->
-			</field>
-		</footer>
-	</level><!-- GiftLevel -->
-	
-	<level name="GiftDetailLevel" identification="PartnerKey">
-		<detail>
-			<field whichfield="left 0" calculation="SelectRecipientField">
-				<value text=" "/>
-			</field>
-			<field whichfield="Columns" calculation="ClearAddress">
-			</field>
-		</detail>
-	</level><!-- GiftDetailLevel -->
-	<level name="DummyLevel" identification="PartnerKey">
-		<detail>
-		</detail>
-	</level><!-- GiftDetailDummyLevel -->
-	
+    <level name="PartnerTypeLevel" identification="PartnerKey">
+        <header>
+            <field whichfield="header 0" pos="0cm" width="20cm" calculation="MakeHeader">
+                <value variable="HeaderText"/>
+                <value text="  Name: "/>
+                <value variable="ShortName"/>
+                <value text="  Acqusition: "/>
+                <value variable="p_acquisition_code_c"/>
+                <value text="  Language: "/>
+                <value variable="Language"/>
+                <value text="  Status: "/>
+                <value variable="Status"/>
+            </field>
+        </header>
+        <detail></detail>
+        <footer>
+            <field whichfield="left 0" pos="0cm" width="1cm">
+                <value text=" "/>
+            </field>
+            <field whichfield="column 0" pos="0cm" width="20cm" calculation="GetPartnerTypes">
+                <value text="Partner Types: " condition="gt(length({PartnerTypes}), 0)"/>
+                <value variable="PartnerTypes"/>
+            </field>
+        </footer>
+    </level><!-- PartnerTypeLevel -->
+    
+    <level name="AddressLevel" identification="PartnerKey">
+        <header>
+            <field whichfield="header 0" pos="0cm" width="20cm">
+                <value text="Addresses:"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="AddressLowerLevel" calculation="SelectAllAddresses"/>
+        </detail>
+        <footer>
+            <field whichfield="left 0" pos="0cm" width="1cm">
+                <value text=" "/>
+            </field>
+            <field whichfield="column 0" pos="0cm" width="20cm">
+                <value text=" "/>
+            </field>
+        </footer>
+    </level><!-- AddressLevel -->
+    
+    <level name="AddressLowerLevel" identification="PartnerKey">
+        <detail>
+            <field whichfield="Columns" calculation="CleanUp"></field>
+            <field whichfield="left 0" calculation="GetAddressFlag">
+                <value variable="AddressFlag"/>
+            </field>
+        </detail>
+    </level>
+       
+    <level name="SubscriptionLevel" identification="PartnerKey">
+        <header>
+            <field whichfield="header 0" pos="0cm" width="20cm" calculation="MakeSubscriptionText">
+                <value variable="SubscriptionText"/>
+                <value function="assign(SubscriptionText, )"/> <!-- reset text to avoid double printing -->
+            </field>
+        </header>
+        <detail></detail>
+        <footer>
+            <field whichfield="left 0" pos="0cm" width="1cm">
+                <value text=" "/>
+            </field>
+            <field whichfield="column 0" pos="0cm" width="20cm">
+                <value text=" "/>
+            </field>
+        </footer>
+    </level><!-- SubscriptionLevel -->
+    
+    <level name="GiftLevel" identification="PartnerKey">
+        <header>
+            <field whichfield="header 0" pos="0cm" width="20cm" calculation="CalculateGiftSum">
+                <value text="Last Gift On: "/>
+                <value variable="GiftDateEntered"/>
+                <value text="   Amount: " condition="containsCSV({s_default_value_c}, AMOUNT)"/>
+                <value variable="GiftSum" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
+                <value text=" "/>
+                <value variable="Currency" condition="containsCSV({s_default_value_c}, AMOUNT)"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="GiftDetailLevel" calculation="SelectGiftDetails" condition=
+                "or(containsCSV({s_default_value_c}, RECIPIENT), containsCSV({s_default_value_c}, 'FIELD'))"/>
+        </detail>
+        <footer>
+            <field whichfield="left 0" pos="0cm" width="1cm">
+                <value text=" "/>
+            </field>
+            <field whichfield="column 0" pos="0cm" width="20cm">
+                <value text=" "/>
+                <!--value text=" Ledger Number: "/>
+                <value variable="a_ledger_number_i"/>
+                <value text=" BatchNumber: "/>
+                <value variable="a_batch_number_i"/>
+                <value text=" TransactionNumber: "/>
+                <value variable="a_gift_transaction_number_i"/-->
+            </field>
+        </footer>
+    </level><!-- GiftLevel -->
+    
+    <level name="GiftDetailLevel" identification="PartnerKey">
+        <detail>
+            <field whichfield="left 0" calculation="SelectRecipientField">
+                <value text=" "/>
+            </field>
+            <field whichfield="Columns" calculation="ClearAddress">
+            </field>
+        </detail>
+    </level><!-- GiftDetailLevel -->
+    <level name="DummyLevel" identification="PartnerKey">
+        <detail>
+        </detail>
+    </level><!-- GiftDetailDummyLevel -->
+    
     </levels>
 
   </report>

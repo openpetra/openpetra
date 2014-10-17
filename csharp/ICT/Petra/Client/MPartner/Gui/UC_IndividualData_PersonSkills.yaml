@@ -74,7 +74,6 @@ RootNode:
             Width: 380
             ColSpan: 2
             Validation: true
-            #AllowDbNull: true  Problem with integers at the moment
         txtDescriptEnglish: {Label=Description, DataField=PmPersonSkill.DescriptionEnglish, Width=380, ColSpan=2}
         cmbLocalLanguage: 
             Label: Local Language

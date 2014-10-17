@@ -40,7 +40,6 @@ RootNode:
         rgrBudgetTypeCode:
             OptionalValues: [Split, Ad hoc, Same, Inflate base, Inflate n]
             ControlsOrientation: horizontal
-            Align: left
             NoLabel: true
             Enabled: false
             OnChange: BudgetTypeChanged
@@ -103,7 +102,6 @@ RootNode:
                 #Row6: [txtPeriod07Index, txtPeriod14Index]
                 #Row7: [txtEmptyColumn2, txtInflateBaseTotalAmount]
         grpBudgetDetails: {ColSpan=1, Width:760, Height: 180}
-            Align: top-left
             Controls: 
                 Row0: [pnlBudgetTypeAdhoc]
                 Row1: [pnlBudgetTypeSame]
