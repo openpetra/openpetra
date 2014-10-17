@@ -28,6 +28,7 @@ using Ict.Testing.NUnitTools;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.GL;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -63,19 +64,21 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             return intOperationCount;
         }
 
-        public override void RunEndOfPeriodOperation()
+        public override Int32 RunOperation()
         {
             Assert.AreEqual(1, intCount);
             ++intOperationCount;
             intJobCount = 0;
+            return intJobCount;
         }
     }
 
     class TestOperations : TPeriodEndOperations
     {
+        /// <summary></summary>
         public void Test1(TVerificationResultCollection tvr)
         {
-            verificationResults = tvr;
+            FverificationResults = tvr;
             TestOperation testOperation = new TestOperation(1);
             testOperation.SetJobSize(12);
             testOperation.IsInInfoMode = true;
@@ -83,14 +86,20 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(1, testOperation.GetOperationCount());
         }
 
+        /// <summary></summary>
         public void Test2(TVerificationResultCollection tvr)
         {
-            verificationResults = tvr;
+            FverificationResults = tvr;
             TestOperation testOperation = new TestOperation(1);
             testOperation.SetJobSize(12);
             testOperation.IsInInfoMode = false;
             RunPeriodEndSequence(testOperation, "Message");
             Assert.AreEqual(1, testOperation.GetOperationCount());
+        }
+
+        /// <summary></summary>
+        public override void SetNextPeriod()
+        {
         }
     }
 
@@ -101,8 +110,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public partial class TestGLPeriodicEnd
     {
-        private int intLedgerNumber = 43;
-
         /// <summary>
         /// Some very basic tests of TPeriodEndOperations and AbstractPeriodEndOperation
         /// </summary>
@@ -114,88 +121,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             periodEndOperations.Test1(tvr);
             periodEndOperations.Test2(tvr);
-        }
-
-        /// <summary>
-        /// Carry Forward manages the switch form Month to Month including year end ...
-        /// </summary>
-        [Test]
-        public void Test_TCarryForward()
-        {
-            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
-            TCarryForward carryForward;
-
-            for (int i = 1; i < 13; ++i)  // 12 Months
-            {
-                TLedgerInfo ledgerInfo = new TLedgerInfo(intLedgerNumber);
-                Assert.AreEqual(i, ledgerInfo.CurrentPeriod, "Current period should be " + i.ToString());
-                carryForward = new TCarryForward(ledgerInfo);
-                Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
-                    "Month: " + i.ToString());
-                carryForward.SetNextPeriod();
-            }
-
-            carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Year, "Next Year");
-            carryForward.SetNextPeriod();
-
-            carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month, "Next Month");
-            carryForward.SetNextPeriod();
-        }
-
-        /// <summary>
-        /// Test_TCarryForwardYear
-        /// </summary>
-        [Test]
-        public void Test_TCarryForwardYear()
-        {
-            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
-            TCarryForward carryForward = null;
-
-            int CurrentYear = new TAccountPeriodInfo(intLedgerNumber, 1).PeriodStartDate.Year;
-            Assert.AreEqual(DateTime.Now.Year, CurrentYear, "new ledger should be in current year");
-
-            TLedgerInfo ledgerInfo = null;
-
-            for (int i = 1; i < 13; ++i)  // 12 Months
-            {
-                ledgerInfo = new TLedgerInfo(intLedgerNumber);
-                Assert.AreEqual(i, ledgerInfo.CurrentPeriod, "Current period should be " + i.ToString());
-                carryForward = new TCarryForward(ledgerInfo);
-                Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
-                    "Month: " + i.ToString());
-                carryForward.SetNextPeriod();
-            }
-
-            ledgerInfo = new TLedgerInfo(intLedgerNumber);
-            Assert.AreEqual(true, ledgerInfo.ProvisionalYearEndFlag, "provisional year end flag should be set");
-            Assert.AreEqual(false, ledgerInfo.YearEndFlag, "year end has not been run yet");
-            Assert.AreEqual(TYearEndProcessStatus.RESET_STATUS,
-                (TYearEndProcessStatus)ledgerInfo.YearEndProcessStatus,
-                "year end process status should be still on RESET");
-
-            carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            carryForward.SetNextPeriod();
-
-            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
-            Assert.AreEqual(1, LedgerInfo.CurrentFinancialYear, "after year end, we are in a new financial year");
-            Assert.AreEqual(1, LedgerInfo.CurrentPeriod, "after year end, we are in Period 1");
-            Assert.AreEqual(true, LedgerInfo.YearEndFlag, "after year end, year end flag should be set, because it has been run");
-            Assert.AreEqual(false, LedgerInfo.ProvisionalYearEndFlag, "after year end, provisional year end flag should not be set");
-            Assert.AreEqual(TYearEndProcessStatus.RESET_STATUS,
-                (TYearEndProcessStatus)LedgerInfo.YearEndProcessStatus,
-                "after year end, year end process status should be RESET");
-
-            carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            carryForward.SetNextPeriod();
-            LedgerInfo = new TLedgerInfo(intLedgerNumber);
-            Assert.AreEqual(2, LedgerInfo.CurrentPeriod, "new month, period 2");
-
-            TAccountPeriodInfo periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
-            Assert.AreEqual(new DateTime(CurrentYear + 1,
-                    1,
-                    1), periodInfo.PeriodStartDate, "new Calendar should start with January 1st of next year");
         }
 
         /// <summary>

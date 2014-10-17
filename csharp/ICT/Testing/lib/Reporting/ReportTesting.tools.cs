@@ -47,6 +47,7 @@ using Ict.Petra.Server.MReporting.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MReporting;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Tests.MReporting.Tools
 {
@@ -85,7 +86,7 @@ namespace Tests.MReporting.Tools
                 strAccountBank, StandardCostCentre, "Expense Example", "Credit", MFinanceConstants.IS_CREDIT, 20);
             commonAccountingTool.AddBaseCurrencyTransaction(
                 "4200", StandardCostCentre, "Expense Example", "Debit", MFinanceConstants.IS_DEBIT, 20);
-            commonAccountingTool.CloseSaveAndPost();
+            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
 
             return LedgerNumber;
         }
