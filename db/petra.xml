@@ -2573,9 +2573,13 @@
                 columnlabel="Deletable?"
                 initial="No"
                 notnull="yes"/>
+    <!-- Constraints on table p_partner_attribute_type -->                
     <primarykey name="p_partner_attribute_type_pk"
                 descr=""
-                thisFields="p_attribute_category_c, p_code_c"/>
+                thisFields="p_code_c"/>
+    <uniquekey name="p_partner_attribute_type_uk"
+                 descr=""
+                 thisFields="p_attribute_category_c, p_code_c"/>
     <foreignkey name="p_partner_attribute_type_fk1"
                 descr=""
                 thisFields="p_attribute_category_c"
@@ -16680,7 +16684,7 @@
                 label="Skill Level"
                 columnlabel="Skill Level"
                 help="Numeric representation of level of skill"
-                notnull="yes"/>
+                initial="0"/>
     <tablefield name="pm_years_of_experience_i"
                 type="integer"
                 descr="Years of experience this person has had this skill."
