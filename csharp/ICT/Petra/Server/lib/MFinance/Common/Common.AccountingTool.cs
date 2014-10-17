@@ -39,21 +39,21 @@ namespace Ict.Petra.Server.MFinance.Common
     {
         private GLBatchTDS FBatchTDS = null;
         private ABatchRow FBatchRow;
+        Int32 FBatchNumber;
         private AJournalRow FJournalRow;
 
-        private TLedgerInfo TLedgerInfo;
-        private TCurrencyInfo getBaseCurrencyInfo;
-        private TCurrencyInfo getForeignCurrencyInfo = null;
-        bool blnJournalIsInForeign;
+        private TLedgerInfo FLedgerInfo;
+        private TCurrencyInfo FBaseCurrencyInfo;
+        private TCurrencyInfo FForeignCurrencyInfo = null;
+        bool FForeignJournal;
 
-        private int intJournalCount;
+        private int FJournalCount;
 
         private bool blnReadyForTransaction;
 
         // The use of the default value requires an additional database request. So this is done in the
         // "last moment" and only if no other date value is used
         private bool blnInitBatchDate;
-
 
         /// <summary>
         /// The constructor creates a base batch and defines the batch parameters. There is only
@@ -64,30 +64,31 @@ namespace Ict.Petra.Server.MFinance.Common
         public TCommonAccountingTool(int ALedgerNumber,
             string ABatchDescription)
         {
-            TLedgerInfo = new TLedgerInfo(ALedgerNumber);
+            FLedgerInfo = new TLedgerInfo(ALedgerNumber);
             TCommonAccountingTool_(ABatchDescription);
         }
 
         /// <summary>
-        /// Internaly a TLedgerInfo-Oject is used. If you have one, reduce the number of not neccessary
-        /// database requests and use this constructor ...
+        /// A TLedgerInfo-Oject is used internally.
+        /// If you already have one, use this constructor to reduce the number of database requests.
         /// </summary>
         /// <param name="ALedgerInfo">The ledger-info object</param>
         /// <param name="ABatchDescription">the description text ...</param>
         public TCommonAccountingTool(TLedgerInfo ALedgerInfo, string ABatchDescription)
         {
-            TLedgerInfo = ALedgerInfo;
+            FLedgerInfo = ALedgerInfo;
             TCommonAccountingTool_(ABatchDescription);
         }
 
         private void TCommonAccountingTool_(string ABatchDescription)
         {
-            FBatchTDS = TGLPosting.CreateABatch(TLedgerInfo.LedgerNumber);
-            getBaseCurrencyInfo = new TCurrencyInfo(TLedgerInfo.BaseCurrency);
+            FBatchTDS = TGLPosting.CreateABatch(FLedgerInfo.LedgerNumber);
+            FBaseCurrencyInfo = new TCurrencyInfo(FLedgerInfo.BaseCurrency);
             FBatchRow = FBatchTDS.ABatch[0];
             FBatchRow.BatchDescription = ABatchDescription;
             FBatchRow.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
-            intJournalCount = 0;
+            FBatchNumber = FBatchRow.BatchNumber;
+            FJournalCount = 0;
             blnReadyForTransaction = false;
             blnInitBatchDate = true;
         }
@@ -122,8 +123,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AExchangeRateToBase"></param>
         public void AddForeignCurrencyJournal(TCurrencyInfo ATCurrencyInfo, decimal AExchangeRateToBase)
         {
-            blnJournalIsInForeign = true;
-            getForeignCurrencyInfo = ATCurrencyInfo;
+            FForeignJournal = true;
+            FForeignCurrencyInfo = ATCurrencyInfo;
             AddAJournal(AExchangeRateToBase);
         }
 
@@ -135,11 +136,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AExchangeRateToBase"></param>
         public void AddForeignCurrencyJournal(string ACurrencyCode, decimal AExchangeRateToBase)
         {
-            blnJournalIsInForeign = true;
+            FForeignJournal = true;
 
-            if (getForeignCurrencyInfo == null)
+            if (FForeignCurrencyInfo == null)
             {
-                getForeignCurrencyInfo = new TCurrencyInfo(ACurrencyCode);
+                FForeignCurrencyInfo = new TCurrencyInfo(ACurrencyCode);
             }
 
             AddAJournal(AExchangeRateToBase);
@@ -150,7 +151,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public void AddBaseCurrencyJournal()
         {
-            blnJournalIsInForeign = false;
+            FForeignJournal = false;
             AddAJournal(1.0m);
         }
 
@@ -220,33 +221,25 @@ namespace Ict.Petra.Server.MFinance.Common
             if (blnInitBatchDate)
             {
                 TAccountPeriodInfo getAccountingPeriodInfo =
-                    new TAccountPeriodInfo(TLedgerInfo.LedgerNumber, TLedgerInfo.CurrentPeriod);
+                    new TAccountPeriodInfo(FLedgerInfo.LedgerNumber, FLedgerInfo.CurrentPeriod);
                 FBatchRow.DateEffective = getAccountingPeriodInfo.PeriodEndDate;
                 blnInitBatchDate = false;
             }
 
-            if (intJournalCount != 0)
+            if (FJournalCount != 0)
             {
                 // The checksum of the "last journal" is used to update the checksum of the batch.
                 FBatchRow.BatchControlTotal += FJournalRow.JournalDebitTotal - FJournalRow.JournalCreditTotal;
             }
 
-            ++intJournalCount;
+            ++FJournalCount;
             FJournalRow = FBatchTDS.AJournal.NewRowTyped();
             FJournalRow.LedgerNumber = FBatchRow.LedgerNumber;
             FJournalRow.BatchNumber = FBatchRow.BatchNumber;
-            FJournalRow.JournalNumber = intJournalCount;
+            FJournalRow.JournalNumber = FJournalCount;
             FJournalRow.DateEffective = FBatchRow.DateEffective;
-            FJournalRow.JournalPeriod = TLedgerInfo.CurrentPeriod;
-
-            if (blnJournalIsInForeign)
-            {
-                FJournalRow.TransactionCurrency = getForeignCurrencyInfo.CurrencyCode;
-            }
-            else
-            {
-                FJournalRow.TransactionCurrency = getBaseCurrencyInfo.CurrencyCode;
-            }
+            FJournalRow.JournalPeriod = FLedgerInfo.CurrentPeriod;
+            FJournalRow.TransactionCurrency = (FForeignJournal) ? FForeignCurrencyInfo.CurrencyCode : FBaseCurrencyInfo.CurrencyCode;
 
             FJournalRow.JournalDescription = FBatchRow.BatchDescription;
             FJournalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
@@ -270,14 +263,14 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AReferenceMessage"></param>
         /// <param name="AIsDebit"></param>
         /// <param name="AAmountBaseCurrency"></param>
-        public void AddBaseCurrencyTransaction(string AAccount,
+        public ATransactionRow AddBaseCurrencyTransaction(string AAccount,
             string ACostCenter,
             string ANarrativeMessage,
             string AReferenceMessage,
             bool AIsDebit,
             decimal AAmountBaseCurrency)
         {
-            AddATransaction(AAccount, ACostCenter, ANarrativeMessage,
+            return AddATransaction(AAccount, ACostCenter, ANarrativeMessage,
                 AReferenceMessage, AIsDebit, AAmountBaseCurrency, 0, false);
         }
 
@@ -291,7 +284,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AIsDebit"></param>
         /// <param name="AAmountBaseCurrency"></param>
         /// <param name="AAmountForeignCurrency"></param>
-        public void AddForeignCurrencyTransaction(string AAccount,
+        public ATransactionRow AddForeignCurrencyTransaction(string AAccount,
             string ACostCenter,
             string ANarrativeMessage,
             string AReferenceMessage,
@@ -299,7 +292,7 @@ namespace Ict.Petra.Server.MFinance.Common
             decimal AAmountBaseCurrency,
             decimal AAmountForeignCurrency)
         {
-            if (!blnJournalIsInForeign)
+            if (!FForeignJournal)
             {
                 EVerificationException terminate = new EVerificationException(
                     Catalog.GetString("You cannot account foreign currencies in a base journal!"));
@@ -308,11 +301,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw terminate;
             }
 
-            AddATransaction(AAccount, ACostCenter, ANarrativeMessage,
+            return AddATransaction(AAccount, ACostCenter, ANarrativeMessage,
                 AReferenceMessage, AIsDebit, AAmountBaseCurrency, AAmountForeignCurrency, true);
         }
 
-        private void AddATransaction(string AAccount,
+        private ATransactionRow AddATransaction(string AAccount,
             string ACostCenter,
             string ANarrativeMessage,
             string AReferenceMessage,
@@ -335,28 +328,28 @@ namespace Ict.Petra.Server.MFinance.Common
                 throw new Exception("account code is empty");
             }
 
-            if (blnJournalIsInForeign)
+            if (FForeignJournal)
             {
                 if (ATransActionIsInForeign)
                 {
                     TAccountInfo accountCheck =
-                        new TAccountInfo(TLedgerInfo, AAccount);
+                        new TAccountInfo(FLedgerInfo, AAccount);
 
                     if (accountCheck.IsValid)
                     {
                         if (accountCheck.ForeignCurrencyFlag)
                         {
-                            if (!accountCheck.ForeignCurrencyCode.Equals(this.getForeignCurrencyInfo.CurrencyCode))
+                            if (!accountCheck.ForeignCurrencyCode.Equals(this.FForeignCurrencyInfo.CurrencyCode))
                             {
                                 // This is a difficult error situation. Someone wants to account
                                 // JYP-Currencies on a GBP-account in an EUR ledger.
                                 string strMessage = Catalog.GetString("The ledger is defined in {0}, the account {1} is defined in " +
                                     "{2} and you want to account something in {3}?");
                                 strMessage = String.Format(strMessage,
-                                    TLedgerInfo.BaseCurrency,
+                                    FLedgerInfo.BaseCurrency,
                                     AAccount,
                                     accountCheck.ForeignCurrencyCode,
-                                    getForeignCurrencyInfo.CurrencyCode);
+                                    FForeignCurrencyInfo.CurrencyCode);
                                 EVerificationException terminate = new EVerificationException(strMessage);
                                 terminate.Context = "Common Accountig";
                                 terminate.ErrorCode = "GL.CAT.07";
@@ -367,32 +360,32 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            ATransactionRow transaction = null;
+            ATransactionRow transRow = null;
 
-            transaction = FBatchTDS.ATransaction.NewRowTyped();
-            transaction.LedgerNumber = FJournalRow.LedgerNumber;
-            transaction.BatchNumber = FJournalRow.BatchNumber;
-            transaction.JournalNumber = FJournalRow.JournalNumber;
-            transaction.TransactionNumber = ++FJournalRow.LastTransactionNumber;
-            transaction.AccountCode = AAccount;
-            transaction.CostCentreCode = ACostCenter;
-            transaction.Narrative = ANarrativeMessage;
-            transaction.Reference = AReferenceMessage;
-            transaction.DebitCreditIndicator = AIsDebit;
+            transRow = FBatchTDS.ATransaction.NewRowTyped();
+            transRow.LedgerNumber = FJournalRow.LedgerNumber;
+            transRow.BatchNumber = FJournalRow.BatchNumber;
+            transRow.JournalNumber = FJournalRow.JournalNumber;
+            transRow.TransactionNumber = ++FJournalRow.LastTransactionNumber;
+            transRow.AccountCode = AAccount;
+            transRow.CostCentreCode = ACostCenter;
+            transRow.Narrative = ANarrativeMessage;
+            transRow.Reference = AReferenceMessage;
+            transRow.DebitCreditIndicator = AIsDebit;
 
             if (ATransActionIsInForeign)
             {
-                transaction.TransactionAmount = AAmountForeignCurrency;
-                transaction.AmountInBaseCurrency = AAmountBaseCurrency;
+                transRow.TransactionAmount = AAmountForeignCurrency;
+                transRow.AmountInBaseCurrency = AAmountBaseCurrency;
             }
             else
             {
-                transaction.TransactionAmount = AAmountBaseCurrency;
-                transaction.AmountInBaseCurrency = AAmountBaseCurrency;
+                transRow.TransactionAmount = AAmountBaseCurrency;
+                transRow.AmountInBaseCurrency = AAmountBaseCurrency;
             }
 
-            transaction.TransactionDate = FBatchRow.DateEffective;
-            FBatchTDS.ATransaction.Rows.Add(transaction);
+            transRow.TransactionDate = FBatchRow.DateEffective;
+            FBatchTDS.ATransaction.Rows.Add(transRow);
 
             if (AIsDebit)
             {
@@ -402,6 +395,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 FJournalRow.JournalCreditTotal += AAmountBaseCurrency;
             }
+            return transRow;
         }
 
         /// <summary>
@@ -428,16 +422,18 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private Boolean CloseSaveAndPost_(TVerificationResultCollection AVerifications)
         {
-            if (intJournalCount != 0)
+            if (FJournalCount != 0)
             {
                 // The checksum of the "last journal" is used to update the checksum of the batch.
                 FBatchRow.BatchControlTotal += FJournalRow.JournalDebitTotal - FJournalRow.JournalCreditTotal;
             }
 
+            
+            FBatchTDS.ThrowAwayAfterSubmitChanges = true;
             GLBatchTDSAccess.SubmitChanges(FBatchTDS);
 
             Boolean PostedOk = TGLPosting.PostGLBatch(
-                FBatchRow.LedgerNumber, FBatchRow.BatchNumber, out AVerifications);
+                FLedgerInfo.LedgerNumber, FBatchNumber, out AVerifications);
 
             // Make sure that this object cannot be used for another posting ...
             FBatchTDS = null;

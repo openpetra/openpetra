@@ -241,20 +241,25 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary></summary>
-        public override void RunOperation()
-        {
-        }
-
-        /// <summary></summary>
         public override int GetJobSize()
         {
-            return 0;
+            bool blnHelp = FInfoMode;
+            FInfoMode = true;
+            Int32 CountJobs = RunOperation();
+            FInfoMode = blnHelp;
+            return CountJobs;
         }
 
         /// <summary></summary>
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
             return new TArchive(FledgerInfo);
+        }
+
+        /// <summary></summary>
+        public override Int32 RunOperation()
+        {
+            return 0;
         }
 
     } // TArchive
@@ -267,6 +272,9 @@ namespace Ict.Petra.Server.MFinance.GL
         TLedgerInfo FledgerInfo;
         TAccountInfo FaccountInfo;
         ACostCentreTable FCostCentreTbl;
+        string FstrYearEnd = Catalog.GetString("YEAR-END");
+        string FstrNarrativeMessage = Catalog.GetString("Year end re-allocation to {0}:{1}");
+
 
         TGlmInfo FglmInfo;
 
@@ -281,11 +289,13 @@ namespace Ict.Petra.Server.MFinance.GL
             FledgerInfo = ALedgerInfo;
         }
 
-        private void CalculateAccountList()
+        private void CalculateAccountInfo()
         {
             FaccountInfo = new TAccountInfo(FledgerInfo);
             bool blnIncomeFound = false;
             bool blnExpenseFound = false;
+            String strIncomeAccount = TAccountTypeEnum.Income.ToString();
+            String strExpenseAccount = TAccountTypeEnum.Expense.ToString();
 
             FaccountInfo.Reset();
             FAccountList = new List <String>();
@@ -294,13 +304,13 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (FaccountInfo.PostingStatus)
                 {
-                    if (FaccountInfo.AccountType.Equals(TAccountTypeEnum.Income.ToString()))
+                    if (FaccountInfo.AccountType == strIncomeAccount)
                     {
                         FAccountList.Add(FaccountInfo.AccountCode);
                         blnIncomeFound = true;
                     }
 
-                    if (FaccountInfo.AccountType.Equals(TAccountTypeEnum.Expense.ToString()))
+                    if (FaccountInfo.AccountType == strExpenseAccount)
                     {
                         FAccountList.Add(FaccountInfo.AccountCode);
                         blnExpenseFound = true;
@@ -312,10 +322,10 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("No Income Account found"),
-                        Catalog.GetString("You shall have at least one income"), "",
+                        Catalog.GetString("At least one income account is required."), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_09.ToString(),
                         TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvt);
+                FverificationResults.Add(tvt);
                 FHasCriticalErrors = true;
             }
 
@@ -323,10 +333,10 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("No Expense Account found"),
-                        Catalog.GetString("You shall have at least one expense"), "",
+                        Catalog.GetString("At least one expense account is required."), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_10.ToString(),
                         TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvt);
+                FverificationResults.Add(tvt);
                 FHasCriticalErrors = true;
             }
 
@@ -340,10 +350,10 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 TVerificationResult tvt =
                     new TVerificationResult(Catalog.GetString("No ICH_ACCT Account defined"),
-                        Catalog.GetString("You need to define this account"), "",
+                        Catalog.GetString("An ICH Account must be defined."), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_11.ToString(),
                         TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvt);
+                FverificationResults.Add(tvt);
                 FHasCriticalErrors = true;
             }
 
@@ -360,20 +370,17 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        ///
         /// </summary>
         public override int GetJobSize()
         {
             bool blnHelp = FInfoMode;
             FInfoMode = true;
-            FCountJobs = 0;
-            RunOperation();
+            Int32 CountJobs = RunOperation();
             FInfoMode = blnHelp;
-            return FCountJobs;
+            return CountJobs;
         }
 
         /// <summary>
-        ///
         /// </summary>
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
@@ -381,30 +388,24 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        ///
+        /// TReallocation.RunOperation
         /// </summary>
-        public override void RunOperation()
+        public override Int32 RunOperation()
         {
-//          MessageBox.Show("Run End of year Reallocation (" + DoExecuteableCode.ToString() + ")");
+            Int32 CountJobs = 0;
             if (FAccountList == null)
             {
-                CalculateAccountList();
+                CalculateAccountInfo();
             }
 
             TCommonAccountingTool YearEndBatch = null;
 
             if (DoExecuteableCode)
             {
-                YearEndBatch =
-                    new TCommonAccountingTool(FledgerInfo,
+                YearEndBatch = new TCommonAccountingTool(FledgerInfo,
                         Catalog.GetString("Financial year end processing"));
-            }
-
-            if (DoExecuteableCode)
-            {
                 YearEndBatch.AddBaseCurrencyJournal();
-                YearEndBatch.JournalDescription =
-                    Catalog.GetString("Period end revaluations");
+                YearEndBatch.JournalDescription = Catalog.GetString("YearEnd revaluations");
                 YearEndBatch.SubSystemCode = CommonAccountingSubSystemsEnum.GL;
             }
 
@@ -427,7 +428,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if ((glmpInfo.ActualBase != 0) && (FglmInfo.YtdActualBase != 0))
                         {
-                            ReallocationLoop(YearEndBatch, strAccountCode, FglmInfo.CostCentreCode);
+                            if (DoExecuteableCode)
+                            {
+                                ReallocationLoop(YearEndBatch, strAccountCode, FglmInfo.CostCentreCode);
+                            }
+                            CountJobs++;
                         }
                     }
                 }
@@ -435,80 +440,62 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (DoExecuteableCode)
             {
-                YearEndBatch.CloseSaveAndPost();
+                YearEndBatch.CloseSaveAndPost(FverificationResults);
             }
+            return CountJobs;
         }
 
-        private void ReallocationLoop(TCommonAccountingTool YearEndBatch, String AAccountCode, string ACostCentreCode)
+        private void ReallocationLoop(TCommonAccountingTool YearEndBatch, String AAccountCode, String ACostCentreCode)
         {
-            bool blnDebitCredit;
-
-            FaccountInfo.AccountCode = FglmInfo.AccountCode;
-
-            blnDebitCredit = FaccountInfo.DebitCreditIndicator;
-
-            string strCostCentreTo;
+            string strCostCentreTo = TLedgerInfo.GetStandardCostCentre(FledgerInfo.LedgerNumber);
             string strAccountTo;
 
-            string strCCAccoutType = FaccountInfo.SetCarryForwardAccount();
+            FaccountInfo.AccountCode = AAccountCode;
+            Boolean blnDebitCredit = FaccountInfo.DebitCreditIndicator;
 
+            string strCCAccoutCode = FaccountInfo.SetCarryForwardAccount(); // Move FaccountInfo to the Carry Forward Account - if there is one.
             if (FaccountInfo.IsValid)
             {
-                strAccountTo = AAccountCode;
+                strAccountTo = FaccountInfo.AccountCode;
 
-                if (strCCAccoutType.Equals("SAMECC"))
+                if (strCCAccoutCode == "SAMECC")
                 {
-                    strCostCentreTo = FglmInfo.CostCentreCode;
-                    //blnCarryForward = true;
-                }
-                else
-                {
-                    strCostCentreTo = GetStandardCostCentre();
+                    strCostCentreTo = ACostCentreCode;
                 }
             }
-            else
+            else // If there's no Carry Forward account, use EARNINGS_BF_ACCT
             {
                 FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.EARNINGS_BF_ACCT);
                 strAccountTo = FaccountInfo.AccountCode;
-                strCostCentreTo = GetStandardCostCentre();
             }
 
-            if (FledgerInfo.IltAccountFlag)
+            if (FledgerInfo.IltAccountFlag) // Change that if ICH_ACCT is set
             {
                 FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
                 strAccountTo = FaccountInfo.AccountCode;
             }
 
-            if (FledgerInfo.BranchProcessing)
+            if (FledgerInfo.BranchProcessing) // Keep the original Cost Centres - don't roll up
             {
-                strAccountTo = AAccountCode;
+                strCostCentreTo = ACostCentreCode;
             }
 
-            string strYearEnd = Catalog.GetString("YEAR-END");
-            string strNarrativeMessage = Catalog.GetString("Year end re-allocation to {0}:{1}");
-
-            if (DoExecuteableCode)
+            if (FglmInfo.YtdActualBase < 0)
             {
-                YearEndBatch.AddBaseCurrencyTransaction(
-                    AAccountCode, ACostCentreCode,
-                    String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode),
-                    strYearEnd, !blnDebitCredit, Math.Abs(FglmInfo.YtdActualBase));
+                blnDebitCredit = !blnDebitCredit;
             }
 
-            if (DoExecuteableCode)
-            {
-                YearEndBatch.AddBaseCurrencyTransaction(
-                    strAccountTo, strCostCentreTo,
-                    String.Format(strNarrativeMessage, ACostCentreCode, AAccountCode),
-                    strYearEnd, blnDebitCredit, Math.Abs(FglmInfo.YtdActualBase));
-            }
+            Decimal TransactionAmount = Math.Abs(FglmInfo.YtdActualBase);
 
-            ++FCountJobs;
-        }
+            YearEndBatch.AddBaseCurrencyTransaction(
+                AAccountCode, ACostCentreCode,
+                String.Format(FstrNarrativeMessage, ACostCentreCode, AAccountCode),
+                FstrYearEnd, !blnDebitCredit, TransactionAmount);
 
-        private string GetStandardCostCentre()
-        {
-            return TLedgerInfo.GetStandardCostCentre(FledgerInfo.LedgerNumber);
+            YearEndBatch.AddBaseCurrencyTransaction(
+                strAccountTo, strCostCentreTo,
+                String.Format(FstrNarrativeMessage, ACostCentreCode, AAccountCode),
+                FstrYearEnd, blnDebitCredit, TransactionAmount);
         }
     } // TReallocation
 
@@ -540,55 +527,63 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public override int GetJobSize()
         {
-            return 0;
+            bool blnHelp = FInfoMode;
+            FInfoMode = true;
+            Int32 CountJobs = RunOperation();
+            FInfoMode = blnHelp;
+            return CountJobs;
         }
 
         /// <summary>
         /// The AccountingPeriod Rows are updated ...
         /// </summary>
-        override public void RunOperation()
+        override public Int32 RunOperation()
         {
             bool NewTransaction;
+            Int32 JobSize = 0;
+
             Boolean ShouldCommit = false;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
             AAccountingPeriodTable AccountingPeriodTbl = null;
 
-            if (DoExecuteableCode)
+            try
             {
-                try
+                AccountingPeriodTbl = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, Transaction);
+                foreach (AAccountingPeriodRow accountingPeriodRow in AccountingPeriodTbl.Rows)
                 {
-                    AccountingPeriodTbl = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, Transaction);
-                    foreach (AAccountingPeriodRow accountingPeriodRow in AccountingPeriodTbl.Rows)
-                    {
-                        accountingPeriodRow.PeriodStartDate =
-                            accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
-                        accountingPeriodRow.PeriodEndDate =
-                            accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
-                    }
+                    accountingPeriodRow.PeriodStartDate =
+                        accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
+                    accountingPeriodRow.PeriodEndDate =
+                        accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
+                    JobSize++;
+                }
 
-                    AAccountingPeriodAccess.SubmitChanges(AccountingPeriodTbl, Transaction);
-                    ShouldCommit = true;
-                }
-                catch (Exception Exc)
+                if (DoExecuteableCode)
                 {
-                    TLogging.Log("Exception during running the AccountPeriod To New Year operation:" + Environment.NewLine + Exc.ToString());
-                    throw;
+                        AAccountingPeriodAccess.SubmitChanges(AccountingPeriodTbl, Transaction);
+                        ShouldCommit = true;
                 }
-                finally
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("Exception during running the AccountPeriod To New Year operation:" + Environment.NewLine + Exc.ToString());
+                throw;
+            }
+            finally
+            {
+                if (NewTransaction)
                 {
-                    if (NewTransaction)
+                    if (ShouldCommit)
                     {
-                        if (ShouldCommit)
-                        {
-                            DBAccess.GDBAccessObj.CommitTransaction();
-                        }
-                        else
-                        {
-                            DBAccess.GDBAccessObj.RollbackTransaction();
-                        }
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
                     }
                 }
-            } // if
+            }
+            return JobSize;
         }  // RunOperation
 
     } // TAccountPeriodToNewYear
@@ -606,7 +601,6 @@ namespace Ict.Petra.Server.MFinance.GL
         int FCurrentYear;
         int FNextYear;
         TLedgerInfo FLedgerInfo;
-        int intEntryCount;
         TYearEnd FYearEndOperator;
 
 
@@ -651,11 +645,10 @@ namespace Ict.Petra.Server.MFinance.GL
         public override int GetJobSize()
         {
             bool blnOldInfoMode = FInfoMode;
-
             FInfoMode = true;
-            RunOperation();
+            int EntryCount = RunOperation();
             FInfoMode = blnOldInfoMode;
-            return intEntryCount;
+            return EntryCount;
         }
 
         private GLPostingTDS LoadTable(int ALedgerNumber, int AYear, TDBTransaction ATransaction)
@@ -682,12 +675,11 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// Next-Year records will be created, and the Ledger will be moved to the new year.
         /// </summary>
-        public override void RunOperation()
+        public override Int32 RunOperation()
         {
             Int32 TempGLMSequence = -1;
             ALedgerRow LedgerRow = FPostingFromDS.ALedger[0];
-
-            intEntryCount = 0;
+            Int32 EntryCount = 0;
 
             if (!FInfoMode)
             {
@@ -728,7 +720,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         FPostingToDS.AGeneralLedgerMaster.Rows.Add(generalLedgerMasterRowTo);
                     }
 
-                    ++intEntryCount;
+                    ++EntryCount;
                 }
 
                 if (!FInfoMode)
@@ -769,57 +761,62 @@ namespace Ict.Petra.Server.MFinance.GL
                 FPostingToDS.ThrowAwayAfterSubmitChanges = true;
                 GLPostingTDSAccess.SubmitChanges(FPostingToDS);
             }
-        } // RunEndOfPeriodOperation
+            return EntryCount;
+        } // RunOperation
     } // TGlmNewYearInit
 
-/*
- * As far as we can tell, there's nothing to do with the budgets:
+    /*
+     * As far as we can tell, there's nothing to do with the budgets:
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public class TNewYearBudgets : AbstractPeriodEndOperation
+        {
+            private TLedgerInfo FLedgerInfo;
+
+            public TNewYearBudgets(TLedgerInfo ALedgerInfo)
+            {
+                FLedgerInfo = ALedgerInfo;
+            }
+
+            /// <summary>
+            ///
+            /// </summary>
+            public override AbstractPeriodEndOperation GetActualizedClone()
+            {
+                return new TNewYearBudgets(FLedgerInfo);
+            }
+
+            /// <summary>
+            ///
+            /// </summary>
+            public override int GetJobSize()
+            {
+                bool blnHelp = FInfoMode;
+                FInfoMode = true;
+                Int32 CountJobs = RunOperation();
+                FInfoMode = blnHelp;
+                return CountJobs;
+            }
+
+            /// <summary>
+            /// In a_budget_period move this year’s values to last year, next year’s to this year, and set next year to zero.
+            /// </summary>
+            public override Int32 RunOperation()
+            {
+                return 0;
+            }
+
+        } // TNewYearBudgets
+    */
 
     /// <summary>
-    /// 
-    /// </summary>
-    public class TNewYearBudgets : AbstractPeriodEndOperation
-    {
-        private TLedgerInfo FLedgerInfo;
-
-        public TNewYearBudgets(TLedgerInfo ALedgerInfo)
-        {
-            FLedgerInfo = ALedgerInfo;
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public override AbstractPeriodEndOperation GetActualizedClone()
-        {
-            return new TNewYearBudgets(FLedgerInfo);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        public override int GetJobSize()
-        {
-            return 0;
-        }
-
-        /// <summary>
-        /// In a_budget_period move this year’s values to last year, next year’s to this year, and set next year to zero.
-        /// </summary>
-        public override void RunOperation()
-        {
-        }
-
-    } // TNewYearBudgets
-*/
-
-        /// <summary>
         /// Reset period columns on batch, journal and gift batch tables for periods beyond end of last year
         /// </summary>
         public class TResetForwardPeriodBatches : AbstractPeriodEndOperation
         {
             private TLedgerInfo FLedgerInfo;
-            private Int32 JobSize = 0;
 
             /// <summary>
             /// </summary>
@@ -841,15 +838,21 @@ namespace Ict.Petra.Server.MFinance.GL
             /// </summary>
             public override int GetJobSize()
             {
-                RunOperation();
-                return JobSize;
+                bool blnHelp = FInfoMode;
+                FInfoMode = true;
+                Int32 CountJobs = RunOperation();
+                FInfoMode = blnHelp;
+                return CountJobs;
             }
 
             /// <summary>
+            /// ResetForwardPeriodBatches.RunOperation
+            /// 
             /// Reset period columns on batch, journal and gift batch tables for periods beyond end of the old year
             /// </summary>
-            public override void RunOperation()
+            public override Int32 RunOperation()
             {
+                Int32 JobSize = 0;
                 bool NewTransaction;
                 Boolean ShouldCommit = false;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -870,13 +873,14 @@ namespace Ict.Petra.Server.MFinance.GL
                         BatchTbl.Merge(Tbl);
 
                         JobSize = BatchTbl.Rows.Count;
-                        foreach (ABatchRow BatchRow in BatchTbl.Rows)
-                        {
-                            BatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
-                            BatchRow.BatchYear += 1;
-                        }
+
                         if (!FInfoMode)
                         {
+                            foreach (ABatchRow BatchRow in BatchTbl.Rows)
+                            {
+                                BatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                                BatchRow.BatchYear += 1;
+                            }
                             ABatchAccess.SubmitChanges(BatchTbl, Transaction);
                             ShouldCommit = true;
                         }
@@ -894,12 +898,12 @@ namespace Ict.Petra.Server.MFinance.GL
                         AJournalTable JournalTbl = new AJournalTable();
                         JournalTbl.Merge(Tbl);
 
-                        foreach (AJournalRow JournalRow in JournalTbl.Rows)
-                        {
-                            JournalRow.JournalPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
-                        }
                         if (!FInfoMode)
                         {
+                            foreach (AJournalRow JournalRow in JournalTbl.Rows)
+                            {
+                                JournalRow.JournalPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                            }
                             AJournalAccess.SubmitChanges(JournalTbl, Transaction);
                             ShouldCommit = true;
                         }
@@ -918,19 +922,19 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         JobSize += GiftBatchTbl.Rows.Count;
 
-                        foreach (AGiftBatchRow GiftBatchRow in GiftBatchTbl.Rows)
-                        {
-                            GiftBatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
-                            GiftBatchRow.BatchYear += 1;
-                        }
-
                         if (!FInfoMode)
                         {
+                            foreach (AGiftBatchRow GiftBatchRow in GiftBatchTbl.Rows)
+                            {
+                                GiftBatchRow.BatchPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                                GiftBatchRow.BatchYear += 1;
+                            }
+
                             AGiftBatchAccess.SubmitChanges(GiftBatchTbl, Transaction);
                             ShouldCommit = true;
                         }
                     }
-                }
+                } // try
                 finally
                 {
                     if (NewTransaction)
@@ -945,7 +949,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                     }
                 }
-
+                return JobSize;
             }
 
         } // TResetForwardPeriodBatches
@@ -956,7 +960,6 @@ namespace Ict.Petra.Server.MFinance.GL
         public class TResetForwardPeriodICH : AbstractPeriodEndOperation
         {
             private TLedgerInfo FLedgerInfo;
-            private Int32 JobSize = 0;
 
             /// <summary>
             /// </summary>
@@ -978,15 +981,20 @@ namespace Ict.Petra.Server.MFinance.GL
             /// </summary>
             public override int GetJobSize()
             {
-                RunOperation();
-                return JobSize;
+                bool blnHelp = FInfoMode;
+                FInfoMode = true;
+                Int32 CountJobs = RunOperation();
+                FInfoMode = blnHelp;
+                return CountJobs;
             }
 
             /// <summary>
+            /// TResetForwardPeriodICH.RunOperation
             /// Delete old year and update periods for those in new year (eg. 13 becomes 1, 14 becomes 2, etc)
             /// </summary>
-            public override void RunOperation()
+            public override Int32 RunOperation()
             {
+                Int32 JobSize = 0;
                 bool NewTransaction;
                 Boolean ShouldCommit = false;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -1019,6 +1027,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                         if (!FInfoMode)
                         {
+                            StewardshipTbl.ThrowAwayAfterSubmitChanges = true;
                             AIchStewardshipAccess.SubmitChanges(StewardshipTbl, Transaction);
                             ShouldCommit = true;
                         }
@@ -1038,7 +1047,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                     }
                 }
-
+                return JobSize;
             }
 
         } // TResetForwardPeriodICH

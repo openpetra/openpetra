@@ -452,88 +452,91 @@ namespace Ict.Petra.Server.MFinance.Common
 
             foreach (AJournalRow journal in ADataSet.AJournal.Rows)
             {
-                if (journal.BatchNumber.Equals(ABatchNumber))
+                if (journal.BatchNumber != ABatchNumber)
                 {
-                    TransactionsOfJournalView.RowFilter = ATransactionTable.GetJournalNumberDBName() + " = " + journal.JournalNumber.ToString();
+                    continue;
+                }
 
-                    foreach (DataRowView transRowView in TransactionsOfJournalView)
+                TransactionsOfJournalView.RowFilter = ATransactionTable.GetJournalNumberDBName() + " = " + journal.JournalNumber.ToString();
+
+                foreach (DataRowView transRowView in TransactionsOfJournalView)
+                {
+                    ATransactionRow transRow = (ATransactionRow)transRowView.Row;
+
+                    // Check that all atransanalattrib records are there for all analattributes entries
+                    DataView ANView = APostingDS.AAnalysisAttribute.DefaultView;
+                    ANView.RowFilter = String.Format("{0} = '{1}' AND {2} = true",
+                        AAnalysisAttributeTable.GetAccountCodeDBName(),
+                        transRow.AccountCode, AAnalysisAttributeTable.GetActiveDBName());
+                    int i = 0;
+
+                    while (i < ANView.Count)
                     {
-                        ATransactionRow trans = (ATransactionRow)transRowView.Row;
-                        // 1. check that all atransanalattrib records are there for all analattributes entries
-                        DataView ANView = APostingDS.AAnalysisAttribute.DefaultView;
-                        ANView.RowFilter = String.Format("{0} = '{1}' AND {2} = true",
-                            AAnalysisAttributeTable.GetAccountCodeDBName(),
-                            trans.AccountCode, AAnalysisAttributeTable.GetActiveDBName());
-                        int i = 0;
+                        AAnalysisAttributeRow attributeRow = (AAnalysisAttributeRow)ANView[i].Row;
 
-                        while (i < ANView.Count)
+
+                        ATransAnalAttribRow aTransAttribRow =
+                            (ATransAnalAttribRow)ADataSet.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
+                                                                                                    transRow.JournalNumber,
+                                                                                                    transRow.TransactionNumber,
+                                                                                                    attributeRow.AnalysisTypeCode });
+
+                        if (aTransAttribRow == null)
                         {
-                            AAnalysisAttributeRow attributeRow = (AAnalysisAttributeRow)ANView[i].Row;
+                            AVerifications.Add(new TVerificationResult(
+                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                    String.Format(Catalog.GetString(
+                                            "Missing attributes record for journal #{0} transaction #{1}  and TypeCode {2}"),
+                                        transRow.JournalNumber,
+                                        transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                    TResultSeverity.Resv_Critical));
+                        }
+                        else
+                        {
+                            String v = aTransAttribRow.AnalysisAttributeValue;
 
-
-                            ATransAnalAttribRow aTransAttribRow =
-                                (ATransAnalAttribRow)ADataSet.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
-                                                                                                        trans.JournalNumber,
-                                                                                                        trans.TransactionNumber,
-                                                                                                        attributeRow.AnalysisTypeCode });
-
-                            if (aTransAttribRow == null)
+                            if ((v == null) || (v.Length == 0))
                             {
                                 AVerifications.Add(new TVerificationResult(
                                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                        String.Format(Catalog.GetString(
-                                                "Missing attributes record for journal #{0} transaction #{1}  and TypeCode {2}"),
-                                            trans.JournalNumber,
-                                            trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                        String.Format(Catalog.GetString("Analysis Type {0} is missing values in journal #{1}, transaction #{2}"),
+                                            attributeRow.AnalysisTypeCode, transRow.JournalNumber, transRow.TransactionNumber),
                                         TResultSeverity.Resv_Critical));
                             }
                             else
                             {
-                                String v = aTransAttribRow.AnalysisAttributeValue;
+                                AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)APostingDS.AFreeformAnalysis.Rows.Find(
+                                    new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
 
-                                if ((v == null) || (v.Length == 0))
+                                if (afaRow == null)
                                 {
+                                    // this would cause a constraint error and is only possible in a development/sqlite environment
                                     AVerifications.Add(new TVerificationResult(
                                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                            String.Format(Catalog.GetString("Analysis Type {0} is missing values in journal #{1}, transaction #{2}"),
-                                                attributeRow.AnalysisTypeCode, trans.JournalNumber, trans.TransactionNumber),
+                                            String.Format(Catalog.GetString("Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"),
+                                                transRow.JournalNumber, transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
                                             TResultSeverity.Resv_Critical));
                                 }
                                 else
                                 {
-                                    AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)APostingDS.AFreeformAnalysis.Rows.Find(
-                                        new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
-
-                                    if (afaRow == null)
+                                    if (!afaRow.Active)
                                     {
-                                        // this would cause a constraint error and is only possible in a development/sqlite environment
                                         AVerifications.Add(new TVerificationResult(
-                                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                                String.Format(Catalog.GetString("Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"),
-                                                    trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber,
+                                                    ALedgerNumber),
+                                                String.Format(Catalog.GetString(
+                                                        "Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"), v,
+                                                    transRow.JournalNumber, transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
                                                 TResultSeverity.Resv_Critical));
-                                    }
-                                    else
-                                    {
-                                        if (!afaRow.Active)
-                                        {
-                                            AVerifications.Add(new TVerificationResult(
-                                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber,
-                                                        ALedgerNumber),
-                                                    String.Format(Catalog.GetString(
-                                                            "Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"), v,
-                                                        trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
-                                                    TResultSeverity.Resv_Critical));
-                                        }
-                                    }
-                                }
-                            }
+                                    } // if
+                                } // else
+                            } // else
+                        } // else
 
-                            i++;
-                        }
-                    }
-                }
-            }
+                        i++;
+                    } // while i
+                } // foreach transRowView
+            } // foreach journal
 
             return TVerificationHelper.IsNullOrOnlyNonCritical(AVerifications);
         }
@@ -821,7 +824,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
                                 // Find the summary level, creating it if it does not already exist.
                                 int GLMMasterIndex = GLMMasterView.Find(new object[] { AccountCodeToReportTo, CostCentreCodeToReportTo });
-                                AGeneralLedgerMasterRow GlmRow;
 
                                 if (GLMMasterIndex == -1)
                                 {
@@ -834,7 +836,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                     GLMMasterIndex = GLMMasterView.Find(new object[] { AccountCodeToReportTo, CostCentreCodeToReportTo });
                                 }
 
-                                GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
+                                AGeneralLedgerMasterRow GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
 
                                 GlmRow.YtdActualBase += SignBaseAmount;
 
@@ -1022,10 +1024,7 @@ namespace Ict.Petra.Server.MFinance.Common
             // for testing the balances, we don't need to calculate the whole tree
             if (ACalculatePostingTree)
             {
-                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-                {
-                    TLogging.Log("Posting: CalculateTrees...");
-                }
+                TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: CalculateTrees...");
 
                 // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
                 SortedList <string, TAccountTreeElement>AccountTree;
@@ -1040,20 +1039,12 @@ namespace Ict.Petra.Server.MFinance.Common
                 // but avoid calculating the whole account tree?
                 CalculateTrees(ALedgerNumber, ref APostingLevel, out AccountTree, out CostCentreTree, APostingDS);
 
-                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-                {
-                    TLogging.Log("Posting: SummarizeData...");
-                }
-
+                TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SummarizeData...");
                 SummarizeData(APostingDS, AFromPeriod, ref APostingLevel, ref AccountTree, ref CostCentreTree);
             }
             else
             {
-                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-                {
-                    TLogging.Log("Posting: SummarizeDataSimple...");
-                }
-
+                TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SummarizeDataSimple...");
                 SummarizeDataSimple(ALedgerNumber, APostingDS, AFromPeriod, ref APostingLevel);
             }
         }
@@ -1405,23 +1396,20 @@ namespace Ict.Petra.Server.MFinance.Common
                 return false;
             }
 
-            if (!ValidateAnalysisAttributes(ref BatchDS, APostingDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!APostingDS.ALedger[0].ProvisionalYearEndFlag) // During YearEnd Processing, I don't require all the attributes correctly fulfiled.
             {
-                return false;
+                if (!ValidateAnalysisAttributes(ref BatchDS, APostingDS, ALedgerNumber, ABatchNumber, out AVerifications))
+                {
+                    return false;
+                }
             }
 
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Load GLM Data...");
-            }
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Load GLM Data...");
 
             // TODO
             LoadGLMData(ref APostingDS, ALedgerNumber, BatchToPost);
 
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Mark as posted and collect data...");
-            }
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Mark as posted and collect data...");
 
             // post each journal, each transaction; add sums for costcentre/account combinations
             MarkAsPostedAndCollectData(BatchDS, APostingDS, APostingLevel, BatchToPost);

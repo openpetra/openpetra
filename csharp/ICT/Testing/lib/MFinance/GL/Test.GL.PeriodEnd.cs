@@ -64,11 +64,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             return intOperationCount;
         }
 
-        public override void RunOperation()
+        public override Int32 RunOperation()
         {
             Assert.AreEqual(1, intCount);
             ++intOperationCount;
             intJobCount = 0;
+            return intJobCount;
         }
     }
 

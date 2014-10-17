@@ -286,13 +286,14 @@ namespace Ict.Petra.Server.MFinance.GL
             return new RunMonthEndChecks(FledgerInfo);
         }
 
-        public override void RunOperation()
+        public override Int32 RunOperation()
         {
             CheckIfRevaluationIsDone();
             CheckForUnpostedBatches();
             CheckForUnpostedGiftBatches();
             CheckForSuspenseAccountsZero();
             CheckForSuspenseAccounts();
+            return 0;
         }
 
         private void CheckIfRevaluationIsDone()
@@ -325,7 +326,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         Catalog.GetString("Please run a foreign currency revaluation first."), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
                     // Error is critical but additional checks can still be done
-                    verificationResults.Add(tvr);
+                    FverificationResults.Add(tvr);
                     FHasCriticalErrors = true;
                 }
             }
@@ -351,7 +352,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             "Please post or cancel the batches {0} first!"),
                         getBatchInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_06.ToString(), TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvr);
+                FverificationResults.Add(tvr);
                 FHasCriticalErrors = true;
             }
         }
@@ -373,7 +374,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             "Have you checked the details of suspense account {0}?"),
                         getSuspenseAccountInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Status);
-                verificationResults.Add(tvr);
+                FverificationResults.Add(tvr);
             }
         }
 
@@ -392,7 +393,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         "Please post or cancel the gift batches {0} first!",
                         getUnpostedGiftInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_08.ToString(), TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvr);
+                FverificationResults.Add(tvr);
                 FHasCriticalErrors = true;
             }
         }
@@ -433,10 +434,10 @@ namespace Ict.Petra.Server.MFinance.GL
                                     getSuspenseAccountInfo.ToString(),
                                     get_GLMp_Info.ActualBase), "",
                                 TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
-                            verificationResults.Add(tvr);
+                            FverificationResults.Add(tvr);
 
                             FHasCriticalErrors = true;
-                            verificationResults.Add(tvr);
+                            FverificationResults.Add(tvr);
                         }
                     }
                 }
@@ -460,9 +461,10 @@ namespace Ict.Petra.Server.MFinance.GL
             return new RunMonthlyAdminFees();
         }
 
-        public override void RunOperation()
+        public override Int32 RunOperation()
         {
             // TODO: Some Code
+            return 0;
         }
     }
 

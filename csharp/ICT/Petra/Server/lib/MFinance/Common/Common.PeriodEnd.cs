@@ -84,7 +84,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// Standard routine to execute the period end of each AbstractPeriodEndOperation correctly
+        /// Standard routine to execute each PeriodEndOperation, and then confirm its success
         /// </summary>
         /// <param name="AOperation"></param>
         /// <param name="AOperationName"></param>
@@ -94,21 +94,35 @@ namespace Ict.Petra.Server.MFinance.Common
             AOperation.VerificationResultCollection = FverificationResults;
             AOperation.FPeriodEndOperator = this;
 
-            if (AOperation.GetJobSize() == 0)
+            if (FInfoMode)
             {
-                // Non Critical Problem but the user shall be informed ...
-                String strTitle = Catalog.GetString("Period end status");
-                String strMessage = String.Format(Catalog.GetString("Nothing to be done for \"{0}\""), AOperationName);
-                TVerificationResult tvt =
-                    new TVerificationResult(strTitle, strMessage, "",
-                        TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
-                        TResultSeverity.Resv_Info);
-                FverificationResults.Add(tvt);
+                if (AOperation.GetJobSize() == 0)
+                {
+                    // Non Critical Problem but the user shall be informed ...
+                    String strTitle = Catalog.GetString("Period end status");
+                    String strMessage = String.Format(Catalog.GetString("Nothing to be done for \"{0}\""), AOperationName);
+                    TVerificationResult tvt =
+                        new TVerificationResult(strTitle, strMessage, "",
+                            TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
+                            TResultSeverity.Resv_Info);
+                    FverificationResults.Add(tvt);
+                }
             }
-            else if (FInfoMode == false)
+            else
             {
                 // now we actually run the operation
-                AOperation.RunOperation();
+                Int32 OperationsDone = AOperation.RunOperation();
+                if (OperationsDone == 0)
+                {
+                    // Non Critical Problem but the user shall be informed ...
+                    String strTitle = Catalog.GetString("Period end status");
+                    String strMessage = String.Format(Catalog.GetString("Nothing done for \"{0}\""), AOperationName);
+                    TVerificationResult tvt =
+                        new TVerificationResult(strTitle, strMessage, "",
+                            TPeriodEndErrorAndStatusCodes.PEEC_01.ToString(),
+                            TResultSeverity.Resv_Info);
+                    FverificationResults.Add(tvt);
+                }
 
                 //
                 // Now I want to verify whether the job has been finished correctly...
@@ -116,17 +130,16 @@ namespace Ict.Petra.Server.MFinance.Common
                 AbstractPeriodEndOperation VerifyOperation = AOperation.GetActualizedClone();
                 VerifyOperation.IsInInfoMode = true;
                 VerifyOperation.VerificationResultCollection = FverificationResults;
-
-                if (VerifyOperation.GetJobSize() != 0)
+                Int32 RemainingItems = VerifyOperation.GetJobSize();
+                if (RemainingItems > 0)
                 {
                     // Critical Problem because there should be nothing left to do.
-                    String strTitle = Catalog.GetString("Problem occurs in module [{0}]");
-                    strTitle = String.Format(strTitle, AOperationName);
-                    String strMessage = Catalog.GetString(
-                        "The operation has left {0} elements that are not transformed!");
-                    strMessage = String.Format(strMessage, VerifyOperation.GetJobSize().ToString());
                     TVerificationResult tvt =
-                        new TVerificationResult(strTitle, strMessage, "",
+                        new TVerificationResult(
+                            String.Format(Catalog.GetString("Problem in \"{0}\""), AOperationName),
+                            String.Format(Catalog.GetString("The operation has {0} elements remaining!"),
+                                RemainingItems),
+                            "",
                             TPeriodEndErrorAndStatusCodes.PEEC_02.ToString(),
                             TResultSeverity.Resv_Critical);
                     FverificationResults.Add(tvt);
@@ -149,7 +162,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// This is the standard VerificationResultCollection for the info and the error messages.
         /// </summary>
-        protected TVerificationResultCollection verificationResults = null;
+        protected TVerificationResultCollection FverificationResults = null;
 
         /// <summary>
         /// See TPeriodEndOperations
@@ -178,7 +191,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// The specific operation is done. Be sure to handle blnIsInInfoMode and blnCriticalErrors correctly
         /// </summary>
-        public abstract void RunOperation();
+        public abstract Int32 RunOperation();
 
         /// <summary>
         /// Method to create a duplicate based on the actualized database value(s)
@@ -211,7 +224,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             set
             {
-                verificationResults = value;
+                FverificationResults = value;
             }
         }
 

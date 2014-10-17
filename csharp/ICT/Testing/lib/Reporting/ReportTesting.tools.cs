@@ -47,6 +47,7 @@ using Ict.Petra.Server.MReporting.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MReporting;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Tests.MReporting.Tools
 {
