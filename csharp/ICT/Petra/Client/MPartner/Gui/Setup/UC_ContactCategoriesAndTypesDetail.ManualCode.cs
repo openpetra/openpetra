@@ -130,10 +130,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             string NewName = Catalog.GetString("NEWTYPE");
             Int32 CountNewDetail = 0;            
             
-            if (FMainDS.PPartnerAttributeType.Rows.Find(new object[] { FContactCategory, NewName }) != null)
+            if (FMainDS.PPartnerAttributeType.Rows.Find(new object[] { NewName }) != null)
             {
-                while (FMainDS.PPartnerAttributeType.Rows.Find(new object[] { FContactCategory, 
-                                                                                NewName + CountNewDetail.ToString() }) != null)
+                while (FMainDS.PPartnerAttributeType.Rows.Find(new object[] { NewName + CountNewDetail.ToString() }) != null)
                 {
                     CountNewDetail++;
                 }

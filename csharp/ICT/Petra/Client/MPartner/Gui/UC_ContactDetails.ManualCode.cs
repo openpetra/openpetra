@@ -250,7 +250,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (!FMainDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
             {
-                FMainDS.Tables.Add(new PPartnerAttributeTable());
+                FMainDS.Tables.Add(new PartnerEditTDSPPartnerAttributeTable());
                 FMainDS.InitVars();
             }
             
