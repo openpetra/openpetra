@@ -121,60 +121,60 @@ namespace Ict.Petra.Client.App.PetraClient
             LoadNavigationUI();
 
             this.Text = APPLICATION_TITLE + TApplicationVersion.GetApplicationVersion();
-            
+
             this.KeyDown += CustomKeyDownHandler;
         }
 
         /// <summary>
-        /// Custom <see cref="Control.KeyDown"/> Handler of this Form. Hooks up the key combination 
+        /// Custom <see cref="Control.KeyDown"/> Handler of this Form. Hooks up the key combination
         /// 'CTRL+SHIFT+T' and on pressing this executes the 'TestAction' (if any was specified).
         /// That particular key combination is convenient for the re-opening of a screen that the
-        /// developer needs to close and re-open while testing/debugging!         
+        /// developer needs to close and re-open while testing/debugging!
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-		private void CustomKeyDownHandler(object sender, KeyEventArgs e)
-		{
-		    if ((e.KeyCode == Keys.T) 
-		        && (Control.ModifierKeys == (Keys.Shift | Keys.Control)))
+        private void CustomKeyDownHandler(object sender, KeyEventArgs e)
+        {
+            if ((e.KeyCode == Keys.T)
+                && (Control.ModifierKeys == (Keys.Shift | Keys.Control)))
             {
                 e.Handled = true;
                 RunTestAction();
             }
-		}
-		
+        }
+
         private void RunOnceOnActivationManual()
         {
             System.Windows.Forms.Timer RunTestActionTimer = new System.Windows.Forms.Timer();
-            
+
             // Set up Timer that is needed for running TestActions
             RunTestActionTimer.Tick += new EventHandler(RunTestActionFromTimer);
             RunTestActionTimer.Interval = 50;
-            
+
             RunTestActionTimer.Start();
         }
 
-		/// <summary>
-		/// Called from a Timer, RunTestActionTimer (started in RunOnceOnActivationManual), so that the processing of the
-		/// <see cref="Form.Activated"/> Event (which is hooked up to call RunOnceOnActivationManual) can complete 
-		/// before the TestAction is executed. (Would the TestAction be executed while the <see cref="Form.Activated"/> 
-		/// gets processed, any Form that would be opened by that would appear 'behind' the Main Window!)
-		/// </summary>
-		/// <param name="Sender">Gets evaluated to make sure a Timer is calling this Method.</param>
-		/// <param name="e">Ignored.</param>
-		private void RunTestActionFromTimer(Object Sender, EventArgs e)        
-        {            
+        /// <summary>
+        /// Called from a Timer, RunTestActionTimer (started in RunOnceOnActivationManual), so that the processing of the
+        /// <see cref="Form.Activated"/> Event (which is hooked up to call RunOnceOnActivationManual) can complete
+        /// before the TestAction is executed. (Would the TestAction be executed while the <see cref="Form.Activated"/>
+        /// gets processed, any Form that would be opened by that would appear 'behind' the Main Window!)
+        /// </summary>
+        /// <param name="Sender">Gets evaluated to make sure a Timer is calling this Method.</param>
+        /// <param name="e">Ignored.</param>
+        private void RunTestActionFromTimer(Object Sender, EventArgs e)
+        {
             System.Windows.Forms.Timer SendingTimer = Sender as System.Windows.Forms.Timer;
-            
+
             if (SendingTimer != null)
             {
                 // I got called from a Timer: stop that now so that the following run of a TestAction gets run only once!
                 SendingTimer.Stop();
-                
+
                 RunTestAction();
             }
-		}		    
-        
+        }
+
         /// <summary>
         /// For development and testing purposes this Method can either execute actions that
         /// are set up by the program 'PetraMultiStart' (indicated by 'RunAutoTests=true' on

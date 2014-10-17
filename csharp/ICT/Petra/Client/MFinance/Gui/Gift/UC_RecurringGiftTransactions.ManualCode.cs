@@ -209,6 +209,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ResetMotivationDetailCodeFilter();
 
+            // Always enabled initially. Combobox may be diabled later once populated.
+            cmbKeyMinistries.Enabled = true;
+
             txtDetailRecipientKeyMinistry.Visible = true;
             txtDetailRecipientKeyMinistry.BringToFront();
             txtDetailRecipientKeyMinistry.Parent.Refresh();
@@ -528,6 +531,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                txtDetailRecipientKey.Text = APartnerKey.ToString();
                 FPreviouslySelectedDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
 
@@ -546,9 +550,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!FMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref FMotivationGroup, ref FMotivationDetail))
                 {
-                    if (FMotivationDetail.Equals(MFinanceConstants.GROUP_DETAIL_KEY_MIN))
+                    if (FMotivationGroup != cmbDetailMotivationGroupCode.GetSelectedString())
                     {
-                        cmbDetailMotivationDetailCode.SetSelectedString(MFinanceConstants.GROUP_DETAIL_KEY_MIN);
+                        cmbDetailMotivationGroupCode.SetSelectedString(FMotivationGroup);
+                        FPreviouslySelectedDetailRow.MotivationGroupCode = FMotivationGroup;
+                    }
+
+                    if (FMotivationDetail != cmbDetailMotivationDetailCode.GetSelectedString())
+                    {
+                        cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
+                        FPreviouslySelectedDetailRow.MotivationDetailCode = FMotivationDetail;
                     }
                 }
 
@@ -731,14 +742,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void KeyMinistryChanged(object sender, EventArgs e)
         {
-            string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
-            string RecipientKey = cmbKeyMinistries.GetSelectedInt64().ToString();
-
             if ((FPreviouslySelectedDetailRow == null) || FInKeyMinistryChanging || FInRecipientKeyChanging
                 || FPetraUtilsObject.SuppressChangeDetection || txtDetailRecipientKeyMinistry.Visible)
             {
                 return;
             }
+
+            string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+            string RecipientKey = cmbKeyMinistries.GetSelectedInt64().ToString();
 
             try
             {
@@ -1072,25 +1083,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     MotivationRecipientKey = motivationDetail.RecipientKey;
 
-                    chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
+                    // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
+                    if (!FPetraUtilsObject.SuppressChangeDetection || FInRecipientKeyChanging)
+                    {
+                        chkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
+                    }
                 }
-                else
-                {
-                    chkDetailTaxDeductible.Checked = false;
-                }
+            }
+            else
+            {
+                chkDetailTaxDeductible.Checked = false;
             }
 
             if (!FCreatingNewGiftFlag && (MotivationRecipientKey > 0))
             {
                 FMotivationDetailChangedFlag = true;
                 PopulateKeyMinistry(MotivationRecipientKey);
-            }
-            else
-            {
-                RetrieveMotivationDetailCostCentreCode();
-                UpdateRecipientKeyText(0);
                 FMotivationDetailChangedFlag = false;
             }
+            else if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            {
+                UpdateRecipientKeyText(0);
+            }
+
+            RetrieveMotivationDetailCostCentreCode();
         }
 
         private void PopulateKeyMinistry(long APartnerKey = 0)
@@ -1118,6 +1134,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
+
+            // enable / disable combo box depending on whether it contains any key ministries
+            if (cmbKeyMinistries.Table.Rows.Count == 0)
+            {
+                cmbKeyMinistries.Enabled = false;
+            }
+            else
+            {
+                cmbKeyMinistries.Enabled = true;
+            }
 
             if ((Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))
             {
@@ -1221,6 +1247,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ClearCurrentSelection()
         {
             this.FPreviouslySelectedDetailRow = null;
+            FBatchNumber = -1;
         }
 
         /// <summary>
@@ -1340,7 +1367,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return deletionSuccessful;
             }
 
-            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+            if ((ARowToDelete.RowState != DataRowState.Added) && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
             {
                 MessageBox.Show("Error in trying to save prior to deleting current gift detail!");
                 return deletionSuccessful;
@@ -1464,7 +1491,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 //Try to save changes
-                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
                 {
                     //Clear current batch's gift data and reload from server
                     if (RefreshCurrentRecurringBatchGiftData(FBatchNumber))
@@ -1526,7 +1553,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateTotals();
 
-                ((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges();
+                ((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual();
 
                 //message to user
                 MessageBox.Show(ACompletionMessage,

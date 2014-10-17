@@ -49,7 +49,7 @@ namespace Ict.Petra.Shared.MPartner
         /// page for contacts
         /// </summary>
         petpContactDetails,
-        
+
         /// <summary>
         /// detail page for partner class foundations
         /// </summary>
@@ -196,7 +196,7 @@ namespace Ict.Petra.Shared.MPartner
         /// </summary>
         CONTACTDETAIL_SKYPEID
     };
-    
+
     #region TLocationPK
 
     /// <summary>

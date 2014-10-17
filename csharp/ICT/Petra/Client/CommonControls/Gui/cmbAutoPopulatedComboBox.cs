@@ -191,10 +191,10 @@ namespace Ict.Petra.Client.CommonControls
 
             /// <summary>todoComment</summary>
             PartnerAttributeCategoryList,
-            
+
             /// <summary>todoComment</summary>
             PartnerAttributeTypeList,
-            
+
             /// <summary>todoComment</summary>
             PartnerClassList,
 
@@ -279,15 +279,15 @@ namespace Ict.Petra.Client.CommonControls
         {
             get
             {
-                return cmbCombobox.Text;   
+                return cmbCombobox.Text;
             }
-            
+
             set
             {
                 cmbCombobox.Text = value;
             }
         }
-        
+
         /// <summary>
         /// Exposes the DataTable that defines the items that are shown as drop-down items.
         /// <para>
@@ -807,20 +807,20 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PartnerAttributeCategoryList:
                     SortedCacheableDataTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactCategoryList);
-                        
+
                     SortedCacheableDataTable.DefaultView.Sort = PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC";
-                    
+
                     InitialiseUserControl(SortedCacheableDataTable,
                     "p_category_code_c",
                     "p_category_desc_c",
                     null);
                     break;
-                    
-                case TListTableEnum.PartnerAttributeTypeList:                   
+
+                case TListTableEnum.PartnerAttributeTypeList:
                     SortedCacheableDataTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList);
-                        
+
                     SortedCacheableDataTable.DefaultView.Sort = PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC";
-                    
+
                     InitialiseUserControl(SortedCacheableDataTable,
                     "p_code_c",
                     "p_description_c",
@@ -1562,21 +1562,21 @@ namespace Ict.Petra.Client.CommonControls
                 cmbCombobox.DataBindings[0].BindingManagerBase.EndCurrentEdit();
             }
         }
-        
+
         /// <summary>
         /// Returns the DataRow that underlies the currently selected ComboBox Item.
         /// </summary>
         public DataRow GetSelectedItemsDataRow()
         {
             DataRow ReturnValue = null;
-            
-            if (cmbCombobox.SelectedItem != null) 
+
+            if (cmbCombobox.SelectedItem != null)
             {
                 DataRowView Drv = (DataRowView)cmbCombobox.SelectedItem;
-                ReturnValue = Drv.Row;                
+                ReturnValue = Drv.Row;
             }
-            
+
             return ReturnValue;
-        }        
+        }
     }
 }

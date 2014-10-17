@@ -1566,7 +1566,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             return GetPartnerTypesInternal(out ACount, false);
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -2942,7 +2942,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             return GetContactDetailsInternal(out ContactDetailsCount, false);
         }
-        
+
         private PPartnerAttributeTable GetContactDetailsInternal(out Int32 ACount, Boolean ACountOnly)
         {
             TDBTransaction ReadTransaction;
@@ -2964,12 +2964,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
                 else
                 {
-                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetContactDetailsInternal: loading Contact Details for Partner " + FPartnerKey.ToString() + "...");
+                    TLogging.LogAtLevel(7,
+                        "TPartnerEditUIConnector.GetContactDetailsInternal: loading Contact Details for Partner " + FPartnerKey.ToString() + "...");
                     try
                     {
                         // load relationships where partner is involved with partner key or reciprocal
                         AttributeDT.Merge(PPartnerAttributeAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
-
                     }
                     catch (Exception)
                     {
@@ -2987,10 +2987,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetContactDetailsInternal: committed own transaction.");
                 }
             }
-            
+
             return AttributeDT;
         }
-        
+
         private PartnerEditTDSPPartnerRelationshipTable GetPartnerRelationshipsInternal(out Int32 ACount, Boolean ACountOnly)
         {
             TDBTransaction ReadTransaction;

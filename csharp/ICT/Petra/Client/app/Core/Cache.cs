@@ -150,7 +150,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return GetCacheableConferenceTable2(ACacheableTable, String.Empty);
             }
-            
+
             /**
              * Returns the chosen DataTable for the Conference Namespace from the Cache.
              *
@@ -193,7 +193,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return GetCacheablePartnerTable2(ACacheableTable, String.Empty);
             }
-            
+
             /**
              * Returns the chosen DataTable for the Petra Partner Module, Partner Sub-Module
              * from the
@@ -210,7 +210,6 @@ namespace Ict.Petra.Client.App.Core
             {
                 return TDataCache.GetCacheableDataTableFromCache2(ACacheableTable.ToString(), ACustomTableName);
             }
-            
 
             /**
              * Returns the chosen DataTable for the Petra Partner Module, Subscriptions
@@ -227,7 +226,7 @@ namespace Ict.Petra.Client.App.Core
             public static DataTable GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum ACacheableTable)
             {
                 return GetCacheableSubscriptionsTable2(ACacheableTable, String.Empty);
-            }            
+            }
 
             /**
              * Returns the chosen DataTable for the Petra Partner Module, Subscriptions
@@ -243,7 +242,8 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableSubscriptionsTable2(TCacheableSubscriptionsTablesEnum ACacheableTable, string ACustomTableName)
             {
-                return TDataCache.GetCacheableDataTableFromCache2(Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum), ACacheableTable), ACustomTableName);
+                return TDataCache.GetCacheableDataTableFromCache2(Enum.GetName(typeof(TCacheableSubscriptionsTablesEnum),
+                        ACacheableTable), ACustomTableName);
             }
 
             /**
@@ -281,7 +281,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return GetCacheableMailingTable2(ACacheableTable, String.Empty);
             }
-            
+
             /**
              * Returns the chosen DataTable for the Petra Partner Module, Mailing
              * Sub-Module from the
@@ -296,7 +296,8 @@ namespace Ict.Petra.Client.App.Core
              */
             public static DataTable GetCacheableMailingTable2(TCacheableMailingTablesEnum ACacheableTable, string ACustomTableName)
             {
-                return TDataCache.GetCacheableDataTableFromCache2(Enum.GetName(typeof(TCacheableMailingTablesEnum), ACacheableTable), ACustomTableName);
+                return TDataCache.GetCacheableDataTableFromCache2(Enum.GetName(typeof(TCacheableMailingTablesEnum),
+                        ACacheableTable), ACustomTableName);
             }
 
             /**
@@ -363,7 +364,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return GetCacheableFinanceTable2(ACacheableTable, String.Empty);
             }
-            
+
             /**
              * Returns the chosen DataTable for the Petra Finance Module from the
              *
@@ -409,7 +410,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return GetCacheableFinanceTable2(ACacheableTable, ALedgerNumber, String.Empty);
             }
-            
+
             /**
              * Returns the chosen DataTable for the Petra Finance Module from the
              *
@@ -426,7 +427,9 @@ namespace Ict.Petra.Client.App.Core
              * @return Chosen DataTable
              *
              */
-            public static DataTable GetCacheableFinanceTable2(TCacheableFinanceTablesEnum ACacheableTable, System.Int32 ALedgerNumber, string ACustomTableName)
+            public static DataTable GetCacheableFinanceTable2(TCacheableFinanceTablesEnum ACacheableTable,
+                System.Int32 ALedgerNumber,
+                string ACustomTableName)
             {
                 DataTable ReturnValue;
                 Type DataTableType;
@@ -436,8 +439,12 @@ namespace Ict.Petra.Client.App.Core
                 switch (ACacheableTable)
                 {
                     case TCacheableFinanceTablesEnum.AccountHierarchyList:
-                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.AccountHierarchyList, AAccountHierarchyTable.GetLedgerNumberDBName(
-                            ), ALedgerNumber, out DataTableType, ACustomTableName);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.AccountHierarchyList,
+                        AAccountHierarchyTable.GetLedgerNumberDBName(
+                            ),
+                        ALedgerNumber,
+                        out DataTableType,
+                        ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.CostCentreList:
@@ -447,47 +454,51 @@ namespace Ict.Petra.Client.App.Core
 
                     case TCacheableFinanceTablesEnum.AccountList:
                         ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.AccountList, AAccountTable.GetLedgerNumberDBName(), ALedgerNumber,
-                            out DataTableType, ACustomTableName);
+                        out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.AccountingPeriodList:
-                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.AccountingPeriodList, AAccountingPeriodTable.GetLedgerNumberDBName(), 
-                            ALedgerNumber, out DataTableType, ACustomTableName);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.AccountingPeriodList,
+                        AAccountingPeriodTable.GetLedgerNumberDBName(),
+                        ALedgerNumber,
+                        out DataTableType,
+                        ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.LedgerDetails:
-                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber,
-                            out DataTableType, ACustomTableName);
+                        ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.LedgerDetails,
+                        ALedgerTable.GetLedgerNumberDBName(), ALedgerNumber,
+                        out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.MotivationGroupList:
                         ReturnValue = GetBasedOnLedger2(ACacheableTable,
-                            AMotivationGroupTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
+                        AMotivationGroupTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.MotivationList:
                         ReturnValue = GetBasedOnLedger2(ACacheableTable,
-                            AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
+                        AMotivationDetailTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.FeesPayableList:
                         ReturnValue = GetBasedOnLedger2(ACacheableTable,
-                            AFeesPayableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
+                        AFeesPayableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.FeesReceivableList:
                         ReturnValue = GetBasedOnLedger2(ACacheableTable,
-                            AFeesReceivableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
+                        AFeesReceivableTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.SuspenseAccountList:
                         ReturnValue = GetBasedOnLedger2(ACacheableTable,
-                            ASuspenseAccountTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
+                        ASuspenseAccountTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     case TCacheableFinanceTablesEnum.ICHStewardshipList:
                         ReturnValue = GetBasedOnLedger2(TCacheableFinanceTablesEnum.ICHStewardshipList,
-                            AIchStewardshipTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
+                        AIchStewardshipTable.GetLedgerNumberDBName(), ALedgerNumber, out DataTableType, ACustomTableName);
                         break;
 
                     default:
@@ -558,7 +569,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return GetBasedOnLedger2(ACacheableTable, ALedgerColumnDBName, ALedgerNumber, out ADataTableType, String.Empty);
             }
-            
+
             /**
              * Get rows from a table that are based on a ledger; (e.g. Costcentres, Accounts)
              * The cache will only retrieve data for the one ledger, and check the next time
@@ -576,14 +587,18 @@ namespace Ict.Petra.Client.App.Core
             public static DataTable GetBasedOnLedger2(TCacheableFinanceTablesEnum ACacheableTable,
                 String ALedgerColumnDBName,
                 System.Int32 ALedgerNumber,
-                out Type ADataTableType, 
+                out Type ADataTableType,
                 string ACustomTableName)
             {
                 try
                 {
                     String CacheableTableName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
                     String FilterCriteria = ALedgerColumnDBName + " = " + ALedgerNumber.ToString();
-                    return TDataCache.GetCacheableDataTableFromCache2(CacheableTableName, FilterCriteria, (object)ALedgerNumber, out ADataTableType, ACustomTableName);
+                    return TDataCache.GetCacheableDataTableFromCache2(CacheableTableName,
+                        FilterCriteria,
+                        (object)ALedgerNumber,
+                        out ADataTableType,
+                        ACustomTableName);
                 }
                 catch (System.Runtime.Remoting.RemotingException Exc)
                 {
@@ -680,7 +695,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return GetCacheableUnitsTable2(ACacheableTable, String.Empty);
             }
-            
+
             /**
              * Returns the chosen DataTable for the Petra Partner Module, Subscriptions
              * Sub-Module from the
@@ -743,7 +758,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 return GetCacheableSysManTable2(ACacheableTable, String.Empty);
             }
-            
+
             /**
              * Returns the chosen DataTable for the Petra SysMan Module
              *
@@ -1139,7 +1154,7 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
         /// DataTable</param>
-        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should 
+        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should
         /// not be the name of the CacheableDataTable as it is in the Cache.</param>
         /// <returns>Chosen DataTable.</returns>
         public static DataTable GetCacheableDataTableFromCache2(String ACacheableTableName, string ACustomTableName = "")
@@ -1148,7 +1163,7 @@ namespace Ict.Petra.Client.App.Core
 
             return GetCacheableDataTableFromCache2(ACacheableTableName, "", null, out DataTableType, ACustomTableName);
         }
-        
+
         /// <summary>
         /// Returns the chosen DataTable from the Client-side Cache.
         ///
@@ -1181,14 +1196,14 @@ namespace Ict.Petra.Client.App.Core
         /// <param name="ACacheableTableName">The cached DataTable that should be returned in the
         /// DataTable</param>
         /// <param name="AType"><see cref="System.Type" /> of the returned <see cref="DataTable" />.</param>
-        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should 
+        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should
         /// not be the name of the CacheableDataTable as it is in the Cache.</param>
         /// <returns>Chosen DataTable.</returns>
         public static DataTable GetCacheableDataTableFromCache2(String ACacheableTableName, out System.Type AType, string ACustomTableName = "")
         {
             return GetCacheableDataTableFromCache2(ACacheableTableName, "", null, out AType, ACustomTableName);
         }
-        
+
         /// <summary>
         /// Returns the chosen DataTable from the Client-side Cache.
         ///
@@ -1219,7 +1234,7 @@ namespace Ict.Petra.Client.App.Core
         {
             return GetCacheableDataTableFromCache2(ACacheableTableName, AFilterCriteriaString, AFilterCriteria, out ADataTableType, String.Empty);
         }
-        
+
         /// <summary>
         /// Returns the chosen DataTable from the Client-side Cache.
         ///
@@ -1244,7 +1259,7 @@ namespace Ict.Petra.Client.App.Core
         /// DataTable</param>
         /// <param name="ADataTableType"> The Type of the DataTable (useful in case it's a
         /// Typed DataTable).</param>
-        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should 
+        /// <param name="ACustomTableName">A Table name if the returned DataTables' TableName should
         /// not be the name of the CacheableDataTable as it is in the Cache.</param>
         /// <returns>Chosen DataTable.</returns>
         public static DataTable GetCacheableDataTableFromCache2(String ACacheableTableName, String AFilterCriteriaString, object AFilterCriteria,
@@ -1504,11 +1519,11 @@ namespace Ict.Petra.Client.App.Core
                 ReturnValue.AcceptChanges();
             }
 
-            if (ACustomTableName != String.Empty) 
+            if (ACustomTableName != String.Empty)
             {
-                ReturnValue.TableName = ACustomTableName;    
+                ReturnValue.TableName = ACustomTableName;
             }
-            
+
             return ReturnValue;
         }
 

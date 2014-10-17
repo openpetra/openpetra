@@ -56,9 +56,9 @@ namespace Ict.Common.Controls
         {
             this.rtbTextWithLinks = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
-            // 
+            //
             // rtbTextWithLinks
-            // 
+            //
             this.rtbTextWithLinks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtbTextWithLinks.Location = new System.Drawing.Point(0, 0);
             this.rtbTextWithLinks.Name = "rtbTextWithLinks";
@@ -66,9 +66,9 @@ namespace Ict.Common.Controls
             this.rtbTextWithLinks.Size = new System.Drawing.Size(300, 80);
             this.rtbTextWithLinks.TabIndex = 0;
             this.rtbTextWithLinks.Text = "";
-            // 
+            //
             // TRtbHyperlinks
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.rtbTextWithLinks);
@@ -76,6 +76,7 @@ namespace Ict.Common.Controls
             this.Size = new System.Drawing.Size(300, 80);
             this.ResumeLayout(false);
         }
+
         private System.Windows.Forms.RichTextBox rtbTextWithLinks;
     }
 }

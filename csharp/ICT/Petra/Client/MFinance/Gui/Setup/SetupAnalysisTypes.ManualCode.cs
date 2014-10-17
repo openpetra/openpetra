@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 /* fix tab order */
                 pnlButtons.TabIndex = grdDetails.TabIndex + 1;
-                
+
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
             }

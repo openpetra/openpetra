@@ -48,6 +48,7 @@ using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -2216,13 +2217,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         +
                         "Recipient.p_partner_class_c, Recipient.p_partner_short_name_c, " +
 
-                        // true if donor has a valid Ex-omer special type
+                        // true if donor has a valid Ex-Worker special type
                         "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
                         "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
                         " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
                         " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
-                        " AND p_partner_type.p_type_code_c LIKE 'EX-OMER%'" +
-                        ") THEN True ELSE False END AS EXOMER, " +
+                        " AND p_partner_type.p_type_code_c LIKE '" +
+                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
+                        ") THEN True ELSE False END AS EXWORKER, " +
 
                         // true if the gift is restricted for the user
                         "CASE WHEN EXISTS (SELECT s_user_group.* FROM s_user_group " +
