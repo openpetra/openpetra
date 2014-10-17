@@ -321,7 +321,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>No Primary Email Address has been set desipite current E-Mail Addresses are available.</summary>
         [ErrCodeAttribute("Primary Email Address Not Set Desipite E-Mail Addresses on File",
-             ErrorMessageText = "No Primary Email Address has been set desipite current E-Mail Addresses are available.  IMPORTANT: OpenPetra can't send emails to this Partner in automated situations unless a Primary Email Address has been chosen!")]
+             ErrorMessageText = "No Primary Email Address has been set although current E-Mail Addresses are available.  IMPORTANT: OpenPetra can't send emails to this Partner in automated situations unless a Primary Email Address has been chosen!")]
         public const String ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL = "PARTN.00035N";
 
         /// <summary>A Primary Email Address has been set but there are no current E-Mail Addresses available.</summary>
@@ -329,6 +329,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "A Primary Email Address is still set, but there are no current E-Mail Addresses available. Remove the Primary Email Address!")]
         public const String ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00036V";
 
+        /// <summary>A Primary Email Address has been set but there are no current E-Mail Addresses available.</summary>
+        [ErrCodeAttribute("Primary Email Address Set But the E-Mail Addresses record is not current",
+             ErrorMessageText = "A Primary Email Address is still set, but the corresponding E-Mail Address record is not current. Change the Primary Email Address to a current E-Mail Address!")]
+        public const String ERR_PRIMARY_EMAIL_ADDR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00037V";
+        
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>
