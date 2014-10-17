@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FMotivationDetail = string.Empty;
         string FFilterAllDetailsOfGift = string.Empty;
         private DataView FGiftDetailView = null;
+        private Int64 FRecipientKey = 0;
 
         private string FBatchStatus = string.Empty;
         private bool FBatchUnposted = false;
@@ -232,19 +233,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void BeginEditMode(object sender, EventArgs e)
         {
+            bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
             FInEditMode = true;
 
             bool DoTaxUpdate;
-            TUC_GiftTransactions_Recipient.SetKeyMinistryTextBoxInvisible(FPreviouslySelectedDetailRow, FMainDS, FLedgerNumber, FPetraUtilsObject,
-                cmbKeyMinistries, ref cmbDetailMotivationDetailCode, txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode,
-                txtDetailAccountCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible, txtDeductibleAccount,
-                FMotivationGroup, ref FMotivationDetail, ref FMotivationDetailChanged, FActiveOnly,
-                FInRecipientKeyChanging, FCreatingNewGift, FInEditMode, FBatchUnposted, FTaxDeductiblePercentageEnabled, out DoTaxUpdate);
+            TUC_GiftTransactions_Recipient.SetKeyMinistryTextBoxInvisible(FPreviouslySelectedDetailRow,
+                FMainDS,
+                FLedgerNumber,
+                FPetraUtilsObject,
+                cmbKeyMinistries,
+                ref cmbDetailMotivationDetailCode,
+                txtDetailRecipientKey,
+                FRecipientKey,
+                txtDetailRecipientLedgerNumber,
+                txtDetailCostCentreCode,
+                txtDetailAccountCode,
+                txtDetailRecipientKeyMinistry,
+                chkDetailTaxDeductible,
+                txtDeductibleAccount,
+                FMotivationGroup,
+                ref FMotivationDetail,
+                ref FMotivationDetailChanged,
+                FActiveOnly,
+                FInRecipientKeyChanging,
+                FCreatingNewGift,
+                FInEditMode,
+                FBatchUnposted,
+                FTaxDeductiblePercentageEnabled,
+                out DoTaxUpdate);
 
             if (DoTaxUpdate)
             {
                 UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
                 EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+            }
+
+            //On populating key muinistry
+            if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+            {
+                FPetraUtilsObject.DisableSaveButton();
             }
         }
 
@@ -295,7 +323,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 InitialiseControls();
             }
 
-            UpdateCurrencySymbols(FBatchRow.CurrencyCode);
+            //UpdateCurrencySymbols(FBatchRow.CurrencyCode);
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer)
@@ -390,8 +418,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((FPreviouslySelectedDetailRow != null) && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-                TUC_GiftTransactions_Recipient.GetRecipientData(FPreviouslySelectedDetailRow, FPreviouslySelectedDetailRow.RecipientKey,
-                    ref cmbKeyMinistries, txtDetailRecipientKey, ref txtDetailRecipientLedgerNumber);
+                bool disableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
+
+                if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
+                {
+                    FPetraUtilsObject.DisableSaveButton();
+                }
             }
 
             FTransactionsLoaded = true;
@@ -423,12 +455,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool DoValidateGiftDestination;
             bool DoTaxUpdate;
 
-            TUC_GiftTransactions_Recipient.OnRecipientKeyChanged(APartnerKey, APartnerShortName, AValidSelection, FPreviouslySelectedDetailRow,
-                FMainDS, FLedgerNumber, FPetraUtilsObject, ref cmbKeyMinistries, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode,
-                txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible,
-                ref FMotivationGroup, ref FMotivationDetail, FShowingDetails, ref FInRecipientKeyChanging, FInKeyMinistryChanging, FInEditMode,
-                FBatchUnposted, FMotivationDetailChanged, FTaxDeductiblePercentageEnabled,
-                out DoEnableRecipientHistory, out DoValidateGiftDestination, out DoTaxUpdate);
+            FRecipientKey = APartnerKey;
+
+            TUC_GiftTransactions_Recipient.OnRecipientKeyChanged(APartnerKey,
+                APartnerShortName,
+                AValidSelection,
+                FPreviouslySelectedDetailRow,
+                FMainDS,
+                FLedgerNumber,
+                FPetraUtilsObject,
+                ref cmbKeyMinistries,
+                cmbDetailMotivationGroupCode,
+                cmbDetailMotivationDetailCode,
+                txtDetailRecipientKey,
+                txtDetailRecipientLedgerNumber,
+                txtDetailCostCentreCode,
+                txtDetailAccountCode,
+                txtDetailRecipientKeyMinistry,
+                chkDetailTaxDeductible,
+                txtDeductibleAccount,
+                ref FMotivationGroup,
+                ref FMotivationDetail,
+                FShowingDetails,
+                ref FInRecipientKeyChanging,
+                FInKeyMinistryChanging,
+                FInEditMode,
+                FBatchUnposted,
+                FMotivationDetailChanged,
+                FTaxDeductiblePercentageEnabled,
+                FActiveOnly,
+                out DoEnableRecipientHistory,
+                out DoValidateGiftDestination,
+                out DoTaxUpdate);
 
             if (DoTaxUpdate)
             {
@@ -634,6 +692,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMotivationGroupCode,
                 ref cmbDetailMotivationDetailCode,
                 txtDetailRecipientKey,
+                FRecipientKey,
                 txtDetailRecipientLedgerNumber,
                 txtDetailCostCentreCode,
                 txtDetailAccountCode,
@@ -671,6 +730,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbKeyMinistries,
                 cmbDetailMotivationDetailCode,
                 txtDetailRecipientKey,
+                FRecipientKey,
                 txtDetailRecipientLedgerNumber,
                 txtDetailCostCentreCode,
                 txtDetailAccountCode,
@@ -709,13 +769,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (FTaxDeductiblePercentageEnabled)
+            if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-                // this will also call UpdateBaseAmount
-                UpdateTaxDeductibilityAmounts(sender, e);
-            }
-            else if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
-            {
+                FPreviouslySelectedDetailRow.GiftTransactionAmount = (decimal)txn.NumberValueDecimal;
                 UpdateBaseAmount(true);
             }
 
@@ -798,6 +854,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ClearCurrentSelection()
         {
             this.FPreviouslySelectedDetailRow = null;
+            FBatchNumber = -1;
         }
 
         /// <summary>
@@ -1256,10 +1313,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
-            txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
-            txtGiftTotal.CurrencyCode = ACurrencyCode;
-            txtBatchTotal.CurrencyCode = ACurrencyCode;
-            txtHashTotal.CurrencyCode = ACurrencyCode;
+            if (txtDetailGiftTransactionAmount.CurrencyCode != ACurrencyCode)
+            {
+                txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
+            }
+
+            if ((txtGiftTotal.CurrencyCode != ACurrencyCode)
+                || (txtBatchTotal.CurrencyCode != ACurrencyCode)
+                || (txtHashTotal.CurrencyCode != ACurrencyCode))
+            {
+                txtGiftTotal.CurrencyCode = ACurrencyCode;
+                txtBatchTotal.CurrencyCode = ACurrencyCode;
+                txtHashTotal.CurrencyCode = ACurrencyCode;
+            }
         }
 
         /// <summary>
@@ -1590,7 +1656,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool reverseWholeBatch = (AFunctionName == "Reverse Gift Batch");
 
-            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            if (!((TFrmGiftBatch)ParentForm).SaveChangesManual())
             {
                 return;
             }
@@ -1832,8 +1898,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FTaxDeductiblePercentageEnabled)
             {
-                UpdateTaxDeductibiltyBaseAmounts(CurrentBatchRow, AUpdateCurrentRowOnly, IsTransactionInIntlCurrency, BatchExchangeRateToBase,
-                    IntlToBaseCurrencyExchRate, TransactionsFromCurrentBatch);
+                UpdateTaxDeductibilityAmounts(this, null);
             }
         }
 
@@ -2016,6 +2081,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 int CurrentTransaction = 0;
 
+                // This stops the recipient key from updating the motivation group and detail. These fields will instead be set here.
+                FMotivationDetailChanged = true;
+
                 while (true)
                 {
                     // populate gift detail
@@ -2031,6 +2099,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     chkDetailConfidentialGiftFlag.Checked = GiftDetailTable[CurrentTransaction].ConfidentialGiftFlag;
                     chkDetailChargeFlag.Checked = GiftDetailTable[CurrentTransaction].ChargeFlag;
                     chkDetailTaxDeductible.Checked = GiftDetailTable[CurrentTransaction].TaxDeductible;
+                    ToggleTaxDeductible(this, null);
                     cmbDetailMailingCode.SetSelectedString(GiftDetailTable[CurrentTransaction].MailingCode, -1);
                     KeyMinistryChanged(this, null);
 
@@ -2060,6 +2129,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         break;
                     }
                 }
+
+                FMotivationDetailChanged = false;
             }
         }
 
@@ -2123,6 +2194,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //    txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
             //    mniRecipientGiftDestination.Enabled = true;
             //}
+        }
+
+        private bool PreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            return OnPreDeleteManual(ARowToDelete, ref ADeletionQuestion);
+        }
+
+        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
+        {
+            return OnDeleteRowManual(ARowToDelete, ref ACompletionMessage);
         }
 
         /// <summary>

@@ -171,6 +171,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Decimal AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];
             Decimal AExchangeRateIntlToBase = (Decimal)requestParams["AExchangeRateIntlToBase"];
 
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
             bool TransactionInIntlCurrency = false;
 
             GiftBatchTDS RMainDS = LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
@@ -271,7 +274,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= AEffectiveDate))
                                         )
                                     {
-                                        AGiftDetailRow detail = GMainDS.AGiftDetail.NewRowTyped();
+                                        GiftBatchTDSAGiftDetailRow detail = GMainDS.AGiftDetail.NewRowTyped();
                                         detail.LedgerNumber = gift.LedgerNumber;
                                         detail.BatchNumber = gift.BatchNumber;
                                         detail.GiftTransactionNumber = gift.GiftTransactionNumber;
@@ -314,6 +317,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.CommentTwoType = recGiftDetail.CommentTwoType;
                                         detail.GiftCommentThree = recGiftDetail.GiftCommentThree;
                                         detail.CommentThreeType = recGiftDetail.CommentThreeType;
+
+                                        if (TaxDeductiblePercentageEnabled)
+                                        {
+                                            // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                                            TGift.SetDefaultTaxDeductibilityData(ref detail, gift.DateEntered, Transaction);
+                                        }
 
                                         GMainDS.AGiftDetail.Rows.Add(detail);
                                     }
@@ -463,51 +472,57 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static GiftBatchTDS LoadAGiftBatch(Int32 ALedgerNumber, Int32 AYear, Int32 APeriod)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
             string FilterByPeriod = string.Empty;
 
-            if (AYear > -1)
-            {
-                FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
-                    AGiftBatchTable.GetTableDBName(),
-                    AGiftBatchTable.GetBatchYearDBName(),
-                    AYear);
+            TDBTransaction Transaction = null;
 
-                if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    //Return current and forwarding periods
-                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
-                        AGiftBatchTable.GetTableDBName(),
-                        AGiftBatchTable.GetBatchPeriodDBName(),
-                        MainDS.ALedger[0].CurrentPeriod);
-                }
-                else if (APeriod > 0)
-                {
-                    //Return only specified period
-                    FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
-                        AGiftBatchTable.GetTableDBName(),
-                        AGiftBatchTable.GetBatchPeriodDBName(),
-                        APeriod);
-                }
-                else
-                {
-                    //Nothing to add, returns all periods
-                }
-            }
+                    ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
 
-            string SelectClause =
-                String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
-                    AGiftBatchTable.GetTableDBName(),
-                    AGiftBatchTable.GetLedgerNumberDBName(),
-                    ALedgerNumber);
+                    if (AYear > -1)
+                    {
+                        FilterByPeriod = String.Format(" AND PUB_{0}.{1} = {2}",
+                            AGiftBatchTable.GetTableDBName(),
+                            AGiftBatchTable.GetBatchYearDBName(),
+                            AYear);
 
-            DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
-                MainDS.AGiftBatch.TableName, Transaction);
+                        if ((APeriod == 0) && (AYear == MainDS.ALedger[0].CurrentFinancialYear))
+                        {
+                            //Return current and forwarding periods
+                            FilterByPeriod += String.Format(" AND PUB_{0}.{1} >= {2}",
+                                AGiftBatchTable.GetTableDBName(),
+                                AGiftBatchTable.GetBatchPeriodDBName(),
+                                MainDS.ALedger[0].CurrentPeriod);
+                        }
+                        else if (APeriod > 0)
+                        {
+                            //Return only specified period
+                            FilterByPeriod += String.Format(" AND PUB_{0}.{1} = {2}",
+                                AGiftBatchTable.GetTableDBName(),
+                                AGiftBatchTable.GetBatchPeriodDBName(),
+                                APeriod);
+                        }
+                        else
+                        {
+                            //Nothing to add, returns all periods
+                        }
+                    }
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+                    string SelectClause =
+                        String.Format("SELECT * FROM PUB_{0} WHERE {1} = {2}",
+                            AGiftBatchTable.GetTableDBName(),
+                            AGiftBatchTable.GetLedgerNumberDBName(),
+                            ALedgerNumber);
+
+                    DBAccess.GDBAccessObj.Select(MainDS, SelectClause + FilterByPeriod,
+                        MainDS.AGiftBatch.TableName, Transaction);
+                });
+
+            MainDS.AcceptChanges();
+
             return MainDS;
         }
 
@@ -705,8 +720,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool BatchStatusUnposted;
             string FailedUpdates = string.Empty;
 
-            TDBTransaction Transaction = null;
             GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
@@ -717,7 +733,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         //Load Ledger & Motivation Data to allow updating of CostCentreCode
                         AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
 
                         MainDS.Merge(LoadGiftBatchData(ALedgerNumber, ABatchNumber));
 
@@ -768,6 +783,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         TLogging.Log("Error in LoadTransactions: " + e.Message);
                     }
                 });
+
+            MainDS.AcceptChanges();
 
             return MainDS;
         }
@@ -864,7 +881,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     NewCostCentreCode = ValidLedgerNumberCostCentreCode;
                 }
-                else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == "GIFT") || KeyMinExists))
+                else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == MFinanceConstants.MOTIVATION_GROUP_GIFT) || KeyMinExists))
                 {
                     ErrMsg = String.Format(
                         "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
@@ -1313,6 +1330,50 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Returns a table of gifts with Ex-Worker recipients
+        /// </summary>
+        /// <param name="AGiftDetailsToCheck">GiftDetails to check for ExWorker recipients</param>
+        /// <param name="ANotInBatchNumber">Used to exclude gift from a particular batch</param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable FindGiftRecipientExWorker(DataTable AGiftDetailsToCheck, int ANotInBatchNumber = -1)
+        {
+            DataTable ReturnValue = AGiftDetailsToCheck.Copy();
+
+            ReturnValue.Clear();
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    foreach (DataRow Row in AGiftDetailsToCheck.Rows)
+                    {
+                        // check changed data is either added or modified and that it is by a new donor
+                        if ((Row.RowState != DataRowState.Deleted)
+                            && (((Int32)Row[GiftBatchTDSAGiftDetailTable.GetBatchNumberDBName()]) != ANotInBatchNumber))
+                        {
+                            PPartnerTypeTable PartnerTypeTable =
+                                PPartnerTypeAccess.LoadViaPPartner((Int64)Row[GiftBatchTDSAGiftDetailTable.GetRecipientKeyDBName()], Transaction);
+
+                            foreach (PPartnerTypeRow TypeRow in PartnerTypeTable.Rows)
+                            {
+                                if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE,
+                                            "EX-WORKER")))
+                                {
+                                    ReturnValue.Rows.Add((object[])Row.ItemArray.Clone());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// this will store all new and modified recurring batches, recurring gift transactions and recurring details
         /// </summary>
         /// <param name="AInspectDS"></param>
@@ -1448,6 +1509,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
 
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
             batch.BatchDescription = Catalog.GetString("Gift Batch " + giftBatch.BatchNumber.ToString());
             batch.DateEffective = giftBatch.GlEffectiveDate;
             batch.BatchPeriod = giftBatch.BatchPeriod;
@@ -1474,43 +1538,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
-                ATransactionRow transaction = null;
-
-                // do we have already a transaction for this costcentre&account?
-                GLDataset.ATransaction.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'",
-                    ATransactionTable.GetAccountCodeDBName(),
-                    giftdetail.AccountCode,
-                    ATransactionTable.GetCostCentreCodeDBName(),
-                    giftdetail.CostCentreCode);
-
-                if (GLDataset.ATransaction.DefaultView.Count == 0)
+                if (!TaxDeductiblePercentageEnabled)
                 {
-                    transaction = GLDataset.ATransaction.NewRowTyped();
-                    transaction.LedgerNumber = journal.LedgerNumber;
-                    transaction.BatchNumber = journal.BatchNumber;
-                    transaction.JournalNumber = journal.JournalNumber;
-                    transaction.TransactionNumber = ++journal.LastTransactionNumber;
-                    transaction.AccountCode = giftdetail.AccountCode;
-                    transaction.CostCentreCode = giftdetail.CostCentreCode;
-                    transaction.Narrative = "GB - Gift Batch " + giftBatch.BatchNumber.ToString();
-                    transaction.Reference = "GB" + giftBatch.BatchNumber.ToString();
-                    transaction.DebitCreditIndicator = false;
-                    transaction.TransactionAmount = 0;
-                    transaction.AmountInBaseCurrency = 0;
-                    transaction.AmountInIntlCurrency = 0;
-                    transaction.SystemGenerated = true;
-                    transaction.TransactionDate = giftBatch.GlEffectiveDate;
-
-                    GLDataset.ATransaction.Rows.Add(transaction);
+                    AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.AccountCode,
+                        giftdetail.GiftTransactionAmount, giftdetail.GiftAmount, giftdetail.GiftAmountIntl, journal, giftBatch);
                 }
                 else
                 {
-                    transaction = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
-                }
+                    // if tax deductible pct is enabled then the gift detail needs split in two: tax-deductible and non-deductible
+                    if (giftdetail.TaxDeductiblePct > 0)
+                    {
+                        // tax deductible
+                        AddGiftDetailToGLBatch(ref GLDataset,
+                            giftdetail.CostCentreCode,
+                            giftdetail.TaxDeductibleAccountCode,
+                            giftdetail.TaxDeductibleAmount,
+                            giftdetail.TaxDeductibleAmountBase,
+                            giftdetail.TaxDeductibleAmountIntl,
+                            journal,
+                            giftBatch);
+                    }
 
-                transaction.TransactionAmount += giftdetail.GiftTransactionAmount;
-                transaction.AmountInBaseCurrency += giftdetail.GiftAmount;
-                transaction.AmountInIntlCurrency += giftdetail.GiftAmountIntl;
+                    if (giftdetail.TaxDeductiblePct < 100)
+                    {
+                        // non deductible
+                        AddGiftDetailToGLBatch(ref GLDataset,
+                            giftdetail.CostCentreCode,
+                            giftdetail.AccountCode,
+                            giftdetail.NonDeductibleAmount,
+                            giftdetail.NonDeductibleAmountBase,
+                            giftdetail.NonDeductibleAmountIntl,
+                            journal,
+                            giftBatch);
+                    }
+                }
 
                 // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c ???
 
@@ -1567,6 +1628,49 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             batch.LastJournal = 1;
 
             return GLDataset;
+        }
+
+        private static void AddGiftDetailToGLBatch(ref GLBatchTDS AGLDataset,
+            string ACostCentre, string AAccountCode, decimal ATransactionAmount, decimal AAmountInBaseCurrency, decimal AAmountInIntlCurrency,
+            AJournalRow AJournal, AGiftBatchRow AGiftBatch)
+        {
+            ATransactionRow transaction = null;
+
+            // do we have already a transaction for this costcentre&account?
+            AGLDataset.ATransaction.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'",
+                ATransactionTable.GetAccountCodeDBName(),
+                AAccountCode,
+                ATransactionTable.GetCostCentreCodeDBName(),
+                ACostCentre);
+
+            if (AGLDataset.ATransaction.DefaultView.Count == 0)
+            {
+                transaction = AGLDataset.ATransaction.NewRowTyped();
+                transaction.LedgerNumber = AJournal.LedgerNumber;
+                transaction.BatchNumber = AJournal.BatchNumber;
+                transaction.JournalNumber = AJournal.JournalNumber;
+                transaction.TransactionNumber = ++AJournal.LastTransactionNumber;
+                transaction.AccountCode = AAccountCode;
+                transaction.CostCentreCode = ACostCentre;
+                transaction.Narrative = "GB - Gift Batch " + AGiftBatch.BatchNumber.ToString();
+                transaction.Reference = "GB" + AGiftBatch.BatchNumber.ToString();
+                transaction.DebitCreditIndicator = false;
+                transaction.TransactionAmount = 0;
+                transaction.AmountInBaseCurrency = 0;
+                transaction.AmountInIntlCurrency = 0;
+                transaction.SystemGenerated = true;
+                transaction.TransactionDate = AGiftBatch.GlEffectiveDate;
+
+                AGLDataset.ATransaction.Rows.Add(transaction);
+            }
+            else
+            {
+                transaction = (ATransactionRow)AGLDataset.ATransaction.DefaultView[0].Row;
+            }
+
+            transaction.TransactionAmount += ATransactionAmount;
+            transaction.AmountInBaseCurrency += AAmountInBaseCurrency;
+            transaction.AmountInIntlCurrency += AAmountInIntlCurrency;
         }
 
         private static void LoadGiftRelatedData(GiftBatchTDS AGiftDS,
@@ -2644,17 +2748,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static PPartnerTaxDeductiblePctTable LoadPartnerTaxDeductiblePct(long PartnerKey)
         {
+            PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePct = null;
+
             TDBTransaction Transaction = null;
-            PPartnerTaxDeductiblePctTable ReturnValue = null;
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
                 {
-                    ReturnValue = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(PartnerKey, Transaction);
+                    PartnerTaxDeductiblePct = PPartnerTaxDeductiblePctAccess.LoadViaPPartner(PartnerKey, Transaction);
                 });
 
-            return ReturnValue;
+            PartnerTaxDeductiblePct.AcceptChanges();
+
+            return PartnerTaxDeductiblePct;
         }
 
         /// <summary>
@@ -2833,7 +2940,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 APartnerKey,
                 AGiftDate);
 
-            DataSet tempDataSet = new DataSet();
+            DataSet GiftDestDS = new DataSet();
 
             TDBTransaction Transaction = null;
 
@@ -2844,19 +2951,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     try
                     {
-                        DBAccess.GDBAccessObj.Select(tempDataSet, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
+                        DBAccess.GDBAccessObj.Select(GiftDestDS, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
                             Transaction,
                             0, 0);
 
-                        if (tempDataSet.Tables[PartnerGiftDestinationTable] != null)
+                        if (GiftDestDS.Tables[PartnerGiftDestinationTable] != null)
                         {
-                            if (tempDataSet.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
+                            if (GiftDestDS.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
                             {
-                                DataRow row = tempDataSet.Tables[PartnerGiftDestinationTable].Rows[0];
+                                DataRow row = GiftDestDS.Tables[PartnerGiftDestinationTable].Rows[0];
                                 PartnerField = (Int64)row[0];
                             }
 
-                            tempDataSet.Clear();
+                            GiftDestDS.Clear();
                         }
                     }
                     catch (Exception e)
@@ -2864,6 +2971,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         TLogging.Log("Error in GetGiftDestinationForRecipient: " + e.Message);
                     }
                 });
+
+            GiftDestDS.AcceptChanges();
 
             return PartnerField;
         }
@@ -2948,31 +3057,31 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// Load key Ministry
         /// </summary>
-        /// <param name="partnerKey">Partner Key </param>
-        /// <param name="fieldNumber">Field Number </param>
+        /// <param name="APartnerKey">Partner Key </param>
+        /// <param name="AFieldNumber">Field Number </param>
         /// <returns>ArrayList for loading the key ministry combobox</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static PUnitTable LoadKeyMinistry(Int64 partnerKey, out Int64 fieldNumber)
+        public static PUnitTable LoadKeyMinistry(Int64 APartnerKey, out Int64 AFieldNumber)
         {
+            AFieldNumber = 0;
+            Int64 FieldNumber = AFieldNumber;
+
+            PUnitTable UnitTable = null;
+
             TDBTransaction Transaction = null;
-
-            PUnitTable unitTable = null;
-
-            try
-            {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-                unitTable = LoadKeyMinistries(partnerKey, Transaction);
-                fieldNumber = GetRecipientFundNumber(partnerKey);
-            }
-            finally
-            {
-                if (Transaction != null)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-            return unitTable;
+                    UnitTable = LoadKeyMinistries(APartnerKey, Transaction);
+                    FieldNumber = GetRecipientFundNumber(APartnerKey);
+                });
+
+            AFieldNumber = FieldNumber;
+
+            UnitTable.AcceptChanges();
+
+            return UnitTable;
         }
 
         /// <summary>

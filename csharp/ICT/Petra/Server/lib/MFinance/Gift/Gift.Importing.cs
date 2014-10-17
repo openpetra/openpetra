@@ -32,18 +32,13 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MFinance.Gift.WebConnectors;
-using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Gift.Data.Access;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 
 //using Ict.Petra.Server.MFinance.Account.Data.Access;
 //using Ict.Petra.Shared.MFinance.Account.Data;
@@ -137,6 +132,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
+
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
             //Assume it is a new transaction
             bool NewTransaction = true;
@@ -277,7 +275,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 gift.ReceiptPrinted = ImportBoolean(Catalog.GetString("receipt printed"));
                             }
 
-                            AGiftDetailRow giftDetails = FMainDS.AGiftDetail.NewRowTyped(true);
+                            GiftBatchTDSAGiftDetailRow giftDetails = FMainDS.AGiftDetail.NewRowTyped(true);
 
                             if ((previousGift != null) && (gift.DonorKey == previousGift.DonorKey)
                                 && (gift.MethodOfGivingCode == previousGift.MethodOfGivingCode)
@@ -367,6 +365,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.CommentThreeType = ImportString(Catalog.GetString(
                                     "comment three type"), AGiftDetailTable.GetCommentThreeTypeLength());
                             giftDetails.TaxDeductible = ImportBoolean(Catalog.GetString("tax deductible"));
+
+                            if (TaxDeductiblePercentageEnabled)
+                            {
+                                // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                                TGift.SetDefaultTaxDeductibilityData(ref giftDetails, gift.DateEntered, FTransaction);
+                            }
 
                             gift.DateEntered = giftBatch.GlEffectiveDate;
 

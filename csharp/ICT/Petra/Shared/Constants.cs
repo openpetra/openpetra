@@ -175,6 +175,12 @@ namespace Ict.Petra.Shared
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE = "TaxDeduct%OnRecipient";
 
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_EXWORKERSPECIALTYPE = "EXWORKERSPECIALTYPE";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_DEFAULTFIELDMOTIVATION = "DefaultFieldMotivation";
+
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_DISCONNECT = "DISCONNECT";
 

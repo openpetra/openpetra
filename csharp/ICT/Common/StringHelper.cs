@@ -2211,17 +2211,17 @@ namespace Ict.Common
             }
 
             return result;
-        }        
+        }
 
-        /// <summary> 
-        /// Splits a string that contains one or more email addresses 
+        /// <summary>
+        /// Splits a string that contains one or more email addresses
         /// so that each email address becomes one item in a string array.
         /// </summary>
         static public string[] SplitEmailAddresses(string AEmailAddress)
         {
             return AEmailAddress.Split(",;".ToCharArray());
-        }        
-        
+        }
+
         /// <summary>
         /// Returns the elements of a string[] as one string, optionally adding a delimter between
         /// the elements if one is specified in Argument <paramref name="ADelimiter"/>.
@@ -2232,26 +2232,26 @@ namespace Ict.Common
         static public string StrArrayToString(string[] AStringArrary, string ADelimiter = "")
         {
             string ReturnValue = String.Empty;
-            
-            if (AStringArrary == null) 
+
+            if (AStringArrary == null)
             {
                 throw new ArgumentNullException("AStringArrary must not be null");
             }
-            
-            for (int Counter = 0; Counter < AStringArrary.Length; Counter++) 
+
+            for (int Counter = 0; Counter < AStringArrary.Length; Counter++)
             {
                 ReturnValue += AStringArrary[Counter] + ADelimiter;
             }
-            
+
             if ((ADelimiter != String.Empty)
                 && (ReturnValue != String.Empty))
             {
                 ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - ADelimiter.Length);
-            }            
-            
+            }
+
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Returns the elements of a <see cref="StringCollection"/> as one string, optionally adding a delimter between
         /// the elements if one is specified in Argument <paramref name="ADelimiter"/>.
@@ -2263,28 +2263,29 @@ namespace Ict.Common
         {
             string ReturnValue = String.Empty;
 
-            if (AStringColl == null) 
+            if (AStringColl == null)
             {
                 throw new ArgumentNullException("AStringColl must not be null");
             }
-            
-            for (int Counter = 0; Counter < AStringColl.Count; Counter++) 
+
+            for (int Counter = 0; Counter < AStringColl.Count; Counter++)
             {
                 ReturnValue += AStringColl[Counter] + ADelimiter;
             }
-                        
+
             if ((ADelimiter != String.Empty)
                 && (ReturnValue != String.Empty))
             {
                 ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - ADelimiter.Length);
-            }            
+            }
+
 //            foreach(string ArrayEntry in AStringColl)
 //            {
 //                ReturnValue += ArrayEntry;
-//            }            
-            
+//            }
+
             return ReturnValue;
-        }        
+        }
     }
 
     /// <summary>

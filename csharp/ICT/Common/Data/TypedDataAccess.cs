@@ -740,9 +740,10 @@ namespace Ict.Common.Data
 
             if (APKFieldNames.Length > AOtherPKFieldNames.Length)
             {
-                throw new ArgumentException(String.Format("Argument 'AOtherPKFieldNames' must hold at least as many items as Argument 'APKFieldNames', " +
-                    "but this is not the case: 'AOtherPKFieldNames' holds these items: '{0}' - whereas 'APKFieldNames' holds these items: '{1}'",
-                    StringHelper.StrArrayToString(AOtherPKFieldNames, "; "), StringHelper.StrArrayToString(APKFieldNames, "; ")));
+                throw new ArgumentException(String.Format(
+                        "Argument 'AOtherPKFieldNames' must hold at least as many items as Argument 'APKFieldNames', " +
+                        "but this is not the case: 'AOtherPKFieldNames' holds these items: '{0}' - whereas 'APKFieldNames' holds these items: '{1}'",
+                        StringHelper.StrArrayToString(AOtherPKFieldNames, "; "), StringHelper.StrArrayToString(APKFieldNames, "; ")));
             }
 
             for (int Counter = 0; Counter < APKFieldNames.Length; Counter++)
@@ -1851,7 +1852,7 @@ namespace Ict.Common.Data
                 GenerateSelectClause(AFieldList, ATableId, true) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) + ", PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId) +
                 GenerateWhereClauseForJoin(TTypedDataTable.GetTableNameSQL(AOtherTableId), TTypedDataTable.GetTableNameSQL(ATableId), AThisFieldNames,
-                                           TTypedDataTable.GetPrimaryKeyColumnStringList(AOtherTableId)) +
+                    TTypedDataTable.GetPrimaryKeyColumnStringList(AOtherTableId)) +
                 GenerateWhereClauseLong("PUB_" + TTypedDataTable.GetTableNameSQL(AOtherTableId),
                     AOtherTableId, ATemplateRow, ATemplateOperators) +
                 GenerateOrderByClause(AOrderBy),
@@ -2140,7 +2141,7 @@ namespace Ict.Common.Data
                     GetParametersForWhereClause(ATableId, ASearchCriteria)))
             {
                 throw new EDBSubmitException(
-                    "[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row",
+                    "[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row: no rows were deleted.  Hint: If this can be a valid case, run one of the *Access.Count* Methods before to ensure that you don't call the present Method if there are no records to be expected!",
                     eSubmitChangesOperations.eDelete);
             }
         }

@@ -2152,12 +2152,12 @@ namespace Ict.Common.Controls
         }
 
         #region IndexedGridRowsHelper
-        
+
         /// <summary>
         /// Helper Class for Grids that are sorted based on an 'Index' Column.
         /// </summary>
-        /// <remarks>Create an instance of this Class in a Form's 'RunOnceOnActivationManual' Method 
-        /// (or in a UserControls' 'InitializeManualCode' Method) and then call this Classes' Methods, 
+        /// <remarks>Create an instance of this Class in a Form's 'RunOnceOnActivationManual' Method
+        /// (or in a UserControls' 'InitializeManualCode' Method) and then call this Classes' Methods,
         /// as required.</remarks>
         public class IndexedGridRowsHelper
         {
@@ -2167,7 +2167,7 @@ namespace Ict.Common.Controls
             readonly System.Windows.Forms.Button FBtnPromote;
             readonly Action FActionAfterSwapping;
             bool FDemoteAndPromoteButtonsDisabledDueToManualSort = false;
-            
+
             /// <summary>
             /// Constructor.
             /// </summary>
@@ -2175,8 +2175,8 @@ namespace Ict.Common.Controls
             /// <param name="AIndexColumnNr">Number of the DataColumn in the DataTables' DataColumns Collection that represents the 'index' of the Rows.</param>
             /// <param name="ABtnDemote">Demote Button.</param>
             /// <param name="ABtnPromote">Promote Button.</param>
-    		/// <param name="AActionAfterSwapping">Delegate that should be executed after the swap of Rows was performed (optional).</param>
-            public IndexedGridRowsHelper(TSgrdDataGrid AGrid, int AIndexColumnNr, 
+            /// <param name="AActionAfterSwapping">Delegate that should be executed after the swap of Rows was performed (optional).</param>
+            public IndexedGridRowsHelper(TSgrdDataGrid AGrid, int AIndexColumnNr,
                 System.Windows.Forms.Button ABtnDemote, System.Windows.Forms.Button ABtnPromote, Action AActionAfterSwapping = null)
             {
                 FGrid = AGrid;
@@ -2184,58 +2184,58 @@ namespace Ict.Common.Controls
                 FBtnDemote = ABtnDemote;
                 FBtnPromote = ABtnPromote;
                 FActionAfterSwapping = AActionAfterSwapping;
-                
+
                 // When the user sorts the Grid manually: disable promote/demote buttons and show MessageBox
                 AGrid.SortedRangeRows += HandleSortedRangeRows;
             }
-            
+
             /// <summary>
             /// If there are any Rows in the Grid that are 'below' the selected Row: increase/decrease their Indexes accordingly.
             /// </summary>
             /// <param name="ASelectedRowIndex">Grid Row that is the selected Row (Row numbers start with 1!).</param>
             /// <param name="AIncrease">True to increase the indexes, false to decrease the indexes of following rows.</param>
-    		public void AdjustIndexesOfFollowingRows(int ASelectedRowIndex, bool AIncrease)
-    		{
-    		    DataRow PresentRow;
-            
-    			if (AIncrease)
-    			{		    
-                    for (int Counter = FGrid.Rows.Count - 1; Counter > ASelectedRowIndex; Counter--) 
-        			{
-        				PresentRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(Counter)).Row;
-        				
-        				PresentRow[FIndexColumnNr] = ((int)PresentRow[FIndexColumnNr]) + 1;
-        			}
-    			}
-    			else
-    			{
-                    for (int Counter = ASelectedRowIndex; Counter < FGrid.Rows.Count; Counter++) 
-        			{
-        				PresentRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(Counter)).Row;
-        				
-        				PresentRow[FIndexColumnNr] = ((int)PresentRow[FIndexColumnNr]) - 1;
-        			}
-    			}
-		}
+            public void AdjustIndexesOfFollowingRows(int ASelectedRowIndex, bool AIncrease)
+            {
+                DataRow PresentRow;
 
-    		/// <summary>
-    		/// Swaps the Indexes of two DataRows.
-    		/// </summary>
-    		/// <param name="ARow1">First <see cref="DataRow"/>.</param>
-    		/// <param name="ARow2">Second <see cref="DataRow"/>.</param>
+                if (AIncrease)
+                {
+                    for (int Counter = FGrid.Rows.Count - 1; Counter > ASelectedRowIndex; Counter--)
+                    {
+                        PresentRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(Counter)).Row;
+
+                        PresentRow[FIndexColumnNr] = ((int)PresentRow[FIndexColumnNr]) + 1;
+                    }
+                }
+                else
+                {
+                    for (int Counter = ASelectedRowIndex; Counter < FGrid.Rows.Count; Counter++)
+                    {
+                        PresentRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(Counter)).Row;
+
+                        PresentRow[FIndexColumnNr] = ((int)PresentRow[FIndexColumnNr]) - 1;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Swaps the Indexes of two DataRows.
+            /// </summary>
+            /// <param name="ARow1">First <see cref="DataRow"/>.</param>
+            /// <param name="ARow2">Second <see cref="DataRow"/>.</param>
             public void SwapRowIndexes(DataRow ARow1, DataRow ARow2)
             {
                 // Actually do the row updates in the table
                 int PresentIndex = (int)ARow1[FIndexColumnNr];
-    
+
                 ARow1.BeginEdit();
                 ARow1[FIndexColumnNr] = ARow2[FIndexColumnNr];
                 ARow1.EndEdit();
                 ARow2.BeginEdit();
                 ARow2[FIndexColumnNr] = PresentIndex;
                 ARow2.EndEdit();
-    
-                if (FActionAfterSwapping != null) 
+
+                if (FActionAfterSwapping != null)
                 {
                     FActionAfterSwapping();
                 }
@@ -2248,43 +2248,44 @@ namespace Ict.Common.Controls
             public void DetermineIndexForNewRow(DataRow ARow)
             {
                 DataRow CurrentRow;
+
                 int[] SelectedRegion = FGrid.Selection.GetSelectionRegion().GetRowsIndex();
                 int SelectedRowIndex = SelectedRegion.Length > 0 ? SelectedRegion[0] : -1;
-                
+
                 if (SelectedRowIndex == -1)
                 {
                     // There is no selected Row as there are no Rows yet: Index is set to 0
                     ARow[FIndexColumnNr] = 0;
                 }
-                else  
+                else
                 {
                     // Determine the currently selected Row...
                     CurrentRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(SelectedRowIndex)).Row;
-                    
+
                     // and base the Index of a new Row on the selected Row's index
                     int NewRowIndex = (int)CurrentRow[FIndexColumnNr] + 1;
-                    
+
                     AdjustIndexesOfFollowingRows(SelectedRowIndex, true);
-    
+
                     ARow[FIndexColumnNr] = NewRowIndex;
-                }                
+                }
             }
-            
+
             /// <summary>
             /// Promotes the current Row, i.e. moves the current row further down in the Grid.
             /// </summary>
             public void PromoteRow()
             {
                 int SelectedRowIndex = FGrid.Selection.GetSelectionRegion().GetRowsIndex()[0];
-    
+
                 var CurrentRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(SelectedRowIndex)).Row;
                 var OtherRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(SelectedRowIndex + 1)).Row;
-    
+
                 SwapRowIndexes(CurrentRow, OtherRow);
-    
+
                 // Move the selection so it tracks the current row (grid rows start at 1)
                 FGrid.SelectRowInGrid(SelectedRowIndex + 1);
-            }         
+            }
 
             /// <summary>
             /// Demotes the current Row, i.e. moves the current row further up in the Grid.
@@ -2292,23 +2293,23 @@ namespace Ict.Common.Controls
             public void DemoteRow()
             {
                 int SelectedRowIndex = FGrid.Selection.GetSelectionRegion().GetRowsIndex()[0];
-    
+
                 var CurrentRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(SelectedRowIndex)).Row;
                 var OtherRow = ((DataRowView)FGrid.Rows.IndexToDataSourceRow(SelectedRowIndex - 1)).Row;
-    
+
                 SwapRowIndexes(CurrentRow, OtherRow);
-    
+
                 // Move the selection so it tracks the current row (grid rows start at 1)
                 FGrid.SelectRowInGrid(SelectedRowIndex - 1);
             }
 
             /// <summary>
-            /// Updates the enabled/disabled state of Demote and Promote Buttons. 
+            /// Updates the enabled/disabled state of Demote and Promote Buttons.
             /// </summary>
             /// <param name="ACurrentRow">Current Row number (Row numbers start at 1!).</param>
             public void UpdateButtons(int ACurrentRow)
             {
-                if (FDemoteAndPromoteButtonsDisabledDueToManualSort) 
+                if (FDemoteAndPromoteButtonsDisabledDueToManualSort)
                 {
                     FBtnDemote.Enabled = false;
                     FBtnPromote.Enabled = false;
@@ -2317,10 +2318,10 @@ namespace Ict.Common.Controls
                 {
                     // The grid rows start at 1 due to the one-row header
                     FBtnDemote.Enabled = ACurrentRow > 1;
-                    FBtnPromote.Enabled = ((ACurrentRow < FGrid.Rows.Count - 1) 
-                        && (ACurrentRow != -1));
+                    FBtnPromote.Enabled = ((ACurrentRow < FGrid.Rows.Count - 1)
+                                           && (ACurrentRow != -1));
                 }
-            }   
+            }
 
             /// <summary>
             /// When the user sorts the Grid manually: show information and disable promote/demote buttons!
@@ -2328,26 +2329,28 @@ namespace Ict.Common.Controls
             /// <param name="sender">Ignored.</param>
             /// <param name="e">Ignored.</param>
             void HandleSortedRangeRows(object sender, SourceGrid.SortRangeRowsEventArgs e)
-    		{
-                if (!FDemoteAndPromoteButtonsDisabledDueToManualSort) 
+            {
+                if (!FDemoteAndPromoteButtonsDisabledDueToManualSort)
                 {
                     FDemoteAndPromoteButtonsDisabledDueToManualSort = true;
-                    
+
                     UpdateButtons(-1);
-    
+
                     MessageBox.Show(
-        		        Catalog.GetString("You have sorted the list manually. Because of that you will not be able to move individual rows 'up' and 'down' anymore with the respective buttons " + 
-        		                          "because the re-ordering of rows only makes sense when the list is sorted according to its internal sort order!\r\n\r\n" + 
-        		                          "If you need to re-order the rows: you will need to close this form and re-open it again."),
-        		        Catalog.GetString("List Manually Sorted: Re-ordering of Rows no Longer Possible"), 
-        		        MessageBoxButtons.OK, MessageBoxIcon.Information);                    
+                        Catalog.GetString(
+                            "You have sorted the list manually. Because of that you will not be able to move individual rows 'up' and 'down' anymore with the respective buttons "
+                            +
+                            "because the re-ordering of rows only makes sense when the list is sorted according to its internal sort order!\r\n\r\n"
+                            +
+                            "If you need to re-order the rows: you will need to close this form and re-open it again."),
+                        Catalog.GetString("List Manually Sorted: Re-ordering of Rows no Longer Possible"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                
-    		}
+            }
         }
-        
+
         #endregion
-        
+
         #endregion
     }
     #endregion
