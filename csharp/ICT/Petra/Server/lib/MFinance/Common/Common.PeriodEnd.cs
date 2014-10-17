@@ -263,69 +263,6 @@ namespace Ict.Petra.Server.MFinance.Common
         Year
     }
 
-/*
-    /// <summary>
-    /// Central object to switch to the next accounting period
-    /// </summary>
-    public class TCarryForward
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public TLedgerInfo FledgerInfo;
-
-        /// <summary>
-        /// A TMounthEnd or TYearEnd object
-        /// </summary>
-        public TPeriodEndOperations FPeriodEndOperator;
-        /// <summary>
-        /// The routine requires a TLedgerInfo object ...
-        /// </summary>
-        public TCarryForward(TLedgerInfo ALedgerInfo, TPeriodEndOperations PeriodEndOperator=null)
-        {
-            FledgerInfo = ALedgerInfo;
-            FPeriodEndOperator = PeriodEndOperator;
-        }
-
-        /// <summary>
-        /// Sets the ledger to the next accounting period ...
-        /// </summary>
-        public void SetNextPeriod()
-        {
-            if (GetPeriodType == TCarryForwardENum.Month)
-            {
-                TMonthEnd.SetNextPeriod(this);
-            }
-            else
-            {
-                TYearEnd.SetNextPeriod(this);
-            }
-
-            new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
-                TLedgerInitFlagEnum.Revaluation).Flag = false;  // ( "A Revaluation has not been done.")
-        }
-
-        /// <summary>
-        /// Gets the type of the actual accouting period (see TCarryForwardENum).
-        /// </summary>
-        public TCarryForwardENum GetPeriodType
-        {
-            get
-            {
-                if (FledgerInfo.ProvisionalYearEndFlag)
-                {
-                    return TCarryForwardENum.Year;
-                }
-                else
-                {
-                    return TCarryForwardENum.Month;
-                }
-            }
-        }
-
-
-    } // TCarryForward
-*/
     /// <summary>
     /// This is the actual list of the different error status codes of the GL Module ...
     /// </summary>

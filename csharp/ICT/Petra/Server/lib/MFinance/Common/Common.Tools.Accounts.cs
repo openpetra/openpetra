@@ -51,7 +51,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private const string STANDARD = "STANDARD";
         AAccountHierarchyDetailTable FAccountTable;
         AAccountHierarchyDetailRow accountRow = null;
-        TLedgerInfo ledgerInfo;
+        TLedgerInfo FledgerInfo;
 
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerInfo"></param>
         public TGetAccountHierarchyDetailInfo(TLedgerInfo ALedgerInfo)
         {
-            ledgerInfo = ALedgerInfo;
+            FledgerInfo = ALedgerInfo;
 
             bool NewTransaction = false;
 
@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MFinance.Common
             try
             {
                 FAccountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
-                    ledgerInfo.LedgerNumber, transaction);
+                    FledgerInfo.LedgerNumber, transaction);
             }
             finally
             {
@@ -422,8 +422,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
 
     /// <summary>
-    /// TAccountInfo uses a TLedgerInfo a primilary references the LedgerNumber.
-    /// All Accounts are load in both contructors. You can define an inital account code in the
+    /// TAccountInfo uses a TLedgerInfo and primarily references the LedgerNumber.
+    /// All Accounts are load in both contructors. You can define an initial account code in the
     /// second constructor or you can set the value later (or change) by using SetAccountRowTo.
     /// Then you can read the values for the selected Account.
     /// </summary>
