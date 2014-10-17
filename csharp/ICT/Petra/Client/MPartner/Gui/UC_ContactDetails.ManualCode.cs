@@ -422,7 +422,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if successful.</returns>
         public bool GetOverallContactSettingsDataFromControls()
         {
-            bool ReturnValue = false;
+            bool ReturnValue = true;
             string PrimaryEmailChoice;
             DataView ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(false);
 
@@ -464,9 +464,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
+    
+            DataView CurrentEmailAddrsDV = DeterminePartnersEmailAddresses(true);
+            
+            if (CurrentEmailAddrsDV.Count != 0)
+            {
+                if (PrimaryEmailChoice == String.Empty)
+                {
+                    // Generate a Validation *Warning*, not an error. The user can ignore this if (s)he chooses to do so!
+                    ValidationPrimaryEmailAddrNotSet();    
+                }
+            }
+            else
+            {
+                if (PrimaryEmailChoice != String.Empty)
+                {
+                    // Generate a Validation *Error*. The user cannot ignore this.
+                    ValidationPrimaryEmailAddrSetButNoEmailAddrAvailable();
 
-            ReturnValue = ValidatePrimaryEmailAddress((ElegibleEmailAddrsDV.Count > 0) && (PrimaryEmailChoice != String.Empty));
-
+                    ReturnValue = false;                    
+                }
+            }
+            
             return ReturnValue;
         }
 
@@ -1168,7 +1187,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         MessageBox.Show(Catalog.GetString(
                             "No Primary Email Address has been chosen for this Partner, although the Partner has at least one current Email Address on record.\r\n\r\n"
                             +
-                            "Please choose an Email Address from the Primary Email Address setting!"),
+                            "IMPORTANT: OpenPetra can't send emails to this Partner in automated situations unless a Primary Email Address has been chosen!\r\n" 
+                            +
+                            "Therefore, please choose an Email Address from the Primary Email Address setting,"),
                         Catalog.GetString("No Primary Email Address Set!"),
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
@@ -1193,55 +1214,60 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        #endregion
+        
+        #region Data Validation
+        
         /// <summary>
-        /// Adds validation for cmbPrimaryEmail
+        /// Creates a Data Validation *Warning* for cmbPrimaryEmail.
         /// </summary>
-        /// <returns>Returns false if validation error</returns>
-        private bool ValidatePrimaryEmailAddress(bool APrimaryEmailSelected)
+        private void ValidationPrimaryEmailAddrNotSet()
         {
-            const string ResCont = "ContactDetails_PrimaryEmailAddress";
-
+            const string ResCont = "ContactDetails_PrimaryEmailAddress_Not_Set";
+            TScreenVerificationResult VerificationResult;
+            
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TScreenVerificationResult VerificationResult = null;
+            VerificationResult = new TScreenVerificationResult(
+                new TVerificationResult((object)ResCont,
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL),
+                    FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID),
+                null, cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
 
-            if (!APrimaryEmailSelected)
-            {
-                VerificationResult = new TScreenVerificationResult(
-                    new TVerificationResult((object)ResCont,
-                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL),
-                        FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID),
-                    null, cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
-//                VerificationResult = new TScreenVerificationResult("ContactDetails_PrimaryEmailAddress", null,
-//                    "", PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL,
-//                    cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
-            }
-
-//            DataColumn ValidationColumn = FMainDS.PPartnerTaxDeductiblePct.ColumnDateValidFrom;
-
-//            // validate dtpTaxDeductibleValidFrom
-//            if (!dtpTaxDeductibleValidFrom.ValidDate(false))
-//            {
-//                VerificationResult = new TScreenVerificationResult(dtpTaxDeductibleValidFrom.DateVerificationResult,
-//                    ValidationColumn,
-//                    dtpTaxDeductibleValidFrom);
-//                VerificationResult.OverrideResultContext(this);
-//
-//                ReturnValue = false;
-//            }
 
             VerificationResultCollection.Remove(ResCont);
-//            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
 
             if (VerificationResult != null)
             {
                 VerificationResultCollection.Add(VerificationResult);
             }
-
-            return true;
         }
 
-        #endregion
+        /// <summary>
+        /// Creates a Data Validation *Error* for cmbPrimaryEmail.
+        /// </summary>
+        private void ValidationPrimaryEmailAddrSetButNoEmailAddrAvailable()
+        {
+            const string ResCont = "ContactDetails_PrimaryEmailAddress_Set_But_No_Email_Addr_Available";
+            TScreenVerificationResult VerificationResult;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            VerificationResult = new TScreenVerificationResult(
+                new TVerificationResult((object)ResCont,
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL),
+                    FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID),
+                null, cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
+
+
+            VerificationResultCollection.Remove(ResCont);
+
+            if (VerificationResult != null)
+            {
+                VerificationResultCollection.Add(VerificationResult);
+            }
+        }
+        
+        #endregion        
     }
 
     /// <summary>
