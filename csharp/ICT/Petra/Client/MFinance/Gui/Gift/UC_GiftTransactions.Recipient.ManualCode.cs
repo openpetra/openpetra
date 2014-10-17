@@ -55,6 +55,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AActiveOnly);
 
+            // Always enabled initially. Combobox may be diabled later once populated.
+            ACmbKeyMinistries.Enabled = true;
+
             ATxtDetailRecipientKeyMinistry.Visible = true;
             ATxtDetailRecipientKeyMinistry.BringToFront();
             ATxtDetailRecipientKeyMinistry.Parent.Refresh();
@@ -190,6 +193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbKeyMinistries,
             TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            Int64 ARecipientKey,
             TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode,
@@ -265,11 +269,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MotivationRecipientKey);
                 AMotivationDetailChangedFlag = false;
             }
-            else
+            else if (ARecipientKey == 0)
             {
-                RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
                 UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
             }
+
+            RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
         }
 
         /// <summary>
@@ -288,8 +293,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
             TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
+            TextBox ATxtDetailAccountCode,
             TextBox ATxtDetailRecipientKeyMinistry,
             CheckBox AChkDetailTaxDeductible,
+            TextBox ATxtDeductibleAccount,
             ref string AMotivationGroup,
             ref string AMotivationDetail,
             bool AShowingDetailsFlag,
@@ -299,6 +306,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool ABatchUnpostedFlag,
             bool AMotivationDetailChangedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
+            bool AActiveOnly,
             out bool? AEnableRecipientHistory,
             out bool ADoValidateGiftDestination,
             out bool ADoTaxUpdate)
@@ -317,6 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                ATxtDetailRecipientKey.Text = APartnerKey.ToString();
                 ACurrentDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 ACurrentDetailRow.RecipientDescription = APartnerShortName;
 
@@ -338,11 +347,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
                     {
                         ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
+                        ACurrentDetailRow.MotivationGroupCode = AMotivationGroup;
                     }
 
                     if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
                     {
                         ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
+                        ACurrentDetailRow.MotivationDetailCode = AMotivationDetail;
                     }
                 }
 
@@ -426,6 +437,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbMotivationGroupCode,
             ref TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            Int64 ARecipientKey,
             TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode,
@@ -459,6 +471,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACmbKeyMinistries,
                 ref ACmbMotivationDetailCode,
                 ATxtDetailRecipientKey,
+                ARecipientKey,
                 AtxtDetailRecipientLedgerNumber,
                 ATxtDetailCostCentreCode,
                 ATxtDetailAccountCode,
@@ -469,8 +482,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ref AMotivationDetail,
                 ref AMotivationDetailChangedFlag,
                 AActiveOnly,
-                ACreatingNewGiftFlag,
                 ARecipientKeyChangingFlag,
+                ACreatingNewGiftFlag,
                 AInEditModeFlag,
                 ABatchUnpostedFlag,
                 ATaxDeductiblePercentageEnabledFlag,
@@ -554,6 +567,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbKeyMinistries,
             ref TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            Int64 ARecipientKey,
             TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode,
@@ -580,6 +594,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ACmbKeyMinistries,
                     ref ACmbMotivationDetailCode,
                     ATxtDetailRecipientKey,
+                    ARecipientKey,
                     AtxtDetailRecipientLedgerNumber,
                     ATxtDetailCostCentreCode,
                     ATxtDetailAccountCode,
@@ -646,6 +661,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref ACmbKeyMinistries, ref AtxtDetailRecipientLedgerNumber, APartnerKey, true);
+
+            // enable / disable combo box depending on whether it contains any key ministries
+            if (ACmbKeyMinistries.Table.Rows.Count == 0)
+            {
+                ACmbKeyMinistries.Enabled = false;
+            }
+            else
+            {
+                ACmbKeyMinistries.Enabled = true;
+            }
 
             if ((Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))
             {
@@ -923,6 +948,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoPopulated ACmbKeyMinistries,
             ref TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            Int64 ARecipientKey,
             TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode,
             TextBox ATxtDetailAccountCode,
@@ -965,6 +991,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ACmbKeyMinistries,
                     ACmbMotivationDetailCode,
                     ATxtDetailRecipientKey,
+                    ARecipientKey,
                     AtxtDetailRecipientLedgerNumber,
                     ATxtDetailCostCentreCode,
                     ATxtDetailAccountCode,
@@ -992,6 +1019,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ACmbKeyMinistries,
                     ACmbMotivationDetailCode,
                     ATxtDetailRecipientKey,
+                    ARecipientKey,
                     AtxtDetailRecipientLedgerNumber,
                     ATxtDetailCostCentreCode,
                     ATxtDetailAccountCode,

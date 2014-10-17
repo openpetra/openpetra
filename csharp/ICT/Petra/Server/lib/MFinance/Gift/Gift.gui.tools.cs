@@ -25,11 +25,13 @@
 using System;
 using System.Data;
 using Ict.Common.DB;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {
@@ -113,7 +115,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     }
                                     else
                                     {
-                                        MotivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
+                                        MotivationDetail =
+                                            TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
+                                                MFinanceConstants.GROUP_DETAIL_FIELD);
+
+                                        // if system default is empty then set to FIELD
+                                        if (string.IsNullOrEmpty(MotivationDetail))
+                                        {
+                                            MotivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
+                                        }
                                     }
                                 }
                             }
