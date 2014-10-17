@@ -114,6 +114,7 @@ RootNode:
         txtValue:
             Label: Value
             Width: 290
+            OnLeave: HandleValueLeave
 # TODO SHORTCUTS:             Type: Hyperlink
 
         txtComment: {Label=Comment, Multiline=true, Width=245, Height=73, ColSpan=2, RowSpan=3, ScrollBars=Vertical, DataField=PPartnerAttribute.Comment}
@@ -123,7 +124,7 @@ RootNode:
             Controls: [chkCurrent, dtpNoLongerCurrentFrom]
             Padding: 52,0,0,0
         chkCurrent:
-            OnChange: EnableDisableNoLongerCurrentFromDate
+            OnChange: HandleCurrentFlagChanged
         dtpNoLongerCurrentFrom:
             Validation: true
             Enabled: false

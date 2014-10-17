@@ -326,13 +326,18 @@ namespace Ict.Petra.Shared
 
         /// <summary>A Primary Email Address has been set but there are no current E-Mail Addresses available.</summary>
         [ErrCodeAttribute("Primary Email Address Set But No E-Mail Addresses on File",
-             ErrorMessageText = "A Primary Email Address is still set, but there are no current E-Mail Addresses available. Remove the Primary Email Address!")]
-        public const String ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00036V";
+             ErrorMessageText = "A Primary Email Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Primary E-Mail' choices and no 'Primary E-Mail' is set any longer!")]
+        public const String ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00036N";
 
         /// <summary>A Primary Email Address has been set but there are no current E-Mail Addresses available.</summary>
         [ErrCodeAttribute("Primary Email Address Set But the E-Mail Addresses record is not current",
              ErrorMessageText = "A Primary Email Address is still set, but the corresponding E-Mail Address record is not current. Change the Primary Email Address to a current E-Mail Address!")]
         public const String ERR_PRIMARY_EMAIL_ADDR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00037V";
+
+        /// <summary>A Primary Email Address has been set but it doesn't match any E-Mail Address records.</summary>
+        [ErrCodeAttribute("Primary Email Address Set But it Does Not Match any E-Mail Addresses record",
+             ErrorMessageText = "A Primary Email Address was set, but it did not match any E-Mail Address that are on file. It has therefore been removed from the 'Primary E-Mail' choices. Change the Primary Email Address to a current E-Mail Address!")]
+        public const String ERR_PRIMARY_EMAIL_ADDR_SET_BUT_NOT_AMONG_EMAIL_ADDR = "PARTN.00038V";
         
         #region Subscriptions
 

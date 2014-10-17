@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
@@ -43,6 +44,10 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         private readonly string StrDefaultContactType = Catalog.GetString("Phone");
 
+        private string StrPrimEmailConsequence = Catalog.GetString(
+            "Please select a current E-mail Address from the available ones!");
+        private string StrPrimEmailMessageBoxTitle = Catalog.GetString("Primary E-Mail Address Needs Adjusting");
+        
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
@@ -428,6 +433,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             bool ReturnValue = true;
             string PrimaryEmailChoice;
+            bool PrimaryEmailChoiceFoundAmongEligbleEmailAddr = false;
             DataView ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(false);
 
             PrimaryEmailChoice = cmbPrimaryEMail.GetSelectedString();
@@ -484,36 +490,55 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         var TheEmailPartnerAttributeRow = ((PPartnerAttributeRow)ElegibleEmailAddrsDV[Counter3].Row);
                         
-                        if ((TheEmailPartnerAttributeRow.Value == PrimaryEmailChoice)
-                            && (!TheEmailPartnerAttributeRow.Current))
-                        {              
-                            // This condition should not occur, unless the program code that runs when the 'Valid'
-                            // CheckBox is disabled and which should clear all the Items from cmbPrimaryEMail is 
-                            // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop' 
-                            // that will prevent invalid data going to the DB!
-                            
-                            // Generate a Validation *Error*. The user cannot ignore this.
-                            ValidationPrimaryEmailAddrSetButItIsntCurrent();
-                            
-                            UpdatePrimaryEmailComboItems(false);
-                            
-                            ReturnValue = false;                                        
-                        }    
-                    }                    
+                        if (TheEmailPartnerAttributeRow.Value == PrimaryEmailChoice) 
+                        {
+                            PrimaryEmailChoiceFoundAmongEligbleEmailAddr = true;
+
+                            if (!TheEmailPartnerAttributeRow.Current)
+                            {              
+                                // This condition should not occur, unless the program code that runs when the 'Valid'
+                                // CheckBox is disabled and which should clear all the Items from cmbPrimaryEMail is 
+                                // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                                // that will prevent invalid data going to the DB!
+                                
+                                // Generate a Validation *Error*. The user cannot ignore this.
+                                ValidationPrimaryEmailAddrSetButItIsntCurrent();
+                                
+                                UpdatePrimaryEmailComboItems(false);
+                                
+                                ReturnValue = false;                                        
+                            }    
+                        }                        
+                    }    
+                    
+                    if (!PrimaryEmailChoiceFoundAmongEligbleEmailAddr) 
+                    {
+                        // This condition should not occur, unless various bits of program code are somehow 
+                        // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                        // that will prevent invalid data going to the DB!
+                        
+                        // Generate a Validation *Error*. The user cannot ignore this.
+                        ValidationPrimaryEmailAddrSetButNotAmongEmailAddrs();
+                        
+                        UpdatePrimaryEmailComboItems(true);
+                        
+                        ReturnValue = false;                                                                    
+                    }
                 }
             }
             else
             {
                 if (PrimaryEmailChoice != String.Empty)
                 {
-                    // This condition should not occur, unless the program code that runs when the 'Valid'
-                    // CheckBox is disabled and which should clear all the Items from cmbPrimaryEMail is 
-                    // somehow not working correctly, or not run at all. This condition is therefore a 'back-stop' 
+                    // This condition should not occur, unless various bits of program code are somehow 
+                    // not working correctly, or not run at all. This condition is therefore a 'back-stop' 
                     // that will prevent invalid data going to the DB!
-                    
-                    // Generate a Validation *Error*. The user cannot ignore this.
+
+                        // Generate a Validation *Error*. The user cannot ignore this.
                     ValidationPrimaryEmailAddrSetButNoEmailAddrAvailable();
 
+                    UpdatePrimaryEmailComboItems(true);                    
+                    
                     ReturnValue = false;                    
                 }
             }
@@ -558,7 +583,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FEmailAttributesConcatStr = "'" + EmailAttributesConcatStr.Substring(0, EmailAttributesConcatStr.Length - 3);
         }
 
-        private void UpdatePrimaryEmailComboItems(bool ASuppressMessages)
+        private void UpdatePrimaryEmailComboItems(bool ASuppressMessages, string ANewEmailAddressValue = null)
         {
             object[] PrimaryEmailAddresses;
             string ThePrimaryEmailAddress = String.Empty;
@@ -596,6 +621,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+                CurrentlySelectedEmailAddr = ANewEmailAddressValue ?? CurrentlySelectedEmailAddr;    
+
                 cmbPrimaryEMail.SetSelectedString(CurrentlySelectedEmailAddr);
                 
                 if (!ASuppressMessages) 
@@ -651,7 +678,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void GetDetailDataFromControlsManual(PPartnerAttributeRow ARow)
         {
         }
-
+        
         /// <summary>
         /// Event Handler for Grid Event
         /// </summary>
@@ -787,9 +814,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(PPartnerAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
+
             /*Code to execute before the delete can take place*/
 //            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Contact Detail record: '{0}'?"),
 //                ARowToDelete.RelationName);
+            
             return true;
         }
 
@@ -835,8 +864,55 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
+            bool NoEmailAddressesAvailableAnymore = false;
+            string AttributeTypeOfDeletedRow = (string)ARowToDelete[PPartnerAttributeTable.GetAttributeTypeDBName(), DataRowVersion.Original];
+            string ValueOfDeletedRow = (string)ARowToDelete[PPartnerAttributeTable.GetValueDBName(), DataRowVersion.Original];
+            
             if (ADeletionPerformed)
             {
+                StringCollection EmailAttrColl = StringHelper.StrSplit(FEmailAttributesConcatStr, ", ");
+            
+                if (EmailAttrColl.Contains("'" + AttributeTypeOfDeletedRow + "'")) 
+                {
+                    // User deleted an E-mail Contact Detail
+                    
+                    if (cmbPrimaryEMail.GetSelectedString(-1) == ValueOfDeletedRow) 
+                    {
+                        DataView ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(true);
+                        
+                        if (ElegibleEmailAddrsDV.Count == 0) 
+                        {
+                            NoEmailAddressesAvailableAnymore = true;
+                            StrPrimEmailConsequence = Catalog.GetString("The Primary E-mail Address has been cleared as there is no other current E-Mail Address record.");
+                            StrPrimEmailMessageBoxTitle = Catalog.GetString("Primary E-Mail Address Cleared");                                    
+                        }
+                        
+                        // User deleted the E-mail Contact Detail that was set as the 'Primary E-Mail Address':
+                        // Refresh the Primary E-Mail Address Combo (which upon that will no longer contain the E-mail 
+                        // Address of the deleted Contact Detail!) and notify the user that (s)he needs to take action.
+                        UpdatePrimaryEmailComboItems(true);                            
+                        
+                        MessageBox.Show(
+                            String.Format(
+                                Catalog.GetString("You have deleted the Contact Detail that was set as the 'Primary E-Mail Address'.\r\n\r\n{0}"),
+                                StrPrimEmailConsequence),
+                            StrPrimEmailMessageBoxTitle, 
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    
+                        if (!NoEmailAddressesAvailableAnymore)
+                        {
+                            // Show the other current e-mail-Address(es) to the user                    
+                            cmbPrimaryEMail.DroppedDown = true;
+                        }                    
+                    }   
+                    else
+                    {
+                        // User deleted a E-mail Contact Detail that was not set as the 'Primary E-Mail Address':
+                        // Simply refresh the Primary E-Mail Address Combo
+                        UpdatePrimaryEmailComboItems(true);
+                    }         
+                }
+                
                 DoRecalculateScreenParts();
 
                 if (grdDetails.Rows.Count <= 1)
@@ -844,7 +920,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // hide details part and disable buttons if no record in grid (first row for headings)
                     btnDelete.Enabled = false;
                     pnlDetails.Visible = false;
-                }
+                }                
             }
         }
 
@@ -1018,7 +1094,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             throw new NotImplementedException("Filtering is not implemented yet!");
         }
 
-        private void EnableDisableNoLongerCurrentFromDate(Object sender, EventArgs e)
+        private void HandleCurrentFlagChanged(Object sender, EventArgs e)
         {
             bool PrimaryEmailAddressIsThisRecord = false;
             
@@ -1056,11 +1132,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void HandleValueLeave(Object sender, EventArgs e)
+        {
+            var SelectedDetailDR = GetSelectedDetailRow();
+            if ((!FRunningInsideShowDetails) 
+                && (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS))
+            {
+                if (SelectedDetailDR.RowState != DataRowState.Detached) 
+                {
+                    // Ensure current email address is reflected in the DataRow
+                    SelectedDetailDR.Value = txtValue.Text;
+                    
+                    // Refresh the ComboBox so it reflects any change in the email address!
+                    UpdatePrimaryEmailComboItems(true, txtValue.Text);                                                    
+                }
+            }
+        }
+            
         private void CheckThatNonCurrentEmailAddressIsntPrimaryEmailAddr(bool AIsPrimaryEmailAddressIsThisRecord)
         {
             bool NoEmailAddressesAvailableAnymore = false;
-            string ConsequenceStr = Catalog.GetString("Please select a current E-mail Address from the available ones!");
-            string MessageBoxTitleStr = Catalog.GetString("Primary E-Mail Address Needs Adjusting");
             
             if (AIsPrimaryEmailAddressIsThisRecord) 
             {
@@ -1069,9 +1160,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (ElegibleEmailAddrsDV.Count == 0) 
                 {
                     NoEmailAddressesAvailableAnymore = true;
-                    ConsequenceStr = Catalog.GetString("The Primary E-mail Address has been cleared as there is no other current E-Mail Address record.");
-                    MessageBoxTitleStr = Catalog.GetString("Primary E-Mail Address Cleared");                    
-                
+                    StrPrimEmailConsequence = Catalog.GetString("The Primary E-mail Address has been cleared as there is no other current E-Mail Address record.");
+                    StrPrimEmailMessageBoxTitle = Catalog.GetString("Primary E-Mail Address Cleared");                                    
                 }
 
                 // Select the 'empty' ComboBox Item
@@ -1080,8 +1170,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MessageBox.Show(
                     String.Format(
                         Catalog.GetString("You have made the E-Mail Address no longer current, but up till now it was set to be the Primary E-Mail Address.\r\n\r\n{0}"), 
-                        ConsequenceStr), 
-                    MessageBoxTitleStr, 
+                        StrPrimEmailConsequence), 
+                    StrPrimEmailMessageBoxTitle, 
                     MessageBoxButtons.OK, NoEmailAddressesAvailableAnymore ? MessageBoxIcon.Warning : MessageBoxIcon.Information);
         
                 if (!NoEmailAddressesAvailableAnymore)
@@ -1378,6 +1468,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             VerificationResult = new TScreenVerificationResult(
                 new TVerificationResult((object)ResCont,
                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_SET_BUT_IT_ISNT_CURRENT),
+                    FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID),
+                null, cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
+
+
+            VerificationResultCollection.Remove(ResCont);
+
+            if (VerificationResult != null)
+            {
+                VerificationResultCollection.Add(VerificationResult);
+            }
+        }
+
+        /// <summary>
+        /// Creates a Data Validation *Error* for cmbPrimaryEmail.
+        /// </summary>
+        private void ValidationPrimaryEmailAddrSetButNotAmongEmailAddrs()
+        {
+            const string ResCont = "ContactDetails_PrimaryEmailAddress_Set_But_Not_Among_Email_Addrs";
+            TScreenVerificationResult VerificationResult;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            VerificationResult = new TScreenVerificationResult(
+                new TVerificationResult((object)ResCont,
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_SET_BUT_NOT_AMONG_EMAIL_ADDR),
                     FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID),
                 null, cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
 
