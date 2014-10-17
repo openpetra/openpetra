@@ -397,7 +397,7 @@
 			</query>
 		</calculation>
 		
-		<calculation align="left" id="NumberOfAddresses" returns="text" returnsFormat="text">
+		<calculation align="left" id="NumberOfAddresses" returns="integer" returnsFormat="integer">
 			<caption><value text="Number of Addresses"></value></caption>
 			<query>
 				<queryDetail>
@@ -423,7 +423,7 @@
 				<field whichfield="column 1" pos="0.0cm" width="3cm">
 					<value text="Number of Addresses:"/>
 				</field>
-				<field whichfield="column 2" pos="3.2cm" width="1cm">
+				<field whichfield="column 2" pos="3.2cm" width="1cm" format="integer">
 					<value variable="NumberOfAddresses"/>
 				</field>
 				<!--field whichfield="column 3" pos="4.5cm" width="10cm">

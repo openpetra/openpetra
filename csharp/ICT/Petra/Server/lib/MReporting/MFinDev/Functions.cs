@@ -515,7 +515,48 @@ namespace Ict.Petra.Server.MReporting.MFinDev
         }
 
         /// <summary>
-        ///	Select the last Gift and motivation details of the gifts that were given within the time period from one partner.
+        /// Find the latest gift that was given by a donor
+        /// </summary>
+        /// <param name="AParameters">report parameter list</param>
+        /// <param name="AResults">result list</param>
+        /// <returns>DataTable with row for last gift by donor</returns>
+        public static DataTable SelectLatestGiftRow(TParameterList AParameters, TResultList AResults)
+        {
+            Int64 DonorKey = AParameters.Get("PartnerKey").ToInt64();
+
+            String StrSql = "SELECT DISTINCT " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetLedgerNumberDBName() + ", " +
+                            AGiftTable.GetTableDBName() + "." + AGiftTable.GetBatchNumberDBName() + ", " +
+                            AGiftTable.GetTableDBName() + "." + AGiftTable.GetGiftTransactionNumberDBName() + ", " +
+                            AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName();
+
+            StrSql = StrSql +
+                     " FROM " + AGiftTable.GetTableDBName() +
+                     " WHERE " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDonorKeyDBName() + " = " + DonorKey.ToString() +
+                     " ORDER BY " + AGiftTable.GetTableDBName() + "." + AGiftTable.GetDateEnteredDBName() + " DESC";
+
+            TDBTransaction Transaction = null;
+            DataTable tempTbl = new DataTable();
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    tempTbl = DBAccess.GDBAccessObj.SelectDT(StrSql, "result", Transaction);
+                });
+
+            DataTable resultTbl = tempTbl.Clone();
+            resultTbl.Clear();
+
+            if (tempTbl.Rows.Count > 0)
+            {
+                resultTbl.Rows.Add((object[])tempTbl.Rows[0].ItemArray.Clone());
+            }
+
+            return resultTbl;
+        }
+
+        /// <summary>
+        /// Select the last Gift and motivation details of the gifts that were given within the time period from one partner.
         /// </summary>
         /// <param name="ADonorKey">Partner key of the donor</param>
         /// <param name="ALedgerNumber">Ledger number</param>
