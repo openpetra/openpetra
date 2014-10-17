@@ -35,7 +35,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
-    public partial class TFrmRecurringGiftBatch
+    public partial class TFrmRecurringGiftBatch : IFrmPetraEditManual
     {
         private Int32 FLedgerNumber;
         private int standardTabIndex = 0;
@@ -65,6 +65,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoRecurringBatches.RefreshAll();
         }
 
+        private void FileSaveManual(object sender, EventArgs e)
+        {
+            SaveChangesManual();
+        }
+
+        /// <summary>
+        /// Check for ExWorkers before saving
+        /// </summary>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual()
+        {
+            return SaveChangesManual(TExWorkerAlert.GiftBatchAction.SAVING);
+        }
+
+        /// <summary>
+        /// Check for ExWorkers before saving or cancelling
+        /// </summary>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual(TExWorkerAlert.GiftBatchAction AAction)
+        {
+            GetDataFromControls();
+
+            // first alert the user to any recipients who are Ex-Workers
+            if (TExWorkerAlert.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
+            {
+                return SaveChanges();
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check for Ex-Worker before saving and submitting
+        /// </summary>
+        /// <param name="ASubmittingGiftDetails">GiftDetails for the recurring batch that is to be submitted</param>
+        /// <param name="ACancelledDueToExWorker">True if batch posting has been cancelled by the user because of an Ex-Worker recipient</param>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesForSubmitting(DataTable ASubmittingGiftDetails, out bool ACancelledDueToExWorker)
+        {
+            GetDataFromControls();
+
+            // first alert the user to any recipients who are Ex-Workers
+            ACancelledDueToExWorker = !TExWorkerAlert.CanContinueWithAnyExWorkers(
+                TExWorkerAlert.GiftBatchAction.SUBMITTING, FMainDS, FPetraUtilsObject, ASubmittingGiftDetails);
+
+            if (!ACancelledDueToExWorker)
+            {
+                ProcessRecipientCostCentreCodeUpdateErrors(false);
+                return SaveChanges();
+            }
+
+            return false;
+        }
+
         // Before the dataset is saved, check for correlation between batch and transactions
         private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
@@ -76,6 +130,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgRecurringTransactions.Enabled = false;
+
+            // change the event that gets called when 'Save' is clicked (i.e. changed from generated code)
+            tbbSave.Click -= FileSave;
+            mniFileSave.Click -= FileSave;
+            tbbSave.Click += FileSaveManual;
+            mniFileSave.Click += FileSaveManual;
         }
 
         /// <summary>
@@ -265,7 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    SaveChanges();
+                    SaveChangesManual();
                 }
 
                 return true;

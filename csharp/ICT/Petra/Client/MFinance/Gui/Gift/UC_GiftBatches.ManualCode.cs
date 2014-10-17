@@ -234,12 +234,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SelectRowInGrid(nCurrentRowIndex);
                 UpdateRecordNumberDisplay();
 
-                if (((TFrmGiftBatch)ParentForm).GetTransactionsControl() != null)
+                TUC_GiftTransactions TransactionForm = ((TFrmGiftBatch)ParentForm).GetTransactionsControl();
+
+                if (TransactionForm != null)
                 {
                     ((TFrmGiftBatch)ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
 
-                    // This will update the transactions to match the current batch
-                    ((TFrmGiftBatch)ParentForm).GetTransactionsControl().RefreshAllData();
+                    // if the batch number = -1 then this is not a valid instance of TUC_GiftTransactions and we do not need to refresh
+                    if (TransactionForm.FBatchNumber != -1)
+                    {
+                        // This will update the transactions to match the current batch
+                        TransactionForm.RefreshAllData();
+                    }
                 }
             }
             finally
@@ -520,6 +526,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            GetDataFromControls();
+
+            if (!TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
+            {
+                return;
+            }
+
             //If viewing posted batches only, show list of editing batches
             //  instead before adding a new batch
             if (!FLoadAndFilterLogicObject.StatusEditing)
@@ -857,7 +870,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    ((TFrmGiftBatch)ParentForm).SaveChanges();
+                    ((TFrmGiftBatch)ParentForm).SaveChangesManual();
                 }
             }
         }
