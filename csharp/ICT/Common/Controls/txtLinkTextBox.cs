@@ -74,14 +74,14 @@ namespace Ict.Common.Controls
         #endregion
 
         #region Delegates
-        
+
         /// <summary>
         /// Delegate for building a Link where the Text of this Control is part of a hyperlink rather than it being the full hyperlink.
         /// </summary>
-        public Func<string, string> BuildLinkWithValue;
-        
+        public Func <string, string>BuildLinkWithValue;
+
         #endregion
-        
+
         #region Constructor
 
         /// <summary>
@@ -126,7 +126,6 @@ namespace Ict.Common.Controls
             {
                 this.SwitchToEditMode(true);
             }
-
         }
 
         /// <summary>
@@ -141,7 +140,7 @@ namespace Ict.Common.Controls
             if (FLinkType != THyperLinkHandling.THyperLinkType.None)
             {
                 this.SwitchToEditMode(false);
-            }               
+            }
         }
 
         /// <summary>
@@ -214,13 +213,13 @@ namespace Ict.Common.Controls
                     break;
 
                 case THyperLinkHandling.THyperLinkType.Skype:
+
                     if (this.Text.ToLower().IndexOf("skype:") < 0)
-                    {                    
+                    {
                         LinkType = "skype:";
                     }
-                    
+
                     break;
-                    
             }
 
             // Clear old links and create a new one
@@ -234,25 +233,26 @@ namespace Ict.Common.Controls
         private void LaunchHyperlink()
         {
             string TheLink;
-            
+
             try
             {
                 if (FLinkLabel.Links.Count > 0)
                 {
                     TheLink = FLinkLabel.Links[0].LinkData.ToString();
-                    
+
                     if (FLinkType == THyperLinkHandling.THyperLinkType.Http_With_Value_Replacement)
                     {
-                        if (BuildLinkWithValue != null) 
+                        if (BuildLinkWithValue != null)
                         {
                             TheLink = BuildLinkWithValue(TheLink);
                         }
                         else
                         {
-                            throw new EProblemLaunchingHyperlinkException("LinkType is set to TLinkTypes.Http_With_Value_Replacement, but the Delegate 'BuildLinkWithValue' has not been set up");
+                            throw new EProblemLaunchingHyperlinkException(
+                                "LinkType is set to TLinkTypes.Http_With_Value_Replacement, but the Delegate 'BuildLinkWithValue' has not been set up");
                         }
                     }
-                    
+
                     System.Diagnostics.Process.Start(TheLink);
                 }
             }
@@ -287,7 +287,7 @@ namespace Ict.Common.Controls
         {
             if (FLinkType != THyperLinkHandling.THyperLinkType.None)
             {
-                if ((e.Button == MouseButtons.Left) 
+                if ((e.Button == MouseButtons.Left)
                     && ((Control.ModifierKeys & Keys.Control) == Keys.Control))
                 {
                     LaunchHyperlink();
@@ -314,7 +314,7 @@ namespace Ict.Common.Controls
             if (!FIsLinkClicked)
             {
                 this.Focus();
-                
+
                 FIsLinkClicked = false;
             }
         }
@@ -326,5 +326,5 @@ namespace Ict.Common.Controls
         }
 
         #endregion
-    }    
- }
+    }
+}

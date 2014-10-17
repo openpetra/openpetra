@@ -626,12 +626,12 @@ namespace Ict.Petra.Shared.MPartner
         {
             var ReturnValue = new PPartnerAttributeTypeTable();
             Type tmp;
-            
+
             ReturnValue.Merge(ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), TCacheablePartnerTablesEnum.ContactTypeList), out tmp));
 
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// count the available current addresses and the total number of addresses
         /// </summary>
@@ -670,14 +670,14 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// Count the Partner Contact Details.
         /// </summary>
-        /// <param name="ATable">Table with Partner Contact Details. This will be the PPartnerAttribute Table.</param>        
+        /// <param name="ATable">Table with Partner Contact Details. This will be the PPartnerAttribute Table.</param>
         /// <param name="ATotalPartnerContactDetails">returns the total number of Partner Contact Details.</param>
         /// <param name="AActivePartnerContactDetails">returns the number of current Partner Contact Details.</param>
-        public static void CalculateTabCountsPartnerContactDetails(PartnerEditTDSPPartnerAttributeTable ATable,  
+        public static void CalculateTabCountsPartnerContactDetails(PartnerEditTDSPPartnerAttributeTable ATable,
             out Int32 ATotalPartnerContactDetails, out Int32 AActivePartnerContactDetails)
         {
             // Inspect only CurrentRows (this excludes Deleted DataRows)
-            ATotalPartnerContactDetails = new DataView(ATable, 
+            ATotalPartnerContactDetails = new DataView(ATable,
                 "PartnerContactDetail = true", "", DataViewRowState.CurrentRows).Count;
 
             // Inspect only CurrentRows (this excludes Deleted DataRows)
@@ -686,7 +686,7 @@ namespace Ict.Petra.Shared.MPartner
                 PPartnerAttributeTable.GetCurrentDBName() + " = true", "",
                 DataViewRowState.CurrentRows).Count;
         }
-        
+
         /// <summary>
         /// Count the subscriptions
         /// </summary>

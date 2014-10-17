@@ -36,54 +36,54 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmContactCategoriesAndTypesSetup
     {
-		bool FDataSavedInNoMasterDataToSaveEvent = false;
+        bool FDataSavedInNoMasterDataToSaveEvent = false;
 
-		bool FDataSavingInUserControlRequiredFirst = false;
-		
+        bool FDataSavingInUserControlRequiredFirst = false;
+
         System.Windows.Forms.Timer ShowMessageBoxTimer = new System.Windows.Forms.Timer();
 
-		/// <summary>
-		/// Index of Row that is to be deleted.
-		/// </summary>
-		int FIndexOfDeletedRow = -1;
-		
-		// Instance of a 'Helper Class' for handling the Indexes of the DataRows. (The Grid is sorted by the Index.)
-		TSgrdDataGrid.IndexedGridRowsHelper FIndexedGridRowsHelper;
-		
+        /// <summary>
+        /// Index of Row that is to be deleted.
+        /// </summary>
+        int FIndexOfDeletedRow = -1;
+
+        // Instance of a 'Helper Class' for handling the Indexes of the DataRows. (The Grid is sorted by the Index.)
+        TSgrdDataGrid.IndexedGridRowsHelper FIndexedGridRowsHelper;
+
         private void InitializeManualCode()
-        {                        
+        {
             // Initialize 'Helper Class' for handling the Indexes of the DataRows.
             FIndexedGridRowsHelper = new TSgrdDataGrid.IndexedGridRowsHelper(
                 grdDetails, PPartnerAttributeCategoryTable.ColumnIndexId, btnDemoteCategory, btnPromoteCategory,
                 delegate { FPetraUtilsObject.SetChangedFlag(); });
-            
+
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(DataSavingStarted);
             // We need to capture the 'DataSaved' event so we can save our Extra DataSet
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(DataSaved);
-            // We need to capture the 'NoMasterDataToSave' event so we can save our Extra DataSet 
+            // We need to capture the 'NoMasterDataToSave' event so we can save our Extra DataSet
             // in case that no data was changed in this Forms' pnlDetails
             FPetraUtilsObject.NoMasterDataToSave += NoMasterDataToSave;
 
-            // We also want to know if the UserControl holds no more detail records            
+            // We also want to know if the UserControl holds no more detail records
             ucoValues.NoMoreDetailRecords += Uco_NoMoreDetailRecords;
-            
+
             ucoValues.PetraUtilsObject = FPetraUtilsObject;
-            
+
             grdDetails.Selection.FocusRowLeaving += HandleFocusRowLeaving;
 
-            // We capture the Leave event of the Code TextBox (This is more consistent than LostFocus. - it always occurs 
+            // We capture the Leave event of the Code TextBox (This is more consistent than LostFocus. - it always occurs
             // before validation, whereas LostFocus occurs before or after depending on mouse or keyboard.)
             txtDetailCategoryCode.Leave += new EventHandler(txtDetailCategoryCode_Leave);
-            
+
             // Set up Timer that is needed for showing MessageBoxes from a Grid Event
             ShowMessageBoxTimer.Tick += new EventHandler(ShowTimerDrivenMessageBox);
             ShowMessageBoxTimer.Interval = 100;
-            
+
             /* fix tab order */
             pnlButtons.TabIndex = grdDetails.TabIndex + 1;
         }
-        
+
         private void RunOnceOnActivationManual()
         {
             // Set up the correct filter for the bottom grid, based on our initial contact attribute
@@ -92,28 +92,28 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 ucoValues.SetCategoryCode(txtDetailCategoryCode.Text);
             }
 
-            SelectRowInGrid(1);            
+            SelectRowInGrid(1);
         }
-        
+
         private void NewRecord(System.Object sender, EventArgs e)
         {
             if (FDataSavingInUserControlRequiredFirst)
             {
                 MessageBox.Show(Catalog.GetString(
-                    "You need to press 'Save' first before you can create a new Category."), 
+                        "You need to press 'Save' first before you can create a new Category."),
                     Catalog.GetString("Saving of Data Required"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                
+
                 return;
             }
-            
-            if(CreateNewPPartnerAttributeCategory())
+
+            if (CreateNewPPartnerAttributeCategory())
             {
                 // Create the required initial detail attribute.
-                ucoValues.CreateFirstContactType(txtDetailCategoryCode.Text, FMainDS.PPartnerAttributeCategory);            
-                
+                ucoValues.CreateFirstContactType(txtDetailCategoryCode.Text, FMainDS.PPartnerAttributeCategory);
+
                 ucoValues.Enabled = true;
                 txtDetailCategoryCode.ReadOnly = false;
-                
+
                 txtDetailCategoryCode.Focus();
             }
         }
@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             ARow.CategoryCode = NewName;
             ARow.PartnerContactCategory = true;
-            ARow.Deletable = true;  // all manually created Contact Categories are deletable                                 
+            ARow.Deletable = true;  // all manually created Contact Categories are deletable
 
             // Determine and set the 'Index' (ARow.Index in this case) of the new Row
             FIndexedGridRowsHelper.DetermineIndexForNewRow(ARow);
@@ -150,10 +150,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private bool PreDeleteManual(PPartnerAttributeCategoryRow ARowToDelete, ref string ADeletionQuestion)
         {
             FIndexOfDeletedRow = grdDetails.DataSourceRowToIndex2(ARowToDelete);
-            
+
             return true;
         }
-        
+
         private void DeleteRecord(object sender, EventArgs e)
         {
             if (ucoValues.Count > 0)
@@ -171,23 +171,23 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 msg += Catalog.GetString("You must delete all the Contact Types for the selected Contact Category before you can delete this record.");
 
                 MessageBox.Show(msg, MCommon.MCommonResourcestrings.StrRecordDeletionTitle,
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                 return;
             }
 
             if (FDataSavingInUserControlRequiredFirst)
             {
                 MessageBox.Show(Catalog.GetString(
-                    "You need to press 'Save' first before deleting the Category."), 
+                        "You need to press 'Save' first before deleting the Category."),
                     Catalog.GetString("Saving of Data Required"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                
+
                 return;
             }
-            
+
             DeletePPartnerAttributeCategory();
         }
-        
+
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
@@ -195,17 +195,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(PPartnerAttributeCategoryRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
-        {         
-            if (ADeletionPerformed) 
-            {                
+        private void PostDeleteManual(PPartnerAttributeCategoryRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            if (ADeletionPerformed)
+            {
                 // If the Row that got selected for deletion wasn't the last Row then we need to adjust the
                 // Index of the following Rows
                 if (FIndexOfDeletedRow != grdDetails.Rows.Count - 1)
                 {
                     FIndexedGridRowsHelper.AdjustIndexesOfFollowingRows(GetSelectedRowIndex(), false);
                 }
-            }            
+            }
         }
 
         private void ShowDetailsManual(PPartnerAttributeCategoryRow ARow)
@@ -221,22 +224,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 ucoValues.Enabled = true;
 
                 // Pass the category code to the user control - it will then update itself
-                ucoValues.SetCategoryCode(txtDetailCategoryCode.Text);                                
+                ucoValues.SetCategoryCode(txtDetailCategoryCode.Text);
             }
-         
-            // Need to do the enabling/disabling of the Delete button manually as no auto-generated code 
+
+            // Need to do the enabling/disabling of the Delete button manually as no auto-generated code
             // gets created since we have our own Delete handling ('DeleteRecord' Method in ManualCode file)
             btnDelete.Enabled = pnlDetails.Enabled && chkDetailDeletable.Checked;
-            
+
             FIndexedGridRowsHelper.UpdateButtons(GetSelectedRowIndex());
         }
 
         private void GetDetailDataFromControlsManual(PPartnerAttributeCategoryRow ARow)
         {
-            // Tell the user control to get its data, too            
+            // Tell the user control to get its data, too
             ucoValues.GetDetailsFromControls();
         }
-                
+
         private void txtDetailCategoryCode_Leave(object sender, EventArgs e)
         {
             string NewCode = txtDetailCategoryCode.Text;
@@ -252,11 +255,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 return;
             }
-           
+
             // So it is safe to modify the Contact Types
             ucoValues.ModifyCategoryCode(NewCode);
         }
-        
+
         /// <summary>
         /// This Procedure will get called from the SaveChanges procedure before it
         /// actually performs any saving operation.
@@ -269,10 +272,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             TTypedDataTable ChildDTWhoseDataGotSaved;
 
-            FDataSavedInNoMasterDataToSaveEvent = false;            
-        
-            if (FPreviouslySelectedDetailRow != null) 
-            {            
+            FDataSavedInNoMasterDataToSaveEvent = false;
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
                 // Trigger a Leave Event on the Category Code in case we have a new Category.
                 // This is needed to ensure that any change in the Category Code is for sure
                 // passed on the ucoValues UserControl - as the Leave Event doesn't fire if
@@ -280,86 +283,86 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                     && (txtDetailCategoryCode.Focused))
                 {
-                    txtDetailCategoryCode_Leave(this, null);                
+                    txtDetailCategoryCode_Leave(this, null);
                 }
             }
-            
-            if (FDataSavingInUserControlRequiredFirst) 
+
+            if (FDataSavingInUserControlRequiredFirst)
             {
                 ucoValues.SaveChanges(out ChildDTWhoseDataGotSaved);
-                
+
                 FDataSavingInUserControlRequiredFirst = false;
                 FPetraUtilsObject.HasChanges = true;
             }
         }
-        
+
         private void DataSaved(object Sender, TDataSavedEventArgs e)
         {
             TTypedDataTable ChildDTWhoseDataGotSaved;
-            
+
             // Save the changes in the user control
             if ((e.Success)
                 && (!FDataSavedInNoMasterDataToSaveEvent))
             {
                 FPetraUtilsObject.SetChangedFlag();
-            
+
                 ucoValues.SaveChanges(out ChildDTWhoseDataGotSaved);
-                                
-                FPetraUtilsObject.DisableSaveButton();      
+
+                FPetraUtilsObject.DisableSaveButton();
             }
-            
+
             // Ensure Filter functionality is enabled (might have been disabled in Method 'Uco_NoMoreDetailRecords')
             ActionEnabledEvent(null, new ActionEventArgs("cndFindFilterAvailable", true));
         }
-        
-		private void NoMasterDataToSave(object Sender, Ict.Common.TNoMasterDataToSaveEventArgs e)
-		{
-		    TTypedDataTable ChildDTWhoseDataGotSaved;
-		    bool UCSaveResult;
-		    
+
+        private void NoMasterDataToSave(object Sender, Ict.Common.TNoMasterDataToSaveEventArgs e)
+        {
+            TTypedDataTable ChildDTWhoseDataGotSaved;
+            bool UCSaveResult;
+
             // Save the changes in the user control
             UCSaveResult = ucoValues.SaveChanges(out ChildDTWhoseDataGotSaved);
 
-			e.SubmitChangesResult = UCSaveResult ? TSubmitChangesResult.scrOK : TSubmitChangesResult.scrError;            
+            e.SubmitChangesResult = UCSaveResult ? TSubmitChangesResult.scrOK : TSubmitChangesResult.scrError;
             e.ChildDataTableWhoseDataGotSaved = ChildDTWhoseDataGotSaved;
-		    
+
             FDataSavedInNoMasterDataToSaveEvent = true;
-		}
+        }
 
         /// <summary>
         /// Raised when the Values UserControl holds no more detail records after all detail records
-		/// have been deleted.
-		/// <para>
-		/// We need to check in this Event Hanlder whether the deleted records exist in the DB; if so we  
-		/// need to prevent a few actions that the user could take to ensure that the UserControls' data 
-		/// gets saved first (signalised by the FDataSavingInUserControlRequiredFirst flag). This is necessary  
-		/// so that the deleted Rows are no longer in the DB. That in turn is necessary for the user to be able  
-		/// to delete the Category as well, as otherwise the reference count on the Category would not be null 
-		/// and a deletion of the Category could not go ahead.
-		/// </para>
+        /// have been deleted.
+        /// <para>
+        /// We need to check in this Event Hanlder whether the deleted records exist in the DB; if so we
+        /// need to prevent a few actions that the user could take to ensure that the UserControls' data
+        /// gets saved first (signalised by the FDataSavingInUserControlRequiredFirst flag). This is necessary
+        /// so that the deleted Rows are no longer in the DB. That in turn is necessary for the user to be able
+        /// to delete the Category as well, as otherwise the reference count on the Category would not be null
+        /// and a deletion of the Category could not go ahead.
+        /// </para>
         /// </summary>
         /// <param name="sender">Ignored.</param>
         /// <param name="e">Ignored.</param>
-		private void Uco_NoMoreDetailRecords(object sender, EventArgs e)
-		{
-			TVerificationResultCollection VerificationResults = null;
-            
+        private void Uco_NoMoreDetailRecords(object sender, EventArgs e)
+        {
+            TVerificationResultCollection VerificationResults = null;
+
             GetReferenceCount(GetSelectedDataRow(), FPetraUtilsObject.MaxReferenceCountOnDelete, out VerificationResults);
 
             if ((VerificationResults != null)
                 && (VerificationResults.Count > 0))
-            {            
+            {
                 FDataSavingInUserControlRequiredFirst = true;
-                
-                // Need to disable Filter functionality to prevent user from potentially changing to different Rows 
+
+                // Need to disable Filter functionality to prevent user from potentially changing to different Rows
                 // as that could happen if the user would apply a Filter!
                 ActionEnabledEvent(null, new ActionEventArgs("cndFindFilterAvailable", false));
-                
+
                 // Need to set Focus to btnNew as otherwise the 'Filter' button of the UserControl gets the Focus, which isn't helpful
-                btnNew.Focus();  
+                btnNew.Focus();
             }
-		}
-		
+        }
+
         private void ContactCategoryPromote(System.Object sender, System.EventArgs e)
         {
             FIndexedGridRowsHelper.PromoteRow();
@@ -368,49 +371,49 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void ContactCategoryDemote(System.Object sender, System.EventArgs e)
         {
             FIndexedGridRowsHelper.DemoteRow();
-        }		
+        }
 
-		private void HandleFocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
-		{
-		    if (FDataSavingInUserControlRequiredFirst)
+        private void HandleFocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+        {
+            if (FDataSavingInUserControlRequiredFirst)
             {
-                DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(e.ProposedRow);		
+                DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(e.ProposedRow);
                 var SelectedDR = rowView.Row as PPartnerAttributeCategoryRow;
-                    
+
                 // This check is needed in case one of the promote/demote Buttons have got clicked: in that case
-                // this Event will be fired, but the Row hasn't changed                
-                if (SelectedDR.CategoryCode != txtDetailCategoryCode.Text) 
+                // this Event will be fired, but the Row hasn't changed
+                if (SelectedDR.CategoryCode != txtDetailCategoryCode.Text)
                 {
                     ShowMessageBoxTimer.Start();
-                    
-                    e.Cancel = true;                    
-                }                
-            }		    
-		}
-		
-		/// <summary>
-		/// Called from a timer, ShowMessageBoxTimer, so that the FocusRowLeaving Event processing can
+
+                    e.Cancel = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called from a timer, ShowMessageBoxTimer, so that the FocusRowLeaving Event processing can
         /// complete before the MessageBox is show (would the MessageBox be shown while the Event gets
         /// processed the Grid would get into a strange state in which mouse moves would cause the Grid
         /// to scroll!).
-		/// </summary>
-		/// <param name="Sender">Gets evaluated to make sure a Timer is calling this Method.</param>
-		/// <param name="e">Ignored.</param>
-		private void ShowTimerDrivenMessageBox(Object Sender, EventArgs e)        
-        {            
+        /// </summary>
+        /// <param name="Sender">Gets evaluated to make sure a Timer is calling this Method.</param>
+        /// <param name="e">Ignored.</param>
+        private void ShowTimerDrivenMessageBox(Object Sender, EventArgs e)
+        {
             System.Windows.Forms.Timer SendingTimer = Sender as System.Windows.Forms.Timer;
-            
+
             if (SendingTimer != null)
             {
                 // I got called from a Timer: stop that now so that the following MessageBox gets shown only once!
                 SendingTimer.Stop();
-                
+
                 MessageBox.Show(
                     Catalog.GetString(
                         "You need to press 'Save' first before you can change to a different Category."),
-                        Catalog.GetString("Saving of Data Required"), 
-                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);                
+                    Catalog.GetString("Saving of Data Required"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-		}		    
+        }
     }
 }

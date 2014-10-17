@@ -37,8 +37,8 @@ using Ict.Petra.Shared;
 namespace Ict.Petra.Client.CommonForms
 {
     /// <summary>
-    /// A utility class that centralises aspects of 'SaveChanges' Methods in OpenPetra. Those aspects perform (nearly) 
-    /// the same operations everywhere; where they differ, Arguments of these central Methods make those different 
+    /// A utility class that centralises aspects of 'SaveChanges' Methods in OpenPetra. Those aspects perform (nearly)
+    /// the same operations everywhere; where they differ, Arguments of these central Methods make those different
     /// behaviours possible.
     /// </summary>
     public static class TCommonSaveChangesFunctions
@@ -56,38 +56,38 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AMasterDataTableSaveCall"></param>
         /// <param name="ACalledFromUserControl"></param>
         /// <param name="ACallAcceptChangesOnReturnedDataBeforeMerge"></param>
-        public static void ProcessSubmitChangesResultOK(IFrmPetra ACallingFormOrUserControl, DataTable ALocalDT, 
+        public static void ProcessSubmitChangesResultOK(IFrmPetra ACallingFormOrUserControl, DataTable ALocalDT,
             DataTable ASubmitDT, TFrmPetraEditUtils APetraUtilsObject, TVerificationResultCollection AVerificationResults,
-            Action<bool> ASetPrimaryKeyOnlyMethod, bool AMasterDataTableSaveCall, bool ACalledFromUserControl, 
+            Action <bool>ASetPrimaryKeyOnlyMethod, bool AMasterDataTableSaveCall, bool ACalledFromUserControl,
             bool ACallAcceptChangesOnReturnedDataBeforeMerge = false)
         {
-            if (AMasterDataTableSaveCall) 
-            {            
+            if (AMasterDataTableSaveCall)
+            {
                 // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
                 ALocalDT.AcceptChanges();
-    
+
                 // Merge back with data from the Server (eg. for getting Sequence values)
-                if (ACallAcceptChangesOnReturnedDataBeforeMerge) 
+                if (ACallAcceptChangesOnReturnedDataBeforeMerge)
                 {
-                    ASubmitDT.AcceptChanges();    
+                    ASubmitDT.AcceptChanges();
                 }
-                
+
                 ALocalDT.Merge(ASubmitDT, false);
-    
+
                 // Need to accept any new modification ID's
                 ALocalDT.AcceptChanges();
-            
-                if (ASetPrimaryKeyOnlyMethod != null) 
+
+                if (ASetPrimaryKeyOnlyMethod != null)
                 {
                     // Ensure the Primary-Key(s)-containing Controls are disabled to prevent further modification of Primary Key values
-                    ASetPrimaryKeyOnlyMethod(true);                                    
+                    ASetPrimaryKeyOnlyMethod(true);
                 }
             }
-            
-            CommonPostMergeOperations(ACallingFormOrUserControl, APetraUtilsObject, 
+
+            CommonPostMergeOperations(ACallingFormOrUserControl, APetraUtilsObject,
                 AVerificationResults, ACalledFromUserControl);
         }
-        
+
         /// <summary>
         /// Processes the result of a data submission to the Server where the result of that operation is
         /// <see cref="TSubmitChangesResult.scrOK" />. (Overload for Typed DataSets.)
@@ -101,37 +101,37 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AMasterDataTableSaveCall"></param>
         /// <param name="ACalledFromUserControl"></param>
         /// <param name="ACallAcceptChangesOnReturnedDataBeforeMerge"></param>
-        public static void ProcessSubmitChangesResultOK(IFrmPetra ACallingFormOrUserControl, TTypedDataSet ALocalTDS, 
+        public static void ProcessSubmitChangesResultOK(IFrmPetra ACallingFormOrUserControl, TTypedDataSet ALocalTDS,
             TTypedDataSet ASubmitTDS, TFrmPetraEditUtils APetraUtilsObject, TVerificationResultCollection AVerificationResults,
-            Action<bool> ASetPrimaryKeyOnlyMethod, bool AMasterDataTableSaveCall, bool ACalledFromUserControl, 
+            Action <bool>ASetPrimaryKeyOnlyMethod, bool AMasterDataTableSaveCall, bool ACalledFromUserControl,
             bool ACallAcceptChangesOnReturnedDataBeforeMerge = false)
         {
-            if (AMasterDataTableSaveCall) 
-            {            
+            if (AMasterDataTableSaveCall)
+            {
                 // Call AcceptChanges to get rid now of any deleted columns before we Merge with the result from the Server
                 ALocalTDS.AcceptChanges();
-    
+
                 // Merge back with data from the Server (eg. for getting Sequence values)
-                if (ACallAcceptChangesOnReturnedDataBeforeMerge) 
+                if (ACallAcceptChangesOnReturnedDataBeforeMerge)
                 {
-                    ASubmitTDS.AcceptChanges();    
+                    ASubmitTDS.AcceptChanges();
                 }
-                
+
                 ALocalTDS.Merge(ASubmitTDS, false);
-    
+
                 // Need to accept any new modification ID's
                 ALocalTDS.AcceptChanges();
-            
-                if (ASetPrimaryKeyOnlyMethod != null) 
+
+                if (ASetPrimaryKeyOnlyMethod != null)
                 {
                     // Ensure the Primary-Key(s)-containing Controls are disabled to prevent further modification of Primary Key values
-                    ASetPrimaryKeyOnlyMethod(true);                                    
+                    ASetPrimaryKeyOnlyMethod(true);
                 }
             }
-            
-            CommonPostMergeOperations(ACallingFormOrUserControl, APetraUtilsObject, 
+
+            CommonPostMergeOperations(ACallingFormOrUserControl, APetraUtilsObject,
                 AVerificationResults, ACalledFromUserControl);
-        }        
+        }
 
         /// <summary>
         /// Processes the result of a data submission to the Server where the result of that operation is
@@ -140,44 +140,50 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="ACallingFormOrUserControl"></param>
         /// <param name="APetraUtilsObject"></param>
         /// <param name="ACalledFromUserControl"></param>
-        public static void ProcessSubmitChangesResultNothingToBeSaved(IFrmPetra ACallingFormOrUserControl, TFrmPetraEditUtils APetraUtilsObject, bool ACalledFromUserControl = false)
+        public static void ProcessSubmitChangesResultNothingToBeSaved(IFrmPetra ACallingFormOrUserControl,
+            TFrmPetraEditUtils APetraUtilsObject,
+            bool ACalledFromUserControl = false)
         {
-            CommonUIUpdatesNoChangesAnymore(ACallingFormOrUserControl, APetraUtilsObject, 
+            CommonUIUpdatesNoChangesAnymore(ACallingFormOrUserControl, APetraUtilsObject,
                 MCommonResourcestrings.StrSavingDataNothingToSave, ACalledFromUserControl);
         }
 
-		private static void CommonPostMergeOperations(IFrmPetra ACallingFormOrUserControl, TFrmPetraEditUtils APetraUtilsObject, TVerificationResultCollection AVerificationResults, bool ACalledFromUserControl = false)
-		{
-		    CommonUIUpdatesSavingSuccessful(ACallingFormOrUserControl, APetraUtilsObject, ACalledFromUserControl);
-						
-			if ((AVerificationResults != null) 
-			    && (AVerificationResults.HasCriticalOrNonCriticalErrors))
-			{
-				TDataValidation.ProcessAnyDataValidationErrors(false, AVerificationResults, ACallingFormOrUserControl.GetType(), null);
-			}
-		}
-
-		private static void CommonUIUpdatesSavingSuccessful(IFrmPetra ACallingFormOrUserControl, TFrmPetraEditUtils APetraUtilsObject,
+        private static void CommonPostMergeOperations(IFrmPetra ACallingFormOrUserControl,
+            TFrmPetraEditUtils APetraUtilsObject,
+            TVerificationResultCollection AVerificationResults,
             bool ACalledFromUserControl = false)
-		{
-		    CommonUIUpdatesNoChangesAnymore(ACallingFormOrUserControl, APetraUtilsObject, 
-		      MCommonResourcestrings.StrSavingDataSuccessful, ACalledFromUserControl);
-		}        
+        {
+            CommonUIUpdatesSavingSuccessful(ACallingFormOrUserControl, APetraUtilsObject, ACalledFromUserControl);
 
-		private static void CommonUIUpdatesNoChangesAnymore(IFrmPetra ACallingFormOrUserControl, TFrmPetraEditUtils APetraUtilsObject, string AStatusBarMessage,
+            if ((AVerificationResults != null)
+                && (AVerificationResults.HasCriticalOrNonCriticalErrors))
+            {
+                TDataValidation.ProcessAnyDataValidationErrors(false, AVerificationResults, ACallingFormOrUserControl.GetType(), null);
+            }
+        }
+
+        private static void CommonUIUpdatesSavingSuccessful(IFrmPetra ACallingFormOrUserControl, TFrmPetraEditUtils APetraUtilsObject,
             bool ACalledFromUserControl = false)
-		{
-			APetraUtilsObject.WriteToStatusBar(AStatusBarMessage);
-			APetraUtilsObject.ShowDefaultCursor();
-			
-			// We don't have unsaved changes anymore
-			APetraUtilsObject.DisableSaveButton();
+        {
+            CommonUIUpdatesNoChangesAnymore(ACallingFormOrUserControl, APetraUtilsObject,
+                MCommonResourcestrings.StrSavingDataSuccessful, ACalledFromUserControl);
+        }
 
-            
-			if (!ACalledFromUserControl) 
-			{
-				APetraUtilsObject.OnDataSaved(ACallingFormOrUserControl, new TDataSavedEventArgs(true));
-			}			
-		}
+        private static void CommonUIUpdatesNoChangesAnymore(IFrmPetra ACallingFormOrUserControl,
+            TFrmPetraEditUtils APetraUtilsObject,
+            string AStatusBarMessage,
+            bool ACalledFromUserControl = false)
+        {
+            APetraUtilsObject.WriteToStatusBar(AStatusBarMessage);
+            APetraUtilsObject.ShowDefaultCursor();
+
+            // We don't have unsaved changes anymore
+            APetraUtilsObject.DisableSaveButton();
+
+            if (!ACalledFromUserControl)
+            {
+                APetraUtilsObject.OnDataSaved(ACallingFormOrUserControl, new TDataSavedEventArgs(true));
+            }
+        }
     }
 }
