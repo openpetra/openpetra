@@ -270,8 +270,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     if (!TSecurity.CheckFoundationSecurity(
-                            FMainDS.MiscellaneousData[0].FoundationOwner1Key,
-                            FMainDS.MiscellaneousData[0].FoundationOwner2Key))
+                        FMainDS.MiscellaneousData[0].FoundationOwner1Key,
+                        FMainDS.MiscellaneousData[0].FoundationOwner2Key))
                     {
                         tpgFoundationDetails.Enabled = false;
                     }
@@ -304,12 +304,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // for the time beeing, we always hide these Tabs that don't do anything yet...
-#if  SHOWUNFINISHEDTABS
-#else 
+            #if  SHOWUNFINISHEDTABS
+            #else
             TabsToHide.Add("tbpContacts");
             TabsToHide.Add("tbpReminders");
             TabsToHide.Add("tbpInterests");
-#endif
+            #endif
             ControlsUtilities.HideTabs(tabPartners, TabsToHide);
             FUserControlInitialised = true;
 
@@ -484,7 +484,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (!UCContactDetails.GetOverallContactSettingsDataFromControls())
                 {
                     ReturnValue = false;
-                }                
+                }
             }
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucSubscriptions))
@@ -1079,49 +1079,50 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         tpgAddresses.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "current",
-                            CountAll,
-                            CountActive,
-                            DynamicToolTipPart1);
+                                                                 CountAll,
+                                                                 CountActive,
+                                                                 DynamicToolTipPart1);
                     }
                 }
             }
 
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_ContactDetails))
             {
-                if (FMainDS.MiscellaneousData[0].ItemsCountContactDetails == -1)
-                {
-                    Calculations.CalculateTabCountsPartnerContactDetails(FMainDS.PPartnerAttribute, out CountAll, out CountActive);
+                if ((FMainDS.MiscellaneousData[0].IsItemsCountContactDetailsNull())
+                    || (FMainDS.MiscellaneousData[0].ItemsCountContactDetails == -1))
+                    {
+                        Calculations.CalculateTabCountsPartnerContactDetails(FMainDS.PPartnerAttribute, out CountAll, out CountActive);
+                        tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
+                    }
+                    else
+                    {
+                        CountAll = FMainDS.MiscellaneousData[0].ItemsCountContactDetails;
+                        CountActive = FMainDS.MiscellaneousData[0].ItemsCountContactDetailsActive;
+                    }
+
+                    if ((CountAll == 0) || (CountAll > 1))
+                    {
+                        DynamicToolTipPart1 = StrContactDetailsTabHeader;
+                    }
+                    else
+                    {
+                        DynamicToolTipPart1 = StrContactDetailsSingular;
+                    }
+
                     tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
-                }
-                else
-                {
-                    CountAll = FMainDS.MiscellaneousData[0].ItemsCountContactDetails;
-                    CountActive = FMainDS.MiscellaneousData[0].ItemsCountContactDetailsActive;
-                }
 
-                if ((CountAll == 0) || (CountAll > 1))
-                {
-                    DynamicToolTipPart1 = StrContactDetailsTabHeader;
+                    if ((CountActive == 0) || (CountActive > 1))
+                    {
+                        tpgContactDetails.ToolTipText = String.Format(StrTabHeaderCounterTipPlural + "current", CountAll, CountActive, DynamicToolTipPart1);
+                    }
+                    else
+                    {
+                        tpgContactDetails.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "current",
+                                                                      CountAll,
+                                                                      CountActive,
+                                                                      DynamicToolTipPart1);
+                    }
                 }
-                else
-                {
-                    DynamicToolTipPart1 = StrContactDetailsSingular;
-                }
-
-                tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
-
-                if ((CountActive == 0) || (CountActive > 1))
-                {
-                    tpgContactDetails.ToolTipText = String.Format(StrTabHeaderCounterTipPlural + "current", CountAll, CountActive, DynamicToolTipPart1);
-                }
-                else
-                {
-                    tpgContactDetails.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "current",
-                        CountAll,
-                        CountActive,
-                        DynamicToolTipPart1);
-                }
-            }
             
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_Subscriptions))
             {
@@ -1154,9 +1155,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     tpgSubscriptions.ToolTipText = String.Format(StrTabHeaderCounterTipSingular + "active",
-                        CountAll,
-                        CountActive,
-                        DynamicToolTipPart1);
+                                                                 CountAll,
+                                                                 CountActive,
+                                                                 DynamicToolTipPart1);
                 }
             }
 
@@ -1438,7 +1439,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         tabPartners.SelectedTab = tpgInterests;
                         break;
 
-#if TODO
+                        #if TODO
                     case TPartnerEditTabPageEnum.petpReminders:
                         tabPartners.SelectedTab = tpgReminders;
                         break;
@@ -1446,7 +1447,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     case TPartnerEditTabPageEnum.petpContacts:
                         tabPartners.SelectedTab = tpgContacts;
                         break;
-#endif
+                        #endif
                     case TPartnerEditTabPageEnum.petpNotes:
 
                         if (tpgNotes.Enabled)
