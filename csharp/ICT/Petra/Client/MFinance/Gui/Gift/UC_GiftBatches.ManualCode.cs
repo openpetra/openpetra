@@ -528,7 +528,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             GetDataFromControls();
 
-            if (!TExWorkerWarning.CanContinueWithAnyExWorkers(TExWorkerWarning.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
+            if (!TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
             {
                 return;
             }

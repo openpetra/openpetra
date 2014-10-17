@@ -37,7 +37,7 @@ namespace Ict.Petra.Client.MFinance.Logic
     /// <summary>
     /// Common logic for Ex-Worker check in Gift Batch and Recurring Gift Batch
     /// </summary>
-    public static class TExWorkerWarning
+    public static class TExWorkerAlert
     {
         /// <summary>
         ///

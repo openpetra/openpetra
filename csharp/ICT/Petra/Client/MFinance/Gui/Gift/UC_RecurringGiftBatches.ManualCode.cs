@@ -465,7 +465,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             GetDataFromControls();
 
-            if (!TExWorkerWarning.CanContinueWithAnyExWorkers(TExWorkerWarning.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
+            if (!TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
             {
                 return;
             }
@@ -494,7 +494,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool newBatch = (ARowToDelete.RowState == DataRowState.Added);
 
             // first save any changes
-            if (!((TFrmRecurringGiftBatch)FPetraUtilsObject.GetForm()).SaveChangesManual(TExWorkerWarning.GiftBatchAction.DELETING))
+            if (!((TFrmRecurringGiftBatch)FPetraUtilsObject.GetForm()).SaveChangesManual(TExWorkerAlert.GiftBatchAction.DELETING))
             {
                 return false;
             }

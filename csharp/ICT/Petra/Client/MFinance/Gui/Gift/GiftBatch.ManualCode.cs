@@ -129,19 +129,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if Save is successful</returns>
         public bool SaveChangesManual()
         {
-            return SaveChangesManual(TExWorkerWarning.GiftBatchAction.SAVING);
+            return SaveChangesManual(TExWorkerAlert.GiftBatchAction.SAVING);
         }
 
         /// <summary>
         /// Check for ExWorkers before saving or cancelling
         /// </summary>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual(TExWorkerWarning.GiftBatchAction AAction)
+        public bool SaveChangesManual(TExWorkerAlert.GiftBatchAction AAction)
         {
             GetDataFromControls();
 
             // first alert the user to any recipients who are Ex-Workers
-            if (TExWorkerWarning.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
+            if (TExWorkerAlert.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
             {
                 return SaveChanges();
             }
@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             GetDataFromControls();
 
             // first alert the user to any recipients who are Ex-Workers
-            ACancelledDueToExWorker = !TExWorkerWarning.CanContinueWithAnyExWorkers(TExWorkerWarning.GiftBatchAction.POSTING,
+            ACancelledDueToExWorker = !TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.POSTING,
                 FMainDS,
                 FPetraUtilsObject,
                 APostingGiftDetails);

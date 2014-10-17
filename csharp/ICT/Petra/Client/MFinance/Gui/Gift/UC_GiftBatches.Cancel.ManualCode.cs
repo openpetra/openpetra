@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // first save any changes
-            if (!FMyForm.SaveChangesManual(TExWorkerWarning.GiftBatchAction.CANCELLING))
+            if (!FMyForm.SaveChangesManual(TExWorkerAlert.GiftBatchAction.CANCELLING))
             {
                 return false;
             }
