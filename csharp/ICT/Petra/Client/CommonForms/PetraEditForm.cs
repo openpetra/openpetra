@@ -1025,9 +1025,9 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     try
                     {
-                    	// An exception is made for TFrmGiftBatch. We want to use a custom save method for this form.
-                    	if ((FTheForm.GetType().Name == "TFrmGiftBatch" && ((IFrmPetraEditManual)FTheForm).SaveChangesManual() == false)
-                    	    || ((IFrmPetraEdit)FTheForm).SaveChanges() == false)
+                        // An exception is made for TFrmGiftBatch. We want to use a custom save method for this form.
+                        if (((FTheForm.GetType().Name == "TFrmGiftBatch") && (((IFrmPetraEditManual)FTheForm).SaveChangesManual() == false))
+                            || (((IFrmPetraEdit)FTheForm).SaveChanges() == false))
                         {
                             // Form contains invalid data that hasn't been corrected yet
                             CloseFormCheckRun = false;

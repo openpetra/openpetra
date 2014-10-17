@@ -41,114 +41,115 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             AGiftRow CurrentGiftRow = null;
             bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
+
             FCreatingNewGift = true;
 
             try
             {
-	            if (ValidateAllData(true, true))
-	            {
-	                if (!ACompletelyNewGift)  //i.e. a gift detail
-	                {
-	                    ACompletelyNewGift = IsEmptyGrid;
-	                }
-	
-	                if (ACompletelyNewGift)
-	                {
-	                    //Run this if a new gift is requested or required.
-	
-	                    // we create the table locally, no dataset
-	                    AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
-	
-	                    giftRow.DateEntered = FBatchRow.GlEffectiveDate;
-	                    giftRow.LedgerNumber = FBatchRow.LedgerNumber;
-	                    giftRow.BatchNumber = FBatchRow.BatchNumber;
-	                    giftRow.GiftTransactionNumber = ++FBatchRow.LastGiftNumber;
-	                    giftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
-	                    giftRow.LastDetailNumber = 1;
-	
-	                    FMainDS.AGift.Rows.Add(giftRow);
-	
-	                    CurrentGiftRow = giftRow;
-	
-	                    mniDonorHistory.Enabled = false;
-	                }
-	                else
-	                {
-	                    CurrentGiftRow = GetGiftRow(FPreviouslySelectedDetailRow.GiftTransactionNumber);
-	                    CurrentGiftRow.LastDetailNumber++;
-	                }
-	
-	                //New gifts will require a new detail anyway, so this code always runs
-	                GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
-	
-	                newRow.LedgerNumber = FBatchRow.LedgerNumber;
-	                newRow.BatchNumber = FBatchRow.BatchNumber;
-	                newRow.GiftTransactionNumber = CurrentGiftRow.GiftTransactionNumber;
-	                newRow.DetailNumber = CurrentGiftRow.LastDetailNumber;
-	                newRow.MethodOfPaymentCode = CurrentGiftRow.MethodOfPaymentCode;
-	                newRow.MethodOfGivingCode = CurrentGiftRow.MethodOfGivingCode;
-	                newRow.DonorKey = CurrentGiftRow.DonorKey;
-	
-	                if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
-	                {
-	                    newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
-	                }
-	
-	                newRow.DateEntered = CurrentGiftRow.DateEntered;
-	
-	                if (FTaxDeductiblePercentageEnabled)
-	                {
-	                    newRow.TaxDeductiblePct = 100;
-	                }
-	
-	                FMainDS.AGiftDetail.Rows.Add(newRow);
-	
-	                FPetraUtilsObject.SetChangedFlag();
-	
-	                if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
-	                {
-	                    if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
-	                    {
-	                        MessageBox.Show(
-	                            MCommonResourcestrings.StrNewRecordIsFiltered,
-	                            MCommonResourcestrings.StrAddNewRecordTitle,
-	                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-	                        FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
-	
-	                        if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
-	                        {
-	                            FFilterAndFindObject.ApplyFilter();
-	                        }
-	
-	                        SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
-	                    }
-	                }
-	
-	                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
-	                UpdateRecordNumberDisplay();
-	
-	                //Focus accordingly
-	                if (ACompletelyNewGift)
-	                {
-	                    txtDetailDonorKey.Focus();
-	                }
-	                else
-	                {
-	                    txtDetailRecipientKey.Focus();
-	                }
-	
-	                //Set the default motivation Group. This needs to happen after focus has returned
-	                //  to the pnlDetails to ensure FInEditMode is correct.
-	                cmbDetailMotivationGroupCode.SelectedIndex = 0;
-	
-	                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationDetailCode);
-	                cmbKeyMinistries.Clear();
-	                mniRecipientHistory.Enabled = false;
-	            }
+                if (ValidateAllData(true, true))
+                {
+                    if (!ACompletelyNewGift)      //i.e. a gift detail
+                    {
+                        ACompletelyNewGift = IsEmptyGrid;
+                    }
+
+                    if (ACompletelyNewGift)
+                    {
+                        //Run this if a new gift is requested or required.
+
+                        // we create the table locally, no dataset
+                        AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
+
+                        giftRow.DateEntered = FBatchRow.GlEffectiveDate;
+                        giftRow.LedgerNumber = FBatchRow.LedgerNumber;
+                        giftRow.BatchNumber = FBatchRow.BatchNumber;
+                        giftRow.GiftTransactionNumber = ++FBatchRow.LastGiftNumber;
+                        giftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
+                        giftRow.LastDetailNumber = 1;
+
+                        FMainDS.AGift.Rows.Add(giftRow);
+
+                        CurrentGiftRow = giftRow;
+
+                        mniDonorHistory.Enabled = false;
+                    }
+                    else
+                    {
+                        CurrentGiftRow = GetGiftRow(FPreviouslySelectedDetailRow.GiftTransactionNumber);
+                        CurrentGiftRow.LastDetailNumber++;
+                    }
+
+                    //New gifts will require a new detail anyway, so this code always runs
+                    GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
+
+                    newRow.LedgerNumber = FBatchRow.LedgerNumber;
+                    newRow.BatchNumber = FBatchRow.BatchNumber;
+                    newRow.GiftTransactionNumber = CurrentGiftRow.GiftTransactionNumber;
+                    newRow.DetailNumber = CurrentGiftRow.LastDetailNumber;
+                    newRow.MethodOfPaymentCode = CurrentGiftRow.MethodOfPaymentCode;
+                    newRow.MethodOfGivingCode = CurrentGiftRow.MethodOfGivingCode;
+                    newRow.DonorKey = CurrentGiftRow.DonorKey;
+
+                    if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
+                    {
+                        newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
+                    }
+
+                    newRow.DateEntered = CurrentGiftRow.DateEntered;
+
+                    if (FTaxDeductiblePercentageEnabled)
+                    {
+                        newRow.TaxDeductiblePct = 100;
+                    }
+
+                    FMainDS.AGiftDetail.Rows.Add(newRow);
+
+                    FPetraUtilsObject.SetChangedFlag();
+
+                    if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
+                    {
+                        if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
+                        {
+                            MessageBox.Show(
+                                MCommonResourcestrings.StrNewRecordIsFiltered,
+                                MCommonResourcestrings.StrAddNewRecordTitle,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
+
+                            if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                            {
+                                FFilterAndFindObject.ApplyFilter();
+                            }
+
+                            SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                        }
+                    }
+
+                    btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+                    UpdateRecordNumberDisplay();
+
+                    //Focus accordingly
+                    if (ACompletelyNewGift)
+                    {
+                        txtDetailDonorKey.Focus();
+                    }
+                    else
+                    {
+                        txtDetailRecipientKey.Focus();
+                    }
+
+                    //Set the default motivation Group. This needs to happen after focus has returned
+                    //  to the pnlDetails to ensure FInEditMode is correct.
+                    cmbDetailMotivationGroupCode.SelectedIndex = 0;
+
+                    TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationDetailCode);
+                    cmbKeyMinistries.Clear();
+                    mniRecipientHistory.Enabled = false;
+                }
             }
             finally
             {
-            	FCreatingNewGift = false;
+                FCreatingNewGift = false;
             }
         }
 

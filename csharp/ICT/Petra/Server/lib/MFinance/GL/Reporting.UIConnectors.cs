@@ -2222,7 +2222,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
                         " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
                         " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
-                        " AND p_partner_type.p_type_code_c LIKE '" + TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
+                        " AND p_partner_type.p_type_code_c LIKE '" +
+                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
                         ") THEN True ELSE False END AS EXWORKER, " +
 
                         // true if the gift is restricted for the user

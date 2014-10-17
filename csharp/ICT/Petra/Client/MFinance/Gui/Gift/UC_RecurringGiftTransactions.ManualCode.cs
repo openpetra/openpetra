@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void SetTextBoxOverlayOnKeyMinistryCombo(bool AReadComboValue = false)
         {
             ResetMotivationDetailCodeFilter();
-            
+
             // Always enabled initially. Combobox may be diabled later once populated.
             cmbKeyMinistries.Enabled = true;
 
@@ -531,7 +531,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-            	txtDetailRecipientKey.Text = APartnerKey.ToString();
+                txtDetailRecipientKey.Text = APartnerKey.ToString();
                 FPreviouslySelectedDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
 
@@ -748,7 +748,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-        	string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+            string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
             string RecipientKey = cmbKeyMinistries.GetSelectedInt64().ToString();
 
             try
@@ -1105,7 +1105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 UpdateRecipientKeyText(0);
             }
-            
+
             RetrieveMotivationDetailCostCentreCode();
         }
 
@@ -1134,15 +1134,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
-                
+
             // enable / disable combo box depending on whether it contains any key ministries
             if (cmbKeyMinistries.Table.Rows.Count == 0)
             {
-            	cmbKeyMinistries.Enabled = false;
+                cmbKeyMinistries.Enabled = false;
             }
             else
             {
-            	cmbKeyMinistries.Enabled = true;
+                cmbKeyMinistries.Enabled = true;
             }
 
             if ((Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))

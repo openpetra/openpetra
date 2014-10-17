@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ref string AMotivationDetail, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool AReadComboValue = false)
         {
             ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AActiveOnly);
-            
+
             // Always enabled initially. Combobox may be diabled later once populated.
             ACmbKeyMinistries.Enabled = true;
 
@@ -271,9 +271,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (ARecipientKey == 0)
             {
-            	UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
+                UpdateRecipientKeyText(0, ACurrentDetailRow, ACmbMotivationDetailCode);
             }
-            
+
             RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
         }
 
@@ -325,7 +325,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-            	ATxtDetailRecipientKey.Text = APartnerKey.ToString();
+                ATxtDetailRecipientKey.Text = APartnerKey.ToString();
                 ACurrentDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 ACurrentDetailRow.RecipientDescription = APartnerShortName;
 
@@ -661,15 +661,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFinanceControls.GetRecipientData(ref ACmbKeyMinistries, ref AtxtDetailRecipientLedgerNumber, APartnerKey, true);
-                
+
             // enable / disable combo box depending on whether it contains any key ministries
             if (ACmbKeyMinistries.Table.Rows.Count == 0)
             {
-            	ACmbKeyMinistries.Enabled = false;
+                ACmbKeyMinistries.Enabled = false;
             }
             else
             {
-            	ACmbKeyMinistries.Enabled = true;
+                ACmbKeyMinistries.Enabled = true;
             }
 
             if ((Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))

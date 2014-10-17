@@ -38,34 +38,34 @@ namespace Ict.Petra.Shared.MFinance
         /// <param name="AGiftDetail"></param>
         public static void UpdateTaxDeductibiltyAmounts(ref GiftBatchTDSAGiftDetailRow AGiftDetail)
         {
-        	/* Update transaction amounts */
+            /* Update transaction amounts */
 
-        	decimal TaxDeductAmount;
-        	decimal NonDeductAmount;
-        	
-        	CalculateTaxDeductibilityAmounts(
-        		out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftTransactionAmount, AGiftDetail.TaxDeductiblePct);
-        	
-        	AGiftDetail.TaxDeductibleAmount = TaxDeductAmount;
-        	AGiftDetail.NonDeductibleAmount = NonDeductAmount;
-        	
-        	/* Update base amounts */
-        	
-        	CalculateTaxDeductibilityAmounts(
-        		out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftAmount, AGiftDetail.TaxDeductiblePct);
-        	
-        	AGiftDetail.TaxDeductibleAmountBase = TaxDeductAmount;
-        	AGiftDetail.NonDeductibleAmountBase = NonDeductAmount;
-        	
-        	/* Update intl amounts */
-        	
-        	CalculateTaxDeductibilityAmounts(
-        		out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftAmountIntl, AGiftDetail.TaxDeductiblePct);
-        	
-        	AGiftDetail.TaxDeductibleAmountIntl = TaxDeductAmount;
-        	AGiftDetail.NonDeductibleAmountIntl = NonDeductAmount;
+            decimal TaxDeductAmount;
+            decimal NonDeductAmount;
+
+            CalculateTaxDeductibilityAmounts(
+                out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftTransactionAmount, AGiftDetail.TaxDeductiblePct);
+
+            AGiftDetail.TaxDeductibleAmount = TaxDeductAmount;
+            AGiftDetail.NonDeductibleAmount = NonDeductAmount;
+
+            /* Update base amounts */
+
+            CalculateTaxDeductibilityAmounts(
+                out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftAmount, AGiftDetail.TaxDeductiblePct);
+
+            AGiftDetail.TaxDeductibleAmountBase = TaxDeductAmount;
+            AGiftDetail.NonDeductibleAmountBase = NonDeductAmount;
+
+            /* Update intl amounts */
+
+            CalculateTaxDeductibilityAmounts(
+                out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftAmountIntl, AGiftDetail.TaxDeductiblePct);
+
+            AGiftDetail.TaxDeductibleAmountIntl = TaxDeductAmount;
+            AGiftDetail.NonDeductibleAmountIntl = NonDeductAmount;
         }
-        
+
         /// <summary>
         /// Calculate Tax-Deductible Amount and Non-Deductible Amount for a gift amount using the tax deductible percentage
         /// </summary>
@@ -74,7 +74,7 @@ namespace Ict.Petra.Shared.MFinance
         /// <param name="AGiftAmount"></param>
         /// <param name="ADeductiblePercentage"></param>
         private static void CalculateTaxDeductibilityAmounts(
-        	out decimal ATaxDeductAmount, out decimal ANonDeductAmount, decimal AGiftAmount, decimal ADeductiblePercentage)
+            out decimal ATaxDeductAmount, out decimal ANonDeductAmount, decimal AGiftAmount, decimal ADeductiblePercentage)
         {
             ATaxDeductAmount =
                 AGiftAmount * (ADeductiblePercentage / 100);

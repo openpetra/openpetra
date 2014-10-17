@@ -104,16 +104,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMyForm.Cursor = Cursors.WaitCursor;
 
                 FMyForm.EnsureGiftDataPresent(FLedgerNumber, FSelectedBatchNumber);
-                
+
                 GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
-        	
-	        	foreach (GiftBatchTDSAGiftDetailRow Row in FMainDS.AGiftDetail.Rows)
-	        	{
-	        		if (Row.BatchNumber == FSelectedBatchNumber)
-	        		{
-	        			BatchGiftDetails.Rows.Add((object[]) Row.ItemArray.Clone());
-	        		}
-	        	}
+
+                foreach (GiftBatchTDSAGiftDetailRow Row in FMainDS.AGiftDetail.Rows)
+                {
+                    if (Row.BatchNumber == FSelectedBatchNumber)
+                    {
+                        BatchGiftDetails.Rows.Add((object[])Row.ItemArray.Clone());
+                    }
+                }
 
                 // there are no gifts in this batch!
                 if (BatchGiftDetails.Rows.Count == 0)
@@ -123,21 +123,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     return false;
                 }
-                
+
                 bool CancelledDueToExWorker;
 
                 // save first, then post
                 if (!FMyForm.SaveChangesForPosting(BatchGiftDetails, out CancelledDueToExWorker))
                 {
                     FMyForm.Cursor = Cursors.Default;
-                    
+
                     if (!CancelledDueToExWorker)
                     {
-	                    // saving failed, therefore do not try to post
-	                    MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-	                        Catalog.GetString("Please first save the batch, and then post it!"));
+                        // saving failed, therefore do not try to post
+                        MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
+                            Catalog.GetString("Please first save the batch, and then post it!"));
                     }
-                    
+
                     return false;
                 }
             }

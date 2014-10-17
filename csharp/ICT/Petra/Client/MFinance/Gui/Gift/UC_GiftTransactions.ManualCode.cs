@@ -238,11 +238,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FInEditMode = true;
 
             bool DoTaxUpdate;
-            TUC_GiftTransactions_Recipient.SetKeyMinistryTextBoxInvisible(FPreviouslySelectedDetailRow, FMainDS, FLedgerNumber, FPetraUtilsObject,
-                cmbKeyMinistries, ref cmbDetailMotivationDetailCode, txtDetailRecipientKey, FRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode,
-                txtDetailAccountCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible, txtDeductibleAccount,
-                FMotivationGroup, ref FMotivationDetail, ref FMotivationDetailChanged, FActiveOnly,
-                FInRecipientKeyChanging, FCreatingNewGift, FInEditMode, FBatchUnposted, FTaxDeductiblePercentageEnabled, out DoTaxUpdate);
+            TUC_GiftTransactions_Recipient.SetKeyMinistryTextBoxInvisible(FPreviouslySelectedDetailRow,
+                FMainDS,
+                FLedgerNumber,
+                FPetraUtilsObject,
+                cmbKeyMinistries,
+                ref cmbDetailMotivationDetailCode,
+                txtDetailRecipientKey,
+                FRecipientKey,
+                txtDetailRecipientLedgerNumber,
+                txtDetailCostCentreCode,
+                txtDetailAccountCode,
+                txtDetailRecipientKeyMinistry,
+                chkDetailTaxDeductible,
+                txtDeductibleAccount,
+                FMotivationGroup,
+                ref FMotivationDetail,
+                ref FMotivationDetailChanged,
+                FActiveOnly,
+                FInRecipientKeyChanging,
+                FCreatingNewGift,
+                FInEditMode,
+                FBatchUnposted,
+                FTaxDeductiblePercentageEnabled,
+                out DoTaxUpdate);
 
             if (DoTaxUpdate)
             {
@@ -435,15 +454,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool? DoEnableRecipientHistory;
             bool DoValidateGiftDestination;
             bool DoTaxUpdate;
-            
+
             FRecipientKey = APartnerKey;
 
-            TUC_GiftTransactions_Recipient.OnRecipientKeyChanged(APartnerKey, APartnerShortName, AValidSelection, FPreviouslySelectedDetailRow,
-                FMainDS, FLedgerNumber, FPetraUtilsObject, ref cmbKeyMinistries, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode,
-                txtDetailRecipientKey, txtDetailRecipientLedgerNumber, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailRecipientKeyMinistry, chkDetailTaxDeductible,
-                txtDeductibleAccount, ref FMotivationGroup, ref FMotivationDetail, FShowingDetails, ref FInRecipientKeyChanging, FInKeyMinistryChanging, FInEditMode,
-                FBatchUnposted, FMotivationDetailChanged, FTaxDeductiblePercentageEnabled, FActiveOnly,
-                out DoEnableRecipientHistory, out DoValidateGiftDestination, out DoTaxUpdate);
+            TUC_GiftTransactions_Recipient.OnRecipientKeyChanged(APartnerKey,
+                APartnerShortName,
+                AValidSelection,
+                FPreviouslySelectedDetailRow,
+                FMainDS,
+                FLedgerNumber,
+                FPetraUtilsObject,
+                ref cmbKeyMinistries,
+                cmbDetailMotivationGroupCode,
+                cmbDetailMotivationDetailCode,
+                txtDetailRecipientKey,
+                txtDetailRecipientLedgerNumber,
+                txtDetailCostCentreCode,
+                txtDetailAccountCode,
+                txtDetailRecipientKeyMinistry,
+                chkDetailTaxDeductible,
+                txtDeductibleAccount,
+                ref FMotivationGroup,
+                ref FMotivationDetail,
+                FShowingDetails,
+                ref FInRecipientKeyChanging,
+                FInKeyMinistryChanging,
+                FInEditMode,
+                FBatchUnposted,
+                FMotivationDetailChanged,
+                FTaxDeductiblePercentageEnabled,
+                FActiveOnly,
+                out DoEnableRecipientHistory,
+                out DoValidateGiftDestination,
+                out DoTaxUpdate);
 
             if (DoTaxUpdate)
             {
@@ -728,7 +771,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((FPreviouslySelectedDetailRow != null) && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-            	FPreviouslySelectedDetailRow.GiftTransactionAmount = (decimal) txn.NumberValueDecimal;
+                FPreviouslySelectedDetailRow.GiftTransactionAmount = (decimal)txn.NumberValueDecimal;
                 UpdateBaseAmount(true);
             }
 
@@ -2037,7 +2080,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((GiftDetailTable != null) && (GiftDetailTable.Rows.Count > 0))
             {
                 int CurrentTransaction = 0;
-                
+
                 // This stops the recipient key from updating the motivation group and detail. These fields will instead be set here.
                 FMotivationDetailChanged = true;
 
@@ -2086,8 +2129,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         break;
                     }
                 }
-                
-                
+
                 FMotivationDetailChanged = false;
             }
         }
@@ -2153,15 +2195,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //    mniRecipientGiftDestination.Enabled = true;
             //}
         }
-        
+
         private bool PreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
-        	return OnPreDeleteManual(ARowToDelete, ref ADeletionQuestion);
+            return OnPreDeleteManual(ARowToDelete, ref ADeletionQuestion);
         }
-        
+
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
-        	return OnDeleteRowManual(ARowToDelete, ref ACompletionMessage);
+            return OnDeleteRowManual(ARowToDelete, ref ACompletionMessage);
         }
 
         /// <summary>

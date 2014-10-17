@@ -514,7 +514,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             return true;
         }
-        
+
         /// <summary>
         /// Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
         /// </summary>
@@ -522,53 +522,53 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <param name="ADateEntered"></param>
         /// <param name="ATransaction"></param>
         public static void SetDefaultTaxDeductibilityData(
-        	ref GiftBatchTDSAGiftDetailRow GiftDetailRow, DateTime ADateEntered, TDBTransaction ATransaction)
+            ref GiftBatchTDSAGiftDetailRow GiftDetailRow, DateTime ADateEntered, TDBTransaction ATransaction)
         {
-        	bool FoundTaxDeductiblePct = false;
-                                    		
-    		// if the gift it tax deductible
-        	if (GiftDetailRow.TaxDeductible)
-        	{
-        		AMotivationDetailRow MotivationDetailRow = AMotivationDetailAccess.LoadByPrimaryKey(
-        			GiftDetailRow.LedgerNumber, GiftDetailRow.MotivationGroupCode, GiftDetailRow.MotivationDetailCode, ATransaction)[0];
-        		
-        		// if the gift's motivation detail has a tax-deductible account
-        		if (!string.IsNullOrEmpty(MotivationDetailRow.TaxDeductibleAccount))
-        		{
-        			// default pct is 100
-        			GiftDetailRow.TaxDeductiblePct = 100;
-					FoundTaxDeductiblePct = true;
-        					
-        			PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePctTable = 
-        				PPartnerTaxDeductiblePctAccess.LoadViaPPartner(GiftDetailRow.RecipientKey, ATransaction);
-        			
-        			// search for tax deductible pct for recipient
-        			foreach (PPartnerTaxDeductiblePctRow Row in PartnerTaxDeductiblePctTable.Rows)
-        			{
-        				if (Row.DateValidFrom <= ADateEntered)
-        				{
-        					GiftDetailRow.TaxDeductiblePct = Row.PercentageTaxDeductible;
-        					break;
-        				}
-        			}
-        		}
-        	}
-        	
-        	// if a tax deductible pct is set for the recipient
-        	if (FoundTaxDeductiblePct)
-        	{
-        		// calculate TaxDeductibleAmount and NonDeductibleAmount for all three currencies
-        		TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref GiftDetailRow);
-        	}
-        	
-        	// if gift is not tax deductible or motivation detail does not hace a tax deductible account
-        	if (!GiftDetailRow.TaxDeductible || !FoundTaxDeductiblePct)
-        	{
-            	GiftDetailRow.TaxDeductiblePct = 0;
-            	GiftDetailRow.NonDeductibleAmount = GiftDetailRow.GiftTransactionAmount;
-            	GiftDetailRow.NonDeductibleAmountBase = GiftDetailRow.GiftAmount;
-            	GiftDetailRow.NonDeductibleAmountIntl = GiftDetailRow.GiftAmountIntl;
-        	}
+            bool FoundTaxDeductiblePct = false;
+
+            // if the gift it tax deductible
+            if (GiftDetailRow.TaxDeductible)
+            {
+                AMotivationDetailRow MotivationDetailRow = AMotivationDetailAccess.LoadByPrimaryKey(
+                    GiftDetailRow.LedgerNumber, GiftDetailRow.MotivationGroupCode, GiftDetailRow.MotivationDetailCode, ATransaction)[0];
+
+                // if the gift's motivation detail has a tax-deductible account
+                if (!string.IsNullOrEmpty(MotivationDetailRow.TaxDeductibleAccount))
+                {
+                    // default pct is 100
+                    GiftDetailRow.TaxDeductiblePct = 100;
+                    FoundTaxDeductiblePct = true;
+
+                    PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePctTable =
+                        PPartnerTaxDeductiblePctAccess.LoadViaPPartner(GiftDetailRow.RecipientKey, ATransaction);
+
+                    // search for tax deductible pct for recipient
+                    foreach (PPartnerTaxDeductiblePctRow Row in PartnerTaxDeductiblePctTable.Rows)
+                    {
+                        if (Row.DateValidFrom <= ADateEntered)
+                        {
+                            GiftDetailRow.TaxDeductiblePct = Row.PercentageTaxDeductible;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // if a tax deductible pct is set for the recipient
+            if (FoundTaxDeductiblePct)
+            {
+                // calculate TaxDeductibleAmount and NonDeductibleAmount for all three currencies
+                TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref GiftDetailRow);
+            }
+
+            // if gift is not tax deductible or motivation detail does not hace a tax deductible account
+            if (!GiftDetailRow.TaxDeductible || !FoundTaxDeductiblePct)
+            {
+                GiftDetailRow.TaxDeductiblePct = 0;
+                GiftDetailRow.NonDeductibleAmount = GiftDetailRow.GiftTransactionAmount;
+                GiftDetailRow.NonDeductibleAmountBase = GiftDetailRow.GiftAmount;
+                GiftDetailRow.NonDeductibleAmountIntl = GiftDetailRow.GiftAmountIntl;
+            }
         }
     }
 }

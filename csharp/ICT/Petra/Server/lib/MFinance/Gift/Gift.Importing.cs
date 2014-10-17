@@ -365,11 +365,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.CommentThreeType = ImportString(Catalog.GetString(
                                     "comment three type"), AGiftDetailTable.GetCommentThreeTypeLength());
                             giftDetails.TaxDeductible = ImportBoolean(Catalog.GetString("tax deductible"));
-                            
+
                             if (TaxDeductiblePercentageEnabled)
                             {
-                            	// Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
-                        		TGift.SetDefaultTaxDeductibilityData(ref giftDetails, gift.DateEntered, FTransaction);
+                                // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                                TGift.SetDefaultTaxDeductibilityData(ref giftDetails, gift.DateEntered, FTransaction);
                             }
 
                             gift.DateEntered = giftBatch.GlEffectiveDate;

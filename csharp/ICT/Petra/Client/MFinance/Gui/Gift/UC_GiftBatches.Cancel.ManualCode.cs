@@ -91,11 +91,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return false;
             }
-            	
+
             // first save any changes
             if (!FMyForm.SaveChangesManual(TExWorkerWarning.GiftBatchAction.CANCELLING))
             {
-            	return false;
+                return false;
             }
 
             try
@@ -123,13 +123,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Delete gift details
                 for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
                 {
-                	FMainDS.AGiftDetail[i].Delete();
+                    FMainDS.AGiftDetail[i].Delete();
                 }
 
                 //Delete gifts
                 for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
                 {
-                	FMainDS.AGift[i].Delete();
+                    FMainDS.AGift[i].Delete();
                 }
 
                 //Batch is only cancelled and never deleted

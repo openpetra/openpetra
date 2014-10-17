@@ -317,11 +317,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.CommentTwoType = recGiftDetail.CommentTwoType;
                                         detail.GiftCommentThree = recGiftDetail.GiftCommentThree;
                                         detail.CommentThreeType = recGiftDetail.CommentThreeType;
-                                        
+
                                         if (TaxDeductiblePercentageEnabled)
                                         {
-                                        	// Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
-                                        	TGift.SetDefaultTaxDeductibilityData(ref detail, gift.DateEntered, Transaction);
+                                            // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                                            TGift.SetDefaultTaxDeductibilityData(ref detail, gift.DateEntered, Transaction);
                                         }
 
                                         GMainDS.AGiftDetail.Rows.Add(detail);
@@ -1328,7 +1328,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             //TODO
             return true;
         }
-        
+
         /// <summary>
         /// Returns a table of gifts with Ex-Worker recipients
         /// </summary>
@@ -1338,35 +1338,39 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static DataTable FindGiftRecipientExWorker(DataTable AGiftDetailsToCheck, int ANotInBatchNumber = -1)
         {
-        	DataTable ReturnValue = AGiftDetailsToCheck.Copy();
-        	ReturnValue.Clear();
-        	
-        	TDBTransaction Transaction = null;
+            DataTable ReturnValue = AGiftDetailsToCheck.Copy();
+
+            ReturnValue.Clear();
+
+            TDBTransaction Transaction = null;
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
-		        	foreach (DataRow Row in AGiftDetailsToCheck.Rows)
-		            {
-		                // check changed data is either added or modified and that it is by a new donor
-		                if (Row.RowState != DataRowState.Deleted && ((Int32) Row[GiftBatchTDSAGiftDetailTable.GetBatchNumberDBName()]) != ANotInBatchNumber)
-		                {
-		                	PPartnerTypeTable PartnerTypeTable = PPartnerTypeAccess.LoadViaPPartner((Int64) Row[GiftBatchTDSAGiftDetailTable.GetRecipientKeyDBName()], Transaction);
-		                	
-		                	foreach (PPartnerTypeRow TypeRow in PartnerTypeTable.Rows)
-		                	{
-		                		if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER")))
-		                		{
-		                			ReturnValue.Rows.Add((object[]) Row.ItemArray.Clone());
-		                			break;
-		                		}
-		                	}
-		                }
-		            }
+                    foreach (DataRow Row in AGiftDetailsToCheck.Rows)
+                    {
+                        // check changed data is either added or modified and that it is by a new donor
+                        if ((Row.RowState != DataRowState.Deleted)
+                            && (((Int32)Row[GiftBatchTDSAGiftDetailTable.GetBatchNumberDBName()]) != ANotInBatchNumber))
+                        {
+                            PPartnerTypeTable PartnerTypeTable =
+                                PPartnerTypeAccess.LoadViaPPartner((Int64)Row[GiftBatchTDSAGiftDetailTable.GetRecipientKeyDBName()], Transaction);
+
+                            foreach (PPartnerTypeRow TypeRow in PartnerTypeTable.Rows)
+                            {
+                                if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE,
+                                            "EX-WORKER")))
+                                {
+                                    ReturnValue.Rows.Add((object[])Row.ItemArray.Clone());
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 });
-        	
-        	return ReturnValue;
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -1534,28 +1538,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
-            	if (!TaxDeductiblePercentageEnabled)
-            	{
-            		AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.AccountCode,
-                   		giftdetail.GiftTransactionAmount, giftdetail.GiftAmount, giftdetail.GiftAmountIntl, journal, giftBatch);
-            	}
-            	else
-            	{
-            		// if tax deductible pct is enabled then the gift detail needs split in two: tax-deductible and non-deductible
-            		if (giftdetail.TaxDeductiblePct > 0)
-            		{
-            			// tax deductible
-            			AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.TaxDeductibleAccountCode,
-                   			giftdetail.TaxDeductibleAmount, giftdetail.TaxDeductibleAmountBase, giftdetail.TaxDeductibleAmountIntl, journal, giftBatch);
-            		}
-            		
-            		if (giftdetail.TaxDeductiblePct < 100)
-            		{
-            			// non deductible
-            			AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.AccountCode,
-                   			giftdetail.NonDeductibleAmount, giftdetail.NonDeductibleAmountBase, giftdetail.NonDeductibleAmountIntl, journal, giftBatch);
-            		}
-            	}
+                if (!TaxDeductiblePercentageEnabled)
+                {
+                    AddGiftDetailToGLBatch(ref GLDataset, giftdetail.CostCentreCode, giftdetail.AccountCode,
+                        giftdetail.GiftTransactionAmount, giftdetail.GiftAmount, giftdetail.GiftAmountIntl, journal, giftBatch);
+                }
+                else
+                {
+                    // if tax deductible pct is enabled then the gift detail needs split in two: tax-deductible and non-deductible
+                    if (giftdetail.TaxDeductiblePct > 0)
+                    {
+                        // tax deductible
+                        AddGiftDetailToGLBatch(ref GLDataset,
+                            giftdetail.CostCentreCode,
+                            giftdetail.TaxDeductibleAccountCode,
+                            giftdetail.TaxDeductibleAmount,
+                            giftdetail.TaxDeductibleAmountBase,
+                            giftdetail.TaxDeductibleAmountIntl,
+                            journal,
+                            giftBatch);
+                    }
+
+                    if (giftdetail.TaxDeductiblePct < 100)
+                    {
+                        // non deductible
+                        AddGiftDetailToGLBatch(ref GLDataset,
+                            giftdetail.CostCentreCode,
+                            giftdetail.AccountCode,
+                            giftdetail.NonDeductibleAmount,
+                            giftdetail.NonDeductibleAmountBase,
+                            giftdetail.NonDeductibleAmountIntl,
+                            journal,
+                            giftBatch);
+                    }
+                }
 
                 // TODO: for other currencies a post to a_ledger.a_forex_gains_losses_account_c ???
 
@@ -1613,12 +1629,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             return GLDataset;
         }
-        
+
         private static void AddGiftDetailToGLBatch(ref GLBatchTDS AGLDataset,
             string ACostCentre, string AAccountCode, decimal ATransactionAmount, decimal AAmountInBaseCurrency, decimal AAmountInIntlCurrency,
             AJournalRow AJournal, AGiftBatchRow AGiftBatch)
         {
-        	ATransactionRow transaction = null;
+            ATransactionRow transaction = null;
 
             // do we have already a transaction for this costcentre&account?
             AGLDataset.ATransaction.DefaultView.RowFilter = String.Format("{0}='{1}' and {2}='{3}'",
