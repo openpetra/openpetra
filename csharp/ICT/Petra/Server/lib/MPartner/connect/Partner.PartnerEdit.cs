@@ -2868,23 +2868,11 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return GetSubscriptionsInternal(out ACount, false);
         }
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <returns></returns>
-        public PPartnerAttributeTable GetDataContactDetails()
-        {
-            int ContactDetailsCount;
-
-            return GetPartnerContactDetailsInternal(out ContactDetailsCount);
-        }
-
-        private PartnerEditTDSPPartnerAttributeTable GetPartnerContactDetailsInternal(out Int32 ACount)
+        private void GetPartnerContactDetailsInternal(out Int32 ACount)
         {
             TPartnerCacheable PartnerCacheable = new TPartnerCacheable();
             TDBTransaction ReadTransaction = null;
             PPartnerAttributeTypeTable AttributeTypeDT;
-            var PartnerAttributesThatArentPartnerContactAttributes = new List <PPartnerAttributeRow>();
             int NonPartnerContactAttributesCount = 0;
 
             // Get the Partner Attribute Types that represent Partner Contact Types.
@@ -2924,8 +2912,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             ACount = FPartnerEditScreenDS.PPartnerAttribute.Rows.Count - NonPartnerContactAttributesCount;
-
-            return FPartnerEditScreenDS.PPartnerAttribute;
         }
 
         private PartnerEditTDSPPartnerRelationshipTable GetPartnerRelationshipsInternal(out Int32 ACount, Boolean ACountOnly)
