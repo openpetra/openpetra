@@ -61,6 +61,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private bool FRunningInsideShowDetails = false;
         
+        private bool FSuppressOnContactTypeChangedEvent = false;
+        
         private bool FPrimaryEmailSelectedValueChangedEvent = false;
         
         private enum TTimerDrivenMessageBoxKind
@@ -570,8 +572,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private DataView DetermineEmailAttributes()
         {
             return new DataView(FMainDS.PPartnerAttributeType,
-                PPartnerAttributeTypeTable.GetAttributeCategoryDBName() + " = 'E-Mail' AND " +
-                PPartnerAttributeTypeTable.GetUnassignableDBName() + " = false",
+                String.Format(PPartnerAttributeTypeTable.GetAttributeTypeValueKindDBName() + " = '{0}' AND " +
+                               PPartnerAttributeTypeTable.GetUnassignableDBName() + " = false", TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS),
                 "", DataViewRowState.CurrentRows);
         }
 
@@ -1217,18 +1219,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void FilterContactTypeCombo(Object sender, EventArgs e)
         {
-            if (cmbContactCategory.Text != String.Empty)
-            {
-                cmbContactType.Filter = PPartnerAttributeTypeTable.GetAttributeCategoryDBName() + " = '" + cmbContactCategory.Text + "'";
-
-                // Select the first item in the ComboBox
-                if (cmbContactType.Count > 0)
+                if (cmbContactCategory.Text != String.Empty)
                 {
-                    cmbContactType.SelectedIndex = 0;
-                }
-
-                OnContactTypeChanged(null, null);
-            }
+                    FSuppressOnContactTypeChangedEvent = true;
+                    
+                    cmbContactType.Filter = PPartnerAttributeTypeTable.GetAttributeCategoryDBName() + " = '" + cmbContactCategory.Text + "'";
+                    
+                    FSuppressOnContactTypeChangedEvent = false;
+    
+                    // Select the first item in the ComboBox
+                    if (cmbContactType.Count > 0)
+                    {
+                        cmbContactType.SelectedIndex = 0;
+                    }
+    
+                    OnContactTypeChanged(null, null);
+                }                
         }
 
         private void OnContactTypeChanged(Object sender, EventArgs e)
@@ -1236,7 +1242,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             PPartnerAttributeTypeRow ContactTypeDR;
             TPartnerAttributeTypeValueKind ValueKind;
 
-            if (cmbContactType.Text != String.Empty)
+            if ((!FSuppressOnContactTypeChangedEvent)
+                && (cmbContactType.Text != String.Empty))
             {
                 ContactTypeDR = (PPartnerAttributeTypeRow)cmbContactType.GetSelectedItemsDataRow();
 
