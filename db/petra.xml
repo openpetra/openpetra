@@ -2577,9 +2577,6 @@
     <primarykey name="p_partner_attribute_type_pk"
                 descr=""
                 thisFields="p_code_c"/>
-    <uniquekey name="p_partner_attribute_type_uk"
-                 descr=""
-                 thisFields="p_attribute_category_c, p_code_c"/>
     <foreignkey name="p_partner_attribute_type_fk1"
                 descr=""
                 thisFields="p_attribute_category_c"
