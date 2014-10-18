@@ -1183,8 +1183,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 dtpNoLongerCurrentFrom.Date = null;
             }
+            
+            DoRecalculateScreenParts();
         }
 
+        private void HandleSpecialisedFlagChanged(Object sender, EventArgs e)
+        {
+            // Ensure current Checked state is reflected in the DataRow
+            GetSelectedDetailRow().Specialised = chkSpecialised.Checked;            
+        }
+        
         private void HandleValueLeave(Object sender, EventArgs e)
         {
             var SelectedDetailDR = GetSelectedDetailRow();
