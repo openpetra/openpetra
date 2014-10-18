@@ -194,7 +194,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Try to find a Contact Type that matches the default; if found, new Records are defaulting to that Contact Type.
             DefaultContactTypes = FMainDS.PPartnerAttributeType.Select(
-                PPartnerAttributeTypeTable.GetCodeDBName() + " = '" + StrDefaultContactType + "'");
+                PPartnerAttributeTypeTable.GetAttributeTypeDBName() + " = '" + StrDefaultContactType + "'");
 
             if (DefaultContactTypes.Length > 0)
             {
@@ -207,7 +207,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // The Contact Type that should be Default wasn't found, therefore use the first Contact Type of the first Contact Category
                     DataView SortedPartnerAttr = new DataView(FMainDS.PPartnerAttributeType, String.Empty,
                         "CategoryIndex ASC, " + PPartnerAttributeTypeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);
-                    FDefaultContactType = ((PPartnerAttributeTypeRow)SortedPartnerAttr[0].Row).Code;
+                    FDefaultContactType = ((PPartnerAttributeTypeRow)SortedPartnerAttr[0].Row).AttributeType;
                 }
             }
 
@@ -617,7 +617,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             for (int Counter = 0; Counter < EmailAttributesDV.Count; Counter++)
             {
-                EmailAttributesConcatStr += ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).Code + "', '";
+                EmailAttributesConcatStr += ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).AttributeType + "', '";
             }
 
             if (EmailAttributesConcatStr.Length > 0) 
@@ -704,7 +704,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (FMainDS.PPartnerAttributeType != null)
                 {
                     DataRow[] ParnterAttributeRow = FMainDS.PPartnerAttributeType.Select(
-                        PPartnerAttributeTypeTable.GetCodeDBName() + " = " + "'" + ARow.AttributeType + "'");
+                        PPartnerAttributeTypeTable.GetAttributeTypeDBName() + " = " + "'" + ARow.AttributeType + "'");
 
                     if (ParnterAttributeRow.Length > 0)
                     {
@@ -1004,7 +1004,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ForeignTableColumn = new DataColumn();
             ForeignTableColumn.DataType = System.Type.GetType("System.String");
-            ForeignTableColumn.ColumnName = "Parent_" + PPartnerAttributeTypeTable.GetCodeDBName();
+            ForeignTableColumn.ColumnName = "Parent_" + PPartnerAttributeTypeTable.GetAttributeTypeDBName();
             ForeignTableColumn.Expression = "";  // The real expression will be set in Method 'SetColumnExpressions'!
             FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
 
@@ -1043,8 +1043,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void SetColumnExpressions()
         {
-            FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()].Expression =
-                "Parent." + PPartnerAttributeTypeTable.GetCodeDBName();
+            FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetAttributeTypeDBName()].Expression =
+                "Parent." + PPartnerAttributeTypeTable.GetAttributeTypeDBName();
 
             FMainDS.PPartnerAttribute.Columns["Parent_AttributeIndex"].Expression =
                 "Parent." + PPartnerAttributeTypeTable.GetIndexDBName();
@@ -1054,8 +1054,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FMainDS.PPartnerAttribute.Columns["ContactType"].Expression =
                 "IIF(" + PPartnerAttributeTable.GetSpecialisedDBName() + " = true, ISNULL(Parent." +
-                PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetCodeDBName() + "), Parent." +
-                PPartnerAttributeTypeTable.GetCodeDBName() + ")";
+                PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetAttributeTypeDBName() + "), Parent." +
+                PPartnerAttributeTypeTable.GetAttributeTypeDBName() + ")";
         }
 
         /// <summary>
@@ -1249,7 +1249,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FSuppressOnContactTypeChangedEvent = true;
                     
-                    cmbContactType.Filter = PPartnerAttributeTypeTable.GetAttributeCategoryDBName() + " = '" + cmbContactCategory.Text + "'";
+                    cmbContactType.Filter = PPartnerAttributeTypeTable.GetCategoryCodeDBName() + " = '" + cmbContactCategory.Text + "'";
                     
                     FSuppressOnContactTypeChangedEvent = false;
     
@@ -1360,7 +1360,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             foreach (DataRowView Drv in cmbContactCategory.Table.DefaultView)
             {
-                if (((PPartnerAttributeCategoryRow)(Drv.Row)).CategoryCode == ARow.AttributeCategory)
+                if (((PPartnerAttributeCategoryRow)(Drv.Row)).CategoryCode == ARow.CategoryCode)
                 {
                     break;
                 }

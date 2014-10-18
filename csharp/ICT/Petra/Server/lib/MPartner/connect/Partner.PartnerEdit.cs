@@ -2899,7 +2899,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             // (their PPartnerAttributeCategory.PartnerContactCategory Column holds 'false') aren't!
             for (int Counter = 0; Counter < FPartnerEditScreenDS.PPartnerAttribute.Rows.Count; Counter++)
             {
-                if (AttributeTypeDT.Select(PPartnerAttributeTypeTable.GetCodeDBName() + " = '" +
+                if (AttributeTypeDT.Select(PPartnerAttributeTypeTable.GetAttributeTypeDBName() + " = '" +
                         FPartnerEditScreenDS.PPartnerAttribute[Counter].AttributeType + "'").Length == 0)
                 {
                     NonPartnerContactAttributesCount++;

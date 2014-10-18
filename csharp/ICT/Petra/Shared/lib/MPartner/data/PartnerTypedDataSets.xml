@@ -130,10 +130,10 @@
         createConstraints="false"/>
     <CustomRelation name="ContactDetails1"
         parentTable="PPartnerAttributeCategory" parentFields="CategoryCode"
-        childTable="PPartnerAttributeType" childFields="AttributeCategory"
+        childTable="PPartnerAttributeType" childFields="CategoryCode"
         createConstraints="false"/>        
     <CustomRelation name="ContactDetails2"
-        parentTable="PPartnerAttributeType" parentFields="Code"
+        parentTable="PPartnerAttributeType" parentFields="AttributeType"
         childTable="PPartnerAttribute" childFields="AttributeType"
         createConstraints="false"/>                
     <CustomRelation name="PartnerInterestCategory"
