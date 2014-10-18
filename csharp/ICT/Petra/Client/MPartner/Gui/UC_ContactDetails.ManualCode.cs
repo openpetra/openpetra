@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Populated by Method <see cref="DetermineEmailPartnerAttributeTypes"/>.
         /// </summary>
-        string FEmailAttributesConcatStr;
+        string FEmailAttributesConcatStr = String.Empty;
 
         #region Properties
 
@@ -591,11 +591,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             string CurrentCriteria = AOnlyCurrentEmailAddresses ? PPartnerAttributeTable.GetCurrentDBName() + " = true AND " : String.Empty;
 
-            return new DataView(FMainDS.PPartnerAttribute,
-                CurrentCriteria +
-                String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
-                    FEmailAttributesConcatStr),
-                PPartnerAttributeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);
+            if (FEmailAttributesConcatStr.Length > 0) 
+            {
+                return new DataView(FMainDS.PPartnerAttribute,
+                    CurrentCriteria +
+                    String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
+                        FEmailAttributesConcatStr),
+                    PPartnerAttributeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);                
+            }
+            else
+            {
+                return new DataView();
+            }
         }
 
         /// <summary>
@@ -613,7 +620,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 EmailAttributesConcatStr += ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).Code + "', '";
             }
 
-            FEmailAttributesConcatStr = "'" + EmailAttributesConcatStr.Substring(0, EmailAttributesConcatStr.Length - 3);
+            if (EmailAttributesConcatStr.Length > 0) 
+            {
+                FEmailAttributesConcatStr = "'" + EmailAttributesConcatStr.Substring(0, EmailAttributesConcatStr.Length - 3);    
+            }            
         }
 
         private void UpdatePrimaryEmailComboItems(bool ASuppressMessages, string ANewEmailAddressValue = null)
