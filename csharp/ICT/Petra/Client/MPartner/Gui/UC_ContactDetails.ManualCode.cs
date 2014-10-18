@@ -42,6 +42,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_ContactDetails
     {
+        private enum TTimerDrivenMessageBoxKind
+        {
+            tdmbkNoPrimaryEmailAsNoCurrentAvailable,
+
+            tdmbkNoPrimaryEmailButNonCurrentAvailable
+        }
+
         private readonly string StrDefaultContactType = Catalog.GetString("Phone");
 
         private string StrPrimEmailConsequence = Catalog.GetString(
@@ -65,13 +72,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private bool FPrimaryEmailSelectedValueChangedEvent = false;
         
-        private enum TTimerDrivenMessageBoxKind
-        {
-            tdmbkNoPrimaryEmailAsNoCurrentAvailable,
-
-            tdmbkNoPrimaryEmailButNonCurrentAvailable
-        }
-
+        /// <summary>
+        /// Usage: see Methods <see cref="PreDeleteManual"/> and <see cref="PostDeleteManual"/>. 
+        /// </summary>
+        private string FDeletedRowsAttributeType = String.Empty;
+        
+        /// <summary>
+        /// Usage: see Methods <see cref="PreDeleteManual"/> and <see cref="PostDeleteManual"/>. 
+        /// </summary>
+        private string FDeletedRowsValue = String.Empty;
+        
         /// <summary>
         /// Populated by Method <see cref="DetermineEmailPartnerAttributeTypes"/>.
         /// </summary>
@@ -841,10 +851,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(PPartnerAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
+            // Those values are getting safed for use in the PostDeleteManual Method
+            // Trying to establish those values there doesn't work in case the Partner was new, 
+            // the Row was newly added, and then gets removed (DataRow has DataRowVersion.Detached in 
+            // this case, and no Original data that can be accessed!)
+            FDeletedRowsAttributeType = ARowToDelete.AttributeType;
+            FDeletedRowsValue = ARowToDelete.Value;
 
-            /*Code to execute before the delete can take place*/
-//            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Contact Detail record: '{0}'?"),
-//                ARowToDelete.RelationName);
+            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete the following Contact Detail record?\r\n\r\n    Type: '{0}'\r\n    Value: '{1}'"),
+                ARowToDelete.AttributeType, ARowToDelete.Value);
             
             return true;
         }
@@ -892,18 +907,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             string ACompletionMessage)
         {
             bool NoEmailAddressesAvailableAnymore = false;
-            string AttributeTypeOfDeletedRow = (string)ARowToDelete[PPartnerAttributeTable.GetAttributeTypeDBName(), DataRowVersion.Original];
-            string ValueOfDeletedRow = (string)ARowToDelete[PPartnerAttributeTable.GetValueDBName(), DataRowVersion.Original];
             
             if (ADeletionPerformed)
             {
                 StringCollection EmailAttrColl = StringHelper.StrSplit(FEmailAttributesConcatStr, ", ");
             
-                if (EmailAttrColl.Contains("'" + AttributeTypeOfDeletedRow + "'")) 
+                if (EmailAttrColl.Contains("'" + FDeletedRowsAttributeType + "'")) 
                 {
                     // User deleted an E-mail Contact Detail
                     
-                    if (cmbPrimaryEMail.GetSelectedString(-1) == ValueOfDeletedRow) 
+                    if (cmbPrimaryEMail.GetSelectedString(-1) == FDeletedRowsValue) 
                     {
                         DataView ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(true);
                         
@@ -949,6 +962,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlDetails.Visible = false;
                 }                
             }
+            
+            FDeletedRowsAttributeType = String.Empty;
+            FDeletedRowsValue = String.Empty;
         }
 
         private void DoRecalculateScreenParts()
