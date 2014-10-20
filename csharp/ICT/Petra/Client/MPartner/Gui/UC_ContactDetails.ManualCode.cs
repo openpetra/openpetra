@@ -1184,7 +1184,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 dtpNoLongerCurrentFrom.Date = null;
             }
             
-            DoRecalculateScreenParts();
+            if (!FRunningInsideShowDetails) 
+            {
+                DoRecalculateScreenParts();    
+            }
         }
 
         private void HandleSpecialisedFlagChanged(Object sender, EventArgs e)

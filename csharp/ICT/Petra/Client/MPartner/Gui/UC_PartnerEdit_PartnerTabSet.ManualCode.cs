@@ -1088,9 +1088,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_ContactDetails))
             {
-                // OPTIMIZE_LOW: Develop a way in which the following calculation doesn't need to be done if the Partner Edit screen isn't opened for the Contact Details Tab (i.e. where an assignment similar to 'CountAll = FMainDS.MiscellaneousData[0].ItemsCountSubscriptions;' and 'CountActive = FMainDS.MiscellaneousData[0].ItemsCountSubscriptionsActive;' would be enough).
-                Calculations.CalculateTabCountsPartnerContactDetails(FMainDS.PPartnerAttribute, out CountAll, out CountActive);
-                tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);
+                if (FMainDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
+                {
+                    Calculations.CalculateTabCountsPartnerContactDetails(FMainDS.PPartnerAttribute, out CountAll, out CountActive);
+                    tpgContactDetails.Text = String.Format(StrContactDetailsTabHeader + " ({0})", CountActive);                                            
+                }
+                else
+                {
+                    CountAll = 0;
+                    CountActive = 0;
+                }
 
                 if ((CountAll == 0) || (CountAll > 1))
                 {
