@@ -258,6 +258,11 @@ namespace {#NAMESPACE}
         if (ARow != null)
         {
             object[] beforeEdit = ARow.ItemArray;
+{#IFDEF GETDETAILSMANUAL}
+
+            GetDetailsFromControlsManual(ARow);
+{#ENDIF GETDETAILSMANUAL}            
+
             ARow.BeginEdit();
             {#SAVEDETAILS}
             {#SAVEDETAILSEXTRA}

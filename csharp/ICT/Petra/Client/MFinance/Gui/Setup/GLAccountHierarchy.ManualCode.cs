@@ -468,7 +468,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
                 chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
-                chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag;
+                chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag
+                     && FMainDS.ALedger[0].BudgetControlFlag;
+                lblDetailBudgetControlFlag.Enabled = FMainDS.ALedger[0].BudgetControlFlag;
+
                 cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
 
                 chkDetailIsSummary.Checked = !ARow.PostingStatus;
@@ -690,7 +693,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ucoAccountsTree.MarkAllNodesCommitted();
-            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+            TSubmitChangesResult ServerResult = 
+                TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+            TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            return ServerResult;
         }
 
         private void DeleteAccount(Object sender, EventArgs ev)
@@ -784,7 +790,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Called from ValidateAllData
+        /// I need to find out whether the specified AccountCode can be allowed.
+        /// </summary>
+        private void GetDetailsFromControlsManual(GLSetupTDSAAccountRow ARow)
+        {
+            //
+            // If changing the PrimaryKey to that specified causes a contraints error, 
+            // I'll catch it here, issue a warning, and return the control to the "safe" value.
+            ProtectedChangeOfPrimaryKey(FCurrentAccount);
+        }
+
+        /// <summary>
         /// </summary>
         private void GetDataFromControlsManual()
         {
@@ -839,14 +855,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 ShowDetails((GLSetupTDSAAccountRow)FCurrentAccount.AccountRow);
+                FCurrentAccount.GetAttrributes();
             }
 
             FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-            tbbAddNewAccount.Enabled =
-                ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue ? FCurrentAccount.CanHaveChildren.Value : false));
-            tbbDeleteAccount.Enabled = ((FCurrentAccount != null) && (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false));
+
+            if ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue))
+            {
+                tbbAddNewAccount.Enabled = FCurrentAccount.CanHaveChildren.Value;
+                tbbAddNewAccount.ToolTipText = (tbbAddNewAccount.Enabled) ? "New Account" : FCurrentAccount.Msg;
+            }
+            else
+            {
+                tbbAddNewAccount.Enabled = false;
+                tbbAddNewAccount.ToolTipText = "";
+            }
+
+            if ((FCurrentAccount != null) && (FCurrentAccount.CanDelete.HasValue))
+            {
+                tbbDeleteAccount.Enabled = FCurrentAccount.CanDelete.Value;
+                tbbDeleteAccount.ToolTipText = (tbbDeleteAccount.Enabled) ? "Delete Account" : FCurrentAccount.Msg;
+            }
+            else
+            {
+                tbbDeleteAccount.Enabled = false;
+                tbbDeleteAccount.ToolTipText = "";
+            }
+            
 
             FPetraUtilsObject.HasChanges = hasChanges;
         }
@@ -881,6 +918,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return (GLSetupTDSAAccountRow)FCurrentAccount.AccountRow;
+        }
+
+        /// <summary>
+        /// The fact that the AccountCode is the database primary key causes SO MUCH GRIEF all over the system!
+        /// </summary>
+        /// <param name="AAccountNode"></param>
+        /// <returns></returns>
+        private Boolean ProtectedChangeOfPrimaryKey(AccountNodeDetails AAccountNode)
+        {
+            String NewValue = txtDetailAccountCode.Text;
+            try
+            {
+                AAccountNode.AccountRow.AccountCode = NewValue;
+                AAccountNode.DetailRow.ReportingAccountCode = NewValue;
+
+                return true;
+            }
+            catch (System.Data.ConstraintException)
+            {
+                txtDetailAccountCode.Text = strOldDetailAccountCode;
+
+                FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
+
+                ShowStatus(Catalog.GetString("Account Code change REJECTED!"));
+
+                MessageBox.Show(String.Format(
+                        Catalog.GetString(
+                            "Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{1}' already exists."
+                            + "\r\n\r\n--> Account Code reverted to previous value."),
+                        strOldDetailAccountCode, NewValue),
+                    Catalog.GetString("Renaming Not Possible - Conflicts With Existing Account Code"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                txtDetailAccountCode.Focus();
+            }
+            return false;
         }
 
         /// <summary>
@@ -926,38 +999,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;
 
-                    try
-                    {
-                        FCurrentAccount.AccountRow.BeginEdit();
-                        FCurrentAccount.AccountRow.AccountCode = strNewDetailAccountCode;
-                        FCurrentAccount.DetailRow.ReportingAccountCode = strNewDetailAccountCode;
-                        FCurrentAccount.AccountRow.EndEdit();
-                        ucoAccountsTree.SetNodeLabel(strNewDetailAccountCode, strAccountShortDescr);
-
-                        changeAccepted = true;
-                    }
-                    catch (System.Data.ConstraintException)
-                    {
-                        txtDetailAccountCode.Text = strOldDetailAccountCode;
-                        FCurrentAccount.AccountRow.CancelEdit();
-                        FCurrentAccount.DetailRow.CancelEdit();
-
-                        FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
-
-                        ShowStatus(Catalog.GetString("Account Code change REJECTED!"));
-
-                        MessageBox.Show(String.Format(
-                                Catalog.GetString(
-                                    "Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{2}' already exists.\r\n\r\n--> Account Code reverted to previous value!"),
-                                strOldDetailAccountCode, strNewDetailAccountCode, strNewDetailAccountCode),
-                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Account Code"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        txtDetailAccountCode.Focus();
-                    }
+                    changeAccepted = ProtectedChangeOfPrimaryKey(FCurrentAccount);
 
                     if (changeAccepted)
                     {
+                        ucoAccountsTree.SetNodeLabel(strNewDetailAccountCode, strAccountShortDescr);
                         if (FCurrentAccount.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:
@@ -990,6 +1036,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 strOldDetailAccountCode = "";
                                 FPetraUtilsObject.SuppressChangeDetection = true;
                                 ucoAccountsTree.PopulateTreeView(FMainDS, FLedgerNumber, FSelectedHierarchy);
+                                ucoAccountsList.PopulateListView(FMainDS, FLedgerNumber, FSelectedHierarchy);
                                 ShowDetailsManual(null);
                                 ClearStatus();
                                 FIAmUpdating--;
@@ -997,6 +1044,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 ucoAccountsTree.SelectNodeByName(FRecentlyUpdatedDetailAccountCode);
 
                                 ShowStatus(String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode));
+                                TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
                             }
                             else
                             {

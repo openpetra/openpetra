@@ -222,13 +222,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void DeleteContactLog(object sender, EventArgs e)
         {
-            TDeleteGridRows.DeleteRows(this, grdDetails, FPetraUtilsObject, this);
+            
+            if(!TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner(100)){ // TODOOOOOOOOOOOO
+                // filter this before passing it so that only the selected row(s) get nuked
+                TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PContactLog); // TODOOOOOOOOOOOOOO 
+                
+                TDeleteGridRows.DeleteRows(this, grdDetails, FPetraUtilsObject, this);
+            }
+
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
         private void RecalculateTabHeaderCounter()
         {
             TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;

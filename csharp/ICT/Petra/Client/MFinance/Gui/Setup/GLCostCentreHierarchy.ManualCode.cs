@@ -42,6 +42,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -559,7 +560,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ucoCostCentreTree.MarkAllNodesCommitted();
-            return TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+            TSubmitChangesResult ServerResult = 
+                TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
+            TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
+            return ServerResult;
         }
 
         /// <summary>
@@ -598,6 +602,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     Catalog.GetString("This Cost Centre Code is in use and cannot be deleted.") + "\n" + FCurrentCostCentre.Msg,
                     Catalog.GetString("Delete Cost Centre"));
             }
+        }
+
+        /// <summary>
+        /// The fact that the CostCentreCode is the database primary key causes SO MUCH GRIEF all over the system!
+        /// </summary>
+        /// <param name="ACostCentreNode"></param>
+        /// <returns></returns>
+        private Boolean ProtectedChangeOfPrimaryKey(CostCentreNodeDetails ACostCentreNode)
+        {
+            String NewValue = txtDetailCostCentreCode.Text;
+            try
+            {
+                ACostCentreNode.CostCentreRow.CostCentreCode = NewValue;
+                ACostCentreNode.CostCentreRow.CostCentreToReportTo = NewValue;
+
+                return true;
+            }
+            catch (System.Data.ConstraintException)
+            {
+                txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
+
+                FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
+
+                ShowStatus(Catalog.GetString("Account Code change REJECTED!"));
+
+                MessageBox.Show(String.Format(
+                        Catalog.GetString(
+                            "Renaming Cost Centre Code '{0}' to '{1}' is not possible because a Cost Centre Code by the name of '{1}' already exists."
+                            + "\r\n\r\n--> Cost Centre Code reverted to previous value."),
+                        strOldDetailCostCentreCode, NewValue),
+                    Catalog.GetString("Renaming Not Possible - Conflicts With Existing Cost Centre Code"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                txtDetailCostCentreCode.Focus();
+            }
+            return false;
         }
 
         /// <summary>
@@ -642,36 +682,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     this.Refresh();
 
                     FRecentlyUpdatedDetailCostCentreCode = strNewDetailCostCentreCode;
-                    try
-                    {
-                        FCurrentCostCentre.CostCentreRow.BeginEdit();
-                        FCurrentCostCentre.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
-                        FCurrentCostCentre.CostCentreRow.EndEdit();  // A constraint exception might occur here
-                        ucoCostCentreTree.SetNodeLabel(FCurrentCostCentre.CostCentreRow);
-
-                        changeAccepted = true;
-                    }
-                    catch (System.Data.ConstraintException)
-                    {
-                        txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
-                        FCurrentCostCentre.CostCentreRow.CancelEdit();
-
-                        FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
-
-                        ShowStatus(Catalog.GetString("Cost Centre Code change REJECTED!"));
-
-                        MessageBox.Show(String.Format(
-                                Catalog.GetString(
-                                    "Renaming Cost Centre Code '{0}' to '{1}' is not possible because a Cost Centre Code by the name of '{2}' already exists.\r\n\r\n--> Cost Centre Code reverted to previous value!"),
-                                strOldDetailCostCentreCode, strNewDetailCostCentreCode, strNewDetailCostCentreCode),
-                            Catalog.GetString("Renaming Not Possible - Conflicts With Existing Cost Centre Code"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        txtDetailCostCentreCode.Focus();
-                    }
+                    changeAccepted = ProtectedChangeOfPrimaryKey(FCurrentCostCentre);
 
                     if (changeAccepted)
                     {
+                        ucoCostCentreTree.SetNodeLabel(FCurrentCostCentre.CostCentreRow);
                         if (FCurrentCostCentre.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:
@@ -699,10 +714,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             if (Success)
                             {
-                                DataTable NewTable;
-                                TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.CostCentreList,
-                                    FLedgerNumber,
-                                    out NewTable);
+                                TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                                 strOldDetailCostCentreCode = "";
                                 FIAmUpdating++;
@@ -711,6 +723,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FPetraUtilsObject.SuppressChangeDetection = false;
                                 FCurrentCostCentre = null;
                                 ucoCostCentreTree.PopulateTreeView(FMainDS);
+                                ucoCostCentreList.PopulateListView(FMainDS, FLedgerNumber);
                                 FIAmUpdating--;
                                 ucoCostCentreTree.SelectNodeByName(FRecentlyUpdatedDetailCostCentreCode);
                                 ClearStatus();
@@ -730,6 +743,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return changeAccepted;
+        }
+
+        /// <summary>
+        /// I need to find out whether the specified AccountCode can be allowed.
+        /// </summary>
+        private void GetDetailsFromControlsManual(ACostCentreRow ARow)
+        {
+            //
+            // If changing the PrimaryKey to that specified causes a contraints error, 
+            // I'll catch it here, issue a warning, and return the control to the "safe" value.
+            ProtectedChangeOfPrimaryKey(FCurrentCostCentre);
         }
 
         private void GetDataFromControlsManual()
@@ -802,8 +826,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-            tbbAddNewCostCentre.Enabled = ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanHaveChildren.Value));
-            tbbDeleteCostCentre.Enabled = ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanDelete.Value));
+            if ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanHaveChildren.HasValue))
+            {
+                tbbAddNewCostCentre.Enabled = FCurrentCostCentre.CanHaveChildren.Value;
+                tbbAddNewCostCentre.ToolTipText = (tbbAddNewCostCentre.Enabled) ? "New Cost Centre" : FCurrentCostCentre.Msg;
+            }
+            else
+            {
+                tbbAddNewCostCentre.Enabled = false;
+                tbbAddNewCostCentre.ToolTipText = "";
+            }
+
+            if ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanDelete.HasValue))
+            {
+                tbbDeleteCostCentre.Enabled = FCurrentCostCentre.CanDelete.Value;
+                tbbDeleteCostCentre.ToolTipText = (tbbDeleteCostCentre.Enabled) ? "Delete Cost Centre" : FCurrentCostCentre.Msg;
+            }
+            else
+            {
+                tbbDeleteCostCentre.Enabled = false;
+                tbbDeleteCostCentre.ToolTipText = "";
+            }
 
             FPetraUtilsObject.HasChanges = hasChanges;
         }

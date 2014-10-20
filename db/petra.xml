@@ -407,7 +407,7 @@
                 descr="This defines if the code can be modified"
                 format="Yes/No"
                 label="Can Modify"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 initial="yes"/>
     <tablefield name="s_record_delete_l"
                 type="bit"
@@ -622,7 +622,7 @@
                 descr="This defines if the code can be modified"
                 format="Yes/No"
                 label="Can Modify"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 initial="yes"/>
     <!-- Constraints on table s_group -->
     <primarykey name="s_group_pk"
@@ -2717,7 +2717,7 @@
 &lt;br/&gt;This can only be updated by the system manager."
                 format="Yes/No"
                 label="Deletable"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <!-- Constraints on table u_unit_type -->
@@ -5038,7 +5038,7 @@
                 type="bit"
                 descr="Indicates that the extract has been edited by a user"
                 format="Yes/No"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="m_manual_mod_d"
@@ -6848,13 +6848,13 @@
                 descr="This defines which currency is being used"
                 format="X(8)"
                 label="Base Currency"
-                help="Enter a currency code"/>
+                help="Default currency for this Ledger"/>
     <tablefield name="a_transaction_account_flag_l"
                 type="bit"
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Transaction Account Flag"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_year_end_flag_l"
@@ -6862,12 +6862,12 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Year End Flag"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_forex_gains_losses_account_c"
                 type="varchar"
-                descr="This identifies the account the financial transaction must be stored against"
+                descr="The account for foreign exchange gains or losses"
                 format="X(8)"
                 label="Foreign Currency revaluation Account"
                 help="Enter an account code"
@@ -6877,7 +6877,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="System Interface Flag"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_suspense_account_flag_l"
@@ -6893,7 +6893,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Bank account Flag"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Include Bank Accounts"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_delete_ledger_flag_l"
@@ -6901,7 +6901,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Delete Ledger Flag"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_new_financial_year_flag_l"
@@ -6909,7 +6909,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="New Financial Year Flag"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_recalculate_gl_master_flag_l"
@@ -6917,7 +6917,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Recalculate GL Master Flag"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_installation_id_c"
@@ -7191,7 +7191,7 @@
                 descr="This defines which currency to use as a second (&apos;international&apos;) base currency."
                 format="X(8)"
                 label="International Currency"
-                help="Enter a currency code"/>
+                help="International reporting currency"/>
     <tablefield name="a_last_rec_gift_batch_number_i"
                 type="integer"
                 descr="The number of the last gift batch to be created."
@@ -9471,7 +9471,7 @@
                 descr="Shows if the method of giving involves a trust"
                 format="Yes/No"
                 label="Trust Flag"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_tax_rebate_flag_l"
@@ -9479,7 +9479,7 @@
                 descr="Shows if this method of giving involves a tax rebate"
                 format="Yes/No"
                 label="Tax Rebate Flag"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_recurring_method_flag_l"
@@ -9487,7 +9487,7 @@
                 descr="Shows if this method of giving is used by recurring gifts"
                 format="Yes/No"
                 label="Recurring Method Flag"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_active_l"
@@ -9694,7 +9694,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Bulk Rate Flag"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_next_response_status_c"
@@ -9707,7 +9707,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Activate Partner"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_number_sent_i"
@@ -12239,7 +12239,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Analysis Indicator"
-                help="Enter &quot;&quot;YES&quot;&quot; or &quot;&quot;NO&quot;&quot;"
+                help="Enter Yes or No"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_reconciled_status_l"
