@@ -779,6 +779,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 MessageProcessed = true;
             }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcUnitHierarchyChanged)
+            {
+                ucoTransactions.ProcessUnitHierarchyBroadcastMessage(AFormsMessage);
+
+                MessageProcessed = true;
+            }
 
             return MessageProcessed;
         }

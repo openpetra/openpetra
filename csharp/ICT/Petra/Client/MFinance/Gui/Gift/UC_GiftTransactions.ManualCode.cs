@@ -33,6 +33,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
@@ -269,7 +270,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
             }
 
-            //On populating key muinistry
+            //On populating key ministry
             if (disableSave && FPetraUtilsObject.HasChanges && !((TFrmGiftBatch)ParentForm).BatchColumnsHaveChanged(FBatchRow))
             {
                 FPetraUtilsObject.DisableSaveButton();
@@ -501,7 +502,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Thread only invokes ValidateGiftDestination once Partner Short Name has been updated.
                 // Otherwise the Gift Destination screen is displayed and then the screen focus moves to this screen again
                 // when the Partner Short Name is updated.
-                new Thread(ValidateGiftDestinationThread).Start();
+                new Thread(ValidateRecipientLedgerNumberThread).Start();
             }
 
             if (DoEnableRecipientHistory.HasValue)
@@ -514,7 +515,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FPartnerShortName = "";
         private delegate void SimpleDelegate();
 
-        private void ValidateGiftDestinationThread()
+        private void ValidateRecipientLedgerNumberThread()
         {
             // Check whether this thread should still execute
             while (txtDetailRecipientKey.LabelText != FPartnerShortName)
@@ -523,7 +524,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Thread.Sleep(10);
             }
 
-            Invoke(new SimpleDelegate(ValidateGiftDestination));
+            Invoke(new SimpleDelegate(ValidateRecipientLedgerNumber));
         }
 
         private void DonorKeyChanged(Int64 APartnerKey,
@@ -716,7 +717,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
             }
 
-            ValidateGiftDestination();
+            if (!FInRecipientKeyChanging)
+            {
+            	ValidateRecipientLedgerNumber();
+            }
         }
 
         private void MotivationDetailChanged(object sender, EventArgs e)
@@ -1581,14 +1585,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ValidateGiftDestination()
+        private void ValidateRecipientLedgerNumber()
         {
-            // if no gift destination exists for parter then give the user the option to open Gift Destination maintenance screen
+            // if no gift destination exists for Family parter then give the user the option to open Gift Destination maintenance screen
             if ((FPreviouslySelectedDetailRow != null)
                 && (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 && (FPreviouslySelectedDetailRow.RecipientKey != 0)
-                && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)
-                && (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
+                && (cmbDetailMotivationGroupCode.GetSelectedString() == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            {
+            	if ((txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
                 && (MessageBox.Show(Catalog.GetString("No valid Gift Destination exists for ") +
                         FPreviouslySelectedDetailRow.RecipientDescription +
                         " (" + FPreviouslySelectedDetailRow.RecipientKey + ").\n\n" +
@@ -1597,8 +1602,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 " Would you like to do this now?"), MFinanceConstants.MOTIVATION_GROUP_GIFT),
                         Catalog.GetString("No valid Gift Destination"),
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes))
-            {
-                OpenGiftDestination(this, null);
+	            {
+	                OpenGiftDestination(this, null);
+	            }
+            	// if no recipient ledger number for Unit partner
+            	else if (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.UNIT
+                	&& (MessageBox.Show(string.Format(Catalog.GetString(
+            	         	"The Unit Partner {0} has not been allocated a Parent Field that can receive gifts. " +
+                     		"This will need to be changed before this gift can be saved with the Motivation Group '{1}'.\n\n" +
+							"Would you like to do this now?"),
+                                "'" + FPreviouslySelectedDetailRow.RecipientDescription + "' (" + FPreviouslySelectedDetailRow.RecipientKey + ")",
+                                MFinanceConstants.MOTIVATION_GROUP_GIFT),
+                        Catalog.GetString("Problem with Unit's Parent Field"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes))
+            	{
+            		TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+                	frm.SetParameters(TScreenMode.smEdit, FPreviouslySelectedDetailRow.RecipientKey, Ict.Petra.Shared.MPartner.TPartnerEditTabPageEnum.petpDetails);
+                	frm.Show();
+            	}
             }
         }
 
@@ -2228,6 +2249,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         txtDetailRecipientLedgerNumber.Text = Row.FieldKey.ToString();
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update Unit recipient based on a broadcast message
+        /// </summary>
+        /// <param name="AFormsMessage"></param>
+        public void ProcessUnitHierarchyBroadcastMessage(TFormsMessage AFormsMessage)
+        {
+        	if (txtDetailRecipientKey.CurrentPartnerClass != TPartnerClass.UNIT)
+        	{
+        		return;
+        	}
+        	
+            List <Tuple <string, Int64,
+                         Int64>>UnitHierarchyChanges =
+                ((TFormsMessage.FormsMessageUnitHierarchy)AFormsMessage.MessageObject).UnitHierarchyChanges;
+        		    
+    		// loop backwards as the most recent (and accurate) change will be at the end
+            for (int i = UnitHierarchyChanges.Count - 1; i >= 0; i--)
+            {
+            	if (UnitHierarchyChanges[i].Item2 == Convert.ToInt64(txtDetailRecipientKey.Text))
+                {
+            		TUC_GiftTransactions_Recipient.GetRecipientData(FPreviouslySelectedDetailRow,
+											                        Convert.ToInt64(txtDetailRecipientKey.Text),
+											                        ref cmbKeyMinistries,
+											                        txtDetailRecipientKey,
+											                        ref txtDetailRecipientLedgerNumber);
+            		
+                    break;
                 }
             }
         }

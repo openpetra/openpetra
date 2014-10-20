@@ -329,6 +329,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACurrentDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
                 ACurrentDetailRow.RecipientDescription = APartnerShortName;
 
+                if (!AMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
+                        APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
+                {
+                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
+                    {
+                    	// note - this will also update the Motivation Detail
+                        ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
+                    }
+                    else if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
+                    {
+                        ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
+                    }
+                    
+                    ACurrentDetailRow.MotivationGroupCode = AMotivationGroup;
+                    ACurrentDetailRow.MotivationDetailCode = AMotivationDetail;
+                }
+
                 APetraUtilsObject.SuppressChangeDetection = true;
 
                 //Set RecipientLedgerNumber
@@ -339,22 +356,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     ACurrentDetailRow.RecipientLedgerNumber = 0;
-                }
-
-                if (!AMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
-                        APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
-                {
-                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
-                    {
-                        ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
-                        ACurrentDetailRow.MotivationGroupCode = AMotivationGroup;
-                    }
-
-                    if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
-                    {
-                        ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
-                        ACurrentDetailRow.MotivationDetailCode = AMotivationDetail;
-                    }
                 }
 
                 if (APartnerKey > 0)
@@ -462,7 +463,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             AMotivationGroup = ACmbMotivationGroupCode.GetSelectedString();
-            AMotivationDetail = string.Empty;
+            
+            if (!ARecipientKeyChangingFlag)
+            {
+            	AMotivationDetail = string.Empty;
+            }
 
             ApplyMotivationDetailCodeFilter(AGiftBatchDetail,
                 AMainDS,
@@ -521,6 +526,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
+                	// if key ministry has actually changed
                     if ((ATxtDetailRecipientKeyMinistry.Text != KeyMinistry)
                         || (ACurrentDetailRow.RecipientKeyMinistry != KeyMinistry))
                     {
@@ -528,7 +534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ACurrentDetailRow.RecipientKeyMinistry = KeyMinistry;
                     }
 
-                    if (ATxtDetailRecipientKey.Text != RecipientKey)
+                	if (Convert.ToInt64(ATxtDetailRecipientKey.Text) != Convert.ToInt64(RecipientKey))
                     {
                         ATxtDetailRecipientKey.Text = RecipientKey;
                     }
@@ -672,7 +678,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACmbKeyMinistries.Enabled = true;
             }
 
-            if ((Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0) && (APartnerKey != 0))
+            // if recipient is a family then we will need to find their Gift Destination
+            if ((ATxtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY) && (APartnerKey != 0))
             {
                 AtxtDetailRecipientLedgerNumber.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey,
                     ACurrentDetailRow.DateEntered).ToString();
@@ -1064,8 +1071,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
             }
-
-            GetRecipientData(ACurrentDetailRow, APartnerKey, ref ACmbKeyMinistries, ATxtDetailRecipientKey, ref AtxtDetailRecipientLedgerNumber);
+            
+            // Create a copy of AtxtDetailRecipientLedgerNumber as we do not want to actually change this combobox.
+            // Otherwise it is possible that the form will display data that is not actually in the database.
+            TtxtAutoPopulatedButtonLabel temp = new TtxtAutoPopulatedButtonLabel();
+            temp.Text = AtxtDetailRecipientLedgerNumber.Text;
+  
+            GetRecipientData(ACurrentDetailRow, APartnerKey, ref ACmbKeyMinistries, ATxtDetailRecipientKey, ref temp);
         }
 
         /// <summary>
