@@ -47,8 +47,15 @@ namespace Ict.Petra.Server.MFinance.Common
     public class TLedgerInfo
     {
         int ledgerNumber;
-        private ALedgerTable ledger = null;
-        ALedgerRow row;
+
+        //
+        // Several utilities may each have their own TLedgerInfo object, so several objects can be created for the same ledger.
+        // This static DataTable attempts to ensure that they all see the same view of the world.
+
+        static private ALedgerTable FLedgerTbl = null;
+        DataView MyView = null;
+        ALedgerRow FLedgerRow;
+
 
         /// <summary>
         /// Constructor to address the correct table line (relevant ledger number). The
@@ -60,27 +67,45 @@ namespace Ict.Petra.Server.MFinance.Common
         public TLedgerInfo(int ALedgerNumber)
         {
             ledgerNumber = ALedgerNumber;
-            LoadInfoLine();
+            GetDataRow();
         }
 
-        private void LoadInfoLine()
+        private void GetDataRow()
         {
-            TDBTransaction Transaction = null;
+            bool NewTransaction = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadUncommitted,
                     TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
-                    delegate
-                    {
-                        ledger = ALedgerAccess.LoadByPrimaryKey(ledgerNumber, Transaction);
-                        row = (ALedgerRow)ledger[0];
-                    });
+                    out NewTransaction);
+
+                FLedgerTbl = ALedgerAccess.LoadAll(transaction); // FLedgerTbl is static - this refreshes *any and all* TLedgerInfo objects.
+                MyView = new DataView(FLedgerTbl);
+                MyView.RowFilter = "a_ledger_number_i = " + ledgerNumber;
+                FLedgerRow = (ALedgerRow)MyView[0].Row; // More than one TLedgerInfo object may point to this same row.
             }
-            catch (Exception)
+            finally
             {
-                throw;
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+        }
+
+        private void CommitLedgerChange()
+        {
+            bool NewTransaction;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            ALedgerAccess.SubmitChanges(FLedgerTbl, Transaction);
+            FLedgerTbl.AcceptChanges();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+                GetDataRow();
             }
         }
 
@@ -91,7 +116,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.ForexGainsLossesAccount;
+                return FLedgerRow.ForexGainsLossesAccount;
             }
         }
 
@@ -102,45 +127,45 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.BaseCurrency;
+                return FLedgerRow.BaseCurrency;
             }
         }
 
         /// <summary>
-        /// Property to read the value of the ProvisionalYearEndFlag
+        /// Read or write the ProvisionalYearEndFlag
         /// </summary>
         public bool ProvisionalYearEndFlag
         {
             get
             {
-                return row.ProvisionalYearEndFlag;
+                GetDataRow();
+                return FLedgerRow.ProvisionalYearEndFlag;
             }
             set
             {
-                OdbcParameter[] ParametersArray;
-                ParametersArray = new OdbcParameter[2];
-                ParametersArray[0] = new OdbcParameter("", OdbcType.Bit);
-                ParametersArray[0].Value = value;
-                ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-                ParametersArray[1].Value = ledgerNumber;
-
-                bool NewTransaction;
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
-                strSQL += "SET " + ALedgerTable.GetProvisionalYearEndFlagDBName() + " = ? ";
-                strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    strSQL, transaction, ParametersArray);
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-
-                LoadInfoLine();
+                GetDataRow();
+                FLedgerRow.ProvisionalYearEndFlag = value;
+                CommitLedgerChange();
             }
         }
 
+        /// <summary>
+        /// Read or write the YearEndFlag
+        /// </summary>
+        public bool YearEndFlag
+        {
+            get
+            {
+                GetDataRow();
+                return FLedgerRow.YearEndFlag;
+            }
+            set
+            {
+                GetDataRow();
+                FLedgerRow.YearEndFlag = value;
+                CommitLedgerChange();
+            }
+        }
 
         /// <summary>
         ///
@@ -149,7 +174,14 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.CurrentPeriod;
+                GetDataRow();
+                return FLedgerRow.CurrentPeriod;
+            }
+            set
+            {
+                GetDataRow();
+                FLedgerRow.CurrentPeriod = value;
+                CommitLedgerChange();
             }
         }
 
@@ -160,7 +192,8 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.NumberOfAccountingPeriods;
+                GetDataRow();
+                return FLedgerRow.NumberOfAccountingPeriods;
             }
         }
 
@@ -171,7 +204,8 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.NumberFwdPostingPeriods;
+                GetDataRow();
+                return FLedgerRow.NumberFwdPostingPeriods;
             }
         }
 
@@ -182,31 +216,14 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.CurrentFinancialYear;
+                GetDataRow();
+                return FLedgerRow.CurrentFinancialYear;
             }
             set
             {
-                OdbcParameter[] ParametersArray;
-                ParametersArray = new OdbcParameter[2];
-                ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-                ParametersArray[0].Value = value;
-                ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-                ParametersArray[1].Value = ledgerNumber;
-
-                bool NewTransaction;
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
-                strSQL += "SET " + ALedgerTable.GetCurrentFinancialYearDBName() + " = ? ";
-                strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    strSQL, transaction, ParametersArray);
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-
-                LoadInfoLine();
+                GetDataRow();
+                FLedgerRow.CurrentFinancialYear = value;
+                CommitLedgerChange();
             }
         }
 
@@ -218,19 +235,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.LedgerNumber;
-            }
-        }
-
-
-        /// <summary>
-        ///
-        /// </summary>
-        public bool YearEndFlag
-        {
-            get
-            {
-                return row.YearEndFlag;
+                return FLedgerRow.LedgerNumber;
             }
         }
 
@@ -241,31 +246,13 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.YearEndProcessStatus;
+                return FLedgerRow.YearEndProcessStatus;
             }
             set
             {
-                OdbcParameter[] ParametersArray;
-                ParametersArray = new OdbcParameter[2];
-                ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-                ParametersArray[0].Value = value;
-                ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
-                ParametersArray[1].Value = ledgerNumber;
-
-                bool NewTransaction;
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
-                strSQL += "SET " + ALedgerTable.GetYearEndProcessStatusDBName() + " = ? ";
-                strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
-                DBAccess.GDBAccessObj.ExecuteNonQuery(
-                    strSQL, transaction, ParametersArray);
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-
-                LoadInfoLine();
+                GetDataRow();
+                FLedgerRow.YearEndProcessStatus = value;
+                CommitLedgerChange();
             }
         }
 
@@ -277,7 +264,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.IltAccountFlag;
+                return FLedgerRow.IltAccountFlag;
             }
         }
 
@@ -288,7 +275,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.BranchProcessing;
+                return FLedgerRow.BranchProcessing;
             }
         }
 
@@ -300,7 +287,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return row.IltProcessingCentre;
+                return FLedgerRow.IltProcessingCentre;
             }
         }
 
@@ -530,9 +517,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
     /// <summary>
     /// LedgerInitFlag is a table wich holds a small set of "boolean" properties for each
-    /// Ledger refered to the actual month.
-    /// One example is the value that a Revaluation has been done in the actual month. Some other
-    /// values will be added soon.
+    /// Ledger related to the actual month.
+    /// One example is the value that a Revaluation has been done in the actual month.
     /// </summary>
     public class TLedgerInitFlagHandler
     {
@@ -541,8 +527,8 @@ namespace Ict.Petra.Server.MFinance.Common
         private string strFlagNameHelp;
 
         /// <summary>
-        /// This Constructor only takes and stores the initial parameters. No
-        /// Database request is done by this routine.
+        /// This Constructor only takes and stores the initial parameters.
+        /// No Database request is done by this routine.
         /// </summary>
         /// <param name="ALedgerNumber">A valid ledger number</param>
         /// <param name="AFlagEnum">A valid LegerInitFlag entry</param>
@@ -572,7 +558,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// The flag property controls all databse requests.
+        /// The Flag property controls all database requests.
         /// </summary>
         public bool Flag
         {

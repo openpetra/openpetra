@@ -322,6 +322,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// <param name="AAccountCodeFilter"></param>
         /// <param name="ACostCentreFilter"></param>
         /// <param name="AFinancialYear"></param>
+        /// <param name="ASortBy"></param>
+        /// <param name="ATransactionsTbl"></param>
         /// <param name="AStartPeriod"></param>
         /// <param name="AEndPeriod"></param>
         /// <param name="AInternational"></param>
@@ -331,11 +333,17 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String AAccountCodeFilter,
             String ACostCentreFilter,
             Int32 AFinancialYear,
+            String ASortBy,
+            DataTable ATransactionsTbl,
             Int32 AStartPeriod,
             Int32 AEndPeriod,
             Boolean AInternational)
         {
             DataTable Results = new DataTable();
+            Results.Columns.Add(new DataColumn("a_cost_centre_code_c", typeof(string)));
+            Results.Columns.Add(new DataColumn("a_account_code_c", typeof(string)));
+            Results.Columns.Add(new DataColumn("OpeningBalance", typeof(Decimal)));
+            Results.Columns.Add(new DataColumn("ClosingBalance", typeof(Decimal)));
 
             try
             {
@@ -353,28 +361,38 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
                 String StartBalanceField = (AInternational) ? "glm.a_start_balance_intl_n" : "glm.a_start_balance_base_n";
+                String GroupField = "";
+                if (ASortBy == "Account")
+                {
+                    GroupField = " ORDER BY glm.a_account_code_c, glm.a_cost_centre_code_c";
+                }
+
+                if (ASortBy == "Cost Centre")
+                {
+                    GroupField = " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c";
+                }
 
                 Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, " +
                         "a_account.a_debit_credit_indicator_l AS Debit, " +
                         StartBalanceField + " AS start_balance, " +
                         BalanceField + " AS balance " +
-                        " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account" +
+                        " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
                         " WHERE glm." + ALedgerFilter +
                         " AND a_account." + ALedgerFilter +
+                        " AND a_cost_centre." + ALedgerFilter +
+                        " AND a_account.a_posting_status_l = TRUE" +
+                        " AND a_cost_centre.a_posting_cost_centre_flag_l = TRUE" +
                         " AND glm.a_year_i = " + AFinancialYear +
                         " AND glm.a_account_code_c = a_account.a_account_code_c " +
-                        " AND glm." + AAccountCodeFilter +
+                        " AND glm.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c " +
+                        AAccountCodeFilter +
                         ACostCentreFilter +
                         " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
                         " AND glmp.a_period_number_i BETWEEN " + AStartPeriod + " AND " + AEndPeriod +
-                        " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i";
+                        GroupField;
 
 
                 DataTable GlmTbl = DbAdapter.RunQuery(Query, "balances", ReadTrans);
-                Results.Columns.Add(new DataColumn("a_cost_centre_code_c", typeof(string)));
-                Results.Columns.Add(new DataColumn("a_account_code_c", typeof(string)));
-                Results.Columns.Add(new DataColumn("OpeningBalance", typeof(Decimal)));
-                Results.Columns.Add(new DataColumn("ClosingBalance", typeof(Decimal)));
 
                 String CostCentre = "";
                 String AccountCode = "";
@@ -384,7 +402,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Decimal MakeItDebit = 1;
 
                 // For each CostCentre / Account combination  I want just a single row, with the opening and closing balances,
-                // so I need to pre-process the stuff I've got in this table, and generate another table.
+                // so I need to pre-process the stuff I've got in this table, and generate rows in the Results table.
 
                 foreach (DataRow row in GlmTbl.Rows)
                 {
@@ -426,9 +444,33 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Decimal ClosingBalance = Convert.ToDecimal(row["balance"]);
                         NewRow["ClosingBalance"] = MakeItDebit * ClosingBalance;
                     }
+
                 } // foreach
 
-            }
+                for (Int32 Idx = Results.Rows.Count -1; Idx >= 0; Idx--)
+                {
+                    DataRow ResultsRow = Results.Rows[Idx];
+                    //
+                    // Since a revision in October 2014, this balances table can be the master table for the Account Detail report
+                    // (That is, "for each opening and closing balance, list any applicable transactions", 
+                    // rather than, "for each Account/Cost Centre combination where we say transactions, show opening and closing balance".)
+                    // The effect of this is I need to remove opening and closing balances both are zero,
+                    // AND there were no transactions in the selected period.
+                    if (Convert.ToDecimal(ResultsRow["OpeningBalance"]) == 0 && Convert.ToDecimal(ResultsRow["ClosingBalance"]) == 0)
+                    {
+                        ATransactionsTbl.DefaultView.RowFilter = String.Format("AccountCode='{0}' AND CostCentreCode ='{1}'",
+                            ResultsRow["a_account_code_c"],
+                            ResultsRow["a_cost_centre_code_c"]);
+                        if (ATransactionsTbl.DefaultView.Count == 0)
+                        {
+                            ResultsRow.Delete();
+                        }
+                    }
+                }
+
+                Results.AcceptChanges();
+            }  // try
+
             catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
             {
                 TLogging.Log(ex.Message);

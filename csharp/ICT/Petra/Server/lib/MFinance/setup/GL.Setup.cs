@@ -1533,30 +1533,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return ReturnValue;
         }
 
-        private static bool AccountCodeHasBeenUsed(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
-        {
-            // TODO: enhance sql statement to check for more references to a_account
-
-            String QuerySql =
-                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
-                "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                "a_account_code_c = '" + AAccountCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
-
-            if (!IsInUse)
-            {
-                QuerySql =
-                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
-                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                    "a_account_code_c = '" + AAccountCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-                IsInUse = (Convert.ToInt32(SqlResult) > 0);
-            }
-
-            return IsInUse;
-        }
-
         private static bool AccountHasChildren(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
         {
             String QuerySql =
@@ -1615,25 +1591,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (!ACanBeParent || ACanDelete)
                 {
-                    bool IsInUse = AccountCodeHasBeenUsed(ALedgerNumber, AAccountCode, Transaction);
+                    List<TRowReferenceInfo> CascadingReferences;
+                    Int32 Refs = AAccountCascading.CountByPrimaryKey(
+                        ALedgerNumber, AAccountCode,
+                        3, Transaction, true,
+                        out CascadingReferences);
+
+                    bool IsInUse = (Refs > 0);
+
                     ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
                     ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
 
                     if (!ACanDelete)
                     {
                         AMsg = Catalog.GetString("Account has been used in Transactions.");
-                    }
-                }
-
-                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
-                {                // and do the low-level database check to see if a deletion would succeed:
-                    TVerificationResultCollection ReferenceResults;
-                    Int32 RefCount = AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, 50, Transaction, false, out ReferenceResults);
-
-                    if (RefCount > 0)
-                    {
-                        ACanDelete = false;
-                        AMsg = ReferenceResults.BuildVerificationResultString();
                     }
                 }
             }
@@ -3699,32 +3670,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return Convert.ToInt32(SqlResult) > 0;
         }
 
-        private static bool CostCentreCodeHasBeenUsed(Int32 ALedgerNumber, string ACostCentreCode, TDBTransaction Transaction)
-        {
-            // TODO: enhance sql statement to check for more references to a_cost_centre
-            // TODO:? This method is *almost exactly like* the equivalent AccountCode function.
-            //        With an extra parameter the two could be combined.
-
-            String QuerySql =
-                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
-                "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
-
-            if (!IsInUse)
-            {
-                QuerySql =
-                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
-                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                    "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-                IsInUse = (Convert.ToInt32(SqlResult) > 0);
-            }
-
-            return IsInUse;
-        }
-
         /// <summary>I can add child accounts to this account if it's a summary Cost Centre,
         ///          or if there have never been transactions posted to it,
         ///          or if it's linked to a partner.
@@ -3790,9 +3735,27 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         canDelete = true;
                     }
 
+                    if (canBeParent || canDelete)     // I need to check whether the Cost Centre has been linked to a partner.
+                    {                                 // If it has, the link must be deleted first.
+                        AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
+
+                        if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                        {
+                            canBeParent = false;
+                            canDelete = false;
+                            msg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
+                        }
+                    }
+
                     if (!canBeParent || canDelete)
                     {
-                        bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
+                        List<TRowReferenceInfo> CascadingReferences;
+                        Int32 Refs = MCommon.Data.Cascading.ACostCentreCascading.CountByPrimaryKey(
+                            ALedgerNumber, ACostCentreCode,
+                            5, Transaction, true,
+                            out CascadingReferences);
+
+                        bool IsInUse = (Refs > 0);
 
                         if (IsInUse)
                         {
@@ -3806,34 +3769,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         }
                     }
 
-                    if (canBeParent || canDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
-                    {                                   // If it has, the link must be deleted first.
-                        AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
-
-                        if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
-                        {
-                            canBeParent = false;
-                            canDelete = false;
-                            msg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
-                        }
-                    }
-
-                    if (canDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
-                    {                // and do the low-level database check to see if a deletion would succeed:
-                        TVerificationResultCollection ReferenceResults;
-                        Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
-                            ACostCentreCode,
-                            50,
-                            Transaction,
-                            false,
-                            out ReferenceResults);
-
-                        if (RefCount > 0)
-                        {
-                            canDelete = false;
-                            msg = ReferenceResults.BuildVerificationResultString();
-                        }
-                    }
                 }); // End of BeginAutoReadTransaction with anonymous function
 
             ACanBeParent = canBeParent;
