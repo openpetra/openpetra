@@ -32,6 +32,7 @@ using Ict.Common;
 using System.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -94,17 +95,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // I need to get the name of the current ledger..
 
-            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
-            DataView LedgerView = new DataView(LedgerNameTable);
-            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
-            String LedgerName = "";
+            ALedgerTable LedgerTbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
 
-            if (LedgerView.Count > 0)
+            String LedgerName = "";
+            Boolean IsClosed = false;
+
+            if (LedgerTbl.Rows.Count > 0)
             {
-                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+                ALedgerRow LedgerRow = LedgerTbl[0];
+                LedgerName = LedgerRow.LedgerName;
+                //
+                // I want to tell the user whether the selected period is closed
+                // (although they probably know already...)
+                Int32 SelPeriod = ACalc.GetParameters().GetParameter("param_end_period_i").value.ToInt32();
+                Int32 SelYear   = ACalc.GetParameters().GetParameter("param_year_i").value.ToInt32();
+                if ((SelYear < LedgerRow.CurrentFinancialYear) || (SelPeriod < LedgerRow.CurrentPeriod))
+                {
+                    IsClosed = true;
+                }
             }
 
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddParameter("param_period_closed", IsClosed);
+
             return true;
         }
 

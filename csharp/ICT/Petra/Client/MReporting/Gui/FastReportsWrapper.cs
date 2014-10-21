@@ -551,15 +551,24 @@ namespace Ict.Petra.Client.MReporting.Gui
                     ReportStream.Position = 0;
 
                     TUC_EmailPreferences.LoadEmailDefaults();
-                    TSmtpSender EmailSender = new TSmtpSender(
-                        TUserDefaults.GetStringDefault("SmtpHost"),
-                        TUserDefaults.GetInt16Default("SmtpPort"),
-                        TUserDefaults.GetBooleanDefault("SmtpUseSsl"),
-                        TUserDefaults.GetStringDefault("SmtpUser"),
-                        TUserDefaults.GetStringDefault("SmtpPassword"),
-                        "");
-                    EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
-                    EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+                    TSmtpSender EmailSender;
+                    try
+                    {
+                        EmailSender = new TSmtpSender(
+                            TUserDefaults.GetStringDefault("SmtpHost"),
+                            TUserDefaults.GetInt16Default("SmtpPort"),
+                            TUserDefaults.GetBooleanDefault("SmtpUseSsl"),
+                            TUserDefaults.GetStringDefault("SmtpUser"),
+                            TUserDefaults.GetStringDefault("SmtpPassword"),
+                            "");
+                        EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                        EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show(Catalog.GetString("Failed to set up the email server.\nPlease check the settings in Preferences / Email."), Catalog.GetString("Auto-email to linked partners"));
+                        return;
+                    }
 
                     String EmailBody = "";
 
