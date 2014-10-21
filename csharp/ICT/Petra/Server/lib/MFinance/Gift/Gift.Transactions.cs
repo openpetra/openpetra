@@ -722,6 +722,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
+            MainDS.Merge(LoadGiftBatchData(ALedgerNumber, ABatchNumber));
+
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -733,8 +735,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         //Load Ledger & Motivation Data to allow updating of CostCentreCode
                         AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-                        MainDS.Merge(LoadGiftBatchData(ALedgerNumber, ABatchNumber));
 
                         //Find the batch status
                         BatchStatusUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
@@ -1883,6 +1883,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static GiftBatchTDS LoadGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            bool SaveChanges = false;
 
             TDBTransaction Transaction = null;
 
@@ -1929,6 +1930,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (giftDetail.RecipientKey > 0)
                             {
                                 giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftRow.DateEntered);
+                    
+			                    // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
+			                    if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
+			                    {
+			                    	giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
+			                    	SaveChanges = true;
+			                    }
 
                                 PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                                 giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
@@ -1984,6 +1992,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         TLogging.Log("Error in LoadGiftBatchData: " + e.Message);
                     }
                 });
+            
+            if (SaveChanges)
+            {
+            	// if RecipientLedgerNumber has been updated then this should immediately be saved to the database
+            	GiftBatchTDSAccess.SubmitChanges(MainDS);
+            }
 
             return MainDS;
         }
@@ -1993,6 +2007,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static GiftBatchTDS LoadRecurringGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             bool NewTransaction = false;
+            bool SaveChanges = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                 IsolationLevel.ReadCommitted,
@@ -2032,6 +2047,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (giftDetail.RecipientKey > 0)
                 {
                     giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, DateTime.Today);
+                    
+                    // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
+                    if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
+                    {
+                    	giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
+                    	SaveChanges = true;
+                    }
+                    
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
 
@@ -2072,6 +2095,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            
+            if (SaveChanges)
+            {
+            	// if RecipientLedgerNumber has been updated then this should immediately be saved to the database
+            	GiftBatchTDSAccess.SubmitChanges(MainDS);
             }
 
             return MainDS;
