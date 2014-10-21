@@ -2277,7 +2277,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 											                        Convert.ToInt64(txtDetailRecipientKey.Text),
 											                        ref cmbKeyMinistries,
 											                        txtDetailRecipientKey,
-											                        ref txtDetailRecipientLedgerNumber);
+											                        ref txtDetailRecipientLedgerNumber,
+											                        false);
             		
                     break;
                 }

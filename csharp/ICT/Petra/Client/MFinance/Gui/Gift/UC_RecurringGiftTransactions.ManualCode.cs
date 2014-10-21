@@ -559,7 +559,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Set RecipientLedgerNumber
                 if (APartnerKey > 0)
                 {
-                    FPreviouslySelectedDetailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, null);
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber = 
+                    	TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, DateTime.Today);
                 }
                 else
                 {
@@ -1156,23 +1157,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
             }
 
-            TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
+            // If this method has been called as a result of a change in motivation detail then txtDetailRecipientKey has not yet been set...
+            // but we do know that the recipient must be a Unit.
+            if (!FMotivationDetailChangedFlag && txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
+            {
+            	txtDetailRecipientLedgerNumber.Text = FPreviouslySelectedDetailRow.RecipientLedgerNumber.ToString();
+            	cmbKeyMinistries.Clear();
+            }
+            else
+            {
+            	TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
+            }
 
             // enable / disable combo box depending on whether it contains any key ministries
-            if (cmbKeyMinistries.Table.Rows.Count == 0)
+            if (cmbKeyMinistries.Table == null || cmbKeyMinistries.Table.Rows.Count == 0)
             {
                 cmbKeyMinistries.Enabled = false;
             }
             else
             {
                 cmbKeyMinistries.Enabled = true;
-            }
-
-            // if recipient is a family then we will need to find their Gift Destination
-            if ((txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY) && (APartnerKey != 0))
-            {
-                txtDetailRecipientLedgerNumber.Text = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey,
-                    DateTime.Today).ToString();
             }
 
             FCorrespondingRecipientKeyToField = APartnerKey;

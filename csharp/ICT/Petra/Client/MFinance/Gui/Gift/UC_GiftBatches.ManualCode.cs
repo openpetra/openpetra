@@ -930,6 +930,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(FPreviouslySelectedDetailRow.CurrencyCode);
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.Enabled =
