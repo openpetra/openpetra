@@ -406,9 +406,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
-            // Hide all Controls in the 'Overall Contact Settings' GroupBox except 'Primary E-Mail' for the time being - their implementation will follow
-            cmbPrimaryWayOfContacting.Visible = false;
-            lblPrimaryWayOfContacting.Visible = false;
+            // Hide all Controls in the 'Overall Contact Settings' GroupBox except 'Primary Contact Method' and 'Primary E-Mail' for the time being - their implementation will follow
             cmbPrimaryPhoneForContacting.Visible = false;
             lblPrimaryPhoneForContacting.Visible = false;
             grpWithinTheOrganisation.Visible = false;
