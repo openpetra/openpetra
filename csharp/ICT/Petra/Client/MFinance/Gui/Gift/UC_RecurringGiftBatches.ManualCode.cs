@@ -463,6 +463,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
+            GetDataFromControls();
+
+            if (!TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.NEWBATCH, FMainDS, FPetraUtilsObject))
+            {
+                return;
+            }
+
             this.CreateNewARecurringGiftBatch();
 
             txtDetailBatchDescription.Focus();
@@ -485,6 +492,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int batchNumber = ARowToDelete.BatchNumber;
 
             bool newBatch = (ARowToDelete.RowState == DataRowState.Added);
+
+            // first save any changes
+            if (!((TFrmRecurringGiftBatch)FPetraUtilsObject.GetForm()).SaveChangesManual(TExWorkerAlert.GiftBatchAction.DELETING))
+            {
+                return false;
+            }
 
             try
             {
@@ -713,16 +726,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            if (!LoadAllBatchData() || !AllowInactiveFieldValues())
+            {
+                return;
+            }
+
+            GiftBatchTDSARecurringGiftDetailTable RecurringBatchGiftDetails = new GiftBatchTDSARecurringGiftDetailTable();
+
+            foreach (ARecurringGiftDetailRow Row in FMainDS.ARecurringGiftDetail.Rows)
+            {
+                if (Row.BatchNumber == FSelectedBatchNumber)
+                {
+                    RecurringBatchGiftDetails.Rows.Add((object[])Row.ItemArray.Clone());
+                }
+            }
+
             if (FPetraUtilsObject.HasChanges)
             {
+                bool CancelledDueToExWorker;
+
                 // save first, then submit
-                if (!((TFrmRecurringGiftBatch)ParentForm).SaveChanges())
+                if (!((TFrmRecurringGiftBatch)ParentForm).SaveChangesForSubmitting(RecurringBatchGiftDetails, out CancelledDueToExWorker))
                 {
-                    // saving failed, therefore do not try to submit
-                    MessageBox.Show(Catalog.GetString(
-                            "The recurring batch was not submitted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please fix the batch first and then submit it."),
-                        Catalog.GetString("Submit Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (!CancelledDueToExWorker)
+                    {
+                        // saving failed, therefore do not try to submit
+                        MessageBox.Show(Catalog.GetString(
+                                "The recurring batch was not submitted due to problems during saving; ") + Environment.NewLine +
+                            Catalog.GetString("Please fix the batch first and then submit it."),
+                            Catalog.GetString("Submit Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
                     return;
                 }
             }
@@ -739,11 +773,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 txtDetailHashTotal.Focus();
                 txtDetailHashTotal.SelectAll();
-                return;
-            }
-
-            if (!LoadAllBatchData() || !AllowInactiveFieldValues())
-            {
                 return;
             }
 

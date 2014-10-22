@@ -97,7 +97,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FSelectedBatchNumber = ACurrentBatchRow.BatchNumber;
-            Boolean batchIsEmpty = true;
             TVerificationResultCollection Verifications;
 
             try
@@ -106,24 +105,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FMyForm.EnsureGiftDataPresent(FLedgerNumber, FSelectedBatchNumber);
 
-                if (FMainDS.AGift != null)
+                GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
+
+                foreach (GiftBatchTDSAGiftDetailRow Row in FMainDS.AGiftDetail.Rows)
                 {
-                    for (int i = 0; i < FMainDS.AGift.Count; i++)
+                    if (Row.BatchNumber == FSelectedBatchNumber)
                     {
-                        AGiftRow giftRow = (AGiftRow)FMainDS.AGift[i];
+                        BatchGiftDetails.Rows.Add((object[])Row.ItemArray.Clone());
                     }
-
-                    DataView giftView = new DataView(FMainDS.AGift);
-                    giftView.RowFilter = String.Format("{0}={1} And {2}={3}",
-                        AGiftTable.GetLedgerNumberDBName(),
-                        FLedgerNumber,
-                        AGiftTable.GetBatchNumberDBName(),
-                        FSelectedBatchNumber);
-
-                    batchIsEmpty = (giftView.Count == 0);
                 }
 
-                if (batchIsEmpty)  // there are no gifts in this batch!
+                // there are no gifts in this batch!
+                if (BatchGiftDetails.Rows.Count == 0)
                 {
                     FMyForm.Cursor = Cursors.Default;
                     MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
@@ -131,13 +124,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return false;
                 }
 
+                bool CancelledDueToExWorker;
+
                 // save first, then post
-                if (!FMyForm.SaveChanges())
+                if (!FMyForm.SaveChangesForPosting(BatchGiftDetails, out CancelledDueToExWorker))
                 {
                     FMyForm.Cursor = Cursors.Default;
-                    // saving failed, therefore do not try to post
-                    MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please first save the batch, and then post it!"));
+
+                    if (!CancelledDueToExWorker)
+                    {
+                        // saving failed, therefore do not try to post
+                        MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
+                            Catalog.GetString("Please first save the batch, and then post it!"));
+                    }
+
                     return false;
                 }
             }

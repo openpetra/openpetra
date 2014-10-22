@@ -33,8 +33,8 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
+using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
@@ -50,10 +50,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
     /// <summary>
     /// Routines for running the period month end check.
     /// </summary>
-    public partial class TPeriodIntervallConnector
+    public partial class TPeriodIntervalConnector
     {
         /// <summary>
-        /// Month end master routine ...
+        /// MonthEnd master routine ...
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AInfoMode"></param>
@@ -61,65 +61,54 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <returns>false if there's no problem</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool TPeriodMonthEnd(
-            int ALedgerNumber,
+            Int32 ALedgerNumber,
             bool AInfoMode,
             out TVerificationResultCollection AVerificationResults)
         {
-            bool RetVal = false;
 
-            AVerificationResults = new TVerificationResultCollection();
-            TVerificationResultCollection VerificationResults = AVerificationResults;
+            try
+            {
+                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+                Int32 PeriodClosing = ledgerInfo.CurrentPeriod;
+                bool res = new TMonthEnd(ledgerInfo).RunMonthEnd(AInfoMode,
+                    out AVerificationResults);
 
-            bool SubmissionOK = true;
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                ref SubmissionOK,
-                delegate
+                if (!res && !AInfoMode)
                 {
-                    try
-                    {
-                        TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
+                    TDBTransaction Transaction = null;
+                    AAccountingPeriodTable PeriodTbl = null;
 
-                        RetVal = new TMonthEnd().RunMonthEnd(ALedgerNumber, AInfoMode,
-                            out VerificationResults);
-
-                        if (!RetVal && !AInfoMode)
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted, ref Transaction,
+                        delegate
                         {
-                            AAccountingPeriodTable PeriodTbl =
-                                AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ledgerInfo.CurrentPeriod, Transaction);
+                            PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ledgerInfo.LedgerNumber, PeriodClosing, Transaction);
+                        });
 
-                            if (PeriodTbl.Rows.Count > 0)
-                            {
-                                VerificationResults.Add(
-                                    new TVerificationResult(
-                                        Catalog.GetString("Month End"),
-                                        String.Format(Catalog.GetString("The period {0} - {1} has been closed."),
-                                            PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
-                                        TResultSeverity.Resv_Status));
-                            }
-                        }
-                    }
-                    catch (Exception e)
+                    if (PeriodTbl.Rows.Count > 0)
                     {
-                        TLogging.Log("TPeriodIntervallConnector.TPeriodMonthEnd() throws " + e.ToString());
-                        VerificationResults.Add(
+                        AVerificationResults.Add(
                             new TVerificationResult(
                                 Catalog.GetString("Month End"),
-                                Catalog.GetString("Uncaught Exception: ") + e.Message,
-                                TResultSeverity.Resv_Critical));
-
-                        SubmissionOK = false;
-
-                        RetVal = true;
+                                String.Format(Catalog.GetString("The period {0} - {1} has been closed."),
+                                    PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
+                                TResultSeverity.Resv_Status));
                     }
-                });
+                }
+                return res;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("TPeriodIntervallConnector.TPeriodMonthEnd() throws " + e.ToString());
+                AVerificationResults = new TVerificationResultCollection();
+                AVerificationResults.Add(
+                    new TVerificationResult(
+                        Catalog.GetString("Month End"),
+                        Catalog.GetString("Uncaught Exception: ") + e.Message,
+                        TResultSeverity.Resv_Critical));
 
-            AVerificationResults = VerificationResults;
 
-            return RetVal;
+                return true;
+            }
         }
     }
 }
@@ -158,38 +147,71 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="ALedgerInfo"></param>
+        public TMonthEnd(TLedgerInfo ALedgerInfo)
+        {
+            FledgerInfo = ALedgerInfo;
+        }
+
+        /// <summary>
+        /// Go to next month - unless you're already at the last month!
+        /// </summary>
+        public override void SetNextPeriod()
+        {
+            if (FledgerInfo.CurrentPeriod == FledgerInfo.NumberOfAccountingPeriods)
+            {
+                // Set the YearEndFlag to Switch between the months...
+                FledgerInfo.ProvisionalYearEndFlag = true;
+            }
+            else
+            {
+                // Conventional Month->Month Switch ...
+                FledgerInfo.CurrentPeriod = FledgerInfo.CurrentPeriod + 1;
+            }
+        }
 
         /// <summary>
         /// Main Entry point. The parameters are the same as in
         /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <param name="AInfoMode"></param>
         /// <param name="AVRCollection"></param>
         /// <returns>false if it went OK</returns>
-        public bool RunMonthEnd(int ALedgerNumber, bool AInfoMode,
+        public bool RunMonthEnd(bool AInfoMode,
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
-            FledgerInfo = new TLedgerInfo(ALedgerNumber);
-            verificationResults = new TVerificationResultCollection();
+            FverificationResults = new TVerificationResultCollection();
+            AVRCollection = FverificationResults;
+
+            if (FledgerInfo.ProvisionalYearEndFlag)
+            {
+                // we want to run a month end, but the provisional year end flag has been set
+                TVerificationResult tvt =
+                    new TVerificationResult(Catalog.GetString("Year End is required!"),
+                        Catalog.GetString("In this situation you cannot run a month end routine"), "",
+                        TPeriodEndErrorAndStatusCodes.PEEC_03.ToString(),
+                        TResultSeverity.Resv_Critical);
+                FverificationResults.Add(tvt);
+                FHasCriticalErrors = true;
+                return true;
+            }
 
             if (AInfoMode)
             {
                 AAccountingPeriodTable PeriodTbl = null;
-
-                TDBTransaction transaction = null;
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref transaction,
+                TDBTransaction Transaction = null;
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted, ref Transaction,
                     delegate
                     {
-                        PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, FledgerInfo.CurrentPeriod, transaction);
+                        PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod, Transaction);
                     });
 
                 if (PeriodTbl.Rows.Count > 0)
                 {
-                    verificationResults.Add(
+                    FverificationResults.Add(
                         new TVerificationResult(
                             Catalog.GetString("Month End"),
                             String.Format(Catalog.GetString("Current period is {0} - {1}"),
@@ -198,34 +220,20 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            TCarryForward carryForward = new TCarryForward(FledgerInfo);
-
-            if (carryForward.GetPeriodType != TCarryForwardENum.Month)
-            {
-                // we want to run a month end, but the provisional year end flag has been set
-                TVerificationResult tvt =
-                    new TVerificationResult(Catalog.GetString("Year End is required!"),
-                        Catalog.GetString("In this situation you cannot run a month end routine"), "",
-                        TPeriodEndErrorAndStatusCodes.PEEC_03.ToString(),
-                        TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvt);
-                FHasCriticalErrors = true;
-            }
-
-            RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), verificationResults);
+            RunPeriodEndCheck(new RunMonthEndChecks(FledgerInfo), FverificationResults);
 
             if (!AInfoMode)
             {
                 TVerificationResultCollection IchVerificationReults;
 
-                if (!StewardshipCalculationDelegate(ALedgerNumber, FledgerInfo.CurrentPeriod,
+                if (!StewardshipCalculationDelegate(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod,
                         out IchVerificationReults))
                 {
                     FHasCriticalErrors = true;
                 }
 
                 // Merge VerificationResults:
-                verificationResults.AddCollection(IchVerificationReults);
+                FverificationResults.AddCollection(IchVerificationReults);
             }
 
             // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
@@ -234,7 +242,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (!FHasCriticalErrors)
                 {
-                    carryForward.SetNextPeriod();
+                    SetNextPeriod();
                     // refresh cached ledger table, so that the client will know the current period
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                         TCacheableFinanceTablesEnum.LedgerDetails.ToString());
@@ -253,7 +261,6 @@ namespace Ict.Petra.Server.MFinance.GL
             //     AFO report.
             //     Executive Summary Report.
             //
-            AVRCollection = verificationResults;
             return FHasCriticalErrors;
         }
     }
@@ -279,45 +286,56 @@ namespace Ict.Petra.Server.MFinance.GL
             return new RunMonthEndChecks(FledgerInfo);
         }
 
-        public override void RunEndOfPeriodOperation()
+        public override Int32 RunOperation()
         {
             CheckIfRevaluationIsDone();
             CheckForUnpostedBatches();
             CheckForUnpostedGiftBatches();
             CheckForSuspenseAccountsZero();
             CheckForSuspenseAccounts();
+            return 0;
         }
 
         private void CheckIfRevaluationIsDone()
         {
-            // TODO: could also check for the balance in this month of the foreign currency account. if balance is zero, no revaluation is needed.
-            string testForForeignKeyAccount =
-                String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
-                    AAccountTable.GetLedgerNumberDBName(),
-                    FledgerInfo.LedgerNumber,
-                    AAccountTable.GetForeignCurrencyFlagDBName());
-
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, transaction)) == 0)
+            if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
+                        TLedgerInitFlagEnum.Revaluation).Flag))
             {
-                // no revaluation is needed
-                return;
+                return; // Revaluation has been performed for the current period.
             }
 
-            if (!(new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
-                      TLedgerInitFlagEnum.Revaluation).Flag))
+            bool NewTransaction = false;
+            TDBTransaction transaction;
+            try
             {
-                TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("Ledger revaluation"),
-                    Catalog.GetString("Please run a ledger revaluation first."), "",
-                    TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
-                // Error is critical but additional checks shall be done
-                verificationResults.Add(tvr);
-                FHasCriticalErrors = true;
+                transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
+                string testForForeignKeyAccount =
+                    String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
+                        AAccountTable.GetLedgerNumberDBName(),
+                        FledgerInfo.LedgerNumber,
+                        AAccountTable.GetForeignCurrencyFlagDBName());
+
+                if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, transaction)) != 0)
+                {
+                    TVerificationResult tvr = new TVerificationResult(
+                        Catalog.GetString("Ledger revaluation"),
+                        Catalog.GetString("Please run a foreign currency revaluation first."), "",
+                        TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
+                    // Error is critical but additional checks can still be done
+                    FverificationResults.Add(tvr);
+                    FHasCriticalErrors = true;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
         }
 
@@ -334,7 +352,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             "Please post or cancel the batches {0} first!"),
                         getBatchInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_06.ToString(), TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvr);
+                FverificationResults.Add(tvr);
                 FHasCriticalErrors = true;
             }
         }
@@ -356,7 +374,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             "Have you checked the details of suspense account {0}?"),
                         getSuspenseAccountInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Status);
-                verificationResults.Add(tvr);
+                FverificationResults.Add(tvr);
             }
         }
 
@@ -375,7 +393,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         "Please post or cancel the gift batches {0} first!",
                         getUnpostedGiftInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_08.ToString(), TResultSeverity.Resv_Critical);
-                verificationResults.Add(tvr);
+                FverificationResults.Add(tvr);
                 FHasCriticalErrors = true;
             }
         }
@@ -416,10 +434,10 @@ namespace Ict.Petra.Server.MFinance.GL
                                     getSuspenseAccountInfo.ToString(),
                                     get_GLMp_Info.ActualBase), "",
                                 TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
-                            verificationResults.Add(tvr);
+                            FverificationResults.Add(tvr);
 
                             FHasCriticalErrors = true;
-                            verificationResults.Add(tvr);
+                            FverificationResults.Add(tvr);
                         }
                     }
                 }
@@ -443,9 +461,10 @@ namespace Ict.Petra.Server.MFinance.GL
             return new RunMonthlyAdminFees();
         }
 
-        public override void RunEndOfPeriodOperation()
+        public override Int32 RunOperation()
         {
             // TODO: Some Code
+            return 0;
         }
     }
 
@@ -539,7 +558,7 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class GetSuspenseAccountInfo
     {
-        ASuspenseAccountTable table;
+        ASuspenseAccountTable FSuspenseAccountTable;
 
         /// <summary>
         /// Constructor to define ...
@@ -547,17 +566,12 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber">the ledger Number</param>
         public GetSuspenseAccountInfo(int ALedgerNumber)
         {
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
-            table = ASuspenseAccountAccess.LoadViaALedger(ALedgerNumber, transaction);
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
+                delegate
+                {
+                    FSuspenseAccountTable = ASuspenseAccountAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                });
         }
 
         /// <summary>
@@ -567,7 +581,7 @@ namespace Ict.Petra.Server.MFinance.GL
         {
             get
             {
-                return table.Rows.Count;
+                return FSuspenseAccountTable.Rows.Count;
             }
         }
 
@@ -578,7 +592,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <returns></returns>
         public ASuspenseAccountRow Row(int index)
         {
-            return table[index];
+            return FSuspenseAccountTable[index];
         }
 
         /// <summary>
@@ -596,14 +610,11 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             else
             {
-                strH = table[0].SuspenseAccountCode;
+                strH = FSuspenseAccountTable[0].SuspenseAccountCode;
 
-                if (RowCount > 1)
+                for (int i = 1; i < RowCount; ++i)
                 {
-                    for (int i = 1; i < RowCount; ++i)
-                    {
-                        strH += ", " + table[i].SuspenseAccountCode;
-                    }
+                    strH += ", " + FSuspenseAccountTable[i].SuspenseAccountCode;
                 }
             }
 

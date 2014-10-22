@@ -24,9 +24,11 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
@@ -34,13 +36,14 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
-    public partial class TFrmGiftBatch
+    public partial class TFrmGiftBatch : IFrmPetraEditManual
     {
         private Int32 FLedgerNumber;
         private Boolean FViewMode = false;
@@ -115,6 +118,62 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.RefreshAllData();
         }
 
+        private void FileSaveManual(object sender, EventArgs e)
+        {
+            SaveChangesManual();
+        }
+
+        /// <summary>
+        /// Check for ExWorkers before saving
+        /// </summary>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual()
+        {
+            return SaveChangesManual(TExWorkerAlert.GiftBatchAction.SAVING);
+        }
+
+        /// <summary>
+        /// Check for ExWorkers before saving or cancelling
+        /// </summary>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual(TExWorkerAlert.GiftBatchAction AAction)
+        {
+            GetDataFromControls();
+
+            // first alert the user to any recipients who are Ex-Workers
+            if (TExWorkerAlert.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
+            {
+                return SaveChanges();
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check for Ex-Worker before saving and posting
+        /// </summary>
+        /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
+        /// <param name="ACancelledDueToExWorker">True if batch posting has been cancelled by the user because of an Ex-Worker recipient</param>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesForPosting(DataTable APostingGiftDetails, out bool ACancelledDueToExWorker)
+        {
+            GetDataFromControls();
+
+            // first alert the user to any recipients who are Ex-Workers
+            ACancelledDueToExWorker = !TExWorkerAlert.CanContinueWithAnyExWorkers(TExWorkerAlert.GiftBatchAction.POSTING,
+                FMainDS,
+                FPetraUtilsObject,
+                APostingGiftDetails);
+
+            if (!ACancelledDueToExWorker)
+            {
+                ProcessRecipientCostCentreCodeUpdateErrors(false);
+                return SaveChanges();
+            }
+
+            return false;
+        }
+
         // Before the dataset is saved, check for correlation between batch and transactions
         private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
@@ -137,18 +196,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning()
         {
-            if (FNewDonorWarning)
-            {
-                if (FMainDS.GetChangesTyped(false) == null)
-                {
-                    FGiftDetailTable = null;
-                    return;
-                }
+            GetDataFromControls();
 
-                //add changed gift records to datatable
-                GetDataFromControls();
-                FGiftDetailTable = FMainDS.GetChangesTyped(false).AGiftDetail;
-            }
+            FGiftDetailTable = FMainDS.AGiftDetail.GetChangesTyped();
         }
 
         private void FPetraUtilsObject_DataSaved_NewDonorWarning(object Sender, TDataSavedEventArgs e)
@@ -204,6 +254,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             mniPrintGiftBatchDetail.Enabled = true;
+
+            // change the event that gets called when 'Save' is clicked (i.e. changed from generated code)
+            tbbSave.Click -= FileSave;
+            mniFileSave.Click -= FileSave;
+            tbbSave.Click += FileSaveManual;
+            mniFileSave.Click += FileSaveManual;
         }
 
         /// <summary>
@@ -407,7 +463,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    SaveChanges();
+                    SaveChangesManual();
                 }
 
                 return true;

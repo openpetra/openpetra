@@ -28,6 +28,7 @@ using Ict.Common;
 
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -87,6 +88,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question,
                      MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
+            {
+                return false;
+            }
+
+            // first save any changes
+            if (!FMyForm.SaveChangesManual(TExWorkerAlert.GiftBatchAction.CANCELLING))
             {
                 return false;
             }

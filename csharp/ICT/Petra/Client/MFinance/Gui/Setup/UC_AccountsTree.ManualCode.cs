@@ -419,6 +419,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // An account cannot be deleted if it has children.
                 NodeTag.CanDelete = false;
+                NodeTag.Msg = Catalog.GetString("Child accounts must be deleted first.");
+                NodeTag.CanHaveChildren = true;
 
                 foreach (DataRowView rowView in view)
                 {
@@ -504,7 +506,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             FParentForm.SetSelectedAccount((AccountNodeDetails)treeViewEventArgs.Node.Tag); // This will change my FSelectedAccount
 
-            FSelectedAccount.GetAttrributes();
             FParentForm.PopulateControlsAfterRowSelection();
         }
 

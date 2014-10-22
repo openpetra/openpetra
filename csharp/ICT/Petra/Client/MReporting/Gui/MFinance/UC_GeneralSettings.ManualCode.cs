@@ -386,6 +386,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
+        /// Hide all Period Range selection elements except of the year selection
+        /// </summary>
+        public void ShowOnlyPeriodSelection()
+        {
+            rbtDate.Visible = false;
+            lblStartDate.Visible = false;
+            lblEndDate.Visible = false;
+            dtpStartDate.Visible = false;
+            dtpEndDate.Visible = false;
+
+            rbtQuarter.Visible = true;
+            lblQuarter.Visible = true;
+            txtQuarter.Visible = true;
+            lblQuarterYear.Visible = true;
+            cmbQuarterYear.Visible = true;
+
+            rbtPeriod.Visible = true;
+            lblStartPeriod.Visible = false;
+            lblEndPeriod.Visible = false;
+            txtStartPeriod.Visible = true;
+            txtEndPeriod.Visible = true;
+            cmbPeriodYear.Enabled = true;
+            cmbPeriodYear.Visible = true;
+        }
+
+        /// <summary>
         /// For BalanceSheet, quarters and periods are not appropriate -
         /// I just want a single date.
         /// </summary>

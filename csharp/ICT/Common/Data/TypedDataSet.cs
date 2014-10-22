@@ -214,7 +214,10 @@ namespace Ict.Common.Data
 
                 foreach (DataTable table in this.Tables)
                 {
-                    ((TTypedDataTable)table).ThrowAwayAfterSubmitChanges = value;
+                    if (table is TTypedDataTable)
+                    {
+                        ((TTypedDataTable)table).ThrowAwayAfterSubmitChanges = value;
+                    }
                 }
             }
 
@@ -238,7 +241,10 @@ namespace Ict.Common.Data
 
                 foreach (DataTable table in this.Tables)
                 {
-                    ((TTypedDataTable)table).DontThrowAwayAfterSubmitChanges = value;
+                    if (table is TTypedDataTable)
+                    {
+                        ((TTypedDataTable)table).DontThrowAwayAfterSubmitChanges = value;
+                    }
                 }
             }
 
