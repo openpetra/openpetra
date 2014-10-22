@@ -189,7 +189,9 @@
 			</queryDetail>
 		</query>
 	</calculation>
-	
+
+<!-- This no longer works because p_field_key_n has gone from p_partner and p_family
+
 	<calculation id="GetPartnerField" returns="p_partner_short_name_c" returnsFormat="text">
 		<query>
 			<queryDetail condition="eq({PartnerClass}, PERSON)">
@@ -216,8 +218,8 @@
 			</queryDetail>
 		</query>
 	</calculation>
-	
-	
+ -->
+
 	<calculation id="MakeChurchAddress" returns="ChurchAddress" returnsFormat="text">
 		<query>
 			<queryDetail>

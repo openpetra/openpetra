@@ -315,12 +315,13 @@
                     
                     <queryDetail><value>
                             AND PUB_p_family.p_partner_key_n = PUB_p_person.p_family_key_n
-                            
+<!-- p_field_key_n has gone:
                             AND(    
                                  PUB_p_person.p_field_key_n = {{ReceivingField}}
                                 OR ( PUB_p_person.p_field_key_n = 0
                                     AND PUB_p_family.p_field_key_n = {{ReceivingField}})
                                 )
+-->
                             AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
                             AND ChargedUnit.p_partner_key_n = PUB_pm_short_term_application.pm_st_field_charged_n
                             AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n

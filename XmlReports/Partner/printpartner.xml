@@ -95,8 +95,7 @@
 				SELECT
 					PUB_p_family.p_title_c AS Title,
 					PUB_p_family.p_first_name_c AS FirstName,
-					PUB_p_family.p_family_name_c AS FamilyName,
-					PUB_p_family.p_field_key_n AS FieldKey
+					PUB_p_family.p_family_name_c AS FamilyName
 				FROM
 					PUB_p_family
 				WHERE

@@ -200,6 +200,7 @@
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Sending Field)"><value>
                                     AND PUB_pc_attendee.pc_home_office_key_n = {{ChargedOffice}}
                     </value></queryDetail>
+<!-- p_field_key_n has gone:
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Receiving Field)"><value>
                                     AND (   
                                             ( PUB_p_person.p_field_key_n = {{ReceivingField}})
@@ -207,6 +208,7 @@
                                                 AND PUB_p_family.p_field_key_n = {{ReceivingField}})
                                         )
                     </value></queryDetail>
+-->
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Registering Field)"><value>
                                     AND PUB_pm_short_term_application.pm_registration_office_n = {{ChargedOffice}}
                     </value></queryDetail>
