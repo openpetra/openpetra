@@ -1909,6 +1909,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         DataView giftView = new DataView(MainDS.AGift);
                         giftView.Sort = AGiftTable.GetGiftTransactionNumberDBName();
+                        
+                        bool UnpostedBatch = ((AGiftBatchRow) MainDS.AGiftBatch.Rows.Find(
+                        	new object[] { ALedgerNumber, ABatchNumber })).BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
                         // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
                         foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
@@ -1929,14 +1932,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             //do the same for the Recipient
                             if (giftDetail.RecipientKey > 0)
                             {
-                                giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftRow.DateEntered);
+                            	// if true then this gift is protected and data cannot be changed
+                            	// (note: here this includes all negative gifts and not just reversals)
+                            	if (!UnpostedBatch || giftDetail.GiftTransactionAmount < 0)
+                            	{
+                            		giftDetail.RecipientField = giftDetail.RecipientLedgerNumber;
+                            	}
+                            	else
+                            	{
+                            		// get the current Recipient Fund Number
+                            		giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftRow.DateEntered);
                     
-			                    // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
-			                    if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
-			                    {
-			                    	giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
-			                    	SaveChanges = true;
-			                    }
+				                    // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
+				                    if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
+				                    {
+				                    	giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
+				                    	SaveChanges = true;
+				                    }
+                            	}
 
                                 PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                                 giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
@@ -2026,6 +2039,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DataView giftView = new DataView(MainDS.ARecurringGift);
             giftView.Sort = ARecurringGiftTable.GetGiftTransactionNumberDBName();
+                        
+            bool UnpostedBatch = ((AGiftBatchRow) MainDS.AGiftBatch.Rows.Find(
+            	new object[] { ALedgerNumber, ABatchNumber })).BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
             foreach (GiftBatchTDSARecurringGiftDetailRow giftDetail in MainDS.ARecurringGiftDetail.Rows)
@@ -2046,14 +2062,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
                 {
-                    giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, DateTime.Today);
-                    
-                    // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
-                    if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
-                    {
-                    	giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
-                    	SaveChanges = true;
-                    }
+                	// if true then this gift is protected and data cannot be changed
+                	if (UnpostedBatch || giftDetail.GiftAmount < 0)
+                	{
+                		giftDetail.RecipientField = giftDetail.RecipientLedgerNumber;
+                	}
+                	else
+                	{
+                		// get the current Recipient Fund Number
+                		giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, DateTime.Today);
+        
+	                    // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
+	                    if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
+	                    {
+	                    	giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
+	                    	SaveChanges = true;
+	                    }
+                	}
                     
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
