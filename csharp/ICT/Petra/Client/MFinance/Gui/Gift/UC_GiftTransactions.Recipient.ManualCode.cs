@@ -116,10 +116,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public static void FinishShowDetailsManual(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbMotivationDetailCode,
             TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey, TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
             TextBox ATxtDetailCostCentreCode, TextBox ATxtDetailAccountCode, ref string AMotivationGroup, ref string AMotivationDetail,
-            out bool? AEnableRecipientHistory, out bool ? AEnableRecipientGiftDestination)
+            out bool ? AEnableRecipientGiftDestination)
         {
             AEnableRecipientGiftDestination = null;
-            AEnableRecipientHistory = null;
 
             //Record current values for motivation
             AMotivationGroup = ACurrentDetailRow.MotivationGroupCode;
@@ -156,27 +155,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (Convert.ToInt64(ATxtDetailRecipientKey.Text) == 0)
             {
-                AEnableRecipientHistory = false;
                 OnRecipientPartnerClassChanged(null, ATxtDetailRecipientKey, AtxtDetailRecipientLedgerNumber, out AEnableRecipientGiftDestination);
             }
             else
             {
-                AEnableRecipientHistory = true;
-
                 if (Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0)
                 {
                     OnRecipientPartnerClassChanged(null, ATxtDetailRecipientKey, AtxtDetailRecipientLedgerNumber, out AEnableRecipientGiftDestination);
                 }
             }
-
-            //if (ACurrentDetailRow.IsRecipientLedgerNumberNull())
-            //{
-            //    AtxtDetailRecipientLedgerNumber.Text = String.Format("{0:0000000000}", 0);
-            //}
-            //else
-            //{
-            //    AtxtDetailRecipientLedgerNumber.Text = String.Format("{0:0000000000}", ACurrentDetailRow.RecipientLedgerNumber);
-            //}
         }
 
         #endregion
@@ -308,11 +295,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AMotivationDetailChangedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
             bool AActiveOnly,
-            out bool? AEnableRecipientHistory,
             out bool ADoValidateGiftDestination,
             out bool ADoTaxUpdate)
         {
-            AEnableRecipientHistory = null;
             ADoValidateGiftDestination = false;
             ADoTaxUpdate = false;
 
@@ -369,13 +354,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ALedgerNumber,
                         ATxtDetailCostCentreCode,
                         AInKeyMinistryChangingFlag);
-                    AEnableRecipientHistory = true;
                 }
                 else
                 {
                     UpdateRecipientKeyText(APartnerKey, ACurrentDetailRow, ACmbMotivationDetailCode);
                     RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
-                    AEnableRecipientHistory = false;
                 }
 
                 if (!AInKeyMinistryChangingFlag)

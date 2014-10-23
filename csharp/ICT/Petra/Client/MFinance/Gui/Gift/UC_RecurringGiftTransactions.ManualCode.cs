@@ -522,6 +522,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String APartnerShortName,
             bool AValidSelection)
         {
+            mniRecipientHistory.Enabled = APartnerKey != 0;
+    
             if (FInRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || FShowingDetails)
             {
                 return;
@@ -576,13 +578,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (APartnerKey > 0)
                 {
                     RetrieveRecipientCostCentreCode(APartnerKey);
-                    mniRecipientHistory.Enabled = true;
                 }
                 else
                 {
                     UpdateRecipientKeyText(APartnerKey);
                     RetrieveMotivationDetailCostCentreCode();
-                    mniRecipientHistory.Enabled = false;
                 }
             }
             finally
@@ -606,16 +606,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AValidSelection)
         {
             // At the moment this event is thrown twice
-            // We want to deal only on manual entered changes, not on selections changes
-            if (FPetraUtilsObject.SuppressChangeDetection)
+            // We want to deal only on manual entered changes, i.e. not on selections changes, and on non-zero keys
+            if (FPetraUtilsObject.SuppressChangeDetection || APartnerKey == 0)
             {
-                FLastDonor = APartnerKey;
-            }
-            else if (FShowingDetails || (APartnerKey == 0))
-            {
-                mniDonorHistory.Enabled = false;
-                txtDonorInfo.Text = "";
-                return;
+            	if (APartnerKey != 0)
+            	{
+                	FLastDonor = APartnerKey;
+					mniDonorHistory.Enabled = true;
+            	}
+            	else
+            	{
+            		mniDonorHistory.Enabled = false;
+                	txtDonorInfo.Text = "";
+            	}
             }
             else
             {
@@ -1986,17 +1989,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
                 {
-                    mniRecipientHistory.Enabled = false;
                     RecipientPartnerClassChanged(null);
                 }
-                else
+                else if (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
                 {
-                    mniRecipientHistory.Enabled = true;
-
-                    if (Convert.ToInt64(txtDetailRecipientLedgerNumber.Text) == 0)
-                    {
-                        RecipientPartnerClassChanged(null);
-                    }
+                    RecipientPartnerClassChanged(null);
                 }
 
                 ShowDonorInfo(Convert.ToInt64(txtDetailDonorKey.Text));

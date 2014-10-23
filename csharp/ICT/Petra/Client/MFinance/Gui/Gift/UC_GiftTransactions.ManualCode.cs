@@ -452,7 +452,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String APartnerShortName,
             bool AValidSelection)
         {
-            bool? DoEnableRecipientHistory;
             bool DoValidateGiftDestination;
             bool DoTaxUpdate;
 
@@ -485,7 +484,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMotivationDetailChanged,
                 FTaxDeductiblePercentageEnabled,
                 FActiveOnly,
-                out DoEnableRecipientHistory,
                 out DoValidateGiftDestination,
                 out DoTaxUpdate);
 
@@ -505,10 +503,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 new Thread(ValidateRecipientLedgerNumberThread).Start();
             }
 
-            if (DoEnableRecipientHistory.HasValue)
-            {
-                mniRecipientHistory.Enabled = DoEnableRecipientHistory.Value;
-            }
+            mniRecipientHistory.Enabled = APartnerKey != 0;
         }
 
         // used for ValidateGiftDestinationThread
@@ -532,16 +527,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AValidSelection)
         {
             // At the moment this event is thrown twice
-            // We want to deal only on manual entered changes, not on selections changes
-            if (FPetraUtilsObject.SuppressChangeDetection)
+            // We want to deal only on manual entered changes, i.e. not on selections changes, and on non-zero keys
+            if (FPetraUtilsObject.SuppressChangeDetection || APartnerKey == 0)
             {
-                FLastDonor = APartnerKey;
-            }
-            else if (FShowingDetails || (APartnerKey == 0))
-            {
-                mniDonorHistory.Enabled = false;
-                txtDonorInfo.Text = "";
-                return;
+            	if (APartnerKey != 0)
+            	{
+                	FLastDonor = APartnerKey;
+					mniDonorHistory.Enabled = true;
+            	}
+            	else
+            	{
+            		mniDonorHistory.Enabled = false;
+                	txtDonorInfo.Text = "";
+            	}
             }
             else
             {
@@ -1107,7 +1105,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     FShowingDetails = true;
 
-                    bool? DoEnableRecipientHistory;
                     bool? DoEnableRecipientGiftDestination;
                     TUC_GiftTransactions_Recipient.FinishShowDetailsManual(ARow,
                         cmbDetailMotivationDetailCode,
@@ -1117,13 +1114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         txtDetailAccountCode,
                         ref FMotivationGroup,
                         ref FMotivationDetail,
-                        out DoEnableRecipientHistory,
                         out DoEnableRecipientGiftDestination);
-
-                    if (DoEnableRecipientHistory.HasValue)
-                    {
-                        mniRecipientHistory.Enabled = DoEnableRecipientHistory.Value;
-                    }
 
                     if (DoEnableRecipientGiftDestination.HasValue)
                     {
