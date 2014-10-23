@@ -1832,18 +1832,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out string ACostCentreCode)
         {
             bool CostCentreExists = false;
-            string CostCentreCodeTable = "CostCentreCodes";
+            string CostCentreCodeTableName = "CostCentreCodes";
 
             ACostCentreCode = string.Empty;
             string CostCentreCode = ACostCentreCode;
 
             string GetCostCentreCodeSQL = String.Format(
-                "SELECT a_cost_centre_code_c FROM a_valid_ledger_number WHERE a_ledger_number_i = {0} AND p_partner_key_n = {1};",
+                "SELECT a_cost_centre_code_c as CostCentreCode FROM public.a_valid_ledger_number WHERE a_ledger_number_i = {0} AND p_partner_key_n = {1};",
                 ALedgerNumber,
                 APartnerKey
                 );
 
-            DataSet tempDataSet = new DataSet();
+            DataTable CostCentreCodesTbl = null;
 
             TDBTransaction Transaction = null;
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -1851,24 +1851,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.Select(tempDataSet, GetCostCentreCodeSQL, CostCentreCodeTable,
-                        Transaction,
-                        0, 0);
+                    TLogging.Log("GetCostCentreCodeSQL: " + GetCostCentreCodeSQL);
+                    CostCentreCodesTbl = DBAccess.GDBAccessObj.SelectDT(GetCostCentreCodeSQL, CostCentreCodeTableName, Transaction);
 
-                    if (tempDataSet.Tables[CostCentreCodeTable] != null)
+                    if (CostCentreCodesTbl != null && CostCentreCodesTbl.Rows.Count > 0)
                     {
-                        if (tempDataSet.Tables[CostCentreCodeTable].Rows.Count > 0)
-                        {
-                            DataRow row = tempDataSet.Tables[CostCentreCodeTable].Rows[0];
-                            CostCentreCode = row[0].ToString();
-                            CostCentreExists = true;
-                        }
-
-                        tempDataSet.Clear();
+                        CostCentreCode = (string)CostCentreCodesTbl.DefaultView[0].Row["CostCentreCode"];
+                        CostCentreExists = true;
                     }
                 });
 
             ACostCentreCode = CostCentreCode;
+            TLogging.Log("CheckCostCentreDestinationForRecipient: " + ACostCentreCode);
 
             return CostCentreExists;
         }

@@ -139,15 +139,19 @@ RootNode:
         txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
+        cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
         txtDetailRecipientKeyMinistry: {Label=Key Ministry}
         txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?, ActionClick=ToggleTaxDeductible}
+        txtDeductiblePercentage: {Visible=false, Label=% Tax Deductible, Format=PercentDecimal(2), Width=80, NullValueAllowed=false}
+        txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
+        txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
+        txtDeductibleAccount: {Visible=false, Label=Account, ReadOnly=true}
         txtDetailGiftCommentOne: {Label=Comment 1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentTwo: {Label=Comment 2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentThree: {Label=Comment 3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,Both,Office]
@@ -163,10 +167,6 @@ RootNode:
         tbrTabPage:
         mnuTabPage:
 
-        txtDeductiblePercentage: {Visible=false, Label=% Tax Deductible, Format=PercentDecimal(2), Width=80, NullValueAllowed=false}
-        txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
-        txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
-        txtDeductibleAccount: {Visible=false, Label=Account, ReadOnly=true}
 
     Menu:
         mniTransactions:

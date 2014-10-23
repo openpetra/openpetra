@@ -802,7 +802,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             string errMsg = string.Empty;
 
-            if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
+            DataTable PartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(ALedgerNumber, APartnerKey);
+
+            if (PartnerCostCentreTbl != null && PartnerCostCentreTbl.Rows.Count > 0)
+            {
+                NewCostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
+            }
+            else if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
                     out ValidLedgerNumberCostCentreCode)
                 || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
                     RecipientField,
@@ -832,7 +838,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     TLogging.Log("Cost Centre Code Error: " + errMsg);
                 }
             }
-            else
+
+            if (NewCostCentreCode.Length == 0)
             {
                 AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
                     new object[] { ALedgerNumber, MotivationGroup, MotivationDetail });

@@ -794,21 +794,32 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return ParentCostCentreTbl;
         }
 
-        /// <summary></summary>
+        /// <summary>
+        /// LoadCostCentrePartnerLinks
+        /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber)
+        public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber, Int64 APartnerKey = 0)
         {
             //
             // Load Partners where PartnerType includes "COSTCENTRE":
-            String SqlQuery = "SELECT p_partner_short_name_c as ShortName, " +
-                              "PUB_p_partner.p_partner_key_n as PartnerKey, " +
-                              "'0' as IsLinked, " +
-                              "'0' as ReportsTo" +
-                              " FROM PUB_p_partner, PUB_p_partner_type" +
-                              " WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                              " AND PUB_p_partner_type.p_type_code_c = 'COSTCENTRE';";
+            String SqlQuery = "SELECT p_partner.p_partner_short_name_c as ShortName," +
+                              "   p_partner.p_partner_key_n as PartnerKey," + 
+                              "  '0' as IsLinked," +
+                              "  '0' as ReportsTo" +
+                              " FROM public.p_partner, public.p_partner_type" +
+                              " WHERE p_partner.p_partner_key_n = p_partner_type.p_partner_key_n";
+
+            if (APartnerKey > 0)
+	        {
+		        SqlQuery += "    AND p_partner.p_partner_key_n = " + APartnerKey.ToString();
+	        }
+                              
+            SqlQuery += "        AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
+
+            TLogging.Log("LoadCostCentrePartnerLinks: " + SqlQuery);
 
             DataTable PartnerCostCentreTbl = null;
 
@@ -822,7 +833,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                     PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
-                    AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+
+                    AValidLedgerNumberTable LinksTbl = null;
+
+                    if (APartnerKey == 0)
+                    {
+                        LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                    }
+                    else
+                    {
+                        LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
+                    }
 
                     foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
                     {
@@ -843,6 +864,55 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return PartnerCostCentreTbl;
         }
+
+        ///// <summary></summary>
+        ///// <param name="ALedgerNumber"></param>
+        ///// <returns></returns>
+        //[RequireModulePermission("FINANCE-1")]
+        //public static DataTable LoadCostCentrePartnerLinksForPartner(Int32 ALedgerNumber, Int64 APartnerKey)
+        //{
+        //    // Load Partners where PartnerType includes "COSTCENTRE":
+        //    String SqlQuery = "SELECT p_partner.p_partner_short_name_c as ShortName," +
+        //                      "   p_partner.p_partner_key_n as PartnerKey," +
+        //                      "  '0' as IsLinked," +
+        //                      "  '0' as ReportsTo" +
+        //                      " FROM public.p_partner, public.p_partner_type" +
+        //                      " WHERE p_partner.p_partner_key_n = p_partner_type.p_partner_key_n" +
+        //                      "    AND p_partner.p_partner_key_n = " + APartnerKey.ToString() +
+        //                      "    AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
+
+        //    DataTable PartnerCostCentreTbl = null;
+
+        //    TDBTransaction Transaction = null;
+        //    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+        //        TEnforceIsolationLevel.eilMinimum,
+        //        ref Transaction,
+        //        delegate
+        //        {
+        //            PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+
+        //            if (PartnerCostCentreTbl != null && PartnerCostCentreTbl.Rows.Count > 0)
+        //            {
+        //                AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
+
+        //                if (LinksTbl != null && LinksTbl.Count > 0)
+        //                {
+        //                    string costCentreCode;
+
+        //                    costCentreCode = LinksTbl[0].CostCentreCode;
+        //                    PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"] = costCentreCode;
+                            
+        //                    ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, costCentreCode, Transaction);
+        //                    if (CCTbl.Rows.Count > 0)
+        //                    {
+        //                        PartnerCostCentreTbl.DefaultView[0].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+        //                    }
+        //                }
+        //            }
+        //        });
+
+        //    return PartnerCostCentreTbl;
+        //}
 
         /// <summary>
         ///
