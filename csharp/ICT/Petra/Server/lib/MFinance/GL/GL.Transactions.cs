@@ -1812,14 +1812,16 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ADateForReversal"></param>
         /// <param name="AReversalBatchNumber"></param>
         /// <param name="AVerifications"></param>
+        /// <param name="AAutoPostReverseBatch"></param>
         [RequireModulePermission("FINANCE-3")]
         public static bool ReverseBatch(Int32 ALedgerNumber, Int32 ABatchNumberToReverse,
             DateTime ADateForReversal,
             out Int32 AReversalBatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            bool AAutoPostReverseBatch)
         {
             return TGLPosting.ReverseBatch(ALedgerNumber, ABatchNumberToReverse,
-                ADateForReversal, out AReversalBatchNumber, out AVerifications);
+                ADateForReversal, out AReversalBatchNumber, out AVerifications, AAutoPostReverseBatch);
         }
 
         /// <summary>

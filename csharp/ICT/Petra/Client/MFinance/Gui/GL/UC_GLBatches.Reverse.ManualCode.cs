@@ -119,7 +119,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (!TRemote.MFinance.GL.WebConnectors.ReverseBatch(FLedgerNumber, SelectedBatchNumber,
                             ADateForReverseBatch,
                             out ReversalGLBatch,
-                            out Verifications))
+                            out Verifications,
+                            false))
                     {
                         string ErrorMessages = String.Empty;
 
