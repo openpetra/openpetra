@@ -1920,6 +1920,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             AGiftRow giftRow = (AGiftRow)giftView.FindRows(giftDetail.GiftTransactionNumber)[0].Row;
 
                             PPartnerRow DonorRow = (PPartnerRow)MainDS.DonorPartners.Rows.Find(giftRow.DonorKey);
+                            
+                            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
+                                new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
 
                             giftDetail.DonorKey = giftRow.DonorKey;
                             giftDetail.DonorName = DonorRow.PartnerShortName;
@@ -1949,6 +1952,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 				                    	giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
 				                    	SaveChanges = true;
 				                    }
+				                    
+				                    // get the current CostCentreCode
+				                    if (giftDetail.RecipientLedgerNumber != 0)
+					                {
+					                    giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
+					                }
+					                else
+					                {
+					                    giftDetail.CostCentreCode = motivationDetail.CostCentreCode;
+					                }
                             	}
 
                                 PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
@@ -1979,9 +1992,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
 
                             //And account code
-                            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
-                                new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
-
                             if (motivationDetail != null)
                             {
                                 giftDetail.AccountCode = motivationDetail.AccountCode;
@@ -2039,9 +2049,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DataView giftView = new DataView(MainDS.ARecurringGift);
             giftView.Sort = ARecurringGiftTable.GetGiftTransactionNumberDBName();
-                        
-            bool UnpostedBatch = ((AGiftBatchRow) MainDS.AGiftBatch.Rows.Find(
-            	new object[] { ALedgerNumber, ABatchNumber })).BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
             foreach (GiftBatchTDSARecurringGiftDetailRow giftDetail in MainDS.ARecurringGiftDetail.Rows)
@@ -2062,8 +2069,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
                 {
-                	// if true then this gift is protected and data cannot be changed
-                	if (UnpostedBatch || giftDetail.GiftAmount < 0)
+                	// GiftAmount should never be negative. Negative Recurring gifts are not allowed!
+                	if (giftDetail.GiftAmount < 0)
                 	{
                 		giftDetail.RecipientField = giftDetail.RecipientLedgerNumber;
                 	}
@@ -2468,29 +2475,33 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     return null;
                 }
 
-                PPartnerRow RecipientPartner = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
-
-                giftDetail.RecipientLedgerNumber = 0;
-
-                // make sure the correct costcentres and accounts are used
-                if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
+                // data is only updated if the gift amount is positive
+                if (giftDetail.GiftTransactionAmount >= 0)
                 {
-                    // get the field that the key ministry belongs to. or it might be a field itself
-                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
-                }
-                else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-                {
-                    // TODO make sure the correct costcentres and accounts are used, recipient ledger number
-                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
-                }
-
-                if (giftDetail.RecipientLedgerNumber != 0)
-                {
-                    giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
-                }
-                else
-                {
-                    giftDetail.CostCentreCode = motivationRow.CostCentreCode;
+	                PPartnerRow RecipientPartner = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
+	
+	                giftDetail.RecipientLedgerNumber = 0;
+	
+	                // make sure the correct costcentres and accounts are used
+	                if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
+	                {
+	                    // get the field that the key ministry belongs to. or it might be a field itself
+	                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
+	                }
+	                else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+	                {
+	                    // TODO make sure the correct costcentres and accounts are used, recipient ledger number
+	                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
+	                }
+	
+	                if (giftDetail.RecipientLedgerNumber != 0)
+	                {
+	                    giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
+	                }
+	                else
+	                {
+	                    giftDetail.CostCentreCode = motivationRow.CostCentreCode;
+	                }
                 }
 
                 // set column giftdetail.AccountCode motivation
