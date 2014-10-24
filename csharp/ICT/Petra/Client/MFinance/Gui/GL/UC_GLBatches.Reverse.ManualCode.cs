@@ -101,19 +101,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 int SelectedBatchNumber = ACurrentBatchRow.BatchNumber;
 
-                if ((ADateForReverseBatch.Date < AStartDateCurrentPeriod) || (ADateForReverseBatch.Date > AEndDateLastForwardingPeriod))
-                {
-                    MessageBox.Show(String.Format(Catalog.GetString(
-                                "The Reverse Date is outside the periods available for reversing. We will set the posting date to the first possible date, {0}."),
-                            AStartDateCurrentPeriod));
-                    ADateForReverseBatch = AStartDateCurrentPeriod;
-                }
-
                 if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to reverse batch {0}?"),
                             SelectedBatchNumber),
                         Catalog.GetString("Question"),
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
+                
+		            TFrmBatchDateDialog Form = new TFrmBatchDateDialog(FMyForm);
+		            Form.SetParameters(AStartDateCurrentPeriod, AEndDateLastForwardingPeriod, SelectedBatchNumber);
+		            
+		            if (Form.ShowDialog() == DialogResult.Cancel)
+		            {
+		            	return false;
+		            }
+		            
+		            ADateForReverseBatch = Form.BatchDate;
+                
                     int ReversalGLBatch;
 
                     if (!TRemote.MFinance.GL.WebConnectors.ReverseBatch(FLedgerNumber, SelectedBatchNumber,

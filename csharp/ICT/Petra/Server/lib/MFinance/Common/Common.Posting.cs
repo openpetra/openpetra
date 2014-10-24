@@ -1174,6 +1174,7 @@ namespace Ict.Petra.Server.MFinance.Common
 		                        NewTransactionRow.TransactionStatus = false;
 		                        NewTransactionRow.DebitCreditIndicator = !OriginalTransaction.DebitCreditIndicator;
 		                        NewTransactionRow.SystemGenerated = true;
+		                        NewTransactionRow.TransactionDate = ADateForReversal;
 		
 		                        MainDS.ATransaction.Rows.Add(NewTransactionRow);
 		
