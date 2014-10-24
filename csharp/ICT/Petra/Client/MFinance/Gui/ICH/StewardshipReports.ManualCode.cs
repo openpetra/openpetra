@@ -186,11 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void GenerateHOSAFiles(Object Sender, EventArgs e)
         {
-            int Currency = (this.rbtBase.Checked ? 0 : 1); //0 = base 1 = intl
-            string FileName = string.Empty;
-            string CostCentreCode = string.Empty;
-            bool HOSASuccess = false;
-
+            String CurrencySelect = (this.rbtBase.Checked ? MFinanceConstants.CURRENCY_BASE : MFinanceConstants.CURRENCY_INTERNATIONAL);
             bool DoGenerateHOSAReports = chkHOSAReport.Checked;
             bool DoEmailHOSAReports = chkEmailHOSAReport.Checked;
             bool DoGenerateHOSAFiles = chkHOSAFile.Checked;
@@ -245,30 +241,45 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, FLedgerNumber);
 
                 //Filter for current period
-                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                if (SelectedICHNumber != 0)
+                {
+                    ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                        AIchStewardshipTable.GetPeriodNumberDBName(),
+                        SelectedReportPeriod,
+                        AIchStewardshipTable.GetIchNumberDBName(),
+                        SelectedICHNumber);
+                }
+                else
+                {
+                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
                     AIchStewardshipTable.GetPeriodNumberDBName(),
-                    SelectedReportPeriod,
-                    AIchStewardshipTable.GetIchNumberDBName(),
-                    SelectedICHNumber);
+                    SelectedReportPeriod);
+                }
 
                 ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetCostCentreCodeDBName();
 
                 foreach (DataRowView tmpRow in ICHNumbers.DefaultView)
                 {
                     AIchStewardshipRow ichRow = (AIchStewardshipRow)tmpRow.Row;
+                    bool HOSASuccess = false;
 
-                    CostCentreCode = (string)ichRow[AIchStewardshipTable.ColumnCostCentreCodeId];
+                    String CostCentreCode = ichRow.CostCentreCode;
 
                     if (DoGenerateHOSAReports)
                     {
                         //TODO code to generate the HOSA reports
+                        TRemote.MFinance.ICH.WebConnectors.GenerateHOSAReports(FLedgerNumber,
+                                    cmbReportPeriod.GetSelectedInt32(),
+                                    cmbICHNumber.GetSelectedInt32(),
+                                    CurrencySelect,
+                                    out VerificationResults);
                     }
                     else if (DoGenerateHOSAFiles)
                     {
-                        FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + HOSAFilePrefix + CostCentreCode + ".csv";
+                        String FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + HOSAFilePrefix + CostCentreCode + ".csv";
 
                         HOSASuccess = TRemote.MFinance.ICH.WebConnectors.GenerateHOSAFiles(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
-                            cmbICHNumber.GetSelectedInt32(), CostCentreCode, Currency, FileName, out VerificationResults);
+                            cmbICHNumber.GetSelectedInt32(), CostCentreCode, CurrencySelect, FileName, out VerificationResults);
                     }
 
                     if (HOSASuccess)
@@ -314,13 +325,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 if (msg.Length == 0)
                 {
                     msg = Catalog.GetString("Stewardship Calculations haven't been run or no transactions to process.");
-
-/*
- *                  msg = String.Format(Catalog.GetString("No Cost Centres to process in Ledger {0} for report period: {1} and ICH No.: {2}."),
- *                      FLedgerNumber,
- *                      SelectedReportPeriod,
- *                      SelectedICHNumber);
- */
                 }
 
                 MessageBox.Show(msg, Catalog.GetString("Generate Reports"));
