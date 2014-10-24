@@ -162,6 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void UpdateDisplay()
         {
             Cursor prevCursor = ParentForm.Cursor;
+
             try
             {
                 ParentForm.Cursor = Cursors.WaitCursor;

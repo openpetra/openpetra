@@ -166,7 +166,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 if (Transaction == null)
                 {
                     throw new Exception(Catalog.GetString(
-                        "Could not create a new import transaction because an existing transaction has not completed."));
+                            "Could not create a new import transaction because an existing transaction has not completed."));
                 }
 
                 // Load supplementary tables that we are going to need for validation
@@ -184,6 +184,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 // Go round a loop reading the file line by line
                 FImportLine = sr.ReadLine();
+
                 while (FImportLine != null)
                 {
                     RowNumber++;
@@ -202,7 +203,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (numberOfElements != 9)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Wrong number of batch columns.  The correct number is 9 columns."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of batch columns.  The correct number is 9 columns."),
+                                        TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
                                 continue;
@@ -239,7 +241,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, Transaction);
                                 FMainDS.AGiftBatch.AcceptChanges();
                             }
-                            
 
                             BatchDetailCounter = 0;
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -252,14 +253,14 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (numberOfElements < 12) // Perhaps this CSV file is a summary, and can't be imported?
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Wrong number of gift columns. (This may be a summary?)"), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of gift columns. (This may be a summary?)"), TResultSeverity.Resv_Critical));
                                 FImportLine = sr.ReadLine();
                                 continue;
                             }
                             else if ((numberOfElements != 21) && (numberOfElements != 27))
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Wrong number of gift columns. Expected either 21 or 27."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of gift columns. Expected either 21 or 27."), TResultSeverity.Resv_Critical));
                                 FImportLine = sr.ReadLine();
                                 continue;
                             }
@@ -267,7 +268,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (giftBatch == null)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Expected a GiftBatch line, but found a Gift. Will create a dummy working batch for the current period."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString(
+                                            "Expected a GiftBatch line, but found a Gift. Will create a dummy working batch for the current period."),
+                                        TResultSeverity.Resv_Critical));
 
                                 // in order to carry on we will make a dummy batch and force the date to fit
                                 giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref FMainDS,
@@ -280,7 +283,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             // Parse the line into a new row
                             AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
                             ParseTransactionLine(gift, giftBatch, ref previousGift, numberOfElements, ref totalBatchAmount, ref ImportMessage,
-                                RowNumber, AMessages,  ValidationControlsDictGift, ValidationControlsDictGiftDetail);
+                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail);
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
@@ -304,7 +307,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         else
                         {
                             AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
+                                    Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
                         }
                     }  // if the CSV line qualifies
 
@@ -327,20 +330,23 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                     // Record error count
                     AMessages.Add(new TVerificationResult(Catalog.GetString("Import information"),
-                        String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
+                            String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
 
                     if (FImportLine == null)
                     {
                         // We did reach the end of the file
                         AMessages.Add(new TVerificationResult(Catalog.GetString("Import information"),
-                            Catalog.GetString("Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
-                            TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
+                                TResultSeverity.Resv_Info));
                     }
                     else
                     {
                         // We gave up before the end
                         AMessages.Add(new TVerificationResult(Catalog.GetString("Import information"),
-                            Catalog.GetString("Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."), TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."),
+                                TResultSeverity.Resv_Info));
                     }
 
                     TLogging.Log("Return from here!");
@@ -384,20 +390,21 @@ namespace Ict.Petra.Server.MFinance.Gift
                 {
                     // At least we made a start
                     string msg = ImportMessage;
-                    
+
                     if (friendlyExceptionText.Length > 0)
                     {
                         msg += FNewLine + friendlyExceptionText;
                     }
-                    
+
                     AMessages.Add(new TVerificationResult(String.Format(
-                        Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), msg, TResultSeverity.Resv_Critical));
+                                Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), msg, TResultSeverity.Resv_Critical));
                 }
                 else
                 {
                     // We got an exception before we even started parsing the rows (getting a transaction?)
                     AMessages.Add(new TVerificationResult(String.Format(
-                        Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), friendlyExceptionText, TResultSeverity.Resv_Critical));
+                                Catalog.GetString("An exception occurred while parsing line {0}"),
+                                RowNumber), friendlyExceptionText, TResultSeverity.Resv_Critical));
                 }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -512,7 +519,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             // And do the additional manual ones
             AImportMessage = Catalog.GetString("Additional validation of the gift batch data");
-            TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages, 
+            TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, AGiftBatch, ref AMessages,
                 AValidationControlsDictBatch, AValidationAccountTable, AValidationCostCentreTable);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
@@ -530,8 +537,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (AGiftBatch.ExchangeRateToBase > 10000000)  // Huge numbers here indicate that the decimal comma/point is incorrect.
             {
                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"), ARowNumber),
-                    String.Format(Catalog.GetString("A huge exchange rate of {0} suggest decimal point format problem."), AGiftBatch.ExchangeRateToBase),
-                    TResultSeverity.Resv_Noncritical));
+                        String.Format(Catalog.GetString("A huge exchange rate of {0} suggest decimal point format problem."),
+                            AGiftBatch.ExchangeRateToBase),
+                        TResultSeverity.Resv_Noncritical));
             }
         }
 
@@ -684,7 +692,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
             {
                 ((TVerificationResult)AMessages[i]).OverrideResultContext(String.Format("Validation error in line {0}", ARowNumber));
-                
+
                 if (AMessages[i] is TScreenVerificationResult)
                 {
                     TVerificationResult downgrade = new TVerificationResult((TScreenVerificationResult)AMessages[i]);
@@ -775,7 +783,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             return ex.Message;
         }
 
-        private String ImportString(String AColumnTitle, DataColumn ADataColumn, TValidationControlsDict AValidationColumnsDict, bool ATreatEmptyStringAsText = true)
+        private String ImportString(String AColumnTitle,
+            DataColumn ADataColumn,
+            TValidationControlsDict AValidationColumnsDict,
+            bool ATreatEmptyStringAsText = true)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -803,7 +814,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             return sReturn.ToLower().Equals("yes");
         }
 
-        private Int64 ImportInt64(String AColumnTitle, DataColumn ADataColumn, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationColumnsDict)
+        private Int64 ImportInt64(String AColumnTitle,
+            DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationColumnsDict)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -812,18 +827,24 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
             Int64 retVal;
+
             if (Int64.TryParse(sReturn, out retVal))
             {
                 return retVal;
             }
 
-            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber, AColumnTitle),
-                String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                TResultSeverity.Resv_Critical));
+            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber,
+                        AColumnTitle),
+                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
+                    TResultSeverity.Resv_Critical));
             return -1;
         }
 
-        private Int32 ImportInt32(String AColumnTitle, DataColumn ADataColumn, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationColumnsDict)
+        private Int32 ImportInt32(String AColumnTitle,
+            DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationColumnsDict)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -832,18 +853,24 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
             Int32 retVal;
+
             if (Int32.TryParse(sReturn, out retVal))
             {
                 return retVal;
             }
 
-            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber, AColumnTitle),
-                String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                TResultSeverity.Resv_Critical));
+            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber,
+                        AColumnTitle),
+                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
+                    TResultSeverity.Resv_Critical));
             return -1;
         }
 
-        private decimal ImportDecimal(String AColumnTitle, DataColumn ADataColumn, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationColumnsDict)
+        private decimal ImportDecimal(String AColumnTitle,
+            DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationColumnsDict)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -858,14 +885,19 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             catch
             {
-                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
-                    TResultSeverity.Resv_Critical));
+                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber,
+                            AColumnTitle),
+                        String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
+                        TResultSeverity.Resv_Critical));
                 return 1.0m;
             }
         }
 
-        private DateTime ImportDate(String AColumnTitle, DataColumn ADataColumn, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationColumnsDict)
+        private DateTime ImportDate(String AColumnTitle,
+            DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationColumnsDict)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -881,9 +913,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             catch (Exception)
             {
-                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
-                    TResultSeverity.Resv_Critical));
+                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber,
+                            AColumnTitle),
+                        String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
+                        TResultSeverity.Resv_Critical));
                 TLogging.Log("Problem parsing " + sDate + " with format " + FCultureInfoDate.DateTimeFormat.ShortDatePattern);
                 return DateTime.Today;
             }

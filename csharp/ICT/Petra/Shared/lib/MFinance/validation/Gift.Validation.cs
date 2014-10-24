@@ -208,7 +208,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
                 isImporting ? Catalog.GetString("Recipient key") :
-                    "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
+                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 ValidationContext, ValidationColumn, null);
 
             if (VerificationResult != null)
@@ -251,7 +251,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     VerificationResult = TSharedPartnerValidation_Partner.IsValidRecipientFieldForMotivationGroup(ARow.RecipientKey,
                         ARecipientField,
                         MFinanceConstants.MOTIVATION_GROUP_GIFT,
-                        isImporting ? ValidationControlsData.ValidationControlLabel : "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()) + Environment.NewLine,
+                        isImporting ? ValidationControlsData.ValidationControlLabel : "Recipient of " +
+                        THelper.NiceValueDescription(ValidationContext.ToString()) + Environment.NewLine,
                         AContext,
                         ValidationColumn,
                         null);

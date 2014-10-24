@@ -97,7 +97,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                         snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                     }
-                    
+
                     // Additionally we do not allow empty string in primary keys
                     if (col.GetDotNetType().Contains("String") && ReasonForAutomValidation.Contains(" and "))
                     {
@@ -106,11 +106,11 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                         columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
-                        
+
                         columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                         columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
-    
-                        snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);                        
+
+                        snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                     }
                 }
 

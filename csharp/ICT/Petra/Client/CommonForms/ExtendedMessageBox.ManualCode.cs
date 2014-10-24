@@ -472,6 +472,7 @@ namespace Ict.Petra.Client.CommonForms
             // Will it fit on the screen??
             int screenHeight = Screen.PrimaryScreen.WorkingArea.Height;
             int maxHeight = Convert.ToInt32(0.8 * screenHeight);
+
             if (size.Height > maxHeight)
             {
                 size.Height = Convert.ToInt32(0.75 * maxHeight);

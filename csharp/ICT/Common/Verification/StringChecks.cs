@@ -63,7 +63,7 @@ namespace Ict.Common.Verification
         private static readonly string StrStringTooLong = Catalog.GetString(
             "The value you entered for {0} is too long - its maximum length is {1} characters, but you entered {2} characters.");
 
-        private static readonly string StrStringInactiveValue = Catalog.GetString( "The code '{0}' is currently inactive.");
+        private static readonly string StrStringInactiveValue = Catalog.GetString("The code '{0}' is currently inactive.");
 
         #endregion
 

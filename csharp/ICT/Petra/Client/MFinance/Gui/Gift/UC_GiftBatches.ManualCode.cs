@@ -217,6 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int nCurrentRowIndex = GetSelectedRowIndex();
             TFrmGiftBatch parentForm = (TFrmGiftBatch)ParentForm;
             Cursor prevCursor = parentForm.Cursor;
+
             parentForm.Cursor = Cursors.WaitCursor;
 
             if ((FMainDS != null) && (FMainDS.AGiftBatch != null))

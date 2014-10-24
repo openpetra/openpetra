@@ -133,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (Transaction == null)
                 {
                     throw new Exception(Catalog.GetString(
-                        "Could not create a new import transaction because an existing transaction has not completed."));
+                            "Could not create a new import transaction because an existing transaction has not completed."));
                 }
 
                 // Load supplementary tables that we are going to need for validation
@@ -153,6 +153,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 // Go round a loop reading the file line by line
                 FImportLine = sr.ReadLine();
+
                 while (FImportLine != null)
                 {
                     RowNumber++;
@@ -172,9 +173,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (numberOfElements != 4)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Wrong number of batch columns.  Expected 4 columns."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of batch columns.  Expected 4 columns."), TResultSeverity.Resv_Critical));
 
-                                FImportLine = sr.ReadLine(); 
+                                FImportLine = sr.ReadLine();
                                 continue;
                             }
 
@@ -191,7 +192,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             MainDS.ABatch.Rows.Add(NewBatch);
                             NewJournal = null;
 
-                            NewBatch.BatchDescription = ImportString(Catalog.GetString("Batch description"), 
+                            NewBatch.BatchDescription = ImportString(Catalog.GetString("Batch description"),
                                 MainDS.ABatch.ColumnBatchDescription, ValidationControlsDictBatch);
 
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("Batch hash value"),
@@ -214,9 +215,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                             else
                             {
-                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"), RowNumber),
-                                    String.Format(Catalog.GetString("The effective date [{0}] of the imported batch is not in an open period."),
-                                    StringHelper.DateToLocalizedString(NewBatch.DateEffective)), TResultSeverity.Resv_Critical));
+                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"),
+                                            RowNumber),
+                                        String.Format(Catalog.GetString("The effective date [{0}] of the imported batch is not in an open period."),
+                                            StringHelper.DateToLocalizedString(NewBatch.DateEffective)), TResultSeverity.Resv_Critical));
                             }
 
                             int messageCountBeforeValidate = AMessages.Count;
@@ -244,8 +246,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((NewBatch.BatchDescription == null)   // raise error if empty batch description is imported
                                 || (NewBatch.BatchDescription == ""))
                             {
-                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"), RowNumber),
-                                    Catalog.GetString("The batch description must not be empty."), TResultSeverity.Resv_Critical));
+                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"),
+                                            RowNumber),
+                                        Catalog.GetString("The batch description must not be empty."), TResultSeverity.Resv_Critical));
                             }
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
@@ -263,16 +266,18 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (numberOfElements != 7)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Wrong number of journal columns.  Expected 7 columns."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of journal columns.  Expected 7 columns."), TResultSeverity.Resv_Critical));
 
-                                FImportLine = sr.ReadLine(); 
+                                FImportLine = sr.ReadLine();
                                 continue;
                             }
 
                             if (NewBatch == null)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Expected a Batch line, but found a Journal. Will create a dummy working batch for the current period."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString(
+                                            "Expected a Batch line, but found a Journal. Will create a dummy working batch for the current period."),
+                                        TResultSeverity.Resv_Critical));
 
                                 // in order to carry on we will make a dummy batch and force the date to fit
                                 NewBatch = MainDS.ABatch.NewRowTyped(true);
@@ -345,8 +350,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((NewJournal.TransactionCurrency == LedgerTable[0].BaseCurrency)
                                 && (NewJournal.ExchangeRateToBase != 1.0m))
                             {
-                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Journal in base currency must have exchange rate 1.00."), TResultSeverity.Resv_Critical));
+                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"),
+                                            RowNumber),
+                                        Catalog.GetString("Journal in base currency must have exchange rate 1.00."), TResultSeverity.Resv_Critical));
                             }
 
                             //
@@ -361,10 +367,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
                             {
-                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"), RowNumber),
-                                    String.Format(Catalog.GetString("The journal effective date {0} is not in the same period as the batch date {1}."),
-                                    journalDate.ToShortDateString(),
-                                    NewBatch.DateEffective.ToShortDateString()), TResultSeverity.Resv_Critical));
+                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"),
+                                            RowNumber),
+                                        String.Format(Catalog.GetString(
+                                                "The journal effective date {0} is not in the same period as the batch date {1}."),
+                                            journalDate.ToShortDateString(),
+                                            NewBatch.DateEffective.ToShortDateString()), TResultSeverity.Resv_Critical));
                             }
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
@@ -381,9 +389,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (numberOfElements < 8)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
+                                        TResultSeverity.Resv_Critical));
 
-                                FImportLine = sr.ReadLine(); 
+                                FImportLine = sr.ReadLine();
                                 continue;
                             }
 
@@ -394,7 +403,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         else
                         {
                             AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
+                                    Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
                         }
                     }  // if the CSV line qualifies
 
@@ -417,20 +426,23 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     // Record error count
                     AMessages.Add(new TVerificationResult(Catalog.GetString("Import information"),
-                        String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
+                            String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
 
                     if (FImportLine == null)
                     {
                         // We did reach the end of the file
                         AMessages.Add(new TVerificationResult(Catalog.GetString("Import information"),
-                            Catalog.GetString("Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
-                            TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
+                                TResultSeverity.Resv_Info));
                     }
                     else
                     {
                         // We gave up before the end
                         AMessages.Add(new TVerificationResult(Catalog.GetString("Import information"),
-                            Catalog.GetString("Stopped reading the file after generating more than 100 messages.  The file may contain more errors beyond the ones listed here."), TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Stopped reading the file after generating more than 100 messages.  The file may contain more errors beyond the ones listed here."),
+                                TResultSeverity.Resv_Info));
                     }
 
                     TLogging.Log("Return from here!");
@@ -476,13 +488,14 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
 
                     AMessages.Add(new TVerificationResult(String.Format(
-                        Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), msg, TResultSeverity.Resv_Critical));
+                                Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), msg, TResultSeverity.Resv_Critical));
                 }
                 else
                 {
                     // We got an exception before we even started parsing the rows (getting a transaction?)
                     AMessages.Add(new TVerificationResult(String.Format(
-                        Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), friendlyExceptionText, TResultSeverity.Resv_Critical));
+                                Catalog.GetString("An exception occurred while parsing line {0}"),
+                                RowNumber), friendlyExceptionText, TResultSeverity.Resv_Critical));
                 }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -609,7 +622,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (Transaction == null)
                 {
                     throw new Exception(Catalog.GetString(
-                        "Could not create a new import transaction because an existing transaction has not completed."));
+                            "Could not create a new import transaction because an existing transaction has not completed."));
                 }
 
                 // Load supplementary tables that we are going to need for validation
@@ -623,6 +636,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 // Go round a loop reading the file line by line
                 FImportLine = sr.ReadLine();
+
                 while (FImportLine != null)
                 {
                     RowNumber++;
@@ -640,9 +654,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (numberOfElements < 8)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                    Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
+                                        TResultSeverity.Resv_Critical));
 
-                                FImportLine = sr.ReadLine(); 
+                                FImportLine = sr.ReadLine();
                                 continue;
                             }
 
@@ -652,7 +667,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         else
                         {
                             AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in Line {0}"), RowNumber),
-                                Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
+                                    Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
                         }
                     }  // if the CSV line qualifies
 
@@ -677,13 +692,17 @@ namespace Ict.Petra.Server.MFinance.GL
                     {
                         // We did reach the end of the file
                         AMessages.Add(new TVerificationResult(Catalog.GetString("Import information"),
-                            Catalog.GetString("Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."), TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
+                                TResultSeverity.Resv_Info));
                     }
                     else
                     {
                         // We gave up before the end
                         AMessages.Add(new TVerificationResult(Catalog.GetString("Import information"),
-                            Catalog.GetString("Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."), TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."),
+                                TResultSeverity.Resv_Info));
                     }
 
                     // Do finally actions and then return false
@@ -733,13 +752,14 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
 
                     AMessages.Add(new TVerificationResult(String.Format(
-                        Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), msg, TResultSeverity.Resv_Critical));
+                                Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), msg, TResultSeverity.Resv_Critical));
                 }
                 else
                 {
                     // We got an exception before we even started parsing the rows (getting a transaction?)
                     AMessages.Add(new TVerificationResult(String.Format(
-                        Catalog.GetString("An exception occurred while parsing line {0}"), RowNumber), friendlyExceptionText, TResultSeverity.Resv_Critical));
+                                Catalog.GetString("An exception occurred while parsing line {0}"),
+                                RowNumber), friendlyExceptionText, TResultSeverity.Resv_Critical));
                 }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -857,8 +877,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     // All analysis analysisType errors are non-critical
                     AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"), ARowNumber),
-                        Catalog.GetString("Transaction analysis attributes must have an attribute value.") + strIgnoreAnalysisTypeAndValue,
-                        TResultSeverity.Resv_Noncritical));
+                            Catalog.GetString("Transaction analysis attributes must have an attribute value.") + strIgnoreAnalysisTypeAndValue,
+                            TResultSeverity.Resv_Noncritical));
                 }
 
                 // The analysis data is only imported if all corresponding values are there:
@@ -869,7 +889,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     DataRow afrow = ASetupDS.AFreeformAnalysis.Rows.Find(new Object[] { NewTransaction.LedgerNumber, analysisType, analysisValue });
                     AAnalysisAttributeRow anrow = (AAnalysisAttributeRow)ASetupDS.AAnalysisAttribute.Rows.Find(
                         new Object[] { NewTransaction.LedgerNumber, analysisType, NewTransaction.AccountCode });
-                    
+
                     bool isActive = (anrow != null) && anrow.Active;
 
                     if ((atrow != null) && (afrow != null) && isActive)
@@ -889,33 +909,38 @@ namespace Ict.Petra.Server.MFinance.GL
                         // All analysis analysisType errors are non-critical
                         if (atrow == null)
                         {
-                            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"), ARowNumber),
-                                String.Format(Catalog.GetString("Unknown transaction analysis attribute '{0}'."),
-                                analysisType) + strIgnoreAnalysisTypeAndValue,
-                                TResultSeverity.Resv_Noncritical));
+                            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"),
+                                        ARowNumber),
+                                    String.Format(Catalog.GetString("Unknown transaction analysis attribute '{0}'."),
+                                        analysisType) + strIgnoreAnalysisTypeAndValue,
+                                    TResultSeverity.Resv_Noncritical));
                         }
                         else if (afrow == null)
                         {
-                            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"), ARowNumber),
-                                String.Format(Catalog.GetString("Unknown transaction analysis value '{0}' for type '{1}'."),
-                                analysisValue, analysisType) + strIgnoreAnalysisTypeAndValue,
-                                TResultSeverity.Resv_Noncritical));
+                            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"),
+                                        ARowNumber),
+                                    String.Format(Catalog.GetString("Unknown transaction analysis value '{0}' for type '{1}'."),
+                                        analysisValue, analysisType) + strIgnoreAnalysisTypeAndValue,
+                                    TResultSeverity.Resv_Noncritical));
                         }
                         else if (!isActive)
                         {
                             if (anrow == null)
                             {
-                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"), ARowNumber),
-                                    String.Format(Catalog.GetString("Transaction analysis type/value '{0}'/'{1}' is not associated with account '{2}'."),
-                                    analysisType, analysisValue, NewTransaction.AccountCode) + strIgnoreAnalysisTypeAndValue,
-                                    TResultSeverity.Resv_Noncritical));
+                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"),
+                                            ARowNumber),
+                                        String.Format(Catalog.GetString(
+                                                "Transaction analysis type/value '{0}'/'{1}' is not associated with account '{2}'."),
+                                            analysisType, analysisValue, NewTransaction.AccountCode) + strIgnoreAnalysisTypeAndValue,
+                                        TResultSeverity.Resv_Noncritical));
                             }
                             else
                             {
-                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"), ARowNumber),
-                                    String.Format(Catalog.GetString("Transaction analysis type/value '{0}'/'{1}' is no longer active."),
-                                    analysisType, analysisValue) + strIgnoreAnalysisTypeAndValue,
-                                    TResultSeverity.Resv_Noncritical));
+                                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation warning in Line {0}"),
+                                            ARowNumber),
+                                        String.Format(Catalog.GetString("Transaction analysis type/value '{0}'/'{1}' is no longer active."),
+                                            analysisType, analysisValue) + strIgnoreAnalysisTypeAndValue,
+                                        TResultSeverity.Resv_Noncritical));
                             }
                         }
                     }
@@ -927,19 +952,19 @@ namespace Ict.Petra.Server.MFinance.GL
             if ((DebitAmount == 0) && (CreditAmount == 0))
             {
                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"), ARowNumber),
-                    Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."), TResultSeverity.Resv_Critical));
+                        Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."), TResultSeverity.Resv_Critical));
             }
 
             if ((DebitAmount < 0) || (CreditAmount < 0))
             {
                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"), ARowNumber),
-                    Catalog.GetString("Negative amount specified - debits and credits must be positive."), TResultSeverity.Resv_Critical));
+                        Catalog.GetString("Negative amount specified - debits and credits must be positive."), TResultSeverity.Resv_Critical));
             }
 
             if ((DebitAmount != 0) && (CreditAmount != 0))
             {
                 AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Import validation error in Line {0}"), ARowNumber),
-                    Catalog.GetString("Transactions cannot have values for both debit and credit amounts."), TResultSeverity.Resv_Critical));
+                        Catalog.GetString("Transactions cannot have values for both debit and credit amounts."), TResultSeverity.Resv_Critical));
             }
 
             if (DebitAmount != 0)
@@ -961,10 +986,15 @@ namespace Ict.Petra.Server.MFinance.GL
             // Do our standard gift batch validation checks on this row
             AImportMessage = Catalog.GetString("Validating the transaction data");
             ATransactionValidation.Validate(this, NewTransaction, ref AMessages, AValidationControlsDictTransaction);
-            
+
             // And do the additional manual ones
             AImportMessage = Catalog.GetString("Additional validation of the transaction data");
-            TSharedFinanceValidation_GL.ValidateGLDetailManual(this, ANewBatchRow, NewTransaction, null, ref AMessages, AValidationControlsDictTransaction);
+            TSharedFinanceValidation_GL.ValidateGLDetailManual(this,
+                ANewBatchRow,
+                NewTransaction,
+                null,
+                ref AMessages,
+                AValidationControlsDictTransaction);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
             {
@@ -985,6 +1015,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
                 {
                     TVerificationResult msg = (TVerificationResult)AMessages[i];
+
                     if (msg.ResultText.Contains(Catalog.GetString("Debit amount")) || msg.ResultText.Contains(Catalog.GetString("Credit amount")))
                     {
                         AMessages.RemoveAt(i);
@@ -1104,7 +1135,10 @@ namespace Ict.Petra.Server.MFinance.GL
             return ex.Message;
         }
 
-        private String ImportString(String AColumnTitle, DataColumn ADataColumn, TValidationControlsDict AValidationColumnsDict, bool ATreatEmptyStringAsText = true)
+        private String ImportString(String AColumnTitle,
+            DataColumn ADataColumn,
+            TValidationControlsDict AValidationColumnsDict,
+            bool ATreatEmptyStringAsText = true)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1132,7 +1166,11 @@ namespace Ict.Petra.Server.MFinance.GL
             return sReturn.ToLower().Equals("yes");
         }
 
-        private Int64 ImportInt64(String AColumnTitle, DataColumn ADataColumn, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationColumnsDict)
+        private Int64 ImportInt64(String AColumnTitle,
+            DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationColumnsDict)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1141,18 +1179,24 @@ namespace Ict.Petra.Server.MFinance.GL
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
             Int64 retVal;
+
             if (Int64.TryParse(sReturn, out retVal))
             {
                 return retVal;
             }
 
-            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber, AColumnTitle),
-                String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                TResultSeverity.Resv_Critical));
+            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber,
+                        AColumnTitle),
+                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
+                    TResultSeverity.Resv_Critical));
             return -1;
         }
 
-        private Int32 ImportInt32(String AColumnTitle, DataColumn ADataColumn, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationColumnsDict)
+        private Int32 ImportInt32(String AColumnTitle,
+            DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationColumnsDict)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1161,18 +1205,24 @@ namespace Ict.Petra.Server.MFinance.GL
 
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
             Int32 retVal;
+
             if (Int32.TryParse(sReturn, out retVal))
             {
                 return retVal;
             }
 
-            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber, AColumnTitle),
-                String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                TResultSeverity.Resv_Critical));
+            AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber,
+                        AColumnTitle),
+                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
+                    TResultSeverity.Resv_Critical));
             return -1;
         }
 
-        private decimal ImportDecimal(String AColumnTitle, DataColumn ADataColumn, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationColumnsDict)
+        private decimal ImportDecimal(String AColumnTitle,
+            DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationColumnsDict)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1187,14 +1237,19 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             catch
             {
-                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
-                    TResultSeverity.Resv_Critical));
+                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber,
+                            AColumnTitle),
+                        String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
+                        TResultSeverity.Resv_Critical));
                 return 1.0m;
             }
         }
 
-        private DateTime ImportDate(String AColumnTitle, DataColumn ADataColumn, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationColumnsDict)
+        private DateTime ImportDate(String AColumnTitle,
+            DataColumn ADataColumn,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationColumnsDict)
         {
             if ((ADataColumn != null) && (AValidationColumnsDict != null) && !AValidationColumnsDict.ContainsKey(ADataColumn))
             {
@@ -1210,9 +1265,10 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             catch (Exception)
             {
-                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
-                    TResultSeverity.Resv_Critical));
+                AMessages.Add(new TVerificationResult(String.Format(Catalog.GetString("Parsing error in line {0} - column '{1}'"), ARowNumber,
+                            AColumnTitle),
+                        String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
+                        TResultSeverity.Resv_Critical));
                 TLogging.Log("Problem parsing " + sDate + " with format " + FCultureInfoDate.DateTimeFormat.ShortDatePattern);
                 return DateTime.Today;
             }
