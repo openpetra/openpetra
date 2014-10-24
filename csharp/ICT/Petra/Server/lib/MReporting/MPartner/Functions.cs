@@ -540,7 +540,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         foreach (DataColumn col in PartnerLocationTable.Columns)
                         {
                             situation.GetParameters().AddCalculationParameter(StringHelper.UpperCamelCase(col.ColumnName, true,
-                                    true), new TVariant(PartnerLocationTable.Rows[0][col.ColumnName]));
+                                    true), new TVariant(row[col.ColumnName]));
                         }
 
                         // get the Partner Firstname and Surname as well; depends on the partner class
