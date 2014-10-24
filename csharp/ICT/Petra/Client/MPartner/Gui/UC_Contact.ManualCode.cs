@@ -78,12 +78,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             ValidateAllData(false);
             GetDataFromControls(ARow);
         }
-
+        
+        /// <summary>
+        /// Code associated with ContactLog entry
+        /// </summary>
         public string ContactCode { get { return FContactDR.ContactCode; } }
+        
+        /// <summary>
+        /// Date of Contact
+        /// </summary>
         public DateTime ContactDate { get { return FContactDR.ContactDate; } }
 
         /// <summary>
-        /// 
+        /// Open a dialog to select Contact Attributes 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

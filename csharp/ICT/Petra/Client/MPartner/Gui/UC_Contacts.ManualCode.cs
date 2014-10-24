@@ -64,17 +64,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerEditUIConnector = value;
             }
         }
-
+        
         /// <summary>todoComment</summary>
-        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-
-        private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
-        {
-            if (RecalculateScreenParts != null)
-            {
-                RecalculateScreenParts(this, e);
-            }
-        }
+        public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
@@ -88,20 +80,29 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
 
         #region Private Methods
-
+        private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
+        {
+            if (HookupDataChange != null)
+            {
+                HookupDataChange(this, e);
+            }
+        }
 
         private void InitializeManualCode()
         {
             if (!FMainDS.Tables.Contains(PContactLogTable.GetTableName()))
             {
                 FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactLogsForPartner(FMainDS.PPartner[0].PartnerKey));
-                FMainDS.Merge(new PPartnerContactTable());//TRemote.MPartner.Partner.WebConnectors.GetPartnerContacts(FMainDS.PPartner[0].PartnerKey));
+                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPartnerContacts(FMainDS.PPartner[0].PartnerKey));
                 FMainDS.PContactLog.DefaultView.AllowNew = false;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PContactLog.DefaultView);
+                //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PContactLog.DefaultView);
             }
 
             FMainDS.InitVars();
-            
+
+            OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpContacts));
+            //Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
         }
 
         private Boolean LoadDataOnDemand()
@@ -158,6 +159,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        private void NewRecord(object sender, EventArgs e)
+        {
+            if (CreateNewPContactLog())
+            {
+                ucoContact.Focus();
+            }
+        }
+
         private void NewRowManual(ref PContactLogRow ARow)
         {
             ARow.ContactLogId = TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_contact);
@@ -168,6 +177,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.PPartnerContact.Rows.Add(PartnerContact);
         }
 
+        /// <summary>
+        /// This Procedure will get called from the SaveChanges procedure before it
+        /// actually performs any saving operation.
+        /// </summary>
+        private void DataSavingStarted(System.Object sender, System.EventArgs e)
+        {
+        }
+
         private void ShowDetailsManual(PContactLogRow ARow)
         {
             if (ARow != null)
@@ -176,12 +193,64 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void DeleteRecord(object sender, EventArgs e)
+        {
+            DeletePContactLog();
+
+        }
+
         private bool PreDeleteManual(PContactLogRow pContactLogRow, ref string ADeletionQuestion)
         {
             ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            if (TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner((long)pContactLogRow.ContactLogId))
+            {
+                ADeletionQuestion = Catalog.GetString(
+                                Environment.NewLine + "Other Partners share this contact log." +
+                                Environment.NewLine + "Deleting this record will not affect other Partners" +
+                                Environment.NewLine + "To delete this contact for everyone, use \"Find and Delete Contacts\"");
+            }
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
                 Environment.NewLine, ucoContact.ContactDate, ucoContact.ContactCode);
+
             return true;
+        }
+
+        private bool DeleteRowManual(PContactLogRow ARowToDelete, ref String ACompletionMessage)
+        {
+            
+            foreach (DataRowView ContactLogRow in grdDetails.SelectedDataRows)
+            {
+                DataView PartnerContactLogs = new DataView(FMainDS.PPartnerContact);
+                PartnerContactLogs.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    PPartnerContactTable.GetPartnerKeyDBName(),
+                    FMainDS.PPartner[0].PartnerKey,
+                    PPartnerContactTable.GetContactLogIdDBName(),
+                    ContactLogRow.Row[PContactLogTable.ColumnContactLogIdId]);
+
+                // Delete the PartnerContact records
+                foreach (DataRowView row in PartnerContactLogs)
+                {
+                    row.Delete();
+                }
+
+                // Actually delete the ContactLog if it's the last
+                if (!TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner((long)ContactLogRow.Row[PContactLogTable.ColumnContactLogIdId]))
+                {
+                    ContactLogRow.Row.Delete();
+                }
+
+            }
+            grdDetails.Refresh();
+            
+            return true;
+        }
+        
+        private void PostDeleteManual(PContactLogRow pContactLogRow, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
+        {
+            if (ADeletionPerformed)
+            {
+                //DoRecalculateScreenParts();
+            }
         }
 
         private void GetDetailDataFromControlsManual(PContactLogRow ARow)
@@ -189,56 +258,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoContact.GetDetails(ARow);   
         }
 
-        private void PostDeleteManual(PContactLogRow pContactLogRow, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
-        {
-            if (ADeletionPerformed)
-            {
-                DoRecalculateScreenParts();
-            }
-        }
-
-        private void DoRecalculateScreenParts()
-        {
-            OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs()
-            {
-                ScreenPart = TScreenPartEnum.spCounters
-            });
-        }
-
         private void ValidateDataDetailsManual(PContactLogRow FPreviouslySelectedDetailRow)
         {
-        }
-
-        private void NewContactLog(object sender, EventArgs e)
-        {
-            if (CreateNewPContactLog())
-            {
-                ucoContact.Focus();
-            }
-
-            // reset counter in tab header
-            RecalculateTabHeaderCounter();
-        }
-
-        private void DeleteContactLog(object sender, EventArgs e)
-        {
-            
-            if(!TRemote.MPartner.Partner.WebConnectors.IsContactLogAssociatedWithMoreThanOnePartner(100)){ // TODOOOOOOOOOOOO
-                // filter this before passing it so that only the selected row(s) get nuked
-                TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PContactLog); // TODOOOOOOOOOOOOOO 
-                
-                TDeleteGridRows.DeleteRows(this, grdDetails, FPetraUtilsObject, this);
-            }
-
-        }
-
-        private void RecalculateTabHeaderCounter()
-        {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-            /* Fire OnRecalculateScreenParts event to update the Tab Counters */
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
         }
     
         #endregion

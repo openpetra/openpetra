@@ -8,8 +8,8 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&New, ActionClick=NewContactLog}
-        actDelete: {Label=&Delete, ActionClick=DeleteContactLog}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
     Controls:
         pnlContent:
             Controls: [sptContacts]
