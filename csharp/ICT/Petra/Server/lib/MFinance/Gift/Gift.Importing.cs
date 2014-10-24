@@ -281,8 +281,15 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             // Parse the line into a new row
                             AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
+                            AGiftDetailRow giftDetails;
                             ParseTransactionLine(gift, giftBatch, ref previousGift, numberOfElements, ref totalBatchAmount, ref ImportMessage,
-                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail);
+                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail, out giftDetails);
+
+                            if (TaxDeductiblePercentageEnabled)
+                            {
+                                // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                                TGift.SetDefaultTaxDeductibilityData(ref giftDetails, gift.DateEntered, Transaction);
+                            }
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
@@ -349,12 +356,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                     }
 
                     TLogging.Log("Return from here!");
-
-                            if (TaxDeductiblePercentageEnabled)
-                            {
-                                // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
-                                TGift.SetDefaultTaxDeductibilityData(ref giftDetails, gift.DateEntered, FTransaction);
-                            }
 
                     // Do the 'finally' actions and return false
                     return false;
@@ -550,7 +551,8 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         private void ParseTransactionLine(AGiftRow AGift, AGiftBatchRow AGiftBatch, ref AGiftRow APreviousGift, int ANumberOfColumns,
             ref decimal ATotalBatchAmount, ref string AImportMessage, int ARowNumber, TVerificationResultCollection AMessages,
-            TValidationControlsDict AValidationControlsDictGift, TValidationControlsDict AValidationControlsDictGiftDetail)
+            TValidationControlsDict AValidationControlsDictGift, TValidationControlsDict AValidationControlsDictGiftDetail,
+            out AGiftDetailRow AGiftDetails)
         {
             //this is the format with extra columns
             bool HasExtraColumns = (ANumberOfColumns >= 27);
@@ -583,7 +585,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             AImportMessage = Catalog.GetString("Importing the gift details");
 
-            AGiftDetailRow giftDetails = FMainDS.AGiftDetail.NewRowTyped(true);
+            AGiftDetails = FMainDS.AGiftDetail.NewRowTyped(true);
 
             if ((APreviousGift != null) && (AGift.DonorKey == APreviousGift.DonorKey)
                 && (AGift.MethodOfGivingCode == APreviousGift.MethodOfGivingCode)
@@ -597,7 +599,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 // this row is a new detail for the previousGift
                 AGift = APreviousGift;
                 AGift.LastDetailNumber++;
-                giftDetails.DetailNumber = AGift.LastDetailNumber;
+                AGiftDetails.DetailNumber = AGift.LastDetailNumber;
             }
             else
             {
@@ -608,73 +610,73 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AGiftBatch.LastGiftNumber++;
                 AGift.LastDetailNumber = 1;
                 FMainDS.AGift.Rows.Add(AGift);
-                giftDetails.DetailNumber = 1;
+                AGiftDetails.DetailNumber = 1;
             }
 
-            giftDetails.LedgerNumber = AGift.LedgerNumber;
-            giftDetails.BatchNumber = AGiftBatch.BatchNumber;
-            giftDetails.GiftTransactionNumber = AGift.GiftTransactionNumber;
-            FMainDS.AGiftDetail.Rows.Add(giftDetails);
+            AGiftDetails.LedgerNumber = AGift.LedgerNumber;
+            AGiftDetails.BatchNumber = AGiftBatch.BatchNumber;
+            AGiftDetails.GiftTransactionNumber = AGift.GiftTransactionNumber;
+            FMainDS.AGiftDetail.Rows.Add(AGiftDetails);
 
-            giftDetails.RecipientKey = ImportInt64(Catalog.GetString("Recipient key"),
+            AGiftDetails.RecipientKey = ImportInt64(Catalog.GetString("Recipient key"),
                 FMainDS.AGiftDetail.ColumnRecipientKey, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
 
             ImportString(Catalog.GetString("short name of recipient (unused)"), null, null); // unused
 
             if (HasExtraColumns)
             {
-                giftDetails.RecipientLedgerNumber = ImportInt32(Catalog.GetString("Recipient ledger number"),
+                AGiftDetails.RecipientLedgerNumber = ImportInt32(Catalog.GetString("Recipient ledger number"),
                     FMainDS.AGiftDetail.ColumnRecipientLedgerNumber, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
             }
 
             decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"),
                 FMainDS.AGiftDetail.ColumnGiftTransactionAmount, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
-            giftDetails.GiftAmount = currentGiftAmount;
-            giftDetails.GiftTransactionAmount = currentGiftAmount;
+            AGiftDetails.GiftAmount = currentGiftAmount;
+            AGiftDetails.GiftTransactionAmount = currentGiftAmount;
             ATotalBatchAmount += currentGiftAmount;
             // TODO: currency translation
 
             if (HasExtraColumns)
             {
-                giftDetails.GiftAmountIntl = ImportDecimal(Catalog.GetString("Gift amount intl"),
+                AGiftDetails.GiftAmountIntl = ImportDecimal(Catalog.GetString("Gift amount intl"),
                     FMainDS.AGiftDetail.ColumnGiftAmountIntl, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
             }
 
-            giftDetails.ConfidentialGiftFlag = ImportBoolean(Catalog.GetString("Confidential gift"),
+            AGiftDetails.ConfidentialGiftFlag = ImportBoolean(Catalog.GetString("Confidential gift"),
                 FMainDS.AGiftDetail.ColumnConfidentialGiftFlag, AValidationControlsDictGiftDetail);
-            giftDetails.MotivationGroupCode = ImportString(Catalog.GetString("Motivation group code"),
+            AGiftDetails.MotivationGroupCode = ImportString(Catalog.GetString("Motivation group code"),
                 FMainDS.AGiftDetail.ColumnMotivationGroupCode, AValidationControlsDictGiftDetail);
-            giftDetails.MotivationDetailCode = ImportString(Catalog.GetString("Motivation detail"),
+            AGiftDetails.MotivationDetailCode = ImportString(Catalog.GetString("Motivation detail"),
                 FMainDS.AGiftDetail.ColumnMotivationDetailCode, AValidationControlsDictGiftDetail);
 
             if (HasExtraColumns)
             {
-                giftDetails.CostCentreCode = ImportString(Catalog.GetString("Cost centre code"),
+                AGiftDetails.CostCentreCode = ImportString(Catalog.GetString("Cost centre code"),
                     FMainDS.AGiftDetail.ColumnCostCentreCode, AValidationControlsDictGiftDetail);
             }
             else
             {
                 // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
-                giftDetails.CostCentreCode = InferCostCentre(giftDetails);
+                AGiftDetails.CostCentreCode = InferCostCentre(AGiftDetails);
             }
 
-            giftDetails.GiftCommentOne = ImportString(Catalog.GetString("Gift comment one"),
+            AGiftDetails.GiftCommentOne = ImportString(Catalog.GetString("Gift comment one"),
                 FMainDS.AGiftDetail.ColumnGiftCommentOne, AValidationControlsDictGiftDetail, false);
-            giftDetails.CommentOneType = ImportString(Catalog.GetString("Comment one type"),
+            AGiftDetails.CommentOneType = ImportString(Catalog.GetString("Comment one type"),
                 FMainDS.AGiftDetail.ColumnCommentOneType, AValidationControlsDictGiftDetail, false);
 
-            giftDetails.MailingCode = ImportString(Catalog.GetString("Mailing code"),
+            AGiftDetails.MailingCode = ImportString(Catalog.GetString("Mailing code"),
                 FMainDS.AGiftDetail.ColumnMailingCode, AValidationControlsDictGiftDetail);
 
-            giftDetails.GiftCommentTwo = ImportString(Catalog.GetString("Gift comment two"),
+            AGiftDetails.GiftCommentTwo = ImportString(Catalog.GetString("Gift comment two"),
                 FMainDS.AGiftDetail.ColumnGiftCommentTwo, AValidationControlsDictGiftDetail, false);
-            giftDetails.CommentTwoType = ImportString(Catalog.GetString("Comment two type"),
+            AGiftDetails.CommentTwoType = ImportString(Catalog.GetString("Comment two type"),
                 FMainDS.AGiftDetail.ColumnCommentTwoType, AValidationControlsDictGiftDetail, false);
-            giftDetails.GiftCommentThree = ImportString(Catalog.GetString("Gift comment three"),
+            AGiftDetails.GiftCommentThree = ImportString(Catalog.GetString("Gift comment three"),
                 FMainDS.AGiftDetail.ColumnGiftCommentThree, AValidationControlsDictGiftDetail, false);
-            giftDetails.CommentThreeType = ImportString(Catalog.GetString("Comment three type"),
+            AGiftDetails.CommentThreeType = ImportString(Catalog.GetString("Comment three type"),
                 FMainDS.AGiftDetail.ColumnCommentThreeType, AValidationControlsDictGiftDetail, false);
-            giftDetails.TaxDeductible = ImportBoolean(Catalog.GetString("Tax deductible"),
+            AGiftDetails.TaxDeductible = ImportBoolean(Catalog.GetString("Tax deductible"),
                 FMainDS.AGiftDetail.ColumnTaxDeductible, AValidationControlsDictGiftDetail);
 
             AGift.DateEntered = AGiftBatch.GlEffectiveDate;
@@ -690,9 +692,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             AImportMessage = Catalog.GetString("Validating the gift details data");
 
-            AGiftDetailValidation.Validate(this, giftDetails, ref AMessages, AValidationControlsDictGiftDetail);
-            TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)giftDetails,
-                ref AMessages, AValidationControlsDictGiftDetail, giftDetails.RecipientKey);
+            AGiftDetailValidation.Validate(this, AGiftDetails, ref AMessages, AValidationControlsDictGiftDetail);
+            TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, (GiftBatchTDSAGiftDetailRow)AGiftDetails,
+                ref AMessages, AValidationControlsDictGiftDetail, AGiftDetails.RecipientKey);
 
             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
             {

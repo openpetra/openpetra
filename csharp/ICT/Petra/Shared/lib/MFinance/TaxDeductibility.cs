@@ -36,7 +36,7 @@ namespace Ict.Petra.Shared.MFinance
         /// Calculate the Tax-Deductible and Non-Deductible Transaction, Base and Intl amounts for a Gift Detail
         /// </summary>
         /// <param name="AGiftDetail"></param>
-        public static void UpdateTaxDeductibiltyAmounts(ref GiftBatchTDSAGiftDetailRow AGiftDetail)
+        public static void UpdateTaxDeductibiltyAmounts(ref AGiftDetailRow AGiftDetail)
         {
             /* Update transaction amounts */
 
