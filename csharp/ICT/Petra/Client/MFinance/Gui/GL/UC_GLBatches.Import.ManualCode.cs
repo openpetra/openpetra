@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Data;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Threading;
@@ -721,19 +722,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowMessages(TVerificationResultCollection AMessages)
         {
-            string ErrorMessages = String.Empty;
+            StringBuilder ErrorMessages = new StringBuilder();
 
             if (AMessages.Count > 0)
             {
                 foreach (TVerificationResult message in AMessages)
                 {
-                    ErrorMessages += "[" + message.ResultContext + "] " + message.ResultTextCaption + ": " + message.ResultText + Environment.NewLine;
+                    ErrorMessages.AppendFormat("[{0}] {1}: {2}{3}", message.ResultContext, message.ResultTextCaption,
+                        message.ResultText.Replace(Environment.NewLine, " "), Environment.NewLine);
                 }
             }
 
             if (ErrorMessages.Length > 0)
             {
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+                extendedMessageBox.ShowDialog(ErrorMessages.ToString(), Catalog.GetString("Import Errors"), String.Empty, 
+                    TFrmExtendedMessageBox.TButtons.embbOK, TFrmExtendedMessageBox.TIcon.embiError);
             }
         }
     }

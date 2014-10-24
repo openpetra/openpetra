@@ -59,12 +59,14 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <param name="LedgerTable"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADateEffective"></param>
+        /// <param name="AForceEffectiveDateToFit"></param>
         /// <returns>the new gift batch row</returns>
         public static AGiftBatchRow CreateANewGiftBatchRow(ref GiftBatchTDS MainDS,
             ref TDBTransaction Transaction,
             ref ALedgerTable LedgerTable,
             Int32 ALedgerNumber,
-            DateTime ADateEffective)
+            DateTime ADateEffective,
+            bool AForceEffectiveDateToFit = true)
         {
             AGiftBatchRow NewRow = MainDS.AGiftBatch.NewRowTyped(true);
 
@@ -73,7 +75,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.BatchNumber = LedgerTable[0].LastGiftBatchNumber;
             Int32 BatchYear, BatchPeriod;
             // if DateEffective is outside the range of open periods, use the most fitting date
-            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out BatchYear, out BatchPeriod, Transaction, true);
+            TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out BatchYear, out BatchPeriod, Transaction, AForceEffectiveDateToFit);
             NewRow.BatchYear = BatchYear;
             NewRow.BatchPeriod = BatchPeriod;
             NewRow.GlEffectiveDate = ADateEffective;
