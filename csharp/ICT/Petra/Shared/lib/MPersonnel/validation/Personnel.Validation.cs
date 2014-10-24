@@ -656,6 +656,13 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         }
                     }
                 }
+                else
+                {
+                    // skill level must have a value
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUE_NOT_ENTERED)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
