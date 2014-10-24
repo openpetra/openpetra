@@ -51,7 +51,7 @@ namespace Ict.Petra.Server.MFinance.Common
         private const string STANDARD = "STANDARD";
         AAccountHierarchyDetailTable FAccountTable;
         AAccountHierarchyDetailRow accountRow = null;
-        TLedgerInfo ledgerInfo;
+        TLedgerInfo FledgerInfo;
 
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerInfo"></param>
         public TGetAccountHierarchyDetailInfo(TLedgerInfo ALedgerInfo)
         {
-            ledgerInfo = ALedgerInfo;
+            FledgerInfo = ALedgerInfo;
 
             bool NewTransaction = false;
 
@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MFinance.Common
             try
             {
                 FAccountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
-                    ledgerInfo.LedgerNumber, transaction);
+                    FledgerInfo.LedgerNumber, transaction);
             }
             finally
             {
@@ -301,58 +301,44 @@ namespace Ict.Petra.Server.MFinance.Common
     {
         AAccountPropertyTable propertyCodeTable;
         /// <summary>
-        /// The constructor needs a lederinfo (for the ledger number)
+        /// The constructor needs a ledgerinfo (for the ledger number)
         /// </summary>
         /// <param name="ledgerInfo"></param>
         public THandleAccountPropertyInfo(TLedgerInfo ledgerInfo)
         {
+            bool NewTransaction = false;
             try
             {
-                bool NewTransaction;
                 TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
-                propertyCodeTable = AAccountPropertyAccess.LoadViaALedger(
-                    ledgerInfo.LedgerNumber, transaction);
-
+                propertyCodeTable = AAccountPropertyAccess.LoadViaALedger(ledgerInfo.LedgerNumber, transaction);
+            }
+            finally
+            {
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-            catch (Exception)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
         }
 
         /// <summary>
-        /// Get access on a special account ...
+        /// Get access on a special account...
         /// </summary>
         /// <param name="AEnum"></param>
         /// <returns></returns>
         public string GetAccountCode(TAccountPropertyEnum AEnum)
         {
-            try
+            foreach (AAccountPropertyRow row in propertyCodeTable.Rows)
             {
-                AAccountPropertyRow row;
-
-                for (int i = 0; i < propertyCodeTable.Rows.Count; ++i)
+                if (row.PropertyCode.Equals("Is_Special_Account"))
                 {
-                    row = (AAccountPropertyRow)propertyCodeTable[i];
-
-                    if (row.PropertyCode.Equals("Is_Special_Account"))
+                    if (row.PropertyValue == AEnum.ToString())
                     {
-                        if (row.PropertyValue.Equals(AEnum.ToString()))
-                        {
-                            return row.AccountCode;
-                        }
+                        return row.AccountCode;
                     }
                 }
-            }
-            catch (Exception)
-            {
             }
 
             // if special account flag is not set in the property table, then use config parameters and hardcoded defaults
@@ -418,28 +404,17 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="APropertyCode"></param>
         /// <returns></returns>
         public string GetAccountCode(string APropertyCode)
         {
-            try
+            foreach (AAccountPropertyRow row in propertyCodeTable.Rows)
             {
-                AAccountPropertyRow row;
-
-                for (int i = 0; i < propertyCodeTable.Rows.Count; ++i)
+                if (row.PropertyCode == APropertyCode)
                 {
-                    row = (AAccountPropertyRow)propertyCodeTable[i];
-
-                    if (row.PropertyCode.Equals(APropertyCode))
-                    {
-                        return row.PropertyValue;
-                    }
+                    return row.PropertyValue;
                 }
-            }
-            catch (Exception)
-            {
             }
             return String.Empty;
         }
@@ -447,8 +422,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
 
     /// <summary>
-    /// TAccountInfo uses a TLedgerInfo a primilary references the LedgerNumber.
-    /// All Accounts are load in both contructors. You can define an inital account code in the
+    /// TAccountInfo uses a TLedgerInfo and primarily references the LedgerNumber.
+    /// All Accounts are load in both contructors. You can define an initial account code in the
     /// second constructor or you can set the value later (or change) by using SetAccountRowTo.
     /// Then you can read the values for the selected Account.
     /// </summary>
@@ -457,7 +432,7 @@ namespace Ict.Petra.Server.MFinance.Common
         AAccountTable FAccountTable;
         AAccountRow FAccountRow = null;
         TLedgerInfo FLedgerInfo;
-        THandleAccountPropertyInfo tAccountPropertyHandler = null;
+        THandleAccountPropertyInfo FAccountPropertyHandler = null;
 
         int FRowIdx;
 
@@ -515,12 +490,12 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             FAccountRow = null;
 
-            if (tAccountPropertyHandler == null)
+            if (FAccountPropertyHandler == null)
             {
-                tAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerInfo);
+                FAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerInfo);
             }
 
-            string account = tAccountPropertyHandler.GetAccountCode(AENum);
+            string account = FAccountPropertyHandler.GetAccountCode(AENum);
 
             if (!account.Equals(string.Empty))
             {
@@ -529,30 +504,27 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// ...
         /// </summary>
         /// <returns></returns>
         public string SetCarryForwardAccount()
         {
             FAccountRow = null;
 
-            if (tAccountPropertyHandler == null)
+            if (FAccountPropertyHandler == null)
             {
-                tAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerInfo);
+                FAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerInfo);
             }
 
-            string result = tAccountPropertyHandler.GetAccountCode("CARRYFORWARDCC");
+            string result = FAccountPropertyHandler.GetAccountCode("CARRYFORWARDCC");
 
-            if (!result.Equals(string.Empty))
+            string[] arrStrHelp = result.Split(new Char[] { ',' });
+            if (arrStrHelp.Length < 2)
             {
-                string[] arrStrHelp = result.Split(new Char[] { ',' });
-                AccountCode = arrStrHelp[0];
-                return arrStrHelp[1];
+                return "";
             }
-            else
-            {
-                return string.Empty;
-            }
+
+            AccountCode = arrStrHelp[0];
+            return arrStrHelp[1];
         }
 
         /// <summary>

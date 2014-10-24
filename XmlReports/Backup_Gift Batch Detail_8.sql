@@ -2,7 +2,7 @@ DELETE FROM s_report_template WHERE s_template_id_i=8;
 INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)
 VALUES(8,'Gift Batch Detail','OpenPetra default template','System',True,False,False,False,
 '﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="09/29/2014 12:34:29" ReportInfo.CreatorVersion="2014.2.1.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="10/13/2014 16:11:20" ReportInfo.CreatorVersion="2014.2.1.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -76,8 +76,8 @@ namespace FastReport
       <Column Name="a_gift_comment_two_c" DataType="System.String"/>
       <Column Name="a_gift_comment_three_c" DataType="System.String"/>
       <Column Name="a_tax_deductible_pct_n" DataType="System.Decimal"/>
-      <Column Name="exomer" DataType="System.Boolean"/>
       <Column Name="readaccess" DataType="System.Boolean" BindableControl="CheckBox"/>
+      <Column Name="exworker" DataType="System.Boolean" BindableControl="CheckBox"/>
     </TableDataSource>
     <Parameter Name="param_diff_period_i" DataType="System.Int32"/>
     <Parameter Name="param_start_period_i" DataType="System.Int32"/>
@@ -198,7 +198,7 @@ namespace FastReport
       <TextObject Name="Text24" Left="727.65" Top="9.45" Width="85.05" Height="18.9" Text="[GiftBatchDetail.a_method_of_payment_code_c]" HorzAlign="Right"/>
       <TextObject Name="Text25" Left="812.7" Top="9.45" Width="94.5" Height="18.9" Text="[GiftBatchDetail.a_receipt_letter_code_c]" HorzAlign="Right"/>
       <TextObject Name="Text26" Left="907.2" Top="9.45" Width="94.5" Height="18.9" Text="[GiftBatchDetail.p_receipt_letter_frequency_c]" HorzAlign="Right"/>
-      <TextObject Name="Text116" Left="1001.7" Top="9.45" Width="47.25" Height="18.9" Text="[IIf([GiftBatchDetail.p_receipt_each_gift_l],&quot;E&quot;,&quot;&quot;)] [IIf([GiftBatchDetail.readaccess],IIf([GiftBatchDetail.a_first_time_gift_l],&quot;N&quot;,&quot;&quot;),&quot;&quot;)] [IIf([GiftBatchDetail.readaccess],IIf([GiftBatchDetail.exomer],&quot;X&quot;,&quot;&quot;),&quot;&quot;)]" HorzAlign="Right"/>
+      <TextObject Name="Text116" Left="1001.7" Top="9.45" Width="47.25" Height="18.9" Text="[IIf([GiftBatchDetail.p_receipt_each_gift_l],&quot;E&quot;,&quot;&quot;)] [IIf([GiftBatchDetail.readaccess],IIf([GiftBatchDetail.a_first_time_gift_l],&quot;N&quot;,&quot;&quot;),&quot;&quot;)] [IIf([GiftBatchDetail.readaccess],IIf([GiftBatchDetail.exworker],&quot;X&quot;,&quot;&quot;),&quot;&quot;)]" HorzAlign="Right"/>
       <DataBand Name="TransactionBand" Top="248.25" Width="1047.06" Height="75.6" CanGrow="true" CanShrink="true" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="GiftBatchDetail">
         <TextObject Name="Text27" Left="85.05" Width="85.05" Height="18.9" Text="[GiftBatchDetail.a_motivation_group_code_c]" HorzAlign="Right" TextFill.Color="DimGray"/>
         <TextObject Name="Text31" Left="170.1" Width="94.5" Height="18.9" Text="[GiftBatchDetail.a_motivation_detail_code_c]" HorzAlign="Right" TextFill.Color="DimGray"/>

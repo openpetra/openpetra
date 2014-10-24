@@ -142,6 +142,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new TTxtAutoPopulatedButtonLabelGenerator());
                 AddControlGenerator(new TTxtCurrencyTextBoxGenerator());
                 AddControlGenerator(new TTxtNumericTextBoxGenerator());
+                AddControlGenerator(new TTxtLinkTextBoxGenerator());
+                AddControlGenerator(new TRichTextBoxGenerator());
+                AddControlGenerator(new TRichTextBoxWithHyperlinksGenerator());
                 AddControlGenerator(new ComboBoxGenerator());
                 AddControlGenerator(new TcmbAutoPopulatedGenerator());
                 AddControlGenerator(new TcmbAutoCompleteGenerator());
@@ -1673,6 +1676,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("ValidateDataManual"))
             {
                 FTemplate.SetCodelet("VALIDATEDATAMANUAL", "true");
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("GetDetailsFromControlsManual"))
+            {
+                FTemplate.SetCodelet("GETDETAILSMANUAL", "true");
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("ValidateDataDetailsManual"))

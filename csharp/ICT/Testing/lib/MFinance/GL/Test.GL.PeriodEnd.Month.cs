@@ -59,7 +59,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public class TestGLPeriodicEndMonth
     {
-        private int intLedgerNumber = 43;
+        private int FLedgerNumber;
+        private TLedgerInfo FledgerInfo;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public TestGLPeriodicEndMonth()
+        {
+            FLedgerNumber = 43;
+            FledgerInfo = new TLedgerInfo(FLedgerNumber);
+        }
 
         /// <summary>
         /// Tests if unposted batches are detected correctly
@@ -67,22 +77,21 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_02_UnpostedBatches()
         {
-            TLedgerInfo ledgerInfo = new TLedgerInfo(intLedgerNumber);
 
             // System.Diagnostics.Debug.WriteLine(
             UnloadTestData_GetBatchInfo();
             Assert.AreEqual(0, new GetBatchInfo(
-                    intLedgerNumber, ledgerInfo.CurrentPeriod).NumberOfBatches, "No unposted batch shall be found");
+                    FLedgerNumber, FledgerInfo.CurrentPeriod).NumberOfBatches, "No unposted batch shall be found");
 
             LoadTestData_GetBatchInfo();
 
             Assert.AreEqual(2, new GetBatchInfo(
-                    intLedgerNumber, ledgerInfo.CurrentPeriod).NumberOfBatches, "Two of the four batches shall be found");
+                    FLedgerNumber, FledgerInfo.CurrentPeriod).NumberOfBatches, "Two of the four batches shall be found");
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                intLedgerNumber, true, out verificationResult);
+            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                FLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -108,7 +117,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_PEMM_03_SuspensedAccounts()
         {
             TCommonAccountingTool commonAccountingTool =
-                new TCommonAccountingTool(intLedgerNumber, "NUNIT");
+                new TCommonAccountingTool(FLedgerNumber, "NUNIT");
 
             commonAccountingTool.AddBaseCurrencyJournal();
             commonAccountingTool.JournalDescription = "Test Data accounts";
@@ -118,13 +127,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 strAccountBank, "7300", "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
             commonAccountingTool.AddBaseCurrencyTransaction(
                 "0100", "7300", "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
-            commonAccountingTool.CloseSaveAndPost();
+            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
 
-            new ChangeSuspenseAccount(intLedgerNumber, strAccountBank).Suspense();
+            new ChangeSuspenseAccount(FLedgerNumber, strAccountBank).Suspense();
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                intLedgerNumber, false, out verificationResult);
+            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                FLedgerNumber, false, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -145,16 +154,16 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             while (!blnHasErrors && periodCounter < 12)
             {
-                blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                    intLedgerNumber, false, out verificationResult);
+                blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                    FLedgerNumber, false, out verificationResult);
 
                 Assert.IsFalse(blnHasErrors, "there was an error closing period " + periodCounter.ToString());
                 periodCounter++;
-                Assert.AreEqual(periodCounter, new TLedgerInfo(intLedgerNumber).CurrentPeriod, "should be in new period");
+                Assert.AreEqual(periodCounter, new TLedgerInfo(FLedgerNumber).CurrentPeriod, "should be in new period");
             }
 
-            blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                intLedgerNumber, false, out verificationResult);
+            blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                FLedgerNumber, false, out verificationResult);
 
             blnStatusArrived = false;
 
@@ -171,7 +180,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.IsTrue(blnStatusArrived, "there should be  a critical error PEEC_07 for the suspense account");
             Assert.IsTrue(blnHasErrors, "there should be an error because we cannot close the last period due to suspense account with a balance");
 
-            new ChangeSuspenseAccount(intLedgerNumber, strAccountBank).Unsuspense();
+            new ChangeSuspenseAccount(FLedgerNumber, strAccountBank).Unsuspense();
         }
 
         private void ImportGiftBatch()
@@ -182,13 +191,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
 
-            FileContent = FileContent.Replace("{ledgernumber}", intLedgerNumber.ToString());
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
 
             sr.Close();
 
             Hashtable parameters = new Hashtable();
             parameters.Add("Delimiter", ",");
-            parameters.Add("ALedgerNumber", intLedgerNumber);
+            parameters.Add("ALedgerNumber", FLedgerNumber);
             parameters.Add("DateFormatString", "yyyy-MM-dd");
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
@@ -207,8 +216,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ImportGiftBatch();
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                intLedgerNumber, true, out verificationResult);
+            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                FLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -232,14 +241,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_05_Revaluation()
         {
-            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             // load foreign currency account 6001
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                "test-sql\\gl-test-account-data.sql", intLedgerNumber);
+                "test-sql\\gl-test-account-data.sql", FLedgerNumber);
 
             // post a batch for foreign currency account 6001
             TCommonAccountingTool commonAccountingTool =
-                new TCommonAccountingTool(intLedgerNumber, "NUNIT");
+                new TCommonAccountingTool(FLedgerNumber, "NUNIT");
             commonAccountingTool.AddForeignCurrencyJournal("GBP", 1.1m);
             commonAccountingTool.JournalDescription = "Test foreign currency account";
             string strAccountGift = "0200";
@@ -247,17 +256,17 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // Accounting of some gifts ...
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, (intLedgerNumber * 100).ToString(), "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
+                strAccountBank, (FLedgerNumber * 100).ToString(), "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
 
             commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountGift, (intLedgerNumber * 100).ToString(), "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
+                strAccountGift, (FLedgerNumber * 100).ToString(), "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
 
-            commonAccountingTool.CloseSaveAndPost();
+            commonAccountingTool.CloseSaveAndPost(); // returns true if posting seemed to work
 
 
             TVerificationResultCollection verificationResult;
-            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                intLedgerNumber, true, out verificationResult);
+            bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                FLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -275,14 +284,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.IsTrue(blnHasErrors, "should fail because revaluation needs to be run first");
 
             // run revaluation
-            blnHasErrors = TRevaluationWebConnector.Revaluate(intLedgerNumber, new TLedgerInfo(
-                    intLedgerNumber).CurrentPeriod, new string[] { "GBP" }, new decimal[] { 1.2m }, out verificationResult);
+            blnHasErrors = TRevaluationWebConnector.Revaluate(FLedgerNumber, new TLedgerInfo(
+                    FLedgerNumber).CurrentPeriod, new string[] { "GBP" }, new decimal[] { 1.2m }, out verificationResult);
 
             TLogging.Log(verificationResult.BuildVerificationResultString());
             Assert.IsFalse(blnHasErrors, "Problem running the revaluation");
 
-            blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                intLedgerNumber, true, out verificationResult);
+            blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                FLedgerNumber, true, out verificationResult);
             Assert.IsFalse(blnHasErrors, "should now be able to close the month now that the revaluation has been run");
         }
 
@@ -292,37 +301,35 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_SwitchToNextMonth()
         {
-            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
-            TLedgerInfo ledgerInfo1;
-            TLedgerInfo ledgerInfo2;
+            FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            TLedgerInfo ledgerInfo = new TLedgerInfo(FLedgerNumber);
             int counter = 0;
 
             do
             {
+                Int32 CurrentPeriod = ledgerInfo.CurrentPeriod;
                 ++counter;
                 Assert.Greater(20, counter, "Too many loops");
 
                 // Set revaluation flag ...
-                new TLedgerInitFlagHandler(intLedgerNumber,
+                new TLedgerInitFlagHandler(FLedgerNumber,
                     TLedgerInitFlagEnum.Revaluation).Flag = true;
 
-                ledgerInfo1 = new TLedgerInfo(intLedgerNumber);
-                // Period end now shall run ...
+                // Run MonthEnd ...
                 TVerificationResultCollection verificationResult;
-                bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                    intLedgerNumber, false, out verificationResult);
+                bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+                    FLedgerNumber, false, out verificationResult);
 
-                ledgerInfo2 = new TLedgerInfo(intLedgerNumber);
 
-                if (!ledgerInfo2.ProvisionalYearEndFlag)
+                if (!ledgerInfo.ProvisionalYearEndFlag)
                 {
-                    Assert.AreEqual(ledgerInfo1.CurrentPeriod + 1,
-                        ledgerInfo2.CurrentPeriod, "counter ok");
+                    Assert.AreEqual(CurrentPeriod + 1,
+                        ledgerInfo.CurrentPeriod, "Period increment");
                 }
 
                 Assert.IsFalse(blnHasErrors, "Month end without any error");
                 System.Diagnostics.Debug.WriteLine("Counter: " + counter.ToString());
-            } while (!ledgerInfo2.ProvisionalYearEndFlag);
+            } while (!ledgerInfo.ProvisionalYearEndFlag);
         }
 
         /// <summary>
@@ -332,12 +339,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             TPetraServerConnector.Connect();
-            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
 
             // add costcentre 7300 for gift batch
             ACostCentreTable CostCentres = new ACostCentreTable();
             ACostCentreRow CCRow = CostCentres.NewRowTyped();
-            CCRow.LedgerNumber = intLedgerNumber;
+            CCRow.LedgerNumber = FLedgerNumber;
             CCRow.CostCentreCode = "7300";
             CCRow.CostCentreName = "7300";
             CCRow.CostCentreType = MFinanceConstants.FOREIGN_CC_TYPE;
@@ -368,7 +375,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
             ABatchRow template = new ABatchTable().NewRowTyped(false);
 
-            template.LedgerNumber = intLedgerNumber;
+            template.LedgerNumber = FLedgerNumber;
             template.BatchDescription = strTestDataBatchDescription;
             ABatchTable batches = ABatchAccess.LoadUsingTemplate(template, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
@@ -376,7 +383,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             if (batches.Rows.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-batch-data.sql", intLedgerNumber);
+                    "test-sql\\gl-test-batch-data.sql", FLedgerNumber);
             }
         }
 
@@ -385,7 +392,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[2];
             ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
-            ParametersArray[0].Value = intLedgerNumber;
+            ParametersArray[0].Value = FLedgerNumber;
             ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[1].Value = strTestDataBatchDescription;
 

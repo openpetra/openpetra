@@ -343,7 +343,7 @@ namespace Ict.Common.Verification
             // Check
             if (AEmailAddress != String.Empty)
             {
-                EmailAddresses = AEmailAddress.Split(",;".ToCharArray());
+                EmailAddresses = StringHelper.SplitEmailAddresses(AEmailAddress);
 
                 if (EmailAddresses.Length > 1)
                 {

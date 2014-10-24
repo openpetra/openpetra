@@ -32,21 +32,17 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Shared.MFinance.Gift.Validation;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MFinance.Validation;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+
 
 //using Ict.Petra.Server.MFinance.Account.Data.Access;
 //using Ict.Petra.Shared.MFinance.Account.Data;
@@ -138,6 +134,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
+
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
             // Initialise our working variables
             TDBTransaction Transaction = null;
@@ -350,6 +349,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                     }
 
                     TLogging.Log("Return from here!");
+
+                            if (TaxDeductiblePercentageEnabled)
+                            {
+                                // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                                TGift.SetDefaultTaxDeductibilityData(ref giftDetails, gift.DateEntered, FTransaction);
+                            }
 
                     // Do the 'finally' actions and return false
                     return false;

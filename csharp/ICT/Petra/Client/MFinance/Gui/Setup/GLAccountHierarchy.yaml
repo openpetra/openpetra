@@ -21,7 +21,7 @@ RootNode:
         sptAccountSplitter:
             Panel1: tabAccounts
             Panel2: pnlDetails
-            SplitterDistance: 70
+            SplitterDistance: 71
             SplitterOrientation: vertical
             Dock: Fill
         tabAccounts:
