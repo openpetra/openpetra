@@ -1507,12 +1507,15 @@ namespace Ict.Common.Verification
 
             for (int Counter = 0; Counter <= Count - 1; Counter += 1)
             {
-                si = (TScreenVerificationResult)(List[Counter]);
-
-                if (si.ResultColumn == AResultColumn)
+                if (List[Counter] is TScreenVerificationResult)
                 {
-                    List.Remove(si);
-                    break;
+                    si = (TScreenVerificationResult)(List[Counter]);
+
+                    if (si.ResultColumn == AResultColumn)
+                    {
+                        List.Remove(si);
+                        break;
+                    }
                 }
             }
         }
