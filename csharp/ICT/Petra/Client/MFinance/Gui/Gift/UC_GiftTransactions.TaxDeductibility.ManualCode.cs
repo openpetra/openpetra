@@ -157,10 +157,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
         private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
         {
-            if (FCreatingNewGift)
+        	if (FCreatingNewGift)
             {
                 return;
             }
+        	
+        	if (FPreviouslySelectedDetailRow.IsTaxDeductiblePctNull())
+        	{
+        		FPreviouslySelectedDetailRow.TaxDeductiblePct = 0;
+        	}
 
             if (sender == txtDeductiblePercentage)
             {
@@ -178,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ARow.IsTaxDeductiblePctNull())
             {
-                txtDeductiblePercentage.NumberValueDecimal = 0;
+            	txtDeductiblePercentage.NumberValueDecimal = 0;
             }
             else
             {
