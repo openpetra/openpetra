@@ -347,7 +347,7 @@ namespace Ict.Petra.Server.MConference.Applications
             List <OdbcParameter>parameters = new List <OdbcParameter>();
 
             OdbcParameter parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
-            parameter.Value = AEventCode;
+            parameter.Value = AEventCode.Substring(0,5);
             parameters.Add(parameter);
 
             string DataLabels = "(PUB_p_data_label.p_text_c = 'MedicalNotes' OR PUB_p_data_label.p_text_c = 'Rebukes')";
@@ -481,13 +481,14 @@ namespace Ict.Petra.Server.MConference.Applications
             PersonView.Sort = PPersonTable.GetPartnerKeyDBName();
 
             DataView GenAppView = AMainDS.PmGeneralApplication.DefaultView;
-            GenAppView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," + PmGeneralApplicationTable.GetApplicationKeyDBName();
+            GenAppView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," 
+                + PmGeneralApplicationTable.GetApplicationKeyDBName() + "," + PmGeneralApplicationTable.GetRegistrationOfficeDBName();
 
             foreach (PmShortTermApplicationRow shortTermRow in AMainDS.PmShortTermApplication.Rows)
             {
                 PPersonRow Person = (PPersonRow)PersonView[PersonView.Find(shortTermRow.PartnerKey)].Row;
                 PmGeneralApplicationRow GeneralApplication =
-                    (PmGeneralApplicationRow)GenAppView[GenAppView.Find(new Object[] { shortTermRow.PartnerKey, shortTermRow.ApplicationKey })].Row;
+                    (PmGeneralApplicationRow)GenAppView[GenAppView.Find(new Object[] { shortTermRow.PartnerKey, shortTermRow.ApplicationKey, shortTermRow.RegistrationOffice })].Row;
 
                 ConferenceApplicationTDSApplicationGridRow newRow = AMainDS.ApplicationGrid.NewRowTyped();
                 newRow.PartnerKey = shortTermRow.PartnerKey;
