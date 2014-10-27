@@ -100,10 +100,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMyForm.Cursor = Cursors.WaitCursor;
 
                 int SelectedBatchNumber = ACurrentBatchRow.BatchNumber;
+                string Msg = string.Empty;
+                
+                // load journals belonging to batch
+                GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, ACurrentBatchRow.BatchNumber);
+                FMainDS.Merge(TempDS);
+                
+                foreach (AJournalRow Journal in TempDS.AJournal.Rows)
+                {
+                	// if at least one journal in the batch has already been reversed then confirm with user
+                	if (Journal.Reversed)
+                	{
+                		Msg = String.Format(Catalog.GetString("One or more of the Journals in Batch {0} have already been reversed. " +
+                	                                      "Are you sure you want to continue?"), 
+                	                                      SelectedBatchNumber);
+                		break;
+                	}
+                }
+                
+                if (Msg == string.Empty)
+                {
+                	Msg = String.Format(Catalog.GetString("Are you sure you want to reverse Batch {0}?"),
+                	                    SelectedBatchNumber);
+                }
 
-                if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to reverse batch {0}?"),
-                            SelectedBatchNumber),
-                        Catalog.GetString("Question"),
+                if (MessageBox.Show(Msg, Catalog.GetString("GL Batch Reversal"),
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
                 

@@ -1154,6 +1154,7 @@ namespace Ict.Petra.Server.MFinance.Common
 		                    NewJournalRow.DateEffective = NewBatchRow.DateEffective;
 		                    NewJournalRow.JournalPeriod = NewBatchRow.BatchPeriod;
 		                    NewJournalRow.JournalStatus = NewBatchRow.BatchStatus;
+		                    NewJournalRow.JournalDescription = String.Format(Catalog.GetString("Reversal of {0}"), OriginalJournal.JournalDescription);
 		                    OriginalJournal.Reversed = true;
 		                    MainDS.AJournal.Rows.Add(NewJournalRow);
 		
@@ -1175,6 +1176,10 @@ namespace Ict.Petra.Server.MFinance.Common
 		                        NewTransactionRow.DebitCreditIndicator = !OriginalTransaction.DebitCreditIndicator;
 		                        NewTransactionRow.SystemGenerated = true;
 		                        NewTransactionRow.TransactionDate = ADateForReversal;
+		                        NewTransactionRow.Narrative = Catalog.GetString("Reverse of: ") + OriginalTransaction.Narrative +
+		                        	"(" + Catalog.GetString(" Batch: ") + OriginalTransaction.BatchNumber
+		                        	+ Catalog.GetString(", Journal: ") + OriginalTransaction.JournalNumber
+		                        	+ Catalog.GetString(", Transaction: ") + OriginalTransaction.TransactionNumber + ")";
 		
 		                        MainDS.ATransaction.Rows.Add(NewTransactionRow);
 		
@@ -1192,6 +1197,9 @@ namespace Ict.Petra.Server.MFinance.Common
 		                            ATransAnalAttribRow OriginalTransAnalAttrib = (ATransAnalAttribRow)rvTransAnalAttrib.Row;
 		                            ATransAnalAttribRow NewTransAnalAttribRow = MainDS.ATransAnalAttrib.NewRowTyped();
 		                            DataUtilities.CopyAllColumnValues(OriginalTransAnalAttrib, NewTransAnalAttribRow);
+		                            NewTransAnalAttribRow.BatchNumber = NewTransactionRow.BatchNumber;
+		                            NewTransAnalAttribRow.JournalNumber = NewTransactionRow.JournalNumber;
+		                            NewTransAnalAttribRow.TransactionNumber = NewTransactionRow.TransactionNumber;
 		                            MainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttribRow);
 		                        }
 		                    }
