@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
@@ -285,14 +287,22 @@ namespace Ict.Tools.DataDumpPetra2
         /// </summary>
         public static int MigrateData(TParseProgressCSV AParser, StreamWriter AWriter, StreamWriter AWriterTest, TTable AOldTable, TTable ANewTable)
         {
-            StringCollection OldColumnNames = GetColumnNames(AOldTable);
-            StringCollection NewColumnNames = GetColumnNames(ANewTable);
+            StringCollection OldColumnNames = null;
+            StringCollection NewColumnNames;
             int RowCounter = 0;
 
+            if (AOldTable != null) 
+            {
+                OldColumnNames = GetColumnNames(AOldTable);    
+            }
+            
+            NewColumnNames = GetColumnNames(ANewTable);
+            
             string[] NewRow = CreateRow(NewColumnNames);
 
             // This existing and populated table's data is completely changed. We do not want to import any of it's contents.
-            if (ANewTable.strName == "pt_language_level")
+            if ((ANewTable.strName == "pt_language_level")
+               || (ANewTable.strName == "p_partner_attribute_category"))
             {
                 RowCounter += FixData(ANewTable.strName, NewColumnNames, ref NewRow, AWriter, AWriterTest);
 
@@ -304,6 +314,7 @@ namespace Ict.Tools.DataDumpPetra2
 
             PrepareTable(AOldTable, ANewTable, ref MappingOfFields, ref DefaultValues);
 
+            
             while (true)
             {
                 string[] OldRow = AParser.ReadNextRow();
@@ -751,8 +762,19 @@ namespace Ict.Tools.DataDumpPetra2
             // phone and fax extensions should be '0' rather than null
             if (ATableName == "p_partner_location")
             {
+                Int64 PartnerKey;
+                DataTable PartnerLocationsDT;
+                DataRow NewPartnerLocationDR;
+                string DateEffectiveStr;
+                string DateGoodUntilStr;
+                string SendMailStr;
+                object DateEffectiveColValue;
+                object DateGoodUntilColValue;
+                object SendMailColValue;
+                
+                
                 string val = GetValue(AColumnNames, ANewRow, "p_extension_i");
-
+            
                 if ((val.Length == 0) || (val == "\\N"))
                 {
                     SetValue(AColumnNames, ref ANewRow, "p_extension_i", "0");
@@ -764,6 +786,45 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     SetValue(AColumnNames, ref ANewRow, "p_fax_extension_i", "0");
                 }
+
+
+
+                
+                PartnerKey = Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_partner_key_n"));
+                
+                if (!TPartnerContactDetails.PartnerLocationRecords.TryGetValue(PartnerKey, out PartnerLocationsDT))
+                {
+                    PartnerLocationsDT = TPartnerContactDetails.BestAddressHelper.GetNewPPartnerLocationTableInstance();                    
+                    
+                    TPartnerContactDetails.PartnerLocationRecords.Add(PartnerKey, PartnerLocationsDT);
+                }
+
+                DateEffectiveStr = GetValue(AColumnNames, ANewRow, "p_date_effective_d");
+                DateEffectiveColValue = DateEffectiveStr == "\\N" ? System.DBNull.Value : (object)DateTime.ParseExact(DateEffectiveStr, "yyyy-dd-mm", CultureInfo.InvariantCulture);
+                DateGoodUntilStr = GetValue(AColumnNames, ANewRow, "p_date_good_until_d");
+                DateGoodUntilColValue = DateGoodUntilStr == "\\N" ? System.DBNull.Value: (object)DateTime.ParseExact(DateGoodUntilStr, "yyyy-dd-mm", CultureInfo.InvariantCulture);
+                SendMailStr = GetValue(AColumnNames, ANewRow, "p_send_mail_l");
+                SendMailColValue = SendMailStr == "1" ? (object)true : (object)false;
+                
+                // TODO: Concatenate p_extension_i and p_fax_extension_i with their respective Colums!
+                
+                NewPartnerLocationDR = PartnerLocationsDT.NewRow();
+                NewPartnerLocationDR["p_site_key_n"] = Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_site_key_n"));
+                NewPartnerLocationDR["p_location_key_i"] = Convert.ToInt32(GetValue(AColumnNames, ANewRow, "p_location_key_i"));
+                NewPartnerLocationDR["p_date_effective_d"] = DateEffectiveColValue;
+                NewPartnerLocationDR["p_date_good_until_d"] = DateGoodUntilColValue;
+                NewPartnerLocationDR["p_location_type_c"] = GetValue(AColumnNames, ANewRow, "p_location_type_c");
+                NewPartnerLocationDR["p_send_mail_l"] = SendMailColValue;
+                NewPartnerLocationDR["p_telephone_number_c"] = GetValue(AColumnNames, ANewRow, "p_telephone_number_c");
+                NewPartnerLocationDR["p_fax_number_c"] = GetValue(AColumnNames, ANewRow, "p_fax_number_c");
+                NewPartnerLocationDR["p_mobile_number_c"] = GetValue(AColumnNames, ANewRow, "p_mobile_number_c");
+                NewPartnerLocationDR["p_alternate_telephone_c"] = GetValue(AColumnNames, ANewRow, "p_alternate_telephone_c");
+                NewPartnerLocationDR["p_email_address_c"] = GetValue(AColumnNames, ANewRow, "p_email_address_c");
+                NewPartnerLocationDR["p_url_c"] = GetValue(AColumnNames, ANewRow, "p_url_c");
+                
+                PartnerLocationsDT.Rows.Add(NewPartnerLocationDR);
+                
+                // TODO: Set all Data Columns that we have just added to PartnerLocationsDT to 'null' in p_partner_location!                
             }
 
             // renaming "Gift Receipting" to "Gift Processing" (Mantis 1930)
@@ -890,6 +951,11 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 RowCounter = TPartnerGiftDestination.PopulatePPartnerGiftDestination(AColumnNames, ref ANewRow, AWriter, AWriterTest);
             }
+            
+            if (ATableName == "p_partner_attribute")
+            {
+                RowCounter = TPartnerContactDetails.PopulatePPartnerAttribute(AColumnNames, ref ANewRow, AWriter, AWriterTest);
+            }            
 
             if (ATableName == "s_system_defaults")
             {
@@ -1637,6 +1703,165 @@ namespace Ict.Tools.DataDumpPetra2
 
                         RowCounter++;
                     }
+                }
+            }
+
+            // this is a new table with new data (also in basedata)
+            if (ATableName == "p_partner_attribute_category")
+            {
+                // Default Categories that p_partner_attribute_type records are mapped to. Basedata - p_partner_attribute_category
+                string[, ] AttributeCategories = new string[, ] {
+                    {
+                        "Phone", "Phone and Fax numbers", "0", "1", "0"
+                    },
+                    {
+                        "E-Mail", "E-Mail addresses", "1", "1", "0"
+                    },
+                    {
+                        "Digital Media", "Social Media, Web Sites & Blogs", "2", "1", "0"
+                    },
+                    {
+                        "Instant Messaging & Chat", "Instant Messaging, Internet Voice Communication", "3", "1", "0"
+                    },
+                    {
+                        "PARTNERS_CONTACTDETAILS_SETTINGS", "A Partners' Contact Details Settings", "0", "0", "1"
+                    }
+                };
+
+                for (int i = 0; i < AttributeCategories.GetLength(0); i++)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_category_code_c", AttributeCategories[i, 0]);
+                    SetValue(AColumnNames, ref ANewRow, "p_category_desc_c", AttributeCategories[i, 1]);
+                    SetValue(AColumnNames, ref ANewRow, "p_index_i", AttributeCategories[i, 2]);
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_contact_category_l", AttributeCategories[i, 3]);
+                    SetValue(AColumnNames, ref ANewRow, "p_system_category_l", AttributeCategories[i, 4]);
+                    SetValue(AColumnNames, ref ANewRow, "p_deletable_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
+                    RowCounter++;
+                }
+            }
+            
+            // this table existed, but it has a different schema now and it never held data in Petra 2.x. Gets filled with new data (also in basedata)
+            if (ATableName == "p_partner_attribute_type")
+            {
+                // Default Attribute Types that p_partner_attribute records are referring to. Basedata - p_partner_attribute_type
+                string[, ] AttributeTypes = new string[, ] {
+                    {
+                        "Phone", "Mobile Phone", "Mobile/cellular phone number", "0", "CONTACTDETAIL_GENERAL", "\\N", "Business Mobile Phone"
+                    },
+                    {
+                        "Phone", "Phone", "Landline phone number", "1", "CONTACTDETAIL_GENERAL", "\\N", "Business Phone"
+                    },
+                    {
+                        "Phone", "Fax", "Facsimile number", "2", "CONTACTDETAIL_GENERAL", "\\N", "Business Fax"
+                    },
+                    {
+                        "E-Mail", "E-Mail", "E-Mail address", "0", "CONTACTDETAIL_EMAILADDRESS", "\\N", "Business E-Mail"
+                    },
+                    {
+                        "E-Mail", "Secure E-Mail", "Secure E-Mail address", "1", "CONTACTDETAIL_EMAILADDRESS", "\\N", "Business Secure E-Mail"
+                    },
+
+                    {
+                        "Digital Media", "Facebook", "Facebook user name", "0", "CONTACTDETAIL_HYPERLINK_WITHVALUE", "https://www.facebook.com/{VALUE}", "Facebook (Business)"
+                    },
+                    {
+                        "Digital Media", "Twitter", "Twitter user name", "1", "CONTACTDETAIL_HYPERLINK_WITHVALUE", "http://www.twitter.com/{VALUE}", "Twitter (Business)"
+                    },
+                    {
+                        "Digital Media", "LinkedIn", "LinkedIn user name", "2", "CONTACTDETAIL_HYPERLINK", "\\N", "LinkedIn (Business)"
+                    },
+                    {
+                        "Digital Media", "Xing", "Xing user name", "3", "CONTACTDETAIL_HYPERLINK_WITHVALUE", "http://www.xing.com/profile/{VALUE}", "Xing (Business)"
+                    },
+                    {
+                        "Digital Media", "Instagram", "Instagram user name", "4", "CONTACTDETAIL_HYPERLINK", "\\N", "Instagram (Business)"
+                    },
+                    {
+                        "Digital Media", "Pinterest", "Pinterest user name", "5", "CONTACTDETAIL_HYPERLINK", "\\N", "Pinterest (Business)"
+                    },
+                    {
+                        "Digital Media", "Web Site", "Internet address of a Web Site", "6", "CONTACTDETAIL_HYPERLINK", "\\N", "Business Web Site"
+                    },
+                    {
+                        "Digital Media", "Blog", "Internet address of a Blog", "7", "CONTACTDETAIL_HYPERLINK", "\\N", "Business Blog"
+                    },
+                    
+                    {
+                        "Instant Messaging & Chat", "Skype", "Skype ID", "0", "CONTACTDETAIL_SKYPEID", "\\N", "Skype (Business)"
+                    },
+                    {
+                        "Instant Messaging & Chat", "Lync", "Lync ID", "1", "CONTACTDETAIL_GENERAL", "\\N", "Lync (Business)"
+                    },
+                    {
+                        "Instant Messaging & Chat", "WhatsApp", "WhatsApp ID", "2", "CONTACTDETAIL_GENERAL", "\\N", "WhatsApp (Business)"
+                    },
+                    {
+                        "Instant Messaging & Chat", "Yahoo", "Yahoo ID", "3", "CONTACTDETAIL_GENERAL", "\\N", "Yahoo (Business)"
+                    },
+                    {
+                        "Instant Messaging & Chat", "FaceTime", "FaceTime ID", "4", "CONTACTDETAIL_GENERAL", "\\N", "FaceTime (Business)"
+                    },
+
+                    {
+                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_PRIMARY_CONTACT_METHOD", "A Partners' Primary Contact Method", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
+                    },
+                    {
+                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_PRIMARY_TELEPHONE", "A Partners' Primary Telephone", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
+                    },
+                    {
+                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_EMAIL_WITHIN_ORGANISATION", "A Partners' E-mail Address within the Organisation", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
+                    },
+                    {
+                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_TELEPHONE_WITHIN_ORGANISATION", "A Partners' Telephone Number within the Organisation", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
+                    }
+                    
+                };
+
+                for (int i = 0; i < AttributeTypes.GetLength(0); i++)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_category_code_c", AttributeTypes[i, 0]);
+                    SetValue(AColumnNames, ref ANewRow, "p_attribute_type_c", AttributeTypes[i, 1]);
+                    SetValue(AColumnNames, ref ANewRow, "p_description_c", AttributeTypes[i, 2]);
+                    SetValue(AColumnNames, ref ANewRow, "p_index_i", AttributeTypes[i, 3]);
+                    SetValue(AColumnNames, ref ANewRow, "p_attribute_type_value_kind_c", AttributeTypes[i, 4]);
+                    SetValue(AColumnNames, ref ANewRow, "p_hyperlink_format_c", AttributeTypes[i, 5]);
+                    SetValue(AColumnNames, ref ANewRow, "p_special_label_c", AttributeTypes[i, 6]);
+                    SetValue(AColumnNames, ref ANewRow, "p_unassignable_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "p_unassignable_date_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "p_deletable_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+
+                    if (AWriterTest != null)
+                    {
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                    }
+
+                    RowCounter++;
                 }
             }
 

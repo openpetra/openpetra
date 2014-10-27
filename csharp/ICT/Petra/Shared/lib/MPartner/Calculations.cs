@@ -312,6 +312,38 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
+        /// Determines which address is the 'Best Address' of a Partner, and marks it in the DataColumn 'BestAddress'.
+        /// </summary>
+        /// <remarks>This method overload exists primarily for use in data migration from a legacy DB system.
+        /// It gets called via .NET Reflection from Ict.Tools.DataDumpPetra2!
+        /// DO NOT REMOVE THIS METHOD - although an IDE will not find any references to this Method!</remarks>
+        /// <param name="APartnerLocationsDT">DataTable containing the addresses of a Partner.</param>
+        /// <param name="ASiteKey">Site Key of the 'Best Address'.</param>
+        /// <param name="ALocationKey">Location Key of the 'Best Address'.</param>
+        /// <returns>True if a 'Best Address' was found, otherwise false. 
+        /// In the latter case ASiteKey and ALocationKey will be both -1, too.</returns>
+        public static bool DetermineBestAddress(DataTable APartnerLocationsDT, out Int64 ASiteKey, out int ALocationKey)
+        {
+            TLocationPK PK = DetermineBestAddress(APartnerLocationsDT);
+            
+            if ((PK.SiteKey == -1)
+                && (PK.LocationKey == -1))
+            {
+                ASiteKey = -1;
+                ALocationKey = -1;
+                
+                return false;
+            }
+            else
+            {
+                ASiteKey = PK.SiteKey;
+                ALocationKey = PK.LocationKey;
+                
+                return true;
+            }
+        }
+        
+        /// <summary>
         /// format the shortname for a partner in a standardized way
         /// </summary>
         /// <param name="AName">surname of partner</param>

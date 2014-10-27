@@ -115,7 +115,8 @@ namespace Ict.Tools.DataDumpPetra2
             TTable oldTable = storeOld.GetTable(oldTableName);
 
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
-            if (oldTable == null)
+            // (except p_partner_attribute_category and p_partner_attribute_type which are populated here)
+            if ((oldTable == null) && (newTable.strName != "p_partner_attribute_category") && (newTable.strName != "p_partner_attribute_type"))
             {
                 return;
             }
@@ -132,7 +133,9 @@ namespace Ict.Tools.DataDumpPetra2
             FileInfo info = new FileInfo(dumpFile + ".d.gz");
 
             // ignore empty files (with one exception)
-            if ((info.Length == 0) && (oldTableName != "p_partner_gift_destination"))
+            if ((info.Length == 0) && ((oldTableName != "p_partner_gift_destination")
+                && (oldTableName != "p_partner_attribute_category")
+                && (oldTableName != "p_partner_attribute_type")))
             {
                 TLogging.Log("ignoring " + dumpFile + ".d.gz");
                 return;
@@ -166,7 +169,7 @@ namespace Ict.Tools.DataDumpPetra2
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
             // (except p_postcode_region_range, a_budget_revision and p_partner_gift_destination which are populated here)
             if ((oldTable == null) && (newTable.strName != "p_postcode_region_range") && (newTable.strName != "a_budget_revision")
-                && (newTable.strName != "p_partner_gift_destination"))
+                && (newTable.strName != "p_partner_gift_destination") && (newTable.strName != "p_partner_attribute_category") && (newTable.strName != "p_partner_attribute_type"))
             {
                 return;
             }
@@ -184,13 +187,16 @@ namespace Ict.Tools.DataDumpPetra2
             StreamWriter MyWriterTest = null;
             FileStream outStreamTest;
             Stream gzoStreamTest;
-
+            TParseProgressCSV Parser = null;
             try
             {
-                TParseProgressCSV Parser = new TParseProgressCSV(
-                    dumpFile + ".d.gz",
-                    oldTable.grpTableField.Count);
-
+                if (oldTable != null) 
+                {
+                    Parser = new TParseProgressCSV(
+                                        dumpFile + ".d.gz",
+                                        oldTable.grpTableField.Count);                    
+                }
+                
                 FileStream outStream = File.Create(NewFileName);
                 Stream gzoStream = new GZipOutputStream(outStream);
                 StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
