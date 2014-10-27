@@ -52,36 +52,30 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
     /// <summary>
     /// Enums holding the possible reporting period selection modes
     /// </summary>
-    public enum TICHReportingPeriodSelectionModeEnum
+    public enum ICHModeEnum
     {
         /// <summary>
         /// ICH Statement reporting period selection mode
         /// </summary>
-        rpsmICHStatement,
+        Statement,
         /// <summary>
         /// ICH Stewardship Calculation reporting period selection mode
         /// </summary>
-        rpsmICHStewardshipCalc
+        StewardshipCalc
     }
 
 
     /// manual methods for the generated window
     public partial class TFrmStewardshipReports : System.Windows.Forms.Form
     {
-        /// <summary>
-        /// Field to store the reporting period selection mode
-        /// </summary>
-        public TICHReportingPeriodSelectionModeEnum FReportingPeriodSelectionMode = TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc;
-        /// <summary>
-        /// Field to store the relevant Ledger number
-        /// </summary>
-        public Int32 FLedgerNumber = 0;
+        ICHModeEnum FReportingPeriodSelectionMode = ICHModeEnum.StewardshipCalc;
+        Int32 FLedgerNumber = 0;
         ALedgerRow FLedgerRow = null;
 
         /// <summary>
         /// Gets or sets the ICH reporting period selection mode
         /// </summary>
-        public TICHReportingPeriodSelectionModeEnum ReportingPeriodSelectionMode
+        public ICHModeEnum ReportingPeriodSelectionMode
         {
             get
             {
@@ -92,7 +86,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 FReportingPeriodSelectionMode = value;
 
-                if (FReportingPeriodSelectionMode == TICHReportingPeriodSelectionModeEnum.rpsmICHStatement)
+                if (FReportingPeriodSelectionMode == ICHModeEnum.Statement)
                 {
                     chkEmailHOSAReport.Enabled = true;
                 }
@@ -161,11 +155,10 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             if ((cmbReportPeriod.SelectedIndex > -1) && (cmbYearEnding.SelectedIndex > -1))
             {
                 DateTime YearEnding;
-                DateTime YearStart;
 
                 if (DateTime.TryParse(cmbYearEnding.GetSelectedDescription(), out YearEnding))
                 {
-                    YearStart = TRemote.MFinance.GL.WebConnectors.DecrementYear(YearEnding).AddDays(1);
+                    DateTime YearStart = TRemote.MFinance.GL.WebConnectors.DecrementYear(YearEnding).AddDays(1);
 
                     TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
                         cmbReportPeriod.GetSelectedInt32(),
@@ -191,7 +184,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             bool DoEmailHOSAReports = chkEmailHOSAReport.Checked;
             bool DoGenerateHOSAFiles = chkHOSAFile.Checked;
             bool DoEmailHOSAFiles = chkEmailHOSAFile.Checked;
-            string HOSAFilePrefix = txtHOSAPrefix.Text;
 
             TVerificationResultCollection VerificationResults;
 
@@ -207,31 +199,27 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 return;
             }
 
-            bool HOSAFilePrefixExists = (HOSAFilePrefix.Length > 0);
-
-            int IndexOfInvalidFilenameCharacter = 0;
-
-            if (HOSAFilePrefixExists)
-            {
-                IndexOfInvalidFilenameCharacter = HOSAFilePrefix.IndexOfAny(Path.GetInvalidFileNameChars());
-            }
-
-            if (!HOSAFilePrefixExists)
+            String HOSAFilePrefix = txtHOSAPrefix.Text;
+            if (HOSAFilePrefix.Length == 0)
             {
                 HOSAFilePrefix = Catalog.GetString("HOSAFilesExportFor");
             }
-            else if (IndexOfInvalidFilenameCharacter >= 0)
+            else
             {
-                msg = String.Format("The HOSA File Prefix: '{0}', contains characters not valid in a filename: {1}{2}{2}Please remove and retry.",
-                    HOSAFilePrefix,
-                    String.Join(", ", Path.GetInvalidFileNameChars()),
-                    Environment.NewLine);
+                Int32 IndexOfInvalidFilenameCharacter = HOSAFilePrefix.IndexOfAny(Path.GetInvalidFileNameChars());
+                if (IndexOfInvalidFilenameCharacter >= 0)
+                {
+                    msg = String.Format("The HOSA File Prefix: '{0}', contains characters not valid in a filename: {1}{2}{2}Please remove and retry.",
+                        HOSAFilePrefix,
+                        String.Join(", ", Path.GetInvalidFileNameChars()),
+                        Environment.NewLine);
 
-                MessageBox.Show(msg, "Generate HOSA Reports and Files", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(msg, "Generate HOSA Reports and Files", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
-                txtHOSAPrefix.Focus();
-                txtHOSAPrefix.Select(IndexOfInvalidFilenameCharacter, 1);
-                return;
+                    txtHOSAPrefix.Focus();
+                    txtHOSAPrefix.Select(IndexOfInvalidFilenameCharacter, 1);
+                    return;
+                }
             }
 
             try
@@ -277,7 +265,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     else if (DoGenerateHOSAFiles)
                     {
                         String FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + HOSAFilePrefix + CostCentreCode + ".csv";
-
                         HOSASuccess = TRemote.MFinance.ICH.WebConnectors.GenerateHOSAFiles(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
                             cmbICHNumber.GetSelectedInt32(), CostCentreCode, CurrencySelect, FileName, out VerificationResults);
                     }
@@ -343,16 +330,12 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 return true;
             }
-            else if ((cmbReportPeriod.SelectedIndex == -1) && (cmbReportPeriod.Count > 0))
+            else if (cmbReportPeriod.Count > 0)
             {
                 MessageBox.Show(Catalog.GetString("Please select a valid reporting period first."));
                 cmbReportPeriod.Focus();
-                return false;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

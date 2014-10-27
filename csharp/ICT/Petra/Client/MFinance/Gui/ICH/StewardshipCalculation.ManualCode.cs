@@ -52,14 +52,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
     /// manual methods for the generated window
     public partial class TFrmStewardshipCalculation : System.Windows.Forms.Form
     {
-        /// <summary>
-        /// Field to store the reporting period selection mode
-        /// </summary>
-        public TICHReportingPeriodSelectionModeEnum FReportingPeriodSelectionMode = TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc;
-        /// <summary>
-        /// Field to store the relevant Ledger number
-        /// </summary>
-        public Int32 FLedgerNumber = 0;
+        ICHModeEnum FReportingPeriodSelectionMode = ICHModeEnum.StewardshipCalc;
+        Int32 FLedgerNumber = 0;
 
         /// <summary>
         /// Write-only Ledger number property
@@ -105,31 +99,31 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 return;
             }
 
-            bool retVal = false;
-
             TVerificationResultCollection VerificationResult = null;
 
             try
             {
-                switch (this.ReportingPeriodSelectionMode)
+                switch (FReportingPeriodSelectionMode)
                 {
-                    case TICHReportingPeriodSelectionModeEnum.rpsmICHStewardshipCalc:
+                    case ICHModeEnum.StewardshipCalc:
 
                         Cursor = Cursors.WaitCursor;
 
-                        retVal = TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
-                        out VerificationResult);
+                        Boolean retVal = TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(
+                            FLedgerNumber,
+                            cmbReportPeriod.GetSelectedInt32(),
+                            out VerificationResult);
 
                         Cursor = Cursors.Default;
                         String ResultMsg =
-                            (retVal ? Catalog.GetString("Stewardship Calculation Completed Successfully") : Catalog.GetString(
-                                 "UNSUCCESSFUL Stewardship Calculation!"));
+                            (retVal ? Catalog.GetString("Stewardship Calculation Completed Successfully") 
+                                : Catalog.GetString("UNSUCCESSFUL Stewardship Calculation!"));
 
                         MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg, VerificationResult));
 
                         break;
 
-                    case TICHReportingPeriodSelectionModeEnum.rpsmICHStatement:
+                    case ICHModeEnum.Statement:
 
                         throw new NotImplementedException(Catalog.GetString("ICH Statement functionality is not yet implemented!"));
                 }
@@ -149,7 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         /// <summary>
         /// Gets or sets the ICH reporting period selection mode
         /// </summary>
-        public TICHReportingPeriodSelectionModeEnum ReportingPeriodSelectionMode
+        public ICHModeEnum ReportingPeriodSelectionMode
         {
             get
             {
