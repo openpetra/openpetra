@@ -80,7 +80,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 if (!res)
                 {
-                    AVerificationResult.Add(new TVerificationResult("Year End", "Success", "Success", TResultSeverity.Resv_Status));
+                    String SuccessMsg = AIsInInfoMode ? "YearEnd check: No problems found." : "Success.";
+                    AVerificationResult.Add(new TVerificationResult("Year End", SuccessMsg, "Success", TResultSeverity.Resv_Status));
                 }
 
                 if (NewTransaction)
@@ -273,7 +274,8 @@ namespace Ict.Petra.Server.MFinance.GL
         TAccountInfo FaccountInfo;
         ACostCentreTable FCostCentreTbl;
         string FstrYearEnd = Catalog.GetString("YEAR-END");
-        string FstrNarrativeMessage = Catalog.GetString("Year end re-allocation to {0}:{1}");
+        string FstrNarrativeToMessage = Catalog.GetString("Year end re-allocation to {2}-{3}");
+        string FstrNarrativeFromToMessage = Catalog.GetString("Year end re-allocation from {0}-{1} to {2}-{3}");
 
 
         TGlmInfo FglmInfo;
@@ -445,22 +447,24 @@ namespace Ict.Petra.Server.MFinance.GL
             return CountJobs;
         }
 
-        private void ReallocationLoop(TCommonAccountingTool YearEndBatch, String AAccountCode, String ACostCentreCode)
+        private void ReallocationLoop(TCommonAccountingTool YearEndBatch, String AAccountFrom, String ACostCentreFrom)
         {
             string strCostCentreTo = TLedgerInfo.GetStandardCostCentre(FledgerInfo.LedgerNumber);
             string strAccountTo;
 
-            FaccountInfo.AccountCode = AAccountCode;
+            FaccountInfo.AccountCode = AAccountFrom;
             Boolean blnDebitCredit = FaccountInfo.DebitCreditIndicator;
+            String narrativeMessage = FstrNarrativeToMessage;
 
             string strCCAccoutCode = FaccountInfo.SetCarryForwardAccount(); // Move FaccountInfo to the Carry Forward Account - if there is one.
-            if (FaccountInfo.IsValid)
+            if (FaccountInfo.IsValid) // The CarryForward account exists..
             {
                 strAccountTo = FaccountInfo.AccountCode;
 
                 if (strCCAccoutCode == "SAMECC")
                 {
-                    strCostCentreTo = ACostCentreCode;
+                    strCostCentreTo = ACostCentreFrom;
+                    narrativeMessage = FstrNarrativeFromToMessage;
                 }
             }
             else // If there's no Carry Forward account, use EARNINGS_BF_ACCT
@@ -469,7 +473,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 strAccountTo = FaccountInfo.AccountCode;
             }
 
-            if (FledgerInfo.IltAccountFlag) // Change that if ICH_ACCT is set
+            if (FledgerInfo.IltAccountFlag) // In either case, change that if ICH_ACCT is set
             {
                 FaccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
                 strAccountTo = FaccountInfo.AccountCode;
@@ -477,7 +481,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (FledgerInfo.BranchProcessing) // Keep the original Cost Centres - don't roll up
             {
-                strCostCentreTo = ACostCentreCode;
+                strCostCentreTo = ACostCentreFrom;
+                narrativeMessage = FstrNarrativeFromToMessage;
             }
 
             if (FglmInfo.YtdActualBase < 0)
@@ -488,13 +493,13 @@ namespace Ict.Petra.Server.MFinance.GL
             Decimal TransactionAmount = Math.Abs(FglmInfo.YtdActualBase);
 
             YearEndBatch.AddBaseCurrencyTransaction(
-                AAccountCode, ACostCentreCode,
-                String.Format(FstrNarrativeMessage, ACostCentreCode, AAccountCode),
+                AAccountFrom, ACostCentreFrom,
+                String.Format(narrativeMessage, ACostCentreFrom, AAccountFrom, strCostCentreTo, strAccountTo),
                 FstrYearEnd, !blnDebitCredit, TransactionAmount);
 
             YearEndBatch.AddBaseCurrencyTransaction(
                 strAccountTo, strCostCentreTo,
-                String.Format(FstrNarrativeMessage, ACostCentreCode, AAccountCode),
+                String.Format(narrativeMessage, ACostCentreFrom, AAccountFrom, strCostCentreTo, strAccountTo),
                 FstrYearEnd, blnDebitCredit, TransactionAmount);
         }
     } // TReallocation

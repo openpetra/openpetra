@@ -105,7 +105,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     EVerificationException terminate = new EVerificationException(
                         "You cannot change the Date after you have created a journal!");
-                    terminate.Context = "Common Accountig";
+                    terminate.Context = "Common Accounting";
                     terminate.ErrorCode = "GL.CAT.01";
                     throw terminate;
                 }
@@ -167,7 +167,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     EVerificationException terminate = new EVerificationException(
                         "You have to add a journal before you can change the JournalDescription!");
-                    terminate.Context = "Common Accountig";
+                    terminate.Context = "Common Accounting";
                     terminate.ErrorCode = "GL.CAT.02";
                     throw terminate;
                 }
@@ -187,7 +187,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     EVerificationException terminate = new EVerificationException(
                         "You have to add a journal before you can change the TransactionTypeCode!");
-                    terminate.Context = "Common Accountig";
+                    terminate.Context = "Common Accounting";
                     terminate.ErrorCode = "GL.CAT.03";
                     throw terminate;
                 }
@@ -207,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     EVerificationException terminate = new EVerificationException(
                         "You have to add a journal before you can change the SubSystemCode!");
-                    terminate.Context = "Common Accountig";
+                    terminate.Context = "Common Accounting";
                     terminate.ErrorCode = "GL.CAT.04";
                     throw terminate;
                 }
@@ -254,8 +254,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// A Transaction is added only to the last added batch. This routine can be called
-        /// multiple times too even inside of one journal.
+        /// A Transaction is added to the current batch and journal.
         /// </summary>
         /// <param name="AAccount"></param>
         /// <param name="ACostCenter"></param>
@@ -296,7 +295,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 EVerificationException terminate = new EVerificationException(
                     Catalog.GetString("You cannot account foreign currencies in a base journal!"));
-                terminate.Context = "Common Accountig";
+                terminate.Context = "Common Accounting";
                 terminate.ErrorCode = "GL.CAT.05";
                 throw terminate;
             }
@@ -318,7 +317,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 EVerificationException terminate = new EVerificationException(
                     Catalog.GetString("You have to add a journal before you can add a transaction!"));
-                terminate.Context = "Common Accountig";
+                terminate.Context = "Common Accounting";
                 terminate.ErrorCode = "GL.CAT.06";
                 throw terminate;
             }
@@ -351,7 +350,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                     accountCheck.ForeignCurrencyCode,
                                     FForeignCurrencyInfo.CurrencyCode);
                                 EVerificationException terminate = new EVerificationException(strMessage);
-                                terminate.Context = "Common Accountig";
+                                terminate.Context = "Common Accounting";
                                 terminate.ErrorCode = "GL.CAT.07";
                                 throw terminate;
                             }
@@ -372,17 +371,17 @@ namespace Ict.Petra.Server.MFinance.Common
             transRow.Narrative = ANarrativeMessage;
             transRow.Reference = AReferenceMessage;
             transRow.DebitCreditIndicator = AIsDebit;
-
-            if (ATransActionIsInForeign)
-            {
-                transRow.TransactionAmount = AAmountForeignCurrency;
-                transRow.AmountInBaseCurrency = AAmountBaseCurrency;
-            }
-            else
-            {
-                transRow.TransactionAmount = AAmountBaseCurrency;
-                transRow.AmountInBaseCurrency = AAmountBaseCurrency;
-            }
+            transRow.AmountInBaseCurrency = AAmountBaseCurrency;
+            transRow.TransactionAmount = (ATransActionIsInForeign) ? AAmountForeignCurrency : AAmountBaseCurrency;
+            //
+            // The International currency calculation is changed to "Base -> International", because it's likely
+            // we won't have a "Transaction -> International" conversion rate defined.
+            //
+            transRow.AmountInIntlCurrency = GLRoutines.Multiply(transRow.AmountInBaseCurrency,
+                TExchangeRateTools.GetDailyExchangeRate(
+                    FLedgerInfo.BaseCurrency,
+                    FLedgerInfo.InternationalCurrency,
+                    transRow.TransactionDate));
 
             transRow.TransactionDate = FBatchRow.DateEffective;
             FBatchTDS.ATransaction.Rows.Add(transRow);
