@@ -759,7 +759,7 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
-            // phone and fax extensions should be '0' rather than null
+            // Process p_partner_location records and migrate certain values of p_partner_location records to 'Contact Detail' records
             if (ATableName == "p_partner_location")
             {
                 Int64 PartnerKey;
@@ -767,31 +767,20 @@ namespace Ict.Tools.DataDumpPetra2
                 DataRow NewPartnerLocationDR;
                 string DateEffectiveStr;
                 string DateGoodUntilStr;
-                string SendMailStr;
                 object DateEffectiveColValue;
                 object DateGoodUntilColValue;
                 object SendMailColValue;
-                
-                
-                string val = GetValue(AColumnNames, ANewRow, "p_extension_i");
-            
-                if ((val.Length == 0) || (val == "\\N"))
-                {
-                    SetValue(AColumnNames, ref ANewRow, "p_extension_i", "0");
-                }
-
-                val = GetValue(AColumnNames, ANewRow, "p_fax_extension_i");
-
-                if ((val.Length == 0) || (val == "\\N"))
-                {
-                    SetValue(AColumnNames, ref ANewRow, "p_fax_extension_i", "0");
-                }
-
-
+                string TelephoneNumber;
+                string FaxNumber;
+                string PhoneExtension;
+                string FaxExtension;
 
                 
                 PartnerKey = Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_partner_key_n"));
                 
+                // If we haven't yet recorded the certain values of p_partner_location records for this Partner then create a new 
+                // data structure for this Partner that can hold those. That data structure will be processed and used for the 
+                // creation of records for the new 'Contact Details' scheme (held in the p_partner_attribute DB Table).
                 if (!TPartnerContactDetails.PartnerLocationRecords.TryGetValue(PartnerKey, out PartnerLocationsDT))
                 {
                     PartnerLocationsDT = TPartnerContactDetails.BestAddressHelper.GetNewPPartnerLocationTableInstance();                    
@@ -802,12 +791,44 @@ namespace Ict.Tools.DataDumpPetra2
                 DateEffectiveStr = GetValue(AColumnNames, ANewRow, "p_date_effective_d");
                 DateEffectiveColValue = DateEffectiveStr == "\\N" ? System.DBNull.Value : (object)DateTime.ParseExact(DateEffectiveStr, "yyyy-dd-mm", CultureInfo.InvariantCulture);
                 DateGoodUntilStr = GetValue(AColumnNames, ANewRow, "p_date_good_until_d");
-                DateGoodUntilColValue = DateGoodUntilStr == "\\N" ? System.DBNull.Value: (object)DateTime.ParseExact(DateGoodUntilStr, "yyyy-dd-mm", CultureInfo.InvariantCulture);
-                SendMailStr = GetValue(AColumnNames, ANewRow, "p_send_mail_l");
-                SendMailColValue = SendMailStr == "1" ? (object)true : (object)false;
+                DateGoodUntilColValue = DateGoodUntilStr == "\\N" ? System.DBNull.Value: (object)DateTime.ParseExact(DateGoodUntilStr, "yyyy-dd-mm", CultureInfo.InvariantCulture);               
+                SendMailColValue = GetValue(AColumnNames, ANewRow, "p_send_mail_l") == "1" ? (object)true : (object)false; // This is the value of the 'Mailing Address' CheckBox
+
+                // Phone Extension: Ignore if value in the dumped data is either null or 0                
+                PhoneExtension = GetValue(AColumnNames, ANewRow, "p_extension_i");
+            
+                if ((PhoneExtension == "\\N")
+                    || (PhoneExtension == "0"))
+                {
+                    PhoneExtension = String.Empty;                
+                }
                 
-                // TODO: Concatenate p_extension_i and p_fax_extension_i with their respective Colums!
+                // Fax Extension: Ignore if value in the dumped data is either null or 0
+                FaxExtension = GetValue(AColumnNames, ANewRow, "p_fax_extension_i");
+
+                if ((FaxExtension == "\\N")
+                    || (FaxExtension == "0"))
+                {
+                    FaxExtension = String.Empty;
+                }
                 
+                TelephoneNumber = GetValue(AColumnNames, ANewRow, "p_telephone_number_c");
+                
+                if (TelephoneNumber != "\\N")
+                {
+                    // Concatenate Phone Number and Phone Extension ONLY if both of them aren't null and Phone Extension isn't 0 either.
+                    TelephoneNumber += PhoneExtension; 
+                }
+
+                FaxNumber = GetValue(AColumnNames, ANewRow, "p_fax_number_c");
+                
+                if (FaxNumber != "\\N") 
+                {
+                    // Concatenate Fax Number and Fax Extension ONLY if both of them aren't null and Fax Extension isn't 0 either.
+                    FaxNumber += FaxExtension; 
+                }                
+                
+                // Create representation of key data of the p_partner_location row and add it to the TPartnerContactDetails.PartnerLocationRecords Data Structure
                 NewPartnerLocationDR = PartnerLocationsDT.NewRow();
                 NewPartnerLocationDR["p_site_key_n"] = Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_site_key_n"));
                 NewPartnerLocationDR["p_location_key_i"] = Convert.ToInt32(GetValue(AColumnNames, ANewRow, "p_location_key_i"));
@@ -815,8 +836,8 @@ namespace Ict.Tools.DataDumpPetra2
                 NewPartnerLocationDR["p_date_good_until_d"] = DateGoodUntilColValue;
                 NewPartnerLocationDR["p_location_type_c"] = GetValue(AColumnNames, ANewRow, "p_location_type_c");
                 NewPartnerLocationDR["p_send_mail_l"] = SendMailColValue;
-                NewPartnerLocationDR["p_telephone_number_c"] = GetValue(AColumnNames, ANewRow, "p_telephone_number_c");
-                NewPartnerLocationDR["p_fax_number_c"] = GetValue(AColumnNames, ANewRow, "p_fax_number_c");
+                NewPartnerLocationDR["p_telephone_number_c"] = TelephoneNumber;
+                NewPartnerLocationDR["p_fax_number_c"] = FaxNumber;
                 NewPartnerLocationDR["p_mobile_number_c"] = GetValue(AColumnNames, ANewRow, "p_mobile_number_c");
                 NewPartnerLocationDR["p_alternate_telephone_c"] = GetValue(AColumnNames, ANewRow, "p_alternate_telephone_c");
                 NewPartnerLocationDR["p_email_address_c"] = GetValue(AColumnNames, ANewRow, "p_email_address_c");
@@ -824,7 +845,19 @@ namespace Ict.Tools.DataDumpPetra2
                 
                 PartnerLocationsDT.Rows.Add(NewPartnerLocationDR);
                 
-                // TODO: Set all Data Columns that we have just added to PartnerLocationsDT to 'null' in p_partner_location!                
+                if (TAppSettingsManager.GetValue("wipe_partnerlocation_cont_det", "true") != "false")
+                {                
+                    // Set all Data Columns that we have just added to PartnerLocationsDT as a 'Contact Detail' to 'null' in  
+                    // p_partner_location to 'wipe out' that data - as it will only be held in p_partner_attribute from now on!
+                    SetValue(AColumnNames, ref ANewRow, "p_telephone_number_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "p_extension_i", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "p_fax_number_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "p_fax_extension_i", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "p_mobile_number_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "p_alternate_telephone_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "p_email_address_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "p_url_c", "\\N");
+                }
             }
 
             // renaming "Gift Receipting" to "Gift Processing" (Mantis 1930)

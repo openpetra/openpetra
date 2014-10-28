@@ -34,7 +34,7 @@ using System.Globalization;
 
 using Ict.Tools.DBXML;
 using Ict.Common;
-
+    
 namespace Ict.Tools.DataDumpPetra2
 {
     /// <summary>
@@ -68,17 +68,7 @@ namespace Ict.Tools.DataDumpPetra2
         
         /// <summary>As specified in the 'Base Data'.</summary>
         private const String ATTR_TYPE_WEBSITE = "Web Site";
-        
-        /// <summary>As specified in the 'Base Data'.</summary>
-        private const String ATTR_TYPE_PARTNERS_PRIMARY_TELEPHONE = "PARTNERS_PRIMARY_TELEPHONE";
-        
-        /// <summary>As specified in the 'Base Data'.</summary>
-        private const String ATTR_TYPE_PARTNERS_PRIMARY_EMAIL = "PARTNERS_PRIMARY_EMAIL";
-
-        /// <summary>As specified in the 'Base Data'.</summary>
-        private const String ATTR_TYPE_EMAIL_WITHIN_ORGANISATION = "PARTNERS_EMAIL_WITHIN_ORGANISATION";
-
-        
+                
         /// <summary>
         /// Holds the p_partner_location records of each Partner.
         /// </summary>
@@ -87,7 +77,7 @@ namespace Ict.Tools.DataDumpPetra2
         /// <summary>
         /// Number for the p_sequence_i Column. Gets increased with every p_partner_attribute record that gets produced!
         /// </summary>
-        private static int FSequenceNo = -1;
+        private static int FSequenceNo = 0;
         
         /// <summary>
         /// The order of the p_partner_location record (according to how they are sorted) that the p_partner_attribute 
@@ -346,11 +336,14 @@ namespace Ict.Tools.DataDumpPetra2
                 // Get that Partner's p_partner_location records from PPartnerLocationRecords
                 PPartnersLocationsDT = PPartnerLoctationRec.Value;
                 
-                // We hazard a guess that we will possibly create twice as many p_partner_attribute records as there are
-                // p_partner_location records - but perhaps more (if we need to create many 'primary' p_partner_attribute  
-                // records for Contact Details that come out of the 'Best Address' p_partner_location records, or less 
-                // (if there are many p_partner_location records that don't have details that will become a Contact Detail).
-                // The guess is done so that PPARecords doesn't need to continually get expanded by .NET as we add to it.
+                // We hazard a guess that we will possibly create 2 times as many p_partner_attribute records as there are
+                // p_partner_location records - but in some cases there will be more (if we need to create many 'primary'   
+                // p_partner_attribute records for Contact Details that come out of the 'Best Address' p_partner_location records,  
+                // or less (if there are many p_partner_location records that don't have details that will become a Contact Detail).
+                // The guess is done so that PPARecords doesn't need to continually get expanded by .NET as we are adding to it.
+                // (The 2.0 factor got determined by checking the average number of records that got created by running this 
+                // over actual data from the SA DB (1.3) and then rounding the number up, as often there will only be one
+                // p_partner_location record, and so we create at least 2 entries in that case.)
                 PPARecords = new List<PPartnerAttributeRecord>(PPartnersLocationsDT.Rows.Count * 2);
                 
                 // Determine the p_partner_location record that constitutes the 'Best Address' of that Partner
@@ -409,8 +402,8 @@ namespace Ict.Tools.DataDumpPetra2
                     var PPARecordsGroupedQuery =
                         from PPARecord in PPARecords
                         orderby PPARecord.Primary descending, PPARecord.InsertionOrderPerPartner
-                        group PPARecord by new { PPARecord.AttributeType, PPARecord.Value} into grouping
-//                        orderby grouping.Key
+                        group PPARecord by PPARecord.AttributeType into grouping
+                        orderby grouping.Key
                         select grouping;
         
                     // Iterate over each Group and determine the Index values of their individual members.
@@ -437,7 +430,7 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref ANewRow, "p_sequence_i", PPARec.Sequence.ToString());
                         SetValue(AColumnNames, ref ANewRow, "p_attribute_type_c", PPARec.AttributeType);
                         SetValue(AColumnNames, ref ANewRow, "p_index_i", PPARec.Index.ToString());
-                        SetValue(AColumnNames, ref ANewRow, "p_value_c", PPARec.Value);
+                        SetValue(AColumnNames, ref ANewRow, "p_value_c", PPARec.Value.Replace(";", @"\;"));
                         SetValue(AColumnNames, ref ANewRow, "p_comment_c", PPARec.Comment != String.Empty ? PPARec.Comment : "\\N");
                         SetValue(AColumnNames, ref ANewRow, "p_primary_l", PPARec.Primary ? "1" : "0");
                         SetValue(AColumnNames, ref ANewRow, "p_within_organsiation_l", PPARec.WithinOrgansiation ? "1" : "0");
@@ -462,6 +455,11 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
                         
+            // Get rid of the Data Structure that we don't need anymore!
+            FPartnerLocationRecords = null;
+            // ... and kindly ask .NET's Garbage Collector to really get it out of memory, if it's convenient.
+            GC.Collect(0, GCCollectionMode.Optimized);
+            
             return RowCounter;
         }
         
@@ -476,17 +474,16 @@ namespace Ict.Tools.DataDumpPetra2
             
             var ReturnValue = new List<TPartnerContactDetails.PPartnerAttributeRecord>();
             var PPARecordList = new List<PPartnerAttributeRecord>();
-            var PPAExtraRecordList = new List<PPartnerAttributeRecord>();
             PPartnerAttributeRecord PPARecord;
-//            PPartnerAttributeRecord PPAExtraRecord;
-            // Variables that hold record information            
+            bool IsBestAddr = BestAddressHelper.IsBestAddressPartnerLocationRecord(APartnerLocationDR);
+            bool AnyTelephoneNumberSetAsPrimary = false;
+            // Variables that hold record information
             string TelephoneNumber = (string)APartnerLocationDR["p_telephone_number_c"];
             string FaxNumber = (string)APartnerLocationDR["p_fax_number_c"];
             string MobileNumber = (string)APartnerLocationDR["p_mobile_number_c"];
             string AlternatePhoneNumber = (string)APartnerLocationDR["p_alternate_telephone_c"];
             string Url = (string)APartnerLocationDR["p_url_c"];
             string EmailAddress = (string)APartnerLocationDR["p_email_address_c"]; 
-            bool IsBestAddr = BestAddressHelper.IsBestAddressPartnerLocationRecord(APartnerLocationDR);
             
             FInsertionOrderPerPartner++;
             
@@ -506,16 +503,17 @@ namespace Ict.Tools.DataDumpPetra2
                     PPARecord.Value = TelephoneNumber;
                     PPARecord.AttributeType = ATTR_TYPE_PHONE;
                     
-                    if (IsBestAddr) 
+                    if ((IsBestAddr)
+                        && (PPARecord.Current))
                     {
                         // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
-                        PPARecord.Primary = PPARecord.Current;
+                        PPARecord.Primary = true;
                         
-                        // TODO: create extra p_partner_attribute record for any 'Best Address' Telephone Number!!!
-//                        PPAExtraRecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                        // AttributeType = ATTR_TYPE_PARTNERS_PRIMARY_TELEPHONE;
-                        // ,,,
-//                        PPAExtraRecordList.Add(PPAExtraRecord);
+                        AnyTelephoneNumberSetAsPrimary = true;
+
+                        TLogging.Log(String.Format(
+                            "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                            TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));                        
                     }
                     
                     PPARecordList.Add(PPARecord);
@@ -528,19 +526,23 @@ namespace Ict.Tools.DataDumpPetra2
                     PPARecord.Value = EmailAddress;
                     PPARecord.AttributeType = ATTR_TYPE_EMAIL;
                     
-                    if (IsBestAddr) 
+                    if ((IsBestAddr)
+                        && (PPARecord.Current))
                     {
                         // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
-                        PPARecord.Primary = PPARecord.Current;
+                        PPARecord.Primary = true;
+
+                        // Mark this Contact Detail as being 'WithinOrgansiation' as it has an 'organisation-internal' e-mail-address!
+                        if (EmailAddress.EndsWith("@om.org"))
+                        {
+                            PPARecord.WithinOrgansiation = true;
+    
+                            TLogging.Log(String.Format(
+                                "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
+                                EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                        }
                     }
-                    
-                    // TODO: create extra p_partner_attribute record for any 'organisation-internal' e-mail-address!!!
-//                        PPAExtraRecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                    //         = AttributeType = ATTR_TYPE_EMAIL_WITHIN_ORGANISATION
-                    //         = WithinOrgansiation = true;
-                    //     ,,,
-//                        PPAExtraRecordList.Add(PPAExtraRecord);                    
-                    
+                        
                     PPARecordList.Add(PPARecord);
                 }
             }
@@ -548,7 +550,7 @@ namespace Ict.Tools.DataDumpPetra2
             if (FaxNumber != EMPTY_STRING_INDICATOR) 
             {
                 PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                
+                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]                
                 PPARecord.Value = FaxNumber;
                 PPARecord.AttributeType = ATTR_TYPE_FAX;
                 
@@ -558,9 +560,24 @@ namespace Ict.Tools.DataDumpPetra2
             if (MobileNumber != EMPTY_STRING_INDICATOR) 
             {
                 PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                
+                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
                 PPARecord.Value = MobileNumber;
                 PPARecord.AttributeType = ATTR_TYPE_MOBILE_PHONE;
+                
+                if ((!AnyTelephoneNumberSetAsPrimary) 
+                    && (IsBestAddr) 
+                    && (PPARecord.Current))
+                {
+                    // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and 
+                    // when the Contact Detail is current!
+                    PPARecord.Primary = true;
+                    
+                    AnyTelephoneNumberSetAsPrimary = true;
+                    
+                    TLogging.Log(String.Format(
+                        "Made MOBILE Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                        MobileNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));                    
+                }
                 
                 PPARecordList.Add(PPARecord);
             }
@@ -568,9 +585,24 @@ namespace Ict.Tools.DataDumpPetra2
             if (AlternatePhoneNumber != EMPTY_STRING_INDICATOR) 
             {
                 PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                
+                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
                 PPARecord.Value = AlternatePhoneNumber;
                 PPARecord.AttributeType = ATTR_TYPE_PHONE;
+
+                if ((!AnyTelephoneNumberSetAsPrimary) 
+                    && (IsBestAddr) 
+                    && (PPARecord.Current))
+                {
+                    // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and 
+                    // when the Contact Detail is current!
+                    PPARecord.Primary = true;
+                    
+                    AnyTelephoneNumberSetAsPrimary = true;
+                    
+                    TLogging.Log(String.Format(
+                        "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                        AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));                    
+                }
                 
                 PPARecordList.Add(PPARecord);
             }                        
@@ -578,7 +610,7 @@ namespace Ict.Tools.DataDumpPetra2
             if (Url != EMPTY_STRING_INDICATOR) 
             {
                 PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                
+                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]                
                 PPARecord.Value = Url;
                 PPARecord.AttributeType = ATTR_TYPE_WEBSITE;
                 
@@ -591,11 +623,6 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 ReturnValue.Add(PPARec);    
             }
-            
-            foreach (var PPAExtraRec in PPAExtraRecordList) 
-            {
-                ReturnValue.Add(PPAExtraRec);    
-            }                        
          
             return ReturnValue;            
         }
@@ -634,7 +661,8 @@ namespace Ict.Tools.DataDumpPetra2
                                    StringHelper.DateToLocalizedString(EffectiveDate)));
             }
             
-            if ((string)APartnerLocationDR["p_location_type_c"] == "BUSINESS")
+            if (((string)APartnerLocationDR["p_location_type_c"] == "BUSINESS")
+                || ((string)APartnerLocationDR["p_location_type_c"] == "FIELD"))
             {
                 SpecialisedFlag = true;    
             }
