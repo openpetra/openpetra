@@ -485,12 +485,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ContactLogRow.ContactAttr = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTATTR + Suffix);
                 ContactLogRow.ContactDetail = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL + Suffix);
                 AMainDS.PContactLog.Rows.Add(ContactLogRow);
-                AddVerificationResult("Contact Record Created.", TResultSeverity.Resv_Status);
+                AddVerificationResult("Contact Log Record Created.", TResultSeverity.Resv_Status);
                 
                 var PartnerContactRow = AMainDS.PPartnerContact.NewRowTyped();
                 PartnerContactRow.PartnerKey = APartnerKey;
                 PartnerContactRow.ContactLogId = ContactLogRow.ContactLogId;
-                AMainDS.PPartnerContact.Rows.Add(PartnerContactRow);          
+                AMainDS.PPartnerContact.Rows.Add(PartnerContactRow);
+                AddVerificationResult("Contact Associated with Partner", TResultSeverity.Resv_Status);
             }
         }
 

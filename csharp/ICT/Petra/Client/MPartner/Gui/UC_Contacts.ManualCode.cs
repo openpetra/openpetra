@@ -68,6 +68,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
+        /// <summary>todoComment</summary>
+        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -95,7 +97,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.FindContactLogsForPartner(FMainDS.PPartner[0].PartnerKey));
                 FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPartnerContacts(FMainDS.PPartner[0].PartnerKey));
                 FMainDS.PContactLog.DefaultView.AllowNew = false;
-                //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PContactLog.DefaultView);
             }
 
             FMainDS.InitVars();
@@ -163,7 +164,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (CreateNewPContactLog())
             {
+                ucoContact.Contactor = UserInfo.GUserInfo.UserID;
                 ucoContact.Focus();
+
             }
         }
 
@@ -175,6 +178,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             PartnerContact.ContactLogId = ARow.ContactLogId;
             PartnerContact.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
             FMainDS.PPartnerContact.Rows.Add(PartnerContact);
+
+            RecalculateTabHeaderCounter();
         }
 
         /// <summary>
@@ -183,6 +188,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
+            ValidateAllData(false, true);
         }
 
         private void ShowDetailsManual(PContactLogRow ARow)
@@ -249,7 +255,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (ADeletionPerformed)
             {
-                //DoRecalculateScreenParts();
+                RecalculateTabHeaderCounter();
             }
         }
 
@@ -258,10 +264,41 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoContact.GetDetails(ARow);   
         }
 
-        private void ValidateDataDetailsManual(PContactLogRow FPreviouslySelectedDetailRow)
+        private void ValidateDataDetailsManual(PContactLogRow ARow)
         {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidateContactLogManual(this, ARow, ref VerificationResultCollection,
+                        FValidationControlsDict);
         }
-    
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="e"></param>
+        private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
+        {
+            if (RecalculateScreenParts != null)
+            {
+                RecalculateScreenParts(this, e);
+            }
+        }
+
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        private void RecalculateTabHeaderCounter()
+        {
+            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
+
+            /* Fire OnRecalculateScreenParts event to update the Tab Counters */
+            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
+            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
+            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+        }
+
         #endregion
     }
 }

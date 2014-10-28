@@ -1764,5 +1764,17 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AContext"></param>
+        /// <param name="ARow"></param>
+        /// <param name="VerificationResultCollection"></param>
+        /// <param name="FValidationControlsDict"></param>
+        public static void ValidateContactLogManual(object AContext, PContactLogRow ARow, ref TVerificationResultCollection VerificationResultCollection, TValidationControlsDict FValidationControlsDict)
+        {
+            //TODO: Implement manual validation
+        }
     }
 }

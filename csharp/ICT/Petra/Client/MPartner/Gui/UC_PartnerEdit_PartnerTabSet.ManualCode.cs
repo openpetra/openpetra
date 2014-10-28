@@ -974,6 +974,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgContacts)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContacts;
+
+                    FUcoContacts.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoContacts.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+                    FUcoContacts.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                }
 
                 FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
             }

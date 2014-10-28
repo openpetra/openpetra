@@ -89,6 +89,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public DateTime ContactDate { get { return FContactDR.ContactDate; } }
 
+        public string Contactor
+        {
+            get { return txtContactor.Text; }
+            set { txtContactor.Text = value; }
+        }
+
         /// <summary>
         /// Open a dialog to select Contact Attributes 
         /// </summary>
@@ -97,6 +103,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         protected void SelectAttributes(object sender, EventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+        private void ValidateDataDetailsManual(PContactLogRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidateContactLogManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict);
         }
         
     }
