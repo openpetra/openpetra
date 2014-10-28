@@ -1853,17 +1853,7 @@ namespace Ict.Tools.DataDumpPetra2
 
                     {
                         "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_PRIMARY_CONTACT_METHOD", "A Partners' Primary Contact Method", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
-                    },
-                    {
-                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_PRIMARY_TELEPHONE", "A Partners' Primary Telephone", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
-                    },
-                    {
-                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_EMAIL_WITHIN_ORGANISATION", "A Partners' E-mail Address within the Organisation", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
-                    },
-                    {
-                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_TELEPHONE_WITHIN_ORGANISATION", "A Partners' Telephone Number within the Organisation", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
                     }
-                    
                 };
 
                 for (int i = 0; i < AttributeTypes.GetLength(0); i++)
