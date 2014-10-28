@@ -40,6 +40,7 @@ using Ict.Petra.Shared.MFinance.Gift.Validation;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
@@ -226,8 +227,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                 }
 
                 FLedgerBaseCurrency = ((ALedgerRow)LedgerTable.Rows[0]).BaseCurrency;
-                ACorporateExchangeRateTable CorporateExchangeTable = ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerBaseCurrency, Transaction);
-                ADailyExchangeRateTable DailyExchangeToTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerBaseCurrency, Transaction);
+                string LedgerIntlCurrency = ((ALedgerRow)LedgerTable.Rows[0]).IntlCurrency;
+
+                ACorporateExchangeRateTable CorporateExchangeToLedgerTable = ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerBaseCurrency, Transaction);
+                ADailyExchangeRateTable DailyExchangeToLedgerTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerBaseCurrency, Transaction);
+                ADailyExchangeRateTable DailyExchangeToIntlTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerIntlCurrency, Transaction);
 
                 ImportMessage = Catalog.GetString("Parsing first line");
                 AGiftRow previousGift = null;
@@ -281,7 +285,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             // Parse the complete line and validate it
                             ParseBatchLine(ref giftBatch, ref Transaction, ref LedgerTable, ref ImportMessage, RowNumber,
-                                AMessages, ValidationControlsDictBatch, AccountTable, CostCentreTable, CorporateExchangeTable);
+                                AMessages, ValidationControlsDictBatch, AccountTable, CostCentreTable, CorporateExchangeToLedgerTable);
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
@@ -291,7 +295,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     // Validation will have ensured that we have a corporate rate for the effective date
                                     // We need to know what that rate is...
                                     DateTime firstOfMonth = new DateTime(giftBatch.GlEffectiveDate.Year, giftBatch.GlEffectiveDate.Month, 1);
-                                    ACorporateExchangeRateRow corporateRateRow = (ACorporateExchangeRateRow)CorporateExchangeTable.Rows.Find(
+                                    ACorporateExchangeRateRow corporateRateRow = (ACorporateExchangeRateRow)CorporateExchangeToLedgerTable.Rows.Find(
                                         new object[] { giftBatch.CurrencyCode, FLedgerBaseCurrency, firstOfMonth});
                                     decimal corporateRate = corporateRateRow.RateOfExchange;
 
@@ -305,10 +309,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                     // we need to create a daily exchange rate pair for the transaction date
                                     // start with To Ledger currency
-                                    if (UpdateDailyExchangeRateTable(DailyExchangeToTable, giftBatch.CurrencyCode, FLedgerBaseCurrency, giftBatch.ExchangeRateToBase, giftBatch.GlEffectiveDate))
+                                    if (UpdateDailyExchangeRateTable(DailyExchangeToLedgerTable, giftBatch.CurrencyCode, FLedgerBaseCurrency, giftBatch.ExchangeRateToBase, giftBatch.GlEffectiveDate))
                                     {
-                                        ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToTable, Transaction);
-                                        DailyExchangeToTable.AcceptChanges();
+                                        ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToLedgerTable, Transaction);
+                                        DailyExchangeToLedgerTable.AcceptChanges();
 
                                         AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine, RowNumber),
                                             String.Format(Catalog.GetString("Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
@@ -387,6 +391,33 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
+                                if ((FLedgerBaseCurrency != LedgerIntlCurrency) && (giftDetails.GiftAmountIntl != 0))
+                                {
+                                    // We should add a Daily Exchange Rate row pair
+                                    // start with To Ledger currency
+                                    decimal fromIntlToBase = GLRoutines.Divide(giftDetails.GiftAmount, giftDetails.GiftAmountIntl);
+                                    if (UpdateDailyExchangeRateTable(DailyExchangeToLedgerTable, LedgerIntlCurrency, FLedgerBaseCurrency,
+                                        fromIntlToBase, giftBatch.GlEffectiveDate))
+                                    {
+                                        ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToLedgerTable, Transaction);
+                                        DailyExchangeToLedgerTable.AcceptChanges();
+
+                                        AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine, RowNumber),
+                                            String.Format(Catalog.GetString("Added exchange rate of {0} to Daily Exchange Rate table for ledger currency / international currency on {1}"),
+                                                fromIntlToBase, StringHelper.DateToLocalizedString(giftBatch.GlEffectiveDate)),
+                                            TResultSeverity.Resv_Info));
+                                    }
+
+                                    // Now the inverse for From Ledger currency
+                                    decimal inverseRate = GLRoutines.Divide(giftDetails.GiftAmountIntl, giftDetails.GiftAmount);
+
+                                    if (UpdateDailyExchangeRateTable(DailyExchangeToIntlTable, FLedgerBaseCurrency, LedgerIntlCurrency,
+                                        inverseRate, giftBatch.GlEffectiveDate))
+                                    {
+                                        ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToIntlTable, Transaction);
+                                    }
+                                }
+
                                 ImportMessage = Catalog.GetString("Saving gift");
                                 AGiftAccess.SubmitChanges(FMainDS.AGift, Transaction);
                                 FMainDS.AGift.AcceptChanges();
@@ -732,13 +763,14 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"),
                 FMainDS.AGiftDetail.ColumnGiftTransactionAmount, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
-            AGiftDetails.GiftAmount = currentGiftAmount;
-            AGiftDetails.GiftTransactionAmount = currentGiftAmount;
+            AGiftDetails.GiftTransactionAmount = currentGiftAmount;     // amount in batch currency
             ATotalBatchAmount += currentGiftAmount;
-            // TODO: currency translation
+
+            AGiftDetails.GiftAmount = GLRoutines.Divide(currentGiftAmount, AGiftBatch.ExchangeRateToBase);      // amount in ledger currency
 
             if (HasExtraColumns)
             {
+                // amount in international currency
                 AGiftDetails.GiftAmountIntl = ImportDecimal(Catalog.GetString("Gift amount intl"),
                     FMainDS.AGiftDetail.ColumnGiftAmountIntl, ARowNumber, AMessages, AValidationControlsDictGiftDetail);
             }
