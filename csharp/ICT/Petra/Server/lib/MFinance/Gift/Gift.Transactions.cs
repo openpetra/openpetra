@@ -1818,17 +1818,68 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Get gift destination for recipient
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AGiftDate"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime? AGiftDate)
+        {
+            Int64 PartnerField = 0;
+
+            if ((APartnerKey == 0) || !AGiftDate.HasValue)
+            {
+                return 0;
+            }
+
+            string GetPartnerGiftDestinationSQL = String.Format("SELECT DISTINCT pgd.p_field_key_n as FieldKey" + 
+                                                                "  FROM PUB_p_partner_gift_destination pgd " +
+                                                                "  WHERE pgd.p_partner_key_n = {0}" +
+                                                                "    And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL)" + 
+                                                                "         Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
+                                                                APartnerKey,
+                                                                AGiftDate);
+
+            DataTable GiftDestTable = null;
+            string PartnerGiftDestinationTable = "PartnerGiftDestination";
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    try
+                    {
+                        GiftDestTable = DBAccess.GDBAccessObj.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
+
+                        if (GiftDestTable != null && GiftDestTable.Rows.Count > 0)
+                        {
+                            PartnerField = (Int64)GiftDestTable.DefaultView[0].Row["FieldKey"];
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Error in GetGiftDestinationForRecipient: " + e.Message);
+                    }
+                });
+
+            return PartnerField;
+        }
+
+        /// <summary>
         /// Check if an entry exists in ValidLedgerNumber for the specified ledger number and partner key
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
-        /// <param name="AFieldDateTime"></param>
+        /// <param name="ARecipientField"></param>
         /// <param name="ACostCentreCode"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool CheckCostCentreDestinationForRecipient(Int32 ALedgerNumber,
             Int64 APartnerKey,
-            Int64 AFieldDateTime,
+            Int64 ARecipientField,
             out string ACostCentreCode)
         {
             bool CostCentreExists = false;
@@ -1851,7 +1902,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    TLogging.Log("GetCostCentreCodeSQL: " + GetCostCentreCodeSQL);
                     CostCentreCodesTbl = DBAccess.GDBAccessObj.SelectDT(GetCostCentreCodeSQL, CostCentreCodeTableName, Transaction);
 
                     if (CostCentreCodesTbl != null && CostCentreCodesTbl.Rows.Count > 0)
@@ -1862,7 +1912,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 });
 
             ACostCentreCode = CostCentreCode;
-            TLogging.Log("CheckCostCentreDestinationForRecipient: " + ACostCentreCode);
 
             return CostCentreExists;
         }
@@ -2908,67 +2957,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 return APartnerKey;
             }
-        }
-
-        /// <summary>
-        /// Get gift destination for recipient
-        /// </summary>
-        /// <param name="APartnerKey"></param>
-        /// <param name="AGiftDate"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime ? AGiftDate)
-        {
-            Int64 PartnerField = 0;
-
-            if ((APartnerKey == 0) || !AGiftDate.HasValue)
-            {
-                return 0;
-            }
-
-            string PartnerGiftDestinationTable = "PartnerGiftDestination";
-
-            string GetPartnerGiftDestinationSQL = String.Format(
-                "SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
-                "WHERE pgd.p_partner_key_n = {0} And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL) Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
-                APartnerKey,
-                AGiftDate);
-
-            DataSet GiftDestDS = new DataSet();
-
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    try
-                    {
-                        DBAccess.GDBAccessObj.Select(GiftDestDS, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
-                            Transaction,
-                            0, 0);
-
-                        if (GiftDestDS.Tables[PartnerGiftDestinationTable] != null)
-                        {
-                            if (GiftDestDS.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
-                            {
-                                DataRow row = GiftDestDS.Tables[PartnerGiftDestinationTable].Rows[0];
-                                PartnerField = (Int64)row[0];
-                            }
-
-                            GiftDestDS.Clear();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("Error in GetGiftDestinationForRecipient: " + e.Message);
-                    }
-                });
-
-            GiftDestDS.AcceptChanges();
-
-            return PartnerField;
         }
 
         /// <summary>

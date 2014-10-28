@@ -814,17 +814,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (APartnerKey > 0)
 	        {
-		        SqlQuery += "    AND p_partner.p_partner_key_n = " + APartnerKey.ToString();
+		        SqlQuery += " AND p_partner.p_partner_key_n = " + APartnerKey.ToString();
 	        }
                               
-            SqlQuery += "        AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
-
-            TLogging.Log("LoadCostCentrePartnerLinks: " + SqlQuery);
+            SqlQuery += " AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
 
             DataTable PartnerCostCentreTbl = null;
 
             TDBTransaction Transaction = null;
-
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,

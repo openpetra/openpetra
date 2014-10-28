@@ -136,7 +136,7 @@ RootNode:
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
-        txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
+        txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true, OnChange=RecipientLedgerNumberChanged}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
