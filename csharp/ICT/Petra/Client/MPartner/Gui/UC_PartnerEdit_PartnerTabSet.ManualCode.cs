@@ -733,6 +733,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FUcoAddresses.RefreshRecordsAfterMerge();
+            
+            FUcoContactDetails.RefreshRecordsAfterMerge();
 
             if (FUcoFinanceDetails != null)
             {

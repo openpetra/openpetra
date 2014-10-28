@@ -67,10 +67,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TTimerDrivenMessageBoxKind FTimerDrivenMessageBoxKind;
 
         private bool FRunningInsideShowDetails = false;
-        
+
+        private bool FRunningInsideDataSaving = false;
+
+        private bool FEmailAddressChangedButUserDidntLeaveControl = false;
+
         private bool FSuppressOnContactTypeChangedEvent = false;
         
         private bool FPrimaryEmailSelectedValueChangedEvent = false;
+        
+        private int FSelectedRowIndexBeforeSaving = -1;
         
         /// <summary>
         /// Usage: see Methods <see cref="PreDeleteManual"/> and <see cref="PostDeleteManual"/>. 
@@ -130,16 +136,30 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e">Event Arguments.
         /// </param>
         /// <returns>void</returns>
-        private void DataSavingStarted(System.Object sender, System.EventArgs e)
+        private void HandleDataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            // TODO DataSavingStarted
-            // Do not call this method in your manual code.
-            // This is a method that is private to the generated code and is part of the Validation process.
-            // If you need to update the controls data into the Data Row object, you must use ValidateAllData and be prepared
-            //   to handle the consequences of a failed validation.
-//            GetDetailsFromControls(GetSelectedDetailRow());
+            FRunningInsideDataSaving = true;
+            
+            if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS) 
+            {
+                FEmailAddressChangedButUserDidntLeaveControl = 
+                    String.Compare(txtValue.Text, GetSelectedDetailRow().Value, StringComparison.InvariantCulture) != 0;
+            }            
+            
+            // make sure latest screen modifications are saved to FMainDS
+            GetDataFromControls();
+
+            // Refresh the ComboBox so it reflects any change in the email address!
+            UpdatePrimaryEmailComboItems(true);
+
+            FSelectedRowIndexBeforeSaving = grdDetails.GetFirstHighlightedRowIndex();
         }
 
+        void HandleDataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            FRunningInsideDataSaving = false;
+        }
+        
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -153,7 +173,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.DisableDataChangedEvent();
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
-            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.HandleDataSavingStarted);
+            FPetraUtilsObject.DataSaved += HandleDataSaved;
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
@@ -256,6 +277,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Performs necessary actions after the Merging of rows that were changed on
+        /// the Server side into the Client-side DataSet.
+        /// </summary>
+        /// <returns>void</returns>
+        public void RefreshRecordsAfterMerge()
+        {
+            // Make sure selected row in grid is reinitialized after save in case
+            // it got replaced during merge process.
+            if (FSelectedRowIndexBeforeSaving >= 0)
+            {
+                grdDetails.SelectRowInGrid(FSelectedRowIndexBeforeSaving);
+            }
+        }
+        
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -1197,7 +1233,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void HandleValueLeave(Object sender, EventArgs e)
         {
             var SelectedDetailDR = GetSelectedDetailRow();
-            if ((!FRunningInsideShowDetails) 
+            
+            if ((!FRunningInsideShowDetails)
                 && (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS))
             {
                 if (SelectedDetailDR.RowState != DataRowState.Detached) 
@@ -1206,7 +1243,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     SelectedDetailDR.Value = txtValue.Text;
                     
                     // Refresh the ComboBox so it reflects any change in the email address!
-                    UpdatePrimaryEmailComboItems(true, txtValue.Text);                                                    
+                    UpdatePrimaryEmailComboItems(true, 
+                        (
+                            (cmbPrimaryEMail.SelectedIndex != 0)
+                            && (
+                                FEmailAddressChangedButUserDidntLeaveControl || !FRunningInsideDataSaving
+                               ) 
+                        ) ? txtValue.Text : null);
+                    
+        		    FEmailAddressChangedButUserDidntLeaveControl = false;
                 }
             }
         }
