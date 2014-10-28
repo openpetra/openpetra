@@ -86,7 +86,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// we need to ignore the <paramref name="AParentForm" /> Argument as it will be null in those cases!
         /// </remarks>
         /// <returns>void</returns>
-        public static void FindPartnerOfClass(Form AParentForm, string ARestrictToPartnerClasses = null, TPartnerEditTabPageEnum APreferredInitialTabPage = TPartnerEditTabPageEnum.petpAddresses)
+        public static void FindPartnerOfClass(Form AParentForm,
+            string ARestrictToPartnerClasses = null,
+            TPartnerEditTabPageEnum APreferredInitialTabPage = TPartnerEditTabPageEnum.petpAddresses)
         {
             if (ARestrictToPartnerClasses == null)
             {
@@ -126,6 +128,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     PartnerEditForm = new TFrmPartnerEdit(AParentForm);
+
                     if (APreferredInitialTabPage == TPartnerEditTabPageEnum.petpAddresses)
                     {
                         PartnerEditForm.SetParameters(TScreenMode.smEdit, PartnerKey, LocationPK.SiteKey, LocationPK.LocationKey);
@@ -134,6 +137,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         PartnerEditForm.SetParameters(TScreenMode.smEdit, PartnerKey, APreferredInitialTabPage);
                     }
+
                     PartnerEditForm.Show();
 
                     if (ARestrictToPartnerClasses.Split(new Char[] { (',') })[0] == "PERSON")
@@ -474,6 +478,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             AParentForm.Cursor = Cursors.WaitCursor;
 
             frmPEDS = new TFrmPartnerEdit(AParentForm);
+
             if (Context == TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL)
             {
                 frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey, TPartnerEditTabPageEnum.petpPersonnelIndividualData);
@@ -482,6 +487,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
             }
+
             frmPEDS.Show();
 
             AParentForm.Cursor = Cursors.Default;

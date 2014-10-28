@@ -1591,7 +1591,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (!ACanBeParent || ACanDelete)
                 {
-                    List<TRowReferenceInfo> CascadingReferences;
+                    List <TRowReferenceInfo>CascadingReferences;
                     Int32 Refs = AAccountCascading.CountByPrimaryKey(
                         ALedgerNumber, AAccountCode,
                         3, Transaction, true,
@@ -3749,7 +3749,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     if (!canBeParent || canDelete)
                     {
-                        List<TRowReferenceInfo> CascadingReferences;
+                        List <TRowReferenceInfo>CascadingReferences;
                         Int32 Refs = MCommon.Data.Cascading.ACostCentreCascading.CountByPrimaryKey(
                             ALedgerNumber, ACostCentreCode,
                             5, Transaction, true,
@@ -3768,7 +3768,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             canBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
                         }
                     }
-
                 }); // End of BeginAutoReadTransaction with anonymous function
 
             ACanBeParent = canBeParent;

@@ -65,7 +65,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool AInfoMode,
             out TVerificationResultCollection AVerificationResults)
         {
-
             try
             {
                 TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
@@ -94,6 +93,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 TResultSeverity.Resv_Status));
                     }
                 }
+
                 return res;
             }
             catch (Exception e)
@@ -299,7 +299,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private void CheckIfRevaluationIsDone()
         {
             if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
-                        TLedgerInitFlagEnum.Revaluation).Flag))
+                     TLedgerInitFlagEnum.Revaluation).Flag))
             {
                 return; // Revaluation has been performed for the current period.
             }
@@ -567,6 +567,7 @@ namespace Ict.Petra.Server.MFinance.GL
         public GetSuspenseAccountInfo(int ALedgerNumber)
         {
             TDBTransaction Transaction = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {

@@ -73,7 +73,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName(), AFromCurrencyCode,
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName(), AToCurrencyCode,
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                    AEffectiveDate.ToString("d", CultureInfo.InvariantCulture));
+                AEffectiveDate.ToString("d", CultureInfo.InvariantCulture));
 
             DataView dvTo = new DataView(DailyExchangeTable, filter, SortByTimeDescending, DataViewRowState.CurrentRows);
             bool foundMatch = false;
@@ -90,6 +90,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (!foundMatch)
             {
                 int newTime = 3600;
+
                 if (dvTo.Count > 0)
                 {
                     newTime = ((ADailyExchangeRateRow)dvTo[0].Row).TimeEffectiveFrom + 600;
@@ -197,8 +198,10 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
 
                 LedgerBaseCurrency = LedgerTable[0].BaseCurrency;
-                ACorporateExchangeRateTable CorporateExchangeTable = ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerBaseCurrency, Transaction);
-                ADailyExchangeRateTable DailyExchangeToTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerBaseCurrency, Transaction);
+                ACorporateExchangeRateTable CorporateExchangeTable = ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerBaseCurrency,
+                    Transaction);
+                ADailyExchangeRateTable DailyExchangeToTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerBaseCurrency,
+                    Transaction);
 
                 // Go round a loop reading the file line by line
                 ImportMessage = Catalog.GetString("Parsing first line");
@@ -283,7 +286,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
                             {
-                                ((TVerificationResult)AMessages[i]).OverrideResultContext(String.Format(MCommonConstants.StrValidationErrorInLine, RowNumber));
+                                ((TVerificationResult)AMessages[i]).OverrideResultContext(String.Format(MCommonConstants.StrValidationErrorInLine,
+                                        RowNumber));
 
                                 if (AMessages[i] is TScreenVerificationResult)
                                 {
@@ -315,7 +319,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (numberOfElements != 7)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                    Catalog.GetString("Wrong number of journal columns.  Expected 7 columns."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of journal columns.  Expected 7 columns."), TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
                                 continue;
@@ -324,9 +328,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (NewBatch == null)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                    Catalog.GetString(
-                                        "Expected a Batch line, but found a Journal. Will create a dummy working batch for the current period."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString(
+                                            "Expected a Batch line, but found a Journal. Will create a dummy working batch for the current period."),
+                                        TResultSeverity.Resv_Critical));
 
                                 // in order to carry on we will make a dummy batch and force the date to fit
                                 NewBatch = MainDS.ABatch.NewRowTyped(true);
@@ -385,7 +389,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             for (int i = messageCountBeforeValidate; i < AMessages.Count; i++)
                             {
-                                ((TVerificationResult)AMessages[i]).OverrideResultContext(String.Format(MCommonConstants.StrValidationErrorInLine, RowNumber));
+                                ((TVerificationResult)AMessages[i]).OverrideResultContext(String.Format(MCommonConstants.StrValidationErrorInLine,
+                                        RowNumber));
 
                                 if (AMessages[i] is TScreenVerificationResult)
                                 {
@@ -401,7 +406,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 && (NewJournal.ExchangeRateToBase != 1.0m))
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, RowNumber),
-                                    Catalog.GetString("Journal in base currency must have exchange rate of 1.00."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Journal in base currency must have exchange rate of 1.00."), TResultSeverity.Resv_Critical));
                             }
 
                             //
@@ -417,10 +422,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, RowNumber),
-                                    String.Format(Catalog.GetString(
-                                        "The journal effective date {0} is not in the same period as the batch date {1}."),
-                                        journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString()),
-                                    TResultSeverity.Resv_Critical));
+                                        String.Format(Catalog.GetString(
+                                                "The journal effective date {0} is not in the same period as the batch date {1}."),
+                                            journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString()),
+                                        TResultSeverity.Resv_Critical));
                             }
 
                             if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
@@ -437,23 +442,26 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                     if (Math.Abs((NewJournal.ExchangeRateToBase - corporateRate) / corporateRate) > 0.20m)
                                     {
-                                        AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, RowNumber),
-                                            String.Format(Catalog.GetString("The exchange rate of {0} differs from the Corporate Rate of {1} for the month commencing {2} by more than 20 percent."),
-                                                NewJournal.ExchangeRateToBase, corporateRate, StringHelper.DateToLocalizedString(firstOfMonth)),
-                                            TResultSeverity.Resv_Noncritical));
+                                        AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine,
+                                                    RowNumber),
+                                                String.Format(Catalog.GetString(
+                                                        "The exchange rate of {0} differs from the Corporate Rate of {1} for the month commencing {2} by more than 20 percent."),
+                                                    NewJournal.ExchangeRateToBase, corporateRate, StringHelper.DateToLocalizedString(firstOfMonth)),
+                                                TResultSeverity.Resv_Noncritical));
                                     }
 
                                     // we need to create a daily exchange rate pair for the transaction date
                                     // start with To Ledger currency
-                                    if (UpdateDailyExchangeRateTable(DailyExchangeToTable, NewJournal.TransactionCurrency, LedgerBaseCurrency, NewJournal.ExchangeRateToBase, NewJournal.DateEffective))
+                                    if (UpdateDailyExchangeRateTable(DailyExchangeToTable, NewJournal.TransactionCurrency, LedgerBaseCurrency,
+                                            NewJournal.ExchangeRateToBase, NewJournal.DateEffective))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToTable, Transaction);
                                         DailyExchangeToTable.AcceptChanges();
 
                                         AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine, RowNumber),
-                                            String.Format(Catalog.GetString("Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
-                                                NewJournal.ExchangeRateToBase, StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
-                                            TResultSeverity.Resv_Info));
+                                                String.Format(Catalog.GetString("Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
+                                                    NewJournal.ExchangeRateToBase, StringHelper.DateToLocalizedString(NewJournal.DateEffective)),
+                                                TResultSeverity.Resv_Info));
                                     }
 
                                     // Now the inverse for From Ledger currency
@@ -462,7 +470,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     decimal inverseRate = Math.Round(1 / NewJournal.ExchangeRateToBase, 10);
 
                                     if (UpdateDailyExchangeRateTable(DailyExchangeFromTable, LedgerBaseCurrency, NewJournal.TransactionCurrency,
-                                        inverseRate, NewJournal.DateEffective))
+                                            inverseRate, NewJournal.DateEffective))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeFromTable, Transaction);
                                     }
@@ -480,8 +488,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (numberOfElements < 8)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                    Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
+                                        TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
                                 continue;
@@ -494,7 +502,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         else
                         {
                             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
+                                    Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
                         }
                     }  // if the CSV line qualifies
 
@@ -517,23 +525,23 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     // Record error count
                     AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                        String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
+                            String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
 
                     if (FImportLine == null)
                     {
                         // We did reach the end of the file
                         AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                            Catalog.GetString(
-                                "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
-                            TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
+                                TResultSeverity.Resv_Info));
                     }
                     else
                     {
                         // We gave up before the end
                         AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                            Catalog.GetString(
-                                "Stopped reading the file after generating more than 100 messages.  The file may contain more errors beyond the ones listed here."),
-                            TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Stopped reading the file after generating more than 100 messages.  The file may contain more errors beyond the ones listed here."),
+                                TResultSeverity.Resv_Info));
                     }
 
                     TLogging.Log("Return from here!");
@@ -579,13 +587,13 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
 
                     AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                        msg, TResultSeverity.Resv_Critical));
+                            msg, TResultSeverity.Resv_Critical));
                 }
                 else
                 {
                     // We got an exception before we even started parsing the rows (getting a transaction?)
                     AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                        friendlyExceptionText, TResultSeverity.Resv_Critical));
+                            friendlyExceptionText, TResultSeverity.Resv_Critical));
                 }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -638,8 +646,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
 
                     AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                        Catalog.GetString("None of the data from the import was saved."),
-                        TResultSeverity.Resv_Critical));
+                            Catalog.GetString("None of the data from the import was saved."),
+                            TResultSeverity.Resv_Critical));
 
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                         Catalog.GetString("Data could not be saved."),
@@ -744,8 +752,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (numberOfElements < 8)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                    Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
+                                        TResultSeverity.Resv_Critical));
 
                                 FImportLine = sr.ReadLine();
                                 continue;
@@ -757,7 +765,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         else
                         {
                             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
+                                    Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
                         }
                     }  // if the CSV line qualifies
 
@@ -782,17 +790,17 @@ namespace Ict.Petra.Server.MFinance.GL
                     {
                         // We did reach the end of the file
                         AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                            Catalog.GetString(
-                                "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
-                            TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
+                                TResultSeverity.Resv_Info));
                     }
                     else
                     {
                         // We gave up before the end
                         AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                            Catalog.GetString(
-                                "Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."),
-                            TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."),
+                                TResultSeverity.Resv_Info));
                     }
 
                     // Do finally actions and then return false
@@ -842,13 +850,13 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
 
                     AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                        msg, TResultSeverity.Resv_Critical));
+                            msg, TResultSeverity.Resv_Critical));
                 }
                 else
                 {
                     // We got an exception before we even started parsing the rows (getting a transaction?)
-                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine,RowNumber),
-                        friendlyExceptionText, TResultSeverity.Resv_Critical));
+                    AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                            friendlyExceptionText, TResultSeverity.Resv_Critical));
                 }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -873,8 +881,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
 
                     AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                        Catalog.GetString("A problem was encountered while closing the Import File:"),
-                        TResultSeverity.Resv_Critical));
+                            Catalog.GetString("A problem was encountered while closing the Import File:"),
+                            TResultSeverity.Resv_Critical));
 
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                         Catalog.GetString("Exception Occurred"),
@@ -966,8 +974,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     // All analysis analysisType errors are non-critical
                     AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                        Catalog.GetString("Transaction analysis attributes must have an attribute value.") + strIgnoreAnalysisTypeAndValue,
-                        TResultSeverity.Resv_Noncritical));
+                            Catalog.GetString("Transaction analysis attributes must have an attribute value.") + strIgnoreAnalysisTypeAndValue,
+                            TResultSeverity.Resv_Noncritical));
                 }
 
                 // The analysis data is only imported if all corresponding values are there:
@@ -999,33 +1007,33 @@ namespace Ict.Petra.Server.MFinance.GL
                         if (atrow == null)
                         {
                             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                                String.Format(Catalog.GetString("Unknown transaction analysis attribute '{0}'."),
-                                    analysisType) + strIgnoreAnalysisTypeAndValue,
-                                TResultSeverity.Resv_Noncritical));
+                                    String.Format(Catalog.GetString("Unknown transaction analysis attribute '{0}'."),
+                                        analysisType) + strIgnoreAnalysisTypeAndValue,
+                                    TResultSeverity.Resv_Noncritical));
                         }
                         else if (afrow == null)
                         {
                             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                                String.Format(Catalog.GetString("Unknown transaction analysis value '{0}' for type '{1}'."),
-                                    analysisValue, analysisType) + strIgnoreAnalysisTypeAndValue,
-                                TResultSeverity.Resv_Noncritical));
+                                    String.Format(Catalog.GetString("Unknown transaction analysis value '{0}' for type '{1}'."),
+                                        analysisValue, analysisType) + strIgnoreAnalysisTypeAndValue,
+                                    TResultSeverity.Resv_Noncritical));
                         }
                         else if (!isActive)
                         {
                             if (anrow == null)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                                    String.Format(Catalog.GetString(
-                                            "Transaction analysis type/value '{0}'/'{1}' is not associated with account '{2}'."),
-                                        analysisType, analysisValue, NewTransaction.AccountCode) + strIgnoreAnalysisTypeAndValue,
-                                    TResultSeverity.Resv_Noncritical));
+                                        String.Format(Catalog.GetString(
+                                                "Transaction analysis type/value '{0}'/'{1}' is not associated with account '{2}'."),
+                                            analysisType, analysisValue, NewTransaction.AccountCode) + strIgnoreAnalysisTypeAndValue,
+                                        TResultSeverity.Resv_Noncritical));
                             }
                             else
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, ARowNumber),
-                                    String.Format(Catalog.GetString("Transaction analysis type/value '{0}'/'{1}' is no longer active."),
-                                        analysisType, analysisValue) + strIgnoreAnalysisTypeAndValue,
-                                    TResultSeverity.Resv_Noncritical));
+                                        String.Format(Catalog.GetString("Transaction analysis type/value '{0}'/'{1}' is no longer active."),
+                                            analysisType, analysisValue) + strIgnoreAnalysisTypeAndValue,
+                                        TResultSeverity.Resv_Noncritical));
                             }
                         }
                     }
@@ -1037,19 +1045,19 @@ namespace Ict.Petra.Server.MFinance.GL
             if ((DebitAmount == 0) && (CreditAmount == 0))
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."), TResultSeverity.Resv_Critical));
+                        Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."), TResultSeverity.Resv_Critical));
             }
 
             if ((DebitAmount < 0) || (CreditAmount < 0))
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    Catalog.GetString("Negative amount specified - debits and credits must be positive."), TResultSeverity.Resv_Critical));
+                        Catalog.GetString("Negative amount specified - debits and credits must be positive."), TResultSeverity.Resv_Critical));
             }
 
             if ((DebitAmount != 0) && (CreditAmount != 0))
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    Catalog.GetString("Transactions cannot have values for both debit and credit amounts."), TResultSeverity.Resv_Critical));
+                        Catalog.GetString("Transactions cannot have values for both debit and credit amounts."), TResultSeverity.Resv_Critical));
             }
 
             if (DebitAmount != 0)
@@ -1117,13 +1125,13 @@ namespace Ict.Petra.Server.MFinance.GL
             if ((costcentre == null) || !costcentre.PostingCostCentreFlag)
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    String.Format(Catalog.GetString("Invalid cost centre '{0}'."), NewTransaction.CostCentreCode), TResultSeverity.Resv_Critical));
+                        String.Format(Catalog.GetString("Invalid cost centre '{0}'."), NewTransaction.CostCentreCode), TResultSeverity.Resv_Critical));
             }
             else if (!costcentre.CostCentreActiveFlag)
             {
                 // TODO: ask user if he wants to use an inactive cost centre???
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    String.Format(Catalog.GetString("Inactive cost centre '{0}'."), NewTransaction.CostCentreCode), TResultSeverity.Resv_Critical));
+                        String.Format(Catalog.GetString("Inactive cost centre '{0}'."), NewTransaction.CostCentreCode), TResultSeverity.Resv_Critical));
             }
 
             AAccountRow account = (AAccountRow)ASetupDS.AAccount.Rows.Find(new object[] { ALedgerNumber, NewTransaction.AccountCode });
@@ -1133,13 +1141,13 @@ namespace Ict.Petra.Server.MFinance.GL
             if ((account == null) || !account.PostingStatus)
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    String.Format(Catalog.GetString("Invalid account code '{0}'."), NewTransaction.AccountCode), TResultSeverity.Resv_Critical));
+                        String.Format(Catalog.GetString("Invalid account code '{0}'."), NewTransaction.AccountCode), TResultSeverity.Resv_Critical));
             }
             else if (!account.AccountActiveFlag)
             {
                 // TODO: ask user if he wants to use an inactive account???
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    String.Format(Catalog.GetString("Inactive account code '{0}'."), NewTransaction.AccountCode), TResultSeverity.Resv_Critical));
+                        String.Format(Catalog.GetString("Inactive account code '{0}'."), NewTransaction.AccountCode), TResultSeverity.Resv_Critical));
             }
 
             // update the totals of the batch
@@ -1271,8 +1279,8 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                TResultSeverity.Resv_Critical));
+                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
+                    TResultSeverity.Resv_Critical));
             return -1;
         }
 
@@ -1296,8 +1304,8 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                TResultSeverity.Resv_Critical));
+                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
+                    TResultSeverity.Resv_Critical));
             return -1;
         }
 
@@ -1321,8 +1329,8 @@ namespace Ict.Petra.Server.MFinance.GL
             catch
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
-                    TResultSeverity.Resv_Critical));
+                        String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
+                        TResultSeverity.Resv_Critical));
                 return 1.0m;
             }
         }
@@ -1348,8 +1356,8 @@ namespace Ict.Petra.Server.MFinance.GL
             catch (Exception)
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
-                    TResultSeverity.Resv_Critical));
+                        String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
+                        TResultSeverity.Resv_Critical));
                 TLogging.Log("Problem parsing " + sDate + " with format " + FCultureInfoDate.DateTimeFormat.ShortDatePattern);
                 return DateTime.Today;
             }

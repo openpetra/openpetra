@@ -529,13 +529,18 @@ namespace Ict.Petra.Server.MFinance.Common
                                                     transRow.JournalNumber, transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
                                                 TResultSeverity.Resv_Critical));
                                     } // if
+
                                 } // else
+
                             } // else
+
                         } // else
 
                         i++;
                     } // while i
+
                 } // foreach transRowView
+
             } // foreach journal
 
             return TVerificationHelper.IsNullOrOnlyNonCritical(AVerifications);
@@ -1233,26 +1238,28 @@ namespace Ict.Petra.Server.MFinance.Common
         private static Boolean CheckPostIsAllowed(Int32 ALedgerNumber, out TVerificationResultCollection AVerifications)
         {
             AVerifications = null;
+
             /*
              * As far as I can work out, we should not be doing this here:
              * It's supposed to be impossible to create a new Batch after the final MonthEnd, and this may be adequate.
-             * 
-             * If this check is required, we need to deal with the fact that the YearEnd process calls here, 
+             *
+             * If this check is required, we need to deal with the fact that the YearEnd process calls here,
              * and its reallocation batch should succeed!
              */
+
             /*
-            TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNumber);
-            if (LedgerInfo.ProvisionalYearEndFlag)
-            {
-                AVerifications = new TVerificationResultCollection();
-                AVerifications.Add(
-                    new TVerificationResult(
-                        Catalog.GetString("Post Batch"), 
-                        Catalog.GetString("There are no open periods in which a batch can be posted.\r\nYear End process must be run."),
-                        TResultSeverity.Resv_Critical));
-                return false;
-            }
-            */
+             * TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNumber);
+             * if (LedgerInfo.ProvisionalYearEndFlag)
+             * {
+             *  AVerifications = new TVerificationResultCollection();
+             *  AVerifications.Add(
+             *      new TVerificationResult(
+             *          Catalog.GetString("Post Batch"),
+             *          Catalog.GetString("There are no open periods in which a batch can be posted.\r\nYear End process must be run."),
+             *          TResultSeverity.Resv_Critical));
+             *  return false;
+             * }
+             */
             return true;
         }
 

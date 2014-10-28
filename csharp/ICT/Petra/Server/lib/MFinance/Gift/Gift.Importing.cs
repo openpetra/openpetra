@@ -108,7 +108,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ADailyExchangeRateTable.GetFromCurrencyCodeDBName(), AFromCurrencyCode,
                 ADailyExchangeRateTable.GetToCurrencyCodeDBName(), AToCurrencyCode,
                 ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
-                    AEffectiveDate.ToString("d", CultureInfo.InvariantCulture));
+                AEffectiveDate.ToString("d", CultureInfo.InvariantCulture));
 
             DataView dvTo = new DataView(DailyExchangeTable, filter, SortByTimeDescending, DataViewRowState.CurrentRows);
             bool foundMatch = false;
@@ -125,6 +125,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (!foundMatch)
             {
                 int newTime = 3600;
+
                 if (dvTo.Count > 0)
                 {
                     newTime = ((ADailyExchangeRateRow)dvTo[0].Row).TimeEffectiveFrom + 600;
@@ -229,9 +230,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 FLedgerBaseCurrency = ((ALedgerRow)LedgerTable.Rows[0]).BaseCurrency;
                 string LedgerIntlCurrency = ((ALedgerRow)LedgerTable.Rows[0]).IntlCurrency;
 
-                ACorporateExchangeRateTable CorporateExchangeToLedgerTable = ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerBaseCurrency, Transaction);
-                ADailyExchangeRateTable DailyExchangeToLedgerTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerBaseCurrency, Transaction);
-                ADailyExchangeRateTable DailyExchangeToIntlTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerIntlCurrency, Transaction);
+                ACorporateExchangeRateTable CorporateExchangeToLedgerTable = ACorporateExchangeRateAccess.LoadViaACurrencyToCurrencyCode(
+                    FLedgerBaseCurrency,
+                    Transaction);
+                ADailyExchangeRateTable DailyExchangeToLedgerTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(FLedgerBaseCurrency,
+                    Transaction);
+                ADailyExchangeRateTable DailyExchangeToIntlTable = ADailyExchangeRateAccess.LoadViaACurrencyToCurrencyCode(LedgerIntlCurrency,
+                    Transaction);
 
                 ImportMessage = Catalog.GetString("Parsing first line");
                 AGiftRow previousGift = null;
@@ -296,28 +301,31 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     // We need to know what that rate is...
                                     DateTime firstOfMonth = new DateTime(giftBatch.GlEffectiveDate.Year, giftBatch.GlEffectiveDate.Month, 1);
                                     ACorporateExchangeRateRow corporateRateRow = (ACorporateExchangeRateRow)CorporateExchangeToLedgerTable.Rows.Find(
-                                        new object[] { giftBatch.CurrencyCode, FLedgerBaseCurrency, firstOfMonth});
+                                        new object[] { giftBatch.CurrencyCode, FLedgerBaseCurrency, firstOfMonth });
                                     decimal corporateRate = corporateRateRow.RateOfExchange;
 
                                     if (Math.Abs((giftBatch.ExchangeRateToBase - corporateRate) / corporateRate) > 0.20m)
                                     {
-                                        AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine, RowNumber),
-                                            String.Format(Catalog.GetString("The exchange rate of {0} differs from the Corporate Rate of {1} for the month commencing {2} by more than 20 percent."),
-                                                giftBatch.ExchangeRateToBase, corporateRate, StringHelper.DateToLocalizedString(firstOfMonth)),
-                                            TResultSeverity.Resv_Noncritical));
+                                        AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationWarningInLine,
+                                                    RowNumber),
+                                                String.Format(Catalog.GetString(
+                                                        "The exchange rate of {0} differs from the Corporate Rate of {1} for the month commencing {2} by more than 20 percent."),
+                                                    giftBatch.ExchangeRateToBase, corporateRate, StringHelper.DateToLocalizedString(firstOfMonth)),
+                                                TResultSeverity.Resv_Noncritical));
                                     }
 
                                     // we need to create a daily exchange rate pair for the transaction date
                                     // start with To Ledger currency
-                                    if (UpdateDailyExchangeRateTable(DailyExchangeToLedgerTable, giftBatch.CurrencyCode, FLedgerBaseCurrency, giftBatch.ExchangeRateToBase, giftBatch.GlEffectiveDate))
+                                    if (UpdateDailyExchangeRateTable(DailyExchangeToLedgerTable, giftBatch.CurrencyCode, FLedgerBaseCurrency,
+                                            giftBatch.ExchangeRateToBase, giftBatch.GlEffectiveDate))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToLedgerTable, Transaction);
                                         DailyExchangeToLedgerTable.AcceptChanges();
 
                                         AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine, RowNumber),
-                                            String.Format(Catalog.GetString("Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
-                                                giftBatch.ExchangeRateToBase, StringHelper.DateToLocalizedString(giftBatch.GlEffectiveDate)),
-                                            TResultSeverity.Resv_Info));
+                                                String.Format(Catalog.GetString("Added exchange rate of {0} to Daily Exchange Rate table for {1}"),
+                                                    giftBatch.ExchangeRateToBase, StringHelper.DateToLocalizedString(giftBatch.GlEffectiveDate)),
+                                                TResultSeverity.Resv_Info));
                                     }
 
                                     // Now the inverse for From Ledger currency
@@ -326,7 +334,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     decimal inverseRate = Math.Round(1 / giftBatch.ExchangeRateToBase, 10);
 
                                     if (UpdateDailyExchangeRateTable(DailyExchangeFromTable, FLedgerBaseCurrency, giftBatch.CurrencyCode,
-                                        inverseRate, giftBatch.GlEffectiveDate))
+                                            inverseRate, giftBatch.GlEffectiveDate))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeFromTable, Transaction);
                                     }
@@ -357,7 +365,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             else if ((numberOfElements != 21) && (numberOfElements != 27))
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                    Catalog.GetString("Wrong number of gift columns. Expected either 21 or 27."), TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Wrong number of gift columns. Expected either 21 or 27."), TResultSeverity.Resv_Critical));
                                 FImportLine = sr.ReadLine();
                                 continue;
                             }
@@ -365,9 +373,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (giftBatch == null)
                             {
                                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                    Catalog.GetString(
-                                        "Expected a GiftBatch line, but found a Gift. Will create a dummy working batch for the current period."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString(
+                                            "Expected a GiftBatch line, but found a Gift. Will create a dummy working batch for the current period."),
+                                        TResultSeverity.Resv_Critical));
 
                                 // in order to carry on we will make a dummy batch and force the date to fit
                                 giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref FMainDS,
@@ -396,23 +404,25 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     // We should add a Daily Exchange Rate row pair
                                     // start with To Ledger currency
                                     decimal fromIntlToBase = GLRoutines.Divide(giftDetails.GiftAmount, giftDetails.GiftAmountIntl);
+
                                     if (UpdateDailyExchangeRateTable(DailyExchangeToLedgerTable, LedgerIntlCurrency, FLedgerBaseCurrency,
-                                        fromIntlToBase, giftBatch.GlEffectiveDate))
+                                            fromIntlToBase, giftBatch.GlEffectiveDate))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToLedgerTable, Transaction);
                                         DailyExchangeToLedgerTable.AcceptChanges();
 
                                         AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportInformationForLine, RowNumber),
-                                            String.Format(Catalog.GetString("Added exchange rate of {0} to Daily Exchange Rate table for ledger currency / international currency on {1}"),
-                                                fromIntlToBase, StringHelper.DateToLocalizedString(giftBatch.GlEffectiveDate)),
-                                            TResultSeverity.Resv_Info));
+                                                String.Format(Catalog.GetString(
+                                                        "Added exchange rate of {0} to Daily Exchange Rate table for ledger currency / international currency on {1}"),
+                                                    fromIntlToBase, StringHelper.DateToLocalizedString(giftBatch.GlEffectiveDate)),
+                                                TResultSeverity.Resv_Info));
                                     }
 
                                     // Now the inverse for From Ledger currency
                                     decimal inverseRate = GLRoutines.Divide(giftDetails.GiftAmountIntl, giftDetails.GiftAmount);
 
                                     if (UpdateDailyExchangeRateTable(DailyExchangeToIntlTable, FLedgerBaseCurrency, LedgerIntlCurrency,
-                                        inverseRate, giftBatch.GlEffectiveDate))
+                                            inverseRate, giftBatch.GlEffectiveDate))
                                     {
                                         ADailyExchangeRateAccess.SubmitChanges(DailyExchangeToIntlTable, Transaction);
                                     }
@@ -438,7 +448,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         else
                         {
                             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
+                                    Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"), TResultSeverity.Resv_Critical));
                         }
                     }  // if the CSV line qualifies
 
@@ -461,23 +471,23 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                     // Record error count
                     AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                        String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
+                            String.Format(Catalog.GetString("{0} messages reported."), AMessages.Count), TResultSeverity.Resv_Info));
 
                     if (FImportLine == null)
                     {
                         // We did reach the end of the file
                         AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                            Catalog.GetString(
-                                "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
-                            TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Reached the end of file but errors occurred. When these errors are fixed the batch will import successfully."),
+                                TResultSeverity.Resv_Info));
                     }
                     else
                     {
                         // We gave up before the end
                         AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                            Catalog.GetString(
-                                "Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."),
-                            TResultSeverity.Resv_Info));
+                                Catalog.GetString(
+                                    "Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."),
+                                TResultSeverity.Resv_Info));
                     }
 
                     TLogging.Log("Return from here!");
@@ -528,13 +538,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                     }
 
                     AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                        msg, TResultSeverity.Resv_Critical));
+                            msg, TResultSeverity.Resv_Critical));
                 }
                 else
                 {
                     // We got an exception before we even started parsing the rows (getting a transaction?)
                     AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                        friendlyExceptionText, TResultSeverity.Resv_Critical));
+                            friendlyExceptionText, TResultSeverity.Resv_Critical));
                 }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -587,8 +597,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                     }
 
                     AMessages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
-                        Catalog.GetString("None of the data from the import was saved."),
-                        TResultSeverity.Resv_Critical));
+                            Catalog.GetString("None of the data from the import was saved."),
+                            TResultSeverity.Resv_Critical));
 
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                         Catalog.GetString("Data could not be saved."),
@@ -601,9 +611,16 @@ namespace Ict.Petra.Server.MFinance.Gift
             return ok;
         }
 
-        private void ParseBatchLine(ref AGiftBatchRow AGiftBatch, ref TDBTransaction ATransaction, ref ALedgerTable ALedgerTable,
-            ref string AImportMessage, int ARowNumber, TVerificationResultCollection AMessages, TValidationControlsDict AValidationControlsDictBatch,
-            AAccountTable AValidationAccountTable, ACostCentreTable AValidationCostCentreTable, ACorporateExchangeRateTable AValidationCorporateExchTable)
+        private void ParseBatchLine(ref AGiftBatchRow AGiftBatch,
+            ref TDBTransaction ATransaction,
+            ref ALedgerTable ALedgerTable,
+            ref string AImportMessage,
+            int ARowNumber,
+            TVerificationResultCollection AMessages,
+            TValidationControlsDict AValidationControlsDictBatch,
+            AAccountTable AValidationAccountTable,
+            ACostCentreTable AValidationCostCentreTable,
+            ACorporateExchangeRateTable AValidationCorporateExchTable)
         {
             // There are 8 elements to import
             string BatchDescription = ImportString(Catalog.GetString("Batch description"),
@@ -667,9 +684,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (AGiftBatch.ExchangeRateToBase > 10000000)  // Huge numbers here indicate that the decimal comma/point is incorrect.
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    String.Format(Catalog.GetString("A huge exchange rate of {0} suggests a decimal point format problem."),
-                        AGiftBatch.ExchangeRateToBase),
-                    TResultSeverity.Resv_Noncritical));
+                        String.Format(Catalog.GetString("A huge exchange rate of {0} suggests a decimal point format problem."),
+                            AGiftBatch.ExchangeRateToBase),
+                        TResultSeverity.Resv_Noncritical));
             }
 
             // If this batch is in my base currency, the ExchangeRateToBase must be 1:
@@ -677,7 +694,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 && (AGiftBatch.ExchangeRateToBase != 1.0m))
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrImportValidationErrorInLine, ARowNumber),
-                    Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."), TResultSeverity.Resv_Critical));
+                        Catalog.GetString("A batch in the ledger base currency must have exchange rate of 1.00."), TResultSeverity.Resv_Critical));
             }
         }
 
@@ -974,8 +991,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                TResultSeverity.Resv_Critical));
+                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
+                    TResultSeverity.Resv_Critical));
             return -1;
         }
 
@@ -999,8 +1016,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
-                TResultSeverity.Resv_Critical));
+                    String.Format(Catalog.GetString("Cannot convert '{0}' to a number. Will assume a value of -1."), sReturn),
+                    TResultSeverity.Resv_Critical));
             return -1;
         }
 
@@ -1024,8 +1041,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             catch
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
-                    TResultSeverity.Resv_Critical));
+                        String.Format(Catalog.GetString("Cannot convert '{0}' to a decimal number. Will assume a value of 1.00."), sReturn),
+                        TResultSeverity.Resv_Critical));
                 return 1.0m;
             }
         }
@@ -1051,8 +1068,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             catch (Exception)
             {
                 AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn, ARowNumber, AColumnTitle),
-                    String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
-                    TResultSeverity.Resv_Critical));
+                        String.Format(Catalog.GetString("Cannot convert '{0}' to a date. Will assume a value of 'Today'."), sDate),
+                        TResultSeverity.Resv_Critical));
                 TLogging.Log("Problem parsing " + sDate + " with format " + FCultureInfoDate.DateTimeFormat.ShortDatePattern);
                 return DateTime.Today;
             }

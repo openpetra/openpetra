@@ -190,8 +190,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
                         new object[] { ARow.TransactionCurrency, ABaseCurrency, firstOfMonth });
 
-                    if ((foundRow == null) &&
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    if ((foundRow == null)
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
                             new TVerificationResult(ValidationContext,
                                 String.Format(Catalog.GetString("There is no Corporate Exchange Rate defined for the month starting on '{0}'."),

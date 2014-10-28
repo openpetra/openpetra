@@ -89,8 +89,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     // We even need to check that the code exists!
                     DataRow foundRow = AAccountTableRef.Rows.Find(new object[] { ARow.LedgerNumber, ARow.BankAccountCode });
 
-                    if ((foundRow == null) &&
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    if ((foundRow == null)
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
                             new TVerificationResult(ValidationContext,
                                 String.Format(Catalog.GetString("Unknown bank account code '{0}'."), ARow.BankAccountCode),
@@ -128,8 +128,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     // We even need to check that the code exists!
                     DataRow foundRow = ACostCentreTableRef.Rows.Find(new object[] { ARow.LedgerNumber, ARow.BankCostCentre });
 
-                    if ((foundRow == null) &&
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    if ((foundRow == null)
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
                             new TVerificationResult(ValidationContext,
                                 String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.BankCostCentre),
@@ -214,8 +214,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
                         new object[] { ARow.CurrencyCode, ABaseCurrency, firstOfMonth });
 
-                    if ((foundRow == null) &&
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    if ((foundRow == null)
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
                             new TVerificationResult(ValidationContext,
                                 String.Format(Catalog.GetString("There is no Corporate Exchange Rate defined for the month starting on '{0}'."),
@@ -373,8 +373,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     // We even need to check that the code exists!
                     DataRow foundRow = ACostCentres.Rows.Find(new object[] { ARow.LedgerNumber, ARow.CostCentreCode });
 
-                    if ((foundRow == null) &&
-                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    if ((foundRow == null)
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
                             AContext,
                             new TVerificationResult(ValidationContext,
                                 String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.CostCentreCode),
@@ -400,7 +400,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     }
                 }
             }
-
 
             // Detail comments type 1 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCommentOneTypeId];
