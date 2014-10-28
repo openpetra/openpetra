@@ -688,7 +688,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         // reset to default values
         private void BtnClear_Click(Object sender, EventArgs e)
         {
-        	// clear the search criteria
+            // clear the search criteria
             txtGiftBatchNumber.NumberValueInt = null;
             txtGiftTransactionNumber.NumberValueInt = null;
             txtReceiptNumber.NumberValueInt = null;
@@ -706,7 +706,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdResult.DataSource = null;
             FPagedDataTable = null;
             UpdateRecordNumberDisplay();
-            
+
             // disable View button
             btnView.Enabled = false;
         }
@@ -750,12 +750,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         // read only if gift belongs to a posted batch
                         gb.ViewMode = true;
                         gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"],
-                                             gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
+                            gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
                     }
                     else
                     {
                         gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)CurrentlySelectedRow["a_batch_number_i"],
-                                             gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
+                            gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
                         gb.DisableBatches();
                     }
 

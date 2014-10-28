@@ -108,6 +108,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             return VerifResultCollAddedCount == 0;
         }
+
         /// <summary>
         /// Validates the GL Batch Date dialog.
         /// </summary>
@@ -125,15 +126,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         {
             TScreenVerificationResult VerificationResult = null;
             int VerifResultCollAddedCount = 0;
-            
+
             // 'Reversal Date' must be a valid date
             TVerificationResult Result = TSharedValidationControlHelper.IsNotInvalidDate(ABatchDate,
-                    ADescription, AVerificationResultCollection, true,
-                    AControl, null, AControl);
-            
+                ADescription, AVerificationResultCollection, true,
+                AControl, null, AControl);
+
             if (Result != null)
             {
-            	
                 VerificationResult = new TScreenVerificationResult(Result, null, AControl);
             }
 
@@ -144,9 +144,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
             else
             {
-            	
-            	// 'Reversal Date' must lie within the required date range
-            	Result = TDateChecks.IsDateBetweenDates(ABatchDate,
+                // 'Reversal Date' must lie within the required date range
+                Result = TDateChecks.IsDateBetweenDates(ABatchDate,
                     AStartDateCurrentPeriod,
                     AEndDateLastForwardingPeriod,
                     ADescription,
@@ -155,11 +154,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     AControl,
                     null,
                     AControl);
-            	
-            	if (Result != null)
-            	{
-            		VerificationResult = new TScreenVerificationResult(Result, null, AControl);
-            	}
+
+                if (Result != null)
+                {
+                    VerificationResult = new TScreenVerificationResult(Result, null, AControl);
+                }
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AControl, VerificationResult, null, true))

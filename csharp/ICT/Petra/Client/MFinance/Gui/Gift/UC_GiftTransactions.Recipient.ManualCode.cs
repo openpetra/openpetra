@@ -319,14 +319,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
                     {
-                    	// note - this will also update the Motivation Detail
+                        // note - this will also update the Motivation Detail
                         ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
                     }
                     else if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
                     {
                         ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
                     }
-                    
+
                     ACurrentDetailRow.MotivationGroupCode = AMotivationGroup;
                     ACurrentDetailRow.MotivationDetailCode = AMotivationDetail;
                 }
@@ -336,7 +336,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Set RecipientLedgerNumber
                 if (APartnerKey > 0)
                 {
-                    ACurrentDetailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey, ACurrentDetailRow.DateEntered);
+                    ACurrentDetailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey,
+                        ACurrentDetailRow.DateEntered);
                 }
                 else
                 {
@@ -448,10 +449,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             AMotivationGroup = ACmbMotivationGroupCode.GetSelectedString();
-            
+
             if (!ARecipientKeyChangingFlag)
             {
-            	AMotivationDetail = string.Empty;
+                AMotivationDetail = string.Empty;
             }
 
             ApplyMotivationDetailCodeFilter(AGiftBatchDetail,
@@ -511,7 +512,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                	// if key ministry has actually changed
+                    // if key ministry has actually changed
                     if ((ATxtDetailRecipientKeyMinistry.Text != KeyMinistry)
                         || (ACurrentDetailRow.RecipientKeyMinistry != KeyMinistry))
                     {
@@ -519,7 +520,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ACurrentDetailRow.RecipientKeyMinistry = KeyMinistry;
                     }
 
-                	if (Convert.ToInt64(ATxtDetailRecipientKey.Text) != Convert.ToInt64(RecipientKey))
+                    if (Convert.ToInt64(ATxtDetailRecipientKey.Text) != Convert.ToInt64(RecipientKey))
                     {
                         ATxtDetailRecipientKey.Text = RecipientKey;
                     }
@@ -643,8 +644,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// GetRecipientData
         /// </summary>
-        public static void GetRecipientData(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, long APartnerKey, ref TCmbAutoPopulated ACmbKeyMinistries,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey, ref TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber, bool AMotivationDetailChangedFlag)
+        public static void GetRecipientData(GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
+            long APartnerKey,
+            ref TCmbAutoPopulated ACmbKeyMinistries,
+            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            ref TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
+            bool AMotivationDetailChangedFlag)
         {
             if (APartnerKey == 0)
             {
@@ -653,18 +658,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // If this method has been called as a result of a change in motivation detail then txtDetailRecipientKey has not yet been set...
             // but we do know that the recipient must be a Unit.
-            if (!AMotivationDetailChangedFlag && ATxtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
+            if (!AMotivationDetailChangedFlag && (ATxtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY))
             {
-            	AtxtDetailRecipientLedgerNumber.Text = ACurrentDetailRow.RecipientLedgerNumber.ToString();
-            	ACmbKeyMinistries.Clear();
+                AtxtDetailRecipientLedgerNumber.Text = ACurrentDetailRow.RecipientLedgerNumber.ToString();
+                ACmbKeyMinistries.Clear();
             }
             else
             {
-            	TFinanceControls.GetRecipientData(ref ACmbKeyMinistries, ref AtxtDetailRecipientLedgerNumber, APartnerKey, true);
+                TFinanceControls.GetRecipientData(ref ACmbKeyMinistries, ref AtxtDetailRecipientLedgerNumber, APartnerKey, true);
             }
 
             // enable / disable combo box depending on whether it contains any key ministries
-            if (ACmbKeyMinistries.Table == null || ACmbKeyMinistries.Table.Rows.Count == 0)
+            if ((ACmbKeyMinistries.Table == null) || (ACmbKeyMinistries.Table.Rows.Count == 0))
             {
                 ACmbKeyMinistries.Enabled = false;
             }
@@ -1089,8 +1094,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// PopulateKeyMinistry
         /// </summary>
-        private static void PopulateKeyMinistry(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbKeyMinistries,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey, TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber, bool AMotivationDetailChangedFlag, long APartnerKey = 0)
+        private static void PopulateKeyMinistry(GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
+            TCmbAutoPopulated ACmbKeyMinistries,
+            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
+            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
+            bool AMotivationDetailChangedFlag,
+            long APartnerKey = 0)
         {
             ACmbKeyMinistries.Clear();
 
@@ -1103,8 +1112,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
             }
-            
-            GetRecipientData(ACurrentDetailRow, APartnerKey, ref ACmbKeyMinistries, ATxtDetailRecipientKey, ref AtxtDetailRecipientLedgerNumber, AMotivationDetailChangedFlag);
+
+            GetRecipientData(ACurrentDetailRow,
+                APartnerKey,
+                ref ACmbKeyMinistries,
+                ATxtDetailRecipientKey,
+                ref AtxtDetailRecipientLedgerNumber,
+                AMotivationDetailChangedFlag);
         }
 
         #endregion

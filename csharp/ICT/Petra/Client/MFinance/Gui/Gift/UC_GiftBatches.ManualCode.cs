@@ -308,9 +308,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.Focus();
             }
         }
-        
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
@@ -326,10 +326,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FLoadAndFilterLogicObject.BatchYear != ABatchYear)
             {
-            	FLoadAndFilterLogicObject.BatchYear = ABatchYear;
-            	FLoadAndFilterLogicObject.RefreshPeriods(ABatchYear);
+                FLoadAndFilterLogicObject.BatchYear = ABatchYear;
+                FLoadAndFilterLogicObject.RefreshPeriods(ABatchYear);
             }
-            
+
             FLoadAndFilterLogicObject.BatchPeriod = ABatchPeriod;
             FLoadAndFilterLogicObject.DisableYearAndPeriod(false);
 

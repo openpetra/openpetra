@@ -249,22 +249,22 @@ namespace Tests.MFinance.Server.Gift
         public void TestBatchPostingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
-   
+
             Int64 RecipientKey;
             Int64 RealRecipientLedgerNumber;
             Int64 FalseRecipientLedgerNumber;
             const string REALCOSTCENTRECODE = "4300";
             const string FALSECOSTCENTRECODE = "3500";
             const string ACCOUNTCODE = "0100";
-            
+
             Int32 GiftBatchNumber;
-            
-        	//
+
+            //
             // Arrange: Create all data needed for this test (Gift Details have 'fake' RecipientLedgerNumber and CostCentreCode)
             //
-            TestBatchPostingRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber, 
-                                                   out FalseRecipientLedgerNumber, FALSECOSTCENTRECODE, out GiftBatchNumber);
-            
+            TestBatchPostingRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber,
+                out FalseRecipientLedgerNumber, FALSECOSTCENTRECODE, out GiftBatchNumber);
+
             //
             // Act: Post the batch
             //
@@ -275,8 +275,10 @@ namespace Tests.MFinance.Server.Gift
             //
 
             // Initial Assert: Tests that the post returns positive
-            Assert.AreEqual(true, result, "TestBatchPostingRecalculations fail: Posting GiftBatch failed: " + VerificationResult.BuildVerificationResultString());
-            
+            Assert.AreEqual(true,
+                result,
+                "TestBatchPostingRecalculations fail: Posting GiftBatch failed: " + VerificationResult.BuildVerificationResultString());
+
             // Primary Assert: Chaeck that the gifts have the correct RecipientLedgerNumber, CostCentreCode and Account
             TDBTransaction Transaction = null;
             AGiftDetailRow PositiveGiftDetailRow = null;
@@ -289,30 +291,30 @@ namespace Tests.MFinance.Server.Gift
                 ref Transaction,
                 delegate
                 {
-                	PositiveGiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
-                	NegativeGiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 2, 1, Transaction)[0];
-                	
-                	GLBatchNumber = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction)[0].LastBatchNumber;
-                	TransactionRow = ATransactionAccess.LoadByPrimaryKey(FLedgerNumber, GLBatchNumber, 1, 1, Transaction)[0];
+                    PositiveGiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
+                    NegativeGiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 2, 1, Transaction)[0];
+
+                    GLBatchNumber = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction)[0].LastBatchNumber;
+                    TransactionRow = ATransactionAccess.LoadByPrimaryKey(FLedgerNumber, GLBatchNumber, 1, 1, Transaction)[0];
                 });
-            
+
             Assert.IsNotNull(PositiveGiftDetailRow, "TestBatchPostingRecalculations fail: Obtaining PositiveGiftDetailRow from database failed");
             Assert.IsNotNull(NegativeGiftDetailRow, "TestBatchPostingRecalculations fail: Obtaining NegativeGiftDetailRow from database failed");
             Assert.IsNotNull(TransactionRow, "TestBatchPostingRecalculations fail: Obtaining Transaction from database failed");
-            
-            Assert.AreEqual(RealRecipientLedgerNumber, PositiveGiftDetailRow.RecipientLedgerNumber, 
-        	                "TestBatchPostingRecalculations fail: RecipientLedgerNumber for PositiveGiftDetailRow is incorrect");
-            Assert.AreEqual(FalseRecipientLedgerNumber, NegativeGiftDetailRow.RecipientLedgerNumber, 
-        	                "TestBatchPostingRecalculations fail: RecipientLedgerNumber for NegativeGiftDetailRow is incorrect");
-        	Assert.AreEqual(REALCOSTCENTRECODE, PositiveGiftDetailRow.CostCentreCode, 
-        	                "TestBatchPostingRecalculations fail: CostCentreCode for PositiveGiftDetailRow is incorrect");
-        	Assert.AreEqual(FALSECOSTCENTRECODE, NegativeGiftDetailRow.CostCentreCode, 
-        	                "TestBatchPostingRecalculations fail: CostCentreCode for NegativeGiftDetailRow is incorrect");
-        	Assert.AreEqual(ACCOUNTCODE, TransactionRow.AccountCode, 
-        	                "TestBatchPostingRecalculations fail: AccountCode for PositiveGiftDetailRow is incorrect");
-            
+
+            Assert.AreEqual(RealRecipientLedgerNumber, PositiveGiftDetailRow.RecipientLedgerNumber,
+                "TestBatchPostingRecalculations fail: RecipientLedgerNumber for PositiveGiftDetailRow is incorrect");
+            Assert.AreEqual(FalseRecipientLedgerNumber, NegativeGiftDetailRow.RecipientLedgerNumber,
+                "TestBatchPostingRecalculations fail: RecipientLedgerNumber for NegativeGiftDetailRow is incorrect");
+            Assert.AreEqual(REALCOSTCENTRECODE, PositiveGiftDetailRow.CostCentreCode,
+                "TestBatchPostingRecalculations fail: CostCentreCode for PositiveGiftDetailRow is incorrect");
+            Assert.AreEqual(FALSECOSTCENTRECODE, NegativeGiftDetailRow.CostCentreCode,
+                "TestBatchPostingRecalculations fail: CostCentreCode for NegativeGiftDetailRow is incorrect");
+            Assert.AreEqual(ACCOUNTCODE, TransactionRow.AccountCode,
+                "TestBatchPostingRecalculations fail: AccountCode for PositiveGiftDetailRow is incorrect");
+
             // Cleanup: Delete test records
-            
+
             bool SubmissionOK = true;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -321,18 +323,18 @@ namespace Tests.MFinance.Server.Gift
                 ref SubmissionOK,
                 delegate
                 {
-                	AProcessedFeeAccess.DeleteUsingTemplate(
-                		new TSearchCriteria[] { new TSearchCriteria("a_ledger_number_i", FLedgerNumber), 
-                								new TSearchCriteria("a_batch_number_i", GiftBatchNumber) },
-                		Transaction);
+                    AProcessedFeeAccess.DeleteUsingTemplate(
+                        new TSearchCriteria[] { new TSearchCriteria("a_ledger_number_i", FLedgerNumber),
+                                                new TSearchCriteria("a_batch_number_i", GiftBatchNumber) },
+                        Transaction);
 
-                	AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, PositiveGiftDetailRow, Transaction);
-                	AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, NegativeGiftDetailRow, Transaction);
+                    AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, PositiveGiftDetailRow, Transaction);
+                    AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, NegativeGiftDetailRow, Transaction);
                 });
-            
-        	TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
-    		TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
-    		TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
+
+            TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
         }
 
         /// <summary>
@@ -342,20 +344,20 @@ namespace Tests.MFinance.Server.Gift
         public void TestBatchLoadingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
-   
+
             Int64 RecipientKey;
             Int64 RealRecipientLedgerNumber;
             Int64 FalseRecipientLedgerNumber;
             const string REALCOSTCENTRECODE = "4300";
             const string FALSECOSTCENTRECODE = "3500";
             Int32 GiftBatchNumber;
-            
-        	//
+
+            //
             // Arrange: Create all data needed for this test (Gift Detail has a 'fake' RecipientLedgerNumber and CostCentreCode)
             //
-            TestBatchPostingRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber, 
-                                                   out FalseRecipientLedgerNumber, FALSECOSTCENTRECODE, out GiftBatchNumber);
-            
+            TestBatchPostingRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber,
+                out FalseRecipientLedgerNumber, FALSECOSTCENTRECODE, out GiftBatchNumber);
+
             //
             // Act: Load the batch
             //
@@ -368,7 +370,7 @@ namespace Tests.MFinance.Server.Gift
             // Initial Assert: Tests that the load returns results
             Assert.IsNotNull(GiftBatchDS, "TestBatchLoadingRecalculations fail: Loading GiftBatch failed");
             Assert.IsNotNull(GiftBatchDS.AGiftDetail, "TestBatchLoadingRecalculations fail: Loading GiftBatch failed");
-            
+
             // Primary Assert: Chaeck that the gift has the correct RecipientLedgerNumber and CostCentreCode
             TDBTransaction Transaction = null;
             AGiftDetailRow PositiveGiftDetailRow = null;
@@ -379,24 +381,24 @@ namespace Tests.MFinance.Server.Gift
                 ref Transaction,
                 delegate
                 {
-                	PositiveGiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
-                	NegativeGiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 2, 1, Transaction)[0];
+                    PositiveGiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
+                    NegativeGiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 2, 1, Transaction)[0];
                 });
-            
+
             Assert.IsNotNull(PositiveGiftDetailRow, "TestBatchPostingRecalculations fail: Obtaining PositiveGiftDetailRow from database failed");
             Assert.IsNotNull(NegativeGiftDetailRow, "TestBatchPostingRecalculations fail: Obtaining NegativeGiftDetailRow from database failed");
-            
-            Assert.AreEqual(RealRecipientLedgerNumber, PositiveGiftDetailRow.RecipientLedgerNumber, 
-        	                "TestBatchPostingRecalculations fail: RecipientLedgerNumber for PositiveGiftDetailRow is incorrect");
-            Assert.AreEqual(FalseRecipientLedgerNumber, NegativeGiftDetailRow.RecipientLedgerNumber, 
-        	                "TestBatchPostingRecalculations fail: RecipientLedgerNumber for NegativeGiftDetailRow is incorrect");
-        	Assert.AreEqual(REALCOSTCENTRECODE, PositiveGiftDetailRow.CostCentreCode, 
-        	                "TestBatchPostingRecalculations fail: CostCentreCode for PositiveGiftDetailRow is incorrect");
-        	Assert.AreEqual(FALSECOSTCENTRECODE, NegativeGiftDetailRow.CostCentreCode, 
-        	                "TestBatchPostingRecalculations fail: CostCentreCode for NegativeGiftDetailRow is incorrect");
-            
+
+            Assert.AreEqual(RealRecipientLedgerNumber, PositiveGiftDetailRow.RecipientLedgerNumber,
+                "TestBatchPostingRecalculations fail: RecipientLedgerNumber for PositiveGiftDetailRow is incorrect");
+            Assert.AreEqual(FalseRecipientLedgerNumber, NegativeGiftDetailRow.RecipientLedgerNumber,
+                "TestBatchPostingRecalculations fail: RecipientLedgerNumber for NegativeGiftDetailRow is incorrect");
+            Assert.AreEqual(REALCOSTCENTRECODE, PositiveGiftDetailRow.CostCentreCode,
+                "TestBatchPostingRecalculations fail: CostCentreCode for PositiveGiftDetailRow is incorrect");
+            Assert.AreEqual(FALSECOSTCENTRECODE, NegativeGiftDetailRow.CostCentreCode,
+                "TestBatchPostingRecalculations fail: CostCentreCode for NegativeGiftDetailRow is incorrect");
+
             // Cleanup: Delete test records
-            
+
             bool SubmissionOK = true;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -405,13 +407,13 @@ namespace Tests.MFinance.Server.Gift
                 ref SubmissionOK,
                 delegate
                 {
-                	AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, PositiveGiftDetailRow, Transaction);
-                	AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, NegativeGiftDetailRow, Transaction);
+                    AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, PositiveGiftDetailRow, Transaction);
+                    AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, NegativeGiftDetailRow, Transaction);
                 });
-            
-        	TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
-    		TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
-    		TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
+
+            TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
         }
 
         /// <summary>
@@ -423,10 +425,10 @@ namespace Tests.MFinance.Server.Gift
         /// <param name="AFalseCostCentreCode">What the CostCentreCode is.</param>
         /// <param name="AGiftBatchNumber">Batch Number.</param>
         private void TestBatchPostingRecalculations_Arrange(out long ARecipientKey,
-                                                            out long ARealRecipientLedgerNumber,
-                                                            out long AFalseRecipientLedgerNumber,
-                                                            string AFalseCostCentreCode,
-            												out Int32 AGiftBatchNumber)
+            out long ARealRecipientLedgerNumber,
+            out long AFalseRecipientLedgerNumber,
+            string AFalseCostCentreCode,
+            out Int32 AGiftBatchNumber)
         {
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult Result;
@@ -435,29 +437,29 @@ namespace Tests.MFinance.Server.Gift
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
             PartnerEditTDS PartnerEditDS = new PartnerEditTDS();
-            
+
             // this is a family partner in the test database
             const Int64 DONORKEY = 43005001;
-            
-            
+
+
             // create a new recipient
             TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS);
             ARecipientKey = PartnerEditDS.PFamily[0].PartnerKey;
-            
+
             // create two new Unit partners
             TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
             TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
-            
+
             // create a Gift Destination for family
             PPartnerGiftDestinationRow GiftDestination = PartnerEditDS.PPartnerGiftDestination.NewRowTyped(true);
-            
+
             GiftDestination.Key = TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination();
             GiftDestination.PartnerKey = ARecipientKey;
             GiftDestination.DateEffective = new DateTime(2011, 01, 01);
             GiftDestination.FieldKey = ARealRecipientLedgerNumber;
-            
+
             PartnerEditDS.PPartnerGiftDestination.Rows.Add(GiftDestination);
 
             // Guard Assertions
@@ -472,11 +474,11 @@ namespace Tests.MFinance.Server.Gift
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SubmitChanges for PartnerEditDS failed: " + VerificationResult.BuildVerificationResultString());
-            
+
             // create a new Gift Batch
             MainDS = TGiftTransactionWebConnector.CreateAGiftBatch(FLedgerNumber);
             AGiftBatchNumber = MainDS.AGiftBatch[0].BatchNumber;
-            
+
             // create two new gifts
             AGiftRow GiftRow = MainDS.AGift.NewRowTyped(true);
 
@@ -485,9 +487,9 @@ namespace Tests.MFinance.Server.Gift
             GiftRow.DonorKey = DONORKEY;
             GiftRow.GiftTransactionNumber = 1;
             GiftRow.LastDetailNumber = 1;
-            
+
             MainDS.AGift.Rows.Add(GiftRow);
-            
+
             GiftRow = MainDS.AGift.NewRowTyped(true);
 
             GiftRow.LedgerNumber = FLedgerNumber;
@@ -495,12 +497,12 @@ namespace Tests.MFinance.Server.Gift
             GiftRow.DonorKey = DONORKEY;
             GiftRow.GiftTransactionNumber = 2;
             GiftRow.LastDetailNumber = 1;
-            
+
             MainDS.AGift.Rows.Add(GiftRow);
-            
+
             // create a new GiftDetail with a positive amount
             AGiftDetailRow GiftDetail = MainDS.AGiftDetail.NewRowTyped(true);
-            
+
             GiftDetail.LedgerNumber = FLedgerNumber;
             GiftDetail.BatchNumber = AGiftBatchNumber;
             GiftDetail.GiftTransactionNumber = 1;
@@ -512,12 +514,12 @@ namespace Tests.MFinance.Server.Gift
             GiftDetail.RecipientKey = ARecipientKey;
             GiftDetail.CostCentreCode = AFalseCostCentreCode;
             GiftDetail.GiftTransactionAmount = 100;
-            
+
             MainDS.AGiftDetail.Rows.Add(GiftDetail);
-            
+
             // create a new GiftDetail with a negative amount
             GiftDetail = MainDS.AGiftDetail.NewRowTyped(true);
-            
+
             GiftDetail.LedgerNumber = FLedgerNumber;
             GiftDetail.BatchNumber = AGiftBatchNumber;
             GiftDetail.GiftTransactionNumber = 2;
@@ -529,7 +531,7 @@ namespace Tests.MFinance.Server.Gift
             GiftDetail.RecipientKey = ARecipientKey;
             GiftDetail.CostCentreCode = AFalseCostCentreCode;
             GiftDetail.GiftTransactionAmount = -100;
-            
+
             MainDS.AGiftDetail.Rows.Add(GiftDetail);
 
             // Submit the new GiftBatchTDS records to the database
@@ -547,19 +549,19 @@ namespace Tests.MFinance.Server.Gift
         public void TestRecurringBatchSubmitRecalculations()
         {
             TVerificationResultCollection VerificationResult;
-   
+
             Int64 RecipientKey;
             Int64 RealRecipientLedgerNumber;
             Int64 FalseRecipientLedgerNumber;
             Int32 RecurringGiftBatchNumber;
             Int32 GiftBatchNumber = -1;
-            
-        	//
+
+            //
             // Arrange: Create all data needed for this test (Recurring Gift Detail will have 'fake' RecipientLedgerNumber)
             //
-            TestRecurringBatchSubmitRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber, 
-                                                   out FalseRecipientLedgerNumber, out RecurringGiftBatchNumber);
-            
+            TestRecurringBatchSubmitRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber,
+                out FalseRecipientLedgerNumber, out RecurringGiftBatchNumber);
+
             //
             // Act: Submit the batch
             //
@@ -568,15 +570,15 @@ namespace Tests.MFinance.Server.Gift
             requestParams.Add("ALedgerNumber", FLedgerNumber);
             requestParams.Add("ABatchNumber", RecurringGiftBatchNumber);
             requestParams.Add("AEffectiveDate", DateTime.Today);
-            requestParams.Add("AExchangeRateToBase", (decimal) 1);
-            requestParams.Add("AExchangeRateIntlToBase", (decimal) 1);
-            
+            requestParams.Add("AExchangeRateToBase", (decimal)1);
+            requestParams.Add("AExchangeRateIntlToBase", (decimal)1);
+
             TGiftTransactionWebConnector.SubmitRecurringGiftBatch(requestParams);
 
             //
             // Assert
             //
-            
+
             // Primary Assert: Chaeck that the RecurringGiftDetail and the newly created GiftDetail have the correct RecipientLedgerNumber
             TDBTransaction Transaction = null;
             ARecurringGiftDetailRow RecurringGiftDetailRow = null;
@@ -587,24 +589,25 @@ namespace Tests.MFinance.Server.Gift
                 ref Transaction,
                 delegate
                 {
-                	RecurringGiftDetailRow = ARecurringGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, RecurringGiftBatchNumber, 1, 1, Transaction)[0];
-                	
-                	GiftBatchNumber = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction)[0].LastGiftBatchNumber;
-                	GiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
+                    RecurringGiftDetailRow =
+                        ARecurringGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, RecurringGiftBatchNumber, 1, 1, Transaction)[0];
+
+                    GiftBatchNumber = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, Transaction)[0].LastGiftBatchNumber;
+                    GiftDetailRow = AGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, GiftBatchNumber, 1, 1, Transaction)[0];
                 });
-            
+
             Assert.IsNotNull(
-            	RecurringGiftDetailRow, "TestRecurringBatchSubmitRecalculations fail: Obtaining RecurringGiftDetailRow from database failed");
+                RecurringGiftDetailRow, "TestRecurringBatchSubmitRecalculations fail: Obtaining RecurringGiftDetailRow from database failed");
             Assert.IsNotNull(
-            	GiftDetailRow, "TestRecurringBatchSubmitRecalculations fail: Obtaining GiftDetailRow from database failed");
-            
-            Assert.AreEqual(RealRecipientLedgerNumber, RecurringGiftDetailRow.RecipientLedgerNumber, 
-        	                "TestRecurringBatchSubmitRecalculations fail: RecipientLedgerNumber for RecurringGiftDetailRow is incorrect");
-            Assert.AreEqual(RealRecipientLedgerNumber, GiftDetailRow.RecipientLedgerNumber, 
-        	                "TestRecurringBatchSubmitRecalculations fail: RecipientLedgerNumber for GiftDetailRow is incorrect");
-            
+                GiftDetailRow, "TestRecurringBatchSubmitRecalculations fail: Obtaining GiftDetailRow from database failed");
+
+            Assert.AreEqual(RealRecipientLedgerNumber, RecurringGiftDetailRow.RecipientLedgerNumber,
+                "TestRecurringBatchSubmitRecalculations fail: RecipientLedgerNumber for RecurringGiftDetailRow is incorrect");
+            Assert.AreEqual(RealRecipientLedgerNumber, GiftDetailRow.RecipientLedgerNumber,
+                "TestRecurringBatchSubmitRecalculations fail: RecipientLedgerNumber for GiftDetailRow is incorrect");
+
             // Cleanup: Delete test records
-            
+
             bool SubmissionOK = true;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -613,13 +616,13 @@ namespace Tests.MFinance.Server.Gift
                 ref SubmissionOK,
                 delegate
                 {
-                	AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, GiftDetailRow, Transaction);
-                	ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
+                    AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, GiftDetailRow, Transaction);
+                    ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
                 });
-            
-        	TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
-    		TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
-    		TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
+
+            TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
         }
 
         /// <summary>
@@ -629,18 +632,18 @@ namespace Tests.MFinance.Server.Gift
         public void TestRecurringBatchLoadingRecalculations()
         {
             TVerificationResultCollection VerificationResult;
-   
+
             Int64 RecipientKey;
             Int64 RealRecipientLedgerNumber;
             Int64 FalseRecipientLedgerNumber;
             Int32 RecurringGiftBatchNumber;
-            
-        	//
+
+            //
             // Arrange: Create all data needed for this test (Recurring Gift Detail will have 'fake' RecipientLedgerNumber)
             //
-            TestRecurringBatchSubmitRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber, 
-                                                   out FalseRecipientLedgerNumber, out RecurringGiftBatchNumber);
-            
+            TestRecurringBatchSubmitRecalculations_Arrange(out RecipientKey, out RealRecipientLedgerNumber,
+                out FalseRecipientLedgerNumber, out RecurringGiftBatchNumber);
+
             //
             // Act: Load the batch
             //
@@ -653,7 +656,7 @@ namespace Tests.MFinance.Server.Gift
             // Initial Assert: Tests that the load returns results
             Assert.IsNotNull(GiftBatchDS, "TestRecurringBatchLoadingRecalculations fail: Loading GiftBatch failed");
             Assert.IsNotNull(GiftBatchDS.ARecurringGiftDetail, "TestRecurringBatchLoadingRecalculations fail: Loading GiftBatch failed");
-            
+
             // Primary Assert: Chaeck that the gift has the correct RecipientLedgerNumber
             TDBTransaction Transaction = null;
             ARecurringGiftDetailRow RecurringGiftDetailRow = null;
@@ -663,17 +666,18 @@ namespace Tests.MFinance.Server.Gift
                 ref Transaction,
                 delegate
                 {
-                	RecurringGiftDetailRow = ARecurringGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, RecurringGiftBatchNumber, 1, 1, Transaction)[0];
+                    RecurringGiftDetailRow =
+                        ARecurringGiftDetailAccess.LoadByPrimaryKey(FLedgerNumber, RecurringGiftBatchNumber, 1, 1, Transaction)[0];
                 });
-            
+
             Assert.IsNotNull(
-            	RecurringGiftDetailRow, "TestRecurringBatchLoadingRecalculations fail: Obtaining RecurringGiftDetailRow from database failed");
-            
-            Assert.AreEqual(RealRecipientLedgerNumber, RecurringGiftDetailRow.RecipientLedgerNumber, 
-        	                "TestRecurringBatchLoadingRecalculations fail: RecipientLedgerNumber for RecurringGiftDetailRow is incorrect");
-            
+                RecurringGiftDetailRow, "TestRecurringBatchLoadingRecalculations fail: Obtaining RecurringGiftDetailRow from database failed");
+
+            Assert.AreEqual(RealRecipientLedgerNumber, RecurringGiftDetailRow.RecipientLedgerNumber,
+                "TestRecurringBatchLoadingRecalculations fail: RecipientLedgerNumber for RecurringGiftDetailRow is incorrect");
+
             // Cleanup: Delete test records
-            
+
             bool SubmissionOK = true;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -682,12 +686,12 @@ namespace Tests.MFinance.Server.Gift
                 ref SubmissionOK,
                 delegate
                 {
-                	ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
+                    ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
                 });
-            
-        	TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
-    		TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
-    		TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
+
+            TPartnerWebConnector.DeletePartner(RecipientKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(RealRecipientLedgerNumber, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FalseRecipientLedgerNumber, out VerificationResult);
         }
 
         /// <summary>
@@ -698,9 +702,9 @@ namespace Tests.MFinance.Server.Gift
         /// <param name="AFalseRecipientLedgerNumber">What the RecipientLedgerNumber is.</param>
         /// <param name="ARecurringGiftBatchNumber">Batch Number.</param>
         private void TestRecurringBatchSubmitRecalculations_Arrange(out long ARecipientKey,
-                                                            out long ARealRecipientLedgerNumber,
-                                                            out long AFalseRecipientLedgerNumber,
-            												out Int32 ARecurringGiftBatchNumber)
+            out long ARealRecipientLedgerNumber,
+            out long AFalseRecipientLedgerNumber,
+            out Int32 ARecurringGiftBatchNumber)
         {
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult Result;
@@ -709,29 +713,29 @@ namespace Tests.MFinance.Server.Gift
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
             PartnerEditTDS PartnerEditDS = new PartnerEditTDS();
-            
+
             // this is a family partner in the test database
             const Int64 DONORKEY = 43005001;
-            
-            
+
+
             // create a new recipient
             TCreateTestPartnerData.CreateNewFamilyPartner(PartnerEditDS);
             ARecipientKey = PartnerEditDS.PFamily[0].PartnerKey;
-            
+
             // create two new Unit partners
             TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
             TCreateTestPartnerData.CreateNewUnitPartner(PartnerEditDS);
             AFalseRecipientLedgerNumber = PartnerEditDS.PPartner[0].PartnerKey;
             ARealRecipientLedgerNumber = PartnerEditDS.PPartner[1].PartnerKey;
-            
+
             // create a Gift Destination for family
             PPartnerGiftDestinationRow GiftDestination = PartnerEditDS.PPartnerGiftDestination.NewRowTyped(true);
-            
+
             GiftDestination.Key = TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination();
             GiftDestination.PartnerKey = ARecipientKey;
             GiftDestination.DateEffective = new DateTime(2011, 01, 01);
             GiftDestination.FieldKey = ARealRecipientLedgerNumber;
-            
+
             PartnerEditDS.PPartnerGiftDestination.Rows.Add(GiftDestination);
 
             // Guard Assertions
@@ -746,11 +750,11 @@ namespace Tests.MFinance.Server.Gift
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
                     TSubmitChangesResult.scrOK), "SubmitChanges for PartnerEditDS failed: " + VerificationResult.BuildVerificationResultString());
-            
+
             // create a new Recurring Gift Batch
             MainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);
             ARecurringGiftBatchNumber = MainDS.ARecurringGiftBatch[0].BatchNumber;
-            
+
             // create a new recurring gifts
             ARecurringGiftRow RecurringGiftRow = MainDS.ARecurringGift.NewRowTyped(true);
 
@@ -759,12 +763,12 @@ namespace Tests.MFinance.Server.Gift
             RecurringGiftRow.DonorKey = DONORKEY;
             RecurringGiftRow.GiftTransactionNumber = 1;
             RecurringGiftRow.LastDetailNumber = 1;
-            
+
             MainDS.ARecurringGift.Rows.Add(RecurringGiftRow);
-            
+
             // create a new RecurringGiftDetail
             ARecurringGiftDetailRow RecurringGiftDetail = MainDS.ARecurringGiftDetail.NewRowTyped(true);
-            
+
             RecurringGiftDetail.LedgerNumber = FLedgerNumber;
             RecurringGiftDetail.BatchNumber = ARecurringGiftBatchNumber;
             RecurringGiftDetail.GiftTransactionNumber = 1;
@@ -774,7 +778,7 @@ namespace Tests.MFinance.Server.Gift
             RecurringGiftDetail.MotivationGroupCode = "GIFT";
             RecurringGiftDetail.MotivationDetailCode = "SUPPORT";
             RecurringGiftDetail.RecipientKey = ARecipientKey;
-            
+
             MainDS.ARecurringGiftDetail.Rows.Add(RecurringGiftDetail);
 
             // Submit the new GiftBatchTDS records to the database

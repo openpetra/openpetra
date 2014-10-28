@@ -530,7 +530,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             return TransDV.Count > 0;
         }
-        
+
         /// <summary>
         /// Set up the screen to show only this batch
         /// </summary>

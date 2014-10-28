@@ -36,58 +36,58 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// manual methods for the generated window
     public partial class TFrmBatchDateDialog
     {
-    	private DateTime FBatchDate;
-    	private DateTime FStartDateCurrentPeriod;
-    	private DateTime FEndDateLastForwardingPeriod;
-    	
-    	/// <summary>
-    	/// The date the user has chosen to reverse the batch
-    	/// </summary>
-    	public DateTime BatchDate
-    	{
-    		get
-    		{
-    			return FBatchDate;
-    		}
-    	}
-    	
-    	private void InitializeManualCode()
-    	{
-    		txtMessage.Font = new Font(txtMessage.Font, FontStyle.Regular);
-    	}
-    	
-    	/// <summary></summary>
-    	/// <param name="AStartDateCurrentPeriod"></param>
-    	/// <param name="AEndDateLastForwardingPeriod"></param>
-    	/// <param name="ABatchNumber"></param>
-    	public void SetParameters(DateTime AStartDateCurrentPeriod, DateTime AEndDateLastForwardingPeriod, int ABatchNumber)
-    	{
-    		FStartDateCurrentPeriod = AStartDateCurrentPeriod;
-    		FEndDateLastForwardingPeriod = AEndDateLastForwardingPeriod;
-    	
-    		txtMessage.Text = string.Format(Catalog.GetString("Enter date for Reversal of Batch {0}. (Between {1} and {2}.)"),
-    		                                ABatchNumber, AStartDateCurrentPeriod.ToShortDateString(), AEndDateLastForwardingPeriod.ToShortDateString());
-    		dtpReversalDate.Date = AStartDateCurrentPeriod;
-    	}
-    	
+        private DateTime FBatchDate;
+        private DateTime FStartDateCurrentPeriod;
+        private DateTime FEndDateLastForwardingPeriod;
+
+        /// <summary>
+        /// The date the user has chosen to reverse the batch
+        /// </summary>
+        public DateTime BatchDate
+        {
+            get
+            {
+                return FBatchDate;
+            }
+        }
+
+        private void InitializeManualCode()
+        {
+            txtMessage.Font = new Font(txtMessage.Font, FontStyle.Regular);
+        }
+
+        /// <summary></summary>
+        /// <param name="AStartDateCurrentPeriod"></param>
+        /// <param name="AEndDateLastForwardingPeriod"></param>
+        /// <param name="ABatchNumber"></param>
+        public void SetParameters(DateTime AStartDateCurrentPeriod, DateTime AEndDateLastForwardingPeriod, int ABatchNumber)
+        {
+            FStartDateCurrentPeriod = AStartDateCurrentPeriod;
+            FEndDateLastForwardingPeriod = AEndDateLastForwardingPeriod;
+
+            txtMessage.Text = string.Format(Catalog.GetString("Enter date for Reversal of Batch {0}. (Between {1} and {2}.)"),
+                ABatchNumber, AStartDateCurrentPeriod.ToShortDateString(), AEndDateLastForwardingPeriod.ToShortDateString());
+            dtpReversalDate.Date = AStartDateCurrentPeriod;
+        }
+
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-        	if (ValidateManual())
-        	{
-	        	FBatchDate = (DateTime) dtpReversalDate.Date;
-	        	DialogResult = DialogResult.OK;
-	            this.Close();
-        	}
+            if (ValidateManual())
+            {
+                FBatchDate = (DateTime)dtpReversalDate.Date;
+                DialogResult = DialogResult.OK;
+                this.Close();
+            }
         }
-        
+
         private bool ValidateManual()
         {
-        	TVerificationResultCollection VerificationResultCollection = new TVerificationResultCollection();
+            TVerificationResultCollection VerificationResultCollection = new TVerificationResultCollection();
 
             TSharedFinanceValidation_GL.ValidateGLBatchDateManual(dtpReversalDate.Date, dtpReversalDate.Description,
-                  ref VerificationResultCollection, FStartDateCurrentPeriod, FEndDateLastForwardingPeriod, dtpReversalDate);
-        	
-        	return TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResultCollection, this.GetType(), dtpReversalDate.GetType());
+                ref VerificationResultCollection, FStartDateCurrentPeriod, FEndDateLastForwardingPeriod, dtpReversalDate);
+
+            return TDataValidation.ProcessAnyDataValidationErrors(false, VerificationResultCollection, this.GetType(), dtpReversalDate.GetType());
         }
     }
 }

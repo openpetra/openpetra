@@ -101,8 +101,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 if (value < FcmbPeriod.Items.Count)
-                //if (FcmbPeriod.Items.Contains(value))
                 {
+                    //if (FcmbPeriod.Items.Contains(value))
                     FcmbPeriod.SelectedIndex = value;
                 }
             }
@@ -115,14 +115,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             get
             {
-            	return FcmbYearEnding.GetSelectedInt32();
+                return FcmbYearEnding.GetSelectedInt32();
             }
             set
             {
                 if (FcmbYearEnding.GetSelectedInt32() != value)
                 {
-                	FcmbYearEnding.SetSelectedInt32(value);
-                	FPrevYearEnding = value;
+                    FcmbYearEnding.SetSelectedInt32(value);
+                    FPrevYearEnding = value;
                 }
             }
         }
@@ -138,9 +138,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             set
             {
-            	if (FcmbPeriod.GetSelectedInt32() != value)
+                if (FcmbPeriod.GetSelectedInt32() != value)
                 {
-                	FcmbPeriod.SetSelectedInt32(value);
+                    FcmbPeriod.SetSelectedInt32(value);
                 }
             }
         }
