@@ -469,7 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
                 chkDetailBankAccountFlag.Enabled = !ARow.SystemAccountFlag;
                 chkDetailBudgetControlFlag.Enabled = !ARow.SystemAccountFlag
-                     && FMainDS.ALedger[0].BudgetControlFlag;
+                                                     && FMainDS.ALedger[0].BudgetControlFlag;
                 lblDetailBudgetControlFlag.Enabled = FMainDS.ALedger[0].BudgetControlFlag;
 
                 cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
@@ -693,7 +693,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ucoAccountsTree.MarkAllNodesCommitted();
-            TSubmitChangesResult ServerResult = 
+            TSubmitChangesResult ServerResult =
                 TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
             TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
             return ServerResult;
@@ -795,7 +795,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void GetDetailsFromControlsManual(GLSetupTDSAAccountRow ARow)
         {
             //
-            // If changing the PrimaryKey to that specified causes a contraints error, 
+            // If changing the PrimaryKey to that specified causes a contraints error,
             // I'll catch it here, issue a warning, and return the control to the "safe" value.
             ProtectedChangeOfPrimaryKey(FCurrentAccount);
         }
@@ -861,7 +861,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.SuppressChangeDetection = false;
             FIAmUpdating--;
 
-
             if ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue))
             {
                 tbbAddNewAccount.Enabled = FCurrentAccount.CanHaveChildren.Value;
@@ -883,7 +882,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tbbDeleteAccount.Enabled = false;
                 tbbDeleteAccount.ToolTipText = "";
             }
-            
 
             FPetraUtilsObject.HasChanges = hasChanges;
         }
@@ -928,6 +926,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Boolean ProtectedChangeOfPrimaryKey(AccountNodeDetails AAccountNode)
         {
             String NewValue = txtDetailAccountCode.Text;
+
             try
             {
                 AAccountNode.AccountRow.AccountCode = NewValue;
@@ -945,8 +944,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 MessageBox.Show(String.Format(
                         Catalog.GetString(
-                            "Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{1}' already exists."
-                            + "\r\n\r\n--> Account Code reverted to previous value."),
+                            "Renaming Account Code '{0}' to '{1}' is not possible because an Account Code by the name of '{1}' already exists." +
+                            "\r\n\r\n--> Account Code reverted to previous value."),
                         strOldDetailAccountCode, NewValue),
                     Catalog.GetString("Renaming Not Possible - Conflicts With Existing Account Code"),
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1004,6 +1003,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     if (changeAccepted)
                     {
                         ucoAccountsTree.SetNodeLabel(strNewDetailAccountCode, strAccountShortDescr);
+
                         if (FCurrentAccount.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:
