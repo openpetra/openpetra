@@ -58,36 +58,6 @@
         <Table sqltable="um_unit_structure"/>
     </DataSet>
 
-    <DataSet name="BankImportTDS">
-        <Table sqltable="a_gift">
-            <CustomField name="TotalAmount" type="Decimal"/>
-        </Table>
-        <Table sqltable="a_gift_detail">
-            <CustomField name="DonorKey" type="Int64"/>
-            <CustomField name="DonorShortName" type="string"/>
-            <CustomField name="RecipientDescription" type="string"/>
-            <CustomField name="AlreadyMatched" type="Boolean"/>
-            <CustomField name="BatchStatus" type="string"/>
-        </Table>
-        <Table sqltable="p_banking_details">
-            <CustomField name="PartnerKey" type="Int64"/>
-            <CustomField name="BankSortCode" type="string"/>
-        </Table>
-        <Table sqltable="a_ep_statement"/>
-        <Table sqltable="a_ep_match">
-            <CustomField name="CostCentreName" type="string"/>
-        </Table>
-        <Table sqltable="a_ep_transaction">
-            <CustomField name="MatchAction" type="string"/>
-            <CustomField name="GiftLedgerNumber" type="Int32"/>
-            <CustomField name="GiftBatchNumber" type="Int32"/>
-            <CustomField name="GiftTransactionNumber" type="Int32"/>
-            <CustomField name="DonorKey" type="Int64"/>
-        </Table>
-        <Table sqltable="a_cost_centre"/>
-        <Table sqltable="a_motivation_detail"/>
-    </DataSet> 
-
     <DataSet name="NewDonorTDS">
         <Table sqltable="a_gift">
             <CustomField name="DonorShortName" type="string"/>
