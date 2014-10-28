@@ -26,13 +26,9 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting;
-using System.Text;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
 
-using Ict.Tools.DBXML;
 using Ict.Common;
     
 namespace Ict.Tools.DataDumpPetra2
@@ -117,7 +113,7 @@ namespace Ict.Tools.DataDumpPetra2
             /// <summary>Static Constructor.</summary>            
             static BestAddressHelper()
             {
-                string AssemblyDLLName = "Ict.Petra.Shared.lib.MPartner";
+                const string AssemblyDLLName = "Ict.Petra.Shared.lib.MPartner";
                 const string RemoteType = "Ict.Petra.Shared.MPartner.Calculations";
                 Assembly LoadedAssembly = null;
                 
@@ -127,12 +123,12 @@ namespace Ict.Tools.DataDumpPetra2
     
                 if (FRemoteClass == null)
                 {
-                    string msg = "cannot find type " + RemoteType + " in " + AssemblyDLLName;
+                    const string msg = "cannot find type " + RemoteType + " in " + AssemblyDLLName;
                     TLogging.Log(msg);
                     throw new Exception(msg);
                 }
     
-                object FInstantiator = Activator.CreateInstance(FRemoteClass,
+                FInstantiator = Activator.CreateInstance(FRemoteClass,
                     (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
                     null,
                     null,
@@ -389,10 +385,10 @@ namespace Ict.Tools.DataDumpPetra2
                                    && PPARecord.Value == PPARecordsSingleLocation[SingleLocCounter].Value
                                 select PPARecord;
                             
-                            if (PPARecordsContainsQuery.Count() == 0)
-                            {
-                                PPARecords.Add(PPARecordsSingleLocation[SingleLocCounter]);
-                            }
+							if (!PPARecordsContainsQuery.Any()) 
+							{
+								PPARecords.Add(PPARecordsSingleLocation[SingleLocCounter]);
+							}
                         }
                     }
                     
@@ -533,7 +529,7 @@ namespace Ict.Tools.DataDumpPetra2
                         PPARecord.Primary = true;
 
                         // Mark this Contact Detail as being 'WithinOrgansiation' as it has an 'organisation-internal' e-mail-address!
-                        if (EmailAddress.EndsWith("@om.org"))
+                        if (EmailAddress.EndsWith("@om.org", StringComparison.InvariantCulture))
                         {
                             PPARecord.WithinOrgansiation = true;
     
@@ -674,7 +670,7 @@ namespace Ict.Tools.DataDumpPetra2
                 Comment = CommentStr,
                 Specialised = SpecialisedFlag,
                 Current = CurrentFlag,
-                Confidential = ((string)APartnerLocationDR["p_location_type_c"]).EndsWith(SECURITY_CAN_LOCATIONTYPE),
+                Confidential = ((string)APartnerLocationDR["p_location_type_c"]).EndsWith(SECURITY_CAN_LOCATIONTYPE, StringComparison.InvariantCulture),
                 NoLongerCurrentFrom = NoLongerCurrentFromDate
             };
         }
