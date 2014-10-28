@@ -1818,32 +1818,31 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// Check if an entry exists in ValidLedgerNumber for the specified ledger number and partner key
+        /// Get gift destination for recipient
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
-        /// <param name="AFieldDateTime"></param>
-        /// <param name="ACostCentreCode"></param>
+        /// <param name="AGiftDate"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool CheckCostCentreDestinationForRecipient(Int32 ALedgerNumber,
-            Int64 APartnerKey,
-            Int64 AFieldDateTime,
-            out string ACostCentreCode)
+        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime ? AGiftDate)
         {
-            bool CostCentreExists = false;
-            string CostCentreCodeTable = "CostCentreCodes";
+            Int64 PartnerField = 0;
 
-            ACostCentreCode = string.Empty;
-            string CostCentreCode = ACostCentreCode;
+            if ((APartnerKey == 0) || !AGiftDate.HasValue)
+            {
+                return 0;
+            }
 
-            string GetCostCentreCodeSQL = String.Format(
-                "SELECT a_cost_centre_code_c FROM a_valid_ledger_number WHERE a_ledger_number_i = {0} AND p_partner_key_n = {1};",
-                ALedgerNumber,
-                APartnerKey
-                );
+            string GetPartnerGiftDestinationSQL = String.Format("SELECT DISTINCT pgd.p_field_key_n as FieldKey" +
+                "  FROM PUB_p_partner_gift_destination pgd " +
+                "  WHERE pgd.p_partner_key_n = {0}" +
+                "    And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL)" +
+                "         Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
+                APartnerKey,
+                AGiftDate);
 
-            DataSet tempDataSet = new DataSet();
+            DataTable GiftDestTable = null;
+            string PartnerGiftDestinationTable = "PartnerGiftDestination";
 
             TDBTransaction Transaction = null;
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -1851,20 +1850,64 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    DBAccess.GDBAccessObj.Select(tempDataSet, GetCostCentreCodeSQL, CostCentreCodeTable,
-                        Transaction,
-                        0, 0);
-
-                    if (tempDataSet.Tables[CostCentreCodeTable] != null)
+                    try
                     {
-                        if (tempDataSet.Tables[CostCentreCodeTable].Rows.Count > 0)
-                        {
-                            DataRow row = tempDataSet.Tables[CostCentreCodeTable].Rows[0];
-                            CostCentreCode = row[0].ToString();
-                            CostCentreExists = true;
-                        }
+                        GiftDestTable = DBAccess.GDBAccessObj.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
 
-                        tempDataSet.Clear();
+                        if ((GiftDestTable != null) && (GiftDestTable.Rows.Count > 0))
+                        {
+                            PartnerField = (Int64)GiftDestTable.DefaultView[0].Row["FieldKey"];
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log("Error in GetGiftDestinationForRecipient: " + e.Message);
+                    }
+                });
+
+            return PartnerField;
+        }
+
+        /// <summary>
+        /// Check if an entry exists in ValidLedgerNumber for the specified ledger number and partner key
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="ARecipientField"></param>
+        /// <param name="ACostCentreCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool CheckCostCentreDestinationForRecipient(Int32 ALedgerNumber,
+            Int64 APartnerKey,
+            Int64 ARecipientField,
+            out string ACostCentreCode)
+        {
+            bool CostCentreExists = false;
+            string CostCentreCodeTableName = "CostCentreCodes";
+
+            ACostCentreCode = string.Empty;
+            string CostCentreCode = ACostCentreCode;
+
+            string GetCostCentreCodeSQL = String.Format(
+                "SELECT a_cost_centre_code_c as CostCentreCode FROM public.a_valid_ledger_number WHERE a_ledger_number_i = {0} AND p_partner_key_n = {1};",
+                ALedgerNumber,
+                APartnerKey
+                );
+
+            DataTable CostCentreCodesTbl = null;
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    CostCentreCodesTbl = DBAccess.GDBAccessObj.SelectDT(GetCostCentreCodeSQL, CostCentreCodeTableName, Transaction);
+
+                    if ((CostCentreCodesTbl != null) && (CostCentreCodesTbl.Rows.Count > 0))
+                    {
+                        CostCentreCode = (string)CostCentreCodesTbl.DefaultView[0].Row["CostCentreCode"];
+                        CostCentreExists = true;
                     }
                 });
 
@@ -2205,7 +2248,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 switch (ChargeOption)
                 {
-                    case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED:
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED :
 
                         if (AGiftAmount >= 0)
                         {
@@ -2982,67 +3025,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// Get gift destination for recipient
-        /// </summary>
-        /// <param name="APartnerKey"></param>
-        /// <param name="AGiftDate"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime ? AGiftDate)
-        {
-            Int64 PartnerField = 0;
-
-            if ((APartnerKey == 0) || !AGiftDate.HasValue)
-            {
-                return 0;
-            }
-
-            string PartnerGiftDestinationTable = "PartnerGiftDestination";
-
-            string GetPartnerGiftDestinationSQL = String.Format(
-                "SELECT DISTINCT pgd.p_field_key_n FROM PUB_p_partner_gift_destination pgd " +
-                "WHERE pgd.p_partner_key_n = {0} And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL) Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
-                APartnerKey,
-                AGiftDate);
-
-            DataSet GiftDestDS = new DataSet();
-
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    try
-                    {
-                        DBAccess.GDBAccessObj.Select(GiftDestDS, GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable,
-                            Transaction,
-                            0, 0);
-
-                        if (GiftDestDS.Tables[PartnerGiftDestinationTable] != null)
-                        {
-                            if (GiftDestDS.Tables[PartnerGiftDestinationTable].Rows.Count > 0)
-                            {
-                                DataRow row = GiftDestDS.Tables[PartnerGiftDestinationTable].Rows[0];
-                                PartnerField = (Int64)row[0];
-                            }
-
-                            GiftDestDS.Clear();
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("Error in GetGiftDestinationForRecipient: " + e.Message);
-                    }
-                });
-
-            GiftDestDS.AcceptChanges();
-
-            return PartnerField;
-        }
-
-        /// <summary>
         /// Check if Key Ministry exists
         /// </summary>
         /// <param name="APartnerKey">Partner Key </param>
@@ -3164,7 +3146,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 switch (unitRow.UnitTypeCode)
                 {
-                    case MPartnerConstants.UNIT_TYPE_KEYMIN :
+                    case MPartnerConstants.UNIT_TYPE_KEYMIN:
                         Int64 fieldNumber = GetRecipientFundNumber(ARecipientPartnerKey);
                         UnitTable = LoadKeyMinistriesOfField(fieldNumber, ATransaction);
                         break;

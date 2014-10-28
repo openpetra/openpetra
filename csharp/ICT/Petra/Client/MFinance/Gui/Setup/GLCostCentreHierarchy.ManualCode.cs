@@ -560,7 +560,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ucoCostCentreTree.MarkAllNodesCommitted();
-            TSubmitChangesResult ServerResult = 
+            TSubmitChangesResult ServerResult =
                 TRemote.MFinance.Setup.WebConnectors.SaveGLSetupTDS(FLedgerNumber, ref ASubmitDS, out AVerificationResult);
             TDataCache.TMFinance.RefreshCacheableFinanceTable(Shared.TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
             return ServerResult;
@@ -612,6 +612,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Boolean ProtectedChangeOfPrimaryKey(CostCentreNodeDetails ACostCentreNode)
         {
             String NewValue = txtDetailCostCentreCode.Text;
+
             try
             {
                 ACostCentreNode.CostCentreRow.CostCentreCode = NewValue;
@@ -630,7 +631,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 MessageBox.Show(String.Format(
                         Catalog.GetString(
                             "Renaming Cost Centre Code '{0}' to '{1}' is not possible because a Cost Centre Code by the name of '{1}' already exists."
-                            + "\r\n\r\n--> Cost Centre Code reverted to previous value."),
+                            +
+                            "\r\n\r\n--> Cost Centre Code reverted to previous value."),
                         strOldDetailCostCentreCode, NewValue),
                     Catalog.GetString("Renaming Not Possible - Conflicts With Existing Cost Centre Code"),
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -687,6 +689,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     if (changeAccepted)
                     {
                         ucoCostCentreTree.SetNodeLabel(FCurrentCostCentre.CostCentreRow);
+
                         if (FCurrentCostCentre.IsNew)
                         {
                             // This is the code for changes in "un-committed" nodes:
@@ -751,7 +754,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void GetDetailsFromControlsManual(ACostCentreRow ARow)
         {
             //
-            // If changing the PrimaryKey to that specified causes a contraints error, 
+            // If changing the PrimaryKey to that specified causes a contraints error,
             // I'll catch it here, issue a warning, and return the control to the "safe" value.
             ProtectedChangeOfPrimaryKey(FCurrentCostCentre);
         }

@@ -506,6 +506,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             mniRecipientHistory.Enabled = APartnerKey != 0;
         }
 
+        private void RecipientLedgerNumberChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
+        {
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RecipientLedgerNumber != APartnerKey))
+            {
+                FPreviouslySelectedDetailRow.RecipientLedgerNumber = APartnerKey;
+            }
+        }
+
         // used for ValidateGiftDestinationThread
         private string FPartnerShortName = "";
         private delegate void SimpleDelegate();

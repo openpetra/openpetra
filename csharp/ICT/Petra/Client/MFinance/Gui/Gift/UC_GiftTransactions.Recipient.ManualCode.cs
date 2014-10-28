@@ -311,8 +311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                ATxtDetailRecipientKey.Text = APartnerKey.ToString();
-                ACurrentDetailRow.RecipientKey = Convert.ToInt64(APartnerKey);
+                ACurrentDetailRow.RecipientKey = APartnerKey;
                 ACurrentDetailRow.RecipientDescription = APartnerShortName;
 
                 if (!AMotivationDetailChangedFlag && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
@@ -343,7 +342,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     ACurrentDetailRow.RecipientLedgerNumber = 0;
                 }
-                
+
+                if (!AInKeyMinistryChangingFlag)
+                {
+                    GetRecipientData(ACurrentDetailRow,
+                        APartnerKey,
+                        ref ACmbKeyMinistries,
+                        ATxtDetailRecipientKey,
+                        ref AtxtDetailRecipientLedgerNumber,
+                        AMotivationDetailChangedFlag);
+                    ADoValidateGiftDestination = true;
+                }
 
                 if (APartnerKey > 0)
                 {
@@ -361,18 +370,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
                 }
 
-                if (!AInKeyMinistryChangingFlag)
-                {
-                    GetRecipientData(ACurrentDetailRow,
-                        APartnerKey,
-                        ref ACmbKeyMinistries,
-                        ATxtDetailRecipientKey,
-                        ref AtxtDetailRecipientLedgerNumber,
-                        AMotivationDetailChangedFlag);
-
-                    ADoValidateGiftDestination = true;
-                }
-
                 if (ATaxDeductiblePercentageEnabledFlag)
                 {
                     ADoTaxUpdate = true;
@@ -386,6 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATxtDetailRecipientKeyMinistry,
                     AInEditModeFlag,
                     ABatchUnpostedFlag);
+
                 APetraUtilsObject.SuppressChangeDetection = false;
             }
         }
@@ -682,17 +680,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public static void ReconcileKeyMinistryFromCombo(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbKeyMinistries,
             TextBox ATxtDetailRecipientKeyMinistry, bool AInEditModeFlag, bool ABatchUnpostedFlag)
         {
-            string KeyMinistry = string.Empty;
-            bool EmptyRow = (ACurrentDetailRow == null);
-
             if (ABatchUnpostedFlag && AInEditModeFlag)
             {
-                if (!EmptyRow && (ACmbKeyMinistries.SelectedIndex > -1))
+                bool isEmptyDetailRow = (ACurrentDetailRow == null);
+                string keyMinistry = string.Empty;
+
+                if (!isEmptyDetailRow && (ACmbKeyMinistries.SelectedIndex > -1))
                 {
-                    KeyMinistry = ACmbKeyMinistries.GetSelectedDescription();
+                    keyMinistry = ACmbKeyMinistries.GetSelectedDescription();
                 }
 
-                ATxtDetailRecipientKeyMinistry.Text = KeyMinistry;
+                ATxtDetailRecipientKeyMinistry.Text = keyMinistry;
+            }
+        }
+
+        /// <summary>
+        /// Keep the combo and textboxes together
+        /// </summary>
+        private static void ReconcileKeyMinistryFromTextbox(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbKeyMinistries,
+            TextBox ATxtDetailRecipientKeyMinistry, bool AInEditModeFlag, bool ABatchUnpostedFlag)
+        {
+            if (ABatchUnpostedFlag && AInEditModeFlag)
+            {
+                bool isEmptyDetailRow = (ACurrentDetailRow == null);
+                string keyMinistry = ATxtDetailRecipientKeyMinistry.Text;
+
+                if (!isEmptyDetailRow && (keyMinistry.Length > 0))
+                {
+                    ACmbKeyMinistries.SetSelectedString(keyMinistry);
+                }
+                else
+                {
+                    ACmbKeyMinistries.SelectedIndex = -1;
+                }
             }
         }
 
@@ -772,8 +792,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// FindCostCentreCodeForRecipient
         /// </summary>
-        public static void FindCostCentreCodeForRecipient(AGiftDetailRow ARow, Int64 APartnerKey, GiftBatchTDS AMainDS, Int32 ALedgerNumber,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber, bool AShowError = false)
+        public static void FindCostCentreCodeForRecipient(GiftBatchTDSAGiftDetailRow ARow,
+            Int64 APartnerKey,
+            GiftBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
+            TextBox ATxtCostCentreCode,
+            bool AShowError = false)
         {
             if (ARow == null)
             {
@@ -789,6 +814,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string MotivationDetail = ARow.MotivationDetailCode;
 
             Int64 RecipientLedgerNumber = ARow.RecipientLedgerNumber;
+            Int64 GiftDestinationForRecipient = TRemote.MFinance.Gift.WebConnectors.GetGiftDestinationForRecipient(APartnerKey, ARow.DateEntered);
 
             Int64 LedgerPartnerKey = AMainDS.ALedger[0].PartnerKey;
 
@@ -799,11 +825,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             string errMsg = string.Empty;
 
-            if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
-                    out ValidLedgerNumberCostCentreCode)
-                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
-                    RecipientField,
-                    out ValidLedgerNumberCostCentreCode))
+            DataTable PartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(ALedgerNumber, APartnerKey);
+
+            if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
+            {
+                NewCostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
+            }
+            else if (GiftDestinationForRecipient > 0)
+            {
+                NewCostCentreCode = GiftDestinationForRecipient.ToString();
+            }
+            else if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
+                         out ValidLedgerNumberCostCentreCode)
+                     || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
+                         RecipientField,
+                         out ValidLedgerNumberCostCentreCode))
             {
                 NewCostCentreCode = ValidLedgerNumberCostCentreCode;
             }
@@ -829,7 +865,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     TLogging.Log("Cost Centre Code Error: " + errMsg);
                 }
             }
-            else
+
+            if (NewCostCentreCode.Length == 0)
             {
                 AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
                     new object[] { ALedgerNumber, MotivationGroup, MotivationDetail });
@@ -863,6 +900,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (CurrentCostCentreCode != NewCostCentreCode)
             {
                 ARow.CostCentreCode = NewCostCentreCode;
+                ATxtCostCentreCode.Text = NewCostCentreCode;
             }
         }
 
@@ -881,14 +919,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TextBox ATxtDetailCostCentreCode,
             bool AInKeyMinistryChangingFlag)
         {
-            if (AInKeyMinistryChangingFlag || (ACurrentDetailRow == null))
+            if (ACurrentDetailRow == null)
             {
                 return;
             }
 
-            FindCostCentreCodeForRecipient(ACurrentDetailRow, APartnerKey, AMainDS, ALedgerNumber, AtxtDetailRecipientLedgerNumber, false);
-
-            ATxtDetailCostCentreCode.Text = ACurrentDetailRow.CostCentreCode;
+            FindCostCentreCodeForRecipient(ACurrentDetailRow,
+                APartnerKey,
+                AMainDS,
+                ALedgerNumber,
+                AtxtDetailRecipientLedgerNumber,
+                ATxtDetailCostCentreCode,
+                false);
         }
 
         /// <summary>
@@ -1063,27 +1105,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             
             GetRecipientData(ACurrentDetailRow, APartnerKey, ref ACmbKeyMinistries, ATxtDetailRecipientKey, ref AtxtDetailRecipientLedgerNumber, AMotivationDetailChangedFlag);
-        }
-
-        /// <summary>
-        /// Keep the combo and textboxes together
-        /// </summary>
-        private static void ReconcileKeyMinistryFromTextbox(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbKeyMinistries,
-            TextBox ATxtDetailRecipientKeyMinistry, bool AInEditModeFlag, bool ABatchUnpostedFlag)
-        {
-            if (ABatchUnpostedFlag && AInEditModeFlag)
-            {
-                bool IsEmptyRow = (ACurrentDetailRow == null);
-
-                if (!IsEmptyRow && (ATxtDetailRecipientKeyMinistry.Text.Length > 0))
-                {
-                    ACmbKeyMinistries.SetSelectedString(ATxtDetailRecipientKeyMinistry.Text);
-                }
-                else
-                {
-                    ACmbKeyMinistries.SelectedIndex = -1;
-                }
-            }
         }
 
         #endregion

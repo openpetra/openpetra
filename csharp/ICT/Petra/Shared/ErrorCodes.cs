@@ -112,6 +112,12 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUE_OUTSIDE_OF_RANGE = "GEN.00009V";
 
+        /// <summary>Value must be entered.</summary>
+        [ErrCodeAttribute("Value must be entered.",
+             ErrorMessageText = "Value must be entered",
+             ErrorMessageTitle = "No Data Entered")]
+        public const String ERR_VALUE_NOT_ENTERED = "GEN.00010V";
+
         #endregion
 
         #region Conference Module-specific error codes
