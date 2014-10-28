@@ -230,7 +230,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>Recipient Field/Motivation Group combination is invalid (must be non-gift for field=0).</summary>
         [ErrCodeAttribute("Invalid Motivation Group for Recipient's Field.",
-             ErrorMessageText = "The Recipient's Field is 0 and so cannot have a Gift Motivation Group Code.")]
+             ErrorMessageText = "The Recipient's Field is 0 and so cannot have the Motivation Group Code 'Gift.'")]
         public const String ERR_RECIPIENT_FIELD_MOTIVATION_GROUP = "PARTN.00999V";
 
         /// <summary>Partner Status MERGED must not be assigned.</summary>

@@ -530,16 +530,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             return TransDV.Count > 0;
         }
-
+        
         /// <summary>
         /// Set up the screen to show only this batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="ABatchYear"></param>
+        /// <param name="ABatchPeriod"></param>
+        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, int ABatchYear, int ABatchPeriod)
         {
             FLedgerNumber = ALedgerNumber;
-            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber);
+            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber, ABatchYear, ABatchPeriod);
             Show();
         }
 

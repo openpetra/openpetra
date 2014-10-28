@@ -523,6 +523,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ViewTransaction(object sender, EventArgs e)
         {
+            // get the currently selected row
             FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
             if ((FPreviouslySelectedDetailRow != null) && (FMainDS != null))
@@ -532,16 +533,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     this.Cursor = Cursors.WaitCursor;
 
                     TFrmGiftBatch gb = new TFrmGiftBatch(this);
-                    gb.ViewMode = true;
 
-                    // load dataset with data for single transaction
-                    gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadSingleTransaction(FLedgerNumber,
+                    // load dataset with data for whole transaction (all details)
+                    gb.ViewModeTDS = TRemote.MFinance.Gift.WebConnectors.LoadWholeTransaction(FLedgerNumber,
                         (int)FPreviouslySelectedDetailRow["BatchNumber"],
-                        (int)FPreviouslySelectedDetailRow["GiftTransactionNumber"],
-                        (int)FPreviouslySelectedDetailRow["DetailNumber"]);
-                    gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"]);
-                    gb.FindGiftDetail((AGiftDetailRow)gb.ViewModeTDS.AGiftDetail.Rows[0]);
+                        (int)FPreviouslySelectedDetailRow["GiftTransactionNumber"]);
+
+                    if (gb.ViewModeTDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_POSTED)
+                    {
+                        // read only if gift belongs to a posted batch
+                        gb.ViewMode = true;
+                        gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"],
+                                             gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
+                    }
+                    else
+                    {
+                        gb.ShowDetailsOfOneBatch(FLedgerNumber, (int)FPreviouslySelectedDetailRow["BatchNumber"],
+                                             gb.ViewModeTDS.AGiftBatch[0].BatchYear, gb.ViewModeTDS.AGiftBatch[0].BatchPeriod);
+                        gb.DisableBatches();
+                    }
+
                     gb.SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
+                    gb.FindGiftDetail((AGiftDetailRow)gb.ViewModeTDS.AGiftDetail.Rows.Find(
+                            new object[] { FLedgerNumber,
+                                           FPreviouslySelectedDetailRow["BatchNumber"],
+                                           FPreviouslySelectedDetailRow["GiftTransactionNumber"],
+                                           FPreviouslySelectedDetailRow["DetailNumber"] }));
                 }
                 finally
                 {
