@@ -722,6 +722,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
+            MainDS.Merge(LoadGiftBatchData(ALedgerNumber, ABatchNumber));
+
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
@@ -733,8 +735,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         //Load Ledger & Motivation Data to allow updating of CostCentreCode
                         AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-
-                        MainDS.Merge(LoadGiftBatchData(ALedgerNumber, ABatchNumber));
 
                         //Find the batch status
                         BatchStatusUnposted = (MainDS.AGiftBatch[0].BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
@@ -1926,6 +1926,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static GiftBatchTDS LoadGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            bool SaveChanges = false;
 
             TDBTransaction Transaction = null;
 
@@ -1952,6 +1953,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         DataView giftView = new DataView(MainDS.AGift);
                         giftView.Sort = AGiftTable.GetGiftTransactionNumberDBName();
 
+                        bool UnpostedBatch = ((AGiftBatchRow)MainDS.AGiftBatch.Rows.Find(
+                                                  new object[] { ALedgerNumber, ABatchNumber })).BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+
                         // fill the columns in the modified GiftDetail Table to show donorkey, dateentered etc in the grid
                         foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
                         {
@@ -1959,6 +1963,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             AGiftRow giftRow = (AGiftRow)giftView.FindRows(giftDetail.GiftTransactionNumber)[0].Row;
 
                             PPartnerRow DonorRow = (PPartnerRow)MainDS.DonorPartners.Rows.Find(giftRow.DonorKey);
+
+                            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
+                                new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
 
                             giftDetail.DonorKey = giftRow.DonorKey;
                             giftDetail.DonorName = DonorRow.PartnerShortName;
@@ -1971,7 +1978,35 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             //do the same for the Recipient
                             if (giftDetail.RecipientKey > 0)
                             {
-                                giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftRow.DateEntered);
+                                // if true then this gift is protected and data cannot be changed
+                                // (note: here this includes all negative gifts and not just reversals)
+                                if (!UnpostedBatch || (giftDetail.GiftTransactionAmount < 0))
+                                {
+                                    giftDetail.RecipientField = giftDetail.RecipientLedgerNumber;
+                                }
+                                else
+                                {
+                                    // get the current Recipient Fund Number
+                                    giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftRow.DateEntered);
+
+                                    // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
+                                    if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
+                                    {
+                                        giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
+                                        SaveChanges = true;
+                                    }
+
+                                    // get the current CostCentreCode
+                                    if (giftDetail.RecipientLedgerNumber != 0)
+                                    {
+                                        giftDetail.CostCentreCode =
+                                            IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
+                                    }
+                                    else
+                                    {
+                                        giftDetail.CostCentreCode = motivationDetail.CostCentreCode;
+                                    }
+                                }
 
                                 PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                                 giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
@@ -2001,9 +2036,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
 
                             //And account code
-                            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
-                                new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
-
                             if (motivationDetail != null)
                             {
                                 giftDetail.AccountCode = motivationDetail.AccountCode;
@@ -2028,6 +2060,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 });
 
+            if (SaveChanges)
+            {
+                // if RecipientLedgerNumber has been updated then this should immediately be saved to the database
+                GiftBatchTDSAccess.SubmitChanges(MainDS);
+            }
+
             return MainDS;
         }
 
@@ -2036,6 +2074,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static GiftBatchTDS LoadRecurringGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             bool NewTransaction = false;
+            bool SaveChanges = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                 IsolationLevel.ReadCommitted,
@@ -2074,7 +2113,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
                 {
-                    giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
+                    // GiftAmount should never be negative. Negative Recurring gifts are not allowed!
+                    if (giftDetail.GiftAmount < 0)
+                    {
+                        giftDetail.RecipientField = giftDetail.RecipientLedgerNumber;
+                    }
+                    else
+                    {
+                        // get the current Recipient Fund Number
+                        giftDetail.RecipientField = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, DateTime.Today);
+
+                        // these will be different if the recipient fund number has changed (i.e. a changed Gift Destination)
+                        if (giftDetail.RecipientField != giftDetail.RecipientLedgerNumber)
+                        {
+                            giftDetail.RecipientLedgerNumber = giftDetail.RecipientField;
+                            SaveChanges = true;
+                        }
+                    }
+
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
 
@@ -2115,6 +2171,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            if (SaveChanges)
+            {
+                // if RecipientLedgerNumber has been updated then this should immediately be saved to the database
+                GiftBatchTDSAccess.SubmitChanges(MainDS);
             }
 
             return MainDS;
@@ -2457,29 +2519,33 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     return null;
                 }
 
-                PPartnerRow RecipientPartner = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
+                // data is only updated if the gift amount is positive
+                if (giftDetail.GiftTransactionAmount >= 0)
+                {
+                    PPartnerRow RecipientPartner = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
 
-                giftDetail.RecipientLedgerNumber = 0;
+                    giftDetail.RecipientLedgerNumber = 0;
 
-                // make sure the correct costcentres and accounts are used
-                if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
-                {
-                    // get the field that the key ministry belongs to. or it might be a field itself
-                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
-                }
-                else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-                {
-                    // TODO make sure the correct costcentres and accounts are used, recipient ledger number
-                    giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
-                }
+                    // make sure the correct costcentres and accounts are used
+                    if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
+                    {
+                        // get the field that the key ministry belongs to. or it might be a field itself
+                        giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey);
+                    }
+                    else if (RecipientPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                    {
+                        // TODO make sure the correct costcentres and accounts are used, recipient ledger number
+                        giftDetail.RecipientLedgerNumber = GetRecipientFundNumberSub(MainDS, giftDetail.RecipientKey, giftDetail.DateEntered);
+                    }
 
-                if (giftDetail.RecipientLedgerNumber != 0)
-                {
-                    giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
-                }
-                else
-                {
-                    giftDetail.CostCentreCode = motivationRow.CostCentreCode;
+                    if (giftDetail.RecipientLedgerNumber != 0)
+                    {
+                        giftDetail.CostCentreCode = IdentifyPartnerCostCentre(giftDetail.LedgerNumber, giftDetail.RecipientLedgerNumber);
+                    }
+                    else
+                    {
+                        giftDetail.CostCentreCode = motivationRow.CostCentreCode;
+                    }
                 }
 
                 // set column giftdetail.AccountCode motivation
@@ -2836,10 +2902,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// get the recipient ledger partner for a unit
+        /// get the recipient ledger partner for a unit or the gift destination for a family
         /// </summary>
         /// <param name="APartnerKey"></param>
-        /// <param name="AGiftDate">Gift Date (needed for getting a families Gift Destination)</param>
+        /// <param name="AGiftDate">Gift Date (needed for getting a family's Gift Destination)</param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static Int64 GetRecipientFundNumber(Int64 APartnerKey, DateTime? AGiftDate = null)
