@@ -514,7 +514,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String APartnerShortName,
             bool AValidSelection)
         {
-            if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.RecipientLedgerNumber != APartnerKey)
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RecipientLedgerNumber != APartnerKey))
             {
                 FPreviouslySelectedDetailRow.RecipientLedgerNumber = APartnerKey;
             }

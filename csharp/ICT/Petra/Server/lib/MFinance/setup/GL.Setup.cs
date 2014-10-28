@@ -806,17 +806,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             //
             // Load Partners where PartnerType includes "COSTCENTRE":
             String SqlQuery = "SELECT p_partner.p_partner_short_name_c as ShortName," +
-                              "   p_partner.p_partner_key_n as PartnerKey," + 
+                              "   p_partner.p_partner_key_n as PartnerKey," +
                               "  '0' as IsLinked," +
                               "  '0' as ReportsTo" +
                               " FROM public.p_partner, public.p_partner_type" +
                               " WHERE p_partner.p_partner_key_n = p_partner_type.p_partner_key_n";
 
             if (APartnerKey > 0)
-	        {
-		        SqlQuery += " AND p_partner.p_partner_key_n = " + APartnerKey.ToString();
-	        }
-                              
+            {
+                SqlQuery += " AND p_partner.p_partner_key_n = " + APartnerKey.ToString();
+            }
+
             SqlQuery += " AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
 
             DataTable PartnerCostCentreTbl = null;
@@ -898,7 +898,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         //                    costCentreCode = LinksTbl[0].CostCentreCode;
         //                    PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"] = costCentreCode;
-                            
+
         //                    ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, costCentreCode, Transaction);
         //                    if (CCTbl.Rows.Count > 0)
         //                    {
@@ -1658,7 +1658,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (!ACanBeParent || ACanDelete)
                 {
-                    List<TRowReferenceInfo> CascadingReferences;
+                    List <TRowReferenceInfo>CascadingReferences;
                     Int32 Refs = AAccountCascading.CountByPrimaryKey(
                         ALedgerNumber, AAccountCode,
                         3, Transaction, true,
@@ -3816,7 +3816,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     if (!canBeParent || canDelete)
                     {
-                        List<TRowReferenceInfo> CascadingReferences;
+                        List <TRowReferenceInfo>CascadingReferences;
                         Int32 Refs = MCommon.Data.Cascading.ACostCentreCascading.CountByPrimaryKey(
                             ALedgerNumber, ACostCentreCode,
                             5, Transaction, true,
@@ -3835,7 +3835,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             canBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
                         }
                     }
-
                 }); // End of BeginAutoReadTransaction with anonymous function
 
             ACanBeParent = canBeParent;

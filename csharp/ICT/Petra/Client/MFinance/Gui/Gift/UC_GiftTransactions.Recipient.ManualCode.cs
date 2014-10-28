@@ -387,7 +387,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATxtDetailRecipientKeyMinistry,
                     AInEditModeFlag,
                     ABatchUnpostedFlag);
-                
+
                 APetraUtilsObject.SuppressChangeDetection = false;
             }
         }
@@ -787,8 +787,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// FindCostCentreCodeForRecipient
         /// </summary>
-        public static void FindCostCentreCodeForRecipient(GiftBatchTDSAGiftDetailRow ARow, Int64 APartnerKey, GiftBatchTDS AMainDS, Int32 ALedgerNumber,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber, TextBox ATxtCostCentreCode, bool AShowError = false)
+        public static void FindCostCentreCodeForRecipient(GiftBatchTDSAGiftDetailRow ARow,
+            Int64 APartnerKey,
+            GiftBatchTDS AMainDS,
+            Int32 ALedgerNumber,
+            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
+            TextBox ATxtCostCentreCode,
+            bool AShowError = false)
         {
             if (ARow == null)
             {
@@ -817,7 +822,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             DataTable PartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(ALedgerNumber, APartnerKey);
 
-            if (PartnerCostCentreTbl != null && PartnerCostCentreTbl.Rows.Count > 0)
+            if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
             {
                 NewCostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
             }
@@ -826,10 +831,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 NewCostCentreCode = GiftDestinationForRecipient.ToString();
             }
             else if (TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, APartnerKey, RecipientField,
-                    out ValidLedgerNumberCostCentreCode)
-                || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
-                    RecipientField,
-                    out ValidLedgerNumberCostCentreCode))
+                         out ValidLedgerNumberCostCentreCode)
+                     || TRemote.MFinance.Gift.WebConnectors.CheckCostCentreDestinationForRecipient(ARow.LedgerNumber, RecipientLedgerNumber,
+                         RecipientField,
+                         out ValidLedgerNumberCostCentreCode))
             {
                 NewCostCentreCode = ValidLedgerNumberCostCentreCode;
             }
@@ -914,7 +919,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            FindCostCentreCodeForRecipient(ACurrentDetailRow, APartnerKey, AMainDS, ALedgerNumber, AtxtDetailRecipientLedgerNumber, ATxtDetailCostCentreCode, false);
+            FindCostCentreCodeForRecipient(ACurrentDetailRow,
+                APartnerKey,
+                AMainDS,
+                ALedgerNumber,
+                AtxtDetailRecipientLedgerNumber,
+                ATxtDetailCostCentreCode,
+                false);
         }
 
         /// <summary>

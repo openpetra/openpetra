@@ -1824,7 +1824,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftDate"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime? AGiftDate)
+        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime ? AGiftDate)
         {
             Int64 PartnerField = 0;
 
@@ -1833,13 +1833,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return 0;
             }
 
-            string GetPartnerGiftDestinationSQL = String.Format("SELECT DISTINCT pgd.p_field_key_n as FieldKey" + 
-                                                                "  FROM PUB_p_partner_gift_destination pgd " +
-                                                                "  WHERE pgd.p_partner_key_n = {0}" +
-                                                                "    And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL)" + 
-                                                                "         Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
-                                                                APartnerKey,
-                                                                AGiftDate);
+            string GetPartnerGiftDestinationSQL = String.Format("SELECT DISTINCT pgd.p_field_key_n as FieldKey" +
+                "  FROM PUB_p_partner_gift_destination pgd " +
+                "  WHERE pgd.p_partner_key_n = {0}" +
+                "    And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL)" +
+                "         Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
+                APartnerKey,
+                AGiftDate);
 
             DataTable GiftDestTable = null;
             string PartnerGiftDestinationTable = "PartnerGiftDestination";
@@ -1854,7 +1854,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         GiftDestTable = DBAccess.GDBAccessObj.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
 
-                        if (GiftDestTable != null && GiftDestTable.Rows.Count > 0)
+                        if ((GiftDestTable != null) && (GiftDestTable.Rows.Count > 0))
                         {
                             PartnerField = (Int64)GiftDestTable.DefaultView[0].Row["FieldKey"];
                         }
@@ -1904,7 +1904,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     CostCentreCodesTbl = DBAccess.GDBAccessObj.SelectDT(GetCostCentreCodeSQL, CostCentreCodeTableName, Transaction);
 
-                    if (CostCentreCodesTbl != null && CostCentreCodesTbl.Rows.Count > 0)
+                    if ((CostCentreCodesTbl != null) && (CostCentreCodesTbl.Rows.Count > 0))
                     {
                         CostCentreCode = (string)CostCentreCodesTbl.DefaultView[0].Row["CostCentreCode"];
                         CostCentreExists = true;
@@ -2187,7 +2187,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 switch (ChargeOption)
                 {
-                    case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED:
+                    case MFinanceConstants.ADMIN_CHARGE_OPTION_FIXED :
 
                         if (AGiftAmount >= 0)
                         {
@@ -3081,7 +3081,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 switch (unitRow.UnitTypeCode)
                 {
-                    case MPartnerConstants.UNIT_TYPE_KEYMIN :
+                    case MPartnerConstants.UNIT_TYPE_KEYMIN:
                         Int64 fieldNumber = GetRecipientFundNumber(ARecipientPartnerKey);
                         UnitTable = LoadKeyMinistriesOfField(fieldNumber, ATransaction);
                         break;
