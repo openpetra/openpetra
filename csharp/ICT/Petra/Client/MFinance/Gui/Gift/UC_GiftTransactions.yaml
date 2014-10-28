@@ -176,6 +176,6 @@ RootNode:
             mniReverseGift: {Action=actReverseGift}
             mniReverseGiftDetail: {Action=actReverseGiftDetail}
             mniSeparator: {Label=-}
-            mniDonorHistory: {Action: actDonorHistory}
-            mniRecipientHistory: {Action: actRecipientHistory}
-            mniRecipientGiftDestination: {Action: actRecipientGiftDestination}
+            mniDonorHistory: {Action: actDonorHistory, Enabled=false}
+            mniRecipientHistory: {Action: actRecipientHistory, Enabled=false}
+            mniRecipientGiftDestination: {Action: actRecipientGiftDestination, Enabled=false}

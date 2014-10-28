@@ -1084,153 +1084,156 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADateForReversal"></param>
         /// <param name="AReversalBatchNumber"></param>
         /// <param name="AVerifications"></param>
+        /// <param name="AAutoPostReverseBatch"></param>
         /// <returns></returns>
         public static bool ReverseBatch(Int32 ALedgerNumber, Int32 ABatchNumberToReverse,
             DateTime ADateForReversal,
             out Int32 AReversalBatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            bool AAutoPostReverseBatch)
         {
-            bool NewTransactionStarted = false;
+            bool ReturnValue = false;
 
             GLBatchTDS MainDS = null;
 
-            AReversalBatchNumber = -1;
+            Int32 ReversalBatchNumber = -1;
 
             //Error handling
             string ErrorContext = "Reverse a Batch";
             string ErrorMessage = String.Empty;
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+
             AVerifications = null;
+            TVerificationResultCollection Verifications = null;
 
-            try
-            {
-                MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = true;
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
-
-                // get the data from the database into the MainDS
-                if (!LoadGLBatchData(out MainDS, ALedgerNumber, ABatchNumberToReverse, out AVerifications))
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    return false;
-                }
+                    MainDS = new GLBatchTDS();
 
-                ABatchRow NewBatchRow = MainDS.ABatch.NewRowTyped(true);
-                NewBatchRow.LedgerNumber = ALedgerNumber;
-                MainDS.ALedger[0].LastBatchNumber++;
-                NewBatchRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-
-                int DateEffectiveYearNumber;
-                int DateEffectivePeriodNumber;
-
-                if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, ADateForReversal, out DateEffectivePeriodNumber,
-                        out DateEffectiveYearNumber,
-                        Transaction))
-                {
-                    ErrorMessage = Catalog.GetString("Date is outside of valid posting period");
-                    ErrorType = TResultSeverity.Resv_Critical;
-                    AVerifications.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                    return false;
-                }
-
-                NewBatchRow.DateEffective = ADateForReversal;
-                NewBatchRow.BatchPeriod = DateEffectivePeriodNumber;
-                NewBatchRow.BatchYear = DateEffectiveYearNumber;
-
-                ABatchRow OriginalBatch = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumberToReverse });
-                NewBatchRow.BatchDescription = String.Format(Catalog.GetString("Reversal of {0}"), OriginalBatch.BatchDescription);
-                NewBatchRow.LastJournal = OriginalBatch.LastJournal;
-                MainDS.ABatch.Rows.Add(NewBatchRow);
-
-                MainDS.AJournal.DefaultView.Sort = AJournalTable.GetLedgerNumberDBName() + "," + AJournalTable.GetBatchNumberDBName();
-                DataRowView[] JournalsRowView = MainDS.AJournal.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse });
-
-                foreach (DataRowView rv in JournalsRowView)
-                {
-                    AJournalRow OriginalJournal = (AJournalRow)rv.Row;
-                    AJournalRow NewJournalRow = MainDS.AJournal.NewRowTyped();
-
-                    DataUtilities.CopyAllColumnValues(OriginalJournal, NewJournalRow);
-
-                    NewJournalRow.BatchNumber = NewBatchRow.BatchNumber;
-                    NewJournalRow.DateEffective = NewBatchRow.DateEffective;
-                    NewJournalRow.JournalPeriod = NewBatchRow.BatchPeriod;
-                    NewJournalRow.JournalStatus = NewBatchRow.BatchStatus;
-                    OriginalJournal.Reversed = true;
-                    MainDS.AJournal.Rows.Add(NewJournalRow);
-
-                    MainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetLedgerNumberDBName() + "," +
-                                                           ATransactionTable.GetBatchNumberDBName() + "," +
-                                                           ATransactionTable.GetJournalNumberDBName();
-                    DataRowView[] TransactionsRowView = MainDS.ATransaction.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
-                                                                                                                OriginalJournal.JournalNumber });
-
-                    foreach (DataRowView rvTransaction in TransactionsRowView)
+                    // get the data from the database into the MainDS
+                    if (LoadGLBatchData(out MainDS, ALedgerNumber, ABatchNumberToReverse, out Verifications))
                     {
-                        ATransactionRow OriginalTransaction = (ATransactionRow)rvTransaction.Row;
-                        ATransactionRow NewTransactionRow = MainDS.ATransaction.NewRowTyped();
+                        ABatchRow NewBatchRow = MainDS.ABatch.NewRowTyped(true);
+                        NewBatchRow.LedgerNumber = ALedgerNumber;
+                        MainDS.ALedger[0].LastBatchNumber++;
+                        NewBatchRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
 
-                        DataUtilities.CopyAllColumnValues(OriginalTransaction, NewTransactionRow);
-                        NewTransactionRow.BatchNumber = NewJournalRow.BatchNumber;
-                        NewTransactionRow.JournalNumber = NewJournalRow.JournalNumber;
-                        NewTransactionRow.TransactionStatus = false;
-                        NewTransactionRow.DebitCreditIndicator = !OriginalTransaction.DebitCreditIndicator;
-                        NewTransactionRow.SystemGenerated = true;
+                        int DateEffectiveYearNumber;
+                        int DateEffectivePeriodNumber;
 
-                        MainDS.ATransaction.Rows.Add(NewTransactionRow);
-
-                        MainDS.ATransAnalAttrib.DefaultView.Sort = ATransAnalAttribTable.GetLedgerNumberDBName() + "," +
-                                                                   ATransAnalAttribTable.GetBatchNumberDBName() + "," +
-                                                                   ATransAnalAttribTable.GetJournalNumberDBName() + "," +
-                                                                   ATransAnalAttribTable.GetTransactionNumberDBName();
-                        DataRowView[] TransAnalAttribRowView =
-                            MainDS.ATransAnalAttrib.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
-                                                                                        OriginalJournal.JournalNumber,
-                                                                                        OriginalTransaction.TransactionNumber });
-
-                        foreach (DataRowView rvTransAnalAttrib in TransAnalAttribRowView)
+                        if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, ADateForReversal, out DateEffectivePeriodNumber,
+                                out DateEffectiveYearNumber,
+                                Transaction))
                         {
-                            ATransAnalAttribRow OriginalTransAnalAttrib = (ATransAnalAttribRow)rvTransAnalAttrib.Row;
-                            ATransAnalAttribRow NewTransAnalAttribRow = MainDS.ATransAnalAttrib.NewRowTyped();
-                            DataUtilities.CopyAllColumnValues(OriginalTransAnalAttrib, NewTransAnalAttribRow);
-                            MainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttribRow);
+                            ErrorMessage = Catalog.GetString("Date is outside of valid posting period");
+                            ErrorType = TResultSeverity.Resv_Critical;
+                            Verifications.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                        }
+                        else
+                        {
+                            NewBatchRow.DateEffective = ADateForReversal;
+                            NewBatchRow.BatchPeriod = DateEffectivePeriodNumber;
+                            NewBatchRow.BatchYear = DateEffectiveYearNumber;
+
+                            ABatchRow OriginalBatch = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumberToReverse });
+                            NewBatchRow.BatchDescription = String.Format(Catalog.GetString("Reversal of {0}"), OriginalBatch.BatchDescription);
+                            NewBatchRow.LastJournal = OriginalBatch.LastJournal;
+                            MainDS.ABatch.Rows.Add(NewBatchRow);
+
+                            MainDS.AJournal.DefaultView.Sort = AJournalTable.GetLedgerNumberDBName() + "," + AJournalTable.GetBatchNumberDBName();
+                            DataRowView[] JournalsRowView = MainDS.AJournal.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse });
+
+                            foreach (DataRowView rv in JournalsRowView)
+                            {
+                                AJournalRow OriginalJournal = (AJournalRow)rv.Row;
+                                AJournalRow NewJournalRow = MainDS.AJournal.NewRowTyped();
+
+                                DataUtilities.CopyAllColumnValues(OriginalJournal, NewJournalRow);
+
+                                NewJournalRow.BatchNumber = NewBatchRow.BatchNumber;
+                                NewJournalRow.DateEffective = NewBatchRow.DateEffective;
+                                NewJournalRow.JournalPeriod = NewBatchRow.BatchPeriod;
+                                NewJournalRow.JournalStatus = NewBatchRow.BatchStatus;
+                                NewJournalRow.JournalDescription =
+                                    String.Format(Catalog.GetString("Reversal of {0}"), OriginalJournal.JournalDescription);
+                                OriginalJournal.Reversed = true;
+                                MainDS.AJournal.Rows.Add(NewJournalRow);
+
+                                MainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetLedgerNumberDBName() + "," +
+                                                                       ATransactionTable.GetBatchNumberDBName() + "," +
+                                                                       ATransactionTable.GetJournalNumberDBName();
+                                DataRowView[] TransactionsRowView =
+                                    MainDS.ATransaction.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
+                                                                                            OriginalJournal.
+                                                                                            JournalNumber });
+
+                                foreach (DataRowView rvTransaction in TransactionsRowView)
+                                {
+                                    ATransactionRow OriginalTransaction = (ATransactionRow)rvTransaction.Row;
+                                    ATransactionRow NewTransactionRow = MainDS.ATransaction.NewRowTyped();
+
+                                    DataUtilities.CopyAllColumnValues(OriginalTransaction, NewTransactionRow);
+                                    NewTransactionRow.BatchNumber = NewJournalRow.BatchNumber;
+                                    NewTransactionRow.JournalNumber = NewJournalRow.JournalNumber;
+                                    NewTransactionRow.TransactionStatus = false;
+                                    NewTransactionRow.DebitCreditIndicator = !OriginalTransaction.DebitCreditIndicator;
+                                    NewTransactionRow.SystemGenerated = true;
+                                    NewTransactionRow.TransactionDate = ADateForReversal;
+                                    NewTransactionRow.Narrative = Catalog.GetString("Reverse of: ") + OriginalTransaction.Narrative +
+                                                                  "(" + Catalog.GetString(" Batch: ") + OriginalTransaction.BatchNumber +
+                                                                  Catalog.GetString(", Journal: ") + OriginalTransaction.JournalNumber +
+                                                                  Catalog.GetString(", Transaction: ") + OriginalTransaction.TransactionNumber + ")";
+
+                                    MainDS.ATransaction.Rows.Add(NewTransactionRow);
+
+                                    MainDS.ATransAnalAttrib.DefaultView.Sort = ATransAnalAttribTable.GetLedgerNumberDBName() + "," +
+                                                                               ATransAnalAttribTable.GetBatchNumberDBName() + "," +
+                                                                               ATransAnalAttribTable.GetJournalNumberDBName() + "," +
+                                                                               ATransAnalAttribTable.GetTransactionNumberDBName();
+                                    DataRowView[] TransAnalAttribRowView =
+                                        MainDS.ATransAnalAttrib.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
+                                                                                                    OriginalJournal.JournalNumber,
+                                                                                                    OriginalTransaction.TransactionNumber });
+
+                                    foreach (DataRowView rvTransAnalAttrib in TransAnalAttribRowView)
+                                    {
+                                        ATransAnalAttribRow OriginalTransAnalAttrib = (ATransAnalAttribRow)rvTransAnalAttrib.Row;
+                                        ATransAnalAttribRow NewTransAnalAttribRow = MainDS.ATransAnalAttrib.NewRowTyped();
+                                        DataUtilities.CopyAllColumnValues(OriginalTransAnalAttrib, NewTransAnalAttribRow);
+                                        NewTransAnalAttribRow.BatchNumber = NewTransactionRow.BatchNumber;
+                                        NewTransAnalAttribRow.JournalNumber = NewTransactionRow.JournalNumber;
+                                        NewTransAnalAttribRow.TransactionNumber = NewTransactionRow.TransactionNumber;
+                                        MainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttribRow);
+                                    }
+                                }
+                            }
+
+                            // Calculate the credit and debit totals
+                            GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
+
+                            GLBatchTDSAccess.SubmitChanges(MainDS);
+
+                            ReversalBatchNumber = NewBatchRow.BatchNumber;
+
+                            // only post new batch is AAutoPostReverseBatch is true
+                            if (!AAutoPostReverseBatch || PostGLBatch(ALedgerNumber, ReversalBatchNumber, out Verifications))
+                            {
+                                ReturnValue = true;
+                            }
                         }
                     }
-                }
+                });
 
-                GLBatchTDSAccess.SubmitChanges(MainDS);
+            AVerifications = Verifications;
+            AReversalBatchNumber = ReversalBatchNumber;
 
-                AReversalBatchNumber = NewBatchRow.BatchNumber;
-
-                if (PostGLBatch(ALedgerNumber, AReversalBatchNumber, out AVerifications))
-                {
-                    if (NewTransactionStarted)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                        NewTransactionStarted = false;
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage =
-                    String.Format(Catalog.GetString("Unknown error while reversing a batch for Ledger: {0}." +
-                            Environment.NewLine + Environment.NewLine + ex.ToString()),
-                        ALedgerNumber);
-                ErrorType = TResultSeverity.Resv_Critical;
-                AVerifications.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-            }
-            finally
-            {
-                if (NewTransactionStarted)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
-
-            return false;
+            return ReturnValue;
         }
 
         //

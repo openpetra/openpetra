@@ -3434,6 +3434,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     FMainDS.PPartnerGiftDestination.Merge(
                         ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).GiftDestinationTable);
+                    FMainDS.MiscellaneousData[0].HasEXWORKERPartnerType = Checks.PartnerIsExWorker(FMainDS.PPartnerGiftDestination);
                     bool Changes = FPetraUtilsObject.HasChanges;
 
                     // update the gift destination
