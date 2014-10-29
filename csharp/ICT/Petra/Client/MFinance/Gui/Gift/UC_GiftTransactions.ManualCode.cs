@@ -734,6 +734,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
             bool DoTaxUpdate;
+            string AutoPopComment;
 
             TUC_GiftTransactions_Recipient.OnMotivationDetailChanged(FPreviouslySelectedDetailRow,
                 FMainDS,
@@ -757,7 +758,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FInEditMode,
                 FBatchUnposted,
                 FTaxDeductiblePercentageEnabled,
-                out DoTaxUpdate);
+                out DoTaxUpdate,
+                out AutoPopComment);
 
             if (DoTaxUpdate)
             {
@@ -770,6 +772,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
                 }
             }
+            
+            // if motivation detail has AutoPopDesc set to true and has not already been autopoulated for this detail
+            if (!string.IsNullOrEmpty(AutoPopComment) && txtDetailGiftCommentOne.Text != AutoPopComment)
+            {
+            	// autopopulate comment one with the motivation detail description
+            	AutoPopulateCommentOne(AutoPopComment);
+            }
+        }
+        
+        private void AutoPopulateCommentOne(string AAutoPopComment)
+        {
+        	if (string.IsNullOrEmpty(txtDetailGiftCommentOne.Text))
+        	{
+        		txtDetailGiftCommentOne.Text = AAutoPopComment;
+            	cmbDetailCommentOneType.SetSelectedString("Both", -1);
+        	}
+        	else if (string.IsNullOrEmpty(txtDetailGiftCommentTwo.Text))
+        	{
+        		txtDetailGiftCommentTwo.Text = txtDetailGiftCommentOne.Text;
+        		cmbDetailCommentTwoType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
+        		txtDetailGiftCommentOne.Text = AAutoPopComment;
+            	cmbDetailCommentOneType.SetSelectedString("Both", -1);
+        	}
+        	else if (string.IsNullOrEmpty(txtDetailGiftCommentThree.Text))
+        	{
+        		txtDetailGiftCommentThree.Text = txtDetailGiftCommentOne.Text;
+        		cmbDetailCommentThreeType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
+        		txtDetailGiftCommentOne.Text = AAutoPopComment;
+            	cmbDetailCommentOneType.SetSelectedString("Both", -1);
+        	}
+        	else
+        	{
+        		if (MessageBox.Show(string.Format(Catalog.GetString(
+        			"This Motivation Detail is set to auto populate a gift comment field, but all the comment fields are currently full."
+							+ " Do you want to overwrite Comment 1?{0}{0}"
+							+ "'No' will keep the current comment,{0}"
+							+ "'Yes' will copy Comment 1 to the clipboard and replace it with the automated comment '{1}'"),
+							"\n", AAutoPopComment),
+						Catalog.GetString("Auto Populate Gift Comment"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        				== DialogResult.Yes)
+        		{
+        			Clipboard.SetText(txtDetailGiftCommentOne.Text);
+        			txtDetailGiftCommentOne.Text = AAutoPopComment;
+            		cmbDetailCommentOneType.SetSelectedString("Both", -1);
+        		}
+        	}
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)

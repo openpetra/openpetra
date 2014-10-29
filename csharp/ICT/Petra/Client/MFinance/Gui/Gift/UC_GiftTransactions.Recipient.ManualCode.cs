@@ -195,9 +195,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AInEditModeFlag,
             bool ABatchUnpostedFlag,
             bool ATaxDeductiblePercentageEnabledFlag,
-            out bool ADoTaxUpdate)
+            out bool ADoTaxUpdate,
+            out string AAutoPopComment)
         {
             ADoTaxUpdate = false;
+            AAutoPopComment = null;
 
             if (!ABatchUnpostedFlag || !AInEditModeFlag || ATxtDetailRecipientKeyMinistry.Visible)
             {
@@ -220,6 +222,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         AMotivationGroup, AMotivationDetail, ATaxDeductiblePercentageEnabledFlag);
 
                     MotivationRecipientKey = motivationDetail.RecipientKey;
+                    
+                    // if motivation detail autopopulation is set to true
+                    if (motivationDetail.Autopopdesc)
+                    {
+                    	AAutoPopComment = motivationDetail.MotivationDetailDesc;
+                    }
 
                     // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
                     if (!APetraUtilsObject.SuppressChangeDetection || ARecipientKeyChangingFlag)
@@ -1012,6 +1020,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             //FMotivationbDetail will change by next process
             string motivationDetail = AMotivationDetail;
+            
+            string AutoPopComment;
 
             ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AActiveOnly);
             TFinanceControls.ChangeFilterMotivationDetailList(ref ACmbMotivationDetailCode, AMotivationGroup);
@@ -1050,7 +1060,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
-                    out ADoTaxUpdate);
+                    out ADoTaxUpdate,
+                    out AutoPopComment);
             }
             else
             {
@@ -1078,7 +1089,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag,
                     ATaxDeductiblePercentageEnabledFlag,
-                    out ADoTaxUpdate);
+                    out ADoTaxUpdate,
+                    out AutoPopComment);
             }
 
             RetrieveMotivationDetailAccountCode(AMainDS, ALedgerNumber, ATxtDetailAccountCode, ATxtDeductibleAccount,
