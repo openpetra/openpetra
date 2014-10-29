@@ -39,8 +39,6 @@ Source: ..\..\..\delivery\bin\Owf.Controls.A1Panel.dll; DestDir: {app}/bin30; Fl
 Source: ..\..\..\delivery\bin\CustomControl.OrientedTextControls.dll; DestDir: {app}/bin30; Flags: ignoreversion
 
 Source: ..\..\..\delivery\bin\Ict.Common*.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\delivery\bin\Ict.Petra.ClientPlugins*.dll; DestDir: {app}/bin30; Flags: ignoreversion
-Source: ..\..\..\delivery\bin\Ict.Petra.ServerPlugins*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Client*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Shared*.dll; DestDir: {app}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Server*.dll; DestDir: {app}/bin30; Flags: ignoreversion
