@@ -307,6 +307,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public THandleAccountPropertyInfo(TLedgerInfo ledgerInfo)
         {
             bool NewTransaction = false;
+
             try
             {
                 TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
@@ -416,6 +417,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     return row.PropertyValue;
                 }
             }
+
             return String.Empty;
         }
     }
@@ -518,6 +520,7 @@ namespace Ict.Petra.Server.MFinance.Common
             string result = FAccountPropertyHandler.GetAccountCode("CARRYFORWARDCC");
 
             string[] arrStrHelp = result.Split(new Char[] { ',' });
+
             if (arrStrHelp.Length < 2)
             {
                 return "";

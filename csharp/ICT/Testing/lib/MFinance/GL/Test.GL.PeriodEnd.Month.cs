@@ -63,7 +63,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         private TLedgerInfo FledgerInfo;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public TestGLPeriodicEndMonth()
         {
@@ -77,7 +77,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_02_UnpostedBatches()
         {
-
             // System.Diagnostics.Debug.WriteLine(
             UnloadTestData_GetBatchInfo();
             Assert.AreEqual(0, new GetBatchInfo(
@@ -319,7 +318,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 TVerificationResultCollection verificationResult;
                 bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
                     FLedgerNumber, false, out verificationResult);
-
 
                 if (!ledgerInfo.ProvisionalYearEndFlag)
                 {

@@ -863,7 +863,7 @@ namespace Ict.Common.Controls
 
         #endregion
 
-        #region Costumized events
+        #region Customised events
 
         /// <summary>
         /// custom paint method for the label

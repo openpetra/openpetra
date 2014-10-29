@@ -394,6 +394,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 FJournalRow.JournalCreditTotal += AAmountBaseCurrency;
             }
+
             return transRow;
         }
 
@@ -427,7 +428,6 @@ namespace Ict.Petra.Server.MFinance.Common
                 FBatchRow.BatchControlTotal += FJournalRow.JournalDebitTotal - FJournalRow.JournalCreditTotal;
             }
 
-            
             FBatchTDS.ThrowAwayAfterSubmitChanges = true;
             GLBatchTDSAccess.SubmitChanges(FBatchTDS);
 

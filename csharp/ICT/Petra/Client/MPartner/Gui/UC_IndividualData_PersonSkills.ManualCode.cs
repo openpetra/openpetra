@@ -134,7 +134,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
 
             // initialize skill level with first entry in cacheable table (to avoid runtime error)
-            PtSkillLevelTable SkillLevelTable = (PtSkillLevelTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.SkillLevelList);
+            PtSkillLevelTable SkillLevelTable = (PtSkillLevelTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(
+                TCacheablePersonTablesEnum.SkillLevelList);
+
             if (SkillLevelTable.Count > 0)
             {
                 ARow.SkillLevel = ((PtSkillLevelRow)(SkillLevelTable.Rows[0])).Level;

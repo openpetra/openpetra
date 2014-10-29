@@ -42,7 +42,6 @@ Source: ..\..\..\delivery\bin\Ict.Common*dll; DestDir: {userappdata}/OpenPetra{#
 Source: ..\..\..\delivery\bin\Ict.Petra.Client*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Server.*.connect.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Petra.Shared*dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
-Source: ..\..\..\delivery\bin\Ict.Petra.ClientPlugins*.dll; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\PetraClient.exe; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\delivery\bin\Ict.Tools.PatchTool.exe; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30; Flags: ignoreversion
 Source: ..\..\..\tmp\UINavigation.yml; DestDir: {userappdata}/OpenPetra{#ORGNAME}/bin30
