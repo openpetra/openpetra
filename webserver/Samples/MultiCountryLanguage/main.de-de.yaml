@@ -1,6 +1,0 @@
-RootNode:
-    BaseYaml: main.yaml
-    Controls:
-        grpNameAndAddress:
-            Controls:
-                Row10b: [txtSomethingSpecialForGermany]
