@@ -64,6 +64,7 @@ RootNode:
             ControlAttributes:
                 chkCurrent: {CheckState=CheckState.Checked}            
             InitiallyExpanded: true
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

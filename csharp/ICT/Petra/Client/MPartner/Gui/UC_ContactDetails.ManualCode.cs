@@ -66,6 +66,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private TTimerDrivenMessageBoxKind FTimerDrivenMessageBoxKind;
 
+        private bool FFilterInitialised = false;
+        
         private bool FRunningInsideShowDetails = false;
 
         private bool FRunningInsideDataSaving = false;
@@ -198,7 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
             FFilterAndFindObject.ApplyFilter();
-
+            
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -239,12 +241,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO ApplySecurity();
         }
 
-        private void CreateFilterFindPanelsManual()
+        void FilterToggledManual(bool AIsCollapsed)
         {
-            // By default only 'current' Contact Details should be shown
-// TODO Make initial checking of 'Current' Filter CheckBox work          ((CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByClonedFrom(chkCurrent)).Checked = true;
+            if (!AIsCollapsed) 
+            {
+                if (FFilterInitialised == false) 
+                {
+                    FFilterAndFindObject.SwitchOnKeepFilterTurnedOn(TUcoFilterAndFind.FilterContext.StandardFilterOnly);
+                    FFilterAndFindObject.ToggleFilter();
+                    
+                    FFilterInitialised = true;
+                }
+            }
         }
-
+        
         /// <summary>
         /// Performs necessary actions to make the Merging of rows that were changed on
         /// the Server side into the Client-side DataSet possible.
@@ -1508,13 +1518,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
 
                     case TUC_ContactDetails.TTimerDrivenMessageBoxKind.tdmbkNoPrimaryEmailButNonCurrentAvailable:
+                        // Adjust the Filter so that non-Valid records are shown, too, and expand the Filter Panel                        
+                        ((CheckBox)FFilterAndFindObject.FilterPanelControls.FStandardFilterPanels[0].PanelControl).CheckState = CheckState.Indeterminate;
+                        FFilterAndFindObject.ToggleFilter();
+                        
                         MessageBox.Show(Catalog.GetString(
-                            "No Primary Email Address has been chosen for this Partner.\r\n\r\nThere are non-current Email Addresses on record. You might want to\r\n"
+                            "No Primary Email Address has been chosen for this Partner.\r\n\r\nThere are non-current Email Addresses on record - the Filter has been\r\n"
                             +
-                            "check whether a current email address is available for this Partner."),
+                            "set up for you so those can be seen. You might want to check whether a current email address is available for this Partner."),
                         Catalog.GetString("No Primary Email Address Set - No Current Email Address"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                        
                         break;
 
                     default:
