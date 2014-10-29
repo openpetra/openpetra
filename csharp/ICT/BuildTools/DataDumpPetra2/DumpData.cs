@@ -177,11 +177,11 @@ namespace Ict.Tools.DataDumpPetra2
             string NewFileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
                                  newTable.strName + ".sql.gz";
 
-            if (File.Exists(NewFileName))
-            {
-                // for debugging: ignore files that have been written already
-                return;
-            }
+//            if (File.Exists(NewFileName))
+//            {
+//                // for debugging: ignore files that have been written already
+//                return;
+//            }
 
             StreamWriter MyWriterCount = null;
             StreamWriter MyWriterTest = null;
