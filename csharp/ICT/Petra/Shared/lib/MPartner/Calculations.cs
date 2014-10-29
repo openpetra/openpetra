@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Collections.Specialized;
 using GNU.Gettext;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -663,7 +664,138 @@ namespace Ict.Petra.Shared.MPartner
 
             return ReturnValue;
         }
+        
+        #region Contact Detail-specific
+        
+        /// <summary>
+        /// Determines which p_partner_attribute_type records are of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS'
+        /// </summary>
+        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
+        /// that holds datarows, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
+        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an 
+        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the 
+        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
+        /// <returns>DataView that is filtered so that it contains only p_partner_attribute_type records are of 
+        /// p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS'.</returns>
+        public static DataView DetermineEmailAttributes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
+            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        {
+            Type tmp;
+            
+            if (APPartnerAttributeTypeDT == null)
+            {
+                if (ACacheRetriever == null) 
+                {
+                    throw new ArgumentNullException("ACacheRetriever", "ACacheRetriever must not be null if APPartnerAttributeTypeDT is null");
+                }
+                
+                if (APPartnerAttributeTypeDT.Count == 0)
+                {                    
+                    // Note: If APPartnerAttributeTypeDT hasn't got any rows we add them here from the corresponding Cacheable DataTable 
+                    APPartnerAttributeTypeDT.Merge(
+                        (PPartnerAttributeTypeTable)ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), 
+                                                                                 TCacheablePartnerTablesEnum.ContactTypeList),
+                                                                    out tmp));
+        
+                    if (APPartnerAttributeTypeDT.Count == 0)
+                    {
+                        throw new EOPAppException("The DataTable passed in APPartnerAttributeTypeDT was null, so it got populated via the TDataCache. However, the returned Cacheable DataTable contains no records; for this Method to work that DataTable must hold records!");
+                    }
+                }
+            }
+            else
+            {
+                if (APPartnerAttributeTypeDT.Count == 0)
+                {
+                    throw new EOPAppException("The DataTable passed in APPartnerAttributeTypeDT contains no records; for this Method to work that DataTable must hold records!");
+                }                
+            }
+                
+            return new DataView(APPartnerAttributeTypeDT,
+                String.Format(PPartnerAttributeTypeTable.GetAttributeTypeValueKindDBName() + " = '{0}' AND " +
+                               PPartnerAttributeTypeTable.GetUnassignableDBName() + " = false", 
+                               TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS),
+                "", DataViewRowState.CurrentRows);
+        }
 
+        /// <summary>
+        /// Determines all p_partner_attribute_type records that are of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS' and
+        /// returns the result.
+        /// </summary>
+        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
+        /// that holds datarows, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
+        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an 
+        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the 
+        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
+        /// <returns>String that contains all p_partner_attribute_type records are of p_attribute_type_value_kind_c 
+        /// 'CONTACTDETAIL_EMAILADDRESS'.</returns>
+        public static string DetermineEmailPartnerAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
+            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        {
+            string ReturnValue = String.Empty;
+            string EmailAttributesConcatStr = String.Empty;
+
+            DataView EmailAttributesDV = DetermineEmailAttributes(APPartnerAttributeTypeDT, ACacheRetriever);
+
+            for (int Counter = 0; Counter < EmailAttributesDV.Count; Counter++)
+            {
+                EmailAttributesConcatStr += ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).AttributeType + "', '";
+            }
+
+            if (EmailAttributesConcatStr.Length > 0) 
+            {
+                ReturnValue = "'" + EmailAttributesConcatStr.Substring(0, EmailAttributesConcatStr.Length - 3);    
+            }   
+            
+            return ReturnValue;
+        }        
+        
+        /// <summary>
+        /// Determines all p_partner_attribute records whose p_attribute_type points to a p_partner_attribute_type record 
+        /// that is of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS' and returns the result.
+        /// </summary>
+        /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the Contact Detail 
+        /// records of a given Partner - or of MANY (!) Partners.</param>
+        /// <param name="AEmailAttributesConcatStr">This needs to be the return value of a call to Method 
+        /// <see cref="DetermineEmailPartnerAttributeTypes"/>.</param>
+        /// <param name="AOnlyCurrentEmailAddresses">Set to true to only return 'Valid' p_partner_attribute records
+        /// (i.e. p_partner_attribute records whose p_current_l Flag is set to true).</param>
+        /// <returns></returns>
+        public static DataView DeterminePartnerEmailAddresses(PPartnerAttributeTable APPartnerAttributeDT, 
+            string AEmailAttributesConcatStr, bool AOnlyCurrentEmailAddresses)
+        {
+            string CurrentCriteria;
+
+            if (APPartnerAttributeDT == null) 
+            {
+                throw new ArgumentNullException("APPartnerAttributeDT", "APPartnerAttributeDT must not be null");
+            }
+            
+            if (AEmailAttributesConcatStr == null) 
+            {
+                throw new ArgumentNullException("AEmailAttributesConcatStr", "AEmailAttributesConcatStr must not be null");
+            }
+            
+            if (AEmailAttributesConcatStr.Length > 0) 
+            {
+                CurrentCriteria = AOnlyCurrentEmailAddresses ? PPartnerAttributeTable.GetCurrentDBName() + " = true AND " : String.Empty;
+                
+                return new DataView(APPartnerAttributeDT,
+                    CurrentCriteria +
+                    String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
+                        AEmailAttributesConcatStr),
+                    PPartnerAttributeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);                
+            }
+            else
+            {
+                return new DataView();
+            }
+        }
+                
+        #endregion
+                
         /// <summary>
         /// count the available current addresses and the total number of addresses
         /// </summary>

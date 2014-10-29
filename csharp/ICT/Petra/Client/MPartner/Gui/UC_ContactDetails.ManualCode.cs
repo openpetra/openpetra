@@ -91,7 +91,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private string FDeletedRowsValue = String.Empty;
         
         /// <summary>
-        /// Populated by Method <see cref="DetermineEmailPartnerAttributeTypes"/>.
+        /// Populated by Method <see cref="Calculations.DetermineEmailPartnerAttributeTypes"/>.
         /// </summary>
         string FEmailAttributesConcatStr = String.Empty;
 
@@ -380,7 +380,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.EnableRelation("ContactDetails1");
             FMainDS.EnableRelation("ContactDetails2");
 
-            DetermineEmailPartnerAttributeTypes();
+            FEmailAttributesConcatStr = Calculations.DetermineEmailPartnerAttributeTypes(FMainDS.PPartnerAttributeType);
 
             // Show the 'Within The Organisation' GroupBox only if the Partner is of Partner Class PERSON
             if (FMainDS.PPartner[0].PartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
@@ -508,7 +508,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ReturnValue = true;
             string PrimaryEmailChoice;
             bool PrimaryEmailChoiceFoundAmongEligbleEmailAddr = false;
-            DataView ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(false);
+            DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                FEmailAttributesConcatStr, false);
 
             PrimaryEmailChoice = cmbPrimaryEMail.GetSelectedString();
 
@@ -551,7 +552,8 @@ namespace Ict.Petra.Client.MPartner.Gui
     
             if (ARunValidation) 
             {
-                DataView CurrentEmailAddrsDV = DeterminePartnersEmailAddresses(true);
+                DataView CurrentEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                    FEmailAttributesConcatStr, true);
                 
                 if (CurrentEmailAddrsDV.Count != 0)
                 {
@@ -623,53 +625,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             return ReturnValue;
         }
         
-        private DataView DetermineEmailAttributes()
-        {
-            return new DataView(FMainDS.PPartnerAttributeType,
-                String.Format(PPartnerAttributeTypeTable.GetAttributeTypeValueKindDBName() + " = '{0}' AND " +
-                               PPartnerAttributeTypeTable.GetUnassignableDBName() + " = false", TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS),
-                "", DataViewRowState.CurrentRows);
-        }
-
-        private DataView DeterminePartnersEmailAddresses(bool AOnlyCurrentEmailAddresses)
-        {
-            string CurrentCriteria = AOnlyCurrentEmailAddresses ? PPartnerAttributeTable.GetCurrentDBName() + " = true AND " : String.Empty;
-
-            if (FEmailAttributesConcatStr.Length > 0) 
-            {
-                return new DataView(FMainDS.PPartnerAttribute,
-                    CurrentCriteria +
-                    String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
-                        FEmailAttributesConcatStr),
-                    PPartnerAttributeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);                
-            }
-            else
-            {
-                return new DataView();
-            }
-        }
-
-        /// <summary>
-        /// Determines all Partner Attribute Types that are of Partner Attribute Category 'E-mail' and
-        /// populates FEmailAttributesConcatStr with the result.
-        /// </summary>
-        private void DetermineEmailPartnerAttributeTypes()
-        {
-            string EmailAttributesConcatStr = String.Empty;
-
-            DataView EmailAttributesDV = DetermineEmailAttributes();
-
-            for (int Counter = 0; Counter < EmailAttributesDV.Count; Counter++)
-            {
-                EmailAttributesConcatStr += ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).AttributeType + "', '";
-            }
-
-            if (EmailAttributesConcatStr.Length > 0) 
-            {
-                FEmailAttributesConcatStr = "'" + EmailAttributesConcatStr.Substring(0, EmailAttributesConcatStr.Length - 3);    
-            }            
-        }
-
         private void UpdatePrimaryEmailComboItems(bool ASuppressMessages, string ANewEmailAddressValue = null)
         {
             object[] PrimaryEmailAddresses;
@@ -680,7 +635,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             // Determine all Partner Attributes that have a Partner Attribute Type that constitutes an E-Mail
             // and that are Current.
-            ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(true);
+            ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                FEmailAttributesConcatStr, true);
 
             PrimaryEmailAddresses = new object[ElegibleEmailAddrsDV.Count + 1];
             PrimaryEmailAddresses[0] = String.Empty;
@@ -725,7 +681,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else
                     {
-                        AllEmailAddrsDV = DeterminePartnersEmailAddresses(false);
+                        AllEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                            FEmailAttributesConcatStr, false);
     
                         if (AllEmailAddrsDV.Count > 0)
                         {
@@ -800,7 +757,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (CreateNewPPartnerAttribute())
             {
-                cmbContactCategory.Focus();
+                txtValue.Focus();
             }
 
             // Fire OnRecalculateScreenParts event: reset counter in tab header
@@ -836,7 +793,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 ThisRow_Sequence = Convert.ToInt32(ThisDT.Rows[Counter][PPartnerAttributeTable.GetSequenceDBName(), ThisRow_RowVersion]);
-
+ 
                 if (ThisRow_Sequence < LeastSequence)
                 {
                     LeastSequence = ThisRow_Sequence;
@@ -972,7 +929,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     
                     if (cmbPrimaryEMail.GetSelectedString(-1) == FDeletedRowsValue) 
                     {
-                        DataView ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(true);
+                        DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                            FEmailAttributesConcatStr, true);
                         
                         if (ElegibleEmailAddrsDV.Count == 0) 
                         {
@@ -1154,12 +1112,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ValidateDataDetailsManual(PPartnerAttributeRow ARow)
         {
-//            bool NewPartner = (FMainDS.PPartner.Rows[0].RowState == DataRowState.Added);
-
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-//            TSharedPartnerValidation_Partner.ValidateRelationshipManual(this, ARow, ref VerificationResultCollection,
-//                FValidationControlsDict, NewPartner, ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey);
+            TSharedPartnerValidation_Partner.ValidateContactDetailsManual(this, ARow, ref VerificationResultCollection,
+                FValidationControlsDict, FValueKind);
         }
 
         #endregion
@@ -1280,7 +1236,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             if (AIsPrimaryEmailAddressIsThisRecord) 
             {
-                DataView ElegibleEmailAddrsDV = DeterminePartnersEmailAddresses(true);
+                DataView ElegibleEmailAddrsDV = Calculations.DeterminePartnerEmailAddresses(FMainDS.PPartnerAttribute, 
+                    FEmailAttributesConcatStr, true);
                 
                 if (ElegibleEmailAddrsDV.Count == 0) 
                 {
