@@ -545,12 +545,7 @@ namespace Ict.Tools.DataDumpPetra2
             // p_partner_contact, method of contact cannot be null, should be UNKNOWN
             if (ATableName == "p_partner_contact")
             {
-                string val = GetValue(AColumnNames, ANewRow, "p_contact_code_c");
-
-                if ((val.Length == 0) || (val == "\\N"))
-                {
-                    SetValue(AColumnNames, ref ANewRow, "p_contact_code_c", "UNKNOWN");
-                }
+                return false;
             }
 
             if (ATableName == "a_batch")
@@ -884,6 +879,11 @@ namespace Ict.Tools.DataDumpPetra2
             if (ATableName == "a_budget_period")
             {
                 RowCounter = TFinanceBudgetUpgrader.FixABudgetPeriod(AColumnNames, ref ANewRow, AWriter, AWriterTest);
+            }
+
+            if (ATableName == "p_partner_contact")
+            {
+                RowCounter = TContactLogs.PopulatePContactLog(AColumnNames, ref ANewRow, AWriter, AWriterTest);
             }
 
             if (ATableName == "p_partner_gift_destination")
