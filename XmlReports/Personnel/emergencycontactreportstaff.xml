@@ -3,136 +3,135 @@
 <reports>
 
   <report id="Emergency Contact Report Staff">
-	<description>
-		Emergency Contact Report for general Staff
-		Depends on emergencycontactreport.xml and common.xml
-	</description>
-	<reportparameters>
-		<reportparameter name="param_source"></reportparameter>
-		<reportparameter name="param_extract_name"></reportparameter>
-		<reportparameter name="param_hide_empty_lines"></reportparameter>
-		<reportparameter name="param_print_two_lines"></reportparameter>
-	</reportparameters>
-	
-	<reportheader></reportheader>
-	<pageheader>
-		<field whichfield="title1"><value text ="Emergency Contact Report" /></field>
-		<field whichfield="title2"><value function = "getSiteName()"/></field>
-		<field whichfield="descr1">
-			<fielddetail>
-				<value text = "Selection: "/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},one partner)">
-				<value text = "Partner "/><value variable = "param_partnerkey"/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},an extract)">
-				<value text = "Extract "/><value variable = "param_extract"/>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},all current staff)">
-				<value text = "All current Staff at date "/>
-					<value variable = "param_currentstaffdate" format="formatteddate"/>
-			</fielddetail>
-		</field>
-		<field whichfield="descr2">
-			<fielddetail condition="ne({param_selection}, one partner)">
-				<value text="Sorted by Partner Name"/>
-			</fielddetail>
-		</field>
-	</pageheader>
+    <description>
+        Emergency Contact Report for general Staff
+        Depends on emergencycontactreport.xml and common.xml
+    </description>
+    <reportparameters>
+        <reportparameter name="param_source"></reportparameter>
+        <reportparameter name="param_extract_name"></reportparameter>
+        <reportparameter name="param_hide_empty_lines"></reportparameter>
+        <reportparameter name="param_print_two_lines"></reportparameter>
+    </reportparameters>
+    
+    <reportheader></reportheader>
+    <pageheader>
+        <field whichfield="title1"><value text ="Emergency Contact Report" /></field>
+        <field whichfield="title2"><value function = "getSiteName()"/></field>
+        <field whichfield="descr1">
+            <fielddetail>
+                <value text = "Selection: "/>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},one partner)">
+                <value text = "Partner "/><value variable = "param_partnerkey"/>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},an extract)">
+                <value text = "Extract "/><value variable = "param_extract"/>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},all current staff)">
+                <value text = "All current Staff at date "/>
+                    <value variable = "param_currentstaffdate" format="formatteddate"/>
+            </fielddetail>
+        </field>
+        <field whichfield="descr2">
+            <fielddetail condition="ne({param_selection}, one partner)">
+                <value text="Sorted by Partner Name"/>
+            </fielddetail>
+        </field>
+    </pageheader>
 
     <calculations>
-	
-	<calculation id="Select The Partners" returns="PartnerKey, ApplicantPartnerName, FirstLanguage, Gender, 
-				MaritalStatus, DateOfBirth, p_field_key_n" returnsFormat="row">
-		<query>
-			<queryDetail><value>
-				SELECT DISTINCT
-					PUB_p_partner.p_partner_key_n AS PartnerKey,
-					PUB_p_partner.p_partner_short_name_c AS ApplicantPartnerName,
-					PUB_p_partner.p_language_code_c AS FirstLanguage,
-					PUB_p_person.p_gender_c AS Gender,
-					PUB_p_person.p_marital_status_c AS MaritalStatus,
-					PUB_p_person.p_date_of_birth_d AS DateOfBirth,
-					PUB_p_person.p_field_key_n AS p_field_key_n
-				FROM
-					PUB_p_person, PUB_p_partner
-			</value></queryDetail>
-			<queryDetail condition="eq({param_selection},one partner)"><value>
-				WHERE 
-					PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
-			</value></queryDetail>
-			<queryDetail condition="eq({param_selection},an extract)"><value>
-					, PUB_m_extract,
-					PUB_m_extract_master
-				WHERE 
-					PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract}
-			</value></queryDetail>
-			<queryDetail condition="eq({param_selection},all current staff)"><value>
-					, PUB_pm_staff_data
-				WHERE  PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
-					AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
-					AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
-						OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
-			</value></queryDetail>
-			<queryDetail><value>
-					AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
-				ORDER BY PUB_p_partner.p_partner_short_name_c
-			</value></queryDetail>
-		</query>
-	</calculation>
-	
+    
+    <calculation id="Select The Partners" returns="PartnerKey, ApplicantPartnerName, FirstLanguage, Gender, 
+                MaritalStatus, DateOfBirth" returnsFormat="row">
+        <query>
+            <queryDetail><value>
+                SELECT DISTINCT
+                    PUB_p_partner.p_partner_key_n AS PartnerKey,
+                    PUB_p_partner.p_partner_short_name_c AS ApplicantPartnerName,
+                    PUB_p_partner.p_language_code_c AS FirstLanguage,
+                    PUB_p_person.p_gender_c AS Gender,
+                    PUB_p_person.p_marital_status_c AS MaritalStatus,
+                    PUB_p_person.p_date_of_birth_d AS DateOfBirth,
+                FROM
+                    PUB_p_person, PUB_p_partner
+            </value></queryDetail>
+            <queryDetail condition="eq({param_selection},one partner)"><value>
+                WHERE 
+                    PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
+            </value></queryDetail>
+            <queryDetail condition="eq({param_selection},an extract)"><value>
+                    , PUB_m_extract,
+                    PUB_m_extract_master
+                WHERE 
+                    PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                    AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                    AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+            </value></queryDetail>
+            <queryDetail condition="eq({param_selection},all current staff)"><value>
+                    , PUB_pm_staff_data
+                WHERE  PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+                    AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+                    AND ( PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+                        OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )
+            </value></queryDetail>
+            <queryDetail><value>
+                    AND PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
+                ORDER BY PUB_p_partner.p_partner_short_name_c
+            </value></queryDetail>
+        </query>
+    </calculation>
+    
     </calculations>
    
     <levels> 
-	<level name="main">
-		<detail>
-			<lowerLevelReport calculation="Select The Partners" level="Partner Level"></lowerLevelReport>
-		</detail>
-	</level> 
-	
-	<level name="Partner Level" identification="PartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="9cm" calculation="MakePartnerHeader">
-				<value text=""/>
-				<value variable="PartnerNameAndField"/>
-			</field>
-			<field whichfield="header 1" pos="9cm" width="15cm">
-				<value text=""/>
-				<value variable="PartnerAddress"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="EmergencyDetailLevel" calculation="SelectRelationships"></lowerLevelReport>
-		</detail>
-		<footer space="below">
-			<field whichfield="left 0" pos="0cm" width="9cm" >
-				<value text=" "/>
-			</field>
-			<field whichfield="left 1">
-				<value text=" "/>
-			</field>				
-		</footer>
-	</level>
-	
-	<level name="EmergencyDetailLevel" identification="EmergencyContactKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="0cm">
-				<value variable="ApplicantPartnerName"/>
-				<value text="   "/>
-				<value variable="PartnerKey" format="text"/>
-			</field>
-		</header>
-		<detail>
-			<field whichfield="left 0" pos="0cm" width="1cm">
-				<value text=" "/>
-			</field>
-			<field whichfield="Columns" pos="1cm" calculation="Get Emergency Contact Details">
-			</field>
-		</detail>
-	</level>
-	
+    <level name="main">
+        <detail>
+            <lowerLevelReport calculation="Select The Partners" level="Partner Level"></lowerLevelReport>
+        </detail>
+    </level> 
+    
+    <level name="Partner Level" identification="PartnerKey">
+        <header>
+            <field whichfield="header 0" pos="0cm" width="9cm" calculation="MakePartnerHeader">
+                <value text=""/>
+                <value variable="PartnerNameAndField"/>
+            </field>
+            <field whichfield="header 1" pos="9cm" width="15cm">
+                <value text=""/>
+                <value variable="PartnerAddress"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="EmergencyDetailLevel" calculation="SelectRelationships"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+            <field whichfield="left 0" pos="0cm" width="9cm" >
+                <value text=" "/>
+            </field>
+            <field whichfield="left 1">
+                <value text=" "/>
+            </field>                
+        </footer>
+    </level>
+    
+    <level name="EmergencyDetailLevel" identification="EmergencyContactKey">
+        <header>
+            <field whichfield="header 0" pos="0cm" width="0cm">
+                <value variable="ApplicantPartnerName"/>
+                <value text="   "/>
+                <value variable="PartnerKey" format="text"/>
+            </field>
+        </header>
+        <detail>
+            <field whichfield="left 0" pos="0cm" width="1cm">
+                <value text=" "/>
+            </field>
+            <field whichfield="Columns" pos="1cm" calculation="Get Emergency Contact Details">
+            </field>
+        </detail>
+    </level>
+    
     </levels>
   </report>
 </reports>

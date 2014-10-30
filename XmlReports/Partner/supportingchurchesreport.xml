@@ -3,634 +3,651 @@
 <reports>
 
   <report id="Supporting Churches">
-	<description>
-		Report for supporting churches
-	</description>
-	<reportparameters>
-		<reportparameter name="param_selection">
-			<option name="one partner"></option>
-			<option name="an extract"></option>
-			<option name="all current staff"></option>
-		</reportparameter>
-		<reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
-		<reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
-		<reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
-	</reportparameters>
+    <description>
+        Report for supporting churches
+    </description>
+    <reportparameters>
+        <reportparameter name="param_selection">
+            <option name="one partner"></option>
+            <option name="an extract"></option>
+            <option name="all current staff"></option>
+        </reportparameter>
+        <reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
+        <reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
+        <reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
+    </reportparameters>
 
-	<reportheader></reportheader>
-	<pageheader>
-		<field whichfield="title1"><value text="Supporting Churches Report"></value></field>
-		<field whichfield="title2"><value function="getSiteName()"></value></field>
-		<field whichfield="descr1">
-			<fielddetail>
-				<switch>
-					<case condition="eq({param_order_by}, PartnerName)">
-						<value text="Sorted by: Partner Name"></value>
-					</case>
-					<case condition="eq({param_order_by}, PartnerKey)">
-						<value text="Sorted by: Partner Key"></value>
-					</case>
-				</switch>
-			</fielddetail>
-		</field>	
-		<field whichfield="period2">
-			<fielddetail>
-				<value text="Selection: "></value>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},one partner)">
-				<value text="Partner "></value><value variable="param_partnerkey"></value>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},an extract)">
-				<value text="Extract "></value><value variable="param_extract"></value>
-			</fielddetail>
-			<fielddetail condition="eq({param_selection},all current staff)">
-				<value text="All current Staff at date "></value><value variable="param_currentstaffdate" format="formatteddate"></value>
-			</fielddetail>
-		</field>
-	</pageheader>
+    <reportheader></reportheader>
+    <pageheader>
+        <field whichfield="title1"><value text="Supporting Churches Report"></value></field>
+        <field whichfield="title2"><value function="getSiteName()"></value></field>
+        <field whichfield="descr1">
+            <fielddetail>
+                <switch>
+                    <case condition="eq({param_order_by}, PartnerName)">
+                        <value text="Sorted by: Partner Name"></value>
+                    </case>
+                    <case condition="eq({param_order_by}, PartnerKey)">
+                        <value text="Sorted by: Partner Key"></value>
+                    </case>
+                </switch>
+            </fielddetail>
+        </field>    
+        <field whichfield="period2">
+            <fielddetail>
+                <value text="Selection: "></value>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},one partner)">
+                <value text="Partner "></value><value variable="param_partnerkey"></value>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},an extract)">
+                <value text="Extract "></value><value variable="param_extract"></value>
+            </fielddetail>
+            <fielddetail condition="eq({param_selection},all current staff)">
+                <value text="All current Staff at date "></value><value variable="param_currentstaffdate" format="formatteddate"></value>
+            </fielddetail>
+        </field>
+    </pageheader>
 
-	<calculations>
-	
-	<calculation id="Get Churches" returns="ChurchPartnerKey, ChurchName" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT 
-						PUB_p_church.p_partner_key_n AS ChurchPartnerKey,
-						PUB_p_partner.p_partner_short_name_c AS ChurchName
-					FROM   
-						PUB_p_partner_relationship, PUB_p_church, PUB_p_partner_type, PUB_p_partner
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},one partner)">
-				<value>
-					WHERE  
-						PUB_p_church.p_partner_key_n = {{param_partnerkey}}
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},an extract)">
-				<value>
-						, PUB_m_extract,
-						PUB_m_extract_master
-					WHERE 
-						PUB_p_church.p_partner_key_n = PUB_m_extract.p_partner_key_n
-						AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-						AND PUB_m_extract_master.m_extract_name_c = {param_extract}
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},all current staff)">
-				<value>
-						, PUB_pm_staff_data
-					WHERE 
-						PUB_p_church.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
-						AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
-						AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
-						OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 
-				</value>
-			</queryDetail>
-			<queryDetail>
-			<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
-				<value>
-						AND PUB_p_partner_type.p_type_code_c = 'CHURCH-OM'
-						AND PUB_p_church.p_partner_key_n = PUB_p_partner_type.p_partner_key_n
-						AND PUB_p_partner.p_partner_key_n = PUB_p_partner_type.p_partner_key_n
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_order_by}, PartnerName)">
-				<value>
-					ORDER BY PUB_p_partner.p_partner_short_name_c
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_order_by}, PartnerKey)">
-				<value>
-					ORDER BY PUB_p_church.p_partner_key_n
-				</value>
-			</queryDetail>
-		</query>
-	</calculation> <!-- Get Churches -->
-	
-	
-	<calculation id="Get Supported Partners" returns="ShortName, PartnerClass,  AssociatedPartnerKey" returnsFormat="row">
-		<query>
-		<!-- don't get the special type PUB_p_partner_type.p_type_code_c AS SpecialType here because
-			it will might print out the same partner twice -->
-			<queryDetail>
-			<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
-				<value>
-					SELECT DISTINCT 
-						PUB_p_partner.p_partner_short_name_c AS ShortName,
-						PUB_p_partner.p_partner_class_c AS PartnerClass,
-						PUB_p_partner.p_partner_key_n AS AssociatedPartnerKey
-					FROM   
-						PUB_p_partner, PUB_p_partner_type, PUB_p_partner_relationship
-					WHERE  
-							PUB_p_partner_relationship.p_partner_key_n = {{ChurchPartnerKey}}
-						AND 
-							PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
-						AND PUB_p_partner_relationship.p_relation_name_c = 'SUPPCHURCH'
-						
-						AND PUB_p_partner_type.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
-						AND (
-							PUB_p_partner_type.p_type_code_c LIKE 'OMER%'
-							OR PUB_p_partner_type.p_type_code_c LIKE 'APPLIED%'
-							OR PUB_p_partner_type.p_type_code_c LIKE 'EX-OMER%')
-					UNION
-					SELECT DISTINCT 
-						PUB_p_partner.p_partner_short_name_c AS ShortName,
-						PUB_p_partner.p_partner_class_c AS PartnerClass,
-						PUB_p_partner.p_partner_key_n AS AssociatedPartnerKey
-					FROM   
-						PUB_p_partner, PUB_p_partner_type, PUB_p_partner_relationship
-					WHERE
-							PUB_p_partner_relationship.p_relation_key_n = {{ChurchPartnerKey}}
-						AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
-					</value>
-			</queryDetail>
-		</query>
-	</calculation> <!-- Get Supported Partners -->
-	
-	<calculation id="Get Church Officers" returns="ShortName, PartnerClass,  AssociatedPartnerKey, SpecialType" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT 
-						PUB_p_partner.p_partner_short_name_c AS ShortName,
-						PUB_p_partner.p_partner_class_c AS PartnerClass,
-						PUB_p_partner.p_partner_key_n AS AssociatedPartnerKey,
-						PUB_p_partner_relationship.p_relation_name_c AS SpecialType
-					FROM   
-						PUB_p_partner, PUB_p_partner_relationship
-					WHERE  
-							PUB_p_partner_relationship.p_partner_key_n = {{ChurchPartnerKey}}
-						AND 
-							PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
-						AND PUB_p_partner_relationship.p_relation_name_c &lt;&gt; 'SUPPCHURCH'
-				</value>
-			</queryDetail>
-		</query>
-	</calculation> <!-- Get Church Officers -->
-	
-	<calculation id="GetPartnerType" returns="SpecialType" returnsFormat="text">
-	<!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT
-						PUB_p_partner_type.p_type_code_c AS SpecialType
-					FROM
-						PUB_p_partner_type
-					WHERE
-							PUB_p_partner_type.p_partner_key_n = {{AssociatedPartnerKey}}
-						AND (
-							PUB_p_partner_type.p_type_code_c LIKE 'OMER%'
-							OR PUB_p_partner_type.p_type_code_c LIKE 'APPLIED%'
-							OR PUB_p_partner_type.p_type_code_c LIKE 'EX-OMER%')
-				</value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="GetPartnerField" returns="p_partner_short_name_c" returnsFormat="text">
-		<query>
-			<queryDetail condition="eq({PartnerClass}, PERSON)">
-				<value>
+    <calculations>
+    
+    <calculation id="Get Churches" returns="ChurchPartnerKey, ChurchName" returnsFormat="row">
+        <query>
+            <queryDetail>
+                <value>
+                    SELECT DISTINCT 
+                        PUB_p_church.p_partner_key_n AS ChurchPartnerKey,
+                        PUB_p_partner.p_partner_short_name_c AS ChurchName
+                    FROM   
+                        PUB_p_partner_relationship, PUB_p_church, PUB_p_partner_type, PUB_p_partner
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_selection},one partner)">
+                <value>
+                    WHERE  
+                        PUB_p_church.p_partner_key_n = {{param_partnerkey}}
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_selection},an extract)">
+                <value>
+                        , PUB_m_extract,
+                        PUB_m_extract_master
+                    WHERE 
+                        PUB_p_church.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                        AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                        AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_selection},all current staff)">
+                <value>
+                        , PUB_pm_staff_data
+                    WHERE 
+                        PUB_p_church.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+                        AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+                        AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+                        OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 
+                </value>
+            </queryDetail>
+            <queryDetail>
+            <!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
+                <value>
+                        AND PUB_p_partner_type.p_type_code_c = 'CHURCH-OM'
+                        AND PUB_p_church.p_partner_key_n = PUB_p_partner_type.p_partner_key_n
+                        AND PUB_p_partner.p_partner_key_n = PUB_p_partner_type.p_partner_key_n
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_order_by}, PartnerName)">
+                <value>
+                    ORDER BY PUB_p_partner.p_partner_short_name_c
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_order_by}, PartnerKey)">
+                <value>
+                    ORDER BY PUB_p_church.p_partner_key_n
+                </value>
+            </queryDetail>
+        </query>
+    </calculation> <!-- Get Churches -->
+    
+    
+    <calculation id="Get Supported Partners" returns="ShortName, PartnerClass,  AssociatedPartnerKey" returnsFormat="row">
+        <query>
+        <!-- don't get the special type PUB_p_partner_type.p_type_code_c AS SpecialType here because
+            it will might print out the same partner twice -->
+            <queryDetail>
+            <!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
+                <value>
+                    SELECT DISTINCT 
+                        PUB_p_partner.p_partner_short_name_c AS ShortName,
+                        PUB_p_partner.p_partner_class_c AS PartnerClass,
+                        PUB_p_partner.p_partner_key_n AS AssociatedPartnerKey
+                    FROM   
+                        PUB_p_partner, PUB_p_partner_type, PUB_p_partner_relationship
+                    WHERE  
+                            PUB_p_partner_relationship.p_partner_key_n = {{ChurchPartnerKey}}
+                        AND 
+                            PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
+                        AND PUB_p_partner_relationship.p_relation_name_c = 'SUPPCHURCH'
+                        
+                        AND PUB_p_partner_type.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
+                        AND (
+                            PUB_p_partner_type.p_type_code_c LIKE 'OMER%'
+                            OR PUB_p_partner_type.p_type_code_c LIKE 'APPLIED%'
+                            OR PUB_p_partner_type.p_type_code_c LIKE 'EX-OMER%')
+                    UNION
+                    SELECT DISTINCT 
+                        PUB_p_partner.p_partner_short_name_c AS ShortName,
+                        PUB_p_partner.p_partner_class_c AS PartnerClass,
+                        PUB_p_partner.p_partner_key_n AS AssociatedPartnerKey
+                    FROM   
+                        PUB_p_partner, PUB_p_partner_type, PUB_p_partner_relationship
+                    WHERE
+                            PUB_p_partner_relationship.p_relation_key_n = {{ChurchPartnerKey}}
+                        AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
+                    </value>
+            </queryDetail>
+        </query>
+    </calculation> <!-- Get Supported Partners -->
+    
+    <calculation id="Get Church Officers" returns="ShortName, PartnerClass,  AssociatedPartnerKey, SpecialType" returnsFormat="row">
+        <query>
+            <queryDetail>
+                <value>
+                    SELECT DISTINCT 
+                        PUB_p_partner.p_partner_short_name_c AS ShortName,
+                        PUB_p_partner.p_partner_class_c AS PartnerClass,
+                        PUB_p_partner.p_partner_key_n AS AssociatedPartnerKey,
+                        PUB_p_partner_relationship.p_relation_name_c AS SpecialType
+                    FROM   
+                        PUB_p_partner, PUB_p_partner_relationship
+                    WHERE  
+                            PUB_p_partner_relationship.p_partner_key_n = {{ChurchPartnerKey}}
+                        AND 
+                            PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
+                        AND PUB_p_partner_relationship.p_relation_name_c &lt;&gt; 'SUPPCHURCH'
+                </value>
+            </queryDetail>
+        </query>
+    </calculation> <!-- Get Church Officers -->
+    
+    <calculation id="GetPartnerType" returns="SpecialType" returnsFormat="text">
+    <!-- TODO: ORGANIZATION SPECIFIC  p_type_code_c -->
+        <query>
+            <queryDetail>
+                <value>
+                    SELECT DISTINCT
+                        PUB_p_partner_type.p_type_code_c AS SpecialType
+                    FROM
+                        PUB_p_partner_type
+                    WHERE
+                            PUB_p_partner_type.p_partner_key_n = {{AssociatedPartnerKey}}
+                        AND (
+                            PUB_p_partner_type.p_type_code_c LIKE 'OMER%'
+                            OR PUB_p_partner_type.p_type_code_c LIKE 'APPLIED%'
+                            OR PUB_p_partner_type.p_type_code_c LIKE 'EX-OMER%')
+                </value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="GetPartnerField" returns="p_partner_short_name_c" returnsFormat="text">
+        <query>
+            <queryDetail condition="eq({PartnerClass}, PERSON)">
+                <value>
                     SELECT DISTINCT
                     PUB.p_partner.p_partner_short_name_c
                     FROM
-                    PUB.p_person, PUB.p_partner
+                    PUB.p_person, PUB.p_partner, PUB.p_partner P
+
+                    LEFT JOIN PUB.p_partner_gift_destination 
+                    ON PUB.p_partner_gift_destination.p_partner_key_n = P.p_partner_key_n
+                    AND PUB.p_partner_gift_destination.p_date_effective_d &lt;= {#param_today#}
+                    AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL
+                    OR (PUB.p_partner_gift_destination.p_date_expires_d &gt;= {#param_today#}
+                    AND PUB.p_partner_gift_destination.p_date_effective_d != PUB.p_partner_gift_destination.p_date_expires_d))
+
                     WHERE
                     PUB.p_person.p_partner_key_n = {{AssociatedPartnerKey}}
-                    AND PUB.p_partner.p_partner_key_n = PUB.p_person.p_field_key_n
+                    AND P.p_partner_key_n = PUB.p_person.p_family_key_n
+                    AND PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_field_key_n
                 </value>
-			</queryDetail>
-			<queryDetail condition="not(eq({PartnerClass}, PERSON))">
-				<value>
+            </queryDetail>
+            <queryDetail condition="not(eq({PartnerClass}, PERSON))">
+                <value>
                     SELECT DISTINCT
                     PUB.p_partner.p_partner_short_name_c
                     FROM
                     PUB.p_family, PUB.p_partner
+
+                    LEFT JOIN PUB.p_partner_gift_destination 
+                    ON PUB.p_partner_gift_destination.p_partner_key_n = {{AssociatedPartnerKey}}
+                    AND PUB.p_partner_gift_destination.p_date_effective_d &lt;= {#param_today#}
+                    AND (PUB.p_partner_gift_destination.p_date_expires_d IS NULL
+                    OR (PUB.p_partner_gift_destination.p_date_expires_d &gt;= {#param_today#}
+                    AND PUB.p_partner_gift_destination.p_date_effective_d != PUB.p_partner_gift_destination.p_date_expires_d))
+
                     WHERE
                     PUB.p_family.p_partner_key_n = {{AssociatedPartnerKey}}
-                    AND PUB.p_partner.p_partner_key_n = PUB.p_family.p_field_key_n
+                    AND PUB.p_partner.p_partner_key_n = PUB.p_partner_gift_destination.p_field_key_n
                 </value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	
-	<calculation id="MakeChurchAddress" returns="ChurchAddress" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="GetPartnerBestAddress({{ChurchPartnerKey}})"/>
-				<value function="assign(ChurchAddress, {ChurchName})"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress}, {Locality}, 3))"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress},{StreetName}, 3))"/>
-				<value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{Address3}))"/>
-				<value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{PostalCode}))"/>
-				<value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{City}))"/>
-				<value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{County}))"/>
-				<value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{CountryCode}))"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress}, Type:, 3))"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress}, {LocationType}, 1))"/>
-				<!-- This is needed to print the ChurchPartnerKey nicely -->
-				<value function="assign(ChurchPartnerKey1, concatenateww({ChurchPartnerKey},  , 1))"/>
-			</queryDetail>
-			<queryDetail condition="not(eq(length({TelephoneNumber}), 0))">
-				<value text="NO-SQL"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress}, Phone:, 3))"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress},{TelephoneNumber}, 1))"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress},{Extension}, 1))"/>
-			</queryDetail>
-			<queryDetail condition="not(eq(length({EMailAddress}), 0))">
-				<value text="NO-SQL"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress}, E-Mail:, 3))"/>
-				<value function="assign(ChurchAddress, concatenateww({ChurchAddress},{EMailAddress}, 1))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="IncrementChurchCount" returns="NumberChurches" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				
-				<value function="assign (NumberChurches, add({NumberChurches}, 1))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="BasicInitialisation" returns="NumberIndividuals, NumberChurches" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(NumberIndividuals, 0)"/>
-				<value function="assign(NumberChurches, 0)"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="MakePartnerAddress" returns="PartnerAddress, Type, Field" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(Field, {p_partner_short_name_c})"/>
-				<value function="GetPartnerBestAddress({AssociatedPartnerKey})"/>
-				<value function="assign(PartnerAddress,  )"/>
-				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{City}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
-				<value function="assign(NumberIndividuals, add({NumberIndividuals}, 1))"/>
-				<value function="assign(Telephone, concatenate({TelephoneNumber}, {Extension}))"/>
-				<value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))" condition="gt({FaxNumber}, 0)"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="ClearField" returns="Field" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(Field, )"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Type/Relation" returns="text" returnsFormat="text">
-		<caption><value text="Type/Relation"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="SpecialType"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    
+    <calculation id="MakeChurchAddress" returns="ChurchAddress" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="GetPartnerBestAddress({{ChurchPartnerKey}})"/>
+                <value function="assign(ChurchAddress, {ChurchName})"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, {Locality}, 3))"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress},{StreetName}, 3))"/>
+                <value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{Address3}))"/>
+                <value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{PostalCode}))"/>
+                <value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{City}))"/>
+                <value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{County}))"/>
+                <value function="assign(ChurchAddress, concatenatewithcomma({ChurchAddress},{CountryCode}))"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, Type:, 3))"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, {LocationType}, 1))"/>
+                <!-- This is needed to print the ChurchPartnerKey nicely -->
+                <value function="assign(ChurchPartnerKey1, concatenateww({ChurchPartnerKey},  , 1))"/>
+            </queryDetail>
+            <queryDetail condition="not(eq(length({TelephoneNumber}), 0))">
+                <value text="NO-SQL"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, Phone:, 3))"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress},{TelephoneNumber}, 1))"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress},{Extension}, 1))"/>
+            </queryDetail>
+            <queryDetail condition="not(eq(length({EMailAddress}), 0))">
+                <value text="NO-SQL"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress}, E-Mail:, 3))"/>
+                <value function="assign(ChurchAddress, concatenateww({ChurchAddress},{EMailAddress}, 1))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="IncrementChurchCount" returns="NumberChurches" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                
+                <value function="assign (NumberChurches, add({NumberChurches}, 1))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="BasicInitialisation" returns="NumberIndividuals, NumberChurches" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(NumberIndividuals, 0)"/>
+                <value function="assign(NumberChurches, 0)"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="MakePartnerAddress" returns="PartnerAddress, Type, Field" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(Field, {p_partner_short_name_c})"/>
+                <value function="GetPartnerBestAddress({AssociatedPartnerKey})"/>
+                <value function="assign(PartnerAddress,  )"/>
+                <value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{City}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
+                <value function="assign(NumberIndividuals, add({NumberIndividuals}, 1))"/>
+                <value function="assign(Telephone, concatenate({TelephoneNumber}, {Extension}))"/>
+                <value function="assign(FaxNumber, concatenate({FaxNumber}, {FaxExtension}))" condition="gt({FaxNumber}, 0)"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="ClearField" returns="Field" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(Field, )"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Type/Relation" returns="text" returnsFormat="text">
+        <caption><value text="Type/Relation"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="SpecialType"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation align="left" id="Partner Address" returns="text" returnsFormat="text">
-		<caption><value text="Partner Address"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Address" returns="text" returnsFormat="text">
-		<caption><value text="Church Address"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ChurchAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
-		<caption><value text="Partner Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ShortName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Class" returns="text" returnsFormat="text">
-		<caption><value text="Partner Class"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerClass"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+    <calculation align="left" id="Partner Address" returns="text" returnsFormat="text">
+        <caption><value text="Partner Address"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerAddress"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Address" returns="text" returnsFormat="text">
+        <caption><value text="Church Address"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ChurchAddress"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <caption><value text="Partner Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ShortName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Partner Class" returns="text" returnsFormat="text">
+        <caption><value text="Partner Class"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerClass"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation align="left" id="Church Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Church Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ChurchPartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Church Partner Key1" returns="text" returnsFormat="text">
-		<caption><value text="Church Partner Key1"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ChurchPartnerKey1"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="ChurchName" returns="text" returnsFormat="text">
-		<caption><value text="ChurchName"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ChurchName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Associated Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="AssociatedPartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Field" returns="text" returnsFormat="text">
-		<caption><value text="Field"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Field"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Street Name" returns="text" returnsFormat="text">
-		<caption><value text="Street Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="StreetName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="First Address Line" returns="text" returnsFormat="text">
-		<caption><value text="First Address Line"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Locality"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Third Address Line" returns="text" returnsFormat="text">
-		<caption><value text="Third Address Line"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Address3"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Country" returns="text" returnsFormat="text">
-		<caption><value text="Country"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="CountryCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="County" returns="text" returnsFormat="text">
-		<caption><value text="County"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="County"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="City" returns="text" returnsFormat="text">
-		<caption><value text="City"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="City"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="PostCode" returns="text" returnsFormat="text">
-		<caption><value text="PostCode"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PostalCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-		<caption><value text="E-Mail Address"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EMailAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="TelephoneNumber" returns="text" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value variable="TelephoneNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Telephone" returns="text" returnsFormat="text">
-		<caption><value text="Telephone"/></caption>
-		<query>
-			<queryDetail>
-				<value variable="Telephone"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="FaxNumber" returns="text" returnsFormat="text">
-		<caption><value text="FaxNumber"/></caption>
-		<query>
-			<queryDetail>
-				<value variable="FaxNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Extension" returns="text" returnsFormat="text">
-		<caption><value text=""></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Extension"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Mobile" returns="text" returnsFormat="text">
-		<caption><value text="Mobile"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="MobileNumber"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
-		<caption><value text="Alternate Telephone"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="AlternateTelephone"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="NumberChurches" returns="text" returnsFormat="text">
-		<caption><value text="NumberChurches"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="NumberChurches"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="NumberIndividuals" returns="text" returnsFormat="text">
-		<caption><value text="NumberIndividuals"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="NumberIndividuals"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+    <calculation align="left" id="Church Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Church Partner Key"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ChurchPartnerKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Church Partner Key1" returns="text" returnsFormat="text">
+        <caption><value text="Church Partner Key1"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ChurchPartnerKey1"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="ChurchName" returns="text" returnsFormat="text">
+        <caption><value text="ChurchName"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ChurchName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Associated Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Partner Key"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="AssociatedPartnerKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Field" returns="text" returnsFormat="text">
+        <caption><value text="Field"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Field"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Street Name" returns="text" returnsFormat="text">
+        <caption><value text="Street Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="StreetName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="First Address Line" returns="text" returnsFormat="text">
+        <caption><value text="First Address Line"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Locality"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Third Address Line" returns="text" returnsFormat="text">
+        <caption><value text="Third Address Line"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Address3"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Country" returns="text" returnsFormat="text">
+        <caption><value text="Country"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="CountryCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="County" returns="text" returnsFormat="text">
+        <caption><value text="County"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="County"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="City" returns="text" returnsFormat="text">
+        <caption><value text="City"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="City"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="PostCode" returns="text" returnsFormat="text">
+        <caption><value text="PostCode"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PostalCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
+        <caption><value text="E-Mail Address"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="EMailAddress"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="TelephoneNumber" returns="text" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value variable="TelephoneNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Telephone" returns="text" returnsFormat="text">
+        <caption><value text="Telephone"/></caption>
+        <query>
+            <queryDetail>
+                <value variable="Telephone"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="FaxNumber" returns="text" returnsFormat="text">
+        <caption><value text="FaxNumber"/></caption>
+        <query>
+            <queryDetail>
+                <value variable="FaxNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Extension" returns="text" returnsFormat="text">
+        <caption><value text=""></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Extension"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Mobile" returns="text" returnsFormat="text">
+        <caption><value text="Mobile"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="MobileNumber"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Alternate Telephone" returns="text" returnsFormat="text">
+        <caption><value text="Alternate Telephone"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="AlternateTelephone"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="NumberChurches" returns="text" returnsFormat="text">
+        <caption><value text="NumberChurches"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="NumberChurches"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="NumberIndividuals" returns="text" returnsFormat="text">
+        <caption><value text="NumberIndividuals"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="NumberIndividuals"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
     </calculations>
     
     <levels>    
-	<level name="main">
-		<detail>
-			<lowerLevelReport level="intermediateLevel"></lowerLevelReport>
-		</detail>
-	</level> 
+    <level name="main">
+        <detail>
+            <lowerLevelReport level="intermediateLevel"></lowerLevelReport>
+        </detail>
+    </level> 
 
-	<level name="intermediateLevel">
-		<detail>
-			<lowerLevelReport level="InitLevel"></lowerLevelReport>
-			<lowerLevelReport calculation="Get Churches" level="ChurchesLevel"></lowerLevelReport>
-		</detail>
-		<footer space="above" >
-			<field whichfield="column 2" pos="0.5cm" width="4.5cm">
-				<value text="Total Churches Printed:"/>
-				<value variable="NumberChurches"/>
-			</field>
-			<field whichfield="column 3" pos="5.0cm" width="5.5cm">
-				<value text="Total Individuals Printed: "/>
-				<value variable="NumberIndividuals"/>
-			</field>
-		</footer>
-	</level> 
-	
-	<level name="InitLevel">
-	<!-- This leve is only here to initialise the "NumberIndividuals" with 0 -->
-		<header>
-			<field calculation="BasicInitialisation" whichfield="header 1" pos="0.2cm" width="2cm">
-			</field>
-		</header>
-		<detail/>
-	</level>
-	
-	<level name="ChurchesLevel">
-		<header>
-			<field calculation="IncrementChurchCount" whichfield="header 1" pos="0.0cm" width="0.2cm">
-			</field>
-			<field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
-				<value variable="ChurchPartnerKey1"/>
-				<value text="   "/>
-				<value variable="ChurchAddress"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport calculation="Get Supported Partners" level="PartnerLevel1"></lowerLevelReport>
-			<lowerLevelReport calculation="Get Church Officers" level="PartnerLevel2"></lowerLevelReport>
-			<lowerLevelReport level="DummyPartnerLevel" condition="lt({NumberIndividuals}, 1)"></lowerLevelReport>
-		</detail>
-		<footer space="above">
-		</footer>
-	</level>
-	
+    <level name="intermediateLevel">
+        <detail>
+            <lowerLevelReport level="InitLevel"></lowerLevelReport>
+            <lowerLevelReport calculation="Get Churches" level="ChurchesLevel"></lowerLevelReport>
+        </detail>
+        <footer space="above" >
+            <field whichfield="column 2" pos="0.5cm" width="4.5cm">
+                <value text="Total Churches Printed:"/>
+                <value variable="NumberChurches"/>
+            </field>
+            <field whichfield="column 3" pos="5.0cm" width="5.5cm">
+                <value text="Total Individuals Printed: "/>
+                <value variable="NumberIndividuals"/>
+            </field>
+        </footer>
+    </level> 
+    
+    <level name="InitLevel">
+    <!-- This leve is only here to initialise the "NumberIndividuals" with 0 -->
+        <header>
+            <field calculation="BasicInitialisation" whichfield="header 1" pos="0.2cm" width="2cm">
+            </field>
+        </header>
+        <detail/>
+    </level>
+    
+    <level name="ChurchesLevel">
+        <header>
+            <field calculation="IncrementChurchCount" whichfield="header 1" pos="0.0cm" width="0.2cm">
+            </field>
+            <field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
+                <value variable="ChurchPartnerKey1"/>
+                <value text="   "/>
+                <value variable="ChurchAddress"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport calculation="Get Supported Partners" level="PartnerLevel1"></lowerLevelReport>
+            <lowerLevelReport calculation="Get Church Officers" level="PartnerLevel2"></lowerLevelReport>
+            <lowerLevelReport level="DummyPartnerLevel" condition="lt({NumberIndividuals}, 1)"></lowerLevelReport>
+        </detail>
+        <footer space="above">
+        </footer>
+    </level>
+    
       <level name="PartnerLevel1" identification="AssociatedPartnerKey">
-		<header>
-			<field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
-				<value variable="ChurchPartnerKey1"/>
-				<value text="   "/>
-				<value variable="ChurchAddress"/>
-			</field>
-		</header>
-		<detail>
-			<field calculation="GetPartnerField" whichfield="left 0" pos="0.0cm" width="1cm">
-				<value text=" "/>
-			</field>
-			<field calculation="GetPartnerType" whichfield="left 0" pos="0.0cm" width="1cm">
-				<value text=" "/>
-			</field>
-			<field calculation="MakePartnerAddress" whichfield="Columns"></field>
-		</detail>
+        <header>
+            <field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
+                <value variable="ChurchPartnerKey1"/>
+                <value text="   "/>
+                <value variable="ChurchAddress"/>
+            </field>
+        </header>
+        <detail>
+            <field calculation="GetPartnerField" whichfield="left 0" pos="0.0cm" width="1cm">
+                <value text=" "/>
+            </field>
+            <field calculation="GetPartnerType" whichfield="left 0" pos="0.0cm" width="1cm">
+                <value text=" "/>
+            </field>
+            <field calculation="MakePartnerAddress" whichfield="Columns"></field>
+        </detail>
        </level><!-- Partner Level1 -->
-	   
-	<level name="PartnerLevel2" identification="AssociatedPartnerKey">
-		<header>
-			<field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
-				<value variable="ChurchPartnerKey1"/>
-				<value text="   "/>
-				<value variable="ChurchAddress"/>
-			</field>
-		</header>
-		<detail>
-			<field calculation="MakePartnerAddress" whichfield="Columns"></field>
-			<field calculation="ClearField" whichfield="left 0" pos="0.0cm" width="1cm">
-				<value text=" "/>
-			</field>
-		</detail>
+       
+    <level name="PartnerLevel2" identification="AssociatedPartnerKey">
+        <header>
+            <field calculation="MakeChurchAddress" whichfield="header 0" pos="0.2cm" width="27cm">
+                <value variable="ChurchPartnerKey1"/>
+                <value text="   "/>
+                <value variable="ChurchAddress"/>
+            </field>
+        </header>
+        <detail>
+            <field calculation="MakePartnerAddress" whichfield="Columns"></field>
+            <field calculation="ClearField" whichfield="left 0" pos="0.0cm" width="1cm">
+                <value text=" "/>
+            </field>
+        </detail>
        </level><!-- Partner Level2 -->
-	   
-	<level name="DummyPartnerLevel">
-	<!-- This level is needed if we didn't get any supported partners -->
-		<detail>
-			<field whichfield="left 0" pos="0.0cm" width="1cm">
-				<value text=" "/>
-			</field>
-		</detail>
+       
+    <level name="DummyPartnerLevel">
+    <!-- This level is needed if we didn't get any supported partners -->
+        <detail>
+            <field whichfield="left 0" pos="0.0cm" width="1cm">
+                <value text=" "/>
+            </field>
+        </detail>
        </level><!-- DummyPartnerLevel -->
-	
+    
     </levels>
 
   </report>

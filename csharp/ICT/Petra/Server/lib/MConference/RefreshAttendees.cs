@@ -49,156 +49,207 @@ namespace Ict.Petra.Server.MConference.Applications
     public class TAttendeeManagement
     {
         /// <summary>
+        /// Refresh Outreach Code for applications and conference
+        /// </summary>
+        public static void RefreshOutreachCode(Int64 AConferenceKey)
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = true;
+            PcConferenceTable ConferenceTable;
+            PUnitTable UnitTable;
+            PmShortTermApplicationTable ShortTermAppTable;
+            ConferenceApplicationTDS MainDS;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    ConferenceTable = new PcConferenceTable();
+                    UnitTable = new PUnitTable();
+                    ShortTermAppTable = new PmShortTermApplicationTable();
+                    MainDS = new ConferenceApplicationTDS();
+
+                    // get the conference in order to update the OutreachPrefix
+                    ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
+
+                    if (ConferenceTable.Count == 0)
+                    {
+                        throw new Exception("Cannot find conference " + AConferenceKey.ToString());
+                    }
+
+                    // update OutreachPrefix in conference record in case it was changed in Unit record for event
+                    UnitTable = PUnitAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
+                    if (UnitTable[0].OutreachCode.Length >= 5)
+                    {
+                        ConferenceTable[0].OutreachPrefix = UnitTable[0].OutreachCode.Substring(0, 5);
+                    }
+                    else
+                    {
+                        ConferenceTable[0].OutreachPrefix = UnitTable[0].OutreachCode;
+                    }
+
+                    MainDS.Merge(ConferenceTable);
+
+                    // update event code
+                    ShortTermAppTable = PmShortTermApplicationAccess.LoadViaPUnitStConfirmedOption(AConferenceKey, Transaction);
+                    foreach (PmShortTermApplicationRow ShortTermAppRow in ShortTermAppTable.Rows)
+                    {
+                        ShortTermAppRow.ConfirmedOptionCode = UnitTable[0].OutreachCode;
+                    }
+                    MainDS.Merge(ShortTermAppTable);
+
+                    MainDS.ThrowAwayAfterSubmitChanges = true;
+
+                    ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
+                });
+        }
+
+        /// <summary>
         /// Load/Refresh all Attendees for a conference
         /// </summary>
         public static void RefreshAttendees(Int64 AConferenceKey)
         {
-            TDBTransaction Transaction;
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = true;
             PcConferenceTable ConferenceTable;
             PUnitTable UnitTable;
             string OutreachPrefix = String.Empty;
             ConferenceApplicationTDS MainDS;
 
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            // make sure outreach codes are up to date in case it has changed in Unit record
+            RefreshOutreachCode(AConferenceKey);
 
-            try
-            {
-                ConferenceTable = new PcConferenceTable();
-                UnitTable = new PUnitTable();
-                MainDS = new ConferenceApplicationTDS();
-
-                // get the conference prefix which links all outreaches associated with a conference
-                ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
-
-                if (ConferenceTable.Count == 0)
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
                 {
-                    throw new Exception("Cannot find conference " + AConferenceKey.ToString());
-                }
+                    ConferenceTable = new PcConferenceTable();
+                    UnitTable = new PUnitTable();
+                    MainDS = new ConferenceApplicationTDS();
 
-                OutreachPrefix = ConferenceTable[0].OutreachPrefix;
+                    // get the conference prefix which links all outreaches associated with a conference
+                    ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
 
-                // load application data for all conference attendees from db
-                TApplicationManagement.GetApplications(ref MainDS, AConferenceKey, OutreachPrefix, "all", -1, true, null, false);
-
-                // check a valid pcattendee record exists for each short term application
-                foreach (PmShortTermApplicationRow ShortTermAppRow in MainDS.PmShortTermApplication.Rows)
-                {
-                    if (!IsAttendeeValid(MainDS, OutreachPrefix, ShortTermAppRow.PartnerKey))
+                    if (ConferenceTable.Count == 0)
                     {
-                        // ignore deleted applications, or cancelled applications
-                        continue;
+                        throw new Exception("Cannot find conference " + AConferenceKey.ToString());
                     }
 
-                    // update outreach code in application (it may have changed)
-                    UnitTable = PUnitAccess.LoadByPrimaryKey(ShortTermAppRow.StConfirmedOption, Transaction);
-                    ShortTermAppRow.ConfirmedOptionCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
+                    OutreachPrefix = ConferenceTable[0].OutreachPrefix;
 
-                    // Do we have a record for this attendee yet?
-                    bool AttendeeRecordExists = false;
+                    // load application data for all conference attendees from db
+                    TApplicationManagement.GetApplications(ref MainDS, AConferenceKey, OutreachPrefix, "all", -1, true, null, false);
 
-                    if (MainDS.PcAttendee.Rows.Contains(new object[] { AConferenceKey, ShortTermAppRow.PartnerKey }))
+                    // check a valid pcattendee record exists for each short term application
+                    foreach (PmShortTermApplicationRow ShortTermAppRow in MainDS.PmShortTermApplication.Rows)
                     {
-                        AttendeeRecordExists = true;
+                        if (!IsAttendeeValid(MainDS, OutreachPrefix, ShortTermAppRow.PartnerKey))
+                        {
+                            // ignore deleted applications, or cancelled applications
+                            continue;
+                        }
+
+                        // update outreach code in application (it may have changed)
+                        UnitTable = PUnitAccess.LoadByPrimaryKey(ShortTermAppRow.StConfirmedOption, Transaction);
+                        ShortTermAppRow.ConfirmedOptionCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
+
+                        // Do we have a record for this attendee yet?
+                        bool AttendeeRecordExists = false;
+
+                        if (MainDS.PcAttendee.Rows.Contains(new object[] { AConferenceKey, ShortTermAppRow.PartnerKey }))
+                        {
+                            AttendeeRecordExists = true;
+                        }
+
+                        // create a new PcAttendee record if one does not already exist for this attendee
+                        if (!AttendeeRecordExists)
+                        {
+                            PcAttendeeRow AttendeeRow = MainDS.PcAttendee.NewRowTyped();
+
+                            AttendeeRow.ConferenceKey = AConferenceKey;
+                            AttendeeRow.PartnerKey = ShortTermAppRow.PartnerKey;
+                            if (ShortTermAppRow.ConfirmedOptionCode.Length >= 11)
+                            {
+                                AttendeeRow.OutreachType = ShortTermAppRow.ConfirmedOptionCode.Substring(5, 6);
+                            }
+
+                            PmGeneralApplicationRow GeneralAppRow = (PmGeneralApplicationRow)MainDS.PmGeneralApplication.Rows.Find(
+                                new object[] { ShortTermAppRow.PartnerKey, ShortTermAppRow.ApplicationKey, ShortTermAppRow.RegistrationOffice });
+
+                            DateTime DateAccepted = GeneralAppRow.GenAppDate;
+
+                            if (!GeneralAppRow.IsGenAppSendFldAcceptDateNull())
+                            {
+                                DateAccepted = GeneralAppRow.GenAppSendFldAcceptDate.Value;
+                            }
+                            else if (!GeneralAppRow.IsGenAppRecvgFldAcceptNull())
+                            {
+                                DateAccepted = GeneralAppRow.GenAppRecvgFldAccept.Value;
+                            }
+
+                            AttendeeRow.Registered = DateAccepted;
+
+                            // TODO: in Petra 2.x, this was calculated from pm_staff_data
+                            AttendeeRow.HomeOfficeKey = ShortTermAppRow.RegistrationOffice;
+
+                            if (AttendeeRow.HomeOfficeKey == 0)
+                            {
+                                AttendeeRow.HomeOfficeKey = ((int)AttendeeRow.PartnerKey / 1000000) * 1000000;
+                            }
+
+                            MainDS.PcAttendee.Rows.Add(AttendeeRow);
+                        }
                     }
 
-                    // create a new PcAttendee record if one does not already exist for this attendee
-                    if (!AttendeeRecordExists)
+                    PcRoomAllocTable RoomAllocTable = null;
+                    PcExtraCostTable ExtraCostTable = null;
+
+                    // now check the other way: all attendees of this conference, are they still valid?
+                    foreach (PcAttendeeRow AttendeeRow in MainDS.PcAttendee.Rows)
                     {
-                        PcAttendeeRow AttendeeRow = MainDS.PcAttendee.NewRowTyped();
-
-                        AttendeeRow.ConferenceKey = AConferenceKey;
-                        AttendeeRow.PartnerKey = ShortTermAppRow.PartnerKey;
-                        AttendeeRow.OutreachType = ShortTermAppRow.ConfirmedOptionCode.Substring(5, 6);
-
-                        PmGeneralApplicationRow GeneralAppRow = (PmGeneralApplicationRow)MainDS.PmGeneralApplication.Rows.Find(
-                            new object[] { ShortTermAppRow.PartnerKey, ShortTermAppRow.ApplicationKey, ShortTermAppRow.RegistrationOffice });
-
-                        DateTime DateAccepted = GeneralAppRow.GenAppDate;
-
-                        if (!GeneralAppRow.IsGenAppSendFldAcceptDateNull())
+                        if ((AttendeeRow.RowState != DataRowState.Added)
+                            && !IsAttendeeValid(MainDS, OutreachPrefix, AttendeeRow.PartnerKey))
                         {
-                            DateAccepted = GeneralAppRow.GenAppSendFldAcceptDate.Value;
+                            // remove their accommodation
+                            RoomAllocTable = PcRoomAllocAccess.LoadViaPcAttendee(AttendeeRow.ConferenceKey, AttendeeRow.PartnerKey, Transaction);
+
+                            foreach (DataRow Row in RoomAllocTable.Rows)
+                            {
+                                Row.Delete();
+                            }
+
+                            if (RoomAllocTable != null)
+                            {
+                                PcRoomAllocAccess.SubmitChanges(RoomAllocTable, Transaction);
+                            }
+
+                            // remove any extra costs
+                            ExtraCostTable = PcExtraCostAccess.LoadViaPcAttendee(AttendeeRow.ConferenceKey, AttendeeRow.PartnerKey, Transaction);
+
+                            foreach (DataRow Row in ExtraCostTable.Rows)
+                            {
+                                Row.Delete();
+                            }
+
+                            if (ExtraCostTable != null)
+                            {
+                                PcExtraCostAccess.SubmitChanges(ExtraCostTable, Transaction);
+                            }
+
+                            // remove attendee
+                            AttendeeRow.Delete();
                         }
-                        else if (!GeneralAppRow.IsGenAppRecvgFldAcceptNull())
-                        {
-                            DateAccepted = GeneralAppRow.GenAppRecvgFldAccept.Value;
-                        }
-
-                        AttendeeRow.Registered = DateAccepted;
-
-                        // TODO: in Petra 2.x, this was calculated from pm_staff_data
-                        AttendeeRow.HomeOfficeKey = ShortTermAppRow.RegistrationOffice;
-
-                        if (AttendeeRow.HomeOfficeKey == 0)
-                        {
-                            AttendeeRow.HomeOfficeKey = ((int)AttendeeRow.PartnerKey / 1000000) * 1000000;
-                        }
-
-                        MainDS.PcAttendee.Rows.Add(AttendeeRow);
                     }
-                }
 
-                PcRoomAllocTable RoomAllocTable = null;
-                PcExtraCostTable ExtraCostTable = null;
+                    int shorttermApplicationsCount = MainDS.PmShortTermApplication.Count;
+                    int attendeeCount = MainDS.PcAttendee.Count;
 
-                // now check the other way: all attendees of this conference, are they still valid?
-                foreach (PcAttendeeRow AttendeeRow in MainDS.PcAttendee.Rows)
-                {
-                    if ((AttendeeRow.RowState != DataRowState.Added)
-                        && !IsAttendeeValid(MainDS, OutreachPrefix, AttendeeRow.PartnerKey))
-                    {
-                        // remove their accommodation
-                        RoomAllocTable = PcRoomAllocAccess.LoadViaPcAttendee(AttendeeRow.ConferenceKey, AttendeeRow.PartnerKey, Transaction);
+                    MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                        foreach (DataRow Row in RoomAllocTable.Rows)
-                        {
-                            Row.Delete();
-                        }
-
-                        if (RoomAllocTable != null)
-                        {
-                            PcRoomAllocAccess.SubmitChanges(RoomAllocTable, Transaction);
-                        }
-
-                        // remove any extra costs
-                        ExtraCostTable = PcExtraCostAccess.LoadViaPcAttendee(AttendeeRow.ConferenceKey, AttendeeRow.PartnerKey, Transaction);
-
-                        foreach (DataRow Row in ExtraCostTable.Rows)
-                        {
-                            Row.Delete();
-                        }
-
-                        if (ExtraCostTable != null)
-                        {
-                            PcExtraCostAccess.SubmitChanges(ExtraCostTable, Transaction);
-                        }
-
-                        // remove attendee
-                        AttendeeRow.Delete();
-                    }
-                }
-
-                int shorttermApplicationsCount = MainDS.PmShortTermApplication.Count;
-                int attendeeCount = MainDS.PcAttendee.Count;
-
-                MainDS.ThrowAwayAfterSubmitChanges = true;
-
-                ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
-
-                DBAccess.GDBAccessObj.CommitTransaction();
-
-                TLogging.Log(String.Format(
-                        "RefreshAttendees: finished. OutreachPrefix: {0}, {1} Shortterm Applications, {2} Attendees",
-                        OutreachPrefix, shorttermApplicationsCount, attendeeCount));
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the refreshing of the Attendees:" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
-
-                throw;
-            }
+                    ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
+                });
         }
 
         /// <summary>
@@ -213,7 +264,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
             foreach (PmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
             {
-                if ((Row.PartnerKey == AAttendeeKey) && (Row.ConfirmedOptionCode.Substring(0, 5) == AOutreachPrefix))
+                if ((Row.PartnerKey == AAttendeeKey) && (AOutreachPrefix.Length >= 5) && (Row.ConfirmedOptionCode.Substring(0, 5) == AOutreachPrefix.Substring(0,5)))
                 {
                     ShortTermRow = Row;
                     break;
