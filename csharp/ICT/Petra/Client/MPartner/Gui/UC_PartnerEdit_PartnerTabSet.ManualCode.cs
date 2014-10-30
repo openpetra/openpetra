@@ -1566,6 +1566,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
                 }
             }
+            else if ((this.tabPartners.SelectedTab == tpgContactDetails) && (this.FUcoContactDetails.ProcessParentCmdKey(ref msg, keyData)))
+            {
+                return true;
+            }
             else if ((this.tabPartners.SelectedTab == tpgPartnerRelationships) && (this.FUcoPartnerRelationships.ProcessParentCmdKey(ref msg, keyData)))
             {
                 return true;

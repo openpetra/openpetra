@@ -14,6 +14,7 @@ RootNode:
         actDemote: {ActionClick=ContactTypeDemote, Image: MoveUpArrow.ico}
         actLaunchHyperlinkPrefEMail: {ActionClick=LaunchHyperlinkPrefEMail, Image: Email.ico}
         actLaunchHyperlinkEMailWithinOrg: {ActionClick=LaunchHyperlinkEMailWithinOrg, Image: Email.ico}
+        actLaunchHyperlinkFromValue: {ActionClick=LaunchHyperlinkFromValue, Image: Email.ico}
 
     Controls:
         pnlContent:
@@ -101,7 +102,7 @@ RootNode:
             Controls:
                 Row0: [cmbContactCategory, cmbContactType, chkSpecialised]
 # TODO SHORTCUTS:                Row1: [rtbValue, txtComment]
-                Row1: [txtValue, txtComment]                
+                Row1: [pnlValueGrouping, txtComment]                
                 Row2: [pnlCurrentGrouping]
                 Row3: [chkConfidential]
             Height: 115
@@ -111,13 +112,19 @@ RootNode:
         chkSpecialised: 
            Label: Business
            OnChange: HandleSpecialisedFlagChanged
+        pnlValueGrouping:
+            ControlsOrientation: horizontal
+            Controls: [txtValue, btnLaunchHyperlinkFromValue]
+            Padding: 64,0,0,0
+            Height: 36
 # TODO SHORTCUTS: rtbValue:           
         txtValue:
             Label: Value
-            Width: 290
+            Width: 256
             OnLeave: HandleValueLeave
 # TODO SHORTCUTS:             Type: Hyperlink
 
+        btnLaunchHyperlinkFromValue: {NoLabel=true, Width=15, Height=27}
         txtComment: {Label=Comment, Multiline=true, Width=245, Height=73, ColSpan=2, RowSpan=3, ScrollBars=Vertical, DataField=PPartnerAttribute.Comment}
 
         pnlCurrentGrouping:

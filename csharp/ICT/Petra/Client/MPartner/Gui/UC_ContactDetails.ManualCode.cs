@@ -52,6 +52,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private readonly string StrDefaultContactType = Catalog.GetString("Phone");
 
+        private readonly string StrFunctionKeysTip = Catalog.GetString(
+            "  (Press <F5>-<F8> to change Contact Type; press <SHIFT>+any of those keys to choose alternative.)");
+        
         /// <summary>This string can get manipulated hence it can't be a 'readonly' Field.</summary>
         private string StrPrimEmailConsequence = Catalog.GetString(
             "Please select a current E-mail Address from the available ones!");
@@ -403,10 +406,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             grpWithinTheOrganisation.Top = 16;
 
             // Move the Panel that groups the 'Current' Controls for layout purposes a bit up from it's automatically assigned position
-            pnlCurrentGrouping.Top = 53;
+            pnlCurrentGrouping.Top = 58;
             chkCurrent.Top = 7;
-            dtpNoLongerCurrentFrom.Top = 4;
-            lblNoLongerCurrentFrom.Top = 9;
+            dtpNoLongerCurrentFrom.Top = 8;
+            lblNoLongerCurrentFrom.Top = 12;
+            
+            // Move the Panel that groups the 'Value' Controls for layout purposes a bit up from it's automatically assigned position
+            pnlValueGrouping.Top = 29;            
+            txtValue.Top = 3;
+            lblValue.Top = 9;
+            btnLaunchHyperlinkFromValue.Top = 3;
 
             chkConfidential.Top = 88;
             lblConfidential.Top = 93;
@@ -453,7 +462,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
             // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
             FPetraUtilsObject.SetStatusBarText(txtValue,
-                Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
+                Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about. (Press F5-F7 to change Type!)"));
 //            FPetraUtilsObject.SetStatusBarText(rtbValue, Catalog.GetString("Phone Number, Mobile Phone Number, E-mail Address, Internet Address, ... --- whatever the Contact Type is about."));
 
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
@@ -1230,14 +1239,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void LaunchHyperlinkPrefEMail(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Launching of E-Mail program not implemented yet!");
+            throw new NotImplementedException("Launching of E-Mail program not implemented yet! (Clicked: Button next to 'Primary E-Mail'.)");
         }
 
         private void LaunchHyperlinkEMailWithinOrg(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Launching of E-Mail program not implemented yet!");
+            throw new NotImplementedException("Launching of E-Mail program not implemented yet! (Clicked: Button next to 'Office E-Mail'.)");
         }
 
+        private void LaunchHyperlinkFromValue(object sender, EventArgs e)
+        {
+            throw new NotImplementedException("Launching of E-Mail program / hyperlink / Skype not implemented yet! (Clicked: Button next to 'Value'.)");
+        }
+        
         private void FilterCriteriaChanged(object sender, EventArgs e)
         {
             throw new NotImplementedException("Filtering is not implemented yet!");
@@ -1394,18 +1408,29 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (Enum.TryParse <TPartnerAttributeTypeValueKind>(ContactTypeDR.AttributeTypeValueKind, out ValueKind))
                 {
-                    switch (ValueKind)
+                    FValueKind = ValueKind;
+
+                    switch (FValueKind)
                     {
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
+
+                            btnLaunchHyperlinkFromValue.Visible = false;
+                            txtValue.Width = 290;
+                            
+                            break;
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
-                            FValueKind = ValueKind;
-
+                            btnLaunchHyperlinkFromValue.Visible = true;
+                            txtValue.Width = 256;
+                            
                             break;
-
+                                                    
                         default:
+                            btnLaunchHyperlinkFromValue.Visible = false;
+                            txtValue.Width = 270;
+                            
                             throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");
                     }
                 }
@@ -1434,11 +1459,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             switch (FValueKind)
             {
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
-                    // TODO UpdateValueManual / CONTACTDETAIL_GENERAL
+                    FPetraUtilsObject.SetStatusBarText(txtValue,
+                        Catalog.GetString("Enter whatever the Contact Type is about.") + 
+                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
 
+                    // TODO UpdateValueManual / CONTACTDETAIL_GENERAL
                     break;
 
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
+                    FPetraUtilsObject.SetStatusBarText(txtValue,
+                        Catalog.GetString("Enter Hyperlink / URL.") + 
+                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkFromValue,
+                        Catalog.GetString("Click this button open the hyperlink in a web browser."));
+
                     // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
                     // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //                    rtbValue.Helper.DisplayURL(Value);
@@ -1446,6 +1480,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
+                    FPetraUtilsObject.SetStatusBarText(txtValue,
+                        Catalog.GetString("Enter value that becomes part of the Hyperlink / URL.") + 
+                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkFromValue,
+                        Catalog.GetString("Click this button open the hyperlink in a web browser."));
+                    
                     // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
                     // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //                    rtbValue.Helper.DisplayURLWithValue(Value);
@@ -1453,6 +1493,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
+                    FPetraUtilsObject.SetStatusBarText(txtValue,
+                        Catalog.GetString("Enter E-Mail Address.") + 
+                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkFromValue,
+                        Catalog.GetString("Click this button to send an email to the E-mail address (with your standard e-mail program)."));
+                    
                     // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
                     // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //                    rtbValue.Helper.DisplayEmailAddress(Value);
@@ -1460,6 +1506,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     break;
 
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
+                    FPetraUtilsObject.SetStatusBarText(txtValue,
+                        Catalog.GetString("Enter Skype ID.") + 
+                        (cmbContactCategory.Enabled ? StrFunctionKeysTip : String.Empty));
+                    FPetraUtilsObject.SetStatusBarText(btnLaunchHyperlinkFromValue,
+                        Catalog.GetString("Click this button to initate a Skype call, calling the Skype ID."));
+                    
                     // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
                     // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //                    rtbValue.Helper.DisplaySkypeID(Value);
@@ -1691,7 +1743,132 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
         
-        #endregion        
+        #endregion
+
+        #region Menu and command key handlers for our user controls
+
+        ///////////////////////////////////////////////////////////////////////////////
+        //// Special Handlers for menus and command keys for our user controls
+
+        /// <summary>
+        /// Handler for command key processing
+        /// </summary>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (cmbContactCategory.Enabled)
+            {
+                if ((keyData == (Keys.F5)
+                     || (keyData == (Keys.F5 | Keys.Shift))))
+                {
+                    if (keyData == (Keys.F5 | Keys.Shift))
+                    {
+                        // Select 'Mobile Phone'
+                        cmbContactCategory.cmbCombobox.SetSelectedString("Phone");
+                        cmbContactType.cmbCombobox.SetSelectedString("Mobile Phone");
+                    }
+                    else
+                    {
+                        // Select 'Phone' (=landline)
+                        cmbContactCategory.cmbCombobox.SetSelectedString("Phone");
+                        cmbContactType.cmbCombobox.SetSelectedString("Phone");
+                    }
+                    
+                    txtValue.Focus();
+                    
+                    return true;
+                }
+                
+                if ((keyData == (Keys.F6)
+                     || (keyData == (Keys.F6 | Keys.Shift))))
+                {
+                    if (keyData == (Keys.F6 | Keys.Shift))
+                    {                
+                        // Select 'Secure E-Mail'
+                        cmbContactCategory.cmbCombobox.SetSelectedString("E-Mail");
+                        cmbContactType.cmbCombobox.SetSelectedString("Secure E-Mail");
+                    }
+                    else
+                    {
+                        // Select 'E-Mail'
+                        cmbContactCategory.cmbCombobox.SetSelectedString("E-Mail");
+                        cmbContactType.cmbCombobox.SetSelectedString("E-Mail");
+                    }
+                    
+                    txtValue.Focus();
+                    
+                    return true;
+                }
+                
+                if ((keyData == (Keys.F7)
+                     || (keyData == (Keys.F7 | Keys.Shift))))
+                {
+                    if (keyData == (Keys.F7 | Keys.Shift))
+                    {                
+                        // Select 'Twitter'
+                        cmbContactCategory.cmbCombobox.SetSelectedString("Digital Media");
+                        cmbContactType.cmbCombobox.SetSelectedString("Twitter");
+                    }
+                    else
+                    {
+                        // Select 'Web Site'
+                        cmbContactCategory.cmbCombobox.SetSelectedString("Digital Media");
+                        cmbContactType.cmbCombobox.SetSelectedString("Web Site");
+                    }
+                    
+                    txtValue.Focus();
+                    
+                    return true;
+                }
+    
+                if ((keyData == (Keys.F8)
+                     || (keyData == (Keys.F8 | Keys.Shift))))
+                {
+                    if (keyData == (Keys.F8 | Keys.Shift))
+                    {                
+                        // Select 'Lync'
+                        cmbContactCategory.cmbCombobox.SetSelectedString("Instant Messaging & Chat");
+                        cmbContactType.cmbCombobox.SetSelectedString("Lync");
+                    }
+                    else
+                    {
+                        // Select 'Skype'
+                        cmbContactCategory.cmbCombobox.SetSelectedString("Instant Messaging & Chat");
+                        cmbContactType.cmbCombobox.SetSelectedString("Skype");
+                    }
+                    
+                    txtValue.Focus();
+                    
+                    return true;
+                }
+                
+            }
+
+            if (keyData == (Keys.F9))
+            {
+                LaunchHyperlinkPrefEMail(null, null);
+            }
+
+            if (keyData == (Keys.F10))
+            {
+                if (btnLaunchHyperlinkEMailWithinOrg.Visible) 
+                {
+                    LaunchHyperlinkEMailWithinOrg(null, null);    
+                }                
+            }
+            
+            if (keyData == (Keys.F11))
+            {
+                if (btnLaunchHyperlinkFromValue.Visible) 
+                {
+                    LaunchHyperlinkFromValue(null, null);    
+                }                
+            }
+            
+            return false;
+        }
+
+        #endregion
+        
     }
 
     /// <summary>
