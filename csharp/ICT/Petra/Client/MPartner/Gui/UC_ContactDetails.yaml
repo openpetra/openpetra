@@ -40,14 +40,14 @@ RootNode:
             Margin: 0,16,0,0
             Height: 70
         cmbPrimaryWayOfContacting:
-            Label: Primary Contact Method
+            Label: Primar&y Contact Method
             Width: 170
             OptionalValues: [=,Phone, E-Mail, Letter, Skype, Lync, Digital Media, Instant Messaging & Chat]
             Validation: true
-        cmbPrimaryPhoneForContacting: {Label=Primary Phone, List=UserDefinedList, ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true}
+        cmbPrimaryPhoneForContacting: {Label=Primary Ph&one, List=UserDefinedList, ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true}
         cmbPhoneWithinTheOrganisation: {Label=Office Phone, List=UserDefinedList, ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true}
-        cmbPrimaryEMail: {Label=Primary E-Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
-        cmbEMailWithinTheOrganisation: {Label=Office E-Mail, List=UserDefinedList, ComboBoxWidth=170, Width=170, Validation=true}
+        cmbPrimaryEMail: {Label=Primary E-&Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
+        cmbEMailWithinTheOrganisation: {Label=Office E-Mai&l, List=UserDefinedList, ComboBoxWidth=170, Width=170, Validation=true}
         btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
         btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
        
@@ -107,10 +107,10 @@ RootNode:
                 Row3: [chkConfidential]
             Height: 115
 
-        cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true, OnChange=FilterContactTypeCombo}
-        cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true, OnChange=OnContactTypeChanged}
+        cmbContactCategory: {Label=&Contact Category, List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true, OnChange=FilterContactTypeCombo}
+        cmbContactType: {Label=Contact Ty&pe, List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true, OnChange=OnContactTypeChanged}
         chkSpecialised: 
-           Label: Business
+           Label: &Business
            OnChange: HandleSpecialisedFlagChanged
         pnlValueGrouping:
             ControlsOrientation: horizontal
@@ -119,7 +119,7 @@ RootNode:
             Height: 36
 # TODO SHORTCUTS: rtbValue:           
         txtValue:
-            Label: Value
+            Label: &Value
             Width: 256
             OnLeave: HandleValueLeave
 # TODO SHORTCUTS:             Type: Hyperlink
@@ -132,6 +132,7 @@ RootNode:
             Controls: [chkCurrent, dtpNoLongerCurrentFrom]
             Padding: 52,0,0,0
         chkCurrent:
+            Label: Curren&t
             OnChange: HandleCurrentFlagChanged
         dtpNoLongerCurrentFrom:
             Validation: true
