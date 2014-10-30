@@ -264,7 +264,7 @@ namespace Ict.Petra.Server.MConference.Applications
             List <OdbcParameter>parameters = new List <OdbcParameter>();
 
             OdbcParameter parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
-            parameter.Value = AEventCode.Substring(0,5);
+            parameter.Value = AEventCode.Substring(0, 5);
             parameters.Add(parameter);
 
             string DataLabels = "(PUB_p_data_label.p_text_c = 'MedicalNotes' OR PUB_p_data_label.p_text_c = 'Rebukes')";
@@ -398,8 +398,8 @@ namespace Ict.Petra.Server.MConference.Applications
             PersonView.Sort = PPersonTable.GetPartnerKeyDBName();
 
             DataView GenAppView = AMainDS.PmGeneralApplication.DefaultView;
-            GenAppView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," 
-                + PmGeneralApplicationTable.GetApplicationKeyDBName() + "," + PmGeneralApplicationTable.GetRegistrationOfficeDBName();
+            GenAppView.Sort = PmGeneralApplicationTable.GetPartnerKeyDBName() + "," +
+                              PmGeneralApplicationTable.GetApplicationKeyDBName() + "," + PmGeneralApplicationTable.GetRegistrationOfficeDBName();
 
             if (AMainDS.HasChanges())
             {

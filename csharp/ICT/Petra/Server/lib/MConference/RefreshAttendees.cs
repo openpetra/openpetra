@@ -80,6 +80,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     // update OutreachPrefix in conference record in case it was changed in Unit record for event
                     UnitTable = PUnitAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
+
                     if (UnitTable[0].OutreachCode.Length >= 5)
                     {
                         ConferenceTable[0].OutreachPrefix = UnitTable[0].OutreachCode.Substring(0, 5);
@@ -93,10 +94,12 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     // update event code
                     ShortTermAppTable = PmShortTermApplicationAccess.LoadViaPUnitStConfirmedOption(AConferenceKey, Transaction);
+
                     foreach (PmShortTermApplicationRow ShortTermAppRow in ShortTermAppTable.Rows)
                     {
                         ShortTermAppRow.ConfirmedOptionCode = UnitTable[0].OutreachCode;
                     }
+
                     MainDS.Merge(ShortTermAppTable);
 
                     MainDS.ThrowAwayAfterSubmitChanges = true;
@@ -170,6 +173,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                             AttendeeRow.ConferenceKey = AConferenceKey;
                             AttendeeRow.PartnerKey = ShortTermAppRow.PartnerKey;
+
                             if (ShortTermAppRow.ConfirmedOptionCode.Length >= 11)
                             {
                                 AttendeeRow.OutreachType = ShortTermAppRow.ConfirmedOptionCode.Substring(5, 6);
@@ -264,7 +268,8 @@ namespace Ict.Petra.Server.MConference.Applications
 
             foreach (PmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
             {
-                if ((Row.PartnerKey == AAttendeeKey) && (AOutreachPrefix.Length >= 5) && (Row.ConfirmedOptionCode.Substring(0, 5) == AOutreachPrefix.Substring(0,5)))
+                if ((Row.PartnerKey == AAttendeeKey) && (AOutreachPrefix.Length >= 5)
+                    && (Row.ConfirmedOptionCode.Substring(0, 5) == AOutreachPrefix.Substring(0, 5)))
                 {
                     ShortTermRow = Row;
                     break;

@@ -82,7 +82,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.PPartnerLocation.ColumnIconForSort.Expression = "IIF(Icon = 1, 2, IIF(Icon = 2, 1, 3))";
 
             // introduce sorting -> override DefaultView that was set in earlier methods
-            DataView myDataView = new DataView(FMainDS.PPartnerLocation, "", PartnerEditTDSPPartnerLocationTable.GetIconForSortDBName() + " ASC, " + PartnerEditTDSPPartnerLocationTable.GetDateEffectiveDBName() + " DESC", DataViewRowState.CurrentRows);
+            DataView myDataView = new DataView(FMainDS.PPartnerLocation, "",
+                PartnerEditTDSPPartnerLocationTable.GetIconForSortDBName() + " ASC, " +
+                PartnerEditTDSPPartnerLocationTable.GetDateEffectiveDBName() +
+                " DESC", DataViewRowState.CurrentRows);
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
         }
