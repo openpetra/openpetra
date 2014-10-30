@@ -1,7 +1,0 @@
-RootNode:
-    BaseYaml: main.yaml
-    Controls:
-        hidRegistrationCountryCode: {value=de-DE}
-        dtpDateOfBirth:
-            DateFormat: d.m.Y
-            Help: dd.mm.yyyy

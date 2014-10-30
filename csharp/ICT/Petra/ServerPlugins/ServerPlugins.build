@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<project name="ServerPlugins-Build">
-
-<include buildfile="../../../../inc/nant/OpenPetra.csharp.xml"/> 
-
-</project>

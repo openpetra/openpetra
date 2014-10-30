@@ -29,30 +29,6 @@
         <Table sqltable="pc_attendee"/>
         <Table sqltable="p_data_label_value_partner"/>
         <Table sqltable="p_data_label"/>
-        <CustomTable name="ApplicationGrid">
-            <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
-            <CustomField name="PersonKey" type="Int64"/>
-            <Field sqltable="p_person" sqlfield="p_first_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_family_name_c"/>
-            <Field sqltable="p_person" sqlfield="p_gender_c"/>
-            <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
-            <Field sqltable="pm_general_application" sqlfield="pm_gen_app_date_d"/>
-            <Field sqltable="pm_general_application" sqlfield="pm_gen_application_status_c"/>
-            <Field sqltable="pm_short_term_application" sqlfield="pm_st_congress_code_c"/>
-            <Field sqltable="pm_short_term_application" sqlfield="pm_st_fg_code_c"/>
-            <Field sqltable="pm_short_term_application" sqlfield="pm_st_fg_leader_l"/>
-            <Field sqltable="pc_attendee" sqlfield="pc_badge_print_d"/>
-            <Field sqltable="pm_short_term_application" sqlfield="pm_st_field_charged_n"/>
-            <Field sqltable="pm_general_application" sqlfield="pm_application_key_i"/>
-            <Field sqltable="pm_general_application" sqlfield="pm_registration_office_n"/>
-            <Field sqltable="pm_general_application" sqlfield="pm_comment_c"/>
-            <Field sqltable="pm_short_term_application" sqlfield="pm_arrival_d" name="DateOfArrival"/>
-            <Field sqltable="pm_short_term_application" sqlfield="pm_departure_d" name="DateOfDeparture"/>
-            <CustomField name="RebukeNotes" type="string"/>
-            <CustomField name="MedicalNotes" type="string"/>
-            <CustomField name="JSONData" type="string"/>
-        </CustomTable>
-        
     </DataSet>
 
 </PetraDataSets>

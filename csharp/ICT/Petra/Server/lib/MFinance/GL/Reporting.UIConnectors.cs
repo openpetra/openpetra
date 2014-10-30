@@ -340,6 +340,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Boolean AInternational)
         {
             DataTable Results = new DataTable();
+
             Results.Columns.Add(new DataColumn("a_cost_centre_code_c", typeof(string)));
             Results.Columns.Add(new DataColumn("a_account_code_c", typeof(string)));
             Results.Columns.Add(new DataColumn("OpeningBalance", typeof(Decimal)));
@@ -362,6 +363,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
                 String StartBalanceField = (AInternational) ? "glm.a_start_balance_intl_n" : "glm.a_start_balance_base_n";
                 String GroupField = "";
+
                 if (ASortBy == "Account")
                 {
                     GroupField = " ORDER BY glm.a_account_code_c, glm.a_cost_centre_code_c";
@@ -444,23 +446,24 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Decimal ClosingBalance = Convert.ToDecimal(row["balance"]);
                         NewRow["ClosingBalance"] = MakeItDebit * ClosingBalance;
                     }
-
                 } // foreach
 
-                for (Int32 Idx = Results.Rows.Count -1; Idx >= 0; Idx--)
+                for (Int32 Idx = Results.Rows.Count - 1; Idx >= 0; Idx--)
                 {
                     DataRow ResultsRow = Results.Rows[Idx];
+
                     //
                     // Since a revision in October 2014, this balances table can be the master table for the Account Detail report
-                    // (That is, "for each opening and closing balance, list any applicable transactions", 
+                    // (That is, "for each opening and closing balance, list any applicable transactions",
                     // rather than, "for each Account/Cost Centre combination where we say transactions, show opening and closing balance".)
                     // The effect of this is I need to remove opening and closing balances both are zero,
                     // AND there were no transactions in the selected period.
-                    if (Convert.ToDecimal(ResultsRow["OpeningBalance"]) == 0 && Convert.ToDecimal(ResultsRow["ClosingBalance"]) == 0)
+                    if ((Convert.ToDecimal(ResultsRow["OpeningBalance"]) == 0) && (Convert.ToDecimal(ResultsRow["ClosingBalance"]) == 0))
                     {
                         ATransactionsTbl.DefaultView.RowFilter = String.Format("AccountCode='{0}' AND CostCentreCode ='{1}'",
                             ResultsRow["a_account_code_c"],
                             ResultsRow["a_cost_centre_code_c"]);
+
                         if (ATransactionsTbl.DefaultView.Count == 0)
                         {
                             ResultsRow.Delete();
@@ -470,7 +473,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 Results.AcceptChanges();
             }  // try
-
             catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
             {
                 TLogging.Log(ex.Message);

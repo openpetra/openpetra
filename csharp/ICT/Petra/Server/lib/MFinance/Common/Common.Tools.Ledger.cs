@@ -99,6 +99,7 @@ namespace Ict.Petra.Server.MFinance.Common
             bool NewTransaction;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
             ALedgerAccess.SubmitChanges(FLedgerTbl, Transaction);
             FLedgerTbl.AcceptChanges();
 

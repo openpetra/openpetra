@@ -100,26 +100,50 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMyForm.Cursor = Cursors.WaitCursor;
 
                 int SelectedBatchNumber = ACurrentBatchRow.BatchNumber;
+                string Msg = string.Empty;
 
-                if ((ADateForReverseBatch.Date < AStartDateCurrentPeriod) || (ADateForReverseBatch.Date > AEndDateLastForwardingPeriod))
+                // load journals belonging to batch
+                GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, ACurrentBatchRow.BatchNumber);
+                FMainDS.Merge(TempDS);
+
+                foreach (AJournalRow Journal in TempDS.AJournal.Rows)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString(
-                                "The Reverse Date is outside the periods available for reversing. We will set the posting date to the first possible date, {0}."),
-                            AStartDateCurrentPeriod));
-                    ADateForReverseBatch = AStartDateCurrentPeriod;
+                    // if at least one journal in the batch has already been reversed then confirm with user
+                    if (Journal.Reversed)
+                    {
+                        Msg = String.Format(Catalog.GetString("One or more of the Journals in Batch {0} have already been reversed. " +
+                                "Are you sure you want to continue?"),
+                            SelectedBatchNumber);
+                        break;
+                    }
                 }
 
-                if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to reverse batch {0}?"),
-                            SelectedBatchNumber),
-                        Catalog.GetString("Question"),
+                if (Msg == string.Empty)
+                {
+                    Msg = String.Format(Catalog.GetString("Are you sure you want to reverse Batch {0}?"),
+                        SelectedBatchNumber);
+                }
+
+                if (MessageBox.Show(Msg, Catalog.GetString("GL Batch Reversal"),
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
+                    TFrmBatchDateDialog Form = new TFrmBatchDateDialog(FMyForm);
+                    Form.SetParameters(AStartDateCurrentPeriod, AEndDateLastForwardingPeriod, SelectedBatchNumber);
+
+                    if (Form.ShowDialog() == DialogResult.Cancel)
+                    {
+                        return false;
+                    }
+
+                    ADateForReverseBatch = Form.BatchDate;
+
                     int ReversalGLBatch;
 
                     if (!TRemote.MFinance.GL.WebConnectors.ReverseBatch(FLedgerNumber, SelectedBatchNumber,
                             ADateForReverseBatch,
                             out ReversalGLBatch,
-                            out Verifications))
+                            out Verifications,
+                            false))
                     {
                         string ErrorMessages = String.Empty;
 

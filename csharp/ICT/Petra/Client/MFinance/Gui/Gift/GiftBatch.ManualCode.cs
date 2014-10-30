@@ -536,10 +536,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="ABatchYear"></param>
+        /// <param name="ABatchPeriod"></param>
+        public void ShowDetailsOfOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, int ABatchYear, int ABatchPeriod)
         {
             FLedgerNumber = ALedgerNumber;
-            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber);
+            ucoBatches.LoadOneBatch(ALedgerNumber, ABatchNumber, ABatchYear, ABatchPeriod);
             Show();
         }
 
@@ -776,6 +778,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)
             {
                 ucoTransactions.ProcessGiftDetainationBroadcastMessage(AFormsMessage);
+
+                MessageProcessed = true;
+            }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcUnitHierarchyChanged)
+            {
+                ucoTransactions.ProcessUnitHierarchyBroadcastMessage(AFormsMessage);
 
                 MessageProcessed = true;
             }

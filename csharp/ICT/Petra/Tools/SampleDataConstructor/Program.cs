@@ -4,7 +4,7 @@
 // @Authors:
 //       thomass, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -142,11 +142,6 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 else
                 {
                     TLogging.Log("Please explicitely run nant importDemodata -D:operation=secondLedger");
-                }
-
-                if (TAppSettingsManager.GetValue("operation") == "exportGifts")
-                {
-                    SampleDataBankImportFiles.ExportGiftBatches(datadirectory);
                 }
 
                 TLogging.Log("(9) Creating applications for conference");
