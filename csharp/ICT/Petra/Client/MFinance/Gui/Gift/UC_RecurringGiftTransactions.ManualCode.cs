@@ -609,6 +609,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // We want to deal only on manual entered changes, i.e. not on selections changes, and on non-zero keys
             if (FPetraUtilsObject.SuppressChangeDetection || (APartnerKey == 0))
             {
+            	// FLastDonor should be the last donor key that has been entered for a gift (not 0)
                 if (APartnerKey != 0)
                 {
                     FLastDonor = APartnerKey;
@@ -618,6 +619,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     mniDonorHistory.Enabled = false;
                     txtDonorInfo.Text = "";
+                    
+                    if (FCreatingNewGiftFlag)
+                    {
+                    	FLastDonor = 0;
+                    }
                 }
             }
             else
@@ -1815,6 +1821,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ACompletelyNewGift"></param>
         private void CreateANewGift(bool ACompletelyNewGift)
         {
+            FCreatingNewGiftFlag = true;
+                
             ARecurringGiftRow CurrentGiftRow = null;
             bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
 
@@ -1864,6 +1872,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
                 {
                     newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
+                    newRow.ConfidentialGiftFlag = FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
+                    newRow.ChargeFlag = FPreviouslySelectedDetailRow.ChargeFlag;
+                    newRow.TaxDeductible = FPreviouslySelectedDetailRow.TaxDeductible;
+                	newRow.MotivationGroupCode = FPreviouslySelectedDetailRow.MotivationGroupCode;
+                	newRow.MotivationDetailCode = FPreviouslySelectedDetailRow.MotivationDetailCode;
+                }
+                else
+                {
+                    newRow.MotivationGroupCode = "GIFT";
+                    newRow.MotivationDetailCode = "SUPPORT";
                 }
 
                 newRow.DateEntered = DateTime.Now;
@@ -1903,16 +1921,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     txtDetailRecipientKey.Focus();
                 }
 
-                //Set the default motivation Group. This needs to happen after focus has returned
-                //  to the pnlDetails to ensure FInEditMode is correct.
-                FCreatingNewGiftFlag = true;
-                cmbDetailMotivationGroupCode.SelectedIndex = 0;
-                FCreatingNewGiftFlag = false;
-
                 UpdateRecipientKeyText(0);
                 cmbKeyMinistries.Clear();
                 mniRecipientHistory.Enabled = false;
             }
+            
+            
+            FCreatingNewGiftFlag = false;
         }
 
         /// <summary>

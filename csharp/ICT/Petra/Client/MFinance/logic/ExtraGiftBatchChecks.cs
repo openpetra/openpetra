@@ -197,6 +197,10 @@ namespace Ict.Petra.Client.MFinance.Logic
             {
                 return ReturnValue;
             }
+    			
+			DataView dv = AExWorkers.DefaultView;
+			dv.Sort = GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName() + " ASC";
+			DataTable sortedDT = dv.ToTable();
 
             if ((AAction == GiftBatchAction.POSTING) || (AAction == GiftBatchAction.SUBMITTING))
             {
@@ -228,7 +232,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             ReturnValue += "\n\n";
 
-            foreach (DataRow Row in AExWorkers.Rows)
+            foreach (DataRow Row in sortedDT.Rows)
             {
                 ReturnValue += Catalog.GetString("Batch: ") + Row[GiftBatchTDSAGiftDetailTable.GetBatchNumberDBName()] + "; " +
                                Catalog.GetString("Gift: ") + Row[GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName()] + "; " +

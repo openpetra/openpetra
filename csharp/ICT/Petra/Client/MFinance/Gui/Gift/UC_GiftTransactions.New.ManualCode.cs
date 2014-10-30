@@ -93,6 +93,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
                     {
                         newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
+                        newRow.ConfidentialGiftFlag = FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
+                        newRow.ChargeFlag = FPreviouslySelectedDetailRow.ChargeFlag;
+                        newRow.TaxDeductible = FPreviouslySelectedDetailRow.TaxDeductible;
+                    	newRow.MotivationGroupCode = FPreviouslySelectedDetailRow.MotivationGroupCode;
+                    	newRow.MotivationDetailCode = FPreviouslySelectedDetailRow.MotivationDetailCode;
+                    }
+                    else
+                    {
+	                    newRow.MotivationGroupCode = "GIFT";
+	                    newRow.MotivationDetailCode = "SUPPORT";
                     }
 
                     newRow.DateEntered = CurrentGiftRow.DateEntered;
@@ -137,10 +147,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         txtDetailRecipientKey.Focus();
                     }
-
-                    //Set the default motivation Group. This needs to happen after focus has returned
-                    //  to the pnlDetails to ensure FInEditMode is correct.
-                    cmbDetailMotivationGroupCode.SelectedIndex = 0;
 
                     TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationDetailCode);
                     cmbKeyMinistries.Clear();

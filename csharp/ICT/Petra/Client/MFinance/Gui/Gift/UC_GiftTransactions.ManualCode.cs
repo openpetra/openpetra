@@ -540,6 +540,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // We want to deal only on manual entered changes, i.e. not on selections changes, and on non-zero keys
             if (FPetraUtilsObject.SuppressChangeDetection || (APartnerKey == 0))
             {
+            	// FLastDonor should be the last donor key that has been entered for a gift (not 0)
                 if (APartnerKey != 0)
                 {
                     FLastDonor = APartnerKey;
@@ -549,6 +550,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     mniDonorHistory.Enabled = false;
                     txtDonorInfo.Text = "";
+                    
+                    if (FCreatingNewGift)
+                    {
+                    	FLastDonor = 0;
+                    }
                 }
             }
             else
