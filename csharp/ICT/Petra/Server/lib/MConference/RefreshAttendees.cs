@@ -51,7 +51,7 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <summary>
         /// Refresh Outreach Code for applications and conference
         /// </summary>
-        private static void RefreshOutreachCode(Int64 AConferenceKey)
+        public static void RefreshOutreachCode(Int64 AConferenceKey)
         {
             TDBTransaction Transaction = null;
             bool SubmissionOK = true;
@@ -80,7 +80,15 @@ namespace Ict.Petra.Server.MConference.Applications
 
                     // update OutreachPrefix in conference record in case it was changed in Unit record for event
                     UnitTable = PUnitAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
-                    ConferenceTable[0].OutreachPrefix = UnitTable[0].OutreachCode.Substring(0, 5);
+                    if (UnitTable[0].OutreachCode.Length >= 5)
+                    {
+                        ConferenceTable[0].OutreachPrefix = UnitTable[0].OutreachCode.Substring(0, 5);
+                    }
+                    else
+                    {
+                        ConferenceTable[0].OutreachPrefix = UnitTable[0].OutreachCode;
+                    }
+
                     MainDS.Merge(ConferenceTable);
 
                     // update event code

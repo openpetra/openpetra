@@ -513,7 +513,10 @@ namespace Ict.Petra.Server.MConference.Applications
                 newRow.Comment = GeneralApplication.Comment;
                 newRow.StFgCode = shortTermRow.StFgCode;
                 newRow.StFgLeader = shortTermRow.StFgLeader;
-                newRow.StFieldCharged = shortTermRow.StFieldCharged;
+                if (!shortTermRow.IsStFieldChargedNull())
+                {
+                    newRow.StFieldCharged = shortTermRow.StFieldCharged;
+                }
                 newRow.DateOfArrival = shortTermRow.Arrival;
                 newRow.DateOfDeparture = shortTermRow.Departure;
 
