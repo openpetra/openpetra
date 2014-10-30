@@ -84,7 +84,6 @@ not supported
   loc, ploc: count the lines of code, to be used for COCOMO etc
   generateWebforms: generates the User Interface using the Ext.js AJAX framework
   generateWebform: generate a single Webform. requires parameter: -D:file=SampleApplicationForm
-  startWebServer: start a webservice with Mono XSP and Postgresl (does not work with sqlite at the moment)
 
 useful parameters
   -logfile:test.log
@@ -239,18 +238,8 @@ useful parameters
   <echo message="Target csharp finished at: ${datetime::now()}" /> 
 </target>
 
-<target name="webserver" depends="nanttasks" description="goes into the directory webserver">
-  <echo message="Target webserver started at: ${datetime::now()}" /> 
-  
-  <property name="target" value="compile" overwrite="false" />
-  <nant inheritall="false" target="${target}" 
-        buildfile="webserver/webserver.build" />
-        
-  <echo message="Target webserver finished at: ${datetime::now()}" /> 
-</target>
-
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
-        depends="csharp,nanttasks,webserver,setuptools" />
+        depends="csharp,nanttasks,setuptools" />
 
 <target name="generateSolutionNoCompile" description="generates the project and solution files. minimalGenerateSolution should already be executed"
         depends="generateProjectFiles"/>
