@@ -22,17 +22,17 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
 using System.Collections.Specialized;
-using GNU.Gettext;
+using System.Data;
+using System.Text;
+
+using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Exceptions;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using System.Text;
-using Ict.Common;
-using Ict.Common.Data;
 
 namespace Ict.Petra.Shared.MPartner
 {
@@ -40,7 +40,7 @@ namespace Ict.Petra.Shared.MPartner
     /// Contains functions to be used by the Server and the Client that perform
     /// certain calculations - specific for the Partner Module.
     /// </summary>
-    public class Calculations
+    public static class Calculations
     {
         #region Resourcestrings
 
@@ -649,8 +649,11 @@ namespace Ict.Petra.Shared.MPartner
                     "yyyy-MM-dd") + "# OR " + PPartnerLocationTable.GetDateGoodUntilDBName() + " IS NULL))", "", DataViewRowState.CurrentRows);
         }
 
+
+        #region Contact Detail-specific
+
         /// <summary>
-        /// Gets the Partner Attribute Types that represent Partner Contact Types.
+        /// Determines the Partner Attribute Types that represent Partner Contact Types.
         /// </summary>
         /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
         /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
@@ -660,18 +663,80 @@ namespace Ict.Petra.Shared.MPartner
             var ReturnValue = new PPartnerAttributeTypeTable();
             Type tmp;
 
-            ReturnValue.Merge(ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), TCacheablePartnerTablesEnum.ContactTypeList), out tmp));
+            ReturnValue.Merge(ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), 
+                TCacheablePartnerTablesEnum.ContactTypeList), out tmp));
 
             return ReturnValue;
         }
-        
-        #region Contact Detail-specific
-        
+
+        /// <summary>
+        /// Determines the Partner Attribute Types that represent System Categories.
+        /// </summary>
+        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
+        /// <returns>DataTable containing only Partner Attribute Types that represent System Categories.</returns>
+        public static PPartnerAttributeTypeTable DetermineSystemCategoryTypes(TGetCacheableDataTableFromCache ACacheRetriever)
+        {
+            var ReturnValue = new PPartnerAttributeTypeTable();
+            Type tmp;
+
+            ReturnValue.Merge(ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), 
+                TCacheablePartnerTablesEnum.PartnerAttributeSystemCategoryTypeList), out tmp));
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks if <paramref name="APPartnerAttributeTypeDT"/> isn't null and if so, if it contains records.
+        /// If it is null, <paramref name="ACacheRetriever"/> is used to populate 
+        /// <paramref name="APPartnerAttributeTypeDT"/> from a Cacheable DataTable.
+        /// </summary>
+        /// <param name="APPartnerAttributeTypeDT">A populated DataTable, or null. In the latter case, 
+        /// <paramref name="ACacheRetriever"/> must not be null!</param>
+        /// <param name="ACacheRetriever">Delegate that returns the a DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
+        /// <param name="APartnerContactTypes">Only relevant if <paramref name="APPartnerAttributeTypeDT"/> is null:
+        /// in that case it controls which Cacheable DataTable is fetched from the data cache.</param>
+        private static void GetPPartnerAttributeTable(ref PPartnerAttributeTypeTable APPartnerAttributeTypeDT, 
+            TGetCacheableDataTableFromCache ACacheRetriever, bool APartnerContactTypes)
+        {
+            if (APPartnerAttributeTypeDT == null) 
+            {
+                if (ACacheRetriever == null) 
+                {
+                    throw new ArgumentNullException("ACacheRetriever", "ACacheRetriever must not be null if APPartnerAttributeTypeDT is null");
+                }
+
+                if (APartnerContactTypes) 
+                {
+                    // As APPartnerAttributeTypeDT is null we add DataRows from the corresponding Cacheable DataTable 
+                    APPartnerAttributeTypeDT = DeterminePartnerContactTypes(ACacheRetriever);                        
+                }
+                else
+                {
+                    // As APPartnerAttributeTypeDT is null we add DataRows from the corresponding Cacheable DataTable 
+                    APPartnerAttributeTypeDT = DetermineSystemCategoryTypes(ACacheRetriever);                                                
+                }
+                
+                if (APPartnerAttributeTypeDT.Count == 0) 
+                {
+                    throw new EOPAppException("The DataTable passed in APPartnerAttributeTypeDT was null, so it got populated via the TDataCache. However, the returned Cacheable DataTable contains no records; for this Method to work that DataTable must hold records!");
+                }
+            } 
+            else 
+            {
+                if (APPartnerAttributeTypeDT.Count == 0) 
+                {
+                    throw new EOPAppException("The DataTable passed in APPartnerAttributeTypeDT contains no records; for this Method to work that DataTable must hold records!");
+                }
+            }
+        }
+                
         /// <summary>
         /// Determines which p_partner_attribute_type records are of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS'
         /// </summary>
         /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
-        /// that holds datarows, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
+        /// that holds Contact Detail datarows, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
         /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an 
         /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
         /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the 
@@ -681,37 +746,8 @@ namespace Ict.Petra.Shared.MPartner
         public static DataView DetermineEmailAttributes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
             TGetCacheableDataTableFromCache ACacheRetriever = null)
         {
-            Type tmp;
-            
-            if (APPartnerAttributeTypeDT == null)
-            {
-                if (ACacheRetriever == null) 
-                {
-                    throw new ArgumentNullException("ACacheRetriever", "ACacheRetriever must not be null if APPartnerAttributeTypeDT is null");
-                }
-                
-                if (APPartnerAttributeTypeDT.Count == 0)
-                {                    
-                    // Note: If APPartnerAttributeTypeDT hasn't got any rows we add them here from the corresponding Cacheable DataTable 
-                    APPartnerAttributeTypeDT.Merge(
-                        (PPartnerAttributeTypeTable)ACacheRetriever(Enum.GetName(typeof(TCacheablePartnerTablesEnum), 
-                                                                                 TCacheablePartnerTablesEnum.ContactTypeList),
-                                                                    out tmp));
-        
-                    if (APPartnerAttributeTypeDT.Count == 0)
-                    {
-                        throw new EOPAppException("The DataTable passed in APPartnerAttributeTypeDT was null, so it got populated via the TDataCache. However, the returned Cacheable DataTable contains no records; for this Method to work that DataTable must hold records!");
-                    }
-                }
-            }
-            else
-            {
-                if (APPartnerAttributeTypeDT.Count == 0)
-                {
-                    throw new EOPAppException("The DataTable passed in APPartnerAttributeTypeDT contains no records; for this Method to work that DataTable must hold records!");
-                }                
-            }
-                
+            GetPPartnerAttributeTable(ref APPartnerAttributeTypeDT, ACacheRetriever, true);
+                            
             return new DataView(APPartnerAttributeTypeDT,
                 String.Format(PPartnerAttributeTypeTable.GetAttributeTypeValueKindDBName() + " = '{0}' AND " +
                                PPartnerAttributeTypeTable.GetUnassignableDBName() + " = false", 
@@ -724,7 +760,7 @@ namespace Ict.Petra.Shared.MPartner
         /// returns the result.
         /// </summary>
         /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
-        /// that holds datarows, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
+        /// that holds datarows *that constitute Contact Details*, or pass null. In the latter case, <paramref name="ACacheRetriever"/> must not be null!</param>
         /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an 
         /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
         /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the 
@@ -750,7 +786,7 @@ namespace Ict.Petra.Shared.MPartner
             }   
             
             return ReturnValue;
-        }        
+        }  
         
         /// <summary>
         /// Determines all p_partner_attribute records whose p_attribute_type points to a p_partner_attribute_type record 
@@ -762,7 +798,8 @@ namespace Ict.Petra.Shared.MPartner
         /// <see cref="DetermineEmailPartnerAttributeTypes"/>.</param>
         /// <param name="AOnlyCurrentEmailAddresses">Set to true to only return 'Valid' p_partner_attribute records
         /// (i.e. p_partner_attribute records whose p_current_l Flag is set to true).</param>
-        /// <returns></returns>
+        /// <returns>DataView that is filtered so that it contains only p_partner_attribute records whose p_attribute_type 
+        /// points to a p_partner_attribute_type record that is of p_attribute_type_value_kind_c 'CONTACTDETAIL_EMAILADDRESS'.</returns>
         public static DataView DeterminePartnerEmailAddresses(PPartnerAttributeTable APPartnerAttributeDT, 
             string AEmailAttributesConcatStr, bool AOnlyCurrentEmailAddresses)
         {
@@ -794,6 +831,74 @@ namespace Ict.Petra.Shared.MPartner
             }
         }
                 
+        /// <summary>
+        /// Determines which p_partner_attribute_type records are part of a System Category.
+        /// </summary>
+        /// <param name="APPartnerAttributeTypeDT">Either pass an instance of <see cref="PPartnerAttributeTypeTable"/>
+        /// that holds datarows *that are part of a System Category*, or pass null. In the latter case, 
+        /// <paramref name="ACacheRetriever"/> must not be null!</param>
+        /// <param name="ACacheRetriever">If <paramref name="APPartnerAttributeTypeDT"/> is null you must set this to an 
+        /// instance of a Delegate that returns that DataTable from the data cache (client- or serverside).
+        /// Delegate Method needs to be for the MPartner Cache (that is, it needs to work with the 
+        /// <see cref="TCacheablePartnerTablesEnum" /> Enum!</param>
+        /// <returns>String that contains all p_partner_attribute_type records which are part of a System Category.</returns>
+        public static string DetermineSystemCategoryAttributeTypes(PPartnerAttributeTypeTable APPartnerAttributeTypeDT = null,
+            TGetCacheableDataTableFromCache ACacheRetriever = null)
+        {
+            string ReturnValue = String.Empty;
+            string SystemCategories = String.Empty;
+            
+            GetPPartnerAttributeTable(ref APPartnerAttributeTypeDT, ACacheRetriever, false);
+
+            for (int Counter = 0; Counter < APPartnerAttributeTypeDT.Count; Counter++)
+            {
+                ReturnValue += APPartnerAttributeTypeDT[Counter].AttributeType + "', '";
+            }
+
+            if (ReturnValue.Length > 0) 
+            {
+                ReturnValue = "'" + ReturnValue.Substring(0, ReturnValue.Length - 3);    
+            }   
+            
+            return ReturnValue;
+        }
+        
+        /// <summary>
+        /// Determines all p_partner_attribute records whose p_attribute_type points to any p_partner_attribute_type record 
+        /// that is part of a System Category.
+        /// </summary>
+        /// <param name="APPartnerAttributeDT"><see cref="PPartnerAttributeTable"/> that contains the p_partner_attribute 
+        /// records of a given Partner - or of MANY (!) Partners.</param>
+        /// <param name="ASystemCategoriesConcatStr">This needs to be the return value of a call to Method 
+        /// <see cref="DetermineSystemCategoryAttributeTypes"/>.</param>
+        /// <returns>DataView that is filtered so that it contains only p_partner_attribute records whose p_attribute_type points 
+        /// to any p_partner_attribute_type record that is part of a System Category.</returns>
+        public static DataView DeterminePartnerSystemCategoryAttributes(PPartnerAttributeTable APPartnerAttributeDT, 
+            string ASystemCategoriesConcatStr)
+        {
+            if (APPartnerAttributeDT == null) 
+            {
+                throw new ArgumentNullException("APPartnerAttributeDT", "APPartnerAttributeDT must not be null");
+            }
+            
+            if (ASystemCategoriesConcatStr == null) 
+            {
+                throw new ArgumentNullException("ASystemCategoriesConcatStr", "ASystemCategoriesConcatStr must not be null");
+            }
+            
+            if (ASystemCategoriesConcatStr.Length > 0) 
+            {
+                return new DataView(APPartnerAttributeDT,
+                    String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
+                        ASystemCategoriesConcatStr),
+                    PPartnerAttributeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);                
+            }
+            else
+            {
+                return new DataView();
+            }
+        }
+        
         #endregion
                 
         /// <summary>

@@ -34,7 +34,6 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Validation;
 
@@ -49,10 +48,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             tdmbkNoPrimaryEmailButNonCurrentAvailable
         }
 
+        private const string ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD = "PARTNERS_PRIMARY_CONTACT_METHOD";
+
         private readonly string StrDefaultContactType = Catalog.GetString("Phone");
 
+        /// <summary>This string can get manipulated hence it can't be a 'readonly' Field.</summary>
         private string StrPrimEmailConsequence = Catalog.GetString(
             "Please select a current E-mail Address from the available ones!");
+        /// <summary>This string can get manipulated hence it can't be a 'readonly' Field.</summary>
         private string StrPrimEmailMessageBoxTitle = Catalog.GetString("Primary E-Mail Address Needs Adjusting");
         
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
@@ -95,6 +98,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         string FEmailAttributesConcatStr = String.Empty;
 
+        /// <summary>
+        /// Populated by Method <see cref="Calculations.DetermineSystemCategoryAttributeTypes"/>.
+        /// </summary>
+        string FSystemCategoryAttrTypesConcatStr = String.Empty;
+        
         #region Properties
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
@@ -381,6 +389,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.EnableRelation("ContactDetails2");
 
             FEmailAttributesConcatStr = Calculations.DetermineEmailPartnerAttributeTypes(FMainDS.PPartnerAttributeType);
+            
+            FSystemCategoryAttrTypesConcatStr = Calculations.DetermineSystemCategoryAttributeTypes(
+                null, @TDataCache.GetCacheableDataTableFromCache);
 
             // Show the 'Within The Organisation' GroupBox only if the Partner is of Partner Class PERSON
             if (FMainDS.PPartner[0].PartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
@@ -399,7 +410,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             chkConfidential.Top = 88;
             lblConfidential.Top = 93;
-
 
             // Set up status bar texts for unbound controls and for bound controls whose auto-assigned texts don't match the use here on this screen (these talk about 'Partner Attributes')
             FPetraUtilsObject.SetStatusBarText(cmbPrimaryWayOfContacting,
@@ -466,6 +476,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             UpdatePrimaryEmailComboItems(false);
             
             FPrimaryEmailSelectedValueChangedEvent = false;
+            
+            SelectPrimaryWayOfContactingComboItem();            
         }
 
         private void ShowDetailsManual(PPartnerAttributeRow ARow)
@@ -493,7 +505,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if successful.</returns>
         public bool GetOverallContactSettingsDataFromControls()
         {
-            return UpdatePrimaryEmailAddressRecords(true);
+            bool ReturnValue;
+            
+            ReturnValue = UpdatePrimaryEmailAddressRecords(true);
+
+            if (ReturnValue) 
+            {
+                UpdatePrimaryWayOfContactingComboRecord();    
+            }
+            
+            return ReturnValue;
         }
 
         /// <summary>
@@ -691,6 +712,81 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }                    
                 }
+            }
+        }
+        
+        private void SelectPrimaryWayOfContactingComboItem()
+        {
+            DataView ElegibleSystemCategoryAttributesDV = Calculations.DeterminePartnerSystemCategoryAttributes(
+                FMainDS.PPartnerAttribute, FSystemCategoryAttrTypesConcatStr);
+            PPartnerAttributeRow PartnerAttributeDR;
+            string PrimaryContactMethod = String.Empty;
+            int ComboBoxItemThatMatches;
+            
+            for (int Counter = 0; Counter < ElegibleSystemCategoryAttributesDV.Count; Counter++) 
+            {
+                PartnerAttributeDR = (PPartnerAttributeRow)ElegibleSystemCategoryAttributesDV[Counter].Row;
+                
+                if(PartnerAttributeDR.AttributeType == ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD)
+                {
+                    PrimaryContactMethod = PartnerAttributeDR.Value;
+                }
+            }
+            
+            if (PrimaryContactMethod != String.Empty) 
+            {
+                ComboBoxItemThatMatches = cmbPrimaryWayOfContacting.Items.IndexOf(PrimaryContactMethod);
+    
+                if (ComboBoxItemThatMatches != -1) 
+                {
+                    cmbPrimaryWayOfContacting.SelectedIndex = ComboBoxItemThatMatches;
+                }                
+            }
+        }
+        
+        private void UpdatePrimaryWayOfContactingComboRecord()
+        {
+            string CurrPrimaryWayOfContactingStr = cmbPrimaryWayOfContacting.GetSelectedString();
+            string ExistingPrimContactMethStr = String.Empty;
+            DataRow[] ExistingPrimContactMethArr = FMainDS.PPartnerAttribute.Select(
+                    PPartnerAttributeTable.GetAttributeTypeDBName() + " = '" + ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD + "'");                                
+            PPartnerAttributeRow NewAttributeRow;
+            
+            // Check if a p_partner_attribute record exists which holds the information about this Partners' 'Primary Way of Contacting'
+            if (ExistingPrimContactMethArr.Length != 0) 
+            {
+                // There must always be only one such record, so we can simply pick the first record in the Array
+                ExistingPrimContactMethStr = ((PPartnerAttributeRow)ExistingPrimContactMethArr[0]).Value;
+            }
+            
+            if (ExistingPrimContactMethStr != String.Empty) 
+            {
+                if (ExistingPrimContactMethStr != CurrPrimaryWayOfContactingStr) 
+                {
+                    if (CurrPrimaryWayOfContactingStr != String.Empty) 
+                    {
+                        // Update the existing record with the new 'Primary Way of Contacting' selection 
+                        ((PPartnerAttributeRow)ExistingPrimContactMethArr[0]).Value = CurrPrimaryWayOfContactingStr;    
+                    }
+                    else
+                    {
+                        // If the user chose to clear the 'Primary Way of Contacting': delete the record
+                        ExistingPrimContactMethArr[0].Delete();
+                    }
+                }    
+            }
+            else
+            {
+                // We need to add a record that holds the 'Primary Way of Contacting' selection as there isn't one yet for this Partner
+                NewAttributeRow = FMainDS.PPartnerAttribute.NewRowTyped(true);
+                NewAttributeRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+                NewAttributeRow.AttributeType = ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD;
+                NewAttributeRow.Sequence = -1;
+                NewAttributeRow.Index = 9999;
+                NewAttributeRow.Value = CurrPrimaryWayOfContactingStr;
+                NewAttributeRow.Current = true;
+                
+                FMainDS.PPartnerAttribute.Rows.Add(NewAttributeRow);
             }
         }
 
