@@ -846,7 +846,6 @@ namespace Ict.Petra.Shared.MPartner
             TGetCacheableDataTableFromCache ACacheRetriever = null)
         {
             string ReturnValue = String.Empty;
-            string SystemCategories = String.Empty;
             
             GetPPartnerAttributeTable(ref APPartnerAttributeTypeDT, ACacheRetriever, false);
 
