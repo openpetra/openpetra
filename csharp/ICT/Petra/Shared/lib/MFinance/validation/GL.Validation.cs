@@ -26,9 +26,9 @@ using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -101,6 +101,67 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            return VerifResultCollAddedCount == 0;
+        }
+
+        /// <summary>
+        /// Validates the GL Batch Date dialog.
+        /// </summary>
+        /// <param name="ABatchDate">The Data being validated</param>
+        /// <param name="ADescription">Description of control</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AStartDateCurrentPeriod">If the caller knows this value it can be supplied. Otherwise the server will supply the value for the ledger.</param>
+        /// <param name="AEndDateLastForwardingPeriod">If the caller knows this value it can be supplied. Otherwise the server will supply the value for the ledger.</param>
+        /// <param name="AControl"></param>
+        /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
+        public static bool ValidateGLBatchDateManual(DateTime? ABatchDate, string ADescription,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            DateTime AStartDateCurrentPeriod, DateTime AEndDateLastForwardingPeriod, Control AControl)
+        {
+            TScreenVerificationResult VerificationResult = null;
+            int VerifResultCollAddedCount = 0;
+
+            // 'Reversal Date' must be a valid date
+            TVerificationResult Result = TSharedValidationControlHelper.IsNotInvalidDate(ABatchDate,
+                ADescription, AVerificationResultCollection, true,
+                AControl, null, AControl);
+
+            if (Result != null)
+            {
+                VerificationResult = new TScreenVerificationResult(Result, null, AControl);
+            }
+
+            // Handle addition/removal to/from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AControl, VerificationResult, null, true))
+            {
+                VerifResultCollAddedCount++;
+            }
+            else
+            {
+                // 'Reversal Date' must lie within the required date range
+                Result = TDateChecks.IsDateBetweenDates(ABatchDate,
+                    AStartDateCurrentPeriod,
+                    AEndDateLastForwardingPeriod,
+                    ADescription,
+                    TDateBetweenDatesCheckType.dbdctUnspecific,
+                    TDateBetweenDatesCheckType.dbdctUnspecific,
+                    AControl,
+                    null,
+                    AControl);
+
+                if (Result != null)
+                {
+                    VerificationResult = new TScreenVerificationResult(Result, null, AControl);
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AControl, VerificationResult, null, true))
                 {
                     VerifResultCollAddedCount++;
                 }

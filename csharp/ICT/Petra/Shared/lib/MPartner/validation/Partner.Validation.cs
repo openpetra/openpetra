@@ -1774,7 +1774,36 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="FValidationControlsDict"></param>
         public static void ValidateContactLogManual(object AContext, PContactLogRow ARow, ref TVerificationResultCollection VerificationResultCollection, TValidationControlsDict FValidationControlsDict)
         {
-            //TODO: Implement manual validation
+            DataColumn ValidationColumn;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            
+            ValidationColumn = ARow.Table.Columns[PContactLogTable.ColumnContactCodeId];
+
+           
+            VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.ContactCode, Catalog.GetString("Contact Code"),
+                AContext, ValidationColumn);
+
+            // Handle addition to/removal from TVerificationResultCollection
+            VerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+            ValidationColumn = ARow.Table.Columns[PContactLogTable.ColumnContactDateId];
+            string dateStr = ARow.ContactDate == DateTime.MinValue ? null : ARow.ContactDate.ToString();
+            VerificationResult = TDateChecks.IsValidDateTime(dateStr, Catalog.GetString("Contact Date"),
+                AContext, ValidationColumn);
+
+
+            // Handle addition to/removal from TVerificationResultCollection
+            VerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+
+           
         }
     }
 }

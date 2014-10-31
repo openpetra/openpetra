@@ -164,8 +164,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (CreateNewPContactLog())
             {
-                ucoContact.Contactor = UserInfo.GUserInfo.UserID;
-                ucoContact.Focus();
+                ucoDetails.Contactor = UserInfo.GUserInfo.UserID;
+                ucoDetails.Focus();
 
             }
         }
@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (ARow != null)
             {
-                ucoContact.ShowDetails(ARow);
+                ucoDetails.ShowDetails(ARow);
             }
         }
 
@@ -216,7 +216,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 Environment.NewLine + "To delete this contact for everyone, use \"Find and Delete Contacts\"");
             }
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
-                Environment.NewLine, ucoContact.ContactDate, ucoContact.ContactCode);
+                Environment.NewLine, ucoDetails.ContactDate, ucoDetails.ContactCode);
 
             return true;
         }
@@ -261,13 +261,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GetDetailDataFromControlsManual(PContactLogRow ARow)
         {
-            ucoContact.GetDetails(ARow);   
+            ucoDetails.GetDetails(ARow);   
         }
 
         private void ValidateDataDetailsManual(PContactLogRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
+            
+            ucoDetails.ValidateRowManual(ARow);
+            
             TSharedPartnerValidation_Partner.ValidateContactLogManual(this, ARow, ref VerificationResultCollection,
                         FValidationControlsDict);
         }

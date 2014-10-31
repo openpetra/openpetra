@@ -43,7 +43,7 @@ RootNode:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control
             Controls:
-                Row0: [ucoContact]
-        ucoContact:
+                Row0: [ucoDetails]
+        ucoDetails:
             Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.TUC_Contact

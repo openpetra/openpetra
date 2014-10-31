@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -121,7 +121,7 @@ namespace Ict.Common.Data.Testing
             TDBTransaction ReadTransaction = null;
             DateTime before = DateTime.Now;
             DateTime after = DateTime.Now;
-            BankImportTDS ds = new BankImportTDS();
+            GiftBatchTDS ds = new GiftBatchTDS();
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
@@ -141,7 +141,7 @@ namespace Ict.Common.Data.Testing
                             untyped.Rows.Count,
                             (after.Subtract(before)).TotalMilliseconds));
 
-                    BankImportTDSAGiftDetailTable typed = new BankImportTDSAGiftDetailTable();
+                    GiftBatchTDSAGiftDetailTable typed = new GiftBatchTDSAGiftDetailTable();
                     before = DateTime.Now;
                     DBAccess.GDBAccessObj.SelectDT(typed, sql, ReadTransaction, new OdbcParameter[0], 0, 0);
                     after = DateTime.Now;
@@ -149,9 +149,6 @@ namespace Ict.Common.Data.Testing
                     TLogging.Log(String.Format("loading all {0} gift details into a typed table took {1} milliseconds",
                             typed.Rows.Count,
                             (after.Subtract(before)).TotalMilliseconds));
-
-                    ACostCentreAccess.LoadAll(ds, ReadTransaction);
-                    TLogging.Log(ds.ACostCentre.Rows.Count.ToString() + " cost centres loaded ");
 
                     AMotivationDetailAccess.LoadAll(ds, ReadTransaction);
 
@@ -165,7 +162,7 @@ namespace Ict.Common.Data.Testing
                     (after.Subtract(before)).TotalMilliseconds));
 
             before = DateTime.Now;
-            BankImportTDS ds2 = new BankImportTDS();
+            GiftBatchTDS ds2 = new GiftBatchTDS();
             ds2.Merge(ds.AGiftDetail);
             after = DateTime.Now;
 

@@ -127,7 +127,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             while (blnLoop)
             {
-
                 if (LedgerInfo.ProvisionalYearEndFlag)
                 {
                     blnLoop = false;
@@ -239,6 +238,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql",
                 intLedgerNumber);
             TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
+
             for (int countYear = 0; countYear < 2; countYear++)
             {
                 TLogging.Log("preparing year number " + countYear.ToString());

@@ -114,8 +114,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 AccountCodeFilter = "AND a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
                                     parameters.Get("param_account_code_end") + "'";
-                GlmAccountCodeFilter = " AND glm.a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" + 
-                                    parameters.Get("param_account_code_end") + "'";
+                GlmAccountCodeFilter = " AND glm.a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
+                                       parameters.Get("param_account_code_end") + "'";
             }
 
             String CostCentreFilter = ""; // Cost Centre Filter, as range or list:
@@ -134,7 +134,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 CostCentreFilter = " AND a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
                                    "' AND  '" + parameters.Get("param_cost_centre_code_end") + "'";
                 GlmCostCentreFilter = " AND glm.a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
-                                         "' AND '" + parameters.Get("param_cost_centre_code_end") + "'";
+                                      "' AND '" + parameters.Get("param_cost_centre_code_end") + "'";
             }
 
             String TranctDateFilter = "a_transaction_date_d BETWEEN '" + parameters.Get("param_start_date").DateToString("yyyy-MM-dd") +
@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "'' AS AnalysisValue" +
                     " FROM a_transaction WHERE " +
                     LedgerFilter + AccountCodeFilter +
-                    CostCentreFilter + " AND " + 
+                    CostCentreFilter + " AND " +
                     TranctDateFilter + ReferenceFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
                     " ORDER BY " + GroupField + ", a_transaction_date_d");

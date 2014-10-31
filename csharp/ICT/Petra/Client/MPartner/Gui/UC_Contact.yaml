@@ -12,24 +12,14 @@ RootNode:
         actEditIssues: {Label=Edit Issues, ActionClick=EditIssues}
         actSelectAttributes: {Label=Select Attributes, ActionClick=SelectAttributes}
     Controls:
-        pnlContent:
-            Dock: Fill
-            Controls: [pnlDetails]
         pnlDetails:
             Controls: 
                 Row0: [grpContact]
                 Row1: [grpAttributes]
             Dock: Fill
-        grpContact: {Label=Contact, ControlsOrientation = horizontal}
-            Dock: Top
-            Controls: 
-                Row0: [txtContactor]
-                Row1: [cmbContactCode]
-                Row2: [cmbMailingCode]
-                Row3: [dtpContactDate]
-                Row4: [txtContactComment]
+        grpContact: {Label=Contact, Stretch=horizontally}
+            Controls: [txtContactor, cmbContactCode, cmbMailingCode, dtpContactDate, txtContactComment]
         grpAttributes: {Label=Contact Attributes, ControlsOrientation = horizontal} 
-            Dock: Top
             Controls:
                 Row0:[btnSelectAttributes, txtSelectedAttributes]
         txtContactor:

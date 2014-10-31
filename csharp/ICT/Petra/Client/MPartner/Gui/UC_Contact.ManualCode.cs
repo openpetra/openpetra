@@ -37,6 +37,7 @@ using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Client.MCommon;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -89,6 +90,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public DateTime ContactDate { get { return FContactDR.ContactDate; } }
 
+        /// <summary>
+        /// Person/entity contacting this partner
+        /// </summary>
         public string Contactor
         {
             get { return txtContactor.Text; }
@@ -105,9 +109,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             throw new NotImplementedException();
         }
 
-        private void ValidateDataDetailsManual(PContactLogRow ARow)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ARow"></param>
+        public void ValidateRowManual(PContactLogRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            //if (ARow.ContactDate == DateTime.MinValue || ARow.ContactCode == "")
+            //{
+            //    throw new NotImplementedException();
+            //}
 
             TSharedPartnerValidation_Partner.ValidateContactLogManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
