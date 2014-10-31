@@ -59,6 +59,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
             foreach (TTableField col in currentTable.grpTableField)
             {
                 ProcessTemplate columnTemplate;
+                ProcessTemplate validateColumnTemplate;
 
                 CheckForEmptyDateGenerated = false;
 
@@ -66,47 +67,65 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNotNullChecks,
                         out ReasonForAutomValidation))
                 {
-                    columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
-                    columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
-
-                    if (col.GetDotNetType().Contains("String"))
+                    if (col.GetDotNetType().Contains("DateTime"))
                     {
-                        ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKEMPTYSTRING");
+                        // CHECKEMPTYDATE has NULL as invalid so we use this test with VALIDATECOLUMN2 (test not enclosed in 'if')
+                        validateColumnTemplate = Template.GetSnippet("CHECKEMPTYDATE");
                         validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
+                        columnTemplate = Template.GetSnippet("VALIDATECOLUMN2");
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
-                    }
-                    else if (col.GetDotNetType().Contains("DateTime"))
-                    {
-                        ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKEMPTYDATE");
-                        validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
-                        columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
+                        columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                        columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
+
+                        snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
+
                         CheckForEmptyDateGenerated = true;
                     }
                     else
                     {
-                        ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKGENERALNOTNULL");
+                        // Check all other types with a general NOT NULL check - again using VALIDATECOLUMN2 (test not enclosed in 'if')
+                        validateColumnTemplate = Template.GetSnippet("CHECKGENERALNOTNULL");
                         validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
+                        columnTemplate = Template.GetSnippet("VALIDATECOLUMN2");
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
+
+                        columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                        columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
+
+                        snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                     }
 
-                    columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
+                    // Additionally we do not allow empty string in primary keys
+                    if (col.GetDotNetType().Contains("String") && ReasonForAutomValidation.Contains(" and "))
+                    {
+                        validateColumnTemplate = Template.GetSnippet("CHECKEMPTYSTRING");
+                        validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
-                    snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
+                        columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
+                        columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
+
+                        columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                        columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
+
+                        snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
+                    }
                 }
 
                 if (!CheckForEmptyDateGenerated)
                 {
                     // Date checks
+                    // If a NULL date is not allowed we will have already tested for that above
                     if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsDateChecks,
                             out ReasonForAutomValidation))
                     {
                         columnTemplate = Template.GetSnippet("VALIDATECOLUMN2");
                         columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
-                        ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKVALIDDATE");
+                        // CHECKVALIDDATE allows NULL to be valid but ensures that otherwise the date is correctly formed
+                        validateColumnTemplate = Template.GetSnippet("CHECKVALIDDATE");
                         validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                         validateColumnTemplate.SetCodelet("COLUMNLENGTH", (col.iCharLength * 2).ToString());
 
@@ -124,7 +143,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
-                    ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKSTRINGLENGTH");
+                    validateColumnTemplate = Template.GetSnippet("CHECKSTRINGLENGTH");
                     validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                     validateColumnTemplate.SetCodelet("COLUMNLENGTH", (col.iCharLength * 2).ToString());
 
@@ -141,7 +160,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     columnTemplate = Template.GetSnippet("VALIDATECOLUMN");
                     columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
-                    ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKNUMBERRANGE");
+                    validateColumnTemplate = Template.GetSnippet("CHECKNUMBERRANGE");
                     validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                     validateColumnTemplate.SetCodelet("NUMBEROFDECIMALDIGITS", col.iLength.ToString());
                     validateColumnTemplate.SetCodelet("NUMBEROFFRACTIONALDIGITS", col.iDecimals > 0 ? col.iDecimals.ToString() : "0");

@@ -68,6 +68,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
+            bool isImporting = AContext.ToString().Contains("Importing");
+
             // 'Effective From Date' must be valid
             ValidationColumn = ARow.Table.Columns[ABatchTable.ColumnDateEffectiveId];
             ValidationContext = ARow.BatchNumber;
@@ -92,7 +94,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.DateEffective,
                     StartDateCurrentPeriod,
                     EndDateLastForwardingPeriod,
-                    ValidationControlsData.ValidationControlLabel + " of Batch Number " + ValidationContext.ToString(),
+                    ValidationControlsData.ValidationControlLabel + (isImporting ? String.Empty : " of Batch Number " + ValidationContext.ToString()),
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     AContext,
@@ -199,9 +201,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="ACorporateExchangeTableRef">Corporate exchange rate table.  A reference to this table is REQUIRED when importing - optional otherwise</param>
+        /// <param name="ABaseCurrency">Ledger base currency.  Required when importing</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGLJournalManual(object AContext, AJournalRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            ACorporateExchangeRateTable ACorporateExchangeTableRef = null, string ABaseCurrency = null)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -215,6 +220,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
+            bool isImporting = AContext.ToString().Contains("Importing");
+
             // 'Exchange Rate' must be greater than 0
             ValidationColumn = ARow.Table.Columns[AJournalTable.ColumnExchangeRateToBaseId];
             ValidationContext = ARow.JournalNumber.ToString() + " of Batch Number: " + ARow.BatchNumber.ToString();
@@ -222,13 +229,39 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.ExchangeRateToBase,
-                    ValidationControlsData.ValidationControlLabel + " of Journal Number: " + ValidationContext.ToString(),
+                    ValidationControlsData.ValidationControlLabel + (isImporting ? String.Empty : " of Journal Number: " + ValidationContext.ToString()),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
+                }
+            }
+
+            if ((ACorporateExchangeTableRef != null) && (ABaseCurrency != null) && (ARow.TransactionCurrency != ABaseCurrency))
+            {
+                // For gifts in non-base currency there must be a corporate exchange rate
+                ValidationColumn = ARow.Table.Columns[AJournalTable.ColumnTransactionCurrencyId];
+                ValidationContext = ARow.JournalNumber.ToString() + " of Batch Number: " + ARow.BatchNumber.ToString();
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    DateTime firstOfMonth = new DateTime(ARow.DateEffective.Year, ARow.DateEffective.Month, 1);
+                    ACorporateExchangeRateRow foundRow = (ACorporateExchangeRateRow)ACorporateExchangeTableRef.Rows.Find(
+                        new object[] { ARow.TransactionCurrency, ABaseCurrency, firstOfMonth });
+
+                    if ((foundRow == null)
+                        && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                            AContext,
+                            new TVerificationResult(ValidationContext,
+                                String.Format(Catalog.GetString("There is no Corporate Exchange Rate defined for the month starting on '{0}'."),
+                                    StringHelper.DateToLocalizedString(firstOfMonth)),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
                 }
             }
 
@@ -282,32 +315,56 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            //TransactionAmount is not in the dictionary so had to pass the control directly
-            if ((AControl != null) && AControl.Name.EndsWith("Amount"))
+            bool isImporting = AContext.ToString().Contains("Importing");
+
+            // When used by the GUI TransactionAmount is not in the dictionary so had to pass the control directly
+            // But when importing we do have a dictionary entry
+            if (isImporting)
             {
                 // 'GL amount must be non-zero and positive
                 ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionAmountId];
-                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
-                    ARow.TransactionNumber,
-                    ARow.BatchNumber,
-                    ARow.JournalNumber);
 
-                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
-                    "Amount of " + ValidationContext,
-                    AContext, ValidationColumn, AControl);
-
-                if (VerificationResult != null)
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
-                    VerificationResult.SuppressValidationToolTip = true;
-                }
+                    VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
+                        ValidationControlsData.ValidationControlLabel,
+                        AContext, ValidationColumn, AControl);
 
-                // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+            else
+            {
+                if ((AControl != null) && AControl.Name.EndsWith("Amount"))
                 {
-                    VerifResultCollAddedCount++;
-                }
+                    // 'GL amount must be non-zero and positive
+                    ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionAmountId];
+                    ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                        ARow.TransactionNumber,
+                        ARow.BatchNumber,
+                        ARow.JournalNumber);
 
-                return VerifResultCollAddedCount == 0;
+                    VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
+                        "Amount of " + ValidationContext,
+                        AContext, ValidationColumn, AControl);
+
+                    if (VerificationResult != null)
+                    {
+                        VerificationResult.SuppressValidationToolTip = true;
+                    }
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+
+                    return VerifResultCollAddedCount == 0;
+                }
             }
 
             // 'Narrative must not be empty
@@ -320,7 +377,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Narrative,
-                    "Narrative of " + ValidationContext,
+                    (isImporting) ? ValidationControlsData.ValidationControlLabel : "Narrative of " + ValidationContext,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
@@ -348,7 +405,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.TransactionDate,
                     StartDatePeriod,
                     EndDatePeriod,
-                    "Transaction Date for " + ValidationContext.ToString(),
+                    (isImporting) ? ValidationControlsData.ValidationControlLabel : "Transaction Date for " + ValidationContext.ToString(),
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     TDateBetweenDatesCheckType.dbdctUnspecific,
                     AContext,
@@ -374,7 +431,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
-                        "Reference of " + ValidationContext,
+                        (isImporting) ? ValidationControlsData.ValidationControlLabel : "Reference of " + ValidationContext,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection

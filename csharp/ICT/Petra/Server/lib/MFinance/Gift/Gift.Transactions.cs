@@ -274,7 +274,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= AEffectiveDate))
                                         )
                                     {
-                                        GiftBatchTDSAGiftDetailRow detail = GMainDS.AGiftDetail.NewRowTyped();
+                                        AGiftDetailRow detail = GMainDS.AGiftDetail.NewRowTyped();
                                         detail.LedgerNumber = gift.LedgerNumber;
                                         detail.BatchNumber = gift.BatchNumber;
                                         detail.GiftTransactionNumber = gift.GiftTransactionNumber;
