@@ -280,6 +280,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            // These SelectedValueChanged Events must not be hooked up earlier as that could lead to a 'race condition' in certain data scenarios!
+            cmbContactCategory.SelectedValueChanged += new System.EventHandler(this.FilterContactTypeCombo);
+            cmbContactType.SelectedValueChanged += new System.EventHandler(this.OnContactTypeChanged);
+
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
             // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
 //            rtbValue.LinkClicked += new Ict.Common.Controls.TRtbHyperlinks.THyperLinkClickedArgs(rtbValue.Helper.LaunchHyperLink);
@@ -1781,7 +1785,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             PPartnerAttributeTypeRow ContactTypeDR;
             TPartnerAttributeTypeValueKind PreviousValueKind = FValueKind;
-            TPartnerAttributeTypeValueKind ValueKind;            
+            TPartnerAttributeTypeValueKind ValueKind;  
+            
             if ((!FSuppressOnContactTypeChangedEvent)
                 && (cmbContactType.Text != String.Empty))
             {

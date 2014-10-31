@@ -107,8 +107,8 @@ RootNode:
                 Row3: [chkConfidential]
             Height: 115
 
-        cmbContactCategory: {Label=&Contact Category, List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true, OnChange=FilterContactTypeCombo}
-        cmbContactType: {Label=Contact Ty&pe, List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true, OnChange=OnContactTypeChanged}
+        cmbContactCategory: {Label=&Contact Category, List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true}
+        cmbContactType: {Label=Contact Ty&pe, List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true}
         chkSpecialised: 
            Label: &Business
            OnChange: HandleSpecialisedFlagChanged
