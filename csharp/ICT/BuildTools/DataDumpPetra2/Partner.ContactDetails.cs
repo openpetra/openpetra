@@ -66,9 +66,14 @@ namespace Ict.Tools.DataDumpPetra2
         private const String ATTR_TYPE_WEBSITE = "Web Site";
                 
         /// <summary>
+        /// Holds the p_partner.p_partner_class_c information of each Partner.
+        /// </summary>
+        private static Dictionary<Int64, string> FPartnerClassInformation = new Dictionary<Int64, string>();
+
+        /// <summary>
         /// Holds the p_partner_location records of each Partner.
         /// </summary>
-        private static Dictionary<Int64, DataTable> FPartnerLocationRecords = new Dictionary<Int64, DataTable>();
+        private static Dictionary<Int64, DataTable>FPartnerLocationRecords = new Dictionary<Int64, DataTable>();
         
         /// <summary>
         /// Number for the p_sequence_i Column. Gets increased with every p_partner_attribute record that gets produced!
@@ -84,6 +89,17 @@ namespace Ict.Tools.DataDumpPetra2
         #endregion
         
         #region Properties
+
+        /// <summary>
+        /// Holds the p_partner.p_partner_class_c information of each Partner.
+        /// </summary>
+        public static Dictionary<Int64, string> PartnerClassInformation
+        {
+            get
+            {
+                return FPartnerClassInformation;
+            }
+        }
         
         /// <summary>
         /// Holds the p_partner_location records of each Partner.
@@ -480,6 +496,7 @@ namespace Ict.Tools.DataDumpPetra2
             string AlternatePhoneNumber = (string)APartnerLocationDR["p_alternate_telephone_c"];
             string Url = (string)APartnerLocationDR["p_url_c"];
             string EmailAddress = (string)APartnerLocationDR["p_email_address_c"]; 
+            string PartnerClass;
             
             FInsertionOrderPerPartner++;
             
@@ -529,13 +546,20 @@ namespace Ict.Tools.DataDumpPetra2
                         PPARecord.Primary = true;
 
                         // Mark this Contact Detail as being 'WithinOrgansiation' as it has an 'organisation-internal' e-mail-address!
-                        if (EmailAddress.EndsWith("@om.org", StringComparison.InvariantCulture))
+                        // - but only if the Partner is a PERSON!                        
+                        if (FPartnerClassInformation.TryGetValue(APartnerKey, out PartnerClass))
                         {
-                            PPARecord.WithinOrgansiation = true;
-    
-                            TLogging.Log(String.Format(
-                                "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
-                                EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                            if (PartnerClass == "PERSON") 
+                            {
+                                if (EmailAddress.EndsWith("@om.org", StringComparison.InvariantCulture))
+                                {
+                                    PPARecord.WithinOrgansiation = true;
+            
+                                    TLogging.Log(String.Format(
+                                        "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
+                                        EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                                }                                
+                            }
                         }
                     }
                         

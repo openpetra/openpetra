@@ -365,6 +365,14 @@ namespace Ict.Tools.DataDumpPetra2
                 return false;
             }
 
+            // Process p_partner records only for the purpose of storing the Partner Class of each Partner in an in-memory-structure
+            if (ATableName == "p_partner")
+            {
+                TPartnerContactDetails.PartnerClassInformation.Add(
+                    Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_partner_key_n")),
+                    GetValue(AColumnNames, ANewRow, "p_partner_class_c"));
+            }
+                
             // update pub.a_account_property set a_property_value_c = 'true' where a_property_code_c = 'Bank Account';
             if (ATableName == "a_account_property")
             {
