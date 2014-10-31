@@ -1114,7 +1114,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             int HighestIndex = 0;
             int ThisRow_Sequence = 0;
             int ThisRow_Index = 0;
-
+                 
             System.Data.DataRowVersion ThisRow_RowVersion;
             PPartnerAttributeTable ThisDT = (PPartnerAttributeTable)ARow.Table;
 
@@ -1170,6 +1170,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.Confidential = false;
             ARow.Current = true;
             ARow.PartnerContactDetail = true;
+         
+            // If this is the first time the user created a new record then the Contact Type ComboBox
+            // hasn't been filtered yet and would display all Contact Types of all Contact Categories.
+            // To prevent that we need to initialise the Filter.
+            if (cmbContactType.Filter == null) 
+            {
+                FilterContactTypeCombo(null, null);
+            }
         }
 
         private void DeleteRecord(Object sender, EventArgs e)
@@ -1854,34 +1862,44 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 UpdateValueManual();
                 
-                if ((cmbContactCategory.Enabled) 
-                    && (PreviousValueKind != FValueKind))
-                {                    
-                    if (GetSelectedDetailRow().Primary)
-                    {
-                        GetSelectedDetailRow().Primary = false;
-
-                        UpdatePrimaryEmailComboItems(true);
-                        UpdatePrimaryPhoneComboItems();
-
-                        if (PreviousValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
+                if (cmbContactCategory.Enabled)
+                {
+                    if (PreviousValueKind != FValueKind)
+                    {                    
+                        if (GetSelectedDetailRow().Primary)
                         {
-                            MessageBox.Show(Catalog.GetString(
-                                "You have changed the Contact Type and the Contact Detail that was an E-Mail address is no longer one.\r\n" + 
-                                "As a result, this Contact Detail can no longer be the Primary E-Mail address! It has therefore been removed from the Primary E-Mail choices."),
-                                Catalog.GetString("No Longer Primary E-Mail"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            GetSelectedDetailRow().Primary = false;
+    
+                            UpdatePrimaryEmailComboItems(true);
+                            UpdatePrimaryPhoneComboItems();
+    
+                            if (PreviousValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
+                            {
+                                MessageBox.Show(Catalog.GetString(
+                                    "You have changed the Contact Type and the Contact Detail that was an E-Mail address is no longer one.\r\n" + 
+                                    "As a result, this Contact Detail can no longer be the Primary E-Mail address! It has therefore been removed from the Primary E-Mail choices."),
+                                    Catalog.GetString("No Longer Primary E-Mail"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                            else
+                            {
+                                MessageBox.Show(Catalog.GetString(
+                                    "You have changed the Contact Type and the Contact Detail that was a Phone Number is no longer one.\r\n" + 
+                                    "As a result, this Contact Detail can no longer be the Primary Phone! It has therefore been removed from the Primary Phone choices."),
+                                    Catalog.GetString("No Longer Primary Phone"), MessageBoxButtons.OK, MessageBoxIcon.Warning);                            
+                            }
                         }
                         else
                         {
-                            MessageBox.Show(Catalog.GetString(
-                                "You have changed the Contact Type and the Contact Detail that was a Phone Number is no longer one.\r\n" + 
-                                "As a result, this Contact Detail can no longer be the Primary Phone! It has therefore been removed from the Primary Phone choices."),
-                                Catalog.GetString("No Longer Primary Phone"), MessageBoxButtons.OK, MessageBoxIcon.Warning);                            
+                            UpdatePrimaryEmailComboItems(true);
+                            UpdatePrimaryPhoneComboItems();                        
                         }
                     }
                     else
                     {
-                        UpdatePrimaryEmailComboItems(true);
+                        // This might seem unnecessary as the 'PreviousValueKind' and 'FValueKind' are the same - 
+                        // However, it isn't, as 'Fax Numbers' are to be excluded from the 'Primary Phone' ComboBox but  
+                        // if a user changes between 'Phone' and 'Fax' there is no difference between 'PreviousValueKind' 
+                        // and 'FValueKind' and yet we need to update the Combo!
                         UpdatePrimaryPhoneComboItems();                        
                     }
                 }
