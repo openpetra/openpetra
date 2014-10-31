@@ -976,7 +976,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGiftDetail.Merge(TempDS.AGiftDetail);
                 }
 
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(FLedgerNumber, ABatchNumber));
 
                 RetVal = true;
             }
@@ -1366,7 +1366,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMainDS.AGift.Rows.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ledgerNumber, batchNumber));
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
@@ -1797,7 +1797,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (giftDataView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ledgerNumber, batchNumber));
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }

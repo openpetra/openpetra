@@ -525,10 +525,143 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (TransDV.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactions(ALedgerNumber, ABatchNumber));
             }
 
             return TransDV.Count > 0;
+        }
+
+        /// <summary>
+        /// find a special gift detail
+        /// </summary>
+        public void FindGiftDetail(AGiftDetailRow gdr)
+        {
+            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
+            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
+            standardTabIndex = 1;     // later we switch to the detail tab
+        }
+
+        private int GetChangedRecordCountManual(out string AMessage)
+        {
+            // For Gift Batch we will
+            //  either get a change to N Batches
+            //  or get changes to M transactions in N Batches
+            List<Tuple<string, int>> TableAndCountList = new List<Tuple<string, int>>();
+            int allChangesCount = 0;
+
+            foreach (DataTable dt in FMainDS.Tables)
+            {
+                if (dt != null)
+                {
+                    int tableChangesCount = 0;
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        if (dr.RowState != DataRowState.Unchanged)
+                        {
+                            tableChangesCount++;
+                            allChangesCount++;
+                        }
+                    }
+
+                    if (tableChangesCount > 0)
+                    {
+                        TableAndCountList.Add(new Tuple<string, int>(dt.TableName, tableChangesCount));
+                    }
+                }
+            }
+
+            // Now build up a sensible message
+            AMessage = String.Empty;
+
+            if (TableAndCountList.Count > 0)
+            {
+                if (TableAndCountList.Count == 1)
+                {
+                    // Only saving changes to batches
+                    Tuple<string, int> TableAndCount = TableAndCountList[0];
+
+                    AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
+                        TableAndCount.Item2,
+                        Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
+                        Environment.NewLine);
+                }
+                else
+                {
+                    // Saving changes to transactions as well
+                    int nBatches = 0;
+                    int nTransactions = 0;
+
+                    foreach (Tuple<string, int> TableAndCount in TableAndCountList)
+                    {
+                        if (TableAndCount.Item1.Equals(AGiftBatchTable.GetTableName()))
+                        {
+                            nBatches = TableAndCount.Item2;
+                        }
+                        else if (TableAndCount.Item2 > nTransactions)
+                        {
+                            nTransactions = TableAndCount.Item2;
+                        }
+                    }
+
+                    if (nBatches == 0)
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
+                            nTransactions,
+                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                            Environment.NewLine);
+                    }
+                    else
+                    {
+                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
+                            nBatches,
+                            Catalog.GetPluralString("batch", "batches", nBatches),
+                            nTransactions,
+                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
+                            Environment.NewLine);
+                    }
+                }
+
+                AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
+            }
+
+            return allChangesCount;
+        }
+
+        /// <summary>
+        /// Check if batch columns have actually changed
+        /// </summary>
+        /// <param name="ABatchRow"></param>
+        /// <returns></returns>
+        public bool BatchColumnsHaveChanged(AGiftBatchRow ABatchRow)
+        {
+            bool RetVal = false;
+
+            if (ABatchRow.RowState != DataRowState.Unchanged)
+            {
+                bool columnValueChanged = false;
+
+                for (int i = 0; i < FMainDS.AGiftBatch.Columns.Count; i++)
+                {
+                    string originalValue = ABatchRow[i, DataRowVersion.Original].ToString();
+                    string currentValue = ABatchRow[i, DataRowVersion.Current].ToString();
+
+                    if (originalValue != currentValue)
+                    {
+                        columnValueChanged = true;
+                        break;
+                    }
+                }
+
+                if (!columnValueChanged)
+                {
+                    ABatchRow.RejectChanges();
+                }
+
+                RetVal = columnValueChanged;
+            }
+
+            return RetVal;
         }
 
         /// <summary>
@@ -601,16 +734,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return IntlToBaseCurrencyExchRate;
         }
 
-        /// <summary>
-        /// find a special gift detail
-        /// </summary>
-        public void FindGiftDetail(AGiftDetailRow gdr)
-        {
-            ucoBatches.SelectBatchNumber(gdr.BatchNumber);
-            ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
-            standardTabIndex = 1;     // later we switch to the detail tab
-        }
-
         private void mniNewDonorWarning_Click(Object sender, EventArgs e)
         {
             // toggle menu tick
@@ -632,128 +755,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Report.Show();
         }
 
-        private int GetChangedRecordCountManual(out string AMessage)
-        {
-            // For Gift Batch we will
-            //  either get a change to N Batches
-            //  or get changes to M transactions in N Batches
-            List <Tuple <string, int>>TableAndCountList = new List <Tuple <string, int>>();
-            int allChangesCount = 0;
-
-            foreach (DataTable dt in FMainDS.Tables)
-            {
-                if (dt != null)
-                {
-                    int tableChangesCount = 0;
-
-                    foreach (DataRow dr in dt.Rows)
-                    {
-                        if (dr.RowState != DataRowState.Unchanged)
-                        {
-                            tableChangesCount++;
-                            allChangesCount++;
-                        }
-                    }
-
-                    if (tableChangesCount > 0)
-                    {
-                        TableAndCountList.Add(new Tuple <string, int>(dt.TableName, tableChangesCount));
-                    }
-                }
-            }
-
-            // Now build up a sensible message
-            AMessage = String.Empty;
-
-            if (TableAndCountList.Count > 0)
-            {
-                if (TableAndCountList.Count == 1)
-                {
-                    // Only saving changes to batches
-                    Tuple <string, int>TableAndCount = TableAndCountList[0];
-
-                    AMessage = String.Format(Catalog.GetString("    You have made changes to the details of {0} {1}.{2}"),
-                        TableAndCount.Item2,
-                        Catalog.GetPluralString("batch", "batches", TableAndCount.Item2),
-                        Environment.NewLine);
-                }
-                else
-                {
-                    // Saving changes to transactions as well
-                    int nBatches = 0;
-                    int nTransactions = 0;
-
-                    foreach (Tuple <string, int>TableAndCount in TableAndCountList)
-                    {
-                        if (TableAndCount.Item1.Equals(AGiftBatchTable.GetTableName()))
-                        {
-                            nBatches = TableAndCount.Item2;
-                        }
-                        else if (TableAndCount.Item2 > nTransactions)
-                        {
-                            nTransactions = TableAndCount.Item2;
-                        }
-                    }
-
-                    if (nBatches == 0)
-                    {
-                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1}.{2}"),
-                            nTransactions,
-                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
-                            Environment.NewLine);
-                    }
-                    else
-                    {
-                        AMessage = String.Format(Catalog.GetString("    You have made changes to {0} {1} and {2} {3}.{4}"),
-                            nBatches,
-                            Catalog.GetPluralString("batch", "batches", nBatches),
-                            nTransactions,
-                            Catalog.GetPluralString("transaction", "transactions", nTransactions),
-                            Environment.NewLine);
-                    }
-                }
-
-                AMessage += String.Format(TFrmPetraEditUtils.StrConsequenceIfNotSaved, Environment.NewLine);
-            }
-
-            return allChangesCount;
-        }
-
-        /// <summary>
-        /// Check if batch columns have actually changed
-        /// </summary>
-        /// <param name="ABatchRow"></param>
-        /// <returns></returns>
-        public bool BatchColumnsHaveChanged(AGiftBatchRow ABatchRow)
-        {
-            bool RetVal = false;
-
-            if (ABatchRow.RowState != DataRowState.Unchanged)
-            {
-                bool columnValueChanged = false;
-
-                for (int i = 0; i < FMainDS.AGiftBatch.Columns.Count; i++)
-                {
-                    string originalValue = ABatchRow[i, DataRowVersion.Original].ToString();
-                    string currentValue = ABatchRow[i, DataRowVersion.Current].ToString();
-
-                    if (originalValue != currentValue)
-                    {
-                        columnValueChanged = true;
-                        break;
-                    }
-                }
-
-                if (!columnValueChanged)
-                {
-                    ABatchRow.RejectChanges();
-                }
-
-                RetVal = columnValueChanged;
-            }
-
-            return RetVal;
-        }
 
         #region Forms Messaging Interface Implementation
 

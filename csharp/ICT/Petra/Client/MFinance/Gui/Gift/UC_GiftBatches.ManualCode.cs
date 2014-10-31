@@ -395,6 +395,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FActiveOnly != AActiveOnly)
             {
                 FActiveOnly = AActiveOnly;
+
                 FAccountAndCostCentreLogicObject.RefreshBankAccountAndCostCentreFilters(AActiveOnly, ARow);
             }
         }
@@ -586,16 +587,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow);
 
             SelectRowInGrid(CurrentlySelectedRow);
-
-            //if (grdDetails.Rows.Count > 1)
-            //{
-            //    ((TFrmGiftBatch)ParentForm).EnableTransactions();
-            //}
-            //else
-            //{
-            //    ((TFrmGiftBatch)ParentForm).DisableTransactions();
-            //    ShowDetails(null);
-            //}
 
             UpdateRecordNumberDisplay();
         }
