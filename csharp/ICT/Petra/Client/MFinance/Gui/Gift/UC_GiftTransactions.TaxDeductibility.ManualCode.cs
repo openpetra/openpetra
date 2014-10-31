@@ -172,7 +172,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPreviouslySelectedDetailRow.TaxDeductiblePct = (decimal)txtDeductiblePercentage.NumberValueDecimal;
             }
 
-            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref FPreviouslySelectedDetailRow);
+            AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
+            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
 
             txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
             txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;

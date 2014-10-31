@@ -148,33 +148,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             grdDetails.Columns.Clear();
             grdDetails.AddDateColumn("Date Entered", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DateEntered"]);
-            grdDetails.AddTextColumn("Group", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationGroupCode"], 80);
-            grdDetails.AddTextColumn("Detail", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationDetailCode"], 80);
-            grdDetails.AddTextColumn("Receipt", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ReceiptNumber"], 60);
+            grdDetails.AddTextColumn("Group", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationGroupCode"]);
+            grdDetails.AddTextColumn("Detail", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MotivationDetailCode"]);
+            grdDetails.AddTextColumn("Receipt", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ReceiptNumber"]);
             grdDetails.AddCurrencyColumn("Amount (Base)", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftAmount"]);
             grdDetails.AddCurrencyColumn("Amount (Intl)", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftAmountIntl"]);
-            grdDetails.AddCheckBoxColumn("C", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ConfidentialGiftFlag"], 17);
+            grdDetails.AddCheckBoxColumn("C", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ConfidentialGiftFlag"]);
             grdDetails.AddTextColumn("Batch", FMainDS.Tables[TEMP_TABLE_NAME].Columns["BatchNumber"]);
-            grdDetails.AddTextColumn("Trans", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftTransactionNumber"], 50);
-            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorDescription"], 160);
-            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientDescription"], 160);
-            grdDetails.AddTextColumn("Reference", FMainDS.Tables[TEMP_TABLE_NAME].Columns["Reference"], 90);
-            grdDetails.AddTextColumn("Comment One", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentOne"], 200);
-            grdDetails.AddTextColumn("Comment Type", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CommentOneType"], 100);
-            grdDetails.AddTextColumn("Recipient Field", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientLedgerNumber"], 100);
-            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorKey"], 70);
-            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientKey"], 70);
-            grdDetails.AddCheckBoxColumn("Charge Fee", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ChargeFlag"], 17);
-            grdDetails.AddTextColumn("Method of Payment", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfPaymentCode"], 120);
-            grdDetails.AddTextColumn("Method of Giving", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfGivingCode"], 110);
-            grdDetails.AddTextColumn("Cost Centre Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CostCentreCode"], 110);
-            grdDetails.AddTextColumn("Comment Two", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentTwo"], 100);
-            grdDetails.AddTextColumn("Comment Three", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentThree"], 100);
-            grdDetails.AddTextColumn("Mailing Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MailingCode"], 85);
+            grdDetails.AddTextColumn("Trans", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftTransactionNumber"]);
+            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorDescription"]);
+            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientDescription"]);
+            grdDetails.AddTextColumn("Reference", FMainDS.Tables[TEMP_TABLE_NAME].Columns["Reference"]);
+            grdDetails.AddTextColumn("Comment One", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentOne"]);
+            grdDetails.AddTextColumn("Comment Type", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CommentOneType"]);
+            grdDetails.AddTextColumn("Recipient Field", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientLedgerNumber"]);
+            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorKey"]);
+            grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientKey"]);
+            grdDetails.AddCheckBoxColumn("Charge Fee", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ChargeFlag"]);
+            grdDetails.AddTextColumn("Method of Payment", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfPaymentCode"]);
+            grdDetails.AddTextColumn("Method of Giving", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfGivingCode"]);
+            grdDetails.AddTextColumn("Cost Centre Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CostCentreCode"]);
+            grdDetails.AddTextColumn("Comment Two", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentTwo"]);
+            grdDetails.AddTextColumn("Comment Three", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentThree"]);
+            grdDetails.AddTextColumn("Mailing Code", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MailingCode"]);
 
-            grdDetails.Columns[0].Width = 90;     // Date Entered
-            grdDetails.Columns[4].Width = 100;     // Amount - Base
-            grdDetails.Columns[5].Width = 90;     // Amount - Intl
+            // As there are so many columns we will autosize columns ignoring the column header text (since many columns have no data).
+            //  We will have tooltips in the column headers with the complete column title.
+            grdDetails.IncludeFixedRowsInAutoSizeColumns = false;
         }
 
         private void SetupMotivationComboboxes()
@@ -345,23 +345,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Error calling Donor/Recipient history"), AMessages));
                     return;
                 }
+
+                FMainDS = newTDS;
+
+                if (grdDetails.Columns.Count < 1)
+                {
+                    // First time through here
+                    SetupGrid();
+
+                    DataView myDataView = FMainDS.Tables[TEMP_TABLE_NAME].DefaultView;
+                    myDataView.AllowNew = false;
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+                    // Display header tooltips
+                    for (int i = 0; i < grdDetails.Columns.Count; i++)
+                    {
+                        SourceGrid.DataGridColumn c = grdDetails.Columns[i];
+                        SourceGrid.Cells.ColumnHeader h = (SourceGrid.Cells.ColumnHeader)c.HeaderCell;
+                        grdDetails.SetHeaderTooltip(i, h.DisplayText);
+                    }
+
+                    // First time we have to size grid ourselves
+                    grdDetails.AutoResizeGrid();
+
+                    // Subsequent changes to the data source will automatically sresize the grid columns to the new data
+                    grdDetails.DataSource.ListChanged += DataSource_ListChanged;
+                }
                 else
                 {
-                    if (FMainDS.Tables.Contains(TEMP_TABLE_NAME))
-                    {
-                        FMainDS.Tables.Remove(TEMP_TABLE_NAME);
-                    }
-
-                    FMainDS = newTDS;
-                }
-
-                if (FMainDS != null)
-                {
-                    if (grdDetails.Columns.Count < 1)
-                    {
-                        SetupGrid();
-                    }
-
                     DataView myDataView = FMainDS.Tables[TEMP_TABLE_NAME].DefaultView;
                     myDataView.AllowNew = false;
                     grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
@@ -752,6 +763,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 e.Handled = false;
+            }
+        }
+
+        void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            if (grdDetails.CanFocus)
+            {
+                grdDetails.AutoResizeGrid();
             }
         }
 
