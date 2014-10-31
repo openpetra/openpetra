@@ -207,12 +207,12 @@ namespace Ict.Petra.Client.MFinance.Logic
                 if (AExWorkers.Rows.Count == 1)
                 {
                     ReturnValue = string.Format(Catalog.GetString(
-                            "The gift listed below in this batch is for a recipient who has Special Type beginning with {0}:"), AExWorkerSpecialType);
+                            "The gift listed below has a recipient who has a Special Type beginning with {0}:"), AExWorkerSpecialType);
                 }
                 else
                 {
                     ReturnValue = string.Format(Catalog.GetString(
-                            "The gifts listed below in this batch are for recipients who have Special Type beginning with {0}:"),
+                            "The gifts listed below have recipients who have a Special Type beginning with {0}:"),
                         AExWorkerSpecialType);
                 }
             }

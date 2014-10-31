@@ -2494,7 +2494,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     AVerifications.Add(
                         new TVerificationResult(
                             "Posting Gift Batch",
-                            String.Format("Donor key needed in gift {0}",
+                            String.Format(Catalog.GetString("Donor Key needed in gift {0}"),
                                 giftDetail.GiftTransactionNumber),
                             TResultSeverity.Resv_Critical));
                     return null;
@@ -2545,6 +2545,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     else
                     {
                         giftDetail.CostCentreCode = motivationRow.CostCentreCode;
+                        
+                        // The recipient ledger number must not be 0 if the motivation group is 'GIFT'
+                        if (giftDetail.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                        {
+                        	AVerifications.Add(
+		                        new TVerificationResult(
+		                            "Posting Gift Batch",
+		                            String.Format(Catalog.GetString("No valid Gift Destination exists for the recipient {0} ({1}) of gift {2}."),
+		                                giftDetail.RecipientDescription,
+		                                giftDetail.RecipientKey,
+		                                giftDetail.GiftTransactionNumber)
+		                            + "\n\n"
+		                            + Catalog.GetString("A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
+		                            TResultSeverity.Resv_Critical));
+		                    return null;
+                        }
                     }
                 }
 
