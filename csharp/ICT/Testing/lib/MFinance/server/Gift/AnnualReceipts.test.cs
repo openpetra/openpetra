@@ -84,6 +84,7 @@ namespace Tests.MFinance.Server.Gift
             string FileContent = sr.ReadToEnd();
 
             FileContent = FileContent.Replace("{ledgernumber}", ALedgerNumber.ToString());
+            FileContent = FileContent.Replace("{thisyear}", DateTime.Today.Year.ToString());
 
             sr.Close();
 

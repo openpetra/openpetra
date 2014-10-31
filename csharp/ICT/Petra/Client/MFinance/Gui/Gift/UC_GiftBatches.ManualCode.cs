@@ -215,6 +215,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // Remember our current row position
             int nCurrentRowIndex = GetSelectedRowIndex();
+            TFrmGiftBatch parentForm = (TFrmGiftBatch)ParentForm;
+            Cursor prevCursor = parentForm.Cursor;
+
+            parentForm.Cursor = Cursors.WaitCursor;
 
             if ((FMainDS != null) && (FMainDS.AGiftBatch != null))
             {
@@ -234,11 +238,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SelectRowInGrid(nCurrentRowIndex);
                 UpdateRecordNumberDisplay();
 
-                TUC_GiftTransactions TransactionForm = ((TFrmGiftBatch)ParentForm).GetTransactionsControl();
+                TUC_GiftTransactions TransactionForm = parentForm.GetTransactionsControl();
 
                 if (TransactionForm != null)
                 {
-                    ((TFrmGiftBatch)ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
+                    parentForm.EnableTransactions(grdDetails.Rows.Count > 1);
 
                     // if the batch number = -1 then this is not a valid instance of TUC_GiftTransactions and we do not need to refresh
                     if (TransactionForm.FBatchNumber != -1)
@@ -251,6 +255,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 FPetraUtilsObject.EnableDataChangedEvent();
+                parentForm.Cursor = prevCursor;
             }
         }
 

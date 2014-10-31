@@ -161,15 +161,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void UpdateDisplay()
         {
-            // Remember our current row position
-            int nCurrentRowIndex = GetSelectedRowIndex();
+            Cursor prevCursor = ParentForm.Cursor;
 
-            // This single call will fire the event that loads data and populates the grid
-            FFilterAndFindObject.ApplyFilter();
+            try
+            {
+                ParentForm.Cursor = Cursors.WaitCursor;
 
-            // Now we can select the row index we had before (if it exists)
-            SelectRowInGrid(nCurrentRowIndex);
-            UpdateRecordNumberDisplay();
+                // Remember our current row position
+                int nCurrentRowIndex = GetSelectedRowIndex();
+
+                // This single call will fire the event that loads data and populates the grid
+                FFilterAndFindObject.ApplyFilter();
+
+                // Now we can select the row index we had before (if it exists)
+                SelectRowInGrid(nCurrentRowIndex);
+                UpdateRecordNumberDisplay();
+            }
+            finally
+            {
+                ParentForm.Cursor = prevCursor;
+            }
         }
 
         /// <summary>

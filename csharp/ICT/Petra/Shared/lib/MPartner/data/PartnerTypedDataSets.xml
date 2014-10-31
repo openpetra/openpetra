@@ -15,6 +15,7 @@
     <Table sqltable="p_partner_location">
       <CustomField name="BestAddress" type="bool"/>
       <CustomField name="Icon" type="Int32"/>
+      <CustomField name="IconForSort" type="Int32"/>
       <Field name="LocationLocality" sqltable="p_location" sqlfield="p_locality_c"/>
       <Field name="LocationStreetName" sqltable="p_location" sqlfield="p_street_name_c"/>
       <Field name="LocationAddress3" sqltable="p_location" sqlfield="p_address_3_c"/>

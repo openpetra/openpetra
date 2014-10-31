@@ -202,9 +202,9 @@
                     </value></queryDetail>
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Receiving Field)"><value>
                                     AND (   
-                                            ( PUB_p_person.p_field_key_n = {{ReceivingField}})
-                                            OR ( PUB_p_person.p_field_key_n = 0
-                                                AND PUB_p_family.p_field_key_n = {{ReceivingField}})
+                                            ( PUB_p_person.p_field_key_n = {{ReceivingField}})        <!-- xxxxx -->
+                                            OR ( PUB_p_person.p_field_key_n = 0                       <!-- xxxxx -->
+                                                AND PUB_p_family.p_field_key_n = {{ReceivingField}})  <!-- xxxxx -->
                                         )
                     </value></queryDetail>
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Registering Field)"><value>

@@ -24,6 +24,8 @@
 using System;
 using System.Data;
 
+using Ict.Common;
+
 namespace Ict.Petra.Server.MCommon
 {
     /// <summary>
@@ -34,5 +36,33 @@ namespace Ict.Petra.Server.MCommon
     {
         /// <summary>Cacheable DataTables: Isolation Level used when reading them into memory</summary>
         public const System.Data.IsolationLevel CACHEABLEDT_ISOLATIONLEVEL = IsolationLevel.ReadCommitted;
+
+        #region Importing
+
+        /// <summary>'Import Information'</summary>
+        public static readonly string StrImportInformation = Catalog.GetString("Import Information");
+
+        /// <summary>'An exception occurred while parsing line {0}'</summary>
+        public static readonly string StrExceptionWhileParsingLine = Catalog.GetString("An exception occurred while parsing line {0}");
+
+        /// <summary>'Parsing error in Line {0}'</summary>
+        public static readonly string StrParsingErrorInLine = Catalog.GetString("Parsing error in Line {0}");
+
+        /// <summary>'Parsing error in line {0} - column '{1}''</summary>
+        public static readonly string StrParsingErrorInLineColumn = Catalog.GetString("Parsing error in line {0} - column '{1}'");
+
+        /// <summary>'Import information for Line {0}'</summary>
+        public static readonly string StrImportInformationForLine = Catalog.GetString("Import information for Line {0}");
+
+        /// <summary>'Import validation warning in Line {0}'</summary>
+        public static readonly string StrImportValidationWarningInLine = Catalog.GetString("Import validation warning in Line {0}");
+
+        /// <summary>'Import validation error in Line {0}'</summary>
+        public static readonly string StrImportValidationErrorInLine = Catalog.GetString("Import validation error in Line {0}");
+
+        /// <summary>'Validation error in line {0}'</summary>
+        public static readonly string StrValidationErrorInLine = Catalog.GetString("Validation error in line {0}");
+
+        #endregion
     }
 }
