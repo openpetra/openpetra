@@ -319,7 +319,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        public void LoadOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <param name="ABatchYear"></param>
+        /// <param name="ABatchPeriod"></param>
+        public void LoadOneBatch(Int32 ALedgerNumber, Int32 ABatchNumber, int ABatchYear, int ABatchPeriod)
         {
             FLedgerNumber = ALedgerNumber;
             InitialiseLogicObjects();
@@ -327,6 +329,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.Merge(ViewModeTDS);
             FPetraUtilsObject.SuppressChangeDetection = true;
 
+            if (FLoadAndFilterLogicObject.BatchYear != ABatchYear)
+            {
+                FLoadAndFilterLogicObject.BatchYear = ABatchYear;
+                FLoadAndFilterLogicObject.RefreshPeriods(ABatchYear);
+            }
+
+            FLoadAndFilterLogicObject.BatchPeriod = ABatchPeriod;
             FLoadAndFilterLogicObject.DisableYearAndPeriod(false);
 
             FMainDS.AGiftBatch.DefaultView.RowFilter =
@@ -935,6 +944,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(FPreviouslySelectedDetailRow.CurrencyCode);
 
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.Enabled =

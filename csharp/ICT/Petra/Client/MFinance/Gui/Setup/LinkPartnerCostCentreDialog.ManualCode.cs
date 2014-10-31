@@ -48,7 +48,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                FPartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(FLedgerNumber);
+                //0 last argument means for all partners, otherwise supply a specific partner key
+                FPartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(FLedgerNumber, 0);
                 FLocalCostCentres = TRemote.MFinance.Setup.WebConnectors.LoadLocalCostCentres(FLedgerNumber);
             }
         }

@@ -1,0 +1,24 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    Namespace: Ict.Petra.Client.MFinance.Gui.GL
+    FormType: dialog
+    Template: window
+    FormTitle: GL Batch Reversal
+    WindowWidth: 300
+    WindowHeight: 150
+        
+    Controls:
+        pnlDialogContent:
+            Controls: [txtMessage, dtpReversalDate]
+            Dock: Fill
+
+        txtMessage:
+            Stretch: horizontally
+            Multiline: true
+            Height: 50
+            ReadOnly: true
+            BorderStyle: None
+            NoLabel: true
+            Padding: 0,-3,0,0
+            
+        dtpReversalDate:

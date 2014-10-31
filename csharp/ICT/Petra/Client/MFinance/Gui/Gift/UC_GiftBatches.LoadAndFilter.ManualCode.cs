@@ -102,7 +102,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (value < FcmbPeriod.Items.Count)
                 {
+                    //if (FcmbPeriod.Items.Contains(value))
                     FcmbPeriod.SelectedIndex = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get/set the Batch Year
+        /// </summary>
+        public Int32 BatchYear
+        {
+            get
+            {
+                return FcmbYearEnding.GetSelectedInt32();
+            }
+            set
+            {
+                if (FcmbYearEnding.GetSelectedInt32() != value)
+                {
+                    FcmbYearEnding.SetSelectedInt32(value);
+                    FPrevYearEnding = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get/set the Batch Period
+        /// </summary>
+        public Int32 BatchPeriod
+        {
+            get
+            {
+                return FcmbPeriod.GetSelectedInt32();
+            }
+            set
+            {
+                if (FcmbPeriod.GetSelectedInt32() != value)
+                {
+                    FcmbPeriod.SetSelectedInt32(value);
                 }
             }
         }
@@ -388,7 +426,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Update the Period ComboBox after a change to the Year
         /// </summary>
         /// <param name="ASelectedYear">The year for which to display the periods</param>
-        private void RefreshPeriods(Int32 ASelectedYear)
+        public void RefreshPeriods(Int32 ASelectedYear)
         {
             bool IncludeCurrentAndForwardingItem = true;
 
