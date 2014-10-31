@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -101,8 +102,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     else
                     {
-	                    newRow.MotivationGroupCode = "GIFT";
-	                    newRow.MotivationDetailCode = "SUPPORT";
+	                    newRow.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+	                    newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                     }
 
                     newRow.DateEntered = CurrentGiftRow.DateEntered;
@@ -137,6 +138,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
                     UpdateRecordNumberDisplay();
+                    FLastDonor = -1;
 
                     //Focus accordingly
                     if (ACompletelyNewGift)
@@ -148,7 +150,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         txtDetailRecipientKey.Focus();
                     }
 
-                    TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationDetailCode);
+                    TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
                     cmbKeyMinistries.Clear();
                     mniRecipientHistory.Enabled = false;
                 }

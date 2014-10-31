@@ -420,7 +420,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (row.RecipientKey == 0)
                 {
-                    row.RecipientDescription = row.MotivationDetailCode;
+                    if (row.MotivationGroupCode != MFinanceConstants.MOTIVATION_GROUP_GIFT)
+	            	{
+	                	row.RecipientDescription = row.MotivationDetailCode;
+	            	}
+	            	else
+	            	{
+	            		row.RecipientDescription = string.Empty;
+	            	}
                 }
             }
         }
@@ -598,6 +605,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((APartnerKey == 0) && (FPreviouslySelectedDetailRow != null))
             {
                 FPreviouslySelectedDetailRow.RecipientDescription = cmbDetailMotivationDetailCode.GetSelectedString();
+                
+                if (FMotivationGroup != MFinanceConstants.MOTIVATION_GROUP_GIFT)
+            	{
+                	FPreviouslySelectedDetailRow.RecipientDescription = FMotivationDetail;
+            	}
+            	else
+            	{
+            		FPreviouslySelectedDetailRow.RecipientDescription = string.Empty;
+            	}
             }
         }
 
@@ -1214,24 +1230,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // If this method has been called as a result of a change in motivation detail then txtDetailRecipientKey has not yet been set...
             // but we do know that the recipient must be a Unit.
+            
+            // if Family Recipient
             if (!FMotivationDetailChangedFlag && (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY))
             {
                 txtDetailRecipientLedgerNumber.Text = FPreviouslySelectedDetailRow.RecipientLedgerNumber.ToString();
                 cmbKeyMinistries.Clear();
+                cmbKeyMinistries.Enabled = false;
             }
+            // if Unit Recipient
             else
             {
                 TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
-            }
 
-            // enable / disable combo box depending on whether it contains any key ministries
-            if ((cmbKeyMinistries.Table == null) || (cmbKeyMinistries.Table.Rows.Count == 0))
-            {
-                cmbKeyMinistries.Enabled = false;
-            }
-            else
-            {
-                cmbKeyMinistries.Enabled = true;
+	            // enable / disable combo box depending on whether it contains any key ministries
+	            if ((cmbKeyMinistries.Table == null) || (cmbKeyMinistries.Table.Rows.Count == 0))
+	            {
+	                cmbKeyMinistries.Enabled = false;
+	            }
+	            else
+	            {
+	                cmbKeyMinistries.Enabled = true;
+	            }
             }
 
             FCorrespondingRecipientKeyToField = APartnerKey;
@@ -1880,8 +1900,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    newRow.MotivationGroupCode = "GIFT";
-                    newRow.MotivationDetailCode = "SUPPORT";
+                    newRow.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+                    newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                 }
 
                 newRow.DateEntered = DateTime.Now;

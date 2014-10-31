@@ -483,6 +483,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FBatchUnposted,
                 FMotivationDetailChanged,
                 FTaxDeductiblePercentageEnabled,
+                FCreatingNewGift,
                 FActiveOnly,
                 out DoValidateGiftDestination,
                 out DoTaxUpdate);
@@ -1545,7 +1546,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow, cmbDetailMotivationDetailCode);
+            	TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow, cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
             }
 
             if (txtDetailRecipientLedgerNumber.Text.Length == 0)
@@ -2070,7 +2071,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // check if the donor has another gift in this same batch
             foreach (AGiftRow GiftRow in FMainDS.AGift.Rows)
             {
-                if ((GiftRow.DonorKey == APartnerKey)
+            	if ((GiftRow.RowState != DataRowState.Deleted) && (GiftRow.DonorKey == APartnerKey)
                     && (GiftRow.GiftTransactionNumber != GetSelectedDetailRow().GiftTransactionNumber))
                 {
                     GiftTable.Rows.Add((object[])GiftRow.ItemArray.Clone());
@@ -2160,9 +2161,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 int CurrentTransaction = 0;
 
-                // This stops the recipient key from updating the motivation group and detail. These fields will instead be set here.
-                FMotivationDetailChanged = true;
-
                 while (true)
                 {
                     // populate gift detail
@@ -2208,8 +2206,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         break;
                     }
                 }
-
-                FMotivationDetailChanged = false;
             }
         }
 
@@ -2283,6 +2279,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             return OnDeleteRowManual(ARowToDelete, ref ACompletionMessage);
+        }
+
+        private void PostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            OnPostDeleteManual(ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);
         }
 
         /// <summary>

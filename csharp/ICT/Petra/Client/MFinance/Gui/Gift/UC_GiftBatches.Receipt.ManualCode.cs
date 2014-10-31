@@ -118,7 +118,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 string HtmlPage = TRemote.MFinance.Gift.WebConnectors.PrintGiftReceipt(
                     GiftBatchRow.CurrencyCode,
-                    GiftBatchRow.DateCreated.Value,
                     DonorShortName,
                     DonorKey,
                     DonorClass,
