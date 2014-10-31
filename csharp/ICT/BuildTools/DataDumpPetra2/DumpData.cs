@@ -108,6 +108,7 @@ namespace Ict.Tools.DataDumpPetra2
 
         private void LoadTable(TTable newTable)
         {
+            bool IgnoreFile = false;
             TLogging.Log(newTable.strName);
 
             string oldTableName = DataDefinitionDiff.GetOldTableName(newTable.strName);
@@ -133,9 +134,14 @@ namespace Ict.Tools.DataDumpPetra2
             FileInfo info = new FileInfo(dumpFile + ".d.gz");
 
             // ignore empty files (with one exception)
-            if ((info.Length == 0) && ((oldTableName != "p_partner_gift_destination")
-                && (oldTableName != "p_partner_attribute_category")
-                && (oldTableName != "p_partner_attribute_type")))
+            if ((oldTableName == "p_partner_gift_destination")
+                || (oldTableName == "p_partner_attribute_category")
+                || (oldTableName == "p_partner_attribute_type"))
+            {
+                IgnoreFile = true;
+            }
+            
+            if (IgnoreFile || (info.Length == 0))
             {
                 TLogging.Log("ignoring " + dumpFile + ".d.gz");
                 return;

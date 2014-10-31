@@ -40,7 +40,7 @@ namespace Ict.Petra.Shared.MPartner
     /// Contains functions to be used by the Server and the Client that perform
     /// certain calculations - specific for the Partner Module.
     /// </summary>
-    public static class Calculations
+    public class Calculations
     {
         #region Resourcestrings
 
