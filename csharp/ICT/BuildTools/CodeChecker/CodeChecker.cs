@@ -282,17 +282,17 @@ namespace Ict.Tools.CodeChecker
 
             // DBAccess.GDBAccessObj.Select Methods and DBAccess.GDBAccessObj.SelectDT / SelectDA Methods
             ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT / SelectDA (no Argument after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null\)");                                        // Matches for example:                                                                  
-                                                                                                                            // 'DBAccess.GDBAccessObj.SelectDT(strSql,                                                                  
-                                                                                                                            // "GetLedgerName_TempTable", null)'    in file                                                                  
-                                                                                                                            // \Server\lib\MFinance\GL\Reporting.UIConnectors.cs                                                                  
+                @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null\)");                                        // Matches for example:
+                                                                                                                            // 'DBAccess.GDBAccessObj.SelectDT(strSql,
+                                                                                                                            // "GetLedgerName_TempTable", null)'    in file
+                                                                                                                            // \Server\lib\MFinance\GL\Reporting.UIConnectors.cs
             ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT / SelectDA (1 to 3 Arguments after DB Transaction)",
                 @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                           // Matches for example:
                                                                                                                             // 'DBAccess.GDBAccessObj.SelectDT(bank,
                                                                                                                             // sqlFindBankBySortCode, null, new
                                                                                                                             // OdbcParameter[] {' (continued on
                                                                                                                             // further lines!)    in file
-                                                                                                                            // \Server\lib\MPartner\web\Partner.cs                                                                                    
+                                                                                                                            // \Server\lib\MPartner\web\Partner.cs
             // DBAccess.GDBAccessObj.SelectToTempTable Method
             ReturnValue.Add("DBAccess.GDBAccessObj.SelectToTempTable (n Arguments after DB Transaction)",
                 @"DBAccess\.GDBAccessObj\.SelectToTempTable[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                        // would match for example (*if* the DB Transaction would be null):
