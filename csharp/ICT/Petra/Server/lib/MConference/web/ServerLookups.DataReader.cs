@@ -563,6 +563,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         public static Boolean GetConferenceApplications(ref ConferenceApplicationTDS AMainDS, Int64 AConferenceKey)
         {
             Boolean NewTransaction;
+
+            // make sure outreach codes are up to date in case it has changed in Unit record
+            TAttendeeManagement.RefreshOutreachCode(AConferenceKey);
+
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                 IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,

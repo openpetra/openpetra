@@ -1020,7 +1020,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         partial void PostInitUserControl(UserControl AUserControl)
         {
-            if (AUserControl is TUC_ContactDetails)
+            if (AUserControl is TUC_PartnerAddresses)
+            {
+                FUcoAddresses.PostInitUserControl(FMainDS);
+
+                CorrectDataGridWidthsAfterDataChange();
+            }
+            else if (AUserControl is TUC_ContactDetails)
             {
                 FUcoContactDetails.PostInitUserControl(FMainDS);
 
