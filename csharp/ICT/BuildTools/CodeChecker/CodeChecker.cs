@@ -242,7 +242,6 @@ namespace Ict.Tools.CodeChecker
                                                                                                                                       // PPartnerTable.GetPartnerShortNameDBName() }), null, null, 0, 0)
                                                                                                                                       // in file ../../csharp/ICT\Petra\Server\lib\MFinance\Gift\Gift.Exporting.cs
 
-
             ReturnValue.Add("*Access.CountAll", @"Access\.CountAll[\s]*\((null\))");    // would match for example (*if* the DB Transaction would be null): Access.ALedgerAccess.CountAll(Transaction)
                                                                                         // in file \Testing\lib\MFinance\server\Gift\test.cs
 
@@ -281,281 +280,80 @@ namespace Ict.Tools.CodeChecker
             ReturnValue.Add("*Cascading.CountUsingTemplate (n Arguments after DB Transaction)",
                 @"Cascading\.CountUsingTemplate[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                    // theoretic possibility, such call is not in use at all at the time of writing (Sept. 2014)
 
-
             // DBAccess.GDBAccessObj.Select Methods and DBAccess.GDBAccessObj.SelectDT / SelectDA Methods
             ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT / SelectDA (no Argument after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null\)");                                                                                                         // Matches for example:
-                                                                                                                                                                                             // 'DBAccess.GDBAccessObj.SelectDT(strSql,
-                                                                                                                                                                                             // "GetLedgerName_TempTable", null)'    in file
-                                                                                                                                                                                             // \Server\lib\MFinance\GL\Reporting.UIConnectors.cs
+                @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null\)");                                        // Matches for example:                                                                  
+                                                                                                                            // 'DBAccess.GDBAccessObj.SelectDT(strSql,                                                                  
+                                                                                                                            // "GetLedgerName_TempTable", null)'    in file                                                                  
+                                                                                                                            // \Server\lib\MFinance\GL\Reporting.UIConnectors.cs                                                                  
             ReturnValue.Add("DBAccess.GDBAccessObj.Select / SelectDT / SelectDA (1 to 3 Arguments after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                                               // Matches for example:
-                                                                                                                                                                                                                // 'DBAccess.GDBAccessObj.SelectDT(bank,
-                                                                                                                                                                                                                // sqlFindBankBySortCode, null, new
-                                                                                                                                                                                                                // OdbcParameter[] {' (continued on
-                                                                                                                                                                                                                // further lines!)    in file
-                                                                                                                                                                                                                // \Server\lib\MPartner\web\Partner.cs
-
+                @"DBAccess\.GDBAccessObj\.Select(|DT|DA)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                           // Matches for example:
+                                                                                                                            // 'DBAccess.GDBAccessObj.SelectDT(bank,
+                                                                                                                            // sqlFindBankBySortCode, null, new
+                                                                                                                            // OdbcParameter[] {' (continued on
+                                                                                                                            // further lines!)    in file
+                                                                                                                            // \Server\lib\MPartner\web\Partner.cs                                                                                    
             // DBAccess.GDBAccessObj.SelectToTempTable Method
             ReturnValue.Add("DBAccess.GDBAccessObj.SelectToTempTable (n Arguments after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.SelectToTempTable[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                              // would match for example (*if* the DB Transaction
-                                                                                                                                                                                                  // would be null):
-                                                                                                                                                                                                  // DBAccess.GDBAccessObj.SelectToTempTable(MainDS,
-                                                                                                                                                                                                  // sqlStmt, tempTableName, Transaction,
-                                                                                                                                                                                                  // parameters.ToArray(), 0, 0)    in file
-                                                                                                                                                                                                  // \Server\lib\MFinance\Gift\Gift.Transactions.cs
-
+                @"DBAccess\.GDBAccessObj\.SelectToTempTable[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                        // would match for example (*if* the DB Transaction would be null):
+                                                                                                                            // DBAccess.GDBAccessObj.SelectToTempTable(MainDS,
+                                                                                                                            // sqlStmt, tempTableName, Transaction,
+                                                                                                                            // parameters.ToArray(), 0, 0)    in file
+                                                                                                                            // \Server\lib\MFinance\Gift\Gift.Transactions.cs
             // DBAccess.GDBAccessObj Sequence handling Methods
             ReturnValue.Add("DBAccess.GDBAccessObj.GetNextSequenceValue / GetCurrentSequenceValue ",
-                @"DBAccess\.GDBAccessObj\.Get(Current|Next)SequenceValue[\s]*\((([^;]*)[\s]*null\))");                                                                                            // would match for example (*if* the DB Transaction
-                                                                                                                                                                                                  // would be null):
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  //
-                                                                                                                                                                                                  // DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(),
-                                                                                                                                                                                                  // Transaction)    in file
-                                                                                                                                                                                                  // \csharp\ICT\Petra\Server\lib\MCommon\Sequences.cs
+                @"DBAccess\.GDBAccessObj\.Get(Current|Next)SequenceValue[\s]*\((([^;]*)[\s]*null\))");                      // would match for example (*if* the DB Transaction would be null):
+                                                                                                                            // DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(),
+                                                                                                                            // Transaction)    in file
+                                                                                                                            // \csharp\ICT\Petra\Server\lib\MCommon\Sequences.cs
             ReturnValue.Add("DBAccess.GDBAccessObj.RestartSequence (n Arguments after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.RestartSequence[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                            // would match for example (*if* the DB Transaction would be
-                                                                                                                                                                                              // null):
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              //
-                                                                                                                                                                                              // DBAccess.GDBAccessObj.RestartSequence("seq_statement_number",
-                                                                                                                                                                                              // t, CurrentSequence)    in file
-                                                                                                                                                                                              // \Testing\lib\Common\DB\test.cs
-
+                @"DBAccess\.GDBAccessObj\.RestartSequence[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                          // would match for example (*if* the DB Transaction would be null):
+                                                                                                                            // DBAccess.GDBAccessObj.RestartSequence("seq_statement_number",
+                                                                                                                            // t, CurrentSequence)    in file
+                                                                                                                            // \Testing\lib\Common\DB\test.cs
             // DBAccess.GDBAccessObj.ExecuteScalar Method
             ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteScalar (no Argument after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.ExecuteScalar[\s]*\(([^;]*)[\s]*null\)");                                                                                          // would match for example (*if* the DB Transaction would be null):
-                                                                                                                                                                             // DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount,
-                                                                                                                                                                             // transaction))    in file \Server\lib\MFinance\GL\GL.PeriodEnd.Month.cs
+                @"DBAccess\.GDBAccessObj\.ExecuteScalar[\s]*\(([^;]*)[\s]*null\)");                                         // would match for example (*if* the DB Transaction would be null):
+                                                                                                                            // DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount,
+                                                                                                                            // transaction))    in file \Server\lib\MFinance\GL\GL.PeriodEnd.Month.cs
             ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteScalar (n Arguments after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.ExecuteScalar[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                          // would match for example (*if* the DB Transaction would be
-                                                                                                                                                                                          // null): DBAccess.GDBAccessObj.ExecuteScalar(\r\n
-                                                                                                                                                                                          //                            "SELECT COUNT(*) " +\r\n
-                                                                                                                                                                                          //                            "FROM PUB_" +
-                                                                                                                                                                                          // PPersonTable.GetTableDBName() +\r\n
-                                                                                                                                                                                          //                            " INNER JOIN " + "PUB_" +
-                                                                                                                                                                                          // PPartnerTable.GetTableDBName() +\r\n
-                                                                                                                                                                                          //                            " ON " + "PUB_" +
-                                                                                                                                                                                          // PPersonTable.GetTableDBName() + '.' +\r\n
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //                           PPartnerTable.GetPartnerKeyDBName()
-                                                                                                                                                                                          // + " = " +\r\n                            "PUB_" +
-                                                                                                                                                                                          // PPartnerTable.GetTableDBName() + '.' +\r\n
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //                           PPartnerTable.GetPartnerKeyDBName()
-                                                                                                                                                                                          // + ' ' +\r\n                            "WHERE " +
-                                                                                                                                                                                          // PPersonTable.GetFamilyKeyDBName() + " = ? " +\r\n
-                                                                                                                                                                                          //                            "AND " +
-                                                                                                                                                                                          // PPartnerTable.GetStatusCodeDBName() + " <> '" +\r\n
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          //
-                                                                                                                                                                                          // SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED)
-                                                                                                                                                                                          // + "'", ReadTransaction,\r\n
-                                                                                                                                                                                          //                            ParametersArray)) in file
-                                                                                                                                                                                          // \Server\lib\MPartner\connect\Partner.PartnerEdit.cs
-
+                @"DBAccess\.GDBAccessObj\.ExecuteScalar[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                            // would match for example (*if* the DB Transaction would be
+                                                                                                                            // null): DBAccess.GDBAccessObj.ExecuteScalar(\r\n
+                                                                                                                            //                            "SELECT COUNT(*) " +\r\n
+                                                                                                                            //                            "FROM PUB_" +
+                                                                                                                            // PPersonTable.GetTableDBName() +\r\n
+                                                                                                                            //                            " INNER JOIN " + "PUB_" +
+                                                                                                                            // PPartnerTable.GetTableDBName() +\r\n
+                                                                                                                            //                            " ON " + "PUB_" +
+                                                                                                                            // PPersonTable.GetTableDBName() + '.' +\r\n
+                                                                                                                            //
+                                                                                                                            // PPartnerTable.GetPartnerKeyDBName()
+                                                                                                                            // + " = " +\r\n                            "PUB_" +
+                                                                                                                            // PPartnerTable.GetTableDBName() + '.' +\r\n
+                                                                                                                            //
+                                                                                                                            // PPartnerTable.GetPartnerKeyDBName()
+                                                                                                                            // + ' ' +\r\n                            "WHERE " +
+                                                                                                                            // PPersonTable.GetFamilyKeyDBName() + " = ? " +\r\n
+                                                                                                                            //                            "AND " +
+                                                                                                                            // PPartnerTable.GetStatusCodeDBName() + " <> '" +\r\n
+                                                                                                                            //
+                                                                                                                            // SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED)
+                                                                                                                            // + "'", ReadTransaction,\r\n
+                                                                                                                            //                            ParametersArray)) in file
+                                                                                                                            // \Server\lib\MPartner\connect\Partner.PartnerEdit.cs
             // DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch Method
             ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch (no Argument after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null\)");                                                                                                                   // would match for example (*if* the DB
-                                                                                                                                                                                                                // Transaction would be null):
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                //
-                                                                                                                                                                                                                // DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE
-                                                                                                                                                                                                                // FROM pub_" + table, Transaction);    in
-                                                                                                                                                                                                                // file
-                                                                                                                                                                                                                // \Server\lib\MSysMan\ImportExport.cs
+                @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null\)");                               // would match for example (*if* the DB Transaction would be null):
+                                                                                                                            // DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE
+                                                                                                                            // FROM pub_" + table, Transaction);    in
+                                                                                                                            // file
+                                                                                                                            // \Server\lib\MSysMan\ImportExport.cs
             ReturnValue.Add("DBAccess.GDBAccessObj.ExecuteNonQuery / ExecuteNonQueryBatch (n Arguments after DB Transaction)",
-                @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                                                                                                                   // would match for example
-                                                                                                                                                                                                                             // (*if* the DB Transaction
-                                                                                                                                                                                                                             // would be null):
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             // DBAccess.GDBAccessObj.ExecuteNonQuery(\r\nstrSQL,
-                                                                                                                                                                                                                             // transaction,
-                                                                                                                                                                                                                             // ParametersArray)    in
-                                                                                                                                                                                                                             // file
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             //
-                                                                                                                                                                                                                             // \Server\lib\MFinance\Common\Common.PeriodEnd.cs
-
+                @"DBAccess\.GDBAccessObj\.ExecuteNonQuery(|Batch)[\s]*\(([^;]*)[\s]*null,[\s]*([^;]*)\)");                  // would match for example (*if* the DB Transaction would be null):
+                                                                                                                            // DBAccess.GDBAccessObj.ExecuteNonQuery(\r\nstrSQL,
+                                                                                                                            // transaction,
+                                                                                                                            // ParametersArray)    in file
+                                                                                                                            // \Server\lib\MFinance\Common\Common.PeriodEnd.cs
             return ReturnValue;
         }
 
