@@ -4,7 +4,7 @@
 // @Authors:
 //       alanp
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,7 +43,6 @@ namespace Ict.Tools.FilterButtonWiki
         private static List <string>FListControlMaintainCacheableTable = new List <string>();
         private static List <string>FListWindowSingleTable = new List <string>();
         private static List <string>FListControlMaintainTableWithDataViewGrid = new List <string>();
-        private static List <string>FListWindowBrowsePrint = new List <string>();
         private static List <string>FListMasterAndDetails = new List <string>();
 
         // various global variables
@@ -311,10 +310,6 @@ namespace Ict.Tools.FilterButtonWiki
                         {
                             FListControlMaintainTableWithDataViewGrid.Add(tryPath);
                         }
-                        else if (content.Contains("windowBrowsePrint"))
-                        {
-                            FListWindowBrowsePrint.Add(tryPath);
-                        }
                         else if (content.Contains("MasterTable") && content.Contains("DetailTable"))
                         {
                             FListMasterAndDetails.Add(tryPath);
@@ -342,7 +337,6 @@ namespace Ict.Tools.FilterButtonWiki
                 CheckForIssues(FListControlMaintainTable, "ControlMaintainTable");
                 CheckForIssues(FListControlMaintainCacheableTable, "ControlMaintainCacheableTable");
                 CheckForIssues(FListWindowSingleTable, "WindowSingleTable");
-                CheckForIssues(FListWindowBrowsePrint, "WindowBrowsePrint");
                 CheckForIssues(FListControlMaintainTableWithDataViewGrid, "ControlMaintainTableWithDataViewGrid");
 
                 FLogFile.WriteLine("");

@@ -4,7 +4,7 @@
 // @Authors:
 //       alanp
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -49,7 +49,6 @@ namespace Ict.Tools.DeleteButtonWiki
         private static List <string>FListControlMaintainCacheableTable = new List <string>();
         //private static List <string>FListWindowSingleTable = new List <string>();
         //private static List <string>FListControlMaintainTableWithDataViewGrid = new List <string>();
-        //private static List<string> FListWindowBrowsePrint = new List<string>();
         private static List <string>FListMasterAndDetails = new List <string>();
 
         // Content of the auto-generated -ReferenceCount.cs files
@@ -503,10 +502,6 @@ namespace Ict.Tools.DeleteButtonWiki
                         //{
                         //    FListControlMaintainTableWithDataViewGrid.Add(tryPath);
                         //}
-                        //else if (content.Contains("windowBrowsePrint"))
-                        //{
-                        //    FListWindowBrowsePrint.Add(tryPath);
-                        //}
                         else if (content.Contains("MasterTable") && content.Contains("DetailTable"))
                         {
                             FListMasterAndDetails.Add(tryPath);
@@ -567,7 +562,6 @@ namespace Ict.Tools.DeleteButtonWiki
                 CheckForIssues(FListWindowEditUIConnector, "WindowEditUIConnector");
                 CheckForIssues(FListWindowEditWebConnectorMasterDetail, "WindowEditWebConnectorMasterDetail");
                 //CheckForIssues(FListWindowSingleTable, "WindowSingleTable");
-                //CheckForIssues(FListWindowBrowsePrint, "WindowBrowsePrint");
                 CheckForIssues(FListControlMaintainTable, "ControlMaintainTable");
                 CheckForIssues(FListControlMaintainCacheableTable, "ControlMaintainCacheableTable");
                 //CheckForIssues(FListControlMaintainTableWithDataViewGrid, "ControlMaintainTableWithDataViewGrid");

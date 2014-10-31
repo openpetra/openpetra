@@ -294,7 +294,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 AVerifications.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
-                        String.Format(Catalog.GetString("It does not balance: Debit is {0}, Credit is {1}"), ABatchToPost.BatchDebitTotal,
+                        String.Format(Catalog.GetString("It does not balance: Debit is {0:N2}, Credit is {1:N2}"), ABatchToPost.BatchDebitTotal,
                             ABatchToPost.BatchCreditTotal),
                         TResultSeverity.Resv_Critical));
             }
@@ -383,7 +383,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     AVerifications.Add(new TVerificationResult(
                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchToPost.BatchNumber, ALedgerNumber),
-                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1}, Credit is {2}"),
+                            String.Format(Catalog.GetString("The journal {0} does not balance: Debit is {1:N2}, Credit is {2:N2}"),
                                 journal.JournalNumber,
                                 journal.JournalDebitTotal, journal.JournalCreditTotal),
                             TResultSeverity.Resv_Critical));
@@ -452,88 +452,96 @@ namespace Ict.Petra.Server.MFinance.Common
 
             foreach (AJournalRow journal in ADataSet.AJournal.Rows)
             {
-                if (journal.BatchNumber.Equals(ABatchNumber))
+                if (journal.BatchNumber != ABatchNumber)
                 {
-                    TransactionsOfJournalView.RowFilter = ATransactionTable.GetJournalNumberDBName() + " = " + journal.JournalNumber.ToString();
+                    continue;
+                }
 
-                    foreach (DataRowView transRowView in TransactionsOfJournalView)
+                TransactionsOfJournalView.RowFilter = ATransactionTable.GetJournalNumberDBName() + " = " + journal.JournalNumber.ToString();
+
+                foreach (DataRowView transRowView in TransactionsOfJournalView)
+                {
+                    ATransactionRow transRow = (ATransactionRow)transRowView.Row;
+
+                    // Check that all atransanalattrib records are there for all analattributes entries
+                    DataView ANView = APostingDS.AAnalysisAttribute.DefaultView;
+                    ANView.RowFilter = String.Format("{0} = '{1}' AND {2} = true",
+                        AAnalysisAttributeTable.GetAccountCodeDBName(),
+                        transRow.AccountCode, AAnalysisAttributeTable.GetActiveDBName());
+                    int i = 0;
+
+                    while (i < ANView.Count)
                     {
-                        ATransactionRow trans = (ATransactionRow)transRowView.Row;
-                        // 1. check that all atransanalattrib records are there for all analattributes entries
-                        DataView ANView = APostingDS.AAnalysisAttribute.DefaultView;
-                        ANView.RowFilter = String.Format("{0} = '{1}' AND {2} = true",
-                            AAnalysisAttributeTable.GetAccountCodeDBName(),
-                            trans.AccountCode, AAnalysisAttributeTable.GetActiveDBName());
-                        int i = 0;
+                        AAnalysisAttributeRow attributeRow = (AAnalysisAttributeRow)ANView[i].Row;
 
-                        while (i < ANView.Count)
+
+                        ATransAnalAttribRow aTransAttribRow =
+                            (ATransAnalAttribRow)ADataSet.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
+                                                                                                    transRow.JournalNumber,
+                                                                                                    transRow.TransactionNumber,
+                                                                                                    attributeRow.AnalysisTypeCode });
+
+                        if (aTransAttribRow == null)
                         {
-                            AAnalysisAttributeRow attributeRow = (AAnalysisAttributeRow)ANView[i].Row;
+                            AVerifications.Add(new TVerificationResult(
+                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                    String.Format(Catalog.GetString(
+                                            "Missing attributes record for journal #{0} transaction #{1}  and TypeCode {2}"),
+                                        transRow.JournalNumber,
+                                        transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                    TResultSeverity.Resv_Critical));
+                        }
+                        else
+                        {
+                            String v = aTransAttribRow.AnalysisAttributeValue;
 
-
-                            ATransAnalAttribRow aTransAttribRow =
-                                (ATransAnalAttribRow)ADataSet.ATransAnalAttrib.Rows.Find(new object[] { ALedgerNumber, ABatchNumber,
-                                                                                                        trans.JournalNumber,
-                                                                                                        trans.TransactionNumber,
-                                                                                                        attributeRow.AnalysisTypeCode });
-
-                            if (aTransAttribRow == null)
+                            if ((v == null) || (v.Length == 0))
                             {
                                 AVerifications.Add(new TVerificationResult(
                                         String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                        String.Format(Catalog.GetString(
-                                                "Missing attributes record for journal #{0} transaction #{1}  and TypeCode {2}"),
-                                            trans.JournalNumber,
-                                            trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                        String.Format(Catalog.GetString("Analysis Type {0} is missing values in journal #{1}, transaction #{2}"),
+                                            attributeRow.AnalysisTypeCode, transRow.JournalNumber, transRow.TransactionNumber),
                                         TResultSeverity.Resv_Critical));
                             }
                             else
                             {
-                                String v = aTransAttribRow.AnalysisAttributeValue;
+                                AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)APostingDS.AFreeformAnalysis.Rows.Find(
+                                    new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
 
-                                if ((v == null) || (v.Length == 0))
+                                if (afaRow == null)
                                 {
+                                    // this would cause a constraint error and is only possible in a development/sqlite environment
                                     AVerifications.Add(new TVerificationResult(
                                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                            String.Format(Catalog.GetString("Analysis Type {0} is missing values in journal #{1}, transaction #{2}"),
-                                                attributeRow.AnalysisTypeCode, trans.JournalNumber, trans.TransactionNumber),
+                                            String.Format(Catalog.GetString("Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"),
+                                                transRow.JournalNumber, transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
                                             TResultSeverity.Resv_Critical));
                                 }
                                 else
                                 {
-                                    AFreeformAnalysisRow afaRow = (AFreeformAnalysisRow)APostingDS.AFreeformAnalysis.Rows.Find(
-                                        new Object[] { ALedgerNumber, attributeRow.AnalysisTypeCode, v });
-
-                                    if (afaRow == null)
+                                    if (!afaRow.Active)
                                     {
-                                        // this would cause a constraint error and is only possible in a development/sqlite environment
                                         AVerifications.Add(new TVerificationResult(
-                                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                                String.Format(Catalog.GetString("Invalid values at journal #{0} transaction #{1}  and TypeCode {2}"),
-                                                    trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                                String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber,
+                                                    ALedgerNumber),
+                                                String.Format(Catalog.GetString(
+                                                        "Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"), v,
+                                                    transRow.JournalNumber, transRow.TransactionNumber, attributeRow.AnalysisTypeCode),
                                                 TResultSeverity.Resv_Critical));
-                                    }
-                                    else
-                                    {
-                                        if (!afaRow.Active)
-                                        {
-                                            AVerifications.Add(new TVerificationResult(
-                                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber,
-                                                        ALedgerNumber),
-                                                    String.Format(Catalog.GetString(
-                                                            "Value {0} not active at journal #{1} transaction #{2}  and TypeCode {3}"), v,
-                                                        trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
-                                                    TResultSeverity.Resv_Critical));
-                                        }
-                                    }
-                                }
-                            }
+                                    } // if
 
-                            i++;
-                        }
-                    }
-                }
-            }
+                                } // else
+
+                            } // else
+
+                        } // else
+
+                        i++;
+                    } // while i
+
+                } // foreach transRowView
+
+            } // foreach journal
 
             return TVerificationHelper.IsNullOrOnlyNonCritical(AVerifications);
         }
@@ -821,7 +829,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
                                 // Find the summary level, creating it if it does not already exist.
                                 int GLMMasterIndex = GLMMasterView.Find(new object[] { AccountCodeToReportTo, CostCentreCodeToReportTo });
-                                AGeneralLedgerMasterRow GlmRow;
 
                                 if (GLMMasterIndex == -1)
                                 {
@@ -834,7 +841,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                     GLMMasterIndex = GLMMasterView.Find(new object[] { AccountCodeToReportTo, CostCentreCodeToReportTo });
                                 }
 
-                                GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
+                                AGeneralLedgerMasterRow GlmRow = (AGeneralLedgerMasterRow)GLMMasterView[GLMMasterIndex].Row;
 
                                 GlmRow.YtdActualBase += SignBaseAmount;
 
@@ -1022,10 +1029,7 @@ namespace Ict.Petra.Server.MFinance.Common
             // for testing the balances, we don't need to calculate the whole tree
             if (ACalculatePostingTree)
             {
-                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-                {
-                    TLogging.Log("Posting: CalculateTrees...");
-                }
+                TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: CalculateTrees...");
 
                 // key is PostingAccount, the value TAccountTreeElement describes the parent account and other details of the relation
                 SortedList <string, TAccountTreeElement>AccountTree;
@@ -1040,20 +1044,12 @@ namespace Ict.Petra.Server.MFinance.Common
                 // but avoid calculating the whole account tree?
                 CalculateTrees(ALedgerNumber, ref APostingLevel, out AccountTree, out CostCentreTree, APostingDS);
 
-                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-                {
-                    TLogging.Log("Posting: SummarizeData...");
-                }
-
+                TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SummarizeData...");
                 SummarizeData(APostingDS, AFromPeriod, ref APostingLevel, ref AccountTree, ref CostCentreTree);
             }
             else
             {
-                if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-                {
-                    TLogging.Log("Posting: SummarizeDataSimple...");
-                }
-
+                TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: SummarizeDataSimple...");
                 SummarizeDataSimple(ALedgerNumber, APostingDS, AFromPeriod, ref APostingLevel);
             }
         }
@@ -1062,7 +1058,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// write all changes to the database; on failure the whole transaction is rolled back
         /// </summary>
         /// <param name="AMainDS"></param>
-        /// <returns></returns>
+        /// <returns>true</returns>
         private static bool SubmitChanges(GLPostingTDS AMainDS)
         {
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
@@ -1088,153 +1084,186 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ADateForReversal"></param>
         /// <param name="AReversalBatchNumber"></param>
         /// <param name="AVerifications"></param>
+        /// <param name="AAutoPostReverseBatch"></param>
         /// <returns></returns>
         public static bool ReverseBatch(Int32 ALedgerNumber, Int32 ABatchNumberToReverse,
             DateTime ADateForReversal,
             out Int32 AReversalBatchNumber,
-            out TVerificationResultCollection AVerifications)
+            out TVerificationResultCollection AVerifications,
+            bool AAutoPostReverseBatch)
         {
-            bool NewTransactionStarted = false;
+            bool ReturnValue = false;
 
             GLBatchTDS MainDS = null;
 
-            AReversalBatchNumber = -1;
+            Int32 ReversalBatchNumber = -1;
 
             //Error handling
             string ErrorContext = "Reverse a Batch";
             string ErrorMessage = String.Empty;
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
+
             AVerifications = null;
+            TVerificationResultCollection Verifications = null;
 
-            try
-            {
-                MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = true;
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                 (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out NewTransactionStarted);
-
-                // get the data from the database into the MainDS
-                if (!LoadGLBatchData(out MainDS, ALedgerNumber, ABatchNumberToReverse, out AVerifications))
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction, ref SubmissionOK,
+                delegate
                 {
-                    return false;
-                }
+                    MainDS = new GLBatchTDS();
 
-                ABatchRow NewBatchRow = MainDS.ABatch.NewRowTyped(true);
-                NewBatchRow.LedgerNumber = ALedgerNumber;
-                MainDS.ALedger[0].LastBatchNumber++;
-                NewBatchRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
-
-                int DateEffectiveYearNumber;
-                int DateEffectivePeriodNumber;
-
-                if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, ADateForReversal, out DateEffectivePeriodNumber,
-                        out DateEffectiveYearNumber,
-                        Transaction))
-                {
-                    ErrorMessage = Catalog.GetString("Date is outside of valid posting period");
-                    ErrorType = TResultSeverity.Resv_Critical;
-                    AVerifications.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                    return false;
-                }
-
-                NewBatchRow.DateEffective = ADateForReversal;
-                NewBatchRow.BatchPeriod = DateEffectivePeriodNumber;
-                NewBatchRow.BatchYear = DateEffectiveYearNumber;
-
-                ABatchRow OriginalBatch = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumberToReverse });
-                NewBatchRow.BatchDescription = String.Format(Catalog.GetString("Reversal of {0}"), OriginalBatch.BatchDescription);
-                NewBatchRow.LastJournal = OriginalBatch.LastJournal;
-                MainDS.ABatch.Rows.Add(NewBatchRow);
-
-                MainDS.AJournal.DefaultView.Sort = AJournalTable.GetLedgerNumberDBName() + "," + AJournalTable.GetBatchNumberDBName();
-                DataRowView[] JournalsRowView = MainDS.AJournal.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse });
-
-                foreach (DataRowView rv in JournalsRowView)
-                {
-                    AJournalRow OriginalJournal = (AJournalRow)rv.Row;
-                    AJournalRow NewJournalRow = MainDS.AJournal.NewRowTyped();
-
-                    DataUtilities.CopyAllColumnValues(OriginalJournal, NewJournalRow);
-
-                    NewJournalRow.BatchNumber = NewBatchRow.BatchNumber;
-                    NewJournalRow.DateEffective = NewBatchRow.DateEffective;
-                    NewJournalRow.JournalPeriod = NewBatchRow.BatchPeriod;
-                    NewJournalRow.JournalStatus = NewBatchRow.BatchStatus;
-                    OriginalJournal.Reversed = true;
-                    MainDS.AJournal.Rows.Add(NewJournalRow);
-
-                    MainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetLedgerNumberDBName() + "," +
-                                                           ATransactionTable.GetBatchNumberDBName() + "," +
-                                                           ATransactionTable.GetJournalNumberDBName();
-                    DataRowView[] TransactionsRowView = MainDS.ATransaction.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
-                                                                                                                OriginalJournal.JournalNumber });
-
-                    foreach (DataRowView rvTransaction in TransactionsRowView)
+                    // get the data from the database into the MainDS
+                    if (LoadGLBatchData(out MainDS, ALedgerNumber, ABatchNumberToReverse, out Verifications))
                     {
-                        ATransactionRow OriginalTransaction = (ATransactionRow)rvTransaction.Row;
-                        ATransactionRow NewTransactionRow = MainDS.ATransaction.NewRowTyped();
+                        ABatchRow NewBatchRow = MainDS.ABatch.NewRowTyped(true);
+                        NewBatchRow.LedgerNumber = ALedgerNumber;
+                        MainDS.ALedger[0].LastBatchNumber++;
+                        NewBatchRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
 
-                        DataUtilities.CopyAllColumnValues(OriginalTransaction, NewTransactionRow);
-                        NewTransactionRow.BatchNumber = NewJournalRow.BatchNumber;
-                        NewTransactionRow.JournalNumber = NewJournalRow.JournalNumber;
-                        NewTransactionRow.TransactionStatus = false;
-                        NewTransactionRow.DebitCreditIndicator = !OriginalTransaction.DebitCreditIndicator;
-                        NewTransactionRow.SystemGenerated = true;
+                        int DateEffectiveYearNumber;
+                        int DateEffectivePeriodNumber;
 
-                        MainDS.ATransaction.Rows.Add(NewTransactionRow);
-
-                        MainDS.ATransAnalAttrib.DefaultView.Sort = ATransAnalAttribTable.GetLedgerNumberDBName() + "," +
-                                                                   ATransAnalAttribTable.GetBatchNumberDBName() + "," +
-                                                                   ATransAnalAttribTable.GetJournalNumberDBName() + "," +
-                                                                   ATransAnalAttribTable.GetTransactionNumberDBName();
-                        DataRowView[] TransAnalAttribRowView =
-                            MainDS.ATransAnalAttrib.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
-                                                                                        OriginalJournal.JournalNumber,
-                                                                                        OriginalTransaction.TransactionNumber });
-
-                        foreach (DataRowView rvTransAnalAttrib in TransAnalAttribRowView)
+                        if (!TFinancialYear.IsValidPostingPeriod(ALedgerNumber, ADateForReversal, out DateEffectivePeriodNumber,
+                                out DateEffectiveYearNumber,
+                                Transaction))
                         {
-                            ATransAnalAttribRow OriginalTransAnalAttrib = (ATransAnalAttribRow)rvTransAnalAttrib.Row;
-                            ATransAnalAttribRow NewTransAnalAttribRow = MainDS.ATransAnalAttrib.NewRowTyped();
-                            DataUtilities.CopyAllColumnValues(OriginalTransAnalAttrib, NewTransAnalAttribRow);
-                            MainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttribRow);
+                            ErrorMessage = Catalog.GetString("Date is outside of valid posting period");
+                            ErrorType = TResultSeverity.Resv_Critical;
+                            Verifications.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                        }
+                        else
+                        {
+                            NewBatchRow.DateEffective = ADateForReversal;
+                            NewBatchRow.BatchPeriod = DateEffectivePeriodNumber;
+                            NewBatchRow.BatchYear = DateEffectiveYearNumber;
+
+                            ABatchRow OriginalBatch = (ABatchRow)MainDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumberToReverse });
+                            NewBatchRow.BatchDescription = String.Format(Catalog.GetString("Reversal of {0}"), OriginalBatch.BatchDescription);
+                            NewBatchRow.LastJournal = OriginalBatch.LastJournal;
+                            MainDS.ABatch.Rows.Add(NewBatchRow);
+
+                            MainDS.AJournal.DefaultView.Sort = AJournalTable.GetLedgerNumberDBName() + "," + AJournalTable.GetBatchNumberDBName();
+                            DataRowView[] JournalsRowView = MainDS.AJournal.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse });
+
+                            foreach (DataRowView rv in JournalsRowView)
+                            {
+                                AJournalRow OriginalJournal = (AJournalRow)rv.Row;
+                                AJournalRow NewJournalRow = MainDS.AJournal.NewRowTyped();
+
+                                DataUtilities.CopyAllColumnValues(OriginalJournal, NewJournalRow);
+
+                                NewJournalRow.BatchNumber = NewBatchRow.BatchNumber;
+                                NewJournalRow.DateEffective = NewBatchRow.DateEffective;
+                                NewJournalRow.JournalPeriod = NewBatchRow.BatchPeriod;
+                                NewJournalRow.JournalStatus = NewBatchRow.BatchStatus;
+                                NewJournalRow.JournalDescription =
+                                    String.Format(Catalog.GetString("Reversal of {0}"), OriginalJournal.JournalDescription);
+                                OriginalJournal.Reversed = true;
+                                MainDS.AJournal.Rows.Add(NewJournalRow);
+
+                                MainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetLedgerNumberDBName() + "," +
+                                                                       ATransactionTable.GetBatchNumberDBName() + "," +
+                                                                       ATransactionTable.GetJournalNumberDBName();
+                                DataRowView[] TransactionsRowView =
+                                    MainDS.ATransaction.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
+                                                                                            OriginalJournal.
+                                                                                            JournalNumber });
+
+                                foreach (DataRowView rvTransaction in TransactionsRowView)
+                                {
+                                    ATransactionRow OriginalTransaction = (ATransactionRow)rvTransaction.Row;
+                                    ATransactionRow NewTransactionRow = MainDS.ATransaction.NewRowTyped();
+
+                                    DataUtilities.CopyAllColumnValues(OriginalTransaction, NewTransactionRow);
+                                    NewTransactionRow.BatchNumber = NewJournalRow.BatchNumber;
+                                    NewTransactionRow.JournalNumber = NewJournalRow.JournalNumber;
+                                    NewTransactionRow.TransactionStatus = false;
+                                    NewTransactionRow.DebitCreditIndicator = !OriginalTransaction.DebitCreditIndicator;
+                                    NewTransactionRow.SystemGenerated = true;
+                                    NewTransactionRow.TransactionDate = ADateForReversal;
+                                    NewTransactionRow.Narrative = Catalog.GetString("Reverse of: ") + OriginalTransaction.Narrative +
+                                                                  "(" + Catalog.GetString(" Batch: ") + OriginalTransaction.BatchNumber +
+                                                                  Catalog.GetString(", Journal: ") + OriginalTransaction.JournalNumber +
+                                                                  Catalog.GetString(", Transaction: ") + OriginalTransaction.TransactionNumber + ")";
+
+                                    MainDS.ATransaction.Rows.Add(NewTransactionRow);
+
+                                    MainDS.ATransAnalAttrib.DefaultView.Sort = ATransAnalAttribTable.GetLedgerNumberDBName() + "," +
+                                                                               ATransAnalAttribTable.GetBatchNumberDBName() + "," +
+                                                                               ATransAnalAttribTable.GetJournalNumberDBName() + "," +
+                                                                               ATransAnalAttribTable.GetTransactionNumberDBName();
+                                    DataRowView[] TransAnalAttribRowView =
+                                        MainDS.ATransAnalAttrib.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
+                                                                                                    OriginalJournal.JournalNumber,
+                                                                                                    OriginalTransaction.TransactionNumber });
+
+                                    foreach (DataRowView rvTransAnalAttrib in TransAnalAttribRowView)
+                                    {
+                                        ATransAnalAttribRow OriginalTransAnalAttrib = (ATransAnalAttribRow)rvTransAnalAttrib.Row;
+                                        ATransAnalAttribRow NewTransAnalAttribRow = MainDS.ATransAnalAttrib.NewRowTyped();
+                                        DataUtilities.CopyAllColumnValues(OriginalTransAnalAttrib, NewTransAnalAttribRow);
+                                        NewTransAnalAttribRow.BatchNumber = NewTransactionRow.BatchNumber;
+                                        NewTransAnalAttribRow.JournalNumber = NewTransactionRow.JournalNumber;
+                                        NewTransAnalAttribRow.TransactionNumber = NewTransactionRow.TransactionNumber;
+                                        MainDS.ATransAnalAttrib.Rows.Add(NewTransAnalAttribRow);
+                                    }
+                                }
+                            }
+
+                            // Calculate the credit and debit totals
+                            GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatchRow);
+
+                            GLBatchTDSAccess.SubmitChanges(MainDS);
+
+                            ReversalBatchNumber = NewBatchRow.BatchNumber;
+
+                            // only post new batch is AAutoPostReverseBatch is true
+                            if (!AAutoPostReverseBatch || PostGLBatch(ALedgerNumber, ReversalBatchNumber, out Verifications))
+                            {
+                                ReturnValue = true;
+                            }
                         }
                     }
-                }
+                });
 
-                GLBatchTDSAccess.SubmitChanges(MainDS);
+            AVerifications = Verifications;
+            AReversalBatchNumber = ReversalBatchNumber;
 
-                AReversalBatchNumber = NewBatchRow.BatchNumber;
+            return ReturnValue;
+        }
 
-                if (PostGLBatch(ALedgerNumber, AReversalBatchNumber, out AVerifications))
-                {
-                    if (NewTransactionStarted)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                        NewTransactionStarted = false;
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage =
-                    String.Format(Catalog.GetString("Unknown error while reversing a batch for Ledger: {0}." +
-                            Environment.NewLine + Environment.NewLine + ex.ToString()),
-                        ALedgerNumber);
-                ErrorType = TResultSeverity.Resv_Critical;
-                AVerifications.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-            }
-            finally
-            {
-                if (NewTransactionStarted)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+        //
+        // If the Ledger's ProvisionalYearEndFlag is set, no further batches can be posted.
+        private static Boolean CheckPostIsAllowed(Int32 ALedgerNumber, out TVerificationResultCollection AVerifications)
+        {
+            AVerifications = null;
 
-            return false;
+            /*
+             * As far as I can work out, we should not be doing this here:
+             * It's supposed to be impossible to create a new Batch after the final MonthEnd, and this may be adequate.
+             *
+             * If this check is required, we need to deal with the fact that the YearEnd process calls here,
+             * and its reallocation batch should succeed!
+             */
+
+            /*
+             * TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNumber);
+             * if (LedgerInfo.ProvisionalYearEndFlag)
+             * {
+             *  AVerifications = new TVerificationResultCollection();
+             *  AVerifications.Add(
+             *      new TVerificationResult(
+             *          Catalog.GetString("Post Batch"),
+             *          Catalog.GetString("There are no open periods in which a batch can be posted.\r\nYear End process must be run."),
+             *          TResultSeverity.Resv_Critical));
+             *  return false;
+             * }
+             */
+            return true;
         }
 
         /// <summary>
@@ -1259,7 +1288,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLPostingTDS PostingDS;
 
-            AVerifications = null;
+            if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
+            {
+                return false;
+            }
 
             LoadDataForPosting(out PostingDS, ALedgerNumber);
 
@@ -1292,7 +1324,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// only used for precalculating the new balances before the user actually posts the batch
+        /// Only used for precalculating the new balances before the user actually posts the batch
         /// </summary>
         public static bool TestPostGLBatch(Int32 ALedgerNumber,
             Int32 ABatchNumber,
@@ -1300,8 +1332,13 @@ namespace Ict.Petra.Server.MFinance.Common
             out GLPostingTDS APostingDS,
             ref Int32 ABatchPeriod)
         {
-            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
+            if (!CheckPostIsAllowed(ALedgerNumber, out AVerifications))
+            {
+                APostingDS = null;
+                return false;
+            }
 
+            SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
             LoadDataForPosting(out APostingDS, ALedgerNumber);
 
             if (PostGLBatchPrepare(ALedgerNumber, ABatchNumber, out AVerifications, APostingDS, PostingLevel, ref ABatchPeriod))
@@ -1314,8 +1351,8 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// prepare posting a GL Batch, without saving to database yet.
-        /// This is called by the actual PostGLBatch routine, but also by the routine for testing what would happen to the balances.
+        /// Prepare posting a GL Batch, without saving to database yet.
+        /// This is called by the actual PostGLBatch routine, and also by the routine for testing what would happen to the balances.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber">Batch to post</param>
@@ -1344,10 +1381,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 return false;
             }
 
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Validation...");
-            }
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Validation...");
 
             ABatchRow BatchToPost =
                 ((ABatchRow)BatchDS.ABatch.Rows.Find(new object[] { ALedgerNumber, ABatchNumber }));
@@ -1372,23 +1406,20 @@ namespace Ict.Petra.Server.MFinance.Common
                 return false;
             }
 
-            if (!ValidateAnalysisAttributes(ref BatchDS, APostingDS, ALedgerNumber, ABatchNumber, out AVerifications))
+            if (!APostingDS.ALedger[0].ProvisionalYearEndFlag) // During YearEnd Processing, I don't require all the attributes correctly fulfiled.
             {
-                return false;
+                if (!ValidateAnalysisAttributes(ref BatchDS, APostingDS, ALedgerNumber, ABatchNumber, out AVerifications))
+                {
+                    return false;
+                }
             }
 
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Load GLM Data...");
-            }
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Load GLM Data...");
 
             // TODO
             LoadGLMData(ref APostingDS, ALedgerNumber, BatchToPost);
 
-            if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
-            {
-                TLogging.Log("Posting: Mark as posted and collect data...");
-            }
+            TLogging.LogAtLevel(POSTING_LOGLEVEL, "Posting: Mark as posted and collect data...");
 
             // post each journal, each transaction; add sums for costcentre/account combinations
             MarkAsPostedAndCollectData(BatchDS, APostingDS, APostingLevel, BatchToPost);

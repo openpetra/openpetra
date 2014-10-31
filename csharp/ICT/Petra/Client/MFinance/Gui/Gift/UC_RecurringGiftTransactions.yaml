@@ -152,6 +152,6 @@ RootNode:
     Menu:
         mniTransactions:
             Label: &Gift Transaction
-            mniDonorHistory: {Action: actDonorHistory}
-            mniRecipientHistory: {Action: actRecipientHistory}
-            mniRecipientGiftDestination: {Action: actRecipientGiftDestination}
+            mniDonorHistory: {Action: actDonorHistory, Enabled=false}
+            mniRecipientHistory: {Action: actRecipientHistory, Enabled=false}
+            mniRecipientGiftDestination: {Action: actRecipientGiftDestination, Enabled=false}

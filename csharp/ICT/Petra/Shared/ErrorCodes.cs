@@ -112,6 +112,12 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUE_OUTSIDE_OF_RANGE = "GEN.00009V";
 
+        /// <summary>Value must be entered.</summary>
+        [ErrCodeAttribute("Value must be entered.",
+             ErrorMessageText = "Value must be entered",
+             ErrorMessageTitle = "No Data Entered")]
+        public const String ERR_VALUE_NOT_ENTERED = "GEN.00010V";
+
         #endregion
 
         #region Conference Module-specific error codes
@@ -230,7 +236,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>Recipient Field/Motivation Group combination is invalid (must be non-gift for field=0).</summary>
         [ErrCodeAttribute("Invalid Motivation Group for Recipient's Field.",
-             ErrorMessageText = "The Recipient's Field is 0 and so cannot have a Gift Motivation Group Code.")]
+             ErrorMessageText = "The Recipient's Field is 0 and so cannot have the Motivation Group Code 'Gift.'")]
         public const String ERR_RECIPIENT_FIELD_MOTIVATION_GROUP = "PARTN.00999V";
 
         /// <summary>Partner Status MERGED must not be assigned.</summary>

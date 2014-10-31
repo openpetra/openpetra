@@ -86,7 +86,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// we need to ignore the <paramref name="AParentForm" /> Argument as it will be null in those cases!
         /// </remarks>
         /// <returns>void</returns>
-        public static void FindPartnerOfClass(Form AParentForm, string ARestrictToPartnerClasses = null)
+        public static void FindPartnerOfClass(Form AParentForm,
+            string ARestrictToPartnerClasses = null,
+            TPartnerEditTabPageEnum APreferredInitialTabPage = TPartnerEditTabPageEnum.petpAddresses)
         {
             if (ARestrictToPartnerClasses == null)
             {
@@ -126,7 +128,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     PartnerEditForm = new TFrmPartnerEdit(AParentForm);
-                    PartnerEditForm.SetParameters(TScreenMode.smEdit, PartnerKey, LocationPK.SiteKey, LocationPK.LocationKey);
+
+                    if (APreferredInitialTabPage == TPartnerEditTabPageEnum.petpAddresses)
+                    {
+                        PartnerEditForm.SetParameters(TScreenMode.smEdit, PartnerKey, LocationPK.SiteKey, LocationPK.LocationKey);
+                    }
+                    else
+                    {
+                        PartnerEditForm.SetParameters(TScreenMode.smEdit, PartnerKey, APreferredInitialTabPage);
+                    }
+
                     PartnerEditForm.Show();
 
                     if (ARestrictToPartnerClasses.Split(new Char[] { (',') })[0] == "PERSON")
@@ -160,7 +171,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public static void FindPartnerOfClassPERSON(Form AParentForm)
         {
-            FindPartnerOfClass(AParentForm, "PERSON");
+            FindPartnerOfClass(AParentForm, "PERSON", TPartnerEditTabPageEnum.petpPersonnelIndividualData);
         }
 
         /// <summary>
@@ -438,7 +449,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // now that this function is called from the main menu, we need to check for LastPartnerKey != 0
             if (LastPartnerKey == 0)
             {
-                if (AContext == TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL)
+                if (Context == TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL)
                 {
                     NoPartnerAvailableStr = Catalog.GetString("You have not yet worked with a Person in the Personnel Module.");
                 }
@@ -467,7 +478,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             AParentForm.Cursor = Cursors.WaitCursor;
 
             frmPEDS = new TFrmPartnerEdit(AParentForm);
-            frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
+
+            if (Context == TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL)
+            {
+                frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey, TPartnerEditTabPageEnum.petpPersonnelIndividualData);
+            }
+            else
+            {
+                frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
+            }
+
             frmPEDS.Show();
 
             AParentForm.Cursor = Cursors.Default;

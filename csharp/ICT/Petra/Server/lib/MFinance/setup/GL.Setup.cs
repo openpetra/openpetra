@@ -794,26 +794,34 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return ParentCostCentreTbl;
         }
 
-        /// <summary></summary>
+        /// <summary>
+        /// LoadCostCentrePartnerLinks
+        /// </summary>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber)
+        public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber, Int64 APartnerKey = 0)
         {
             //
             // Load Partners where PartnerType includes "COSTCENTRE":
-            String SqlQuery = "SELECT p_partner_short_name_c as ShortName, " +
-                              "PUB_p_partner.p_partner_key_n as PartnerKey, " +
-                              "'0' as IsLinked, " +
-                              "'0' as ReportsTo" +
-                              " FROM PUB_p_partner, PUB_p_partner_type" +
-                              " WHERE PUB_p_partner_type.p_partner_key_n = PUB_p_partner.p_partner_key_n" +
-                              " AND PUB_p_partner_type.p_type_code_c = 'COSTCENTRE';";
+            String SqlQuery = "SELECT p_partner.p_partner_short_name_c as ShortName," +
+                              "   p_partner.p_partner_key_n as PartnerKey," +
+                              "  '0' as IsLinked," +
+                              "  '0' as ReportsTo" +
+                              " FROM public.p_partner, public.p_partner_type" +
+                              " WHERE p_partner.p_partner_key_n = p_partner_type.p_partner_key_n";
+
+            if (APartnerKey > 0)
+            {
+                SqlQuery += " AND p_partner.p_partner_key_n = " + APartnerKey.ToString();
+            }
+
+            SqlQuery += " AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
 
             DataTable PartnerCostCentreTbl = null;
 
             TDBTransaction Transaction = null;
-
             DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -822,7 +830,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                     PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
-                    AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+
+                    AValidLedgerNumberTable LinksTbl = null;
+
+                    if (APartnerKey == 0)
+                    {
+                        LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                    }
+                    else
+                    {
+                        LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
+                    }
 
                     foreach (AValidLedgerNumberRow Row in LinksTbl.Rows)
                     {
@@ -843,6 +861,55 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return PartnerCostCentreTbl;
         }
+
+        ///// <summary></summary>
+        ///// <param name="ALedgerNumber"></param>
+        ///// <returns></returns>
+        //[RequireModulePermission("FINANCE-1")]
+        //public static DataTable LoadCostCentrePartnerLinksForPartner(Int32 ALedgerNumber, Int64 APartnerKey)
+        //{
+        //    // Load Partners where PartnerType includes "COSTCENTRE":
+        //    String SqlQuery = "SELECT p_partner.p_partner_short_name_c as ShortName," +
+        //                      "   p_partner.p_partner_key_n as PartnerKey," +
+        //                      "  '0' as IsLinked," +
+        //                      "  '0' as ReportsTo" +
+        //                      " FROM public.p_partner, public.p_partner_type" +
+        //                      " WHERE p_partner.p_partner_key_n = p_partner_type.p_partner_key_n" +
+        //                      "    AND p_partner.p_partner_key_n = " + APartnerKey.ToString() +
+        //                      "    AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
+
+        //    DataTable PartnerCostCentreTbl = null;
+
+        //    TDBTransaction Transaction = null;
+        //    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+        //        TEnforceIsolationLevel.eilMinimum,
+        //        ref Transaction,
+        //        delegate
+        //        {
+        //            PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+
+        //            if (PartnerCostCentreTbl != null && PartnerCostCentreTbl.Rows.Count > 0)
+        //            {
+        //                AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
+
+        //                if (LinksTbl != null && LinksTbl.Count > 0)
+        //                {
+        //                    string costCentreCode;
+
+        //                    costCentreCode = LinksTbl[0].CostCentreCode;
+        //                    PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"] = costCentreCode;
+
+        //                    ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, costCentreCode, Transaction);
+        //                    if (CCTbl.Rows.Count > 0)
+        //                    {
+        //                        PartnerCostCentreTbl.DefaultView[0].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
+        //                    }
+        //                }
+        //            }
+        //        });
+
+        //    return PartnerCostCentreTbl;
+        //}
 
         /// <summary>
         ///
@@ -1533,30 +1600,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return ReturnValue;
         }
 
-        private static bool AccountCodeHasBeenUsed(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
-        {
-            // TODO: enhance sql statement to check for more references to a_account
-
-            String QuerySql =
-                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
-                "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                "a_account_code_c = '" + AAccountCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
-
-            if (!IsInUse)
-            {
-                QuerySql =
-                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
-                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                    "a_account_code_c = '" + AAccountCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-                IsInUse = (Convert.ToInt32(SqlResult) > 0);
-            }
-
-            return IsInUse;
-        }
-
         private static bool AccountHasChildren(Int32 ALedgerNumber, string AAccountCode, TDBTransaction Transaction)
         {
             String QuerySql =
@@ -1615,25 +1658,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (!ACanBeParent || ACanDelete)
                 {
-                    bool IsInUse = AccountCodeHasBeenUsed(ALedgerNumber, AAccountCode, Transaction);
+                    List <TRowReferenceInfo>CascadingReferences;
+                    Int32 Refs = AAccountCascading.CountByPrimaryKey(
+                        ALedgerNumber, AAccountCode,
+                        3, Transaction, true,
+                        out CascadingReferences);
+
+                    bool IsInUse = (Refs > 0);
+
                     ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
                     ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
 
                     if (!ACanDelete)
                     {
                         AMsg = Catalog.GetString("Account has been used in Transactions.");
-                    }
-                }
-
-                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
-                {                // and do the low-level database check to see if a deletion would succeed:
-                    TVerificationResultCollection ReferenceResults;
-                    Int32 RefCount = AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, 50, Transaction, false, out ReferenceResults);
-
-                    if (RefCount > 0)
-                    {
-                        ACanDelete = false;
-                        AMsg = ReferenceResults.BuildVerificationResultString();
                     }
                 }
             }
@@ -3699,32 +3737,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             return Convert.ToInt32(SqlResult) > 0;
         }
 
-        private static bool CostCentreCodeHasBeenUsed(Int32 ALedgerNumber, string ACostCentreCode, TDBTransaction Transaction)
-        {
-            // TODO: enhance sql statement to check for more references to a_cost_centre
-            // TODO:? This method is *almost exactly like* the equivalent AccountCode function.
-            //        With an extra parameter the two could be combined.
-
-            String QuerySql =
-                "SELECT COUNT (*) FROM PUB_a_transaction WHERE " +
-                "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-            object SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-            bool IsInUse = (Convert.ToInt32(SqlResult) > 0);
-
-            if (!IsInUse)
-            {
-                QuerySql =
-                    "SELECT COUNT (*) FROM PUB_a_ap_document_detail WHERE " +
-                    "a_ledger_number_i=" + ALedgerNumber + " AND " +
-                    "a_cost_centre_code_c = '" + ACostCentreCode + "';";
-                SqlResult = DBAccess.GDBAccessObj.ExecuteScalar(QuerySql, Transaction);
-                IsInUse = (Convert.ToInt32(SqlResult) > 0);
-            }
-
-            return IsInUse;
-        }
-
         /// <summary>I can add child accounts to this account if it's a summary Cost Centre,
         ///          or if there have never been transactions posted to it,
         ///          or if it's linked to a partner.
@@ -3790,24 +3802,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         canDelete = true;
                     }
 
-                    if (!canBeParent || canDelete)
-                    {
-                        bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
-
-                        if (IsInUse)
-                        {
-                            canBeParent = false;
-                            canDelete = false;      // Once it has transactions posted, I can't delete it, ever.
-                            msg = Catalog.GetString("Cost Centre is referenced in transactions.");
-                        }
-                        else
-                        {
-                            canBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
-                        }
-                    }
-
-                    if (canBeParent || canDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
-                    {                                   // If it has, the link must be deleted first.
+                    if (canBeParent || canDelete)     // I need to check whether the Cost Centre has been linked to a partner.
+                    {                                 // If it has, the link must be deleted first.
                         AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
 
                         if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
@@ -3818,20 +3814,25 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         }
                     }
 
-                    if (canDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
-                    {                // and do the low-level database check to see if a deletion would succeed:
-                        TVerificationResultCollection ReferenceResults;
-                        Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
-                            ACostCentreCode,
-                            50,
-                            Transaction,
-                            false,
-                            out ReferenceResults);
+                    if (!canBeParent || canDelete)
+                    {
+                        List <TRowReferenceInfo>CascadingReferences;
+                        Int32 Refs = MCommon.Data.Cascading.ACostCentreCascading.CountByPrimaryKey(
+                            ALedgerNumber, ACostCentreCode,
+                            5, Transaction, true,
+                            out CascadingReferences);
 
-                        if (RefCount > 0)
+                        bool IsInUse = (Refs > 0);
+
+                        if (IsInUse)
                         {
-                            canDelete = false;
-                            msg = ReferenceResults.BuildVerificationResultString();
+                            canBeParent = false;
+                            canDelete = false;      // Once it has transactions posted, I can't delete it, ever.
+                            msg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                        }
+                        else
+                        {
+                            canBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
                         }
                     }
                 }); // End of BeginAutoReadTransaction with anonymous function

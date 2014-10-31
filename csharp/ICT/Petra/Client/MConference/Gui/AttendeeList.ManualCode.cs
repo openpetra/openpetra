@@ -122,7 +122,7 @@ namespace Ict.Petra.Client.MConference.Gui
                     {
                         if (Row.IsStFieldChargedNull() || (Row.StFieldCharged == 0))
                         {
-                            if (Row.IsStConfirmedOptionNull() || (Row.StCurrentField == 0))
+                            if (Row.IsStCurrentFieldNull() || (Row.StCurrentField == 0))
                             {
                                 StFieldCharged = HomeOfficeKey;
                             }

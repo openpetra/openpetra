@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 uco_AccountCostCentreSettings.InitialiseLedger(FLedgerNumber);
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
+                uco_GeneralSettings.ShowOnlyPeriodSelection();
                 pnlSorting.Padding = new System.Windows.Forms.Padding(8); // This tweak bring controls inline.
                 FPetraUtilsObject.LoadDefaultSettings();
                 rbtSortByCostCentre.CheckedChanged += rbtSortByCostCentre_CheckedChanged;
@@ -96,7 +97,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String LedgerFilter = "a_ledger_number_i=" + parameters.Get("param_ledger_number_i").ToInt32();
 
             String AccountCodeFilter = ""; // Account Filter, as range or list:
-            String TranctAccountCodeFilter = "";
+            String GlmAccountCodeFilter = "";
             DataTable Balances = new DataTable();
 
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this later, for auto_email, but usually it's unused.
@@ -105,35 +106,35 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 String Filter = "'" + parameters.Get("param_account_codes") + "'";
                 Filter = Filter.Replace(",", "','");
-                AccountCodeFilter = "a_account_code_c in (" + Filter + ")";
-                TranctAccountCodeFilter = " AND a_transaction.a_account_code_c in (" + Filter + ")";
+                AccountCodeFilter = "AND a_account_code_c in (" + Filter + ")";
+                GlmAccountCodeFilter = " AND glm.a_account_code_c in (" + Filter + ")";
             }
 
             if (parameters.Get("param_rgrAccounts").ToString() == "AccountRange")
             {
-                AccountCodeFilter = "a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
+                AccountCodeFilter = "AND a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
                                     parameters.Get("param_account_code_end") + "'";
-                TranctAccountCodeFilter = " AND a_transaction.a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") +
-                                          "' AND '" + parameters.Get("param_account_code_end") + "'";
+                GlmAccountCodeFilter = " AND glm.a_account_code_c BETWEEN '" + parameters.Get("param_account_code_start") + "' AND '" +
+                                       parameters.Get("param_account_code_end") + "'";
             }
 
             String CostCentreFilter = ""; // Cost Centre Filter, as range or list:
-            String TranctCostCentreFilter = "";
+            String GlmCostCentreFilter = "";
 
             if (parameters.Get("param_rgrCostCentres").ToString() == "CostCentreList")
             {
                 String Filter = "'" + parameters.Get("param_cost_centre_codes") + "'";
                 Filter = Filter.Replace(",", "','");
                 CostCentreFilter = " AND a_cost_centre_code_c in (" + Filter + ")";
-                TranctCostCentreFilter = " AND a_transaction.a_cost_centre_code_c in (" + Filter + ")";
+                GlmCostCentreFilter = " AND glm.a_cost_centre_code_c in (" + Filter + ")";
             }
 
             if (parameters.Get("param_rgrCostCentres").ToString() == "CostCentreRange")
             {
                 CostCentreFilter = " AND a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
                                    "' AND  '" + parameters.Get("param_cost_centre_code_end") + "'";
-                TranctCostCentreFilter = " AND a_transaction.a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
-                                         "' AND '" + parameters.Get("param_cost_centre_code_end") + "'";
+                GlmCostCentreFilter = " AND glm.a_cost_centre_code_c BETWEEN '" + parameters.Get("param_cost_centre_code_start") +
+                                      "' AND '" + parameters.Get("param_cost_centre_code_end") + "'";
             }
 
             String TranctDateFilter = "a_transaction_date_d BETWEEN '" + parameters.Get("param_start_date").DateToString("yyyy-MM-dd") +
@@ -142,13 +143,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String ReferenceFilter = "";
             String AnalysisTypeFilter = "";
             String GroupField = "a_account_code_c, a_cost_centre_code_c";
+            String Sortby = parameters.Get("param_sortby").ToString();
 
-            if (parameters.Get("param_sortby").ToString() == "Cost Centre")
+            if (Sortby == "Cost Centre")
             {
                 GroupField = "a_cost_centre_code_c, a_account_code_c";
             }
 
-            if (parameters.Get("param_sortby").ToString() == "Reference")
+            if (Sortby == "Reference")
             {
                 GroupField = "a_reference_c";
                 String FilterItem = parameters.Get("param_reference_start").ToString();
@@ -166,21 +168,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            if (parameters.Get("param_sortby").ToString() == "Analysis Type")
+            if (Sortby == "Analysis Type")
             {
                 GroupField = "a_analysis_type_code_c";
                 String FilterItem = parameters.Get("param_analyis_type_start").ToString();
 
                 if (FilterItem != "")
                 {
-                    AnalysisTypeFilter = " AND a_trans_anal_attrib.a_analysis_type_code_c >='" + FilterItem + "'";
+                    AnalysisTypeFilter = " AND a_analysis_type_code_c >='" + FilterItem + "'";
                 }
 
                 FilterItem = parameters.Get("param_analyis_type_end").ToString();
 
                 if (FilterItem != "")
                 {
-                    AnalysisTypeFilter += " AND a_trans_anal_attrib.a_analysis_type_code_c <='" + FilterItem + "'";
+                    AnalysisTypeFilter += " AND a_analysis_type_code_c <='" + FilterItem + "'";
                 }
             }
 
@@ -190,20 +192,31 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Csv = StringHelper.AddCSV(Csv, "ALedger/SELECT * FROM a_ledger WHERE " + LedgerFilter);
             Csv = StringHelper.AddCSV(
                 Csv,
-                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + " AND " + AccountCodeFilter +
+                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + AccountCodeFilter +
                 " AND a_posting_status_l=true AND a_account_active_flag_l=true");
             Csv = StringHelper.AddCSV(
                 Csv,
                 "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + CostCentreFilter +
                 " AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
 
-            if (parameters.Get("param_sortby").ToString() == "Analysis Type")  // To sort by analysis type, I need a different (and more horible) query:
+            Boolean InternationalCurrencySelected = parameters.Get("param_currency").ToString().StartsWith("Int");
+            String AmountField = InternationalCurrencySelected ? "a_amount_in_intl_currency_n" : "a_amount_in_base_currency_n";
+
+            if (Sortby == "Analysis Type")  // To sort by analysis type, I need a different (and more horible) query:
             {
                 Csv = StringHelper.AddCSV(
                     Csv,
-                    "ATransaction/" +
-                    "SELECT a_transaction.*,a_trans_anal_attrib.a_analysis_type_code_c,a_analysis_type.a_analysis_type_description_c,a_trans_anal_attrib.a_analysis_attribute_value_c"
-                    +
+                    "Transactions/" +
+                    "SELECT a_transaction.a_account_code_c AS AccountCode," +
+                    "a_transaction.a_cost_centre_code_c AS CostCentreCode," +
+                    "a_transaction.a_transaction_date_d AS TransactionDate," +
+                    "a_transaction." + AmountField + " AS Amount," +
+                    "a_transaction.a_debit_credit_indicator_l AS Debit," +
+                    "a_transaction.a_narrative_c AS Narrative," +
+                    "a_transaction.a_reference_c AS Reference," +
+                    "a_trans_anal_attrib.a_analysis_type_code_c AS AnalysisTypeCode," +
+                    "a_analysis_type.a_analysis_type_description_c AS AnalysisTypeDescr," +
+                    "a_trans_anal_attrib.a_analysis_attribute_value_c AS AnalysisValue" +
                     " FROM a_transaction, a_trans_anal_attrib, a_analysis_type" +
                     " WHERE a_transaction." + LedgerFilter +
                     " AND a_trans_anal_attrib.a_ledger_number_i = a_transaction.a_ledger_number_i " +
@@ -212,14 +225,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     " AND a_trans_anal_attrib.a_transaction_number_i = a_transaction.a_transaction_number_i" +
                     " AND a_trans_anal_attrib.a_analysis_type_code_c = a_analysis_type.a_analysis_type_code_c" +
                     AnalysisTypeFilter +
-                    TranctAccountCodeFilter + TranctCostCentreFilter + " AND " + TranctDateFilter +
+                    AccountCodeFilter + CostCentreFilter + " AND " + TranctDateFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
                     " ORDER BY " + GroupField + ", a_transaction_date_d");
             }
             else
             {
-                Csv = StringHelper.AddCSV(Csv, "ATransaction/SELECT * FROM a_transaction WHERE " + LedgerFilter + TranctAccountCodeFilter +
-                    TranctCostCentreFilter + " AND " + TranctDateFilter + ReferenceFilter +
+                Csv = StringHelper.AddCSV(Csv, "Transactions/" +
+                    "SELECT a_transaction.a_account_code_c AS AccountCode," +
+                    "a_transaction.a_cost_centre_code_c AS CostCentreCode," +
+                    "a_transaction.a_transaction_date_d AS TransactionDate," +
+                    "a_transaction." + AmountField + " AS Amount," +
+                    "a_transaction.a_debit_credit_indicator_l AS Debit," +
+                    "a_transaction.a_narrative_c AS Narrative," +
+                    "a_transaction.a_reference_c AS Reference," +
+                    "'' AS AnalysisTypeCode," +
+                    "'' AS AnalysisTypeDescr," +
+                    "'' AS AnalysisValue" +
+                    " FROM a_transaction WHERE " +
+                    LedgerFilter + AccountCodeFilter +
+                    CostCentreFilter + " AND " +
+                    TranctDateFilter + ReferenceFilter +
                     " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')" +
                     " ORDER BY " + GroupField + ", a_transaction_date_d");
             }
@@ -233,25 +259,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             //
-            // If I'm reporting by period or quarter,
-            // I want to include opening and closing balances for each Cost Centre / Account, in the selected currency:
-            if (parameters.Get("param_period_checked").ToBool() || parameters.Get("param_quarter_checked").ToBool())
-            {
-                Int32 Year = parameters.Get("param_year_i").ToInt32();
-                Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
-                    LedgerFilter,
-                    AccountCodeFilter,
-                    CostCentreFilter,
-                    Year,
-                    parameters.Get("param_start_period_i").ToInt32(),
-                    parameters.Get("param_end_period_i").ToInt32(),
-                    parameters.Get("param_currency").ToString().StartsWith("Int")
-                    );
+            // I want to include opening and closing balances for each Cost Centre / Account, in the selected currency.
+            // Following a revision in Oct 2014, this table is the master table, and the transactions are the slave.
 
-                if ((this.IsDisposed) || (Balances == null))
-                {
-                    return false;
-                }
+            Int32 Year = parameters.Get("param_year_i").ToInt32();
+            Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
+                LedgerFilter,
+                GlmAccountCodeFilter,
+                GlmCostCentreFilter,
+                Year,
+                Sortby,
+                ReportDs.Tables["Transactions"],
+                parameters.Get("param_start_period_i").ToInt32(),
+                parameters.Get("param_end_period_i").ToInt32(),
+                InternationalCurrencySelected
+                );
+
+            if ((this.IsDisposed) || (Balances == null))
+            {
+                return false;
             }
 
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
@@ -296,7 +322,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAnalysisType, "a_analysis_type");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.Tables["Transactions"], "Transactions");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(Balances, "balances");
 
             //

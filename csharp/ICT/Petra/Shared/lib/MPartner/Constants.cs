@@ -112,6 +112,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Partner Types</summary>
         public const String PARTNERTYPE_LEDGER = "LEDGER";
 
+        /// <summary>Partner Types</summary>
+        public const String PARTNERTYPE_COSTCENTRE = "COSTCENTRE";
+
         /// <summary>Partner class</summary>
         public const String PARTNERCLASS_FAMILY = "FAMILY";
 

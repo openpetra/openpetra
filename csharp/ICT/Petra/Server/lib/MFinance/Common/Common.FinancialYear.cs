@@ -206,42 +206,5 @@ namespace Ict.Petra.Server.MFinance.Common
 
             return false;
         }
-
-        /// <summary>
-        /// close the current financial period, open the next period, if it was not the last period of the year
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AYearNumber"></param>
-        /// <param name="APeriodNumber"></param>
-        /// <returns></returns>
-        public static bool ClosePeriod(Int32 ALedgerNumber, Int32 AYearNumber, Int32 APeriodNumber)
-        {
-            TCarryForward carryForward = new TCarryForward(new TLedgerInfo(ALedgerNumber));
-
-            if (carryForward.GetPeriodType == TCarryForwardENum.Month)
-            {
-                carryForward.SetNextPeriod();
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Close a financial year, open the next financial year
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AYearNumber"></param>
-        /// <returns></returns>
-        public static bool CloseYear(Int32 ALedgerNumber, Int32 AYearNumber)
-        {
-            TCarryForward carryForward = new TCarryForward(new TLedgerInfo(ALedgerNumber));
-
-            if (carryForward.GetPeriodType == TCarryForwardENum.Year)
-            {
-                carryForward.SetNextPeriod();
-            }
-
-            return false;
-        }
     }
 }
