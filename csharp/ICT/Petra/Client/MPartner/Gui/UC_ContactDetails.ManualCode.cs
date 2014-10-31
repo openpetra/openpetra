@@ -178,29 +178,37 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void HandleDataSavingStarted(System.Object sender, System.EventArgs e)
         {
             FRunningInsideDataSaving = true;
+            PPartnerAttributeRow CurrentDetailDR = GetSelectedDetailRow();
             
-            if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS) 
+            if (CurrentDetailDR != null) 
             {
-                FValueWithSpecialMeaningChangedButUserDidntLeaveControl = 
-                    String.Compare(txtValue.Text, GetSelectedDetailRow().Value, StringComparison.InvariantCulture) != 0;
-            }
-            else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
-            {
-                if (RowHasPhoneAttributeType(GetSelectedDetailRow())) 
+                if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS) 
                 {
                     FValueWithSpecialMeaningChangedButUserDidntLeaveControl = 
-                        String.Compare(txtValue.Text, GetSelectedDetailRow().Value, StringComparison.InvariantCulture) != 0;                    
+                        String.Compare(txtValue.Text, CurrentDetailDR.Value, StringComparison.InvariantCulture) != 0;
                 }
-            }   
-            
-            // make sure latest screen modifications are saved to FMainDS
-            GetDataFromControls();
-
-            // Refresh the ComboBox so it reflects any change in the email address!
-            UpdatePrimaryEmailComboItems(true);
-            UpdatePrimaryPhoneComboItems();
-
-            FSelectedRowIndexBeforeSaving = grdDetails.GetFirstHighlightedRowIndex();
+                else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
+                {
+                    if (RowHasPhoneAttributeType(CurrentDetailDR)) 
+                    {
+                        FValueWithSpecialMeaningChangedButUserDidntLeaveControl = 
+                            String.Compare(txtValue.Text, CurrentDetailDR.Value, StringComparison.InvariantCulture) != 0;                    
+                    }
+                }   
+                
+                // make sure latest screen modifications are saved to FMainDS
+                GetDataFromControls();
+    
+                // Refresh the ComboBox so it reflects any change in the email address!
+                UpdatePrimaryEmailComboItems(true);
+                UpdatePrimaryPhoneComboItems();
+    
+                FSelectedRowIndexBeforeSaving = grdDetails.GetFirstHighlightedRowIndex();                
+            }
+            else
+            {
+                FSelectedRowIndexBeforeSaving = -1;
+            }
         }
 
         void HandleDataSaved(object Sender, TDataSavedEventArgs e)
@@ -226,26 +234,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // enable grid to react to insert and delete keyboard keys
             grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
-            // Create custom data columns on-the-fly
-            CreateCustomDataColumns();
-
-            /* Create SourceDataGrid columns */
-            CreateGridColumns();
-
-            /* Setup the DataGrid's visual appearance */
-//            SetupDataGridVisualAppearance();
-
-            // Set up special sort order of Rows in Grid:
-            // PPartnerAttributeCategory.Index followed by PPartnerAttributeType.Index followed by PPartnerAttribute.Index!
-            DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
-            gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
-                            PPartnerAttributeTable.GetIndexDBName() + " ASC";
-
-            string FilterStr = String.Format("{0}='{1}'", PartnerEditTDSPPartnerAttributeTable.GetPartnerContactDetailDBName(), true);
-
-            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
-            FFilterAndFindObject.ApplyFilter();
             
             if (grdDetails.Rows.Count > 1)
             {
@@ -1053,6 +1041,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbContactCategory.Enabled = (ARow.RowState == DataRowState.Added);
         }
 
+        private void CreateFilterFindPanelsManual()
+        {
+            // Create custom data columns on-the-fly
+            CreateCustomDataColumns();
+
+            /* Create SourceDataGrid columns */
+            CreateGridColumns();
+
+            /* Setup the DataGrid's visual appearance */
+//            SetupDataGridVisualAppearance();
+            
+            // Set up special sort order of Rows in Grid:
+            // PPartnerAttributeCategory.Index followed by PPartnerAttributeType.Index followed by PPartnerAttribute.Index!
+            DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+            gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
+                            PPartnerAttributeTable.GetIndexDBName() + " ASC";
+
+            string FilterStr = String.Format("{0}='{1}'", PartnerEditTDSPPartnerAttributeTable.GetPartnerContactDetailDBName(), true);
+
+            FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
+            FFilterAndFindObject.ApplyFilter();
+        }
+        
         private void GetDetailDataFromControlsManual(PPartnerAttributeRow ARow)
         {
         }
