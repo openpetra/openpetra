@@ -766,12 +766,15 @@ namespace Ict.Petra.Shared.MPartner
         /// <see cref="DeterminePhoneAttributes"/>.</param>
         /// <param name="AOnlyCurrentPhoneNumbers">Set to true to only return 'Valid' p_partner_attribute records
         /// (i.e. p_partner_attribute records whose p_current_l Flag is set to true).</param>
+        /// <param name="AIncludeFaxNumbers">Set to false to exclude p_partner_attribute records whose
+        /// p_attribute_type_c is 'Fax'.</param>
         /// <returns>DataView that is filtered so that it contains only p_partner_attribute records whose p_attribute_type 
         /// points to a p_partner_attribute_type record that has p_category_code_c 'Phone'.</returns>
         public static DataView DeterminePartnerPhoneNumbers(PPartnerAttributeTable APPartnerAttributeDT, 
-            string APhoneAttributesConcatStr, bool AOnlyCurrentPhoneNumbers)
+            string APhoneAttributesConcatStr, bool AOnlyCurrentPhoneNumbers, bool AIncludeFaxNumbers)
         {
             string CurrentCriteria;
+            string NonFaxCriteria;
 
             if (APPartnerAttributeDT == null) 
             {
@@ -786,9 +789,11 @@ namespace Ict.Petra.Shared.MPartner
             if (APhoneAttributesConcatStr.Length > 0) 
             {
                 CurrentCriteria = AOnlyCurrentPhoneNumbers ? PPartnerAttributeTable.GetCurrentDBName() + " = true AND " : String.Empty;
+                NonFaxCriteria = AIncludeFaxNumbers ? String.Empty : PPartnerAttributeTable.GetAttributeTypeDBName() + " <> 'Fax' AND ";
                 
                 return new DataView(APPartnerAttributeDT,
                     CurrentCriteria +
+                    NonFaxCriteria +
                     String.Format(PPartnerAttributeTable.GetAttributeTypeDBName() + " IN ({0})",
                         APhoneAttributesConcatStr),
                     PPartnerAttributeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);                

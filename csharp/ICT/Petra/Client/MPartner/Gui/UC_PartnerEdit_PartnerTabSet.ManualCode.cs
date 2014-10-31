@@ -871,6 +871,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     CorrectDataGridWidthsAfterDataChange();
                 }
+                else if (ATabPageEventArgs.Tab == tpgContactDetails)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
+
+                    FUcoContactDetails.SpecialInitUserControl();
+                }                
                 else if (ATabPageEventArgs.Tab == tpgPartnerDetails)
                 {
                     FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
@@ -1007,8 +1013,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Hook up RecalculateScreenParts Event
                 FUcoContactDetails.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
 
-                FUcoContactDetails.PartnerEditUIConnector = FPartnerEditUIConnector;
-
                 CorrectDataGridWidthsAfterDataChange();
             }
         }
@@ -1032,7 +1036,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 CorrectDataGridWidthsAfterDataChange();
             }
         }
-
+        
         private void RecalculateTabHeaderCounters(System.Object sender, TRecalculateScreenPartsEventArgs e)
         {
             // MessageBox.Show('TUC_PartnerEdit_PartnerTabSet2.RecalculateTabHeaderCounters');

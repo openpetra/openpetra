@@ -75,9 +75,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private readonly string StrPrimEmailMessageBoxTitle2 = Catalog.GetString("Primary E-Mail Address Cleared");
 
-        /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
-        private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
-
         private string FDefaultContactType = String.Empty;
 
         private TPartnerAttributeTypeValueKind FValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
@@ -87,7 +84,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TTimerDrivenMessageBoxKind FTimerDrivenMessageBoxKind;        
         
         private bool FFilterInitialised = false;
-        
+
         private bool FRunningInsideShowDetails = false;
 
         private bool FRunningInsideDataSaving = false;
@@ -133,20 +130,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         string FSystemCategoryAttrTypesConcatStr = String.Empty;
         
         #region Properties
-
-        /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
-        public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
-        {
-            get
-            {
-                return FPartnerEditUIConnector;
-            }
-
-            set
-            {
-                FPartnerEditUIConnector = value;
-            }
-        }
 
         #endregion
 
@@ -244,7 +227,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MakeDetailsInvisible(true);
                 btnDelete.Enabled = false;
             }
-
+            
             // now changes to controls can trigger enabling of save button again
             FPetraUtilsObject.EnableDataChangedEvent();
 
@@ -279,6 +262,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TODO ApplySecurity();
         }
 
+        /// <summary>
+        /// Extra Tab initialisation on inital Tab 'activation'.
+        /// </summary>
+        public void SpecialInitUserControl()
+        {
+            // Set up special sort order of Rows in Grid:
+            // PPartnerAttributeCategory.Index followed by PPartnerAttributeType.Index followed by PPartnerAttribute.Index!
+            DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+            gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
+                            PPartnerAttributeTable.GetIndexDBName() + " ASC";
+            
+            if (grdDetails.Rows.Count > 1)
+            {
+                grdDetails.SelectRowInGrid(1);
+            }
+            else
+            {
+                MakeDetailsInvisible(true);
+                btnDelete.Enabled = false;
+            }                           
+        }
+        
         void FilterToggledManual(bool AIsCollapsed)
         {
             if (!AIsCollapsed) 
@@ -289,7 +294,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FFilterAndFindObject.ToggleFilter();
                     
                     FFilterInitialised = true;
-                }
+                }                
             }
         }
         
@@ -574,7 +579,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Determine all Partner Attributes that have a Partner Attribute Type that constitutes a Phone Number
             // and that are Current.
             ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
-                FPhoneAttributesConcatStr, true);
+                FPhoneAttributesConcatStr, true, false);
 
             PrimaryPhoneNumbers = new object[ElegiblePhoneNrsDV.Count + 1];
             PrimaryPhoneNumbers[0] = String.Empty;
@@ -625,7 +630,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             string PrimaryPhoneChoice;
             bool PrimaryPhoneChoiceFoundAmongEligblePhoneNrs = false;
             DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
-                FPhoneAttributesConcatStr, false);
+                FPhoneAttributesConcatStr, false, false);
 
             PrimaryPhoneChoice = cmbPrimaryPhoneForContacting.GetSelectedString();
 
@@ -669,7 +674,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARunValidation) 
             {
                 DataView CurrentPhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
-                    FPhoneAttributesConcatStr, true);
+                    FPhoneAttributesConcatStr, true, false);
                 
                 if (CurrentPhoneNrsDV.Count != 0)
                 {
@@ -1052,16 +1057,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             /* Setup the DataGrid's visual appearance */
 //            SetupDataGridVisualAppearance();
             
-            // Set up special sort order of Rows in Grid:
-            // PPartnerAttributeCategory.Index followed by PPartnerAttributeType.Index followed by PPartnerAttribute.Index!
-            DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
-            gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
-                            PPartnerAttributeTable.GetIndexDBName() + " ASC";
-
             string FilterStr = String.Format("{0}='{1}'", PartnerEditTDSPPartnerAttributeTable.GetPartnerContactDetailDBName(), true);
 
             FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
-            FFilterAndFindObject.ApplyFilter();
+            FFilterAndFindObject.ApplyFilter();            
         }
         
         private void GetDetailDataFromControlsManual(PPartnerAttributeRow ARow)
@@ -1320,7 +1319,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (cmbPrimaryPhoneForContacting.GetSelectedString(-1) == FDeletedRowsValue) 
                     {
                         DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
-                            FPhoneAttributesConcatStr, true);
+                            FPhoneAttributesConcatStr, true, false);
                         
                         if (ElegiblePhoneNrsDV.Count == 0) 
                         {
@@ -1497,7 +1496,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //            }
 
             // Modification TimeStamp (for testing purposes only...)
-            // grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
+//             grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
         }
 
         private void ValidateDataDetailsManual(PPartnerAttributeRow ARow)
@@ -1584,8 +1583,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             if (!chkCurrent.Checked)
             {
-                dtpNoLongerCurrentFrom.Date = DateTime.Now.Date;
-                dtpNoLongerCurrentFrom.Focus();
+                if (!grdDetails.Focused) 
+                {
+                    dtpNoLongerCurrentFrom.Date = DateTime.Now.Date;
+                    dtpNoLongerCurrentFrom.Focus();                    
+                }
                 
                 if (!FRunningInsideShowDetails)
                 {
@@ -1709,7 +1711,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (APrimaryPhoneNumberIsThisRecord) 
             {
                 DataView ElegiblePhoneNrsDV = Calculations.DeterminePartnerPhoneNumbers(FMainDS.PPartnerAttribute, 
-                    FPhoneAttributesConcatStr, true);
+                    FPhoneAttributesConcatStr, true, false);
                 
                 if (ElegiblePhoneNrsDV.Count == 0) 
                 {
@@ -1774,6 +1776,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private void FilterContactTypeCombo(Object sender, EventArgs e)
         {
+//            if (!FRunningInsideShowDetails) 
+//            {
                 if (cmbContactCategory.Text != String.Empty)
                 {
                     FSuppressOnContactTypeChangedEvent = true;
@@ -1789,7 +1793,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
     
                     OnContactTypeChanged(null, null);
-                }                
+                }                                
+//            }
         }
 
         private void OnContactTypeChanged(Object sender, EventArgs e)
@@ -1802,7 +1807,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 && (cmbContactType.Text != String.Empty))
             {
                 ContactTypeDR = (PPartnerAttributeTypeRow)cmbContactType.GetSelectedItemsDataRow();
-                GetSelectedDetailRow().AttributeType = cmbContactType.GetSelectedString();
+                
+                if (!FRunningInsideShowDetails) 
+                {
+                    // If the user created a new Record and changes Attribute Types: Make sure that the change in the Attribute Type is effected 
+                    // in the Record immediately, and not just when the user leaves a Control that gets Validated. If this isn't done then the 
+                    // 'Overall Contact Settings' ComboBoxes whose Items are based on the rows' Attribute Types won't get updated immediately.
+                    GetSelectedDetailRow().AttributeType = cmbContactType.GetSelectedString();    
+                }                
                 
                 SelectCorrespondingCategory(ContactTypeDR);
 
