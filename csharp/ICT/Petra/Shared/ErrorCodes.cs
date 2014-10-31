@@ -327,17 +327,32 @@ namespace Ict.Petra.Shared
         /// <summary>A Primary Email Address has been set but there are no current E-Mail Addresses available.</summary>
         [ErrCodeAttribute("Primary Email Address Set But No E-Mail Addresses on File",
              ErrorMessageText = "A Primary Email Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Primary E-Mail' choices and no 'Primary E-Mail' is set any longer!")]
-        public const String ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00036N";
+        public const String ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00036V";
 
         /// <summary>A Primary Email Address has been set but there are no current E-Mail Addresses available.</summary>
-        [ErrCodeAttribute("Primary Email Address Set But the E-Mail Addresses record is not current",
-             ErrorMessageText = "A Primary Email Address is still set, but the corresponding E-Mail Address record is not current. Change the Primary Email Address to a current E-Mail Address!")]
+        [ErrCodeAttribute("Primary Email Address Set But the E-Mail Addresses' record is not current",
+             ErrorMessageText = "A Primary Email Address is still set, but the corresponding E-Mail Address record is not current. Change the 'Primary Email' setting to a current E-Mail Address!")]
         public const String ERR_PRIMARY_EMAIL_ADDR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00037V";
 
         /// <summary>A Primary Email Address has been set but it doesn't match any E-Mail Address records.</summary>
-        [ErrCodeAttribute("Primary Email Address Set But it Does Not Match any E-Mail Addresses record",
-             ErrorMessageText = "A Primary Email Address was set, but it did not match any E-Mail Address that are on file. It has therefore been removed from the 'Primary E-Mail' choices. Change the Primary Email Address to a current E-Mail Address!")]
+        [ErrCodeAttribute("Primary Email Address Set But it Does Not Match any E-Mail Addresses' record",
+             ErrorMessageText = "A Primary Email Address was set, but it did not match any of the E-Mail Addresss that are on file. It has therefore been removed from the 'Primary E-Mail' choices. Change the 'Primary Email' setting to a current E-Mail Address!")]
         public const String ERR_PRIMARY_EMAIL_ADDR_SET_BUT_NOT_AMONG_EMAIL_ADDR = "PARTN.00038V";
+
+        /// <summary>A Primary Phone Number has been set but there are no current Phone Numbers available.</summary>
+        [ErrCodeAttribute("Primary Phone Number Set But No Phone Numbers on File",
+             ErrorMessageText = "A Primary Phone Number was set, but there are no current Phone Numbers available. It has therefore been removed from the 'Primary Phone' choices and no 'Primary Phone' is set any longer!")]
+        public const String ERR_PRIMARY_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL = "PARTN.00039V";
+
+        /// <summary>A Primary Phone Number has been set but there are no current Phone Numbers available.</summary>
+        [ErrCodeAttribute("Primary Phone Number Set But the Phone Numbers' record is not current",
+             ErrorMessageText = "A Primary Phone Number is still set, but the corresponding Phone Number record is not current. Change the 'Primary Phone' setting to a current Phone Number!")]
+        public const String ERR_PRIMARY_PHONE_NR_SET_BUT_IT_ISNT_CURRENT = "PARTN.00040V";
+
+        /// <summary>A Primary Phone Number has been set but it doesn't match any Phone Number records.</summary>
+        [ErrCodeAttribute("Primary Phone Number Set But it Does Not Match any Phone Numbers' record",
+             ErrorMessageText = "A Primary Phone Number was set, but it did not match any of the Phone Numbers that are on file. It has therefore been removed from the 'Primary Phone' choices. Change the 'Primary Phone' setting to a current Phone Number!")]
+        public const String ERR_PRIMARY_PHONE_NR_SET_BUT_NOT_AMONG_PHONE_NRS = "PARTN.00041V";
         
         #region Subscriptions
 

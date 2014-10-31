@@ -44,10 +44,10 @@ RootNode:
             Width: 170
             OptionalValues: [=,Phone, E-Mail, Letter, Skype, Lync, Digital Media, Instant Messaging & Chat]
             Validation: true
-        cmbPrimaryPhoneForContacting: {Label=Primary Ph&one, List=UserDefinedList, ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true}
-        cmbPhoneWithinTheOrganisation: {Label=Office Phone, List=UserDefinedList, ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true}
+        cmbPrimaryPhoneForContacting: {Label=Primary Ph&one, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true,OnChange=HandlePrimaryPhoneSelectedValueChanged}
+        cmbPhoneWithinTheOrganisation: {Label=Office Phone, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true}
         cmbPrimaryEMail: {Label=Primary E-&Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
-        cmbEMailWithinTheOrganisation: {Label=Office E-Mai&l, List=UserDefinedList, ComboBoxWidth=170, Width=170, Validation=true}
+        cmbEMailWithinTheOrganisation: {Label=Office E-Mai&l, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true}
         btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
         btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
        
