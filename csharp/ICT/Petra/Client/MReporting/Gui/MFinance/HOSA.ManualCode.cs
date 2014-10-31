@@ -136,6 +136,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private Boolean LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
+            
+            pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
+            
+            // 0 = Full Report. Currently the only option for this report.
+            pm.Add("param_run_number", 0);
 
             String Csv = "";
 
@@ -174,7 +179,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 if (PeriodEnd > PeriodStart)
                 {
-                    PeriodTitle = String.Format("{0} - {1}", PeriodEnd, PeriodStart) + PeriodTitle;
+                    PeriodTitle = String.Format("{0} - {1}", PeriodStart, PeriodEnd) + PeriodTitle;
                 }
                 else
                 {
