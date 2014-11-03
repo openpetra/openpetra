@@ -57,7 +57,8 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            bool NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
             AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
@@ -71,7 +72,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                 Transaction);
             AEndDateLastForwardingPeriod = AccountingPeriodTable[0].PeriodEndDate;
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
 
             return true;
         }

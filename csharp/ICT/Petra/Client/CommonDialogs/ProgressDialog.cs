@@ -48,13 +48,13 @@ namespace Ict.Petra.Client.CommonDialogs
         /// </summary>
         /// <param name="AWorkerThread">The Thread that performs the work that the progress dialog shows the progress of.</param>
         /// <param name="AShowCancellationConfirmationQuestion">In case the user requests a cancellation: should
-        /// <param name="AQueryServerForProgress">does this track a process on the server</param>
         /// a Yes/No MessageBox for the confirmation of the cancellation be shown, or not? NOTE: If that
         /// MessageBox should be shown then the consequence of doing this is that the Thread will still be continuing
         /// the work it is performing until the user chooses 'Yes', which can result in the work being finished
         /// before the user had a chance to read the message of the MessageBox and press 'Yes' - and that might
         /// well not be what the user wants!!! So, in general this Argument should be set to true only for
         /// Threads that are running a substantial amount of time. (Default=false).</param>
+        /// <param name="AQueryServerForProgress">does this track a process on the server</param>
         public TProgressDialog(Thread AWorkerThread, bool AShowCancellationConfirmationQuestion = false, bool AQueryServerForProgress = true) : base()
         {
             //
