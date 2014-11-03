@@ -667,11 +667,14 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public override int GetJobSize()
         {
+            return 0; // I can't know the Job size?
+/*
             bool blnOldInfoMode = FInfoMode;
             FInfoMode = true;
             int EntryCount = RunOperation();
             FInfoMode = blnOldInfoMode;
             return EntryCount;
+ */
         }
 
         private DataTable LoadTable(int ALedgerNumber, int AYear, TDBTransaction ATransaction)

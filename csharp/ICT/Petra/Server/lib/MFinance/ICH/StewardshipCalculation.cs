@@ -72,15 +72,14 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             int APeriodNumber,
             out TVerificationResultCollection AVerificationResult)
         {
-            bool NewTransaction;
-
 /*
  *          if (TLogging.DL >= 9)
  *          {
- *              //Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation called.");
+ *              Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation...");
  *          }
  */
             AVerificationResult = new TVerificationResultCollection();
+            bool NewTransaction;
 
             TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 out NewTransaction);
@@ -550,8 +549,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     if (DestinationAccount[CostCentreRow.CostCentreCode] != MFinanceConstants.ICH_ACCT_ICH)
                     // I'm creating a transaction right here for this "non-ICH" CostCentre.
-                         // This potentially means that there will be multiple transactions to the "non-ICH" account,
-                         // whereas the ICH account has only a single transaction, but that's not big deal:
+                    // This potentially means that there will be multiple transactions to the "non-ICH" account,
+                    // whereas the ICH account has only a single transaction, but that's not big deal:
                     {
                         if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
                                 Catalog.GetString("Non-ICH foreign fund Clearing"),
@@ -572,7 +571,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         NonIchTransactionsIncluded = true;
                     }
 
-                    /* Generate the transction to 'balance' the foreign fund -
+                    /* Generate the transaction to 'balance' the foreign fund -
                      *  in the ICH settlement account.
                      */
 
@@ -582,7 +581,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
                                 Catalog.GetString("ICH Monthly Clearing"),
-                                DestinationAccount[CostCentreRow.CostCentreCode],
+                                MFinanceConstants.ICH_ACCT_SETTLEMENT, // DestinationAccount[CostCentreRow.CostCentreCode],
                                 CostCentreRow.CostCentreCode, SettlementAmount, PeriodEndDate, DrCrIndicator,
                                 Catalog.GetString("ICH Process"), true, SettlementAmount,
                                 out GLTransactionNumber))
@@ -913,7 +912,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
              *  each account. */
             GLStewardshipCalculationTDSCreditFeeTotalTable CreditFeeTotalDT = new GLStewardshipCalculationTDSCreditFeeTotalTable();
             //int x = CreditFeeTotalDT.Count;
-            GLStewardshipCalculationTDSCreditFeeTotalRow CreditFeeTotalDR = null;
 
             /* Retrieve info on the ledger. */
             ALedgerTable AvailableLedgers = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ADBTransaction);
@@ -1095,8 +1093,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                     DataRow pFR2 = ProcessedFeeDataTable2.Rows[j];
 
                                     DrFeeTotal = DrFeeTotal + Math.Round(Convert.ToDecimal(
-                                            pFR2[AProcessedFeeTable.GetPeriodicAmountDBName()]), NumDecPlaces);                                                                                    //pFR2.PeriodicAmount; //ROUND(pFR2.PeriodicAmount,
-                                                                                                                                                                                                   // lv_dp)
+                                            pFR2[AProcessedFeeTable.GetPeriodicAmountDBName()]), NumDecPlaces);        //pFR2.PeriodicAmount; //ROUND(pFR2.PeriodicAmount,
+                                                                                                                       // lv_dp)
 
                                     if (j == (FeeCodeRowCount - 1))                                      //implies last of the CostCentre rows for this feecode
                                     {
@@ -1113,8 +1111,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                                 //lv_dr_fee_total remains unchanged
                                             }
 
-                                            /* Generate the transction to deduct the fee amount from
-                                             *  the source cost centre. (Expense leg) */
+                                            /*
+                                             * Generate the transaction to deduct the fee amount from the source cost centre. (Expense leg)
+                                             */
                                             //RUN gl1130o.p -> gl1130.i
                                             //Create a transaction
                                             if (!TGLPosting.CreateATransaction(AdminFeeDS,
@@ -1156,35 +1155,39 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             (DateTime.Today.TimeOfDay.Hours * 3600 + DateTime.Today.TimeOfDay.Minutes * 60 + DateTime.Today.TimeOfDay.Seconds);
 
                         /* Add the charges on this account to the fee total,
-                         * creating an entry if necessary. (This is for the income total) */
-                        CreditFeeTotalDR = (GLStewardshipCalculationTDSCreditFeeTotalRow)CreditFeeTotalDT.Rows.Find(new object[] { DestCostCentreCode,
-                                                                                                                                   DestAccountCode });                   //, CreditFeeTotalDR.TransactionAmount});
+                         * creating an entry if necessary. (This is for the income total) 
+                         */
+                        GLStewardshipCalculationTDSCreditFeeTotalRow CreditFeeTotalRow = (GLStewardshipCalculationTDSCreditFeeTotalRow)
+                            CreditFeeTotalDT.Rows.Find(new object[] { DestCostCentreCode, DestAccountCode });
 
-                        if (CreditFeeTotalDR != null)
+                        if (CreditFeeTotalRow != null)
                         {
-                            CreditFeeTotalDR.TransactionAmount += Math.Round(pFR.PeriodicAmount, NumDecPlaces);
+                            CreditFeeTotalRow.TransactionAmount += Math.Round(pFR.PeriodicAmount, NumDecPlaces);
                         }
                         else
                         {
-                            CreditFeeTotalDR = CreditFeeTotalDT.NewRowTyped();
-                            CreditFeeTotalDR.CostCentreCode = DestCostCentreCode;
-                            CreditFeeTotalDR.AccountCode = DestAccountCode;
-                            CreditFeeTotalDR.TransactionAmount = Math.Round(pFR.PeriodicAmount, NumDecPlaces);
-                            CreditFeeTotalDT.Rows.Add(CreditFeeTotalDR);
+                            CreditFeeTotalRow = CreditFeeTotalDT.NewRowTyped();
+                            CreditFeeTotalRow.CostCentreCode = DestCostCentreCode;
+                            CreditFeeTotalRow.AccountCode = DestAccountCode;
+                            CreditFeeTotalRow.TransactionAmount = Math.Round(pFR.PeriodicAmount, NumDecPlaces);
+                            CreditFeeTotalDT.Rows.Add(CreditFeeTotalRow);
                         }
                     }
 
                     /* Generate the transaction to credit the fee amounts to
-                     * the destination accounts. (Income leg) */
+                     * the destination accounts. (Income leg)
+                     */
                     for (int k = 0; k < CreditFeeTotalDT.Count; k++)
                     {
-                        GLStewardshipCalculationTDSCreditFeeTotalRow cFT = (GLStewardshipCalculationTDSCreditFeeTotalRow)CreditFeeTotalDT.Rows[k];
+                        GLStewardshipCalculationTDSCreditFeeTotalRow cFT = (GLStewardshipCalculationTDSCreditFeeTotalRow)
+                            CreditFeeTotalDT.Rows[k];
 
                         if (cFT.TransactionAmount < 0)
                         {
                             /* The case of a negative gift total should be very rare.
                              * It would only happen if, for instance, the was only
-                             * a reversal but no new gifts for a certain ledger. */
+                             * a reversal but no new gifts for a certain ledger. 
+                             */
                             DrCrIndicator = true; //Debit
                             TransactionAmount = -cFT.TransactionAmount;
                         }
@@ -1259,7 +1262,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         throw new System.InvalidOperationException(ErrorMessage);
                     }
 
-                    //End of Trnsaction block in 4GL
+                    //End of Transaction block in 4GL
 
                     /* Print the Admin Fee Calculations report, if requested */
                     if (APrintReport && IsSuccessful)
@@ -1276,7 +1279,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             catch (Exception ex)
             {
                 ErrorContext = Catalog.GetString("Generate Admin Fee Batch");
-                ErrorMessage = String.Format(Catalog.GetString("Unknown error while generating admin fee batch for Ledger: {0}" +
+                ErrorMessage = String.Format(Catalog.GetString("Error while generating admin fee batch for Ledger {0}:" +
                         Environment.NewLine + Environment.NewLine + ex.ToString()),
                     ALedgerNumber
                     );
