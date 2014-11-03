@@ -25,7 +25,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
@@ -77,6 +79,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private string FDefaultContactType = String.Empty;
 
+        /// <summary>Holds a reference to an ImageList containing Icons that can be shown in Grid Rows</summary>
+        private ImageList FGridRowIconsImageList;
+        
         private TPartnerAttributeTypeValueKind FValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
 
         System.Windows.Forms.Timer ShowMessageBoxTimer = new System.Windows.Forms.Timer();
@@ -266,7 +271,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Extra Tab initialisation on inital Tab 'activation'.
         /// </summary>
         public void SpecialInitUserControl()
-        {
+        {            
             // Set up special sort order of Rows in Grid:
             // PPartnerAttributeCategory.Index followed by PPartnerAttributeType.Index followed by PPartnerAttribute.Index!
             DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
@@ -360,6 +365,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
+            String ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir", true);
+            
+            // initialize Image List
+            FGridRowIconsImageList = new System.Windows.Forms.ImageList();
+            FGridRowIconsImageList.ImageSize = new System.Drawing.Size(16, 16);
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "PrimaryPhone.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "PrimaryEmail.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.Images.Add(TIconCache.IconCache.AddOrGetExistingIcon(ResourceDirectory + Path.DirectorySeparatorChar +
+                    "Completeley_Empty.ico", TIconCache.TIconSize.is16by16));
+            FGridRowIconsImageList.TransparentColor = System.Drawing.Color.Transparent;
+            
             if (!FMainDS.Tables.Contains(PPartnerAttributeTable.GetTableName()))
             {
                 FMainDS.Tables.Add(new PartnerEditTDSPPartnerAttributeTable());
@@ -596,7 +614,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            // Add the avilable Phone Numbers to the ComboBox
+            // Add the available Phone Numbers to the ComboBox
             cmbPrimaryPhoneForContacting.Items.Clear();
             cmbPrimaryPhoneForContacting.Items.AddRange(PrimaryPhoneNumbers);
 
@@ -611,7 +629,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                CurrentlySelectedPhoneNr = ANewPhoneNumberValue ?? CurrentlySelectedPhoneNr;    
+                   CurrentlySelectedPhoneNr = ANewPhoneNumberValue ?? CurrentlySelectedPhoneNr;
 
                 cmbPrimaryPhoneForContacting.SetSelectedString(CurrentlySelectedPhoneNr);                
             }
@@ -1465,7 +1483,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // Get rid of the Columns as added per YAML file as we need to show calculated Columns!
             grdDetails.Columns.Clear();
-// TODO           FDataGrid.AddImageColumn(@GetAddressKindIconForGridRow);
+            
+            grdDetails.AddImageColumn(@GetPrimaryIconForGridRow);
 
             //
             // Contact Type
@@ -1531,17 +1550,49 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void LaunchHyperlinkPrefEMail(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Launching of E-Mail program not implemented yet! (Clicked: Button next to 'Primary E-Mail'.)");
+            // TODO Replace this 'quick solution' when the txtValue Control is replaced with the proper rtbValue Control!
+            TRtbHyperlinks.DisplayHelper Launcher = new TRtbHyperlinks.DisplayHelper(new TRtbHyperlinks());
+            
+            Launcher.LaunchHyperLink(cmbPrimaryEMail.GetSelectedString(), "||email||");
         }
 
         private void LaunchHyperlinkEMailWithinOrg(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Launching of E-Mail program not implemented yet! (Clicked: Button next to 'Office E-Mail'.)");
+            // TODO Replace this 'quick solution' when the txtValue Control is replaced with the proper rtbValue Control!
+            TRtbHyperlinks.DisplayHelper Launcher = new TRtbHyperlinks.DisplayHelper(new TRtbHyperlinks());
+            
+            Launcher.LaunchHyperLink(cmbPrimaryEMail.GetSelectedString(), "||email||");
         }
 
         private void LaunchHyperlinkFromValue(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Launching of E-Mail program / hyperlink / Skype not implemented yet! (Clicked: Button next to 'Value'.)");
+            TRtbHyperlinks TempHyperlinkCtrl = new TRtbHyperlinks();            
+            string LinkType = String.Empty;
+            
+            // TODO Replace this 'quick solution' when the txtValue Control is replaced with the proper rtbValue Control!
+            TRtbHyperlinks.DisplayHelper Launcher = new TRtbHyperlinks.DisplayHelper(TempHyperlinkCtrl);
+            
+            switch (FValueKind) 
+            {
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
+                    LinkType = THyperLinkHandling.HYPERLINK_PREFIX_URLLINK;
+                    break;
+                    
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
+                    TempHyperlinkCtrl.BuildLinkWithValue = BuildLinkWithValue;
+                    LinkType = THyperLinkHandling.HYPERLINK_PREFIX_URLWITHVALUELINK;
+                    break;                    
+                    
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
+                    LinkType = THyperLinkHandling.HYPERLINK_PREFIX_EMAILLINK;                    
+                    break;
+                    
+                case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
+                    LinkType = THyperLinkHandling.HYPERLINK_PREFIX_SKYPELINK;                    
+                    break;                    
+            }
+            
+            Launcher.LaunchHyperLink(txtValue.Text, LinkType);
         }
         
         private void FilterCriteriaChanged(object sender, EventArgs e)
@@ -1861,8 +1912,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 UpdateValueManual();
-                
-                if (cmbContactCategory.Enabled)
+
+                if (!FRunningInsideShowDetails)
                 {
                     if (PreviousValueKind != FValueKind)
                     {                    
@@ -1895,12 +1946,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                     else
-                    {
+                    {                        
                         // This might seem unnecessary as the 'PreviousValueKind' and 'FValueKind' are the same - 
                         // However, it isn't, as 'Fax Numbers' are to be excluded from the 'Primary Phone' ComboBox but  
                         // if a user changes between 'Phone' and 'Fax' there is no difference between 'PreviousValueKind' 
                         // and 'FValueKind' and yet we need to update the Combo!
-                        UpdatePrimaryPhoneComboItems();                        
+                        UpdatePrimaryPhoneComboItems();
+
+                        // TODO Also detect if GetSelectedDetailRow().Primary = true and set it to 'false' if Fax was chosen
+                        // and show message to the user as above.
                     }
                 }
             }
@@ -2306,7 +2360,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         cmbContactCategory.cmbCombobox.SetSelectedString("Phone");
                         cmbContactType.cmbCombobox.SetSelectedString("Phone");
                     }
-                    
+
+                    // Effect a Value-leave event to ensure that any change in the Value gets reflected everywhere
+                    txtComment.Focus();
                     txtValue.Focus();
                     
                     return true;
@@ -2328,6 +2384,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         cmbContactType.cmbCombobox.SetSelectedString("E-Mail");
                     }
 
+                    // Effect a Value-leave event to ensure that any change in the Value gets reflected everywhere
+                    txtComment.Focus();
                     txtValue.Focus();
                     
                     return true;
@@ -2349,6 +2407,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         cmbContactType.cmbCombobox.SetSelectedString("Web Site");
                     }
                     
+                    // Effect a Value-leave event to ensure that any change in the Value gets reflected everywhere
+                    txtComment.Focus();
                     txtValue.Focus();
                     
                     return true;
@@ -2370,6 +2430,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         cmbContactType.cmbCombobox.SetSelectedString("Skype");
                     }
                     
+                    // Effect a Value-leave event to ensure that any change in the Value gets reflected everywhere
+                    txtComment.Focus();
                     txtValue.Focus();
                     
                     return true;
@@ -2402,6 +2464,67 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
         
+        /// <summary>
+        /// Determines the Primary Icon (displayed in the first Column of the Grid).
+        /// </summary>
+        /// <param name="ARow">Grid Row.</param>
+        /// <returns>Primary Icon.</returns>
+        public System.Drawing.Image GetPrimaryIconForGridRow(int ARow)
+        {
+            System.Drawing.Image ReturnValue = null;
+            PPartnerAttributeRow PartnerAttributeDR = null;
+            DataRowView RowView;
+            bool IsPrimaryPhone = false;
+            
+            if (FGridRowIconsImageList != null) 
+            {
+                RowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(ARow + 1);
+    
+                if (RowView != null)
+                {
+                    PartnerAttributeDR = (PPartnerAttributeRow)(RowView.Row);
+                }
+    
+                if ((PartnerAttributeDR != null)
+                    && (PartnerAttributeDR.RowState != DataRowState.Deleted)
+                    && (PartnerAttributeDR.RowState != DataRowState.Detached))
+                {
+                    if (PartnerAttributeDR.Primary)
+                    {
+                        for (int Counter = 0; Counter < FPhoneAttributesDV.Count; Counter++) 
+                        {
+                            if (PartnerAttributeDR.AttributeType == ((PPartnerAttributeTypeRow)FPhoneAttributesDV[Counter].Row).AttributeType) 
+                            {
+                                IsPrimaryPhone = true;
+                                break;
+                            }
+                        }
+                        
+                        // One of the Primary Icons - either for Primary Phone or Primary Email
+                        if (IsPrimaryPhone) 
+                        {
+                            ReturnValue = FGridRowIconsImageList.Images[0];    
+                        }
+                        else
+                        {
+                            ReturnValue = FGridRowIconsImageList.Images[1];
+                        }
+                    }
+                    else
+                    {
+                        // Empty Icon
+                        ReturnValue = FGridRowIconsImageList.Images[2];
+                    }
+                }
+                else
+                {
+                    // Empty Icon
+                    ReturnValue = FGridRowIconsImageList.Images[2];
+                }
+            }
+            
+            return ReturnValue;
+        }        
     }
 
     /// <summary>
