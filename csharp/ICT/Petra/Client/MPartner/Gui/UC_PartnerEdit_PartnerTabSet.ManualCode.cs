@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrSubscriptionsTabHeader = Catalog.GetString("Subscriptions");
 
-        private static readonly string StrContactsTabHeader = Catalog.GetString("Contacts");
+        private static readonly string StrContactsTabHeader = Catalog.GetString("Contact Logs");
         
         private static readonly string StrSpecialTypesTabHeader = Catalog.GetString("Special Types");
 

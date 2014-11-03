@@ -35,8 +35,8 @@ RootNode:
         actMaintainPartnerDetails: {Label=&Partner Details, ActionClick=MaintainPartnerDetails, Image: Details.ico}
         actMaintainFoundationDetails: {Label=Foundation Details, ActionClick=MaintainFoundationDetails, Image: Foundations.ico}
         actMaintainSubscriptions: {Label=&Subscriptions, ActionClick=MaintainSubscriptions, Image: Subscriptions.ico}
+        actMaintainContacts: {Label=&Contact Logs, ActionClick=MaintainContacts, Image: RecordedContacts.ico}
         actMaintainSpecialTypes: {Label=Special &Types, ActionClick=MaintainSpecialTypes, Image: Types.ico}
-        actMaintainContacts: {Label=&Contacts, ActionClick=MaintainContacts, Image: RecordedContacts.ico}
         actMaintainFamilyMembers: {Label=Fa&mily Members, ActionClick=MaintainFamilyMembers, Image: FamilyMembers.ico}
         actMaintainRelationships: {Label=&Relationships, ActionClick=MaintainRelationships, Image: Relationships.ico}
         actMaintainInterests: {Label=&Interests, ActionClick=MaintainInterests, Image: PartnerInterest.ico}

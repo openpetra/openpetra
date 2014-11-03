@@ -37,7 +37,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             TableName: PContactLog
-            Columns: [ContactDate, ContactCode, Contactor, ContactComment, MailingCode]
+            Columns: [ContactDate, ContactCode, Contactor, MailingCode, ContactComment]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Fill

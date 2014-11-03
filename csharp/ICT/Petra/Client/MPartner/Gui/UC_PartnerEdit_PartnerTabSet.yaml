@@ -45,7 +45,7 @@ RootNode:
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_Subscriptions
 
         tpgContacts: {LoadPageDynamically=true}
-            Label: Contacts ({0})
+            Label: Contact Logs ({0})
             Image: RecordedContacts.ico
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_Contacts
        
