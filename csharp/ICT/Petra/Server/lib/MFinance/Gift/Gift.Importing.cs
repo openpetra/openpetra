@@ -154,9 +154,9 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// </summary>
         /// <param name="ARequestParams">Hashtable containing the given params </param>
         /// <param name="AImportString">Big parts of the export file as a simple String</param>
-        /// <param name="AImportString">Big parts of the export file as a simple String</param>
         /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
         /// import becuase their Family recipients do not have an active Gift Destination</param>
+        /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         public bool ImportGiftBatches(
             Hashtable ARequestParams,

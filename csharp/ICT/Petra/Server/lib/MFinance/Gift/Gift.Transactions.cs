@@ -2786,6 +2786,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="requestParams">Hashtable containing the given params </param>
         /// <param name="importString">The import file as a simple String</param>
+        /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
+        /// import becuase their Family recipients do not have an active Gift Destination</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
