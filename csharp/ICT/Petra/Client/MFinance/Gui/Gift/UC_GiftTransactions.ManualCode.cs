@@ -2130,12 +2130,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // if the last gift was a split gift (multiple details) then ask the user if they would like this new gift to also be split
             if ((GiftDetailTable != null) && (GiftDetailTable.Rows.Count > 1))
             {
+            	GiftDetailTable.DefaultView.Sort = GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName() + " ASC";
+            	
                 string Message = string.Format(Catalog.GetString(
                         "The last gift from this donor was a split gift.{0}{0}Here are the details:{0}"), "\n");
                 int DetailNumber = 1;
 
-                foreach (GiftBatchTDSAGiftDetailRow Row in GiftDetailTable.Rows)
+                foreach (DataRowView dvr in GiftDetailTable.DefaultView)
                 {
+                	GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)dvr.Row;
+                	
                     Message += DetailNumber + ")  ";
 
                     if (Row.RecipientKey > 0)
@@ -2163,27 +2167,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 while (true)
                 {
+                	GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)GiftDetailTable.DefaultView[CurrentTransaction].Row;
+                	
                     // populate gift detail
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", GiftDetailTable[CurrentTransaction].RecipientKey);
-                    cmbDetailMotivationGroupCode.SetSelectedString(GiftDetailTable[CurrentTransaction].MotivationGroupCode);
-                    cmbDetailMotivationDetailCode.SetSelectedString(GiftDetailTable[CurrentTransaction].MotivationDetailCode);
-                    txtDetailGiftCommentOne.Text = GiftDetailTable[CurrentTransaction].GiftCommentOne;
-                    cmbDetailCommentOneType.SetSelectedString(GiftDetailTable[CurrentTransaction].CommentOneType, -1);
-                    txtDetailGiftCommentTwo.Text = GiftDetailTable[CurrentTransaction].GiftCommentTwo;
-                    cmbDetailCommentTwoType.SetSelectedString(GiftDetailTable[CurrentTransaction].CommentTwoType, -1);
-                    txtDetailGiftCommentThree.Text = GiftDetailTable[CurrentTransaction].GiftCommentThree;
-                    cmbDetailCommentThreeType.SetSelectedString(GiftDetailTable[CurrentTransaction].CommentThreeType, -1);
-                    chkDetailConfidentialGiftFlag.Checked = GiftDetailTable[CurrentTransaction].ConfidentialGiftFlag;
-                    chkDetailChargeFlag.Checked = GiftDetailTable[CurrentTransaction].ChargeFlag;
-                    chkDetailTaxDeductible.Checked = GiftDetailTable[CurrentTransaction].TaxDeductible;
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", Row.RecipientKey);
+                    cmbDetailMotivationGroupCode.SetSelectedString(Row.MotivationGroupCode);
+                    cmbDetailMotivationDetailCode.SetSelectedString(Row.MotivationDetailCode);
+                    txtDetailGiftCommentOne.Text = Row.GiftCommentOne;
+                    cmbDetailCommentOneType.SetSelectedString(Row.CommentOneType, -1);
+                    txtDetailGiftCommentTwo.Text = Row.GiftCommentTwo;
+                    cmbDetailCommentTwoType.SetSelectedString(Row.CommentTwoType, -1);
+                    txtDetailGiftCommentThree.Text = Row.GiftCommentThree;
+                    cmbDetailCommentThreeType.SetSelectedString(Row.CommentThreeType, -1);
+                    chkDetailConfidentialGiftFlag.Checked = Row.ConfidentialGiftFlag;
+                    chkDetailChargeFlag.Checked = Row.ChargeFlag;
+                    chkDetailTaxDeductible.Checked = Row.TaxDeductible;
                     ToggleTaxDeductible(this, null);
-                    cmbDetailMailingCode.SetSelectedString(GiftDetailTable[CurrentTransaction].MailingCode, -1);
+                    cmbDetailMailingCode.SetSelectedString(Row.MailingCode, -1);
                     KeyMinistryChanged(this, null);
 
                     if (SplitGift)
                     {
                         // only populate amount if a split gift
-                        txtDetailGiftTransactionAmount.NumberValueDecimal = GiftDetailTable[CurrentTransaction].GiftTransactionAmount;
+                        txtDetailGiftTransactionAmount.NumberValueDecimal = Row.GiftTransactionAmount;
                         CurrentTransaction++;
 
                         // if there are more details that are part of this gift
@@ -2302,7 +2308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
                          GiftDestinationTable.Rows)
                 {
-                    DateTime GiftDate = FPreviouslySelectedDetailRow.DateEntered;
+                	DateTime GiftDate = (DateTime) dtpDateEntered.Date;
 
                     // check if record is active for the Gift Date
                     if ((Row.DateEffective <= GiftDate)

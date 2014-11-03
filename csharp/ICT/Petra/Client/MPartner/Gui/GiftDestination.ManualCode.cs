@@ -278,17 +278,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ShowDetailsManual(FPreviouslySelectedDetailRow);
                 }
-
-                // Broadcast message to update partner's Partner Edit screen if open
-                TFormsMessage BroadcastMessage;
-
-                BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGiftDestinationChanged);
-
-                BroadcastMessage.SetMessageDataGiftDestination(
-                    FPartnerKey,
-                    FMainDS.PPartnerGiftDestination);
-
-                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+                
+                if (!this.Modal)
+                {
+	                // Broadcast message to update partner's Partner Edit screen if open
+	                TFormsMessage BroadcastMessage;
+	
+	                BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGiftDestinationChanged);
+	
+	                BroadcastMessage.SetMessageDataGiftDestination(
+	                    FPartnerKey,
+	                    FMainDS.PPartnerGiftDestination);
+	
+	                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+                }
             }
         }
 

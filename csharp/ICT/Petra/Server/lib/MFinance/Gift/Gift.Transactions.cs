@@ -2791,12 +2791,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static bool ImportGiftBatches(
             Hashtable requestParams,
             String importString,
+            out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
             out TVerificationResultCollection AMessages
             )
         {
             TGiftImporting importing = new TGiftImporting();
 
-            return importing.ImportGiftBatches(requestParams, importString, out AMessages);
+            return importing.ImportGiftBatches(requestParams, importString, out ANeedRecipientLedgerNumber, out AMessages);
         }
 
         /// <summary>
