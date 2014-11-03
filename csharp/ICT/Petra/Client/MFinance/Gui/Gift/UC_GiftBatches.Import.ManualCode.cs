@@ -126,70 +126,71 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
                     requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
-                    
+
                     bool Repeat = true;
 
                     while (Repeat)
                     {
-                    	Repeat = false;
+                        Repeat = false;
 
-	                    String importString = File.ReadAllText(dialog.FileName);
-	                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
-	                    GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
-	                    	
-	                    Thread ImportThread = new Thread(() => ImportGiftBatches(
-	                            requestParams,
-	                            importString,
-	                            out AMessages,
-	                            out ok,
-	                            out NeedRecipientLedgerNumber));
-	
-	                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
-	                    {
-	                        ImportDialog.ShowDialog();
-	                    }
-	
-	                    ShowMessages(AMessages);
-	                    
-	                    // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
-	                    // then the import will have failed and we need to alert the user
-	                    if (NeedRecipientLedgerNumber.Rows.Count > 0)
-	                    {
-	                    	bool OfferToRunImportAgain = true;
-	                    	
-	                    	// for each gift in which the recipient needs a Git Destination
-	                    	foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
-	                    	{
-	                    		if (MessageBox.Show(string.Format(
-	                				Catalog.GetString("Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
-	                    				Row.RecipientDescription, Row.RecipientKey) + 
-	                				"\n\n" +
-	                                Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
-	                                Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-	                                == DialogResult.Yes)
-	                    		{
-	                    			// allow the user to assign a Gift Destingation
-	                    			TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), Row.RecipientKey);
-	                    			GiftDestinationForm.ShowDialog();
-	                    		}
-	                    		else
-	                    		{
-	                    			OfferToRunImportAgain = false;
-	                    		}
-	                    	}
-	                    	
-	                    	// if the user has clicked yes to assigning Gift Destinations then offer to restart the import
-	                    	if (OfferToRunImportAgain &&
-	                    	    MessageBox.Show(Catalog.GetString("Would you like to import this Gift Batch again?"),
-	                    	                   Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-	                    	   					== DialogResult.Yes)
-	                    	{
-	                    		Repeat = true;
-	                    	}
-	                    }
+                        String importString = File.ReadAllText(dialog.FileName);
+                        TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                        GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
+
+                        Thread ImportThread = new Thread(() => ImportGiftBatches(
+                                requestParams,
+                                importString,
+                                out AMessages,
+                                out ok,
+                                out NeedRecipientLedgerNumber));
+
+                        using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                        {
+                            ImportDialog.ShowDialog();
+                        }
+
+                        ShowMessages(AMessages);
+
+                        // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
+                        // then the import will have failed and we need to alert the user
+                        if (NeedRecipientLedgerNumber.Rows.Count > 0)
+                        {
+                            bool OfferToRunImportAgain = true;
+
+                            // for each gift in which the recipient needs a Git Destination
+                            foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
+                            {
+                                if (MessageBox.Show(string.Format(
+                                            Catalog.GetString(
+                                                "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
+                                            Row.RecipientDescription, Row.RecipientKey) +
+                                        "\n\n" +
+                                        Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
+                                        Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                                    == DialogResult.Yes)
+                                {
+                                    // allow the user to assign a Gift Destingation
+                                    TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), Row.RecipientKey);
+                                    GiftDestinationForm.ShowDialog();
+                                }
+                                else
+                                {
+                                    OfferToRunImportAgain = false;
+                                }
+                            }
+
+                            // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
+                            if (OfferToRunImportAgain
+                                && (MessageBox.Show(Catalog.GetString("Would you like to import this Gift Batch again?"),
+                                        Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                    == DialogResult.Yes))
+                            {
+                                Repeat = true;
+                            }
+                        }
                     }
                 }
-                
+
                 if (ok)
                 {
                     MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
@@ -221,7 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
-            
+
 
             ImportIsSuccessful = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
                 ARequestParams,

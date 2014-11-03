@@ -291,18 +291,18 @@ namespace Ict.Tools.DataDumpPetra2
             StringCollection NewColumnNames;
             int RowCounter = 0;
 
-            if (AOldTable != null) 
+            if (AOldTable != null)
             {
-                OldColumnNames = GetColumnNames(AOldTable);    
+                OldColumnNames = GetColumnNames(AOldTable);
             }
-            
+
             NewColumnNames = GetColumnNames(ANewTable);
-            
+
             string[] NewRow = CreateRow(NewColumnNames);
 
             // This existing and populated table's data is completely changed. We do not want to import any of it's contents.
             if ((ANewTable.strName == "pt_language_level")
-               || (ANewTable.strName == "p_partner_attribute_category"))
+                || (ANewTable.strName == "p_partner_attribute_category"))
             {
                 RowCounter += FixData(ANewTable.strName, NewColumnNames, ref NewRow, AWriter, AWriterTest);
 
@@ -314,7 +314,6 @@ namespace Ict.Tools.DataDumpPetra2
 
             PrepareTable(AOldTable, ANewTable, ref MappingOfFields, ref DefaultValues);
 
-            
             while (true)
             {
                 string[] OldRow = AParser.ReadNextRow();
@@ -372,7 +371,7 @@ namespace Ict.Tools.DataDumpPetra2
                     Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_partner_key_n")),
                     GetValue(AColumnNames, ANewRow, "p_partner_class_c"));
             }
-                
+
             // update pub.a_account_property set a_property_value_c = 'true' where a_property_code_c = 'Bank Account';
             if (ATableName == "a_account_property")
             {
@@ -783,34 +782,38 @@ namespace Ict.Tools.DataDumpPetra2
                 string PhoneExtension;
                 string FaxExtension;
 
-                
+
                 PartnerKey = Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_partner_key_n"));
-                
-                // If we haven't yet recorded the certain values of p_partner_location records for this Partner then create a new 
-                // data structure for this Partner that can hold those. That data structure will be processed and used for the 
+
+                // If we haven't yet recorded the certain values of p_partner_location records for this Partner then create a new
+                // data structure for this Partner that can hold those. That data structure will be processed and used for the
                 // creation of records for the new 'Contact Details' scheme (held in the p_partner_attribute DB Table).
                 if (!TPartnerContactDetails.PartnerLocationRecords.TryGetValue(PartnerKey, out PartnerLocationsDT))
                 {
-                    PartnerLocationsDT = TPartnerContactDetails.BestAddressHelper.GetNewPPartnerLocationTableInstance();                    
-                    
+                    PartnerLocationsDT = TPartnerContactDetails.BestAddressHelper.GetNewPPartnerLocationTableInstance();
+
                     TPartnerContactDetails.PartnerLocationRecords.Add(PartnerKey, PartnerLocationsDT);
                 }
 
                 DateEffectiveStr = GetValue(AColumnNames, ANewRow, "p_date_effective_d");
-                DateEffectiveColValue = DateEffectiveStr == "\\N" ? System.DBNull.Value : (object)DateTime.ParseExact(DateEffectiveStr, "yyyy-dd-mm", CultureInfo.InvariantCulture);
+                DateEffectiveColValue = DateEffectiveStr == "\\N" ? System.DBNull.Value : (object)DateTime.ParseExact(DateEffectiveStr,
+                    "yyyy-dd-mm",
+                    CultureInfo.InvariantCulture);
                 DateGoodUntilStr = GetValue(AColumnNames, ANewRow, "p_date_good_until_d");
-                DateGoodUntilColValue = DateGoodUntilStr == "\\N" ? System.DBNull.Value: (object)DateTime.ParseExact(DateGoodUntilStr, "yyyy-dd-mm", CultureInfo.InvariantCulture);               
+                DateGoodUntilColValue = DateGoodUntilStr == "\\N" ? System.DBNull.Value : (object)DateTime.ParseExact(DateGoodUntilStr,
+                    "yyyy-dd-mm",
+                    CultureInfo.InvariantCulture);
                 SendMailColValue = GetValue(AColumnNames, ANewRow, "p_send_mail_l") == "1" ? (object)true : (object)false; // This is the value of the 'Mailing Address' CheckBox
 
-                // Phone Extension: Ignore if value in the dumped data is either null or 0                
+                // Phone Extension: Ignore if value in the dumped data is either null or 0
                 PhoneExtension = GetValue(AColumnNames, ANewRow, "p_extension_i");
-            
+
                 if ((PhoneExtension == "\\N")
                     || (PhoneExtension == "0"))
                 {
-                    PhoneExtension = String.Empty;                
+                    PhoneExtension = String.Empty;
                 }
-                
+
                 // Fax Extension: Ignore if value in the dumped data is either null or 0
                 FaxExtension = GetValue(AColumnNames, ANewRow, "p_fax_extension_i");
 
@@ -819,23 +822,23 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     FaxExtension = String.Empty;
                 }
-                
+
                 TelephoneNumber = GetValue(AColumnNames, ANewRow, "p_telephone_number_c");
-                
+
                 if (TelephoneNumber != "\\N")
                 {
                     // Concatenate Phone Number and Phone Extension ONLY if both of them aren't null and Phone Extension isn't 0 either.
-                    TelephoneNumber += PhoneExtension; 
+                    TelephoneNumber += PhoneExtension;
                 }
 
                 FaxNumber = GetValue(AColumnNames, ANewRow, "p_fax_number_c");
-                
-                if (FaxNumber != "\\N") 
+
+                if (FaxNumber != "\\N")
                 {
                     // Concatenate Fax Number and Fax Extension ONLY if both of them aren't null and Fax Extension isn't 0 either.
-                    FaxNumber += FaxExtension; 
-                }                
-                
+                    FaxNumber += FaxExtension;
+                }
+
                 // Create representation of key data of the p_partner_location row and add it to the TPartnerContactDetails.PartnerLocationRecords Data Structure
                 NewPartnerLocationDR = PartnerLocationsDT.NewRow();
                 NewPartnerLocationDR["p_site_key_n"] = Convert.ToInt64(GetValue(AColumnNames, ANewRow, "p_site_key_n"));
@@ -850,12 +853,12 @@ namespace Ict.Tools.DataDumpPetra2
                 NewPartnerLocationDR["p_alternate_telephone_c"] = GetValue(AColumnNames, ANewRow, "p_alternate_telephone_c");
                 NewPartnerLocationDR["p_email_address_c"] = GetValue(AColumnNames, ANewRow, "p_email_address_c");
                 NewPartnerLocationDR["p_url_c"] = GetValue(AColumnNames, ANewRow, "p_url_c");
-                
+
                 PartnerLocationsDT.Rows.Add(NewPartnerLocationDR);
-                
+
                 if (TAppSettingsManager.GetValue("wipe_partnerlocation_cont_det", "true") != "false")
-                {                
-                    // Set all Data Columns that we have just added to PartnerLocationsDT as a 'Contact Detail' to 'null' in  
+                {
+                    // Set all Data Columns that we have just added to PartnerLocationsDT as a 'Contact Detail' to 'null' in
                     // p_partner_location to 'wipe out' that data - as it will only be held in p_partner_attribute from now on!
                     SetValue(AColumnNames, ref ANewRow, "p_telephone_number_c", "\\N");
                     SetValue(AColumnNames, ref ANewRow, "p_extension_i", "\\N");
@@ -992,11 +995,11 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 RowCounter = TPartnerGiftDestination.PopulatePPartnerGiftDestination(AColumnNames, ref ANewRow, AWriter, AWriterTest);
             }
-            
+
             if (ATableName == "p_partner_attribute")
             {
                 RowCounter = TPartnerContactDetails.PopulatePPartnerAttribute(AColumnNames, ref ANewRow, AWriter, AWriterTest);
-            }            
+            }
 
             if (ATableName == "s_system_defaults")
             {
@@ -1796,7 +1799,7 @@ namespace Ict.Tools.DataDumpPetra2
                     RowCounter++;
                 }
             }
-            
+
             // this table existed, but it has a different schema now and it never held data in Petra 2.x. Gets filled with new data (also in basedata)
             if (ATableName == "p_partner_attribute_type")
             {
@@ -1819,16 +1822,19 @@ namespace Ict.Tools.DataDumpPetra2
                     },
 
                     {
-                        "Digital Media", "Facebook", "Facebook user name", "0", "CONTACTDETAIL_HYPERLINK_WITHVALUE", "https://www.facebook.com/{VALUE}", "Facebook (Business)"
+                        "Digital Media", "Facebook", "Facebook user name", "0", "CONTACTDETAIL_HYPERLINK_WITHVALUE",
+                        "https://www.facebook.com/{VALUE}", "Facebook (Business)"
                     },
                     {
-                        "Digital Media", "Twitter", "Twitter user name", "1", "CONTACTDETAIL_HYPERLINK_WITHVALUE", "http://www.twitter.com/{VALUE}", "Twitter (Business)"
+                        "Digital Media", "Twitter", "Twitter user name", "1", "CONTACTDETAIL_HYPERLINK_WITHVALUE", "http://www.twitter.com/{VALUE}",
+                        "Twitter (Business)"
                     },
                     {
                         "Digital Media", "LinkedIn", "LinkedIn user name", "2", "CONTACTDETAIL_HYPERLINK", "\\N", "LinkedIn (Business)"
                     },
                     {
-                        "Digital Media", "Xing", "Xing user name", "3", "CONTACTDETAIL_HYPERLINK_WITHVALUE", "http://www.xing.com/profile/{VALUE}", "Xing (Business)"
+                        "Digital Media", "Xing", "Xing user name", "3", "CONTACTDETAIL_HYPERLINK_WITHVALUE", "http://www.xing.com/profile/{VALUE}",
+                        "Xing (Business)"
                     },
                     {
                         "Digital Media", "Instagram", "Instagram user name", "4", "CONTACTDETAIL_HYPERLINK", "\\N", "Instagram (Business)"
@@ -1842,7 +1848,7 @@ namespace Ict.Tools.DataDumpPetra2
                     {
                         "Digital Media", "Blog", "Internet address of a Blog", "7", "CONTACTDETAIL_HYPERLINK", "\\N", "Business Blog"
                     },
-                    
+
                     {
                         "Instant Messaging & Chat", "Skype", "Skype ID", "0", "CONTACTDETAIL_SKYPEID", "\\N", "Skype (Business)"
                     },
@@ -1860,7 +1866,8 @@ namespace Ict.Tools.DataDumpPetra2
                     },
 
                     {
-                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_PRIMARY_CONTACT_METHOD", "A Partners' Primary Contact Method", "0", "CONTACTDETAILSETTING", "\\N", "\\N"
+                        "PARTNERS_CONTACTDETAILS_SETTINGS", "PARTNERS_PRIMARY_CONTACT_METHOD", "A Partners' Primary Contact Method", "0",
+                        "CONTACTDETAILSETTING", "\\N", "\\N"
                     }
                 };
 

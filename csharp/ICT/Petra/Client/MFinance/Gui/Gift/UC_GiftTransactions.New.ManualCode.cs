@@ -97,13 +97,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         newRow.ConfidentialGiftFlag = FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
                         newRow.ChargeFlag = FPreviouslySelectedDetailRow.ChargeFlag;
                         newRow.TaxDeductible = FPreviouslySelectedDetailRow.TaxDeductible;
-                    	newRow.MotivationGroupCode = FPreviouslySelectedDetailRow.MotivationGroupCode;
-                    	newRow.MotivationDetailCode = FPreviouslySelectedDetailRow.MotivationDetailCode;
+                        newRow.MotivationGroupCode = FPreviouslySelectedDetailRow.MotivationGroupCode;
+                        newRow.MotivationDetailCode = FPreviouslySelectedDetailRow.MotivationDetailCode;
                     }
                     else
                     {
-	                    newRow.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
-	                    newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
+                        newRow.MotivationGroupCode = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+                        newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                     }
 
                     newRow.DateEntered = CurrentGiftRow.DateEntered;
@@ -150,7 +150,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         txtDetailRecipientKey.Focus();
                     }
 
-                    TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0, FPreviouslySelectedDetailRow, cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
+                    TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0,
+                        FPreviouslySelectedDetailRow,
+                        cmbDetailMotivationGroupCode.GetSelectedString(),
+                        cmbDetailMotivationDetailCode.GetSelectedString());
                     cmbKeyMinistries.Clear();
                     mniRecipientHistory.Enabled = false;
                 }

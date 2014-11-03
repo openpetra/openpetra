@@ -310,7 +310,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             FucoFilterAndFind.SwitchOnKeepFilterTurnedOn(AFilterContext);
         }
-        
+
         /// <summary>
         /// Load the two icons for the filter button
         /// </summary>

@@ -395,7 +395,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             AGiftRow gift = FMainDS.AGift.NewRowTyped(true);
                             AGiftDetailRow giftDetails;
                             ParseTransactionLine(gift, giftBatch, ref previousGift, numberOfElements, ref totalBatchAmount, ref ImportMessage,
-                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail, CostCentreTable, 
+                                RowNumber, AMessages, ValidationControlsDictGift, ValidationControlsDictGiftDetail, CostCentreTable,
                                 ref ANeedRecipientLedgerNumber, out giftDetails);
 
                             if (TaxDeductiblePercentageEnabled)
@@ -498,18 +498,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                     }
 
                     TLogging.Log("Return from here!");
-                
+
                     // we do not want to think about Gift Destination problems if the import has failed for another reason
                     ANeedRecipientLedgerNumber.Clear();
 
                     // Do the 'finally' actions and return false
                     return false;
                 }
-                
+
                 // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination then the import will fail
                 if (ANeedRecipientLedgerNumber.Rows.Count > 0)
                 {
-                	return false;
+                    return false;
                 }
 
                 // Everything is ok, so we can do our finish actions
@@ -795,9 +795,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             else
             {
-            	// calculate RecipientLedgerNumber
-            	AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
-            		AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
+                // calculate RecipientLedgerNumber
+                AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
+                    AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
             }
 
             decimal currentGiftAmount = ImportDecimal(Catalog.GetString("Gift amount"),
@@ -852,20 +852,20 @@ namespace Ict.Petra.Server.MFinance.Gift
                 FMainDS.AGiftDetail.ColumnTaxDeductible, AValidationControlsDictGiftDetail);
 
             AGift.DateEntered = AGiftBatch.GlEffectiveDate;
-            
+
             // If the gift has a Family recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
-            if (AGiftDetails.RecipientLedgerNumber == 0 && AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
-        	{
-            	TPartnerClass RecipientClass;
-            	string RecipientDescription;
-            	TPartnerServerLookups.GetPartnerShortName(AGiftDetails.RecipientKey, out RecipientDescription, out RecipientClass);
-            	
-            	if (RecipientClass == TPartnerClass.FAMILY)
-            	{
-            		((GiftBatchTDSAGiftDetailRow) AGiftDetails).RecipientDescription = RecipientDescription;
-        			ANeedRecipientLedgerNumber.Rows.Add((object[]) AGiftDetails.ItemArray.Clone());
-            	}
-        	}
+            if ((AGiftDetails.RecipientLedgerNumber == 0) && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            {
+                TPartnerClass RecipientClass;
+                string RecipientDescription;
+                TPartnerServerLookups.GetPartnerShortName(AGiftDetails.RecipientKey, out RecipientDescription, out RecipientClass);
+
+                if (RecipientClass == TPartnerClass.FAMILY)
+                {
+                    ((GiftBatchTDSAGiftDetailRow)AGiftDetails).RecipientDescription = RecipientDescription;
+                    ANeedRecipientLedgerNumber.Rows.Add((object[])AGiftDetails.ItemArray.Clone());
+                }
+            }
 
             AImportMessage = Catalog.GetString("Validating the gift data");
 

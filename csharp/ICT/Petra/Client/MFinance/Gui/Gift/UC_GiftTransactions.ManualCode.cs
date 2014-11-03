@@ -541,7 +541,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // We want to deal only on manual entered changes, i.e. not on selections changes, and on non-zero keys
             if (FPetraUtilsObject.SuppressChangeDetection || (APartnerKey == 0))
             {
-            	// FLastDonor should be the last donor key that has been entered for a gift (not 0)
+                // FLastDonor should be the last donor key that has been entered for a gift (not 0)
                 if (APartnerKey != 0)
                 {
                     FLastDonor = APartnerKey;
@@ -551,10 +551,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     mniDonorHistory.Enabled = false;
                     txtDonorInfo.Text = "";
-                    
+
                     if (FCreatingNewGift)
                     {
-                    	FLastDonor = 0;
+                        FLastDonor = 0;
                     }
                 }
             }
@@ -779,52 +779,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
                 }
             }
-            
+
             // if motivation detail has AutoPopDesc set to true and has not already been autopoulated for this detail
-            if (!string.IsNullOrEmpty(AutoPopComment) && txtDetailGiftCommentOne.Text != AutoPopComment)
+            if (!string.IsNullOrEmpty(AutoPopComment) && (txtDetailGiftCommentOne.Text != AutoPopComment))
             {
-            	// autopopulate comment one with the motivation detail description
-            	AutoPopulateCommentOne(AutoPopComment);
+                // autopopulate comment one with the motivation detail description
+                AutoPopulateCommentOne(AutoPopComment);
             }
         }
-        
+
         private void AutoPopulateCommentOne(string AAutoPopComment)
         {
-        	if (string.IsNullOrEmpty(txtDetailGiftCommentOne.Text))
-        	{
-        		txtDetailGiftCommentOne.Text = AAutoPopComment;
-            	cmbDetailCommentOneType.SetSelectedString("Both", -1);
-        	}
-        	else if (string.IsNullOrEmpty(txtDetailGiftCommentTwo.Text))
-        	{
-        		txtDetailGiftCommentTwo.Text = txtDetailGiftCommentOne.Text;
-        		cmbDetailCommentTwoType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
-        		txtDetailGiftCommentOne.Text = AAutoPopComment;
-            	cmbDetailCommentOneType.SetSelectedString("Both", -1);
-        	}
-        	else if (string.IsNullOrEmpty(txtDetailGiftCommentThree.Text))
-        	{
-        		txtDetailGiftCommentThree.Text = txtDetailGiftCommentOne.Text;
-        		cmbDetailCommentThreeType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
-        		txtDetailGiftCommentOne.Text = AAutoPopComment;
-            	cmbDetailCommentOneType.SetSelectedString("Both", -1);
-        	}
-        	else
-        	{
-        		if (MessageBox.Show(string.Format(Catalog.GetString(
-        			"This Motivation Detail is set to auto populate a gift comment field, but all the comment fields are currently full."
-							+ " Do you want to overwrite Comment 1?{0}{0}"
-							+ "'No' will keep the current comment,{0}"
-							+ "'Yes' will copy Comment 1 to the clipboard and replace it with the automated comment '{1}'"),
-							"\n", AAutoPopComment),
-						Catalog.GetString("Auto Populate Gift Comment"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-        				== DialogResult.Yes)
-        		{
-        			Clipboard.SetText(txtDetailGiftCommentOne.Text);
-        			txtDetailGiftCommentOne.Text = AAutoPopComment;
-            		cmbDetailCommentOneType.SetSelectedString("Both", -1);
-        		}
-        	}
+            if (string.IsNullOrEmpty(txtDetailGiftCommentOne.Text))
+            {
+                txtDetailGiftCommentOne.Text = AAutoPopComment;
+                cmbDetailCommentOneType.SetSelectedString("Both", -1);
+            }
+            else if (string.IsNullOrEmpty(txtDetailGiftCommentTwo.Text))
+            {
+                txtDetailGiftCommentTwo.Text = txtDetailGiftCommentOne.Text;
+                cmbDetailCommentTwoType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
+                txtDetailGiftCommentOne.Text = AAutoPopComment;
+                cmbDetailCommentOneType.SetSelectedString("Both", -1);
+            }
+            else if (string.IsNullOrEmpty(txtDetailGiftCommentThree.Text))
+            {
+                txtDetailGiftCommentThree.Text = txtDetailGiftCommentOne.Text;
+                cmbDetailCommentThreeType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
+                txtDetailGiftCommentOne.Text = AAutoPopComment;
+                cmbDetailCommentOneType.SetSelectedString("Both", -1);
+            }
+            else
+            {
+                if (MessageBox.Show(string.Format(Catalog.GetString(
+                                "This Motivation Detail is set to auto populate a gift comment field, but all the comment fields are currently full."
+                                +
+                                " Do you want to overwrite Comment 1?{0}{0}" +
+                                "'No' will keep the current comment,{0}" +
+                                "'Yes' will copy Comment 1 to the clipboard and replace it with the automated comment '{1}'"),
+                            "\n", AAutoPopComment),
+                        Catalog.GetString("Auto Populate Gift Comment"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                    == DialogResult.Yes)
+                {
+                    Clipboard.SetText(txtDetailGiftCommentOne.Text);
+                    txtDetailGiftCommentOne.Text = AAutoPopComment;
+                    cmbDetailCommentOneType.SetSelectedString("Both", -1);
+                }
+            }
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -1546,7 +1547,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-            	TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow, cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
+                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow,
+                    cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
             }
 
             if (txtDetailRecipientLedgerNumber.Text.Length == 0)
@@ -2071,7 +2073,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // check if the donor has another gift in this same batch
             foreach (AGiftRow GiftRow in FMainDS.AGift.Rows)
             {
-            	if ((GiftRow.RowState != DataRowState.Deleted) && (GiftRow.DonorKey == APartnerKey)
+                if ((GiftRow.RowState != DataRowState.Deleted) && (GiftRow.DonorKey == APartnerKey)
                     && (GiftRow.GiftTransactionNumber != GetSelectedDetailRow().GiftTransactionNumber))
                 {
                     GiftTable.Rows.Add((object[])GiftRow.ItemArray.Clone());
@@ -2130,16 +2132,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // if the last gift was a split gift (multiple details) then ask the user if they would like this new gift to also be split
             if ((GiftDetailTable != null) && (GiftDetailTable.Rows.Count > 1))
             {
-            	GiftDetailTable.DefaultView.Sort = GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName() + " ASC";
-            	
+                GiftDetailTable.DefaultView.Sort = GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName() + " ASC";
+
                 string Message = string.Format(Catalog.GetString(
                         "The last gift from this donor was a split gift.{0}{0}Here are the details:{0}"), "\n");
                 int DetailNumber = 1;
 
                 foreach (DataRowView dvr in GiftDetailTable.DefaultView)
                 {
-                	GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)dvr.Row;
-                	
+                    GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)dvr.Row;
+
                     Message += DetailNumber + ")  ";
 
                     if (Row.RecipientKey > 0)
@@ -2167,8 +2169,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 while (true)
                 {
-                	GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)GiftDetailTable.DefaultView[CurrentTransaction].Row;
-                	
+                    GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)GiftDetailTable.DefaultView[CurrentTransaction].Row;
+
                     // populate gift detail
                     txtDetailRecipientKey.Text = String.Format("{0:0000000000}", Row.RecipientKey);
                     cmbDetailMotivationGroupCode.SetSelectedString(Row.MotivationGroupCode);
@@ -2308,7 +2310,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
                          GiftDestinationTable.Rows)
                 {
-                	DateTime GiftDate = (DateTime) dtpDateEntered.Date;
+                    DateTime GiftDate = (DateTime)dtpDateEntered.Date;
 
                     // check if record is active for the Gift Date
                     if ((Row.DateEffective <= GiftDate)

@@ -88,7 +88,7 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("DateFormatString", "yyyy-MM-dd");
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
-            
+
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
 
             if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult))

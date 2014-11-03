@@ -165,11 +165,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS,
                 FPetraUtilsObject,
                 APostingGiftDetails);
-            
+
             // if save is continuing then alert the user to any gift that are not marked confidential but have an anonymous donor
             if (!ACancelledDueToExWorkerOrAnonDonor)
             {
-            	ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyAnonymousDonors(FMainDS);
+                ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyAnonymousDonors(FMainDS);
             }
 
             if (!ACancelledDueToExWorkerOrAnonDonor)

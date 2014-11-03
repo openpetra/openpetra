@@ -136,9 +136,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private Boolean LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
-            
+
             pm.Add("param_current_period", uco_GeneralSettings.GetCurrentPeiod());
-            
+
             // 0 = Full Report. Currently the only option for this report.
             pm.Add("param_run_number", 0);
 
