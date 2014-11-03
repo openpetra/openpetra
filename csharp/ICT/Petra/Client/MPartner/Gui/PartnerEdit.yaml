@@ -32,8 +32,9 @@ RootNode:
         actEditFind: {Label=&Find Partner..., ActionClick=EditFindPartner}
         
         actMaintainAddresses: {Label=&Addresses, ActionClick=MaintainAddresses, Image: Address.ico}
+        actMaintainContactDetails: {Label=C&ontact Details, ActionClick=MaintainContactDetails, Image: ContactDetails.ico}
         actMaintainPartnerDetails: {Label=&Partner Details, ActionClick=MaintainPartnerDetails, Image: Details.ico}
-        actMaintainFoundationDetails: {Label=Foundation Details, ActionClick=MaintainFoundationDetails, Image: Foundations.ico}
+        actMaintainFoundationDetails: {Label=Foundation Details, ActionClick=MaintainFoundationDetails, Image: Foundations.ico, Enabled=False}
         actMaintainSubscriptions: {Label=&Subscriptions, ActionClick=MaintainSubscriptions, Image: Subscriptions.ico}
         actMaintainContacts: {Label=&Contact Logs, ActionClick=MaintainContacts, Image: RecordedContacts.ico}
         actMaintainSpecialTypes: {Label=Special &Types, ActionClick=MaintainSpecialTypes, Image: Types.ico}
@@ -43,7 +44,7 @@ RootNode:
         actMaintainReminders: {Label=&Reminders, ActionClick=MaintainReminders, Image: Reminders.ico}
         actMaintainNotes: {Label=&Notes, ActionClick=MaintainNotes, Image: Notes.ico}
         actMaintainLocalPartnerData: {Label=&Local Partner Data, ActionClick=MaintainLocalPartnerData, Image: OfficeSpecific.ico}
-        actMaintainGiftDestination: {Label=Gift &Destination, ActionClick=MaintainGiftDestination, Image: OMField.ico}
+        actMaintainGiftDestination: {Label=Gift &Destination..., ActionClick=MaintainGiftDestination, Image: OMField.ico}
         actMaintainPersonnelData: {Label=P&ersonnel/Individual Data, ActionClick=MaintainIndividualData, Image: personel_small.ico}
         actMaintainDonorHistory: {Label=Donor &History, ActionClick=MaintainDonorHistory}
         actMaintainRecipientHistory: {Label=Recipient Histor&y, ActionClick=MaintainRecipientHistory}
@@ -111,17 +112,19 @@ RootNode:
 
         mniMaintain: {Label=Ma&intain}            
             mniMaintainAddresses:
+            mniMaintainContactDetails:
             mniMaintainPartnerDetails:
             mniMaintainFoundationDetails:
             mniMaintainSubscriptions:
             mniMaintainSpecialTypes:
             mniMaintainContacts:
             mniMaintainFamilyMembers:
-            mniMaintainRelationships:
-            mniMaintainInterests:
+            mniMaintainRelationships:            
             mniMaintainReminders:
+            mniMaintainFinanceDetails:
+            mniMaintainLocalPartnerData:            
+            mniMaintainInterests:
             mniMaintainNotes:
-            mniMaintainLocalPartnerData:
             mniMaintainGiftDestination:
             mniSeparator:
             mniMaintainPersonnelData:
@@ -131,8 +134,7 @@ RootNode:
             mniMaintainFinanceReports:
             mniMaintainBankAccounts:
             mniMaintainGiftReceipting:
-            mniMaintainFinanceDetails:
-            
+
         mniView:  {Label=Vie&w}
             mniViewUpperScreenPart: {Label=&Upper Screen Part}
                 mniViewUpperScreenPartExpanded:

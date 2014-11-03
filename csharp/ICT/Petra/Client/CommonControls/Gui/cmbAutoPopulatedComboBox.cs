@@ -819,11 +819,11 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.PartnerAttributeTypeList:
                     SortedCacheableDataTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList);
 
-                    SortedCacheableDataTable.DefaultView.Sort = PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC";
+                    SortedCacheableDataTable.DefaultView.Sort = PPartnerAttributeTypeTable.GetIndexDBName() + " ASC";
 
                     InitialiseUserControl(SortedCacheableDataTable,
-                    "p_code_c",
-                    "p_description_c",
+                    PPartnerAttributeTypeTable.GetAttributeTypeDBName(),
+                    PPartnerAttributeTypeTable.GetDescriptionDBName(),
                     null);
                     break;
 

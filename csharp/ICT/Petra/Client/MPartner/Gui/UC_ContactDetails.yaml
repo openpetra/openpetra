@@ -14,6 +14,7 @@ RootNode:
         actDemote: {ActionClick=ContactTypeDemote, Image: MoveUpArrow.ico}
         actLaunchHyperlinkPrefEMail: {ActionClick=LaunchHyperlinkPrefEMail, Image: Email.ico}
         actLaunchHyperlinkEMailWithinOrg: {ActionClick=LaunchHyperlinkEMailWithinOrg, Image: Email.ico}
+        actLaunchHyperlinkFromValue: {ActionClick=LaunchHyperlinkFromValue, Image: Email.ico}
 
     Controls:
         pnlContent:
@@ -39,14 +40,14 @@ RootNode:
             Margin: 0,16,0,0
             Height: 70
         cmbPrimaryWayOfContacting:
-            Label: Primary Contact Method
-            Width: 147
-            OptionalValues: [=,Phone, E-Mail, Letter, Skype, Instant Messaging, Social Network]
+            Label: Primar&y Contact Method
+            Width: 170
+            OptionalValues: [=,Phone, E-Mail, Letter, Skype, Lync, Digital Media, Instant Messaging & Chat]
             Validation: true
-        cmbPrimaryPhoneForContacting: {Label=Primary Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
-        cmbPhoneWithinTheOrganisation: {Label=Office Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
-        cmbPrimaryEMail: {Label=Primary E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
-        cmbEMailWithinTheOrganisation: {Label=Office E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
+        cmbPrimaryPhoneForContacting: {Label=Primary Ph&one, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true,OnChange=HandlePrimaryPhoneSelectedValueChanged}
+        cmbPhoneWithinTheOrganisation: {Label=Office Phone, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true}
+        cmbPrimaryEMail: {Label=Primary E-&Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
+        cmbEMailWithinTheOrganisation: {Label=Office E-Mai&l, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true}
         btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
         btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
        
@@ -61,6 +62,10 @@ RootNode:
             ExpandedWidth: 175
             FilterControls: [chkCurrent, chkSpecialised, chkConfidential]   #, cmbContactType
             FindControls: [chkCurrent, chkSpecialised, chkConfidential]     #, cmbContactType
+            ControlAttributes:
+                chkCurrent: {CheckState=CheckState.Checked}            
+            InitiallyExpanded: true
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -96,20 +101,30 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [cmbContactCategory, cmbContactType, chkSpecialised]
-                Row1: [rtbValue, txtComment]
+# TODO SHORTCUTS:                Row1: [rtbValue, txtComment]
+                Row1: [pnlValueGrouping, txtComment]                
                 Row2: [pnlCurrentGrouping]
                 Row3: [chkConfidential]
             Height: 115
 
-        cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true, OnChange=FilterContactTypeCombo}
-        cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true, OnChange=OnContactTypeChanged}
+        cmbContactCategory: {Label=&Contact Category, List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true}
+        cmbContactType: {Label=Contact Ty&pe, List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true}
         chkSpecialised: 
-           Label: Business
-           Validation: true   # only to cause data to be updated on-the-fly...
-        rtbValue:
-            Label: Value
-            Width: 290
-            Type: Hyperlink
+           Label: &Business
+           OnChange: HandleSpecialisedFlagChanged
+        pnlValueGrouping:
+            ControlsOrientation: horizontal
+            Controls: [txtValue, btnLaunchHyperlinkFromValue]
+            Padding: 64,0,0,0
+            Height: 36
+# TODO SHORTCUTS: rtbValue:           
+        txtValue:
+            Label: &Value
+            Width: 256
+            OnLeave: HandleValueLeave
+# TODO SHORTCUTS:             Type: Hyperlink
+
+        btnLaunchHyperlinkFromValue: {NoLabel=true, Width=15, Height=27}
         txtComment: {Label=Comment, Multiline=true, Width=245, Height=73, ColSpan=2, RowSpan=3, ScrollBars=Vertical, DataField=PPartnerAttribute.Comment}
 
         pnlCurrentGrouping:
@@ -117,9 +132,11 @@ RootNode:
             Controls: [chkCurrent, dtpNoLongerCurrentFrom]
             Padding: 52,0,0,0
         chkCurrent:
-            OnChange: EnableDisableNoLongerCurrentFromDate
+            Label: Curren&t
+            OnChange: HandleCurrentFlagChanged
         dtpNoLongerCurrentFrom:
             Validation: true
             Enabled: false
 
         chkConfidential:
+            OnChange: HandleConfidentialFlagChanged

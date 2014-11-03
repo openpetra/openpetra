@@ -2511,13 +2511,13 @@
          group="partner">
     <tablefield descr="Category of the Partner Attribute Type."
                 format="X(30)"
-                name="p_attribute_category_c"
+                name="p_category_code_c"
                 type="varchar"
                 label="Partner Attribute Category"
                 notnull="yes"/>
     <tablefield descr="Attribute Type. This can be anything really: Phone Number, Mobile Number, Email Address, etc (not limited to Partner Contact Details, though). Use singular words/phrases (e.g. 'Phone Number' and not 'Phone Numbers')."
                 format="X(30)"
-                name="p_code_c"
+                name="p_attribute_type_c"
                 type="varchar"
                 label="Partner Attribute Code"
                 notnull="yes"/>
@@ -2576,13 +2576,10 @@
     <!-- Constraints on table p_partner_attribute_type -->                
     <primarykey name="p_partner_attribute_type_pk"
                 descr=""
-                thisFields="p_code_c"/>
-    <uniquekey name="p_partner_attribute_type_uk"
-                 descr=""
-                 thisFields="p_attribute_category_c, p_code_c"/>
+                thisFields="p_attribute_type_c"/>
     <foreignkey name="p_partner_attribute_type_fk1"
                 descr=""
-                thisFields="p_attribute_category_c"
+                thisFields="p_category_code_c"
                 otherTable="p_partner_attribute_category"
                 otherFields="p_category_code_c"/>                
   </table>
@@ -2689,7 +2686,7 @@
                 descr=""
                 thisFields="p_attribute_type_c"
                 otherTable="p_partner_attribute_type"
-                otherFields="p_code_c"/>
+                otherFields="p_attribute_type_c"/>
   </table>
   <table name="u_unit_type"
          descr="General information about the unit such as unit type and entry conference. "

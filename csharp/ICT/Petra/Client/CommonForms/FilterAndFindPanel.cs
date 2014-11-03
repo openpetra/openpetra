@@ -303,6 +303,15 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
+        /// Switches the 'Keep Filter Turned On' Button to the 'on'/'depressed' state.
+        /// </summary>
+        /// <param name="AFilterContext">Filter Context in which to switch the Button on.</param>
+        public void SwitchOnKeepFilterTurnedOn(TUcoFilterAndFind.FilterContext AFilterContext)
+        {
+            FucoFilterAndFind.SwitchOnKeepFilterTurnedOn(AFilterContext);
+        }
+        
+        /// <summary>
         /// Load the two icons for the filter button
         /// </summary>
         private void LoadFilterIcons()

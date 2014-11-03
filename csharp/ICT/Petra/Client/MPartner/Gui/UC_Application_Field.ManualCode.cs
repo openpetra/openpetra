@@ -104,9 +104,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         #region Public Methods
 
         /// <summary>todoComment</summary>
-        public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
-
-        /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
         /// <summary>
@@ -201,24 +198,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Private Methods
 
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
-
         private void OnHookupDataChange(THookupPartnerEditDataChangeEventArgs e)
         {
             if (HookupDataChange != null)
             {
                 HookupDataChange(this, e);
-            }
-        }
-
-        private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
-        {
-            if (RecalculateScreenParts != null)
-            {
-                RecalculateScreenParts(this, e);
             }
         }
 

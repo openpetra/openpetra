@@ -128,11 +128,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
-        private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
-        {
-            OnRecalculateScreenParts(e);
-        }
-
         /// <summary>
         /// Iterates through all PPartnerLocation DataRows and checks whether any has a
         /// SiteKey and LocationKey with the Original values that we are looking for to
@@ -895,8 +890,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
-
             if (CreateNewPPartnerLocation())
             {
                 txtLocationLocality.Focus();
@@ -910,9 +903,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             SetAddressFieldOrder();
 
             // Fire OnRecalculateScreenParts event: reset counter in tab header
-            RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
-            RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
-            OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+            DoRecalculateScreenParts();
         }
 
         /// <summary>
