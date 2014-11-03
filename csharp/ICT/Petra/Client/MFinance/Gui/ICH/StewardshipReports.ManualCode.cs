@@ -200,6 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
 
             String HOSAFilePrefix = txtHOSAPrefix.Text;
+
             if (HOSAFilePrefix.Length == 0)
             {
                 HOSAFilePrefix = Catalog.GetString("HOSAFilesExportFor");
@@ -207,6 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             else
             {
                 Int32 IndexOfInvalidFilenameCharacter = HOSAFilePrefix.IndexOfAny(Path.GetInvalidFileNameChars());
+
                 if (IndexOfInvalidFilenameCharacter >= 0)
                 {
                     msg = String.Format("The HOSA File Prefix: '{0}', contains characters not valid in a filename: {1}{2}{2}Please remove and retry.",
@@ -239,9 +241,9 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 }
                 else
                 {
-                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
-                    AIchStewardshipTable.GetPeriodNumberDBName(),
-                    SelectedReportPeriod);
+                    ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
+                        AIchStewardshipTable.GetPeriodNumberDBName(),
+                        SelectedReportPeriod);
                 }
 
                 ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetCostCentreCodeDBName();
@@ -257,10 +259,10 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     {
                         //TODO code to generate the HOSA reports
                         TRemote.MFinance.ICH.WebConnectors.GenerateHOSAReports(FLedgerNumber,
-                                    cmbReportPeriod.GetSelectedInt32(),
-                                    cmbICHNumber.GetSelectedInt32(),
-                                    CurrencySelect,
-                                    out VerificationResults);
+                            cmbReportPeriod.GetSelectedInt32(),
+                            cmbICHNumber.GetSelectedInt32(),
+                            CurrencySelect,
+                            out VerificationResults);
                     }
                     else if (DoGenerateHOSAFiles)
                     {
@@ -335,6 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 MessageBox.Show(Catalog.GetString("Please select a valid reporting period first."));
                 cmbReportPeriod.Focus();
             }
+
             return false;
         }
     }

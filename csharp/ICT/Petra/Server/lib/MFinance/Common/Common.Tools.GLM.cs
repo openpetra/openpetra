@@ -191,10 +191,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 GLMTemplateRow.AccountCode = AAccountCode;
                 GLMTemplateRow.CostCentreCode = ACostCentreCode;
                 FGLMTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, transaction);
+
                 if (FGLMTbl.Rows.Count == 0)
                 {
                     TLogging.Log(String.Format("\nERROR: No TGet_GLM_Info row found for ({0}, {1}).\n",
-                        AAccountCode, ACostCentreCode));
+                            AAccountCode, ACostCentreCode));
                 }
             }
             finally
@@ -213,13 +214,13 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                if (FGLMTbl.Rows.Count == 0 || FGLMTbl[0].IsYtdActualBaseNull())
+                if ((FGLMTbl.Rows.Count == 0) || FGLMTbl[0].IsYtdActualBaseNull())
                 {
                     TLogging.Log("TGet_GLM_Info.YtdActual not available.");
                     return 0;
                 }
 
-                return  FGLMTbl[0].YtdActualBase;
+                return FGLMTbl[0].YtdActualBase;
             }
         }
 
@@ -230,13 +231,13 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                if (FGLMTbl.Rows.Count == 0|| FGLMTbl[0].IsYtdActualForeignNull())
+                if ((FGLMTbl.Rows.Count == 0) || FGLMTbl[0].IsYtdActualForeignNull())
                 {
                     TLogging.Log("TGet_GLM_Info.YtdForeign not available.");
                     return 0;
                 }
 
-                return  FGLMTbl[0].YtdActualForeign;
+                return FGLMTbl[0].YtdActualForeign;
             }
         }
 
@@ -250,7 +251,6 @@ namespace Ict.Petra.Server.MFinance.Common
                 return FGLMTbl[0].GlmSequence;
             }
         }
-
     }  // TGet_GLM_Info
 
     /// <summary>

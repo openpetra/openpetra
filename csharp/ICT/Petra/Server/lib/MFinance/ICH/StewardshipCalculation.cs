@@ -92,6 +92,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
                     }
+
                     return GenerateICHStewardshipBatch(ALedgerNumber, APeriodNumber, ref AVerificationResult);
                 }
                 else
@@ -100,6 +101,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
+
                     return false;
                 }
             }
@@ -120,20 +122,23 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// This array of CostCentres may contain some funds that should not be processed
         /// through ICH.
         /// I need to process those here, and remove them from the list.
-        /// 
+        ///
         /// </summary>
         private static StringDictionary GetDestinationAccountCodes(int ALedgerNumber, ACostCentreTable CostCentreTbl, TDBTransaction ATransaction)
         {
             AAccountPropertyTable AccountPropertyTbl = new AAccountPropertyTable();
             AAccountPropertyRow TemplateRow = AccountPropertyTbl.NewRowTyped(false);
+
             TemplateRow.LedgerNumber = ALedgerNumber;
             TemplateRow.PropertyCode = "CLEARING-ACCOUNT-FOR-CC";
             AccountPropertyTbl = AAccountPropertyAccess.LoadUsingTemplate(TemplateRow, ATransaction);
 
             StringDictionary ReportingAccountForCC = new StringDictionary();
+
             foreach (AAccountPropertyRow Row in AccountPropertyTbl.Rows)
             {
                 String[] CcList = Row.PropertyValue.Split(',');
+
                 foreach (String CC in CcList)
                 {
                     ReportingAccountForCC.Add(CC, Row.AccountCode);
@@ -143,6 +148,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             foreach (DataRow UntypedCCRow in CostCentreTbl.Rows)
             {
                 ACostCentreRow CostCentreRow = (ACostCentreRow)UntypedCCRow;
+
                 if (!ReportingAccountForCC.ContainsKey(CostCentreRow.CostCentreCode))
                 {
                     ReportingAccountForCC.Add(CostCentreRow.CostCentreCode, MFinanceConstants.ICH_ACCT_ICH);
@@ -201,11 +207,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 AGiftBatchTable GiftBatchTable = new AGiftBatchTable();
                 String GiftQuery = "SELECT * FROM a_gift_batch WHERE " +
-                    AGiftBatchTable.GetLedgerNumberDBName() + " = " + ALedgerNumber +
-                    " AND " + AGiftBatchTable.GetBatchStatusDBName() + " = '" + MFinanceConstants.BATCH_POSTED + "'" +
-                    " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " >= " + strPeriodStartDate +
-                    " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= " + strPeriodEndDate +
-                    " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName();
+                                   AGiftBatchTable.GetLedgerNumberDBName() + " = " + ALedgerNumber +
+                                   " AND " + AGiftBatchTable.GetBatchStatusDBName() + " = '" + MFinanceConstants.BATCH_POSTED + "'" +
+                                   " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " >= " + strPeriodStartDate +
+                                   " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= " + strPeriodEndDate +
+                                   " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName();
 
                 DataTable GiftBatchTbl = DBAccess.GDBAccessObj.SelectDT(GiftQuery, "AGiftBatch", DBTransaction);
 
@@ -398,12 +404,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     /* 0008 Go through all of the transactions. Ln:301 */
                     String WhereClause = ATransactionTable.GetCostCentreCodeDBName() + " = '" + CostCentreRow.CostCentreCode + "'" +
-                                  " AND " + ATransactionTable.GetTransactionStatusDBName() + " = " + MFinanceConstants.POSTED +
-                                  " AND " + ATransactionTable.GetIchNumberDBName() + " = 0";
+                                         " AND " + ATransactionTable.GetTransactionStatusDBName() + " = " + MFinanceConstants.POSTED +
+                                         " AND " + ATransactionTable.GetIchNumberDBName() + " = 0";
 
                     String OrderBy = ATransactionTable.GetBatchNumberDBName() + ", " +
-                              ATransactionTable.GetJournalNumberDBName() + ", " +
-                              ATransactionTable.GetTransactionNumberDBName();
+                                     ATransactionTable.GetJournalNumberDBName() + ", " +
+                                     ATransactionTable.GetTransactionNumberDBName();
 
                     DataRow[] FoundTransRows = MainDS.ATransaction.Select(WhereClause, OrderBy);
 
@@ -540,7 +546,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     if (SettlementAmount < 0)
                     {
                         DrCrIndicator = !AccountDrCrIndicator;
-                        SettlementAmount = 0-SettlementAmount;
+                        SettlementAmount = 0 - SettlementAmount;
                     }
                     else if (SettlementAmount > 0)
                     {
@@ -548,10 +554,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
 
                     if (DestinationAccount[CostCentreRow.CostCentreCode] != MFinanceConstants.ICH_ACCT_ICH)
-                    // I'm creating a transaction right here for this "non-ICH" CostCentre.
-                    // This potentially means that there will be multiple transactions to the "non-ICH" account,
-                    // whereas the ICH account has only a single transaction, but that's not big deal:
                     {
+                        // I'm creating a transaction right here for this "non-ICH" CostCentre.
+                        // This potentially means that there will be multiple transactions to the "non-ICH" account,
+                        // whereas the ICH account has only a single transaction, but that's not big deal:
+
                         if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
                                 Catalog.GetString("Non-ICH foreign fund Clearing"),
                                 DestinationAccount[CostCentreRow.CostCentreCode],
@@ -568,6 +575,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             ErrorType = TResultSeverity.Resv_Noncritical;
                             throw new System.InvalidOperationException(ErrorMessage);
                         }
+
                         NonIchTransactionsIncluded = true;
                     }
 
@@ -603,13 +611,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         TransRow.IchNumber = ICHProcessing;
                     }
 
-                   /* Now create corresponding report row on stewardship table,
-                    * Only for Cost Centres that cleared to ICH
-                    */
+                    /* Now create corresponding report row on stewardship table,
+                     * Only for Cost Centres that cleared to ICH
+                     */
                     if ((DestinationAccount[CostCentreRow.CostCentreCode] == MFinanceConstants.ICH_ACCT_ICH)
-                    && ((IncomeAmount != 0)
-                        || (ExpenseAmount != 0)
-                        || (XferAmount != 0)))
+                        && ((IncomeAmount != 0)
+                            || (ExpenseAmount != 0)
+                            || (XferAmount != 0)))
                     {
                         AIchStewardshipRow ICHStewardshipRow = ICHStewardshipTable.NewRowTyped(true);
 
@@ -618,7 +626,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         ICHStewardshipRow.LedgerNumber = ALedgerNumber;
                         ICHStewardshipRow.PeriodNumber = APeriodNumber;
                         ICHStewardshipRow.IchNumber = ICHProcessing;
-//                      ICHStewardshipRow.DateProcessed = DateTime.Today; // This would be strictly correct, but the Stewardship Reporting looks for 
+//                      ICHStewardshipRow.DateProcessed = DateTime.Today; // This would be strictly correct, but the Stewardship Reporting looks for
                         ICHStewardshipRow.DateProcessed = PeriodEndDate;  // rows using a date filter.
                         ICHStewardshipRow.CostCentreCode = CostCentreRow.CostCentreCode;
                         ICHStewardshipRow.IncomeAmount = IncomeAmount;
@@ -650,7 +658,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                  *  (eg last minute change of a gift from one field to another)
                  */
 
-                if (ICHTotal == 0 && !NonIchTransactionsIncluded)
+                if ((ICHTotal == 0) && !NonIchTransactionsIncluded)
                 {
                     AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Generating the ICH batch"),
                             Catalog.GetString("No ICH batch was required."), TResultSeverity.Resv_Status));
@@ -715,9 +723,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             out BatchCancelResult);
                         AVerificationResult.AddCollection(BatchCancelResult);
                     } // else
-                } // else
-            } // try
 
+                } // else
+
+            } // try
             catch (ArgumentException Exc)
             {
                 TLogging.Log("An ArgumentException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
@@ -1155,10 +1164,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             (DateTime.Today.TimeOfDay.Hours * 3600 + DateTime.Today.TimeOfDay.Minutes * 60 + DateTime.Today.TimeOfDay.Seconds);
 
                         /* Add the charges on this account to the fee total,
-                         * creating an entry if necessary. (This is for the income total) 
+                         * creating an entry if necessary. (This is for the income total)
                          */
                         GLStewardshipCalculationTDSCreditFeeTotalRow CreditFeeTotalRow = (GLStewardshipCalculationTDSCreditFeeTotalRow)
-                            CreditFeeTotalDT.Rows.Find(new object[] { DestCostCentreCode, DestAccountCode });
+                                                                                         CreditFeeTotalDT.Rows.Find(new object[] { DestCostCentreCode,
+                                                                                                                                   DestAccountCode });
 
                         if (CreditFeeTotalRow != null)
                         {
@@ -1180,13 +1190,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     for (int k = 0; k < CreditFeeTotalDT.Count; k++)
                     {
                         GLStewardshipCalculationTDSCreditFeeTotalRow cFT = (GLStewardshipCalculationTDSCreditFeeTotalRow)
-                            CreditFeeTotalDT.Rows[k];
+                                                                           CreditFeeTotalDT.Rows[k];
 
                         if (cFT.TransactionAmount < 0)
                         {
                             /* The case of a negative gift total should be very rare.
                              * It would only happen if, for instance, the was only
-                             * a reversal but no new gifts for a certain ledger. 
+                             * a reversal but no new gifts for a certain ledger.
                              */
                             DrCrIndicator = true; //Debit
                             TransactionAmount = -cFT.TransactionAmount;

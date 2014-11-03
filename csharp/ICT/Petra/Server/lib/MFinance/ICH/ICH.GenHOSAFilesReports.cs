@@ -90,6 +90,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             )
         {
             bool Successful = false;
+
             AVerificationResult = new TVerificationResultCollection();
 
             //Begin the transaction
@@ -109,13 +110,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 String Currency = (ACurrencySelect == MFinanceConstants.CURRENCY_BASE) ? LedgerRow.BaseCurrency : LedgerRow.IntlCurrency;
 
 /*              String StoreNumericFormat = "#" + CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator + "##0";
-
-                if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits > 0)
-                {
-                    string DecPls = new String('0', CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits);
-                    StoreNumericFormat += CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + DecPls;
-                }
-*/
+ *
+ *              if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits > 0)
+ *              {
+ *                  string DecPls = new String('0', CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits);
+ *                  StoreNumericFormat += CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + DecPls;
+ *              }
+ */
                 AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, DBTransaction);
                 AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
                 String MonthName = AccountingPeriodRow.AccountingPeriodDesc;
@@ -204,8 +205,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     strSql = "SELECT Trans.a_ledger_number_i, Trans.a_batch_number_i, Trans.a_journal_number_i, Trans.a_transaction_number_i, " +
                              "Trans.a_account_code_c, Trans.a_cost_centre_code_c, Trans.a_transaction_date_d, Trans.a_transaction_amount_n, " +
-                             "Trans.a_amount_in_base_currency_n, Trans.a_amount_in_intl_currency_n, Trans.a_ich_number_i, Trans.a_system_generated_l, " +
-                             "Trans.a_narrative_c, Trans.a_debit_credit_indicator_l  FROM public.a_transaction AS Trans, public.a_journal AS Journal " +
+                             "Trans.a_amount_in_base_currency_n, Trans.a_amount_in_intl_currency_n, Trans.a_ich_number_i, Trans.a_system_generated_l, "
+                             +
+                             "Trans.a_narrative_c, Trans.a_debit_credit_indicator_l  FROM public.a_transaction AS Trans, public.a_journal AS Journal "
+                             +
                              "WHERE Trans.a_ledger_number_i = Journal.a_ledger_number_i AND Trans.a_batch_number_i = Journal.a_batch_number_i " +
                              "AND Trans.a_journal_number_i = Journal.a_journal_number_i " +
                              String.Format(
@@ -231,11 +234,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         bool Debit = Convert.ToBoolean(untypedTransactRow[13]);             //a_transaction.a_debit_credit_indicator_l
                         bool SystemGenerated = Convert.ToBoolean(untypedTransactRow[11]);   //a_transaction.a_system_generated_l
                         string Narrative = untypedTransactRow[12].ToString();               //a_transaction.a_narrative_c
-                        DateTime TransactionDate = Convert.ToDateTime(untypedTransactRow[6]);//a_transaction.a_transaction_date_d
+                        DateTime TransactionDate = Convert.ToDateTime(untypedTransactRow[6]); //a_transaction.a_transaction_date_d
 
                         if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
                         {
                             decimal AmountInBaseCurrency = Convert.ToDecimal(untypedTransactRow[8]);  //a_transaction.a_amount_in_base_currency_n
+
                             /* find transaction amount and store as debit or credit */
                             if (Debit)
                             {
@@ -249,6 +253,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         else
                         {
                             decimal AmountInIntlCurrency = Convert.ToDecimal(untypedTransactRow[9]);   //a_transaction.a_amount_in_intl_currency_n
+
                             if (Debit)
                             {
                                 DebitTotal += AmountInIntlCurrency;
@@ -299,7 +304,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 TableForExport.AcceptChanges();
 
-                TLogging.LogAtLevel(4,"HOSA-TableForExport: " + TableForExport.Rows.Count.ToString());
+                TLogging.LogAtLevel(4, "HOSA-TableForExport: " + TableForExport.Rows.Count.ToString());
 
                 //DataTables to XML to CSV
                 XmlDocument doc = TDataBase.DataTableToXml(TableForExport);
@@ -492,8 +497,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 DBTransaction);
                             AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
-                            ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + 
-                                MotivationGroupRow.MotivationGroupDescription.TrimEnd(new Char[] { (' ') }) + "," + LastDetailDesc;
+                            ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" +
+                                                MotivationGroupRow.MotivationGroupDescription.TrimEnd(new Char[] { (' ') }) + "," + LastDetailDesc;
                         }
 
                         //Add data to export table
@@ -515,10 +520,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
                 }
 
-
                 if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
                 {
                     Decimal GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
+
                     if (GiftAmount < 0)
                     {
                         IndividualDebitTotal -= GiftAmount;
@@ -531,6 +536,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 else
                 {
                     Decimal IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
+
                     if (IntlGiftAmount < 0)
                     {
                         IndividualDebitTotal -= IntlGiftAmount;
@@ -569,8 +575,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     AMotivationGroupRow MotivationGroupRow = (AMotivationGroupRow)MotivationGroupTable.Rows[0];
 
 
-                    ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" + 
-                        MotivationGroupRow.MotivationGroupDescription.TrimEnd() + "," + LastDetailDesc;
+                    ExportDescription = ALedgerNumber.ToString() + AMonthName + ":" +
+                                        MotivationGroupRow.MotivationGroupDescription.TrimEnd() + "," + LastDetailDesc;
                 }
 
                 //Add rows to export table
@@ -666,33 +672,33 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 //
                 // Load the Journals, and Transactions for this period:
                 String JournalQuery = "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
-                    "PUB_a_batch.a_ledger_number_i = " + ALedgerNumber +
-                    " AND PUB_a_batch.a_batch_year_i = " + ALedger[0].CurrentFinancialYear +
-                    " AND PUB_a_batch.a_batch_period_i = " + APeriodNumber +
-                    " AND PUB_a_batch.a_batch_status_c = 'Posted'" +
-                    " AND PUB_a_batch.a_ledger_number_i = PUB_a_journal.a_ledger_number_i" +
-                    " AND PUB_a_batch.a_batch_number_i = PUB_a_journal.a_batch_number_i";
+                                      "PUB_a_batch.a_ledger_number_i = " + ALedgerNumber +
+                                      " AND PUB_a_batch.a_batch_year_i = " + ALedger[0].CurrentFinancialYear +
+                                      " AND PUB_a_batch.a_batch_period_i = " + APeriodNumber +
+                                      " AND PUB_a_batch.a_batch_status_c = 'Posted'" +
+                                      " AND PUB_a_batch.a_ledger_number_i = PUB_a_journal.a_ledger_number_i" +
+                                      " AND PUB_a_batch.a_batch_number_i = PUB_a_journal.a_batch_number_i";
 
                 DataTable JournalTbl = DBAccess.GDBAccessObj.SelectDT(JournalQuery, "a_journal", DBTransaction);
                 AJournal.Merge(JournalTbl);
 
                 String TransactionQuery = "SELECT PUB_a_transaction.* FROM PUB_a_batch, PUB_a_transaction WHERE " +
-                    "PUB_a_batch.a_ledger_number_i = " + ALedgerNumber +
-                    " AND PUB_a_batch.a_batch_year_i = " + ALedger[0].CurrentFinancialYear +
-                    " AND PUB_a_batch.a_batch_period_i = " + APeriodNumber +
-                    " AND PUB_a_batch.a_batch_status_c = 'Posted'" +
-                    " AND PUB_a_batch.a_ledger_number_i = PUB_a_transaction.a_ledger_number_i" +
-                    " AND PUB_a_batch.a_batch_number_i = PUB_a_transaction.a_batch_number_i";
+                                          "PUB_a_batch.a_ledger_number_i = " + ALedgerNumber +
+                                          " AND PUB_a_batch.a_batch_year_i = " + ALedger[0].CurrentFinancialYear +
+                                          " AND PUB_a_batch.a_batch_period_i = " + APeriodNumber +
+                                          " AND PUB_a_batch.a_batch_status_c = 'Posted'" +
+                                          " AND PUB_a_batch.a_ledger_number_i = PUB_a_transaction.a_ledger_number_i" +
+                                          " AND PUB_a_batch.a_batch_number_i = PUB_a_transaction.a_batch_number_i";
 
                 DataTable TransactionTbl = DBAccess.GDBAccessObj.SelectDT(TransactionQuery, "a_transaction", DBTransaction);
                 ATransaction.Merge(TransactionTbl);
 
 
                 String CostCentreQuery = "SELECT * FROM a_cost_centre WHERE " +
-                    ACostCentreTable.GetLedgerNumberDBName() + " = " + ALedgerNumber +
-                    " AND " + ACostCentreTable.GetPostingCostCentreFlagDBName() + " = True" +
-                    " AND " + ACostCentreTable.GetCostCentreTypeDBName() + " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" + 
-                    " ORDER BY " + ACostCentreTable.GetCostCentreCodeDBName();
+                                         ACostCentreTable.GetLedgerNumberDBName() + " = " + ALedgerNumber +
+                                         " AND " + ACostCentreTable.GetPostingCostCentreFlagDBName() + " = True" +
+                                         " AND " + ACostCentreTable.GetCostCentreTypeDBName() + " LIKE '" + MFinanceConstants.FOREIGN_CC_TYPE + "'" +
+                                         " ORDER BY " + ACostCentreTable.GetCostCentreCodeDBName();
 
                 DataTable CCTbl = DBAccess.GDBAccessObj.SelectDT(CostCentreQuery, "a_cost_centre", DBTransaction);
                 ACostCentre.Merge(CCTbl);
@@ -708,7 +714,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         int BatchNumber = JournalRow.BatchNumber;
                         int JournalNumber = JournalRow.JournalNumber;
 
-                        String TransFilter = 
+                        String TransFilter =
                             ATransactionTable.GetBatchNumberDBName() + " = " + BatchNumber.ToString() +
                             " AND " + ATransactionTable.GetJournalNumberDBName() + " = " + JournalNumber.ToString() +
                             " AND " + ATransactionTable.GetCostCentreCodeDBName() + " = '" + CostCentreRow.CostCentreCode + "'" +

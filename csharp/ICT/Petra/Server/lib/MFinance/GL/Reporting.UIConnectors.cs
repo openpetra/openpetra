@@ -2493,7 +2493,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             if (AccountCodeOptions == "AccountRange")
             {
                 AccountCodeFilter = " AND glm.a_account_code_c >='" + AParameters["param_account_code_start"].ToString() +
-                                   "' AND glm.a_account_code_c <='" + AParameters["param_account_code_end"].ToString() + "'";
+                                    "' AND glm.a_account_code_c <='" + AParameters["param_account_code_end"].ToString() + "'";
             }
 
             if (AccountCodeOptions == "AllActiveAccounts") // THIS IS NOT SET AT ALL

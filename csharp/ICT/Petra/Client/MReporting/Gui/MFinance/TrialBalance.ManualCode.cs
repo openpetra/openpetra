@@ -108,7 +108,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 // I want to tell the user whether the selected period is closed
                 // (although they probably know already...)
                 Int32 SelPeriod = ACalc.GetParameters().GetParameter("param_end_period_i").value.ToInt32();
-                Int32 SelYear   = ACalc.GetParameters().GetParameter("param_year_i").value.ToInt32();
+                Int32 SelYear = ACalc.GetParameters().GetParameter("param_year_i").value.ToInt32();
+
                 if ((SelYear < LedgerRow.CurrentFinancialYear) || (SelPeriod < LedgerRow.CurrentPeriod))
                 {
                     IsClosed = true;

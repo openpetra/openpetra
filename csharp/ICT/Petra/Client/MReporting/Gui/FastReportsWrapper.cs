@@ -566,7 +566,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show(Catalog.GetString("Failed to set up the email server.\nPlease check the settings in Preferences / Email."), Catalog.GetString("Auto-email to linked partners"));
+                        MessageBox.Show(Catalog.GetString(
+                                "Failed to set up the email server.\nPlease check the settings in Preferences / Email."),
+                            Catalog.GetString("Auto-email to linked partners"));
                         return;
                     }
 

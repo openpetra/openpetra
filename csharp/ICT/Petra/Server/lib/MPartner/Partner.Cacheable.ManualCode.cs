@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                 StringHelper.InitStrArr(new String[] { "ORDER BY", PPartnerAttributeTypeTable.GetTableDBName() + "." +
                                                        PPartnerAttributeTypeTable.GetIndexDBName() + " ASC" }), 0, 0);
         }
-        
+
         private DataTable GetPartnerAttributeSystemCategoryListTable(TDBTransaction AReadTransaction, string ATableName)
         {
             PPartnerAttributeCategoryRow template = new PPartnerAttributeCategoryTable().NewRowTyped(false);
